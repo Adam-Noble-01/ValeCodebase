@@ -1,0 +1,6 @@
+2025-05-09 11:12:37,780 - INFO - Opening PDF: C:/03_-_Adam-Noble-Tools/02_-_Python/SnPy_PdfToPngConverter/Taysom rev plan and side elevations A3Q-14760-1iiB.pdf
+2025-05-09 11:12:37,789 - INFO - Using pdf2image for high-quality conversion
+2025-05-09 11:12:37,815 - ERROR - Error converting PDF to PNG: Unable to get page count. Is poppler installed and in PATH?
+2025-05-09 11:14:56,971 - INFO - Opening PDF: C:/03_-_Adam-Noble-Tools/02_-_Python/SnPy_PdfToPngConverter/Taysom rev plan and side elevations A3Q-14760-1iiB.pdf
+2025-05-09 11:14:56,977 - INFO - Using pdf2image for high-quality conversion
+2025-05-09 11:14:57,006 - ERROR - Error converting PDF to PNG: Unable to get page count. Is poppler installed and in PATH?

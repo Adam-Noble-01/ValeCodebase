@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SketchUp mm ↔ Photoshop px Converter (2px per mm)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 520px;
+            margin: 60px auto;
+            padding: 38px 38px 28px 38px;
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 4px 32px 0 rgba(90,100,110,0.13);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        h2 {
+            font-size: 2em;
+            margin-bottom: 14px;
+            letter-spacing: 0.01em;
+            text-align: center;
+            font-weight: 600;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 22px;
+            gap: 16px;
+        }
+        .col-label {
+            flex: 1 1 42%;
+            font-size: 1.12em;
+            font-weight: 500;
+        }
+        input[type="number"] {
+            width: 150px;
+            padding: 15px 16px;
+            border: 1px solid #c2d1e0;
+            border-radius: 8px;
+            font-size: 1.14em;
+            background: #f7fafc;
+            margin-left: 4px;
+        }
+        .result {
+            background: #e9f3ff;
+            padding: 16px 18px;
+            border-radius: 11px;
+            margin: 0 auto;
+            font-size: 1.19em;
+            min-height: 38px;
+            color: #203650;
+            width: 90%;
+            text-align: center;
+        }
+        button {
+            padding: 13px 34px;
+            border-radius: 9px;
+            border: none;
+            background: #2363c5;
+            color: #fff;
+            font-size: 1.16em;
+            cursor: pointer;
+            margin: 0 auto 8px auto;
+            display: block;
+            font-weight: 600;
+        }
+        button:active { background: #17427d; }
+        .swap-btn {
+            background: #94a3b8;
+            margin: 0 10px;
+            font-size: 1.03em;
+            padding: 11px 22px;
+            border-radius: 9px;
+        }
+        .px-mm-detail {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 1.06em;
+            color: #385168;
+            background: #f6fafd;
+            border-radius: 8px;
+            padding: 10px;
+            font-weight: 500;
+        }
+        .note {
+            margin: 20px auto 0 auto;
+            font-size: 1em;
+            color: #485866;
+            background: #e6ebf3;
+            border-radius: 9px;
+            padding: 14px 16px;
+            width: 94%;
+            line-height: 1.6;
+        }
+        @media (max-width: 650px) {
+            .container {
+                max-width: 99vw;
+                margin: 12px 2vw;
+                padding: 14px 4vw 14px 4vw;
+            }
+            h2 { font-size: 1.25em; }
+            input[type="number"] { width: 80px; padding: 10px; font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>SketchUp mm ↔ Photoshop px Converter (2px per mm)</h2>
+    <div id="converter">
+        <div class="row">
+            <label for="inputValue" class="col-label" id="inputLabel">SketchUp (mm):</label>
+            <input type="number" id="inputValue" min="0" step="any" value="650">
+        </div>
+        <div class="row" style="justify-content:center; margin-bottom: 10px;">
+            <button type="button" class="swap-btn" id="swapBtn">&#8595; Swap &#8593;</button>
+        </div>
+        <div class="row">
+            <label for="outputValue" class="col-label" id="outputLabel">Photoshop (px):</label>
+            <input type="number" id="outputValue" readonly>
+        </div>
+        <button type="button" id="convertBtn">Convert</button>
+        <div class="result" id="result"></div>
+        <div class="px-mm-detail" id="pxmmDetail"></div>
+        <div class="note">
+            - Formula (mm → px): <span style="font-family: monospace;">px = mm × 2</span><br>
+            - Formula (px → mm): <span style="font-family: monospace;">mm = px ÷ 2</span><br>
+            <br>
+            For higher detail, increase px per mm. For lower detail, decrease.<br>
+            (500mm → 1000px = 2 px per mm, recommended baseline)
+        </div>
+    </div>
+</div>
+<script>
+    const FACTOR = 2; // 2px per mm
+
+    let modeMmToPx = true;
+
+    const inputValue = document.getElementById('inputValue');
+    const outputValue = document.getElementById('outputValue');
+    const inputLabel = document.getElementById('inputLabel');
+    const outputLabel = document.getElementById('outputLabel');
+    const swapBtn = document.getElementById('swapBtn');
+    const convertBtn = document.getElementById('convertBtn');
+    const result = document.getElementById('result');
+    const pxmmDetail = document.getElementById('pxmmDetail');
+
+    function convert() {
+        const val = parseFloat(inputValue.value);
+        if (isNaN(val) || val < 0) {
+            result.textContent = "Please enter a valid number.";
+            outputValue.value = "";
+            pxmmDetail.textContent = "";
+            return;
+        }
+        let out;
+        if (modeMmToPx) {
+            out = val * FACTOR;
+            outputValue.value = Math.round(out);
+            result.textContent = val + " mm = " + Math.round(out) + " px";
+            pxmmDetail.textContent = "Detail: " + (out / val).toFixed(2) + " px per mm";
+        } else {
+            out = val / FACTOR;
+            outputValue.value = Math.round(out);
+            result.textContent = val + " px = " + Math.round(out) + " mm";
+            pxmmDetail.textContent = "Detail: " + (val / out).toFixed(2) + " px per mm";
+        }
+    }
+
+    function swapMode() {
+        modeMmToPx = !modeMmToPx;
+        if (modeMmToPx) {
+            inputLabel.textContent = "SketchUp (mm):";
+            outputLabel.textContent = "Photoshop (px):";
+            inputValue.value = "650";
+            outputValue.value = "";
+            result.textContent = "";
+            pxmmDetail.textContent = "";
+        } else {
+            inputLabel.textContent = "Photoshop (px):";
+            outputLabel.textContent = "SketchUp (mm):";
+            inputValue.value = "1000";
+            outputValue.value = "";
+            result.textContent = "";
+            pxmmDetail.textContent = "";
+        }
+    }
+
+    swapBtn.addEventListener('click', swapMode);
+    convertBtn.addEventListener('click', convert);
+
+    inputValue.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') convert();
+    });
+
+    convert();
+</script>
+</body>
+</html>

@@ -168,34 +168,5 @@
 
 // endregion -------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-// REGION | Pattern Loading and Management
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Load Pattern from JSON File
-    // ------------------------------------------------------------
-    async function loadPattern(patternName) {
-        if (!patternName) return;                                    // Exit if no pattern name
-        
-        try {
-            // Use the fallback loader that includes embedded data
-            currentPattern = await loadPatternWithFallback(patternName);
-            
-            if (!currentPattern) {
-                throw new Error('Pattern not found');
-            }
-            
-            createSliderControls(currentPattern.HatchEditor__EnabledTools); // Create UI controls
-            
-            if (livePreviewEnabled && dxfData) {                    // Check if preview should update
-                schedulePreview();                                   // Schedule preview update
-            }
-        } catch (error) {
-            console.error('Error loading pattern:', error);          // Log error
-            showError('Failed to load pattern');                    // Show user error
-        }
-    }
-    // ------------------------------------------------------------
-
 // Make function globally available
 window.renderBrickworkPattern = renderBrickworkPattern;

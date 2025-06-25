@@ -12,7 +12,7 @@
 // DESCRIPTION:
 // - Manages all event handlers for the Hatch Editor interface
 // - Handles pattern selection events
-// - Manages window resize events
+// - Manages export functionality
 // - Provides event delegation utilities
 //
 // =============================================================================
@@ -33,27 +33,6 @@
         }
         
         loadPattern(patternName);                                   // Load selected pattern
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------
-// REGION | Window and Canvas Event Handlers
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Handle Window Resize Event
-    // ------------------------------------------------------------
-    function handleWindowResize() {
-        clearTimeout(window.resizeTimeout);                         // Clear existing timeout
-        
-        window.resizeTimeout = setTimeout(() => {                   // Debounce resize
-            setupCanvasSize();                                      // Reset canvas size
-            
-            if (dxfData && currentPattern) {                       // Check if should redraw
-                generatePreview();                                  // Regenerate preview
-            }
-        }, 250);                                                    // 250ms debounce
     }
     // ------------------------------------------------------------
 

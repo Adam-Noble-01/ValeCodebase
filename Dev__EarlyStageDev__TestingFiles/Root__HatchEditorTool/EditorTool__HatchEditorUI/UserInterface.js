@@ -14,6 +14,7 @@
 // - Handles canvas rendering and hatch preview generation
 // - Creates dynamic slider controls based on pattern configuration
 // - Manages pattern loading and UI state updates
+// - INTEGRATES WITH NAVIGATION SYSTEM for viewport management
 //
 // =============================================================================
 
@@ -23,20 +24,21 @@
 
     // MODULE VARIABLES | Application State Variables
     // ------------------------------------------------------------
-    let canvas              = null;                                  // <-- Main canvas element
-    let ctx                 = null;                                  // <-- Canvas 2D context
+    let canvas              = null;                                  // <-- Main canvas element (reference only)
+    let ctx                 = null;                                  // <-- Canvas 2D context (reference only)
     let currentPattern      = null;                                  // <-- Currently loaded pattern data
     let dxfData             = null;                                  // <-- Loaded DXF file data
     let sliderValues        = {};                                    // <-- Current slider values
     let livePreviewEnabled  = true;                                  // <-- Live preview toggle state
     let previewTimeout      = null;                                  // <-- Debounce timeout for preview
+    let isNavigationReady   = false;                                 // <-- Flag to track navigation system readiness
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | Configuration Values
     // ------------------------------------------------------------
     const CANVAS_PADDING    = 50;                                    // <-- Canvas padding in pixels
     const PREVIEW_DELAY     = 300;                                   // <-- Preview debounce delay in ms
-    const MIN_CANVAS_SIZE   = 600;                                   // <-- Minimum canvas dimension
+    const GRID_SIZE         = 50;                                    // <-- Grid line spacing
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -48,31 +50,46 @@
     // FUNCTION | Initialize User Interface on Page Load
     // ------------------------------------------------------------
     function initializeUI() {
-        canvas = document.getElementById('hatch-canvas');            // Get canvas element
-        ctx = canvas.getContext('2d');                              // Get 2D context
+        // Wait for navigation system to be ready
+        if (typeof window.initializeCanvasNavigation === 'function') {
+            // Navigation system will handle canvas setup
+            canvas = document.getElementById('hatch-canvas');            // Get canvas reference
+            ctx = canvas.getContext('2d');                              // Get context reference
+            isNavigationReady = true;                                   // Mark navigation as ready
+        } else {
+            console.warn('Navigation system not available, falling back to basic setup');
+            setupBasicCanvas();                                          // Fallback canvas setup
+        }
         
-        setupCanvasSize();                                           // Setup initial canvas size
-        attachEventListeners();                                      // Attach all event listeners
-        loadDefaultTestFile();                                       // Load default test file if available
+        attachUIEventListeners();                                        // Attach UI-specific event listeners only
+        loadDefaultTestFile();                                           // Load default test file if available
+        
+        // Register redraw callback with navigation system
+        if (window.requestRedraw) {
+            window.canvasRedrawCallback = renderCurrentContent;         // Register our rendering function
+        }
     }
     // ------------------------------------------------------------
 
-    // SUB FUNCTION | Setup Canvas Dimensions
-    // ------------------------------------------------------------
-    function setupCanvasSize() {
-        const container = document.getElementById('canvas-container'); // Get container element
-        const rect = container.getBoundingClientRect();             // Get container dimensions
+    // SUB FUNCTION | Basic Canvas Setup (Fallback Only)
+    // ---------------------------------------------------------------
+    function setupBasicCanvas() {
+        canvas = document.getElementById('hatch-canvas');                // Get canvas element
+        ctx = canvas.getContext('2d');                                  // Get 2D context
         
-        canvas.width = Math.max(rect.width - 40, MIN_CANVAS_SIZE);  // Set canvas width
-        canvas.height = Math.max(rect.height - 40, MIN_CANVAS_SIZE); // Set canvas height
+        const container = document.getElementById('canvas-container');   // Get container element
+        const rect = container.getBoundingClientRect();                 // Get container dimensions
         
-        clearCanvas();                                               // Clear canvas with background
+        canvas.width = Math.max(rect.width - 40, 600);                  // Set canvas width
+        canvas.height = Math.max(rect.height - 40, 600);                // Set canvas height
+        
+        renderCurrentContent();                                          // Initial render
     }
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
 
-    // SUB FUNCTION | Attach Event Listeners to UI Elements
-    // ------------------------------------------------------------
-    function attachEventListeners() {
+    // SUB FUNCTION | Attach UI-Specific Event Listeners Only
+    // ---------------------------------------------------------------
+    function attachUIEventListeners() {
         // File operation buttons
         document.getElementById('load-dxf-btn').addEventListener('click', triggerFileInput);
         document.getElementById('load-test-file-btn').addEventListener('click', loadDefaultTestFile);
@@ -85,10 +102,10 @@
         document.getElementById('preview-btn').addEventListener('click', generatePreview);
         document.getElementById('live-preview-toggle').addEventListener('change', toggleLivePreview);
         
-        // Window resize
-        window.addEventListener('resize', handleWindowResize);
+        // NOTE: Canvas and window events are handled by navigation system
+        // NOTE: Do not add canvas mouse/wheel/resize events here
     }
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
@@ -176,10 +193,10 @@
 // endregion -------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
-// REGION | Canvas Rendering and Preview Generation
+// REGION | Canvas Rendering and Preview Generation - NAVIGATION INTEGRATED
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Generate Hatch Preview on Canvas
+    // FUNCTION | Generate Hatch Preview on Canvas (Main Entry Point)
     // ------------------------------------------------------------
     function generatePreview() {
         if (!dxfData || !currentPattern) {                          // Check prerequisites
@@ -187,83 +204,132 @@
             return;
         }
         
-        clearCanvas();                                               // Clear existing preview
-        renderDXFOutline();                                         // Render DXF boundary
-        renderHatchPattern();                                       // Render hatch pattern
+        // Update content bounds for navigation system
+        if (dxfData.bounds && window.setContentBounds) {
+            window.setContentBounds(                                 // Set bounds for navigation
+                dxfData.bounds.minX - CANVAS_PADDING,
+                dxfData.bounds.minY - CANVAS_PADDING,
+                dxfData.bounds.maxX + CANVAS_PADDING,
+                dxfData.bounds.maxY + CANVAS_PADDING
+            );
+        }
+        
+        // Use navigation system's redraw mechanism
+        if (window.requestRedraw) {
+            window.requestRedraw();                                  // Request redraw through navigation
+        } else {
+            renderCurrentContent();                                  // Fallback direct render
+        }
         
         document.getElementById('export-btn').disabled = false;      // Enable export button
     }
     // ------------------------------------------------------------
 
-    // SUB FUNCTION | Clear Canvas with Background Color
+    // FUNCTION | Render Current Content (Called by Navigation System)
     // ------------------------------------------------------------
-    function clearCanvas() {
+    function renderCurrentContent() {
+        if (!canvas || !ctx) return;                                // Exit if canvas not ready
+        
+        // Use navigation transform if available
+        let transformedCtx = ctx;
+        if (window.applyViewportTransform) {
+            transformedCtx = window.applyViewportTransform();        // Get transformed context
+            if (!transformedCtx) return;                            // Exit if transform failed
+        } else {
+            // Fallback: clear canvas manually
+            ctx.clearRect(0, 0, canvas.width, canvas.height);       // Clear canvas
+        }
+        
+        renderBackground(transformedCtx);                            // Render background and grid
+        renderDXFContent(transformedCtx);                            // Render DXF content
+        renderHatchPattern(transformedCtx);                          // Render hatch pattern
+        
+        // Restore context if navigation system provided transform
+        if (window.restoreViewportTransform) {
+            window.restoreViewportTransform();                       // Restore context state
+        }
+    }
+    // ------------------------------------------------------------
+
+    // SUB FUNCTION | Render Background and Grid
+    // ---------------------------------------------------------------
+    function renderBackground(ctx) {
+        // Fill background
         ctx.fillStyle = '#ffffff';                                   // Set fill color
-        ctx.fillRect(0, 0, canvas.width, canvas.height);           // Fill entire canvas
+        ctx.fillRect(-10000, -10000, 20000, 20000);                 // Fill large area (handles zoom/pan)
         
         // Draw grid for reference
         ctx.strokeStyle = '#f0f0f0';                                // Set grid color
         ctx.lineWidth = 1;                                          // Set line width
         
-        for (let x = 0; x < canvas.width; x += 50) {               // Draw vertical lines
+        // Calculate grid bounds based on current viewport
+        const gridBounds = calculateGridBounds();                    // Get visible grid area
+        
+        // Draw vertical grid lines
+        for (let x = gridBounds.minX; x <= gridBounds.maxX; x += GRID_SIZE) {
             ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
+            ctx.moveTo(x, gridBounds.minY);
+            ctx.lineTo(x, gridBounds.maxY);
             ctx.stroke();
         }
         
-        for (let y = 0; y < canvas.height; y += 50) {               // Draw horizontal lines
+        // Draw horizontal grid lines
+        for (let y = gridBounds.minY; y <= gridBounds.maxY; y += GRID_SIZE) {
             ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
+            ctx.moveTo(gridBounds.minX, y);
+            ctx.lineTo(gridBounds.maxX, y);
             ctx.stroke();
         }
     }
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
 
-    // SUB FUNCTION | Render DXF Outline on Canvas
-    // ------------------------------------------------------------
-    function renderDXFOutline() {
-        if (!dxfData || !dxfData.boundaries) return;                // Check if data exists
+    // SUB FUNCTION | Render DXF Content (Boundaries and Holes)
+    // ---------------------------------------------------------------
+    function renderDXFContent(ctx) {
+        if (!dxfData) return;                                        // Exit if no DXF data
         
         ctx.strokeStyle = '#333333';                                 // Set outline color
         ctx.lineWidth = 2;                                          // Set line width
         
-        dxfData.boundaries.forEach(boundary => {                    // Iterate through boundaries
-            ctx.beginPath();
-            boundary.points.forEach((point, index) => {              // Draw boundary path
-                if (index === 0) {
-                    ctx.moveTo(point.x + CANVAS_PADDING, point.y + CANVAS_PADDING);
-                } else {
-                    ctx.lineTo(point.x + CANVAS_PADDING, point.y + CANVAS_PADDING);
-                }
+        // Render boundaries
+        if (dxfData.boundaries) {
+            dxfData.boundaries.forEach(boundary => {                // Iterate through boundaries
+                renderPolygon(ctx, boundary.points, false);          // Render boundary polygon
             });
-            ctx.closePath();
-            ctx.stroke();
-        });
+        }
+        
+        // Render holes (windows/doors)
+        if (dxfData.holes) {
+            ctx.strokeStyle = '#666666';                             // Different color for holes
+            dxfData.holes.forEach(hole => {                         // Iterate through holes
+                renderPolygon(ctx, hole.points, false);             // Render hole polygon
+            });
+        }
     }
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
 
     // SUB FUNCTION | Render Hatch Pattern Inside Boundaries
-    // ------------------------------------------------------------
-    function renderHatchPattern() {
+    // ---------------------------------------------------------------
+    function renderHatchPattern(ctx) {
         if (!currentPattern || !dxfData) return;                    // Check prerequisites
         
         ctx.save();                                                  // Save context state
         
         // Create clipping path from DXF boundaries
-        ctx.beginPath();
-        dxfData.boundaries.forEach(boundary => {                    // Create clipping region
-            boundary.points.forEach((point, index) => {
-                if (index === 0) {
-                    ctx.moveTo(point.x + CANVAS_PADDING, point.y + CANVAS_PADDING);
-                } else {
-                    ctx.lineTo(point.x + CANVAS_PADDING, point.y + CANVAS_PADDING);
-                }
+        if (dxfData.boundaries) {
+            ctx.beginPath();
+            dxfData.boundaries.forEach(boundary => {                // Create clipping region
+                boundary.points.forEach((point, index) => {
+                    if (index === 0) {
+                        ctx.moveTo(point.x, point.y);               // Move to first point
+                    } else {
+                        ctx.lineTo(point.x, point.y);               // Line to subsequent points
+                    }
+                });
+                ctx.closePath();
             });
-            ctx.closePath();
-        });
-        ctx.clip();                                                  // Apply clipping
+            ctx.clip();                                              // Apply clipping
+        }
         
         // Call pattern-specific rendering function
         if (window.renderBrickworkPattern) {                        // Check if function exists
@@ -272,23 +338,82 @@
         
         ctx.restore();                                              // Restore context state
     }
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
 
-    // FUNCTION | Draw DXF Line Segments on Canvas
+    // HELPER FUNCTION | Render Polygon Shape
+    // ---------------------------------------------------------------
+    function renderPolygon(ctx, points, filled = false) {
+        if (!points || points.length < 2) return;                   // Exit if insufficient points
+        
+        ctx.beginPath();
+        points.forEach((point, index) => {                          // Draw polygon path
+            if (index === 0) {
+                ctx.moveTo(point.x, point.y);                       // Move to first point
+            } else {
+                ctx.lineTo(point.x, point.y);                       // Line to subsequent points
+            }
+        });
+        ctx.closePath();
+        
+        if (filled) {
+            ctx.fill();                                             // Fill if requested
+        } else {
+            ctx.stroke();                                           // Stroke outline
+        }
+    }
+    // ---------------------------------------------------------------
+
+    // HELPER FUNCTION | Calculate Grid Bounds for Current Viewport
+    // ---------------------------------------------------------------
+    function calculateGridBounds() {
+        // Default bounds if navigation not available
+        let bounds = { minX: -500, minY: -500, maxX: 1500, maxY: 1500 };
+        
+        // Use viewport state if available
+        if (window.getViewportState) {
+            const viewport = window.getViewportState();              // Get current viewport
+            const zoom = viewport.zoomLevel || 1;                    // Get zoom level
+            const offsetX = viewport.viewportX || 0;                 // Get X offset
+            const offsetY = viewport.viewportY || 0;                 // Get Y offset
+            
+            // Calculate visible world area
+            const worldWidth = canvas.width / zoom;                  // World width in view
+            const worldHeight = canvas.height / zoom;                // World height in view
+            const worldLeft = -offsetX / zoom;                       // Left edge in world coords
+            const worldTop = -offsetY / zoom;                        // Top edge in world coords
+            
+            bounds = {
+                minX: Math.floor((worldLeft - 100) / GRID_SIZE) * GRID_SIZE,         // Snap to grid
+                minY: Math.floor((worldTop - 100) / GRID_SIZE) * GRID_SIZE,          // Snap to grid
+                maxX: Math.ceil((worldLeft + worldWidth + 100) / GRID_SIZE) * GRID_SIZE,  // Snap to grid
+                maxY: Math.ceil((worldTop + worldHeight + 100) / GRID_SIZE) * GRID_SIZE   // Snap to grid
+            };
+        }
+        
+        return bounds;                                               // Return calculated bounds
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Draw DXF Line Segments on Canvas (Legacy Support)
     // ------------------------------------------------------------
     function drawDXFLines(segments) {
-        clearCanvas();                                              // Clear canvas first
-        if (!ctx || !segments || segments.length === 0) return;     // Exit if nothing to draw
-        ctx.save();
-        ctx.strokeStyle = '#000000';                                // Black lines
-        ctx.lineWidth = 1.0;                                        // 1.00pt line
-        ctx.beginPath();
-        segments.forEach(seg => {
-            ctx.moveTo(seg.x1, seg.y1);                             // Move to start
-            ctx.lineTo(seg.x2, seg.y2);                             // Draw to end
-        });
-        ctx.stroke();
-        ctx.restore();
+        if (!segments || segments.length === 0) return;             // Exit if nothing to draw
+        
+        // Convert line segments to boundary format for consistency
+        dxfData = {
+            boundaries: [],                                          // Initialize boundaries
+            holes: [],                                              // Initialize holes
+            bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 }   // Default bounds
+        };
+        
+        // Simple conversion: treat all segments as individual boundaries
+        // In production, this should be more sophisticated
+        if (segments.length > 0) {
+            const points = segments.map(seg => ({ x: seg.x1, y: seg.y1 })); // Extract start points
+            dxfData.boundaries.push({ points: points });            // Add as boundary
+        }
+        
+        generatePreview();                                           // Trigger full preview
     }
     // ------------------------------------------------------------
 
@@ -350,6 +475,17 @@
         }, 5000);                                                   // Show for 5 seconds
     }
     // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Public API and Integration Points
+// -----------------------------------------------------------------------------
+
+    // Export functions for navigation system integration
+    window.renderCurrentContent = renderCurrentContent;             // <-- Export render function
+    window.generatePreview = generatePreview;                       // <-- Export preview function
+    window.drawDXFLines = drawDXFLines;                             // <-- Export DXF drawing function
 
 // endregion -------------------------------------------------------------------
 

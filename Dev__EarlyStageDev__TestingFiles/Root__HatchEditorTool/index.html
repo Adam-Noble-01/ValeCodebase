@@ -1,1 +1,140 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vale Design Suite - Hatch Editor Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Header Section                                         -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <header>
+        <h1>Hatch Editor Tool</h1>
+        <p class="subtitle">Create Organic Humanised Artistic Hatches</p>
+    </header>
+    
+    <!-- endregion ----------------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Main Canvas Display Area                               -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <div id="canvas-container">
+        <canvas id="hatch-canvas"></canvas>
+        <div id="canvas-overlay" class="overlay-info">
+            <span id="canvas-info">No file loaded</span>
+        </div>
+    </div>
+    
+    <!-- endregion ----------------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Control Panel Interface                                -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <div id="control-panel">
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | File Operations Section                                 -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div class="control-section">
+            <h2 class="section-title">File Operations</h2>
+            
+            <div class="button-group">
+                <button id="load-dxf-btn" class="primary-button">Load DXF File</button>
+                <button id="load-test-file-btn" class="secondary-button">Load Test Wall</button>
+                <input type="file" id="file-input" accept=".dxf" style="display: none;">
+            </div>
+            
+            <div class="file-info">
+                <span id="loaded-file-name">No file loaded</span>
+            </div>
+        </div>
+        
+        <!-- ---------------------------------------------------------------- -->
+        
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Pattern Selection Section                               -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div class="control-section">
+            <h2 class="section-title">Pattern Selection</h2>
+            
+            <div class="pattern-selector">
+                <select id="pattern-dropdown" class="pattern-select">
+                    <option value="">Select a pattern...</option>
+                    <option value="BrickPattern__MetricBrickwork__Pattern-01">Metric Brickwork - Pattern 01</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- ---------------------------------------------------------------- -->
+        
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Hatch Adjustment Controls                               -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div class="control-section" id="adjustment-controls">
+            <h2 class="section-title">Hatch Parameters</h2>
+            
+            <div id="sliders-container">
+                <!-- Sliders will be dynamically generated based on pattern JSON -->
+            </div>
+        </div>
+        
+        <!-- ---------------------------------------------------------------- -->
+        
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Preview and Export Controls                             -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div class="control-section">
+            <h2 class="section-title">Preview & Export</h2>
+            
+            <div class="button-group">
+                <button id="preview-btn" class="primary-button">Generate Preview</button>
+                <button id="export-btn" class="secondary-button" disabled>Export to SketchUp</button>
+            </div>
+            
+            <div class="preview-info">
+                <label>
+                    <input type="checkbox" id="live-preview-toggle" checked>
+                    Live Preview
+                </label>
+            </div>
+        </div>
+        
+        <!-- ---------------------------------------------------------------- -->
+        
+    </div>
+    
+    <!-- endregion ----------------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Script Imports                                         -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script src="EditorTool__HatchEditorUI/FileHandlersAndSchedulers.js"></script>
+    <script src="EditorTool__HatchEditorUI/EventHandlers.js"></script>
+    <script src="EditorTool__HatchEditorUI/UserInterface.js"></script>
+    
+    <!-- Adjustment Logic Scripts -->
+    <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__BrickworkHatchingAdjustmentLogic.js"></script>
+    <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralLineworkJitter.js"></script>
+    <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralPatchOccurrence.js"></script>
+    <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralPatchRandomness.js"></script>
+    
+    <!-- endregion ----------------------------------------------------------------- -->
+    
+</body>
+</html> 

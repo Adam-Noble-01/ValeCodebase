@@ -1,0 +1,295 @@
+/* =============================================================================
+   VALE DESIGN SUITE - HATCH EDITOR TOOL STYLES
+   =============================================================================
+   
+   PURPOSE     : Styling for Hatch Editor Tool Interface
+   AUTHOR      : Generated for Vale Design Suite
+   CREATED     : 2025
+   
+   ============================================================================= */
+
+
+/* CSS Variables - Vale Design Suite Standards */
+:root {
+    /* Color Variables */
+    --FontCol_ValeTitleTextColour          : #172b3a;
+    --FontCol_ValeTitleHeadingColour       : #172b3a;
+    --FontCol_ValeStandardTextColour       : #1e1e1e;
+    --FontCol_ValeLinkTextColour           : #336699;
+    --FontCol_ValeHoverTextColour          : #3377aa;
+    --FontCol_ValeActiveTextColour         : #006600;
+    --FontCol_ValeDisabledTextColour       : #999999;
+    
+    /* Background Colors */
+    --ValeBackgroundColor                  : #f5f5f5;
+    --ValeCanvasBackground                 : #ffffff;
+    --ValePanelBackground                  : #ffffff;
+    --ValeBorderColor                      : #e0e0e0;
+    --ValeButtonPrimaryBg                  : #336699;
+    --ValeButtonSecondaryBg                : #6c757d;
+    
+    /* Typography Variables */
+    --FontType_ValeTitleText               : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --FontType_ValeStandardText            : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --FontSize_ValeTitleText               : 1.8rem;
+    --FontSize_ValeTitleHeading01          : 1.2rem;
+    --FontSize_ValeTitleHeading02          : 1.0rem;
+    --FontSize_ValeStandardText            : 0.9rem;
+    
+    /* Layout Variables */
+    --ValeStandardPadding                  : 20px;
+    --ValeCompactPadding                   : 10px;
+    --ValeBorderRadius                     : 4px;
+    --ValeControlPanelWidth                : 350px;
+}
+
+
+/* Base Layout Styles */
+html, body {
+    margin                                 : 0;
+    padding                                : 0;
+    font-family                            : var(--FontType_ValeStandardText);
+    font-size                              : 16px;
+    color                                  : var(--FontCol_ValeStandardTextColour);
+    background-color                       : var(--ValeBackgroundColor);
+    height                                 : 100vh;
+    overflow                               : hidden;
+}
+
+body {
+    display                                : flex;
+    flex-direction                         : column;
+}
+
+
+/* Header Styles */
+header {
+    background-color                       : var(--ValePanelBackground);
+    border-bottom                          : 1px solid var(--ValeBorderColor);
+    padding                                : var(--ValeStandardPadding);
+    text-align                             : center;
+    box-shadow                             : 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin                                 : 0;
+    font-size                              : var(--FontSize_ValeTitleText);
+    color                                  : var(--FontCol_ValeTitleTextColour);
+    font-weight                            : 300;
+}
+
+header .subtitle {
+    margin                                 : 5px 0 0 0;
+    font-size                              : var(--FontSize_ValeStandardText);
+    color                                  : var(--FontCol_ValeDisabledTextColour);
+}
+
+
+/* Main Layout Container */
+body > div:last-child {
+    display                                : flex;
+    flex                                   : 1;
+    overflow                               : hidden;
+}
+
+
+/* Canvas Container Styles */
+#canvas-container {
+    flex                                   : 1;
+    position                               : relative;
+    background-color                       : var(--ValeCanvasBackground);
+    border-right                           : 1px solid var(--ValeBorderColor);
+    display                                : flex;
+    align-items                            : center;
+    justify-content                        : center;
+    overflow                               : hidden;
+}
+
+#hatch-canvas {
+    max-width                              : 100%;
+    max-height                             : 100%;
+    border                                 : 1px solid var(--ValeBorderColor);
+    box-shadow                             : 0 0 10px rgba(0,0,0,0.1);
+}
+
+#canvas-overlay {
+    position                               : absolute;
+    top                                    : 50%;
+    left                                   : 50%;
+    transform                              : translate(-50%, -50%);
+    background-color                       : rgba(255,255,255,0.9);
+    padding                                : var(--ValeStandardPadding);
+    border-radius                          : var(--ValeBorderRadius);
+    box-shadow                             : 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.overlay-info {
+    font-size                              : var(--FontSize_ValeStandardText);
+    color                                  : var(--FontCol_ValeDisabledTextColour);
+}
+
+
+/* Control Panel Styles */
+#control-panel {
+    width                                  : var(--ValeControlPanelWidth);
+    background-color                       : var(--ValePanelBackground);
+    overflow-y                             : auto;
+    padding                                : var(--ValeStandardPadding);
+    box-shadow                             : -2px 0 4px rgba(0,0,0,0.1);
+}
+
+.control-section {
+    margin-bottom                          : 30px;
+    padding-bottom                         : 20px;
+    border-bottom                          : 1px solid var(--ValeBorderColor);
+}
+
+.control-section:last-child {
+    border-bottom                          : none;
+}
+
+.section-title {
+    font-size                              : var(--FontSize_ValeTitleHeading01);
+    color                                  : var(--FontCol_ValeTitleHeadingColour);
+    margin                                 : 0 0 15px 0;
+    font-weight                            : 400;
+}
+
+
+/* Button Styles */
+.button-group {
+    display                                : flex;
+    gap                                    : 10px;
+    margin-bottom                          : 15px;
+}
+
+.primary-button, .secondary-button {
+    flex                                   : 1;
+    padding                                : 10px 15px;
+    border                                 : none;
+    border-radius                          : var(--ValeBorderRadius);
+    font-size                              : var(--FontSize_ValeStandardText);
+    cursor                                 : pointer;
+    transition                             : all 0.3s ease;
+    font-family                            : var(--FontType_ValeStandardText);
+}
+
+.primary-button {
+    background-color                       : var(--ValeButtonPrimaryBg);
+    color                                  : white;
+}
+
+.primary-button:hover {
+    background-color                       : var(--FontCol_ValeHoverTextColour);
+}
+
+.secondary-button {
+    background-color                       : var(--ValeButtonSecondaryBg);
+    color                                  : white;
+}
+
+.secondary-button:hover {
+    background-color                       : #5a6268;
+}
+
+button:disabled {
+    background-color                       : #e0e0e0;
+    color                                  : var(--FontCol_ValeDisabledTextColour);
+    cursor                                 : not-allowed;
+}
+
+
+/* Form Control Styles */
+.pattern-select {
+    width                                  : 100%;
+    padding                                : 8px 12px;
+    border                                 : 1px solid var(--ValeBorderColor);
+    border-radius                          : var(--ValeBorderRadius);
+    font-size                              : var(--FontSize_ValeStandardText);
+    font-family                            : var(--FontType_ValeStandardText);
+    background-color                       : white;
+}
+
+.file-info, .preview-info {
+    font-size                              : var(--FontSize_ValeStandardText);
+    color                                  : var(--FontCol_ValeDisabledTextColour);
+    margin-top                             : 10px;
+}
+
+
+/* Slider Container Styles */
+#sliders-container {
+    display                                : flex;
+    flex-direction                         : column;
+    gap                                    : 20px;
+}
+
+.slider-group {
+    display                                : flex;
+    flex-direction                         : column;
+    gap                                    : 8px;
+}
+
+.slider-label {
+    font-size                              : var(--FontSize_ValeStandardText);
+    color                                  : var(--FontCol_ValeStandardTextColour);
+    display                                : flex;
+    justify-content                        : space-between;
+}
+
+.slider-value {
+    color                                  : var(--FontCol_ValeLinkTextColour);
+    font-weight                            : 500;
+}
+
+input[type="range"] {
+    width                                  : 100%;
+    height                                 : 6px;
+    border-radius                          : 3px;
+    background                             : var(--ValeBorderColor);
+    outline                                : none;
+    -webkit-appearance                     : none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance                     : none;
+    appearance                             : none;
+    width                                  : 16px;
+    height                                 : 16px;
+    border-radius                          : 50%;
+    background                             : var(--ValeButtonPrimaryBg);
+    cursor                                 : pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width                                  : 16px;
+    height                                 : 16px;
+    border-radius                          : 50%;
+    background                             : var(--ValeButtonPrimaryBg);
+    cursor                                 : pointer;
+    border                                 : none;
+}
+
+
+/* Checkbox Styles */
+input[type="checkbox"] {
+    margin-right                           : 8px;
+    cursor                                 : pointer;
+}
+
+label {
+    cursor                                 : pointer;
+    font-size                              : var(--FontSize_ValeStandardText);
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #control-panel {
+        width                              : 300px;
+    }
+    
+    .button-group {
+        flex-direction                     : column;
+    }
+}

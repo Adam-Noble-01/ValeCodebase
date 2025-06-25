@@ -18,12 +18,14 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// REGION | Module Constants
+// REGION | Module Dependencies
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Configuration Values
+    // MODULE NOTES | State Management
     // ------------------------------------------------------------
-    const PREVIEW_DELAY = 300;                                      // <-- Preview debounce delay in ms
+    // This module uses the GlobalState system for all state management
+    // Access state via window.getState() and window.setState()
+    // Constants are also stored in GlobalState
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -47,7 +49,7 @@
         if (!file) return;                                          // Exit if no file
         
         if (!file.name.toLowerCase().endsWith('.dxf')) {            // Validate file extension
-            showError('Please select a DXF file');
+            window.showError('Please select a DXF file');
             return;
         }
         
@@ -55,16 +57,16 @@
             const content = await readFileContent(file);             // Read file content
             // dxfData = parseDXFContent(content);                  // <-- Old logic (commented out)
             const segments = window.DXFParser.parseDXFLines(content); // <-- Parse DXF lines
-            drawDXFLines(segments);                                 // <-- Draw on canvas
-            updateFileInfo(file.name);                               // Update UI with filename
-            hideCanvasOverlay();                                     // Hide overlay
+            window.drawDXFLines(segments);                                 // <-- Draw on canvas
+            window.updateFileInfo(file.name);                               // Update UI with filename
+            window.hideCanvasOverlay();                                     // Hide overlay
             
-            if (currentPattern && livePreviewEnabled) {              // Check preview conditions
-                schedulePreview();                                   // Schedule preview
+            if (window.getState('currentPattern') && window.getState('livePreviewEnabled')) {  // Check preview conditions
+                window.schedulePreview();                                   // Schedule preview
             }
         } catch (error) {
             console.error('Error loading file:', error);             // Log error
-            showError('Failed to load DXF file');                   // Show error to user
+            window.showError('Failed to load DXF file');                   // Show error to user
         }
     }
     // ------------------------------------------------------------
@@ -128,12 +130,12 @@
             maxY: testWallData.bounds.maxY * scale
         };
         
-        dxfData = testWallData;                                     // Set global data
-        updateFileInfo('Test Wall (Generated)');                    // Update UI
-        hideCanvasOverlay();                                        // Hide overlay
+        window.setState('dxfData', testWallData);                          // Set global data
+        window.updateFileInfo('Test Wall (Generated)');                    // Update UI
+        window.hideCanvasOverlay();                                        // Hide overlay
         
-        if (currentPattern && livePreviewEnabled) {                 // Check preview conditions
-            schedulePreview();                                      // Schedule preview
+        if (window.getState('currentPattern') && window.getState('livePreviewEnabled')) {  // Check preview conditions
+            window.schedulePreview();                                      // Schedule preview
         }
         
         // Show server instructions
@@ -284,27 +286,5 @@ Then open: http://localhost:8000/index.html
     window.loadDefaultTestFile = loadDefaultTestFile;                        // <-- Export test file loader
     window.parseDXFContent = parseDXFContent;                                // <-- Export DXF parser
     window.readFileContent = readFileContent;                                // <-- Export file reader
-    window.schedulePreview = schedulePreview;                                // <-- Export preview scheduler
-
-// endregion -------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------
-// REGION | Scheduling Functions
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Schedule Preview with Debounce
-    // ------------------------------------------------------------
-    function schedulePreview() {
-        if (previewTimeout) {                                        // <-- Clear existing timeout
-            clearTimeout(previewTimeout);
-        }
-        
-        previewTimeout = setTimeout(() => {                          // <-- Schedule new preview
-            if (typeof generatePreview === 'function') {
-                generatePreview();                                   // <-- Generate preview
-            }
-        }, PREVIEW_DELAY);
-    }
-    // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

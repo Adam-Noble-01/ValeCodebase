@@ -22,19 +22,11 @@
 // REGION | Module Variables and State Management
 // -----------------------------------------------------------------------------
 
-    // MODULE VARIABLES | Application State Variables (References to Global)
+    // MODULE NOTES | State Management
     // ------------------------------------------------------------
-    // These variables are declared globally in index.html
-    // We only reference them here, not redeclare
-    // canvas, ctx, currentPattern, dxfData, sliderValues, 
-    // livePreviewEnabled, previewTimeout, isNavigationReady
-    // ------------------------------------------------------------
-
-    // MODULE CONSTANTS | Configuration Values
-    // ------------------------------------------------------------
-    const CANVAS_PADDING    = 50;                                    // <-- Canvas padding in pixels
-    const PREVIEW_DELAY     = 300;                                   // <-- Preview debounce delay in ms
-    const GRID_SIZE         = 50;                                    // <-- Grid line spacing
+    // This module uses the GlobalState system for all state management
+    // Access state via window.getState() and window.setState()
+    // Constants are also stored in GlobalState
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -51,26 +43,31 @@
         // Wait for navigation system to be ready
         setTimeout(() => {
             // Get canvas references from navigation system if available
+            let canvas, ctx;
             if (typeof window.getCanvasElement === 'function') {
-                canvas = window.getCanvasElement();                       // <-- Get canvas from navigation
+                canvas = window.getCanvasElement();                      // <-- Get canvas from navigation
                 if (canvas) {
-                    ctx = canvas.getContext('2d');                        // <-- Get context
+                    ctx = canvas.getContext('2d');                       // <-- Get context
                 }
             } else {
                 // Fallback to direct element access
-                canvas = document.getElementById('hatch-canvas');         // <-- Get canvas element
+                canvas = document.getElementById('hatch-canvas');        // <-- Get canvas element
                 if (canvas) {
-                    ctx = canvas.getContext('2d');                        // <-- Get 2D context
+                    ctx = canvas.getContext('2d');                       // <-- Get 2D context
                 }
             }
             
             if (!canvas || !ctx) {                                       // <-- Validate canvas setup
-                console.error('Failed to get canvas or context');         // <-- Log error
+                console.error('Failed to get canvas or context');        // <-- Log error
                 return;
             }
             
-            attachUIEventListeners();                                     // <-- Attach UI-specific event listeners
-            isNavigationReady = true;                                     // <-- Mark navigation as ready
+            // Store canvas and context in global state
+            window.setState('canvas', canvas);                           // <-- Store canvas in state
+            window.setState('ctx', ctx);                                 // <-- Store context in state
+            
+            attachUIEventListeners();                                    // <-- Attach UI-specific event listeners
+            window.setState('isNavigationReady', true);                  // <-- Mark navigation as ready
             
             // Register redraw callback with navigation system
             if (typeof window.setCanvasRedrawCallback === 'function') {
@@ -91,21 +88,21 @@
         const fileInput = document.getElementById('file-input');           // <-- Get file input
         
         if (loadDxfBtn) {
-            loadDxfBtn.addEventListener('click', triggerFileInput);        // <-- Add click handler
+            loadDxfBtn.addEventListener('click', window.triggerFileInput);        // <-- Add click handler
         }
         
         if (loadTestBtn) {
-            loadTestBtn.addEventListener('click', loadDefaultTestFile);    // <-- Add click handler
+            loadTestBtn.addEventListener('click', window.loadDefaultTestFile);    // <-- Add click handler
         }
         
         if (fileInput) {
-            fileInput.addEventListener('change', handleFileSelect);        // <-- Add change handler
+            fileInput.addEventListener('change', window.handleFileSelect);        // <-- Add change handler
         }
         
         // Pattern selection
         const patternDropdown = document.getElementById('pattern-dropdown'); // <-- Get pattern dropdown
         if (patternDropdown) {
-            patternDropdown.addEventListener('change', handlePatternSelect); // <-- Add change handler
+            patternDropdown.addEventListener('change', window.handlePatternSelect); // <-- Add change handler
         }
         
         // Preview controls
@@ -141,17 +138,18 @@
                 throw new Error(`Pattern file not found: ${patternName}.json`);
             }
             
-            currentPattern = await response.json();                  // Parse JSON data
-            createSliderControls(currentPattern.HatchEditor__EnabledTools); // Create UI controls
+            const pattern = await response.json();                          // Parse JSON data
+            window.setState('currentPattern', pattern);                     // Store pattern in state
+            createSliderControls(pattern.HatchEditor__EnabledTools);        // Create UI controls
             
-            if (livePreviewEnabled && dxfData) {                    // Check if preview should update
-                schedulePreview();                                   // Schedule preview update
+            if (window.getState('livePreviewEnabled') && window.getState('dxfData')) {  // Check if preview should update
+                window.schedulePreview();                                   // Schedule preview update
             }
             
             console.log('Pattern loaded successfully:', patternName); // <-- Log success
         } catch (error) {
             console.error('Error loading pattern:', error);          // Log error
-            showError(`Failed to load pattern: ${patternName}. Make sure the local server is running.`);
+            window.showError(`Failed to load pattern: ${patternName}. Make sure the local server is running.`);
         }
     }
     // ------------------------------------------------------------
@@ -170,7 +168,9 @@
             container.appendChild(sliderGroup);                      // Add to container
             
             // Initialize slider value
-            sliderValues[toolName] = 50;                            // Default to middle value
+            const sliderValues = window.getState('sliderValues') || {};     // Get current slider values
+            sliderValues[toolName] = 50;                                    // Default to middle value
+            window.setState('sliderValues', sliderValues);                  // Store updated values
         });
         
         console.log('Slider controls created for pattern');          // <-- Log success
@@ -222,7 +222,7 @@
     // FUNCTION | Generate Hatch Preview on Canvas (Main Entry Point)
     // ------------------------------------------------------------
     function generatePreview() {
-        if (!dxfData || !currentPattern) {                          // Check prerequisites
+        if (!window.getState('dxfData') || !window.getState('currentPattern')) {  // Check prerequisites
             console.warn('No DXF data or pattern loaded for preview'); // <-- Log warning
             return;
         }
@@ -241,25 +241,28 @@
     // FUNCTION | Render Current Content on Canvas
     // ------------------------------------------------------------
     function renderCurrentContent() {
-        if (!canvas || !ctx) {                                       // Check canvas availability
-            console.warn('Canvas not available for rendering');      // <-- Log warning
+        const canvas = window.getCanvas();                                  // Get canvas from state
+        const ctx = window.getContext();                                    // Get context from state
+        
+        if (!canvas || !ctx) {                                              // Check canvas availability
+            console.warn('Canvas not available for rendering');             // <-- Log warning
             return;
         }
         
         // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);           // <-- Clear entire canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);                   // <-- Clear entire canvas
         
         // Render background grid
-        renderBackground(ctx);                                       // <-- Render background
+        renderBackground(ctx);                                              // <-- Render background
         
         // Render DXF content if available
-        if (dxfData) {
-            renderDXFContent(ctx);                                   // <-- Render DXF data
+        if (window.getDXFData()) {
+            renderDXFContent(ctx);                                          // <-- Render DXF data
         }
         
         // Render hatch pattern if available
-        if (currentPattern && dxfData) {
-            renderHatchPattern(ctx);                                 // <-- Render hatch pattern
+        if (window.getCurrentPattern() && window.getDXFData()) {
+            renderHatchPattern(ctx);                                        // <-- Render hatch pattern
         }
         
         console.log('Canvas content rendered successfully');         // <-- Log success
@@ -274,6 +277,8 @@
         
         ctx.strokeStyle = '#e0e0e0';                                 // <-- Set grid color
         ctx.lineWidth = 1;                                           // <-- Set line width
+        
+        const GRID_SIZE = window.getState('GRID_SIZE');              // Get grid size from state
         
         // Draw vertical grid lines
         for (let x = bounds.minX; x <= bounds.maxX; x += GRID_SIZE) {
@@ -296,6 +301,7 @@
     // SUB FUNCTION | Render DXF Content
     // ---------------------------------------------------------------
     function renderDXFContent(ctx) {
+        const dxfData = window.getDXFData();                        // Get DXF data from state
         if (!dxfData) return;                                        // Exit if no DXF data
         
         ctx.strokeStyle = '#333333';                                 // <-- Set DXF line color
@@ -321,6 +327,9 @@
     // SUB FUNCTION | Render Hatch Pattern
     // ---------------------------------------------------------------
     function renderHatchPattern(ctx) {
+        const currentPattern = window.getCurrentPattern();           // Get pattern from state
+        const dxfData = window.getDXFData();                        // Get DXF data from state
+        
         if (!currentPattern || !dxfData) return;                     // Exit if no pattern or data
         
         ctx.strokeStyle = '#0066cc';                                 // <-- Set hatch color
@@ -385,6 +394,10 @@
     // HELPER FUNCTION | Calculate Grid Bounds
     // ------------------------------------------------------------
     function calculateGridBounds() {
+        const dxfData = window.getDXFData();                        // Get DXF data from state
+        const canvas = window.getCanvas();                           // Get canvas from state
+        const CANVAS_PADDING = window.getState('CANVAS_PADDING');    // Get padding from state
+        
         if (!dxfData || !dxfData.bounds) {                           // Check if bounds available
             // Return default bounds if no data
             return {
@@ -402,12 +415,15 @@
     // FUNCTION | Draw DXF Lines on Canvas
     // ------------------------------------------------------------
     function drawDXFLines(segments) {
+        const canvas = window.getCanvas();                           // Get canvas from state
+        const ctx = window.getContext();                             // Get context from state
+        
         if (!canvas || !ctx || !segments) return;                    // Check prerequisites
         
         console.log('Drawing DXF lines:', segments.length, 'segments'); // <-- Log drawing
         
         // Convert line segments to DXF data format
-        dxfData = {
+        const dxfData = {
             boundaries: [{
                 points: segments.map(seg => [                        // Convert segments to points
                     { x: seg.x1, y: seg.y1 },
@@ -417,6 +433,8 @@
             holes: [],
             bounds: calculateBoundsFromSegments(segments)            // Calculate bounds
         };
+        
+        window.setState('dxfData', dxfData);                         // Store DXF data in state
         
         // Request redraw
         if (typeof window.requestRedraw === 'function') {
@@ -455,7 +473,9 @@
     // FUNCTION | Update Slider Value
     // ------------------------------------------------------------
     function updateSliderValue(sliderId, toolName, value) {
-        sliderValues[toolName] = parseInt(value);                    // <-- Store slider value
+        const sliderValues = window.getState('sliderValues') || {};  // Get current slider values
+        sliderValues[toolName] = parseInt(value);                    // Store slider value
+        window.setState('sliderValues', sliderValues);               // Update state
         
         // Update display
         const valueElement = document.getElementById(`${sliderId}-value`); // <-- Get value element
@@ -464,8 +484,8 @@
         }
         
         // Schedule preview if live preview is enabled
-        if (livePreviewEnabled) {
-            schedulePreview();                                       // <-- Schedule preview
+        if (window.getState('livePreviewEnabled')) {
+            window.schedulePreview();                                // <-- Schedule preview
         }
     }
     // ------------------------------------------------------------
@@ -473,21 +493,10 @@
     // FUNCTION | Toggle Live Preview
     // ------------------------------------------------------------
     function toggleLivePreview(event) {
-        livePreviewEnabled = event.target.checked;                   // <-- Update toggle state
-        console.log('Live preview:', livePreviewEnabled ? 'enabled' : 'disabled'); // <-- Log state
+        window.setState('livePreviewEnabled', event.target.checked); // <-- Update toggle state
+        console.log('Live preview:', event.target.checked ? 'enabled' : 'disabled'); // <-- Log state
     }
     // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------
-// REGION | Public API and Integration Points
-// -----------------------------------------------------------------------------
-
-    // Export functions for navigation system integration
-    window.renderCurrentContent = renderCurrentContent;             // <-- Export render function
-    window.generatePreview = generatePreview;                       // <-- Export preview function
-    window.drawDXFLines = drawDXFLines;                             // <-- Export DXF drawing function
 
 // endregion -------------------------------------------------------------------
 

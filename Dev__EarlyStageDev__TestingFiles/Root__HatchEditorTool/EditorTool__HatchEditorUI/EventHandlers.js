@@ -18,6 +18,19 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// REGION | Module Dependencies
+// -----------------------------------------------------------------------------
+
+    // MODULE NOTES | State Management
+    // ------------------------------------------------------------
+    // This module uses the GlobalState system for all state management
+    // Access state via window.getState() and window.setState()
+    // All global variables are stored in GlobalState
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 // REGION | Pattern Selection Event Handlers
 // -----------------------------------------------------------------------------
 
@@ -27,12 +40,12 @@
         const patternName = event.target.value;                     // Get selected pattern
         
         if (!patternName) {                                         // No pattern selected
-            currentPattern = null;                                   // Clear current pattern
+            window.setState('currentPattern', null);                 // Clear current pattern
             document.getElementById('sliders-container').innerHTML = ''; // Clear sliders
             return;
         }
         
-        loadPattern(patternName);                                   // Load selected pattern
+        window.loadPattern(patternName);                                   // Load selected pattern
     }
     // ------------------------------------------------------------
 
@@ -45,15 +58,19 @@
     // FUNCTION | Handle Export to SketchUp
     // ------------------------------------------------------------
     function handleExportToSketchUp() {
-        if (!dxfData || !currentPattern) {                         // Check prerequisites
-            showError('No hatch data to export');
+        const dxfData = window.getDXFData();                        // Get DXF data from state
+        const currentPattern = window.getCurrentPattern();           // Get pattern from state
+        const sliderValues = window.getState('sliderValues');       // Get slider values from state
+        
+        if (!dxfData || !currentPattern) {                          // Check prerequisites
+            window.showError('No hatch data to export');
             return;
         }
         
         const exportData = {
-            pattern: currentPattern,                                // Include pattern data
-            boundaries: dxfData,                                    // Include boundary data
-            parameters: sliderValues,                               // Include parameter values
+            pattern: currentPattern,                                 // Include pattern data
+            boundaries: dxfData,                                     // Include boundary data
+            parameters: sliderValues,                                // Include parameter values
             timestamp: new Date().toISOString()                     // Add timestamp
         };
         

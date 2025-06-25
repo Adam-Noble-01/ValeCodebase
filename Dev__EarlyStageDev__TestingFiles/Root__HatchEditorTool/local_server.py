@@ -33,6 +33,7 @@ from pathlib import Path
 # ------------------------------------------------------------
 PORT                    = 8000                                  # <-- Server port
 DIRECTORY               = "."                                   # <-- Serve current directory
+SUPPORTED_EXTENSIONS    = ['.html', '.css', '.js', '.json', '.dxf', '.png', '.jpg', '.jpeg', '.gif', '.ico'] # <-- Supported file types
 # ------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -63,7 +64,13 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     # FUNCTION | Log All Requests for Debugging
     # ------------------------------------------------------------
     def log_message(self, format, *args):
-        print(f"[{self.log_date_time_string()}] {format % args}")   # Log with timestamp
+        request_path = self.path.split('?')[0]                                 # <-- Get request path without query
+        file_extension = Path(request_path).suffix.lower()                     # <-- Get file extension
+        
+        if file_extension in SUPPORTED_EXTENSIONS or request_path == '/':       # <-- Check if supported file type
+            print(f"[{self.log_date_time_string()}] {format % args}")          # <-- Log with timestamp
+        else:
+            print(f"[{self.log_date_time_string()}] WARNING: Unsupported file type {file_extension} - {format % args}") # <-- Log warning
     # ------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

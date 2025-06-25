@@ -27,6 +27,8 @@
     --ValeBorderColor                      : #e0e0e0;
     --ValeButtonPrimaryBg                  : #336699;
     --ValeButtonSecondaryBg                : #6c757d;
+    --ValeDividerColor                     : #336699;
+    --ValeDividerHoverColor                : #3377aa;
     
     /* Typography Variables */
     --FontType_ValeTitleText               : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,7 +42,9 @@
     --ValeStandardPadding                  : 20px;
     --ValeCompactPadding                   : 10px;
     --ValeBorderRadius                     : 4px;
-    --ValeControlPanelWidth                : 350px;
+    --ValeDividerWidth                     : 6px;
+    --ValeMinPanelWidth                    : 250px;
+    --ValeMaxPanelWidth                    : 600px;
 }
 
 
@@ -69,6 +73,7 @@ header {
     padding                                : var(--ValeStandardPadding);
     text-align                             : center;
     box-shadow                             : 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink                            : 0;
 }
 
 header h1 {
@@ -86,10 +91,87 @@ header .subtitle {
 
 
 /* Main Layout Container */
-body > div:last-child {
+.main-layout-container {
     display                                : flex;
     flex                                   : 1;
     overflow                               : hidden;
+    position                               : relative;
+}
+
+
+/* Control Panel Styles */
+#control-panel {
+    width                                  : 33.33%;
+    min-width                              : var(--ValeMinPanelWidth);
+    max-width                              : var(--ValeMaxPanelWidth);
+    background-color                       : var(--ValePanelBackground);
+    overflow-y                             : auto;
+    padding                                : var(--ValeStandardPadding);
+    box-shadow                             : 2px 0 4px rgba(0,0,0,0.1);
+    position                               : relative;
+    z-index                                : 10;
+}
+
+.control-section {
+    margin-bottom                          : 30px;
+    padding-bottom                         : 20px;
+    border-bottom                          : 1px solid var(--ValeBorderColor);
+}
+
+.control-section:last-child {
+    border-bottom                          : none;
+}
+
+.section-title {
+    font-size                              : var(--FontSize_ValeTitleHeading01);
+    color                                  : var(--FontCol_ValeTitleHeadingColour);
+    margin                                 : 0 0 15px 0;
+    font-weight                            : 400;
+}
+
+
+/* Draggable Divider Styles */
+.layout-divider {
+    width                                  : var(--ValeDividerWidth);
+    background-color                       : var(--ValeDividerColor);
+    cursor                                 : col-resize;
+    position                               : relative;
+    z-index                                : 20;
+    transition                             : background-color 0.2s ease;
+    display                                : flex;
+    align-items                            : center;
+    justify-content                        : center;
+}
+
+.layout-divider:hover {
+    background-color                       : var(--ValeDividerHoverColor);
+}
+
+.layout-divider::before {
+    content                                : '';
+    width                                  : 2px;
+    height                                 : 40px;
+    background-color                       : rgba(255, 255, 255, 0.8);
+    border-radius                          : 1px;
+}
+
+.layout-divider::after {
+    content                                : '';
+    position                               : absolute;
+    top                                    : 0;
+    left                                   : 0;
+    right                                  : 0;
+    bottom                                 : 0;
+    background-color                       : transparent;
+    cursor                                 : col-resize;
+}
+
+.layout-divider.dragging {
+    background-color                       : var(--ValeDividerHoverColor);
+}
+
+.layout-divider.dragging::before {
+    background-color                       : rgba(255, 255, 255, 1);
 }
 
 
@@ -98,11 +180,11 @@ body > div:last-child {
     flex                                   : 1;
     position                               : relative;
     background-color                       : var(--ValeCanvasBackground);
-    border-right                           : 1px solid var(--ValeBorderColor);
     display                                : flex;
     align-items                            : center;
     justify-content                        : center;
     overflow                               : hidden;
+    min-width                              : 0;
 }
 
 #hatch-canvas {
@@ -126,33 +208,6 @@ body > div:last-child {
 .overlay-info {
     font-size                              : var(--FontSize_ValeStandardText);
     color                                  : var(--FontCol_ValeDisabledTextColour);
-}
-
-
-/* Control Panel Styles */
-#control-panel {
-    width                                  : var(--ValeControlPanelWidth);
-    background-color                       : var(--ValePanelBackground);
-    overflow-y                             : auto;
-    padding                                : var(--ValeStandardPadding);
-    box-shadow                             : -2px 0 4px rgba(0,0,0,0.1);
-}
-
-.control-section {
-    margin-bottom                          : 30px;
-    padding-bottom                         : 20px;
-    border-bottom                          : 1px solid var(--ValeBorderColor);
-}
-
-.control-section:last-child {
-    border-bottom                          : none;
-}
-
-.section-title {
-    font-size                              : var(--FontSize_ValeTitleHeading01);
-    color                                  : var(--FontCol_ValeTitleHeadingColour);
-    margin                                 : 0 0 15px 0;
-    font-weight                            : 400;
 }
 
 
@@ -199,17 +254,30 @@ button:disabled {
 }
 
 
-/* Form Control Styles */
+/* Pattern Selector Styles */
+.pattern-selector {
+    margin-bottom                          : 15px;
+}
+
 .pattern-select {
     width                                  : 100%;
-    padding                                : 8px 12px;
+    padding                                : 10px;
     border                                 : 1px solid var(--ValeBorderColor);
     border-radius                          : var(--ValeBorderRadius);
     font-size                              : var(--FontSize_ValeStandardText);
     font-family                            : var(--FontType_ValeStandardText);
     background-color                       : white;
+    cursor                                 : pointer;
 }
 
+.pattern-select:focus {
+    outline                                : none;
+    border-color                           : var(--ValeButtonPrimaryBg);
+    box-shadow                             : 0 0 0 2px rgba(51, 102, 153, 0.2);
+}
+
+
+/* File Info and Preview Info Styles */
 .file-info, .preview-info {
     font-size                              : var(--FontSize_ValeStandardText);
     color                                  : var(--FontCol_ValeDisabledTextColour);
@@ -217,79 +285,213 @@ button:disabled {
 }
 
 
-/* Slider Container Styles */
+/* Sliders Container Styles */
 #sliders-container {
-    display                                : flex;
-    flex-direction                         : column;
-    gap                                    : 20px;
+    margin-top                             : 15px;
 }
 
 .slider-group {
-    display                                : flex;
-    flex-direction                         : column;
-    gap                                    : 8px;
+    margin-bottom                          : 20px;
 }
 
 .slider-label {
-    font-size                              : var(--FontSize_ValeStandardText);
-    color                                  : var(--FontCol_ValeStandardTextColour);
     display                                : flex;
     justify-content                        : space-between;
+    align-items                            : center;
+    margin-bottom                          : 8px;
+    font-size                              : var(--FontSize_ValeStandardText);
+    color                                  : var(--FontCol_ValeStandardTextColour);
 }
 
 .slider-value {
-    color                                  : var(--FontCol_ValeLinkTextColour);
-    font-weight                            : 500;
+    font-weight                            : 600;
+    color                                  : var(--ValeButtonPrimaryBg);
 }
 
 input[type="range"] {
     width                                  : 100%;
     height                                 : 6px;
     border-radius                          : 3px;
-    background                             : var(--ValeBorderColor);
+    background                             : #e0e0e0;
     outline                                : none;
-    -webkit-appearance                     : none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance                     : none;
-    appearance                             : none;
-    width                                  : 16px;
-    height                                 : 16px;
-    border-radius                          : 50%;
-    background                             : var(--ValeButtonPrimaryBg);
     cursor                                 : pointer;
 }
 
+input[type="range"]::-webkit-slider-thumb {
+    appearance                             : none;
+    width                                  : 18px;
+    height                                 : 18px;
+    border-radius                          : 50%;
+    background                             : var(--ValeButtonPrimaryBg);
+    cursor                                 : pointer;
+    box-shadow                             : 0 2px 4px rgba(0,0,0,0.2);
+}
+
 input[type="range"]::-moz-range-thumb {
-    width                                  : 16px;
-    height                                 : 16px;
+    width                                  : 18px;
+    height                                 : 18px;
     border-radius                          : 50%;
     background                             : var(--ValeButtonPrimaryBg);
     cursor                                 : pointer;
     border                                 : none;
+    box-shadow                             : 0 2px 4px rgba(0,0,0,0.2);
 }
 
-
-/* Checkbox Styles */
 input[type="checkbox"] {
     margin-right                           : 8px;
-    cursor                                 : pointer;
 }
 
 label {
-    cursor                                 : pointer;
+    display                                : flex;
+    align-items                            : center;
     font-size                              : var(--FontSize_ValeStandardText);
+    cursor                                 : pointer;
 }
 
 
-/* Responsive Adjustments */
+/* Canvas Navigation Controls */
+.canvas-navigation-controls {
+    position                           : absolute;
+    top                                : 20px;
+    right                              : 20px;
+    background-color                   : var(--ValePanelBackground);
+    border                             : 1px solid var(--ValeBorderColor);
+    border-radius                      : var(--ValeBorderRadius);
+    padding                            : 15px;
+    box-shadow                         : 0 4px 12px rgba(0,0,0,0.15);
+    z-index                            : 100;
+    min-width                          : 200px;
+}
+
+.navigation-button-group {
+    display                            : flex;
+    gap                                : 8px;
+    margin-bottom                      : 12px;
+}
+
+.nav-button {
+    width                              : 36px;
+    height                             : 36px;
+    border                             : 1px solid var(--ValeBorderColor);
+    background-color                   : var(--ValePanelBackground);
+    border-radius                      : var(--ValeBorderRadius);
+    cursor                             : pointer;
+    display                            : flex;
+    align-items                        : center;
+    justify-content                    : center;
+    transition                         : all 0.2s ease;
+    font-size                          : 16px;
+    font-weight                        : bold;
+    color                              : var(--FontCol_ValeStandardTextColour);
+}
+
+.nav-button:hover {
+    background-color                   : var(--ValeButtonPrimaryBg);
+    color                              : white;
+    border-color                       : var(--ValeButtonPrimaryBg);
+}
+
+.nav-button:disabled {
+    opacity                            : 0.5;
+    cursor                             : not-allowed;
+    background-color                   : var(--ValeDisabledTextColour);
+    color                              : white;
+}
+
+.nav-button:disabled:hover {
+    background-color                   : var(--ValeDisabledTextColour);
+    border-color                       : var(--ValeDisabledTextColour);
+}
+
+.navigation-info {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 8px;
+    font-size                          : var(--FontSize_ValeStandardText);
+    color                              : var(--FontCol_ValeStandardTextColour);
+}
+
+#zoom-level-display {
+    font-weight                        : bold;
+    text-align                         : center;
+    padding                            : 4px 8px;
+    background-color                   : var(--ValeBackgroundColor);
+    border-radius                      : var(--ValeBorderRadius);
+}
+
+.pan-mode-indicator {
+    text-align                         : center;
+    padding                            : 4px 8px;
+    border-radius                      : var(--ValeBorderRadius);
+    background-color                   : var(--ValeBackgroundColor);
+    transition                         : all 0.2s ease;
+}
+
+.pan-mode-indicator.active {
+    background-color                   : var(--ValeButtonPrimaryBg);
+    color                              : white;
+}
+
+/* Canvas Cursor Styles */
+#hatch-canvas {
+    cursor                             : grab;
+}
+
+#hatch-canvas:active {
+    cursor                             : grabbing;
+}
+
+/* Responsive adjustments for navigation controls */
 @media (max-width: 768px) {
+    .canvas-navigation-controls {
+        top                            : 10px;
+        right                          : 10px;
+        left                           : 10px;
+        min-width                      : auto;
+    }
+    
+    .navigation-button-group {
+        justify-content                : center;
+    }
+    
+    .navigation-info {
+        flex-direction                 : row;
+        justify-content                : space-between;
+        align-items                    : center;
+    }
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-layout-container {
+        flex-direction                      : column;
+    }
+    
     #control-panel {
-        width                              : 300px;
+        width                               : 100%;
+        max-width                           : none;
+        height                              : 40%;
+        min-height                          : 300px;
+    }
+    
+    .layout-divider {
+        width                               : 100%;
+        height                              : var(--ValeDividerWidth);
+        cursor                              : row-resize;
+    }
+    
+    .layout-divider::before {
+        width                               : 40px;
+        height                              : 2px;
+    }
+    
+    #canvas-container {
+        height                              : 60%;
+        min-height                          : 300px;
     }
     
     .button-group {
-        flex-direction                     : column;
+        flex-direction                      : column;
     }
-}
+} 

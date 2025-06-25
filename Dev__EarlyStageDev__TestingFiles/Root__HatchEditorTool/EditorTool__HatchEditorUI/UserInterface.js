@@ -274,6 +274,24 @@
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Draw DXF Line Segments on Canvas
+    // ------------------------------------------------------------
+    function drawDXFLines(segments) {
+        clearCanvas();                                              // Clear canvas first
+        if (!ctx || !segments || segments.length === 0) return;     // Exit if nothing to draw
+        ctx.save();
+        ctx.strokeStyle = '#000000';                                // Black lines
+        ctx.lineWidth = 1.0;                                        // 1.00pt line
+        ctx.beginPath();
+        segments.forEach(seg => {
+            ctx.moveTo(seg.x1, seg.y1);                             // Move to start
+            ctx.lineTo(seg.x2, seg.y2);                             // Draw to end
+        });
+        ctx.stroke();
+        ctx.restore();
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------

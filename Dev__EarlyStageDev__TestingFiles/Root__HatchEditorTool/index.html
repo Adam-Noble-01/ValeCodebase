@@ -20,100 +20,119 @@
     
     
     <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Main Canvas Display Area                               -->
+    <!-- REGION  |  Main Layout Container with Draggable Divider           -->
     <!-- ----------------------------------------------------------------- -->
     
-    <div id="canvas-container">
-        <canvas id="hatch-canvas"></canvas>
-        <div id="canvas-overlay" class="overlay-info">
-            <span id="canvas-info">No file loaded</span>
-        </div>
-    </div>
-    
-    <!-- endregion ----------------------------------------------------------------- -->
-    
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Control Panel Interface                                -->
-    <!-- ----------------------------------------------------------------- -->
-    
-    <div id="control-panel">
+    <div class="main-layout-container">
         
         <!-- ----------------------------------------------------------------- -->
-        <!-- UI MENU | File Operations Section                                 -->
+        <!-- UI MENU | Control Panel Interface                                -->
         <!-- ----------------------------------------------------------------- -->
         
-        <div class="control-section">
-            <h2 class="section-title">File Operations</h2>
+        <div id="control-panel">
             
-            <div class="button-group">
-                <button id="load-dxf-btn" class="primary-button">Load DXF File</button>
-                <button id="load-test-file-btn" class="secondary-button">Load Test Wall</button>
-                <input type="file" id="file-input" accept=".dxf" style="display: none;">
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI MENU | File Operations Section                                 -->
+            <!-- ----------------------------------------------------------------- -->
+            
+            <div class="control-section">
+                <h2 class="section-title">File Operations</h2>
+                
+                <div class="button-group">
+                    <button id="load-dxf-btn" class="primary-button">Load DXF File</button>
+                    <button id="load-test-file-btn" class="secondary-button">Load Test Wall</button>
+                    <input type="file" id="file-input" accept=".dxf" style="display: none;">
+                </div>
+                
+                <div class="file-info">
+                    <span id="loaded-file-name">No file loaded</span>
+                </div>
             </div>
             
-            <div class="file-info">
-                <span id="loaded-file-name">No file loaded</span>
-            </div>
-        </div>
-        
-        <!-- ---------------------------------------------------------------- -->
-        
-        
-        <!-- ----------------------------------------------------------------- -->
-        <!-- UI MENU | Pattern Selection Section                               -->
-        <!-- ----------------------------------------------------------------- -->
-        
-        <div class="control-section">
-            <h2 class="section-title">Pattern Selection</h2>
+            <!-- ---------------------------------------------------------------- -->
             
-            <div class="pattern-selector">
-                <select id="pattern-dropdown" class="pattern-select">
-                    <option value="">Select a pattern...</option>
-                    <option value="BrickPattern__MetricBrickwork__Pattern-01">Metric Brickwork - Pattern 01</option>
-                </select>
-            </div>
-        </div>
-        
-        <!-- ---------------------------------------------------------------- -->
-        
-        
-        <!-- ----------------------------------------------------------------- -->
-        <!-- UI MENU | Hatch Adjustment Controls                               -->
-        <!-- ----------------------------------------------------------------- -->
-        
-        <div class="control-section" id="adjustment-controls">
-            <h2 class="section-title">Hatch Parameters</h2>
             
-            <div id="sliders-container">
-                <!-- Sliders will be dynamically generated based on pattern JSON -->
-            </div>
-        </div>
-        
-        <!-- ---------------------------------------------------------------- -->
-        
-        
-        <!-- ----------------------------------------------------------------- -->
-        <!-- UI MENU | Preview and Export Controls                             -->
-        <!-- ----------------------------------------------------------------- -->
-        
-        <div class="control-section">
-            <h2 class="section-title">Preview & Export</h2>
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI MENU | Pattern Selection Section                               -->
+            <!-- ----------------------------------------------------------------- -->
             
-            <div class="button-group">
-                <button id="preview-btn" class="primary-button">Generate Preview</button>
-                <button id="export-btn" class="secondary-button" disabled>Export to SketchUp</button>
+            <div class="control-section">
+                <h2 class="section-title">Pattern Selection</h2>
+                
+                <div class="pattern-selector">
+                    <select id="pattern-dropdown" class="pattern-select">
+                        <option value="">Select a pattern...</option>
+                        <option value="BrickPattern__MetricBrickwork__Pattern-01">Metric Brickwork - Pattern 01</option>
+                    </select>
+                </div>
             </div>
             
-            <div class="preview-info">
-                <label>
-                    <input type="checkbox" id="live-preview-toggle" checked>
-                    Live Preview
-                </label>
+            <!-- ---------------------------------------------------------------- -->
+            
+            
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI MENU | Hatch Adjustment Controls                               -->
+            <!-- ----------------------------------------------------------------- -->
+            
+            <div class="control-section" id="adjustment-controls">
+                <h2 class="section-title">Hatch Parameters</h2>
+                
+                <div id="sliders-container">
+                    <!-- Sliders will be dynamically generated based on pattern JSON -->
+                </div>
             </div>
+            
+            <!-- ---------------------------------------------------------------- -->
+            
+            
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI MENU | Preview and Export Controls                             -->
+            <!-- ----------------------------------------------------------------- -->
+            
+            <div class="control-section">
+                <h2 class="section-title">Preview & Export</h2>
+                
+                <div class="button-group">
+                    <button id="preview-btn" class="primary-button">Generate Preview</button>
+                    <button id="export-btn" class="secondary-button" disabled>Export to SketchUp</button>
+                </div>
+                
+                <div class="preview-info">
+                    <label>
+                        <input type="checkbox" id="live-preview-toggle" checked>
+                        Live Preview
+                    </label>
+                </div>
+            </div>
+            
+            <!-- ---------------------------------------------------------------- -->
+            
         </div>
         
-        <!-- ---------------------------------------------------------------- -->
+        <!-- endregion ----------------------------------------------------------------- -->
+        
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Draggable Layout Divider                                -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div class="layout-divider" id="layout-divider"></div>
+        
+        <!-- endregion ----------------------------------------------------------------- -->
+        
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Canvas Display Area                                     -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div id="canvas-container">
+            <canvas id="hatch-canvas"></canvas>
+            <div id="canvas-overlay" class="overlay-info">
+                <span id="canvas-info">No file loaded</span>
+            </div>
+        </div>
+        
+        <!-- endregion ----------------------------------------------------------------- -->
         
     </div>
     
@@ -124,6 +143,9 @@
     <!-- REGION  |  Script Imports                                         -->
     <!-- ----------------------------------------------------------------- -->
     
+    <script src="EditorTool__DataParsingScripts/DXF_Parser.js"></script>
+    <script src="EditorTool__HatchEditorUI/2dCanvasNavigation.js"></script>
+    <script src="EditorTool__HatchEditorUI/LayoutManager.js"></script>
     <script src="EditorTool__HatchEditorUI/FileHandlersAndSchedulers.js"></script>
     <script src="EditorTool__HatchEditorUI/EventHandlers.js"></script>
     <script src="EditorTool__HatchEditorUI/UserInterface.js"></script>
@@ -133,6 +155,15 @@
     <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralLineworkJitter.js"></script>
     <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralPatchOccurrence.js"></script>
     <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralPatchRandomness.js"></script>
+    
+    <!-- Initialize Layout Manager and Canvas Navigation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLayoutManager();
+            initializeCanvasNavigation();
+        });
+    </script>
+    
     
     <!-- endregion ----------------------------------------------------------------- -->
     

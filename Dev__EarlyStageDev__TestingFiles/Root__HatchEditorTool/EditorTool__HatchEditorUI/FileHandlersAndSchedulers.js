@@ -42,8 +42,9 @@
         
         try {
             const content = await readFileContent(file);             // Read file content
-            dxfData = parseDXFContent(content);                      // Parse DXF data
-            
+            // dxfData = parseDXFContent(content);                  // <-- Old logic (commented out)
+            const segments = window.DXFParser.parseDXFLines(content); // <-- Parse DXF lines
+            drawDXFLines(segments);                                 // <-- Draw on canvas
             updateFileInfo(file.name);                               // Update UI with filename
             hideCanvasOverlay();                                     // Hide overlay
             

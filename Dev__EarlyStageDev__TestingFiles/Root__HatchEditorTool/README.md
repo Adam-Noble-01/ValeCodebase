@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Hatch Editor Tool is a web-based interface for creating organic, humanized artistic hatches for architectural drawings. It provides real-time preview and adjustment capabilities for various hatching patterns.
+The Hatch Editor Tool is a web-based interface for creating organic, humanized artistic hatches for architectural drawings. It provides real-time preview and adjustment capabilities for various hatching patterns with a modern, responsive layout featuring a draggable divider for customizable interface sizing.
 
 ## Features
 
@@ -11,6 +11,27 @@ The Hatch Editor Tool is a web-based interface for creating organic, humanized a
 - **Organic Rendering**: Creates hand-drawn appearance with jitter and randomness
 - **Multiple Adjustment Parameters**: Fine-tune brick dimensions, randomness, jitter, and patch properties
 - **DXF File Support**: Load and preview hatches on DXF boundary data
+- **Responsive Layout**: Modern 1/3 - 2/3 split layout with draggable divider
+- **Interactive Interface**: Drag to resize panels, double-click to reset layout
+
+## Layout Features
+
+### Default Layout Structure
+- **Left Panel (1/3)**: Control panel containing all tool controls and settings
+- **Right Panel (2/3)**: Canvas area for displaying and editing hatch patterns
+- **Draggable Divider**: 6px wide divider between panels that can be dragged to adjust the split
+
+### Interactive Layout Controls
+- **Drag to Resize**: Click and drag the divider to resize panels in real-time
+- **Double-Click Reset**: Double-click the divider to reset to the default 1/3 - 2/3 split
+- **Visual Feedback**: Divider changes color and shows glow effect during interaction
+- **Constraints**: Panel width is constrained between 250px (minimum) and 600px (maximum)
+- **Hover Effects**: Divider changes color when mouse hovers over it with cursor change
+
+### Responsive Design
+- **Desktop**: Horizontal layout with draggable vertical divider
+- **Mobile/Tablet**: Vertical layout with draggable horizontal divider (control panel on top, canvas below)
+- **Automatic Adaptation**: Layout adjusts to different screen sizes automatically
 
 ## Quick Start
 
@@ -30,6 +51,7 @@ The Hatch Editor Tool is a web-based interface for creating organic, humanized a
 
 ## Usage
 
+### Basic Workflow
 1. **Load Test Data**: Click "Load Test Wall" to load a sample wall with windows
 2. **Select Pattern**: Choose "Metric Brickwork - Pattern 01" from the dropdown
 3. **Adjust Parameters**: Use the sliders to adjust:
@@ -42,16 +64,23 @@ The Hatch Editor Tool is a web-based interface for creating organic, humanized a
 4. **Preview**: The preview updates automatically with "Live Preview" enabled
 5. **Export**: Click "Export to SketchUp" to download the configuration
 
+### Layout Customization
+1. **Adjust Panel Size**: Click and drag the divider between panels to resize
+2. **Reset Layout**: Double-click the divider to reset to default size
+3. **Responsive**: Layout automatically adapts to different screen sizes
+4. **Constraints**: Panel sizes are automatically constrained to usable limits
+
 ## File Structure
 
 ```
 Root__HatchEditorTool/
 ├── index.html                              # Main interface
-├── style.css                               # Styling
+├── style.css                               # Styling with responsive layout
 ├── local_server.py                         # Python development server
 ├── start_server.bat                        # Windows server starter
 ├── README.md                               # This file
 ├── EditorTool__HatchEditorUI/              # UI JavaScript files
+│   ├── LayoutManager.js                    # Draggable divider functionality
 │   ├── UserInterface.js                    # Main UI controller
 │   ├── FileHandlersAndSchedulers.js        # File operations
 │   └── EventHandlers.js                    # Event handling
@@ -93,6 +122,20 @@ Patterns are defined in JSON files with the following structure:
 }
 ```
 
+## Technical Implementation
+
+### CSS Features
+- **CSS Variables**: Consistent Vale Design Suite color scheme and spacing
+- **Flexbox Layout**: Modern flexbox-based responsive layout
+- **CSS Custom Properties**: Dynamic styling with CSS variables
+- **Smooth Transitions**: CSS transitions for smooth visual feedback
+
+### JavaScript Features
+- **Event Handling**: Comprehensive mouse event handling for drag operations
+- **Window Resize**: Automatic adjustment on window resize
+- **State Management**: Proper state tracking for drag operations
+- **Performance**: Optimized event handling with proper cleanup
+
 ## Development
 
 ### Adding New Patterns
@@ -122,6 +165,22 @@ Patterns are defined in JSON files with the following structure:
 - Verify that "Live Preview" is enabled
 - Check the browser console for JavaScript errors
 
+### Layout Issues
+- Ensure you're using a modern browser with CSS Grid and Flexbox support
+- Check that JavaScript is enabled for the draggable divider functionality
+- Verify the LayoutManager.js file is properly loaded
+
+## Browser Compatibility
+- Modern browsers with CSS Grid and Flexbox support
+- Responsive design works on desktop, tablet, and mobile devices
+- JavaScript features require ES6+ support
+
+## Vale Design Suite Integration
+- Follows Vale Design Suite coding conventions
+- Uses consistent color scheme and typography
+- Maintains brand identity and user experience standards
+- Implements proper regional structure and commenting style
+
 ## Future Development
 
 - Support for additional pattern types (stonework, roof tiles, etc.)
@@ -129,6 +188,7 @@ Patterns are defined in JSON files with the following structure:
 - Advanced pattern generation algorithms
 - Material-specific rendering engines
 - Batch processing capabilities
+- Enhanced layout customization options
 
 ## License
 

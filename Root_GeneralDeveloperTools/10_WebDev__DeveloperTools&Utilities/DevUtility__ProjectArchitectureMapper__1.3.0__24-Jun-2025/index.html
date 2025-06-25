@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ValeDesignSuite - Project Architecture 3D Neural Network Map</title>
+    <link rel="stylesheet" href="MapGraph__Stylesheet.css">
+
+    <!-- Three.js Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- D3.js for Force Simulation -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  User Interface Control Panel & Information Display   -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <div id="controls">
+        <div id="controls-header" class="controls-header">
+            <button id="controls-toggle" class="controls-toggle" aria-label="Toggle controls panel">
+                <span class="toggle-arrow">▼</span>
+            </button>
+            <h1>Project File Structure - 3D Network Map</h1>
+        </div>
+        
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI MENU | Project Directory Input & Load Controls                   -->
+        <!-- ----------------------------------------------------------------- -->
+        
+        <div id="controls-content" class="controls-content collapsed">
+            <div id="project-path-controls" class="project-path-controls hidden-by-default">
+                <div class="path-input-container">
+                    <label for="project-path-input" class="path-label">Project Directory:</label>
+                    <input 
+                        type="text" 
+                        id="project-path-input" 
+                        class="project-path-input" 
+                        placeholder="e.g., C:\01_-_Vale-Projects\VGH-Projects_-_2025\Project-Name"
+                        title="Enter a Windows file path (e.g., C:\Projects\MyProject)"
+                    />
+                    <button id="reload-project-btn" class="reload-project-btn" title="Load new project directory">
+                        Reload Project
+                    </button>
+                </div>
+                <div id="path-status" class="path-status"></div>
+            </div>
+            <div class="control-section">
+                <p><strong>Navigation:</strong> Left click + drag to rotate • Right click + drag to pan • Scroll to zoom</p>
+                <p><strong>Interaction:</strong> Click nodes to select • Hover for connections • Double-click to focus</p>
+                <p><strong>Keyboard:</strong> R = Reset View • Space = Pause Physics • Shift + ? = Toggle Help</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | 3D Neural Network Canvas & Visualization Container         -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <div id="neural-container">
+        <!-- Three.js will render here -->
+    </div>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | File Type Legend & Statistics Display                   -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <div id="legend-container">
+        <!-- Legend will be populated by JavaScript -->
+    </div>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | Node Information Panel (Hidden by Default)              -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <div id="node-info" class="node-info-panel" style="display: none;">
+        <!-- Node details will be populated here -->
+    </div>
+
+    <!-- endregion ----------------------------------------------------------------- -->
+
+    <script src="MapGraph__DataLoader.js"></script>
+    <script src="MapGraph__3dPhysicsEngine.js"></script>
+    <script src="MapGraph__3dVisualizationLogic.js"></script>
+</body>
+
+</html>

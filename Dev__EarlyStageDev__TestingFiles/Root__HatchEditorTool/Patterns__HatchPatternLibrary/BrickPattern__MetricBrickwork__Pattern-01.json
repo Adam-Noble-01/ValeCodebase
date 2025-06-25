@@ -1,0 +1,88 @@
+{
+"Metadata": {
+    "File"        : "BrickPattern__MetricBrickwork__Pattern-01.json",
+    "Name"        : "MetricBrickwork_Pattern01",
+    "Description" : "Brickwork Pattern 01",
+    "Api"         : "SketchUp Ruby API",
+    "Units"       : "millimeters",
+    "Tolerance"   : 0.01,
+    "CoorSystem"  : "right-handed",
+    "Version"     : "2025",
+    "Created"     : "25-Jun-2025",
+    "Updated"     : "25-Jun-2025"
+},
+"HatchEditor__EnabledTools": {
+    "HatchEditor__Slider01"  : "Adjustment__BrickLength",
+    "HatchEditor__Slider02"  : "Adjustment__BrickHeight",
+    "HatchEditor__Slider03"  : "Adjustment__BrickworkRandomness",
+    "HatchEditor__Slider04"  : "Adjustment__BrickworkLineworkJitter",
+    "HatchEditor__Slider05"  : "Adjustment__PatchOccurrence",
+    "HatchEditor__Slider06"  : "Adjustment__PatchRandomness"
+},
+"PatternComponents": {
+    "componentsMeta": {
+        "allComponents__ContainerName"     : "MetricBrickwork_Pattern01",
+        "allComponents__SketchUpTag"       : "Brick_Layer",
+        "allComponents__Visible"           : true,
+        "allComponents__SmoothFaces"       : false,
+        "allComponents__ShadowCasting"     : true,
+        "allComponents__ShadowReceiving"   : true,    
+        "allComponents__FrontFaceMaterial" : "Default",
+        "allComponents__BackFaceMaterial"  : "Default"
+    },
+    "Brick__Standard_MetricBrick": {
+        "SubComponent__Vertices": [
+            {"point": [0.0, 10.0, 0.0]},  
+            {"point": [215.0, 10.0, 0.0]},
+            {"point": [215.0, 75.0, 0.0]},
+            {"point": [0.0, 75.0, 0.0]}   
+        ],
+        "SubComponent__Transformation": {
+            "origin": [0.0, 0.0, 0.0],
+            "xaxis": [1.0, 0.0, 0.0],
+            "yaxis": [0.0, 1.0, 0.0],
+            "zaxis": [0.0, 0.0, 1.0]
+        },
+        "SubComponent__Macro": {
+            "faceCreation"  :  false,
+            "faceMaterial"  :  "Default"
+        }
+    },
+    "MortarJoint__PerpendicularJoint": {
+        "SubComponent__Vertices": [
+            {"point": [215.0, 0.0, 0.0]},   
+            {"point": [225.0, 0.0, 0.0]},   
+            {"point": [225.0, 65.0, 0.0]},  
+            {"point": [215.0, 65.0, 0.0]}   
+        ],
+        "SubComponent__Transformation": {
+            "origin": [0.0, 0.0, 0.0],
+            "xaxis": [1.0, 0.0, 0.0],
+            "yaxis": [0.0, 1.0, 0.0],
+            "zaxis": [0.0, 0.0, 1.0]
+        },
+        "SubComponent__Macro": {
+            "faceCreation"  :  false,
+            "faceMaterial"  :  "Default"
+        }
+    },
+    "MortarJoint__BedJoint": {
+        "SubComponent__Vertices": [
+            {"point": [0.0, 0.0, 0.0]},    
+            {"point": [225.0, 0.0, 0.0]},  
+            {"point": [225.0, 10.0, 0.0]}, 
+            {"point": [0.0, 10.0, 0.0]}    
+        ],
+        "SubComponent__Transformation": {
+            "origin": [0.0, 0.0, 0.0],
+            "xaxis": [1.0, 0.0, 0.0],
+            "yaxis": [0.0, 1.0, 0.0],
+            "zaxis": [0.0, 0.0, 1.0]
+        },
+        "SubComponent__Macro": {
+            "faceCreation"  :  false,
+            "faceMaterial"  :  "Default"
+        }
+    }
+}
+}

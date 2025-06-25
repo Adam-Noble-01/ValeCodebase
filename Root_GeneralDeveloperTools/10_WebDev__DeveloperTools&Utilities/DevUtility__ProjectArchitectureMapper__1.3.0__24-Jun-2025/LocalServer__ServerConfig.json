@@ -1,0 +1,77 @@
+{
+    "file_metadata": {
+        "file_header": {
+            "title":         "VALEDESIGNSUITE - PROJECT ARCHITECTURE MAPPER SERVER CONFIG",
+            "file":          "LocalServer__ServerConfig.json",
+            "namespace":     "ProjectArchitectureMapper",
+            "module":        "FlaskServer",
+            "author":        "Adam Noble - Noble Architecture",
+            "purpose":       "Configuration for Flask server and project scanning",
+            "created":       "2025",
+            "description": [
+                "Server configuration for Flask development server",
+                "Controls debug mode, logging, and performance settings",
+                "Configurable directory scanning and file type filtering",
+                "Performance tuning for large project structures"
+            ]
+        }
+    },
+    
+    "server": {
+        "debug_mode": {
+            "enabled":                 true,
+            "show_reloader_messages":  true,
+            "use_reloader":            true
+        },
+        "port":                        5000,
+        "host":                        "localhost",
+        "server_name":                 "ValeDesignSuite Project Architecture Mapper Server",
+        "server_url":                  "http://localhost:5000"
+    },
+    
+    "directory_scanning": {
+        "allow_directory_change":      true,
+        "default_scan_relative":       true,
+        "scan_parent_levels":          3,
+        "max_scan_depth":              20,
+        "remember_last_directory":     true,
+        "validate_directory_access":   true
+    },
+    
+    "logging": {
+        "show_welcome_banner":         true,
+        "show_api_logs":               true,
+        "show_file_scans":             true,
+        "show_directory_changes":      true
+    },
+    
+    "performance": {
+        "scan_batch_size":             100,
+        "max_file_size_mb":            10,
+        "cache_results":               true,
+        "parallel_scanning":           false,
+        "scan_timeout_seconds":        300
+    },
+    
+    "project_directory": {
+        "current_path":                    "",
+        "default_path":                    "",
+        "last_successful_path":            "",
+        "validation_enabled":              true,
+        "path_validation": {
+            "check_directory_exists":          true,
+            "check_read_permissions":          true,
+            "minimum_files_required":          1,
+            "allowed_path_formats": [
+                "windows_absolute",
+                "windows_relative",
+                "network_paths"
+            ]
+        },
+        "logging": {
+            "show_validation_logs":            true,
+            "show_path_changes":               true,
+            "show_error_details":              true
+        }
+    }
+}

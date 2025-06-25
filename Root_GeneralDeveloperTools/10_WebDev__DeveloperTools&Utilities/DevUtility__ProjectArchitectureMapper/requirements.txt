@@ -1,0 +1,31 @@
+# =============================================================================
+# VALEDESIGNSUITE - PROJECT ARCHITECTURE MAPPER DEPENDENCIES
+# =============================================================================
+#
+# FILE       : requirements.txt
+# NAMESPACE  : ProjectArchitectureMapper
+# MODULE     : Dependencies
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Python Package Dependencies for Flask Server
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Python package dependencies for the Project Architecture Mapper Flask server
+# - Ensures consistent environment setup across different development machines
+# - Supports the neural network visualization frontend and API endpoints
+#
+# -----------------------------------------------------------------------------
+#
+# DEVELOPMENT LOG:
+# 2025 - Version 1.0.0
+# - Initial Flask dependency specification
+# - Core web framework for project architecture visualization server
+#
+# =============================================================================
+
+# Core Web Framework
+Flask>=3.1.0                                                                    # <-- Flask web framework for API and static file serving
+
+# Optional Development Dependencies (uncomment if needed)
+# flask-cors>=4.0.0                                                            # <-- CORS support for cross-origin requests
+# python-dotenv>=1.0.0                                                         # <-- Environment variable management 

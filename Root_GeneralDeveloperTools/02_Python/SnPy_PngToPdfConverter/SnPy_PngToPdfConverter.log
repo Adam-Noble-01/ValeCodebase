@@ -1,0 +1,14 @@
+2025-06-11 13:38:22,189 | ERROR | Unhandled exception
+Traceback (most recent call last):
+  File "D:\10_-_Core-Lib_-_ValeCodebase\Root_GeneralDeveloperTools\02_-_Python\SnPy_PngToPdfConverter\SnPy_PngToPdfConverter.py", line 153, in _convert_pngs
+    paper_size = self.paper_var.get()
+  File "c:\Users\adamw\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 569, in get
+    value = self._tk.globalgetvar(self._name)
+RuntimeError: main thread is not in main loop
+2025-06-11 13:39:22,949 | ERROR | Unhandled exception
+Traceback (most recent call last):
+  File "D:\10_-_Core-Lib_-_ValeCodebase\Root_GeneralDeveloperTools\02_-_Python\SnPy_PngToPdfConverter\SnPy_PngToPdfConverter.py", line 153, in _convert_pngs
+    paper_size = self.paper_var.get()
+  File "c:\Users\adamw\AppData\Local\Programs\Python\Python313\Lib\tkinter\__init__.py", line 569, in get
+    value = self._tk.globalgetvar(self._name)
+RuntimeError: main thread is not in main loop

@@ -1,0 +1,7 @@
+{
+    "markdown-preview-enhanced.previewTheme": "none",
+    "markdown-preview-enhanced.codeBlockTheme": "none", 
+    "markdown-preview-enhanced.customCSS": "./MdStyler__VSCode_MarkdownRenderStyle.css",
+    "markdown-preview-enhanced.enableHTML5Embed": true,
+    "markdown-preview-enhanced.enableScriptExecution": false
+} 

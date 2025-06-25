@@ -1,0 +1,137 @@
+# =============================================================================
+# ValeDesignSuite - Framework Data Serializer
+# =============================================================================
+#
+# FILE       :  ValeDesignSuite_Tools_FrameworkToolsDataSerializer.rb
+# NAMESPACE  :  ValeDesignSuite::Utils
+# MODULE     :  FrameworkDataSerializer
+# AUTHOR     :  Adam Noble - Vale Garden Houses
+# PURPOSE    :  Serialises and deserialises framework configuration data to/from
+#               SketchUp model dictionaries using structured JSON.
+# VERSION    :  1.0.0
+# CREATED    :  22-May-2025
+#
+# DESCRIPTION:
+# - This utility module provides a dedicated handler for serialising framework data
+#   (nodes, panels, metadata) into JSON strings and writing them to SketchUp model
+#   attribute dictionaries.
+# - It also deserialises stored JSON strings from the dictionary, validates them,
+#   and returns native Ruby Hashes for use in the main plugin logic.
+# - This class is stateless and can be safely required by other tool or core scripts.
+#
+# DICTIONARY STRUCTURE:
+# - Top Level Dictionary Name  : "ValeDesignSuite_FrameworkAssemblies"
+# - Each framework assembly    : Stored as a subkey using its `FrameworkUniqueId`
+# - Keys per assembly:
+#     - "frameworkMetadata"
+#     - "frameworkNodes"
+#     - "frameworkPanelLines"
+#
+# EXAMPLE USAGE:
+#   FrameworkDataSerializer.save_assembly_data("VFW001", framework_data_hash)
+#   FrameworkDataSerializer.load_assembly_data("VFW001")
+# =============================================================================
+
+require 'json'
+require 'sketchup.rb'
+
+module ValeDesignSuite
+    module Utils
+
+        module FrameworkDataSerializer
+
+            # ---------------------------------------------
+            # CONSTANTS |  Module Constants
+            # ---------------------------------------------
+            DICTIONARY_NAME    =    "ValeDesignSuite_FrameworkAssemblies".freeze
+            METADATA_KEY       =    "frameworkMetadata".freeze
+            NODES_KEY          =    "frameworkNodes".freeze
+            PANEL_LINES_KEY    =    "frameworkPanelLines".freeze
+
+            # ---------------------------------------------
+            # HELPER FUNCTION |  Validate Structure - Private Scope
+            # ---------------------------------------------
+            def self.valid_structure?(hash)
+                hash.is_a?(Hash) &&
+                hash.key?(METADATA_KEY) &&
+                hash.key?(NODES_KEY) &&
+                hash.key?(PANEL_LINES_KEY)
+            end
+            private_class_method :valid_structure?
+
+            # ---------------------------------------------
+            # HELPER FUNCTION |  Validate ID - Private Scope
+            # ---------------------------------------------
+            def self.valid_assembly_id?(id)
+                id.is_a?(String) && id.match?(/^VFW\d{3}$/)
+            end
+            private_class_method :valid_assembly_id?
+
+            # ---------------------------------------------
+            # FUNCTION |  Save Complete Assembly - Public Scope
+            # ---------------------------------------------
+            def self.save_assembly_data(assembly_id, data_hash)
+                return unless valid_assembly_id?(assembly_id)
+                return unless valid_structure?(data_hash)
+
+                model = Sketchup.active_model
+                dict  = model.attribute_dictionaries[DICTIONARY_NAME] || model.attribute_dictionaries.add(DICTIONARY_NAME)
+
+                dict.set_attribute(assembly_id, METADATA_KEY,      JSON.generate(data_hash[METADATA_KEY])     )
+                dict.set_attribute(assembly_id, NODES_KEY,         JSON.generate(data_hash[NODES_KEY])        )
+                dict.set_attribute(assembly_id, PANEL_LINES_KEY,   JSON.generate(data_hash[PANEL_LINES_KEY])  )
+            end
+
+            # ---------------------------------------------
+            # FUNCTION |  Load Complete Assembly - Public Scope
+            # ---------------------------------------------            
+            def self.load_assembly_data(assembly_id)
+                return unless valid_assembly_id?(assembly_id)
+
+                model = Sketchup.active_model
+                dict  = model.attribute_dictionaries[DICTIONARY_NAME]
+                return unless dict
+
+                begin
+                    {
+                        METADATA_KEY      => JSON.parse(dict[assembly_id][METADATA_KEY]),
+                        NODES_KEY         => JSON.parse(dict[assembly_id][NODES_KEY]),
+                        PANEL_LINES_KEY   => JSON.parse(dict[assembly_id][PANEL_LINES_KEY])
+                    }
+                rescue JSON::ParserError => e
+                    puts "JSON Parse Error: #{e.message}"
+                    nil
+                rescue => e
+                    puts "Error loading assembly data: #{e.message}"
+                    nil
+                end
+            end
+
+            # ---------------------------------------------
+            # FUNCTION |  Delete an Assembly - Public Scope
+            # ---------------------------------------------
+            def self.delete_assembly_data(assembly_id)
+                return unless valid_assembly_id?(assembly_id)
+
+                model = Sketchup.active_model
+                dict  = model.attribute_dictionaries[DICTIONARY_NAME]
+                return unless dict
+
+                dict.delete_key(assembly_id)
+            end
+
+            # ---------------------------------------------
+            # FUNCTION |  List All Assemblies - Public Scope
+            # ---------------------------------------------
+            def self.list_all_assemblies
+                model = Sketchup.active_model
+                dict  = model.attribute_dictionaries[DICTIONARY_NAME]
+                return [] unless dict
+
+                dict.keys
+            end
+
+        end
+
+    end
+end

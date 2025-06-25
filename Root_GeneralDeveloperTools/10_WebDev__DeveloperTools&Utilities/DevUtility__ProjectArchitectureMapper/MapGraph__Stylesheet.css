@@ -1,0 +1,935 @@
+/* ==========================================================================
+VALEDESIGNSUITE - PROJECT ARCHITECTURE NEURAL NETWORK MAP STYLES
+========================================================================== */
+
+
+/* -----------------------------------------------------------------------
+CSS VARIABLES |  Project Arch 3D Font Face Declarations
+----------------------------------------------------------------------  */
+
+   
+/* Open Sans Light Font Face Declaration */
+@font-face {
+    font-family                        : 'Open Sans';
+    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_03_-_Standard-Font_-_Open-Sans-Light.ttf') format('truetype');
+    font-weight                        : 300;
+    font-style                         : normal;
+}
+
+/* Open Sans Regular Font Face Declaration */
+@font-face {
+    font-family                        : 'Open Sans';
+    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf') format('truetype');
+    font-weight                        : 400;
+    font-style                         : normal;
+}
+
+/* Open Sans SemiBold Font Face Declaration */
+@font-face {
+    font-family                        : 'Open Sans';
+    src                                : url('https://www.noble-architecture.com/assets/AD04_-_LIBR_-_Common_-_Front-Files/AD04_02_-_Standard-Font_-_Open-Sans-SemiBold.ttf') format('truetype');
+    font-weight                        : 600;
+    font-style                         : normal;
+}
+
+/* -----------------------------------------------------------------------
+CSS VARIABLES |  Project Architecture 3D Neural Network Map Style Variables
+----------------------------------------------------------------------  */
+
+:root {
+    --FontCol_ValeTitleTextColour      : #172b3a;
+    --FontCol_ValeTitleHeadingColour   : #172b3a;
+    --FontCol_ValeStandardTextColour   : #1e1e1e;
+    --FontCol_ValeLinkTextColour       : #336699;
+    --FontCol_ValeNeuralGlowColour     : #00AA77;
+    --FontCol_ValeNeuralPulseColour    : #ff6b6b;
+    --ValeBackgroundColor              : #ffffff;
+    --ValeNeuralDarkColor              : #f8f9fa;
+    --ValeNeuralAccentColor            : #e9ecef;
+    --FontType_ValeStandardText        : 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --FontType_ValeTitleText           : 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size                          : 16px;
+    --FontSize_ValeTitleText           : 1.75rem;
+    --FontSize_ValeTitleHeading01      : 1.375rem;
+    --FontSize_ValeStandardText        : 1.063rem;
+    --FontSize_ValeNodeLabel           : 8px;                              /* <-- 20% smaller than 10px */
+    --FontSize_ValeNodeLabelHighlight  : 8.8px;                           /* <-- 20% smaller than 11px */
+}
+
+/* -----------------------------------------------------------------------
+BASE STYLES |  Basic HTML & Body Styles
+----------------------------------------------------------------------  */
+* {
+    box-sizing                         : border-box;
+}
+
+html, body {
+    margin                             : 0;
+    padding                            : 0;
+    height                             : 100vh;
+    font-family                        : var(--FontType_ValeStandardText);
+    background                         : var(--ValeBackgroundColor);
+    overflow                           : hidden;
+    color                              : #ffffff;
+}
+
+/* Neural Network Container Styles */
+#neural-container {
+    position                           : relative;
+    width                              : 100%;
+    height                             : 100vh;
+    background                         : radial-gradient(circle at center, var(--ValeNeuralDarkColor) 0%, var(--ValeBackgroundColor) 100%);
+    cursor                             : grab;
+}
+
+#neural-container:active {
+    cursor                             : grabbing;
+}
+
+#neural-background {
+    position                           : absolute;
+    top                                : 0;
+    left                               : 0;
+    width                              : 100%;
+    height                             : 100%;
+    z-index                            : 1;
+    pointer-events                     : none;
+}
+
+#graph {
+    position                           : absolute;
+    top                                : 0;
+    left                               : 0;
+    width                              : 100%;
+    height                             : 100%;
+    z-index                            : 2;
+    cursor                             : grab;
+}
+
+#graph:active {
+    cursor                             : grabbing;
+}
+
+/* -----------------------------------------------------------------------
+CONTROL PANEL STYLES |  Control Panel Styles
+----------------------------------------------------------------------  */
+
+#controls {
+    position                           : absolute;
+    top                                : 20px;
+    left                               : 20px;
+    z-index                            : 1000;
+    background                         : rgba(26, 26, 46, 0.95);
+    color                              : #ffffff;
+    padding                            : 25px 31px;
+    border-radius                      : 12px;
+    box-shadow                         : 0 4px 30px rgba(0, 255, 170, 0.2);
+    backdrop-filter                    : blur(15px);
+    border                             : 2px solid rgba(0, 255, 170, 0.3);
+    min-width                          : 438px;
+}
+
+#controls h1 {
+    margin                             : 0 0 15px 0;
+    font-size                          : var(--FontSize_ValeTitleText);
+    font-family                        : var(--FontType_ValeTitleText);
+    font-weight                        : 600;
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    text-shadow                        : 0 0 10px rgba(0, 255, 170, 0.5);
+}
+
+.control-section {
+    margin                             : 10px 0;
+}
+
+.control-section p {
+    margin                             : 5px 0;
+    font-size                          : var(--FontSize_ValeStandardText);
+    font-family                        : var(--FontType_ValeStandardText);
+    color                              : #b0b0c4;
+    line-height                        : 1.4;
+}
+
+.control-section strong {
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    font-weight                        : 600;
+}
+
+/* Neural Network Node Styles */
+.neural-node {
+    stroke-width                       : 3px;
+    transition                         : all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor                             : pointer;
+    filter                             : drop-shadow(0 0 8px rgba(0, 255, 170, 0.4));
+}
+
+.neural-node:hover {
+    stroke-width                       : 5px;
+    filter                             : drop-shadow(0 0 15px rgba(0, 255, 170, 0.8)) brightness(1.3);
+    transform                          : scale(1.15);
+}
+
+.neural-node.pulsing {
+    animation                          : neuralPulse 2s ease-in-out infinite;
+}
+
+@keyframes neuralPulse {
+    0%, 100% {
+        filter                         : drop-shadow(0 0 8px rgba(0, 255, 170, 0.4));
+        transform                      : scale(1);
+    }
+    50% {
+        filter                         : drop-shadow(0 0 25px rgba(255, 107, 107, 0.8));
+        transform                      : scale(1.2);
+    }
+}
+
+/* Node Type Colors - Neural Network Theme */
+.html {
+    fill                               : #00d4ff;
+    stroke                             : #0099cc;
+}
+
+.js {
+    fill                               : #ffaa00;
+    stroke                             : #cc8800;
+}
+
+.css {
+    fill                               : #00ff88;
+    stroke                             : #00cc66;
+}
+
+.external {
+    fill                               : #ff4466;
+    stroke                             : #cc2244;
+}
+
+.other {
+    fill                               : #aa66ff;
+    stroke                             : #8844cc;
+}
+
+/* Neural Connection Styles */
+.neural-connection {
+    stroke                             : var(--FontCol_ValeNeuralGlowColour);
+    stroke-width                       : 2px;
+    fill                               : none;
+    opacity                            : 0.6;
+    transition                         : all 0.3s ease;
+    filter                             : drop-shadow(0 0 3px rgba(0, 255, 170, 0.3));
+}
+
+.neural-connection:hover {
+    stroke                             : var(--FontCol_ValeNeuralPulseColour);
+    stroke-width                       : 4px;
+    opacity                            : 1;
+    filter                             : drop-shadow(0 0 8px rgba(255, 107, 107, 0.6));
+}
+
+.neural-connection.active {
+    stroke                             : var(--FontCol_ValeNeuralPulseColour);
+    stroke-width                       : 3px;
+    opacity                            : 1;
+    animation                          : connectionPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes connectionPulse {
+    0%, 100% {
+        opacity                        : 0.6;
+        stroke-width                   : 2px;
+    }
+    50% {
+        opacity                        : 1;
+        stroke-width                   : 4px;
+    }
+}
+
+/* External Connection Styles */
+.neural-connection.external {
+    stroke                             : var(--FontCol_ValeNeuralPulseColour);
+    stroke-dasharray                   : 8,4;
+    stroke-width                       : 2px;
+}
+
+/* Node Label Styles */
+.neural-label {
+    font-family                        : var(--FontType_ValeStandardText);
+    font-size                          : var(--FontSize_ValeNodeLabel);     /* <-- 20% smaller */
+    font-weight                        : 400;
+    fill                               : #ffffff;
+    pointer-events                     : none;
+    text-anchor                        : middle;
+    dominant-baseline                  : middle;
+    text-shadow                        : 0 0 4px rgba(0, 0, 0, 0.9);
+    opacity                            : 0.8;
+}
+
+.neural-label.highlighted {
+    fill                               : var(--FontCol_ValeNeuralGlowColour);
+    font-size                          : var(--FontSize_ValeNodeLabelHighlight); /* <-- 20% smaller */
+    font-weight                        : 600;
+    text-shadow                        : 0 0 6px rgba(0, 255, 170, 0.8);
+}
+
+/* Legend Styles */
+#legend-container {
+    position                           : absolute;
+    bottom                             : 20px;
+    left                               : 20px;
+    background                         : rgba(26, 26, 46, 0.95);
+    color                              : #ffffff;
+    padding                            : 35px;
+    border-radius                      : 16px;
+    font-size                          : 18px;
+    border                             : 2px solid rgba(0, 255, 170, 0.3);
+    box-shadow                         : 0 4px 30px rgba(0, 255, 170, 0.2);
+    backdrop-filter                    : blur(15px);
+    z-index                            : 1000;
+    min-width                          : 380px;
+}
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  Legend Styles
+----------------------------------------------------------------------  */
+.legend-title {
+    margin                             : 0 0 20px 0;
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    font-family                        : var(--FontType_ValeTitleText);
+    font-weight                        : 600;
+    font-size                          : 1.625rem;
+    text-shadow                        : 0 0 10px rgba(0, 255, 170, 0.5);
+}
+
+.legend-item {
+    display                            : flex;
+    align-items                        : center;
+    margin                             : 12px 0;
+    transition                         : all 0.2s ease;
+}
+
+.legend-item:hover {
+    transform                          : translateX(5px);
+}
+
+.legend-color {
+    width                              : 22px;
+    height                             : 22px;
+    border-radius                      : 50%;
+    margin-right                       : 18px;
+    border                             : 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow                         : 0 0 10px rgba(0, 255, 170, 0.3);
+}
+
+.legend-text {
+    color                              : #e0e0e0;
+    font-family                        : var(--FontType_ValeStandardText);
+    font-weight                        : 500;
+    font-size                          : 16px;
+}
+
+.legend-count {
+    margin-left                        : auto;
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    font-family                        : var(--FontType_ValeStandardText);
+    font-weight                        : 600;
+    font-size                          : 16px;
+}
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  Statistics Display
+----------------------------------------------------------------------  */
+.stats-section {
+    margin-top                         : 20px;
+    padding-top                        : 20px;
+    border-top                         : 1px solid rgba(0, 255, 170, 0.3);
+}
+
+.stats-item {
+    display                            : flex;
+    justify-content                    : space-between;
+    margin                             : 8px 0;
+    font-size                          : 16px;
+    font-family                        : var(--FontType_ValeStandardText);
+}
+
+.stats-label {
+    color                              : #b0b0c4;
+    font-weight                        : 400;
+}
+
+.stats-value {
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    font-weight                        : 600;
+}
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  Node Info Panel Styles
+----------------------------------------------------------------------  */
+.node-info-panel {
+    position                           : absolute;
+    background                         : rgba(26, 26, 46, 0.95);
+    color                              : #ffffff;
+    padding                            : 20px 25px;
+    border-radius                      : 12px;
+    box-shadow                         : 0 4px 30px rgba(0, 255, 170, 0.2);
+    backdrop-filter                    : blur(15px);
+    border                             : 2px solid rgba(0, 255, 170, 0.3);
+    min-width                          : 320px;
+    max-width                          : 400px;
+    z-index                            : 1000;
+    pointer-events                     : auto;                                    /* <-- Enable interactions */
+    transform                          : translateZ(0);                          /* <-- GPU acceleration */
+    will-change                        : transform;                              /* <-- Optimize for animation */
+}
+
+/* Annotation Leader Line */
+.node-info-panel::before {
+    content                            : '';
+    position                           : absolute;
+    width                              : 2px;
+    height                             : 40px;
+    background                         : linear-gradient(to bottom, 
+                                          rgba(0, 255, 170, 0.6) 0%, 
+                                          rgba(0, 255, 170, 0.3) 50%,
+                                          rgba(0, 255, 170, 0.1) 100%);
+    left                               : 50%;
+    bottom                             : -40px;
+    transform                          : translateX(-50%);
+    box-shadow                         : 0 0 10px rgba(0, 255, 170, 0.4);
+}
+
+/* Leader Line Connection Point */
+.node-info-panel::after {
+    content                            : '';
+    position                           : absolute;
+    width                              : 8px;
+    height                             : 8px;
+    background                         : var(--FontCol_ValeNeuralGlowColour);
+    border-radius                      : 50%;
+    left                               : 50%;
+    bottom                             : -44px;
+    transform                          : translateX(-50%);
+    box-shadow                         : 0 0 15px rgba(0, 255, 170, 0.8);
+}
+
+.node-info-panel h3 {
+    margin                             : 0 0 15px 0;
+    font-size                          : 1.25rem;
+    font-family                        : var(--FontType_ValeTitleText);
+    font-weight                        : 600;
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    text-shadow                        : 0 0 8px rgba(0, 255, 170, 0.4);
+    padding-right                      : 30px;                                   /* <-- Space for close button */
+}
+
+/* Info Panel Data Rows */
+.node-info-row {
+    display                            : flex;
+    justify-content                    : space-between;
+    align-items                        : flex-start;
+    margin                             : 10px 0;
+    font-size                          : 0.875rem;
+    font-family                        : var(--FontType_ValeStandardText);
+    color                              : #e0e0e0;
+    line-height                        : 1.5;
+}
+
+.node-info-label {
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    font-weight                        : 600;
+    min-width                          : 110px;
+    flex-shrink                        : 0;
+}
+
+.node-info-value {
+    color                              : #e0e0e0;
+    text-align                         : right;
+    flex                               : 1;
+    word-break                         : break-word;
+    margin-left                        : 15px;
+}
+
+/* Special styling for path value */
+.node-info-value.path-value {
+    font-family                        : 'Consolas', 'Monaco', monospace;
+    font-size                          : 0.8rem;
+    color                              : #b0e6d0;
+}
+
+/* List values (connections) */
+.node-info-list {
+    margin-top                         : 5px;
+    padding-left                       : 15px;
+    font-size                          : 0.8rem;
+    color                              : #b0b0c4;
+    max-height                         : 120px;
+    overflow-y                         : auto;
+    scrollbar-width                    : thin;
+    scrollbar-color                    : rgba(0, 255, 170, 0.3) transparent;
+}
+
+.node-info-list-item {
+    margin                             : 3px 0;
+    padding-left                       : 10px;
+    position                           : relative;
+}
+
+.node-info-list-item::before {
+    content                            : '→';
+    position                           : absolute;
+    left                               : 0;
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+}
+
+/* Close Button */
+.node-info-close {
+    position                           : absolute;
+    top                                : 15px;
+    right                              : 15px;
+    background                         : transparent;
+    border                             : 1px solid rgba(0, 255, 170, 0.3);
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    width                              : 24px;
+    height                             : 24px;
+    border-radius                      : 50%;
+    cursor                             : pointer;
+    font-size                          : 16px;
+    line-height                        : 1;
+    display                            : flex;
+    align-items                        : center;
+    justify-content                    : center;
+    transition                         : all 0.2s ease;
+}
+
+.node-info-close:hover {
+    background                         : rgba(0, 255, 170, 0.1);
+    border-color                       : var(--FontCol_ValeNeuralGlowColour);
+    transform                          : scale(1.1);
+    box-shadow                         : 0 0 10px rgba(0, 255, 170, 0.4);
+}
+
+/* Fade-in animation */
+@keyframes nodeInfoFadeIn {
+    from {
+        opacity                        : 0;
+        transform                      : translateY(-10px);
+    }
+    to {
+        opacity                        : 1;
+        transform                      : translateY(0);
+    }
+}
+
+.node-info-panel.fade-in {
+    animation                          : nodeInfoFadeIn 0.3s ease-out;
+}
+
+/* Custom scrollbar for lists */
+.node-info-list::-webkit-scrollbar {
+    width                              : 6px;
+}
+
+.node-info-list::-webkit-scrollbar-track {
+    background                         : rgba(0, 0, 0, 0.2);
+    border-radius                      : 3px;
+}
+
+.node-info-list::-webkit-scrollbar-thumb {
+    background                         : rgba(0, 255, 170, 0.3);
+    border-radius                      : 3px;
+}
+
+.node-info-list::-webkit-scrollbar-thumb:hover {
+    background                         : rgba(0, 255, 170, 0.5);
+}
+
+/* 3D Canvas Specific Styles */
+#neural-container canvas {
+    display                            : block;
+    width                              : 100%;
+    height                             : 100%;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    position                           : absolute;
+    top                                : 50%;
+    left                               : 50%;
+    transform                          : translate(-50%, -50%);
+    font-size                          : 1.5rem;
+    color                              : var(--FontCol_ValeNeuralGlowColour);
+    font-family                        : var(--FontType_ValeTitleText);
+    font-weight                        : 600;
+    text-shadow                        : 0 0 20px rgba(0, 255, 170, 0.8);
+    z-index                            : 100;
+}
+
+.loading-indicator::after {
+    content                            : '';
+    display                            : inline-block;
+    width                              : 20px;
+    height                             : 20px;
+    margin-left                        : 10px;
+    border                             : 3px solid rgba(0, 255, 170, 0.3);
+    border-top-color                   : var(--FontCol_ValeNeuralGlowColour);
+    border-radius                      : 50%;
+    animation                          : spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #controls {
+        top                            : 10px;
+        left                           : 10px;
+        right                          : 10px;
+        padding                        : 15px 20px;
+        min-width                      : unset;
+    }
+    
+    #controls h1 {
+        font-size                      : 1.2rem;
+    }
+    
+    .control-section p {
+        font-size                      : 0.8rem;
+    }
+    
+    .neural-label {
+        font-size                      : 7px;                             /* <-- 20% smaller for mobile */
+    }
+    
+    #legend-container {
+        bottom                         : 10px;
+        left                           : 10px;
+        right                          : 10px;
+        font-size                      : 11px;
+        min-width                      : unset;
+    }
+    
+    .node-info-panel {
+        max-width                      : 90%;
+        min-width                      : unset;
+    }
+}
+
+@media (max-width: 480px) {
+    .neural-node {
+        stroke-width                   : 2px;
+    }
+    
+    .neural-connection {
+        stroke-width                   : 1.5px;
+    }
+    
+    .neural-label {
+        font-size                      : 6px;                             /* <-- 20% smaller for small mobile */
+    }
+}
+
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  Node Type Colors
+----------------------------------------------------------------------  */
+.folder {
+    fill                               : #ff55cc;
+    stroke                             : #cc4499;
+    stroke-width                       : 3px;
+}
+
+.json {
+    fill                               : #55ddff;
+    stroke                             : #3399cc;
+}
+
+.image {
+    fill                               : #ffcc55;
+    stroke                             : #cc9933;
+}
+
+.model {
+    fill                               : #ff8855;
+    stroke                             : #cc6633;
+}
+
+.font {
+    fill                               : #cc88ff;
+    stroke                             : #9966cc;
+}
+
+.hdri {
+    fill                               : #88ffcc;
+    stroke                             : #66cc99;
+}
+
+.markdown {
+    fill                               : #cccccc;
+    stroke                             : #999999;
+}
+
+.audio {
+    fill                               : #ffaa88;
+    stroke                             : #cc8866;
+}
+
+.video {
+    fill                               : #88aaff;
+    stroke                             : #6688cc;
+}
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  Controls Panel Collapsible Styles
+----------------------------------------------------------------------  */
+.controls-header {
+    display                            : flex;
+    justify-content                    : left;
+    align-items                        : left;
+    vertical-align                     : center;
+    cursor                             : pointer;
+    border-radius                      : 8px 8px 0 0;
+}
+
+.controls-header:hover {
+    background-color                   : #2c2c7c;       /* <-- Lighter blue tone on hover */
+}
+
+.controls-toggle {
+    background                         : none;
+    border                             : none;
+    align-items                        : left;
+    vertical-align                     : center;
+    color                              : #00AA77;
+    font-size                          : 24px;
+    cursor                             : pointer;
+    border-radius                      : 4px;
+    transition                         : transform 0.3s ease;
+    margin-right                       :  15.00px;
+    margin-top                         : -10.00px;
+}
+
+.controls-toggle:hover {
+    background-color                   : rgba(255, 255, 255, 0.1);
+}
+
+
+.controls-content.collapsed {
+    max-height                         : 0;
+    opacity                            : 0;
+}
+
+.controls-content:not(.collapsed) {
+    padding                            : 00.00px;
+    padding-left                       : 00.00px;
+}
+
+.toggle-arrow {
+    display                            : inline-block;
+    transition                         : transform 0.3s ease;
+}
+
+.controls-content.collapsed + .controls-header .toggle-arrow,
+.collapsed .toggle-arrow {
+    transform                          : rotate(-90deg);
+}
+
+/* Ensure controls panel positioning */
+#controls {
+    position                           : absolute;
+    top                                : 20px;
+    left                               : 20px;
+    z-index                            : 1000;
+    border-radius                      : 8px;
+    box-shadow                         : 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  New Styles Below
+----------------------------------------------------------------------  */
+
+/* Project Path Controls Styling */
+.project-path-controls {
+    background-color                       :  #f8f9fa;
+    padding                                :  15px 20px;
+    border-bottom                          :  1px solid #e0e0e0;
+}
+
+.path-input-container {
+    display                                :  flex;
+    align-items                            :  center;
+    gap                                    :  10px;
+    margin-bottom                          :  8px;
+}
+
+.path-label {
+    font-weight                            :  600;
+    color                                  :  var(--FontCol_ValeTitleHeadingColour);
+    font-size                              :  var(--FontSize_ValeTitleHeading03);
+    white-space                            :  nowrap;
+}
+
+.project-path-input {
+    flex                                   :  1;
+    padding                                :  8px 12px;
+    border                                 :  1px solid #cbd5e0;
+    border-radius                          :  4px;
+    font-family                            :  'Consolas', 'Monaco', monospace;
+    font-size                              :  var(--FontSize_ValeStandardText);
+    background-color                       :  white;
+    color                                  :  var(--FontCol_ValeStandardTextColour);
+    transition                             :  all 0.2s ease;
+}
+
+.project-path-input:focus {
+    outline                                :  none;
+    border-color                           :  #3182ce;
+    box-shadow                             :  0 0 0 2px rgba(49, 130, 206, 0.1);
+}
+
+.project-path-input::placeholder {
+    color                                  :  #a0aec0;
+    font-style                             :  italic;
+}
+
+.reload-project-btn {
+    padding                                :  8px 16px;
+    background-color                       :  var(--ValeColour02);
+    color                                  :  white;
+    border                                 :  none;
+    border-radius                          :  4px;
+    font-weight                            :  600;
+    font-size                              :  var(--FontSize_ValeStandardText);
+    cursor                                 :  pointer;
+    transition                             :  all 0.2s ease;
+    white-space                            :  nowrap;
+}
+
+.reload-project-btn:hover {
+    background-color                       :  #2563eb;
+    transform                              :  translateY(-1px);
+    box-shadow                             :  0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reload-project-btn:active {
+    transform                              :  translateY(0);
+    box-shadow                             :  0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.reload-project-btn:disabled {
+    background-color                       :  #e2e8f0;
+    color                                  :  #a0aec0;
+    cursor                                 :  not-allowed;
+    transform                              :  none;
+    box-shadow                             :  none;
+}
+
+.path-status {
+    font-size                              :  var(--FontSize_ValeStandardText);
+    padding                                :  4px 0;
+    min-height                             :  20px;
+}
+
+.path-status.success {
+    color                                  :  #059669;
+}
+
+.path-status.error {
+    color                                  :  #dc2626;
+}
+
+.path-status.loading {
+    color                                  :  #3182ce;
+}
+
+/* ------------------------------------------------------------------------- */
+
+/* Controls Content Styling */
+.controls-content {
+    background                             :  transparent;
+    border                                 :  none;
+}
+
+/* -----------------------------------------------------------------------
+ELEMENT STYLES |  Project Path Controls Collapsed State
+----------------------------------------------------------------------  */
+.project-path-controls.hidden-by-default {
+    display: none !important;
+}
+
+/* Show project path controls when controls-content is expanded */
+.controls-content:not(.collapsed) .project-path-controls {
+    display: block;
+}
+
+/* Make input expand and harmonize colors */
+.project-path-input {
+    min-width: 320px;
+    max-width: 100%;
+    width: auto;
+    flex-grow: 1;
+    background-color: #f4f8fa;
+    color: var(--FontCol_ValeStandardTextColour);
+    border: 1.5px solid #b0e6d0;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 170, 119, 0.07);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.project-path-input:focus {
+    border-color: var(--FontCol_ValeNeuralGlowColour);
+    box-shadow: 0 0 0 2px rgba(0, 170, 119, 0.13);
+    background-color: #e9f7f1;
+}
+
+.reload-project-btn {
+    background-color: var(--FontCol_ValeNeuralGlowColour);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: var(--FontSize_ValeStandardText);
+    padding: 8px 18px;
+    margin-left: 10px;
+    box-shadow: 0 2px 8px rgba(0, 170, 119, 0.09);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.reload-project-btn:hover:not(:disabled) {
+    background-color: #009966;
+    box-shadow: 0 4px 16px rgba(0, 170, 119, 0.13);
+}
+
+.reload-project-btn:disabled {
+    background-color: #e2e8f0;
+    color: #a0aec0;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.project-path-controls {
+    background: linear-gradient(90deg, #f8f9fa 80%, #e9ecef 100%);
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 2px 12px rgba(0, 170, 119, 0.04);
+    padding: 15px 20px 10px 20px;
+    margin-bottom: 0;
+}
+
+.path-label {
+    color: var(--FontCol_ValeTitleHeadingColour);
+    font-size: var(--FontSize_ValeTitleHeading03);
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.path-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+/* -----------------------------------------------------------------------

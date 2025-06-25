@@ -99,3 +99,14 @@
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Global Function Exports
+// -----------------------------------------------------------------------------
+
+    // Export functions to global scope for integration
+    window.handlePatternSelect = handlePatternSelect;                        // <-- Export pattern selection handler
+    window.handleExportToSketchUp = handleExportToSketchUp;                  // <-- Export export handler
+    window.downloadJSON = downloadJSON;                                      // <-- Export download utility
+
+// endregion -------------------------------------------------------------------

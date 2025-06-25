@@ -231,3 +231,16 @@
 
 
 // endregion ---------------------------------------------------- 
+
+// -----------------------------------------------------------------------------
+// REGION | Global Function Exports
+// -----------------------------------------------------------------------------
+
+    // Export functions to global scope for integration
+    window.initializeLayoutManager = initializeLayoutManager;                 // <-- Export layout manager initialization
+    window.setControlPanelWidth = setControlPanelWidth;                       // <-- Export panel width setter
+    window.getControlPanelWidth = getControlPanelWidth;                       // <-- Export panel width getter
+    window.getLayoutConfiguration = getLayoutConfiguration;                   // <-- Export layout config getter
+    window.resetLayoutToDefault = resetLayoutToDefault;                       // <-- Export layout reset function
+
+// endregion ---------------------------------------------------- 

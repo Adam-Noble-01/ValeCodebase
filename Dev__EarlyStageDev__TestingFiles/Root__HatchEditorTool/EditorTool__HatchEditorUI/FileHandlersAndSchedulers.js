@@ -18,6 +18,17 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// REGION | Module Constants
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Configuration Values
+    // ------------------------------------------------------------
+    const PREVIEW_DELAY = 300;                                      // <-- Preview debounce delay in ms
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 // REGION | File Loading Functions
 // -----------------------------------------------------------------------------
 
@@ -258,6 +269,41 @@ Then open: http://localhost:8000/index.html
     function hideCanvasOverlay() {
         const overlay = document.getElementById('canvas-overlay');   // Get overlay element
         overlay.style.display = 'none';                             // Hide overlay
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Global Function Exports
+// -----------------------------------------------------------------------------
+
+    // Export functions to global scope for integration
+    window.triggerFileInput = triggerFileInput;                              // <-- Export file input trigger
+    window.handleFileSelect = handleFileSelect;                              // <-- Export file selection handler
+    window.loadDefaultTestFile = loadDefaultTestFile;                        // <-- Export test file loader
+    window.parseDXFContent = parseDXFContent;                                // <-- Export DXF parser
+    window.readFileContent = readFileContent;                                // <-- Export file reader
+    window.schedulePreview = schedulePreview;                                // <-- Export preview scheduler
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Scheduling Functions
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Schedule Preview with Debounce
+    // ------------------------------------------------------------
+    function schedulePreview() {
+        if (previewTimeout) {                                        // <-- Clear existing timeout
+            clearTimeout(previewTimeout);
+        }
+        
+        previewTimeout = setTimeout(() => {                          // <-- Schedule new preview
+            if (typeof generatePreview === 'function') {
+                generatePreview();                                   // <-- Generate preview
+            }
+        }, PREVIEW_DELAY);
     }
     // ------------------------------------------------------------
 

@@ -156,14 +156,158 @@
     <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralPatchOccurrence.js"></script>
     <script src="EditorTool__HatchAdjustmentLogicScripts/Adjustment__GeneralPatchRandomness.js"></script>
     
-    <!-- Initialize Layout Manager and Canvas Navigation -->
+    <!-- Global Initialization Script -->
     <script>
+        // -----------------------------------------------------------------------------
+        // REGION | Global Variables and State Management
+        // -----------------------------------------------------------------------------
+        
+        // MODULE VARIABLES | Global Application State Variables
+        // ------------------------------------------------------------
+        let canvas              = null;                                  // <-- Main canvas element
+        let ctx                 = null;                                  // <-- Canvas 2D context
+        let currentPattern      = null;                                  // <-- Currently loaded pattern data
+        let dxfData             = null;                                  // <-- Loaded DXF file data
+        let sliderValues        = {};                                    // <-- Current slider values
+        let livePreviewEnabled  = true;                                  // <-- Live preview toggle state
+        let previewTimeout      = null;                                  // <-- Debounce timeout for preview
+        let isNavigationReady   = false;                                 // <-- Flag to track navigation system readiness
+        // ------------------------------------------------------------
+        
+        // MODULE CONSTANTS | Configuration Values
+        // ------------------------------------------------------------
+        const CANVAS_PADDING    = 50;                                    // <-- Canvas padding in pixels
+        const PREVIEW_DELAY     = 300;                                   // <-- Preview debounce delay in ms
+        const GRID_SIZE         = 50;                                    // <-- Grid line spacing
+        // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Global Function Declarations
+        // -----------------------------------------------------------------------------
+        
+        // FUNCTION | Global Error Display Function
+        // ------------------------------------------------------------
+        function showError(message) {
+            console.error('Error:', message);                            // <-- Log error to console
+            alert('Error: ' + message);                                  // <-- Show error to user
+        }
+        // ------------------------------------------------------------
+        
+        // FUNCTION | Global Success Display Function
+        // ------------------------------------------------------------
+        function showSuccess(message) {
+            console.log('Success:', message);                            // <-- Log success to console
+            // Could add a toast notification here
+        }
+        // ------------------------------------------------------------
+        
+        // FUNCTION | Global File Info Update Function
+        // ------------------------------------------------------------
+        function updateFileInfo(filename) {
+            const fileNameElement = document.getElementById('loaded-file-name'); // <-- Get filename element
+            const canvasInfoElement = document.getElementById('canvas-info');     // <-- Get canvas info element
+            
+            if (fileNameElement) {
+                fileNameElement.textContent = filename;                  // <-- Update filename display
+            }
+            
+            if (canvasInfoElement) {
+                canvasInfoElement.textContent = filename;                // <-- Update canvas info
+            }
+        }
+        // ------------------------------------------------------------
+        
+        // FUNCTION | Global Canvas Overlay Hide Function
+        // ------------------------------------------------------------
+        function hideCanvasOverlay() {
+            const overlay = document.getElementById('canvas-overlay');    // <-- Get overlay element
+            if (overlay) {
+                overlay.style.display = 'none';                          // <-- Hide overlay
+            }
+        }
+        // ------------------------------------------------------------
+        
+        // FUNCTION | Global Canvas Overlay Show Function
+        // ------------------------------------------------------------
+        function showCanvasOverlay(message) {
+            const overlay = document.getElementById('canvas-overlay');    // <-- Get overlay element
+            const canvasInfo = document.getElementById('canvas-info');    // <-- Get canvas info element
+            
+            if (overlay && canvasInfo) {
+                canvasInfo.textContent = message;                        // <-- Set overlay message
+                overlay.style.display = 'flex';                          // <-- Show overlay
+            }
+        }
+        // ------------------------------------------------------------
+        
+        // FUNCTION | Global Preview Scheduling Function
+        // ------------------------------------------------------------
+        function schedulePreview() {
+            if (previewTimeout) {                                        // <-- Clear existing timeout
+                clearTimeout(previewTimeout);
+            }
+            
+            previewTimeout = setTimeout(() => {                          // <-- Schedule new preview
+                if (typeof generatePreview === 'function') {
+                    generatePreview();                                   // <-- Generate preview
+                }
+            }, PREVIEW_DELAY);
+        }
+        // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Application Initialization
+        // -----------------------------------------------------------------------------
+        
+        // FUNCTION | Initialize Application on Page Load
+        // ------------------------------------------------------------
         document.addEventListener('DOMContentLoaded', function() {
-            initializeLayoutManager();
-            initializeCanvasNavigation();
+            console.log('Initializing Hatch Editor Tool...');            // <-- Log initialization start
+            
+            try {
+                // Initialize layout manager first
+                if (typeof initializeLayoutManager === 'function') {
+                    initializeLayoutManager();                           // <-- Initialize layout system
+                } else {
+                    console.warn('Layout Manager not available');        // <-- Warn if not available
+                }
+                
+                // Initialize canvas navigation system
+                if (typeof initializeCanvasNavigation === 'function') {
+                    initializeCanvasNavigation();                        // <-- Initialize navigation system
+                } else {
+                    console.warn('Canvas Navigation not available');     // <-- Warn if not available
+                }
+                
+                // Initialize user interface
+                if (typeof initializeUI === 'function') {
+                    initializeUI();                                      // <-- Initialize UI system
+                } else {
+                    console.warn('User Interface not available');        // <-- Warn if not available
+                }
+                
+                // Load default test file
+                if (typeof loadDefaultTestFile === 'function') {
+                    loadDefaultTestFile();                               // <-- Load test data
+                } else {
+                    console.warn('File handlers not available');         // <-- Warn if not available
+                }
+                
+                console.log('Hatch Editor Tool initialized successfully'); // <-- Log success
+                
+            } catch (error) {
+                console.error('Failed to initialize Hatch Editor Tool:', error); // <-- Log initialization errors
+                showError('Failed to initialize application: ' + error.message); // <-- Show error to user
+            }
         });
+        // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
     </script>
-    
     
     <!-- endregion ----------------------------------------------------------------- -->
     

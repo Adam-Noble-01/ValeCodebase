@@ -734,10 +734,18 @@
         const transformedContext = applyViewportTransform();                   // <-- Apply transformations
         if (!transformedContext) return;                                       // <-- Exit if transform failed
         
-        // TODO: Call existing rendering functions with transformed context
-        // This should integrate with the existing hatch rendering system
+        // Call registered redraw callback if available
+        if (window.canvasRedrawCallback && typeof window.canvasRedrawCallback === 'function') {
+            window.canvasRedrawCallback();                                    // <-- Call registered callback
+        } else {
+            // Fallback: clear canvas and show message
+            canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height); // <-- Clear canvas
+            canvasContext.fillStyle = '#666666';                              // <-- Set text color
+            canvasContext.font = '16px Arial';                                // <-- Set font
+            canvasContext.fillText('No content to display', 50, 50);          // <-- Show message
+        }
         
-        restoreViewportTransform();                                            // <-- Restore context state
+        restoreViewportTransform();                                           // <-- Restore context state
     }
     // ---------------------------------------------------------------
 
@@ -779,8 +787,27 @@
 // REGION | Public API Export
 // -----------------------------------------------------------------------------
 
+    // FUNCTION | Get Canvas Element (Public Interface)
+    // ------------------------------------------------------------
+    function getCanvasElement() {
+        return canvasElement;                                                 // <-- Return canvas element reference
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Set Canvas Redraw Callback (Public Interface)
+    // ------------------------------------------------------------
+    function setCanvasRedrawCallback(callback) {
+        if (typeof callback === 'function') {                                 // <-- Validate callback is function
+            window.canvasRedrawCallback = callback;                          // <-- Store callback globally
+            console.log('Canvas redraw callback registered');                 // <-- Log registration
+        }
+    }
+    // ------------------------------------------------------------
+
     // Export functions to global scope for integration
     window.initializeCanvasNavigation = initializeCanvasNavigation;           // <-- Export initialization function
+    window.getCanvasElement = getCanvasElement;                              // <-- Export canvas getter
+    window.setCanvasRedrawCallback = setCanvasRedrawCallback;                // <-- Export callback setter
     window.applyViewportTransform = applyViewportTransform;                   // <-- Export transform function
     window.restoreViewportTransform = restoreViewportTransform;               // <-- Export restore function
     window.screenToWorld = screenToWorld;                                     // <-- Export coordinate conversion

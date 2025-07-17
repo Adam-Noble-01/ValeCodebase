@@ -187,6 +187,7 @@
             "ModelCritical"         : false,
             "ModelFileSize"         : "37MB",
             "EnableGitHubFallback"  : true
+        }
         },
         "ModelLoadingConfig": {
             "EnableProgressiveLoading"  :  true,

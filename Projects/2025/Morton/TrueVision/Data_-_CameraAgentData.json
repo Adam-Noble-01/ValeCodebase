@@ -1,6 +1,6 @@
 {
   "exportInfo": {
-    "exportDate": "2025-07-17 12:35:41",
+    "exportDate": "2025-07-17 13:43:35",
     "modelName": "Morton__ExportHelper__TrueVision__1.1.0",
     "exportedBy": "Camera Agent Tool",
     "version": "1.0.0"
@@ -178,6 +178,35 @@
       "metadata": {
         "createdDate": "2025-07-17 12:33:44",
         "lastModified": "2025-07-17 12:34:46"
+      }
+    },
+    {
+      "agentId": "CAM007",
+      "agentName": "Oven Unit",
+      "waypointNumber": 7,
+      "position": {
+        "x": 1886.9898823616893,
+        "y": 3044.701474306101,
+        "z": 1500.0
+      },
+      "direction": {
+        "x": 0.11048636066375965,
+        "y": -0.9938776404101654,
+        "z": 0.0
+      },
+      "rotation": {
+        "heading": -83.6566471196052,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "camera": {
+        "aspectRatio": "16:9",
+        "lensMm": 35,
+        "fovDegrees": 60
+      },
+      "metadata": {
+        "createdDate": "2025-07-17 13:42:41",
+        "lastModified": "2025-07-17 13:43:33"
       }
     }
   ]

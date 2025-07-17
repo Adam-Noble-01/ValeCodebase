@@ -165,11 +165,26 @@
         "Model-01": {
             "ModelLoadingOrder"     : 1,
             "ModelType"             : "Main Building Model",
-            "ModelUrl"              : "https://cdn.noble-architecture.com/NaProjectPortal/25-Projects/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_RJ03__OundleDrive_-_BuildingModel.glb",
+            "ModelUrl"              : "https://cdn.noble-architecture.com/NaProjectPortal/25-Projects/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_MT03_-_Londonthorpe_-_BuildingModel.glb",
             "ModelVersion"          : "1.0.0",
             "ModelAdded"            : "2025-07-14",
             "ModelNotes"            : "Primary building structure - must load before user interaction",
             "ModelCritical"         : true,
+            "ModelFileSize"         : "37MB",
+            "EnableGitHubFallback"  : true
+        },
+    "CdnModelConfig__ModelLoadingLinkMapper": {
+        "CdnModelConfig_Description": "CDN-based model loading configuration with priority ordering",
+        "CdnModelConfig_Enabled"    : true,
+        "CdnModelConfig_BaseUrl"    : "https://cdn.noble-architecture.com",
+        "Model-01": {
+            "ModelLoadingOrder"     : 2,
+            "ModelType"             : "Kitchen Model",
+            "ModelUrl"              : "https://cdn.noble-architecture.com/NaProjectPortal/25-Projects/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_MT03_-_Londonthorpe_-_FurnitureModel.glb",
+            "ModelVersion"          : "1.0.0",
+            "ModelAdded"            : "2025-07-14",
+            "ModelNotes"            : "Kitchen - Should load after Main Building Model",
+            "ModelCritical"         : false,
             "ModelFileSize"         : "37MB",
             "EnableGitHubFallback"  : true
         },

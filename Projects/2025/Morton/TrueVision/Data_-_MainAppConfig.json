@@ -173,11 +173,7 @@
             "ModelFileSize"         : "37MB",
             "EnableGitHubFallback"  : true
         },
-    "CdnModelConfig__ModelLoadingLinkMapper": {
-        "CdnModelConfig_Description": "CDN-based model loading configuration with priority ordering",
-        "CdnModelConfig_Enabled"    : true,
-        "CdnModelConfig_BaseUrl"    : "https://cdn.noble-architecture.com",
-        "Model-01": {
+        "Model-02": {
             "ModelLoadingOrder"     : 2,
             "ModelType"             : "Kitchen Model",
             "ModelUrl"              : "https://cdn.noble-architecture.com/NaProjectPortal/25-Projects/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_MT03_-_Londonthorpe_-_FurnitureModel.glb",
@@ -187,7 +183,6 @@
             "ModelCritical"         : false,
             "ModelFileSize"         : "37MB",
             "EnableGitHubFallback"  : true
-        }
         },
         "ModelLoadingConfig": {
             "EnableProgressiveLoading"  :  true,

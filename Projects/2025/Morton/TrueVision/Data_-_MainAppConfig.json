@@ -180,7 +180,7 @@
             "ModelVersion"          : "1.0.0",
             "ModelAdded"            : "2025-07-14",
             "ModelNotes"            : "Kitchen - Should load after Main Building Model",
-            "ModelCritical"         : false,
+            "ModelCritical"         : true,
             "ModelFileSize"         : "37MB",
             "EnableGitHubFallback"  : true
         },

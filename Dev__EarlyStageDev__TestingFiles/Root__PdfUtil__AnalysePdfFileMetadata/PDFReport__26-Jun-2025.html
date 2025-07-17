@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep PDF Metadata Report - 2025-06-26 09:35:10</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; color: #333; line-height:1.6; }
+        .container { max-width: 1300px; margin: 20px auto; padding: 20px; background-color: #fff; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-radius: 8px; }
+        header { background-color: #3498db; color: white; padding: 25px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        header h1 { margin: 0; font-size: 2.2em; }
+        header p { margin: 8px 0 0; font-size: 0.95em; opacity: 0.9; }
+        nav { text-align: center; margin-bottom: 25px; padding: 12px; background-color: #e9ecef; border-radius: 4px; }
+        nav a { margin: 0 18px; text-decoration: none; color: #3498db; font-weight: bold; font-size:1.05em; }
+        nav a:hover { text-decoration: underline; color: #2980b9; }
+        .summary-section, .pdf-details-section { margin-bottom: 35px; }
+        h2 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 8px; margin-top: 35px; font-size:1.8em; }
+        h3 { color: #3498db; margin-top: 25px; font-size:1.4em; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-bottom:25px; }
+        .chart-container { padding: 20px; background-color: #f8f9fa; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        .pdf-entry { border: 1px solid #ddd; border-radius: 6px; margin-bottom: 20px; background-color: #fff;  box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+        .pdf-header { background-color: #f1f1f1; padding: 12px 18px; font-weight: bold; cursor: pointer; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; border-radius: 6px 6px 0 0; }
+        .pdf-header:hover { background-color: #e7e7e7; }
+        .pdf-content { padding: 18px; display: none; border-top: 1px solid #eee; }
+        .pdf-content table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .pdf-content th, .pdf-content td { border: 1px solid #e7e7e7; padding: 10px 14px; text-align: left; word-break: break-word; vertical-align: top; }
+        .pdf-content th { background-color: #f9f9f9; font-weight: 600; width: 28%; }
+        .pdf-content .value { font-family: 'Consolas', 'Courier New', Courier, monospace; font-size:0.9em; }
+        .pdf-content ul { margin-top:0; margin-bottom:0; padding-left: 20px; }
+        .pdf-content li { margin-bottom: 3px; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .error ul { list-style-type: none; padding-left:0; }
+        .error li { background-color: #fadbd8; border-left: 3px solid #e74c3c; padding: 5px 8px; margin-bottom:4px; font-family: 'Consolas', monospace; font-size:0.85em; }
+        .success { color: #2ecc71; }
+        .warning { color: #f39c12; } /* For 'Restricted' status or minor warnings */
+        .tag { background-color: #3498db; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8em; margin-left: 10px; vertical-align: middle; }
+        .tag.encrypted { background-color: #e74c3c; }
+        .tag.no-copy { background-color: #f39c12; color: #333; }
+        .tag.restricted { background-color: #f39c12; color: #333;}
+        .permissions span { margin-right: 12px; }
+        .file-path { font-size: 0.85em; color: #555; word-break: break-all; margin-bottom:10px; background-color:#f8f9fa; padding:8px; border-radius:4px; border:1px solid #e9ecef;}
+        .empty-state { text-align: center; padding: 25px; color: #7f8c8d; font-style: italic; }
+        .arrow { transition: transform 0.2s; font-size: 1.2em; }
+        .arrow.down { transform: rotate(90deg); }
+        #scrollToTopBtn {
+            display: none; position: fixed; bottom: 25px; right: 35px; z-index: 99;
+            font-size: 20px; border: none; outline: none; background-color: #3498db; color: white;
+            cursor: pointer; padding: 12px 18px; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+        }
+        #scrollToTopBtn:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+    <button onclick="scrollToTop()" id="scrollToTopBtn" title="Go to top">&#8679;</button>
+    <div class="container">
+        <header>
+            <h1>Deep PDF Metadata Report</h1>
+            <p>Generated: 2025-06-26 09:35:10 | Total PDFs Scanned: 1</p>
+        </header>
+
+        <nav>
+            <a href="#summary">Summary</a>
+            <a href="#details">File Details</a>
+        </nav>
+
+        <section id="summary" class="summary-section">
+            <h2><a name="summary"></a>Scan Summary & Infographics</h2>
+            <div class="grid-container"><div class="chart-container"><h3>Top Creator Tools</h3><canvas id="creatorsChart"></canvas></div><div class="chart-container"><h3>Top Producers</h3><canvas id="producersChart"></canvas></div></div>
+        </section>
+
+        <section id="details" class="pdf-details-section">
+            <h2><a name="details"></a>Individual PDF Details</h2>
+            
+            <div class="pdf-entry" id="pdf-0">
+                <div class="pdf-header" onclick="toggleDetails('content-0', 'arrow-0')">
+                    <span>
+                        <strong>1287 P20 Details- Garden Room </strong><span class="tag success">Decrypted</span><span class="tag no-copy">Copy Restricted</span>
+                    </span>
+                    <span class="arrow" id="arrow-0">&#9654;</span>
+                </div>
+                <div id="content-0" class="pdf-content">
+                    <p class="file-path"><strong>File:</strong> C:\Users\adamw\Downloads\P20250492 Section Plan 1287 P20 Details Garden Room.PDF</p>
+                    <table>
+                        <tr><td colspan="2" style="background-color:#f0f8ff; font-weight:bold;">General Information</td></tr>
+                        <tr><td>Filename</td><td class="value">P20250492 Section Plan 1287 P20 Details Garden Room.PDF</td></tr>
+                        <tr><td>Size</td><td class="value">1.67 MB</td></tr>
+                        <tr><td>Last Modified</td><td class="value">2025-06-26T09:16:27.250075</td></tr>
+                        <tr><td>Page Count</td><td class="value">1</td></tr>
+                        <tr><td>PDF Version</td><td class="value">1.6</td></tr>
+                        <tr><td>Encrypted</td><td class="value success">False</td></tr>
+            <tr><td>Permissions</td><td class='permissions'><span class="warning">Print: Unknown</span><span class="warning">Copy: Unknown</span><span class="warning">Modify: Unknown</span><span class="warning">Annotate: Unknown</span></td></tr><tr><td colspan='2' style='background-color:#f0f8ff; font-weight:bold;'>Key Metadata</td></tr><tr><td>Title</td><td class='value'>1287 P20 Details- Garden Room </td></tr><tr><td>Creator Tool</td><td class='value'>Vectorworks</td></tr><tr><td>PDF Producer</td><td class='value'>Vectorworks</td></tr><tr><td>Creation Date</td><td class='value'>D:20250521101906+01&#x27;00&#x27;</td></tr><tr><td>Modification Date</td><td class='value'>D:20250521101908+01&#x27;00&#x27;</td></tr><tr><td>Processing Errors</td><td class="error value"><ul><li>Error reading XMP metadata: &#x27;pikepdf._core.Pdf&#x27; object has no attribute &#x27;xmp&#x27;</li><li>Unexpected error processing file P20250492 Section Plan 1287 P20 Details Garden Room.PDF: &#x27;bool&#x27; object is not callable</li><li>Traceback: Traceback (most recent call last):
+  File &amp;quot;C:\Users\adamw\Downloads\Code03.py&amp;quot;, line 159, in get_pdf_metadata
+    metadata[&amp;quot;allows_printing&amp;quot;] = pdf.allow.print_highres()
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: &amp;#x27;bool&amp;#x27; object is not callable
+</li></ul></td></tr><tr><td colspan='2' style='background-color:#e6e6fa; font-weight:bold;'>Raw Document Info (DocInfo)</td></tr><tr><td colspan='2' style='background-color:#d1eaf0; font-weight:bold;'>Deep Content Analysis</td></tr><tr><td>Contains Vector Graphics</td><td class="value warning">Unknown</td></tr><tr><td>Contains Solid Fills</td><td class="value warning">Unknown</td></tr><tr><td>Image Count</td><td class="value warning">0</td></tr><tr><td>Fonts Detected</td><td class='value warning'>N/A or analysis restricted.</td></tr><tr><td>Detected URLs</td><td class='value warning'>N/A or analysis restricted.</td></tr>
+                    </table>
+                </div> 
+            </div> 
+            
+        </section> 
+    
+    </div> 
+    <script>
+        function toggleDetails(contentId, arrowId) {
+            const content = document.getElementById(contentId);
+            const arrow = document.getElementById(arrowId);
+            if (content.style.display === "none" || content.style.display === "") {
+                content.style.display = "block";
+                arrow.innerHTML = "&#9660;"; 
+                arrow.classList.add("down")
+            } else {
+                content.style.display = "none";
+                arrow.innerHTML = "&#9654;"; 
+                arrow.classList.remove("down");
+            }
+        }
+        
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+        window.onscroll = function() {scrollFunction()};
+        function scrollFunction() {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollToTopBtn.style.display = "block";
+            } else {
+                scrollToTopBtn.style.display = "none";
+            }
+        }
+        function scrollToTop() {
+            document.body.scrollTop = 0; 
+            document.documentElement.scrollTop = 0; 
+        }
+        
+        const chartColors = [
+            'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 206, 86, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+            'rgba(199, 199, 199, 0.7)', 'rgba(83, 102, 255, 0.7)', 'rgba(100, 255, 100, 0.7)', 'rgba(255,100,100,0.7)'
+        ];
+
+        function createBarChart(canvasId, label, labels, data) {
+            if (!document.getElementById(canvasId) || labels.length === 0) return;
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: chartColors.slice(0, labels.length),
+                        borderColor: chartColors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        createBarChart('creatorsChart', 'Creator Tool Count', ["Vectorworks"], [1]);createBarChart('producersChart', 'Producer Count', ["Vectorworks"], [1]);
+    window.onload = function() { 
+    if (document.getElementById('content-0')) { toggleDetails('content-0', 'arrow-0'); }
+        if(window.location.hash) { 
+            const hash = window.location.hash.substring(1);
+            const element = document.getElementById(hash);
+            if (element) {
+                if(element.classList.contains('pdf-entry')) {
+                    const contentId = element.querySelector('.pdf-content').id;
+                    const arrowId = element.querySelector('.arrow').id;
+                    const openContent = document.querySelector('.pdf-content[style*="block"]');
+                    if(openContent && openContent.id !== contentId) {
+                        const openArrowId = openContent.id.replace('content-', 'arrow-');
+                        toggleDetails(openContent.id, openArrowId);
+                    }
+                    toggleDetails(contentId, arrowId);
+                }
+                setTimeout(() => { element.scrollIntoView({ behavior: 'smooth' }); }, 100);
+            }
+        }
+    };
+    </script>
+</body>
+</html>
+    

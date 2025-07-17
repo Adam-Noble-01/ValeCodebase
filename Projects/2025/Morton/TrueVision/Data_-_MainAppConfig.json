@@ -1,0 +1,186 @@
+{
+    "appName"           :  "TrueVision",
+    "appVersion"        :  "1.3.0",
+    "appDescription"    :  "TrueVision is a web application that allows you to view 3D models in a virtual environment.",
+    "appDeveloper"      :  "Noble Architecture",
+    "appAuthor"         :  "Adam Noble",
+    "appAuthorEmail"    :  "adam@noblearchitecture.co.uk",
+    "appDomain"         :  "https://www.noble-architecture.com/",
+    "appCDN"            :  "https://cdn.noble-architecture.com/",
+    "appMainUrl"        :  "https://www.noble-architecture.com/na-project-portal/25-Projects/RJ03__OundleDrive/TrueVision-WebApp.html",
+    "ModelIdType_Documentation": {
+        "ModelIdType_Description": "This section documents the ModelIdType field values used to bind 3D models to specific UI controls and behaviors in the TrueVision application",
+        "ModelIdType_Usage": "Add a 'ModelIdType' field to any model in the CdnModelConfig section to enable specific functionality for that model",
+        "Available_ModelIdTypes": {
+            "Furnishings": {
+                "ModelIdType_Value": "Furnishings",
+                "ModelIdType_Purpose": "Binds models to the Furniture ON/OFF toggle button in the UI",
+                "ModelIdType_Behavior": "Models with this tag can be shown/hidden using the furniture visibility control",
+                "ModelIdType_Example": "Ground floor furniture, first floor furniture, decorative items",
+                "ModelIdType_UiControl": "furnishingsToggleBtn (Furnishings: ON/OFF button)",
+                "ModelIdType_Notes": "When toggled OFF, all meshes from models with this tag become invisible. When toggled ON, they become visible again."
+            },
+            "MainBuilding": {
+                "ModelIdType_Value": "MainBuilding", 
+                "ModelIdType_Purpose": "Identifies primary building structure models",
+                "ModelIdType_Behavior": "These models are always visible and cannot be toggled off",
+                "ModelIdType_Example": "Walls, floors, roof, structural elements",
+                "ModelIdType_UiControl": "No UI control (always visible)",
+                "ModelIdType_Notes": "Critical models that form the basic structure - should have ModelCritical: true"
+            },
+            "Landscape": {
+                "ModelIdType_Value": "Landscape",
+                "ModelIdType_Purpose": "Future use - for landscape and environment elements",
+                "ModelIdType_Behavior": "Reserved for future landscape toggle functionality",
+                "ModelIdType_Example": "Trees, plants, outdoor furniture, terrain features",
+                "ModelIdType_UiControl": "Future landscape toggle button",
+                "ModelIdType_Notes": "Not yet implemented - reserved for future development"
+            },
+            "Lighting": {
+                "ModelIdType_Value": "Lighting",
+                "ModelIdType_Purpose": "Future use - for lighting fixture models",
+                "ModelIdType_Behavior": "Reserved for future lighting toggle functionality", 
+                "ModelIdType_Example": "Light fixtures, lamps, chandeliers",
+                "ModelIdType_UiControl": "Future lighting toggle button",
+                "ModelIdType_Notes": "Not yet implemented - reserved for future development"
+            }
+        },
+        "ModelIdType_Implementation_Notes": {
+            "Adding_New_Tags": "To add a new ModelIdType, update both this documentation and the corresponding code in the rendering pipelines",
+            "Code_Location": "Rendering pipeline files: RenderingPipeline__TrueVision3DCore__PcVersion.js and RenderingPipeline__TrueVision3DCore__MobileVersion.js",
+            "Required_Code_Changes": "Add conditional logic in registerCdnModelCallbacks() function to handle the new ModelIdType",
+            "UI_Integration": "Create corresponding UI button and event handler in ApplicationCore_TrueVision3DManager.js"
+        }
+    },
+    "AppConfig": {
+        "devMode_Enabled"                   :  false,
+        "devMode_Description"               :  "Various typical app config options, enables debug tools and analysis tools",
+        "devMode_WaypointNotes"             :  "Configures the waypoint marker orbs, the size value represents the diameter of the orb in millimeters",
+        "devMode_WaypointOrbsOn"            :  false,
+        "devMode_WaypointOrbsColor"         :  "#cd0000",
+        "devMode_WaypointOrbsSize"          :  500,
+        "devMode_WaypointOrbsOpacity"       :  0.5,
+        "devMode_WaypointOrbsType"          :  "sphere",
+        "devMode_CameraAgentMarkers"        :  true,
+        "devMode_CameraAgentMarkersNote01"  :  "This switches on the camera agent markers, which are used to display the camera agent positions",
+        "devMode_CameraAgentMarkersNote02"  :  "These are the geometric markers created using the SketchUp Plugin and are named 'Camera_Agent_CAM001' etc",
+        "devMode_CameraAgentMarkersPattern" :  "Camera_Agent_CAM",
+        "devMode_DebugMeshes"               :  true,
+        "devMode_DebugMeshesNote"           :  "Shows debug information for all meshes in the scene including names and positions",
+        "devMode_ShowMeshBounds"            :  true,
+        "devMode_ShowMeshBoundsNote"        :  "Shows bounding boxes around all meshes for debugging layout issues",
+        "AppConfig_NavMode": {
+            "AppNavMode_Description_01"     :  "These Are Used To Determine The Navigation Mode Of The App",
+            "AppNavMode_Description_02"     :  "If False the UI Buttons Will Not Be Displayed",
+            "AppNavMode_Waypoint": {
+                "NavMode_WaypointState"        : true,
+                "NavMode_WaypointFile"         : "NavMode_WaypointNavigationSystemLogic.js",
+                "NavMode_WaypointDescription"  : "Waypoint navigation allows predefined camera positions and paths",
+                "NavMode_WaypointDataFile"     : "Data_-_CameraAgentData.json",
+                "NavMode_WaypointDataFileURL"  : "Note: Use this to override the default data file, if different data is required"
+            },
+            "AppNavMode_Walk": {
+                "NavMode_WalkState"        :  false,
+                "NavMode_WalkFile"         :  "NavMode_WalkNavigationSystemLogic.js",
+                "NavMode_WalkDescription"  :  "Walk mode enables first-person style ground-level navigation"
+            },
+            "AppNavMode_Orbit": {
+                "NavMode_OrbitState"       :  false,
+                "NavMode_OrbitFile"        :  "NavMode_OrbitNavigationSystemLogic.js",
+                "NavMode_OrbitDescription" : "Orbit mode allows camera rotation around a fixed point"
+            },
+            "AppNavMode_Fly": {
+                "NavMode_FlyState": false,
+                "NavMode_FlyFile": "NavMode_FlyNavigationSystemLogic.js",
+                "NavMode_FlyDescription": "Fly mode enables free camera movement in 3D space",
+                "NavMode_FlyDefaultInitCoords": {
+                    "DefaultInitCoordInfo": "Default Initial Camera Position - X, Y, Z In Millimeters",
+                    "DefaultInitCoordX": "0000",
+                    "DefaultInitCoordEyeHeight": "2000",
+                    "DefaultInitCoordZ": "2000",
+                    "DefaultInitRotation": "Default Initial Camera Rotation - X, Y, Z In Degrees",
+                    "DefaultInitRotationX": "0",
+                    "DefaultInitRotationY": "0",
+                    "DefaultInitRotationZ": "225"
+                }
+            }
+        },
+        "RenderPipelineConfig": {
+            "RenderPipelineConfig_Description": "Controls which rendering pipelines are available based on device type",
+            "RenderPipeline_PcEnabled"                 :  true,
+            "RenderPipeline_MobileEnabled"             :  true,
+            "RenderPipeline_MobileUnavailableMessage"  :  "TrueVision 3D is not yet available for mobile devices. Please open this link on a desktop or laptop computer for the best experience.",
+            "RenderPipeline_MobileUnavailableTitle"    :  "Mobile Version Coming Soon",
+            "RenderPipeline_AutoDetectDevice"          :  true,
+            "RenderPipeline_FallbackToPcOnMobileFail"  :  true,
+            "RenderPipeline_PcFile"                    :  "RenderingPipeline__TrueVision3DCore__PcVersion.js",
+            "RenderPipeline_MobileFile"                :  "RenderingPipeline__TrueVision3DCore__MobileVersion.js"
+        }
+    },
+    "SceneConfig": {
+        "SceneConfig_Description": "This section contains all the configuration options for the scene",
+        "EnvironmentSettings": {
+            "EnvironmentSettings_Description": "Global environment configuration for ground plane, skybox, and scene setup",
+            "GroundPlane": {
+                "GroundPlane_Enabled"        :  true,
+                "GroundPlane_YOffset"        :  -10.0,
+                "GroundPlane_YOffsetNote"    :  "Ground plane Y position offset in meters - negative values lower the ground",
+                "GroundPlane_Size"           :  1000,
+                "GroundPlane_SizeMobile"     :  500,
+                "GroundPlane_Color"          :  "#d6d9d6",
+                "GroundPlane_ReceiveShadows" :  true,
+                "GroundPlane_EnableMirror"   :  false
+            },
+            "Skybox": {
+                "Skybox_Enabled": true,
+                "Skybox_Size": 1000,
+                "Skybox_SizeMobile": 500,
+                "Skybox_Color": "#c0d6f2",
+                "Skybox_ColorNote": "Light blue sky color in hex format"
+            },
+            "Shadows": {
+                "Shadows_Enabled": true,
+                "Shadows_MapSize": 4096,
+                "Shadows_MapSizeMobile": 1024,
+                "Shadows_Darkness": 0.2,
+                "Shadows_DarknessMobile": 0.3,
+                "Shadows_BlurEnabled": true,
+                "Shadows_BlurEnabledMobile": false
+            }
+        },
+        "LightingConfig": {
+            "LightingCfg_HdriLighting_Description": "This section contains all the configuration options for the lighting",
+            "LightingCfg_HdriLighting": false,
+            "LightingCfg_HdrirBrightnessFactor": 0.5,
+            "LightingCfg_HdrirRotationAngleDeg": 180,
+            "LightingCfg_HdriLightingRelativePath": "./Assets_PluginAssets/LightAssets_HdriSkydomes/True-Vision-3D_-_Test-HDRI_-_Pure_Sky_2k.hdr",
+            "LightingCfg_HdriLightingURL": "https://www.noble-architecture.com/na-apps/NA21_WebApp_-_TrueVision/Assets_PluginAssets/LightAssets_HdriSkydomes/True-Vision-3D_-_Test-HDRI_-_Pure_Sky_2k.hdr",
+            "LightingCfg_HdriLightingLogicFile": "./SceneConfig_HdriLightingLogic.js"
+        }
+    },
+    "CdnModelConfig__ModelLoadingLinkMapper": {
+        "CdnModelConfig_Description": "CDN-based model loading configuration with priority ordering",
+        "CdnModelConfig_Enabled"    : true,
+        "CdnModelConfig_BaseUrl"    : "https://cdn.noble-architecture.com",
+        "Model-01": {
+            "ModelLoadingOrder"     : 1,
+            "ModelType"             : "Main Building Model",
+            "ModelUrl"              : "https://cdn.noble-architecture.com/NaProjectPortal/25-Projects/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_RJ03__OundleDrive_-_BuildingModel.glb",
+            "ModelVersion"          : "1.0.0",
+            "ModelAdded"            : "2025-07-14",
+            "ModelNotes"            : "Primary building structure - must load before user interaction",
+            "ModelCritical"         : true,
+            "ModelFileSize"         : "37MB",
+            "EnableGitHubFallback"  : true
+        },
+        "ModelLoadingConfig": {
+            "EnableProgressiveLoading"  :  true,
+            "EnableFallbackLoading"     :  false,
+            "FallbackToGitHub"          :  false,
+            "ShowLoadingProgress"       :  true,
+            "MaxRetryAttempts"          :  3,
+            "RetryDelayMs"              :  1000,
+            "_Comment"                  :  "FallbackToGitHub is the global default. Per-model EnableGitHubFallback overrides this setting."
+        }
+    }
+}

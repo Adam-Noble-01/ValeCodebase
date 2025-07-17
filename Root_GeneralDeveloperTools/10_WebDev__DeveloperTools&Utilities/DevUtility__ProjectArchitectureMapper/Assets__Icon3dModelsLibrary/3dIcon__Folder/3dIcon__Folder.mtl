@@ -1,0 +1,24 @@
+# MTL file - created by a modified js OBJExporter
+
+newmtl 01__FolderMetal
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pm 0.75
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.2845 0.2977 0.3636
+Ke 0 0 0
+
+newmtl 02__FolderPaper
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pm 0.1
+Pr 0.9
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.7227 0.5114 0.0892
+Ke 0 0 0

@@ -1,0 +1,155 @@
+{
+  "exportInfo": {
+    "exportDate": "2025-07-17 10:25:39",
+    "modelName": "Morton__ExportHelper__TrueVision",
+    "exportedBy": "Camera Agent Tool",
+    "version": "1.0.0"
+  },
+  "cameraAgents": [
+    {
+      "agentId": "CAM001",
+      "agentName": "Island 01",
+      "waypointNumber": 1,
+      "position": {
+        "x": 3198.800548986385,
+        "y": 2685.2311023895686,
+        "z": 1700.0
+      },
+      "direction": {
+        "x": -0.46293846540045525,
+        "y": 0.8863904203299309,
+        "z": 0.0
+      },
+      "rotation": {
+        "heading": 117.57688445799674,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "camera": {
+        "aspectRatio": "16:9",
+        "lensMm": 35,
+        "fovDegrees": 60
+      },
+      "metadata": {
+        "createdDate": "2025-07-17 10:04:58",
+        "lastModified": "2025-07-17 10:19:14"
+      }
+    },
+    {
+      "agentId": "CAM002",
+      "agentName": "Island Seating",
+      "waypointNumber": 2,
+      "position": {
+        "x": 4599.27301750122,
+        "y": 8383.121054871479,
+        "z": 1700.0000000000014
+      },
+      "direction": {
+        "x": -0.5918436600942789,
+        "y": -0.8060527786728408,
+        "z": 0.0
+      },
+      "rotation": {
+        "heading": -126.28794935431777,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "camera": {
+        "aspectRatio": "16:9",
+        "lensMm": 35,
+        "fovDegrees": 60
+      },
+      "metadata": {
+        "createdDate": "2025-07-17 10:05:01",
+        "lastModified": "2025-07-17 10:19:48"
+      }
+    },
+    {
+      "agentId": "CAM003",
+      "agentName": "Rear Wall 01",
+      "waypointNumber": 3,
+      "position": {
+        "x": 3041.681133386802,
+        "y": 11351.984857289113,
+        "z": 1700.0
+      },
+      "direction": {
+        "x": -1.8041124150158794e-16,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "heading": -90.00000000000001,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "camera": {
+        "aspectRatio": "16:9",
+        "lensMm": 35,
+        "fovDegrees": 60
+      },
+      "metadata": {
+        "createdDate": "2025-07-17 10:05:10",
+        "lastModified": "2025-07-17 10:19:59"
+      }
+    },
+    {
+      "agentId": "CAM004",
+      "agentName": "Rear Wall 02",
+      "waypointNumber": 4,
+      "position": {
+        "x": 2699.7184579618274,
+        "y": 14426.488193946296,
+        "z": 1700.0
+      },
+      "direction": {
+        "x": -0.003305888535403283,
+        "y": -0.9999945355355656,
+        "z": 0.0
+      },
+      "rotation": {
+        "heading": -90.18941380563442,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "camera": {
+        "aspectRatio": "16:9",
+        "lensMm": 35,
+        "fovDegrees": 60
+      },
+      "metadata": {
+        "createdDate": "2025-07-17 10:24:20",
+        "lastModified": "2025-07-17 10:24:46"
+      }
+    },
+    {
+      "agentId": "CAM005",
+      "agentName": "From Lounge",
+      "waypointNumber": 5,
+      "position": {
+        "x": 4562.1780917778015,
+        "y": -424.7976044871409,
+        "z": 1700.0
+      },
+      "direction": {
+        "x": -0.09663462653222012,
+        "y": 0.9953199229167367,
+        "z": 6.988320721184807e-18
+      },
+      "rotation": {
+        "heading": 95.54540993927334,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "camera": {
+        "aspectRatio": "16:9",
+        "lensMm": 35,
+        "fovDegrees": 60
+      },
+      "metadata": {
+        "createdDate": "2025-07-17 10:24:59",
+        "lastModified": "2025-07-17 10:25:38"
+      }
+    }
+  ]
+}

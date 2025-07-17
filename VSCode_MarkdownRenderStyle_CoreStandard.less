@@ -1,0 +1,236 @@
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+
+/* ---------------------------------------------------------------------- */
+/* ----- |  USE THIS FILE TO CUSTOMISE THE MARKDOWN RENDER STYLE  | ----- */
+/* !!  C:\Users\adamw\.crossnote\style.less  !!*/
+/* ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------- */
+.markdown-preview.markdown-preview {
+  // - modify your style here
+  // - This is the main container for the markdown preview
+  // - All code in this file will be applied to the markdown preview
+  // ================================================================
+  
+
+  // Main Background Color
+  // ----------------------------------
+  background-color: rgb(255, 255, 255);
+  
+
+  // Header Style
+  // ----------------------------------
+  h1 {
+    color:            #172b3a;
+    font-family:      'Open Sans Semibold', 'Open Sans', sans-serif;
+    font-weight:      600;
+    font-size:        1.75rem;
+    margin-top:       00.00rem;
+    margin-bottom:    00.75rem;
+  }
+  
+  h2 {
+    color:            #172b3a;
+    font-family:      'Open Sans', sans-serif;
+    font-weight:      600;
+    font-size:        1.60rem;  
+    margin-top:       2.00rem;
+    margin-bottom:    0.20rem;
+  }
+  
+  h3 {
+    color:            #172b3a;
+    font-family:      'Open Sans', sans-serif;
+    font-weight:      600;
+    font-size:        01.4rem;
+    margin-top:       01.75rem;
+    margin-bottom:    00.20rem;
+  }
+  
+  h4 {
+    color:            #172b3a;
+    font-family:      'Open Sans', sans-serif;
+    font-weight:      600;
+    font-size:        01.2rem;
+    margin-top:       01.50rem;
+    margin-bottom:    00.00rem;
+  }
+  
+  h5 {
+    color:            #172b3a;
+    font-family:      'Open Sans', sans-serif;
+    font-weight:      600;
+    font-size:        1rem;
+    margin-top:       00.75rem;
+    margin-bottom:    00.00rem;
+  }
+  
+  h6 {
+    color:            #172b3a;
+    font-family:      'Open Sans', sans-serif;
+    font-weight:      600;
+    font-size:        00.9rem;
+    margin-top:       00.50rem;
+    margin-bottom:    00.00rem;
+  }
+
+  p {
+    color:            #333333;
+    font-family:      'Open Sans', sans-serif;
+  // !! IMPORTANT  : Base 16px Sets the relative size for all text elements !!
+    font-size:       16.00px;  
+  }
+  // ----------------------------------
+
+
+  // List Style
+  // ----------------------------------
+  ul, ol {
+    color:            #333333;                // <-- Dark gray text color for readability
+    list-style-type:  disc;                     // <-- Use disc for bullet points
+    font-size:        01.00rem;                 // <-- Size of list text
+    font-family:      'Open Sans', sans-serif;  // <-- Consistent font family with other elements
+    line-height:      01.20rem;                 // <-- Comfortable spacing between lines for readability
+    padding-left:     01.25rem;                 // <-- Indentation from the left margin for list items
+    margin-top:       00.25rem;                 // <-- Small space above lists to separate from preceding content
+    margin-bottom:    02.00rem;                 // <-- Larger space below lists to separate from following content
+  }
+  li {
+    margin-bottom:    01.00rem;                 // <-- Space between list items for better visual separation
+  }
+  li:last-child {
+    margin-bottom:    0;                        // <-- Removes bottom margin from last item to avoid extra spacing
+  }
+  // ----------------------------------
+
+
+  // Code Block Style (FIXED)
+  // ----------------------------------
+  // Inline code styling
+  code {
+    font-size:        00.75rem;
+    font-weight:      400;
+    background-color: #f5f5f5;
+    color:            #333333;
+    font-family:      'Courier New', Courier, monospace;
+    padding:          00.75rem; 
+    margin-top:       00.75rem;
+    margin-bottom:    00.75rem;
+    border:           0.0625rem solid #cccccc; 
+    border-radius:    00.18rem;
+  }
+  
+  // Code block styling
+  pre {
+    font-size:        00.75rem;
+    font-weight:      400;
+    line-height:      1.4;
+    background-color: #f5f5f5;
+    color:            #333333;
+    border:           0.0625rem solid #cccccc; 
+    font-family:      'Courier New', Courier, monospace;
+    padding:          00.75rem; 
+    margin-top:       00.75rem;
+    margin-bottom:    00.75rem;
+    border-radius:    00.25rem;
+    overflow-x:       auto;
+  }
+  
+  // Code within pre blocks should not have additional styling
+  pre code {
+    background-color: transparent;
+    border:           none;
+    padding:          0;
+    border-radius:    0;
+    font-size:        inherit;
+  }
+  
+
+  // Blockquote Style
+  // ----------------------------------
+  blockquote {
+    background-color: #f9f9f9;    // Changed from black to light gray
+    color:            #555555;     // Changed from black to dark gray
+    border-left:      0.25rem solid #cccccc; // Changed from black to light gray
+    padding:          0.5rem 1rem; // Added padding for better appearance
+    margin:           1rem 0;      // Added margin
+    margin-top:       0.20rem;
+    margin-bottom:    0.20rem;
+  }
+
+  
+  // Anchor Link Style
+  // ----------------------------------
+  a {
+    color:            rgb(9, 0, 87);
+    text-decoration:  underline;   // Added underline for better visibility
+  }
+  
+
+  // Table Style
+  // ----------------------------------
+  table {
+    border-collapse:  collapse;
+    width:            100%;
+    margin-bottom:    2.00rem;
+    margin-bottom:    2.00rem;
+  }
+  
+  th {
+    background-color: #d3d3d3; 
+    color:            #172b3a;
+    font-weight:      600;
+    border:           0.0625rem solid #cccccc; 
+    padding:          0.5rem; 
+    text-align:       left;
+  }
+  
+  td {
+    border:           0.0625rem solid #cccccc; 
+    padding:          0.5rem; 
+    text-align:       left;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey for even rows */
+  }
+  
+  tr:nth-child(odd) {
+    background-color: white;   /* White for odd rows */
+  }
+  
+  
+  // Code highlighting
+  // ----------------------------------
+  .hljs {
+    background-color: #f5f5f5;
+    padding:          0.5rem;
+    border-radius:    0.25rem;
+  }
+  
+
+  // Bold text color fix
+  // ----------------------------------
+  strong {
+    color:            #333333;
+    font-weight:      700;
+  }
+
+
+  // Horizontal Rule Style
+  // ----------------------------------
+  hr {
+    border:           none;
+    height:           00.50px;
+    background-color: #545e65;
+    margin-top:       02.00rem;
+    margin-bottom:    02.00rem;
+    margin-left:      00.50rem;
+    margin-right:     00.50rem;
+  }
+
+
+
+} 

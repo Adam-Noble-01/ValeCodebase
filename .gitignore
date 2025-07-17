@@ -72,3 +72,12 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# .gitignore — Specific oversized files to exclude from tracking
+# --------------------------------------------------------------
+
+# Photogrammetry test video (143.41MB)
+Dev__EarlyStageDev__TestingFiles/Root__Photogrammetry__Video2Image__DataSetProcessor/Test__PhotogramVideo__Test01.mp4
+
+# TrueVision GLB model (239.09MB)
+Projects/2025/Morton/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_RJ03__OundleDrive_-_BuildingModel.glb

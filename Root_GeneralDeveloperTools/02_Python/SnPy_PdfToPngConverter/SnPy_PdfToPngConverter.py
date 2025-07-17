@@ -12,6 +12,9 @@
 # - This script converts a PDF file to a PNG image.
 # - For pip install dependencies, see: .\SnPY_CommonDependencyFiles\SnPy_MasterPipDependencies.txt
 #
+# PIP DEPENDENCIES COMMAND LINE
+# pip install pymupdf PyPDF2 Pillow tqdm
+#
 # DEVELOPMENT LOG
 # 0.9.1 - 10-May-2025 |  Switched to PyMuPDF for PDF to PNG conversion
 # - Replaced pdf2image/Poppler dependency with PyMuPDF (fitz) for pure pip, high-quality conversion.

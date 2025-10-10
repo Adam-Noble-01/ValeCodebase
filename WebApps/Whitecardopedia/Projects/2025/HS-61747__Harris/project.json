@@ -1,0 +1,24 @@
+{
+    "projectName": "Harris",
+    "projectCode": "61747",
+    "ratings": {
+        "quality": 3,
+        "prestige": 3,
+        "value": 2
+    },
+    "productionData": {
+        "input": "Artists Hand Drawing",
+        "duration": 3,
+        "additionalNotes": "Jo provided outstanding quality drawings for this project, this made the mapping task a breeze."
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Harris__Scheme-01.png",
+        "IMG02__Harris__Scheme-02.png"
+    ],
+    "description": "Nil"
+}
+
+    

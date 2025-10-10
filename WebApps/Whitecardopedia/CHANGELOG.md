@@ -2,6 +2,60 @@
 
 ---
 
+## Version 1.3.0 - October 10, 2025
+
+### 🔗 SketchUp Model Link Feature
+
+**Added Conditional SketchUp Model Button**
+
+Enhanced project viewer with optional SketchUp 3D model linking:
+
+**JSON Structure Update:**
+- Added new `sketchUpModel` object with `url` field
+- Conditional display based on URL validity
+
+**Validation Logic:**
+- Button displays ONLY when valid URL provided
+- Automatically hides for invalid placeholder values:
+  - "nil", "Nil", "None", "False" (case-insensitive)
+  - Empty strings
+  - Missing `sketchUpModel` object
+
+**UI Features:**
+- "SketchUp Model" subhead (same styling as Production Data)
+- Full-width action button with Vale blue branding
+- Opens model in new tab/window
+- Hover effect with lift and shadow
+- Positioned below Production Data section
+
+**Files Modified:**
+- `ProjectViewer.jsx` - Added `isValidSketchUpUrl` helper function and conditional section
+- `app.css` - Added `.project-viewer__model-button` styles (~25 lines)
+- `project.json` - Added `sketchUpModel` object
+- `README.md` - Updated schema documentation
+- `Projects/.../README.md` - Updated example schema with SketchUp link
+
+**New Helper Function:**
+```javascript
+isValidSketchUpUrl(url) 
+// Returns false for nil/none/false/empty values
+```
+
+**Usage Examples:**
+```json
+// Button displays
+"sketchUpModel": {
+    "url": "https://3dwarehouse.sketchup.com/model/example"
+}
+
+// Button hidden (any of these)
+"sketchUpModel": { "url": "None" }
+"sketchUpModel": { "url": "nil" }
+// Or omit sketchUpModel object entirely
+```
+
+---
+
 ## Version 1.2.0 - October 10, 2025
 
 ### 📊 Production Data Fields

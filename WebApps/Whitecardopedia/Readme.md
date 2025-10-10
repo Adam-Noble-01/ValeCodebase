@@ -146,6 +146,9 @@ Create `project.json` in the project folder:
         "duration": 3,
         "additionalNotes": "Modern garden house with sustainable design principles"
     },
+    "sketchUpModel": {
+        "url": "https://3dwarehouse.sketchup.com/model/example"
+    },
     "images": [
         "front_view.jpg",
         "side_view.jpg",
@@ -211,6 +214,8 @@ Reload the application in your browser. The new project will appear in the galle
 | `productionData.input` | string | ❌ No | Source material type (e.g., "CAD File") |
 | `productionData.duration` | number | ❌ No | Production time in hours |
 | `productionData.additionalNotes` | string | ❌ No | Free-form production notes |
+| `sketchUpModel` | object | ❌ No | Optional SketchUp model link |
+| `sketchUpModel.url` | string | ❌ No | URL to SketchUp model (omit or set "None"/"nil" to hide) |
 | `images` | array | ✅ Yes | Array of image filenames |
 | `description` | string | ❌ No | Optional project description |
 

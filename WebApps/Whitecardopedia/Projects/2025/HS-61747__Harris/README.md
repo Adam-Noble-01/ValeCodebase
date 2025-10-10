@@ -25,9 +25,6 @@ Each project folder should contain:
         "duration": 2,
         "additionalNotes": "Preliminary design phase complete"
     },
-    "sketchUpModel": {
-        "url": "https://3dwarehouse.sketchup.com/model/example"
-    },
     "images": [
         "view_01_front.jpg",
         "view_02_side.jpg",
@@ -51,13 +48,6 @@ Additional production information:
 - **Input** - Source material type (e.g., "CAD File", "Hand Sketch", "3D Scan")
 - **Duration** - Production time in hours (displayed as "X Hours")
 - **Additional Notes** - Free-form text for production notes and comments
-
-## SketchUp Model Link
-
-Optional link to SketchUp 3D Warehouse or other model hosting:
-- **url** - URL to SketchUp model
-- If omitted or set to "None", "nil", "Nil", or "False", the button will not display
-- Button opens model in new tab when clicked
 
 ## Image Requirements
 

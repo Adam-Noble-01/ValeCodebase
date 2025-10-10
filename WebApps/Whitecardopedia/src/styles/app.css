@@ -338,6 +338,33 @@
         color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
         line-height                        : 1.5;                          /* <-- Line height for readability */
     }
+    
+    .project-viewer__model-button {
+        display                            : block;                        /* <-- Block display for full width */
+        width                              : 100%;                         /* <-- Full width button */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        text-align                         : center;                       /* <-- Center text */
+        text-decoration                    : none;                         /* <-- Remove underline */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        margin-top                         : var(--Vale_Spacing_Small);    /* <-- Space above button */
+    }
+    
+    .project-viewer__model-button:hover {
+        background                         : #0f1e28;                      /* <-- Darker blue on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+        box-shadow                         : 0 4px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
+    }
+    
+    .project-viewer__model-button:active {
+        transform                          : translateY(0);                /* <-- Reset on click */
+    }
     /* ------------------------------------------------------------ */
 
 /* endregion ------------------------------------------------------------------- */
@@ -351,7 +378,8 @@
     .image-carousel {
         position                           : relative;                     /* <-- Relative positioning for controls */
         width                              : 100%;                         /* <-- Full width */
-        height                             : 600px;                        /* <-- Fixed height */
+        min-height                         : 600px;                        /* <-- Minimum height (expands for tall images) */
+        max-height                         : 1200px;                       /* <-- Maximum height limit */
         display                            : flex;                         /* <-- Flexbox layout */
         flex-direction                     : column;                       /* <-- Vertical stacking */
     }
@@ -674,7 +702,8 @@
         }
         
         .image-carousel {
-            height                         : 400px;                        /* <-- Reduced height on mobile */
+            min-height                     : 400px;                        /* <-- Minimum height on mobile */
+            max-height                     : 800px;                        /* <-- Maximum height on mobile */
         }
         
         .app-header {

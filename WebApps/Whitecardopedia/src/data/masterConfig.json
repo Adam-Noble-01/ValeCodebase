@@ -6,6 +6,10 @@
         {
             "folderId": "ExampleProject_GardenHouse_Alpha",
             "enabled": true
+        },
+        {
+            "folderId": "HS-61747__Harris",
+            "enabled": true
         }
     ]
 }

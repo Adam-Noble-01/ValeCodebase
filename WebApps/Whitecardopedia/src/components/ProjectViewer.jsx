@@ -21,6 +21,26 @@
 // REGION | ProjectViewer Component
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Validate SketchUp Model URL
+    // ---------------------------------------------------------------
+    const isValidSketchUpUrl = (url) => {
+        if (!url || typeof url !== 'string') return false;              // <-- Check if URL exists and is string
+        const invalidValues = ['nil', 'none', 'false'];                 // <-- Invalid placeholder values
+        return !invalidValues.includes(url.toLowerCase().trim());       // <-- Exclude invalid values
+    };
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Validate Text Field Content
+    // ---------------------------------------------------------------
+    const isValidTextContent = (text) => {
+        if (!text || typeof text !== 'string') return false;            // <-- Check if text exists and is string
+        const invalidValues = ['nil', 'none', 'false', 'n/a'];          // <-- Invalid placeholder values
+        return !invalidValues.includes(text.toLowerCase().trim());       // <-- Exclude invalid values
+    };
+    // ---------------------------------------------------------------
+
+
     // COMPONENT | Project Detail Viewer
     // ------------------------------------------------------------
     function ProjectViewer({ project, onBack }) {
@@ -49,7 +69,7 @@
                     <div className="project-viewer__header">
                         <h1 className="project-viewer__title">{project.projectName}</h1>
                         <p className="project-viewer__code">{project.projectCode}</p>
-                        {project.description && (
+                        {project.description && isValidTextContent(project.description) && (
                             <p className="project-viewer__description">{project.description}</p>
                         )}
                     </div>
@@ -98,12 +118,27 @@
                                         </div>
                                     )}
                                     
-                                    {project.productionData.additionalNotes && (
+                                    {project.productionData.additionalNotes && isValidTextContent(project.productionData.additionalNotes) && (
                                         <div className="project-viewer__data-field project-viewer__data-field--notes">
                                             <span className="project-viewer__data-label">Additional Notes</span>
                                             <span className="project-viewer__data-value">{project.productionData.additionalNotes}</span>
                                         </div>
                                     )}
+                                </>
+                            )}
+                            
+                            {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
+                                <>
+                                    <h3 className="project-viewer__production-title">SketchUp Model</h3>
+                                    
+                                    <a 
+                                        href={project.sketchUpModel.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="project-viewer__model-button"
+                                    >
+                                        View SketchUp Model
+                                    </a>
                                 </>
                             )}
                         </div>

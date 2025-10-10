@@ -11,6 +11,10 @@
         "duration": 2,
         "additionalNotes": "Preliminary design phase complete. Ready for board review."
     },
+    "sketchUpModel": {
+        "urlNote": "If the model is not available, set the url to 'None' or 'nil' or 'Nil' or 'False'",
+        "url": "https://3dwarehouse.sketchup.com/model/example"
+    },
     "images": [
         "view_01_front.svg",
         "view_02_side.svg",

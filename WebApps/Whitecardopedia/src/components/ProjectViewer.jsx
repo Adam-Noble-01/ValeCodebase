@@ -100,12 +100,22 @@
                                         </div>
                                     )}
                                     
-                                    {project.productionData.additionalNotes && isValidTextContent(project.productionData.additionalNotes) && (
-                                        <div className="project-viewer__data-field project-viewer__data-field--notes">
-                                            <span className="project-viewer__data-label">Additional Notes</span>
-                                            <span className="project-viewer__data-value">{project.productionData.additionalNotes}</span>
-                                        </div>
-                                    )}
+                                    {(() => {
+                                        const notes = project.productionData.additionalNotes;
+                                        const isValid = isValidTextContent(notes);
+                                        console.log('Additional Notes Debug:', {
+                                            notes: notes,
+                                            hasNotes: !!notes,
+                                            isValid: isValid,
+                                            shouldRender: notes && isValid
+                                        });
+                                        return notes && isValid ? (
+                                            <div className="project-viewer__data-field project-viewer__data-field--notes">
+                                                <span className="project-viewer__data-label">Additional Notes</span>
+                                                <span className="project-viewer__data-value">{notes}</span>
+                                            </div>
+                                        ) : null;
+                                    })()}
                                 </>
                             )}
                             

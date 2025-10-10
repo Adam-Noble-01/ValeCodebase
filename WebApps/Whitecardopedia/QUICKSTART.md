@@ -38,10 +38,13 @@ http://localhost:8000
 ### Step 3: Use the Application
 
 1. Click **"Enter Whitecardopedia"** on the landing page
-2. Browse projects in the gallery view
-3. Click any project card to view details
-4. Navigate images using arrow buttons or thumbnails
-5. Click **"Back to Gallery"** to return
+2. **Enter PIN: 1234** when prompted (default placeholder PIN)
+3. Browse projects in the gallery view
+4. Click any project card to view details
+5. Navigate images using arrow buttons or thumbnails
+6. Click **"Back to Gallery"** to return
+
+**Note**: The PIN is currently set to `1234` for testing. To change it, edit `src/components/PinEntry.jsx`.
 
 ---
 

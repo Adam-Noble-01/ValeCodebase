@@ -66,10 +66,10 @@
     }
     
     .homepage__logo {
-        max-width                          : 400px;                        /* <-- Maximum logo width */
+        max-width                          : 500px;                        /* <-- Maximum logo width */
         width                              : 80%;                          /* <-- Responsive width */
         height                             : auto;                         /* <-- Maintain aspect ratio */
-        margin-bottom                      : var(--Vale_Spacing_XLarge);   /* <-- Space below logo */
+        margin-bottom                      : var(--Vale_Spacing_XXLarge);  /* <-- Space below logo */
     }
     
     .homepage__button {
@@ -266,7 +266,7 @@
     
     .project-viewer__content {
         display                            : grid;                         /* <-- CSS Grid layout */
-        grid-template-columns              : 2fr 1fr;                      /* <-- 2:1 ratio columns */
+        grid-template-columns              : 3fr 1fr;                      /* <-- 3:1 ratio columns (ratings panel ~50% reduced) */
         gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
     }
     
@@ -403,7 +403,8 @@
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Counter padding */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
-        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Larger font size for visibility */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
     }
     /* ------------------------------------------------------------ */
 
@@ -435,6 +436,192 @@
 /* endregion ------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
+ * REGION | PinEntry Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PIN ENTRY | Modal Overlay */
+    /* ------------------------------------------------------------ */
+    .pin-entry-overlay {
+        position                           : fixed;                        /* <-- Fixed positioning */
+        top                                : 0;                            /* <-- Cover from top */
+        left                               : 0;                            /* <-- Cover from left */
+        right                              : 0;                            /* <-- Cover to right */
+        bottom                             : 0;                            /* <-- Cover to bottom */
+        background                         : rgba(0, 0, 0, 0.7);           /* <-- Semi-transparent dark overlay */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        z-index                            : var(--Vale_ZIndex_Modal);     /* <-- Modal layer */
+        animation                          : fadeIn 0.2s ease;             /* <-- Fade in animation */
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity                        : 0;                            /* <-- Start transparent */
+        }
+        to {
+            opacity                        : 1;                            /* <-- End opaque */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Modal Container */
+    /* ------------------------------------------------------------ */
+    .pin-entry-modal {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White modal background */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_XLarge);   /* <-- Modal padding */
+        width                              : 90%;                          /* <-- Responsive width */
+        max-width                          : 400px;                        /* <-- Maximum modal width */
+        box-shadow                         : 0 8px 32px rgba(0,0,0,0.3);  /* <-- Strong shadow */
+        animation                          : slideUp 0.3s ease;            /* <-- Slide up animation */
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform                      : translateY(20px);             /* <-- Start below */
+            opacity                        : 0;                            /* <-- Start transparent */
+        }
+        to {
+            transform                      : translateY(0);                /* <-- End at position */
+            opacity                        : 1;                            /* <-- End opaque */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Title and Subtitle */
+    /* ------------------------------------------------------------ */
+    .pin-entry__title {
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below title */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .pin-entry__subtitle {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below subtitle */
+        text-align                         : center;                       /* <-- Center text */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Form */
+    /* ------------------------------------------------------------ */
+    .pin-entry__form {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between elements */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Input Field */
+    /* ------------------------------------------------------------ */
+    .pin-entry__input {
+        width                              : 100%;                         /* <-- Full width */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Input padding */
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Large font for PIN */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        text-align                         : center;                       /* <-- Center text */
+        border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border default */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        letter-spacing                     : 0.5em;                        /* <-- Space between characters */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+    }
+    
+    .pin-entry__input:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border */
+        box-shadow                         : 0 0 0 3px rgba(23,43,58,0.1);  /* <-- Focus ring */
+    }
+    
+    .pin-entry__input::placeholder {
+        letter-spacing                     : 0.3em;                        /* <-- Space placeholder characters */
+        color                              : var(--Vale_BorderLight);      /* <-- Light placeholder color */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Error Message */
+    /* ------------------------------------------------------------ */
+    .pin-entry__error {
+        background                         : #ffe6e6;                      /* <-- Light red background */
+        color                              : #cc0000;                      /* <-- Red text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Error padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        text-align                         : center;                       /* <-- Center text */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        animation                          : shake 0.3s ease;              /* <-- Shake animation */
+    }
+    
+    @keyframes shake {
+        0%, 100% {
+            transform                      : translateX(0);                /* <-- Start and end position */
+        }
+        25% {
+            transform                      : translateX(-10px);            /* <-- Move left */
+        }
+        75% {
+            transform                      : translateX(10px);             /* <-- Move right */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PIN ENTRY | Buttons */
+    /* ------------------------------------------------------------ */
+    .pin-entry__buttons {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between buttons */
+        margin-top                         : var(--Vale_Spacing_Small);    /* <-- Space above buttons */
+    }
+    
+    .pin-entry__button {
+        flex                               : 1;                            /* <-- Equal width buttons */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
+    }
+    
+    .pin-entry__button--submit {
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+    }
+    
+    .pin-entry__button--submit:hover:not(:disabled) {
+        background                         : #0f1e28;                      /* <-- Darker on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+        box-shadow                         : 0 4px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
+    }
+    
+    .pin-entry__button--submit:disabled {
+        background                         : var(--Vale_BorderLight);      /* <-- Light gray when disabled */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text when disabled */
+        cursor                             : not-allowed;                  /* <-- Not-allowed cursor */
+        opacity                            : 0.6;                          /* <-- Semi-transparent */
+    }
+    
+    .pin-entry__button--cancel {
+        background                         : var(--Vale_BackgroundLight);  /* <-- Light background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border */
+    }
+    
+    .pin-entry__button--cancel:hover {
+        background                         : var(--Vale_HoverBackground);  /* <-- Hover background */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
  * REGION | Responsive Design Adjustments
  * ----------------------------------------------------------------------------- */
 
@@ -459,6 +646,14 @@
         
         .homepage__logo {
             max-width                      : 300px;                        /* <-- Smaller logo on mobile */
+        }
+        
+        .pin-entry-modal {
+            padding                        : var(--Vale_Spacing_Large);    /* <-- Reduced padding on mobile */
+        }
+        
+        .pin-entry__input {
+            font-size                      : var(--Vale_FontSize_SubHeading);  /* <-- Smaller font on mobile */
         }
     }
     /* ------------------------------------------------------------ */

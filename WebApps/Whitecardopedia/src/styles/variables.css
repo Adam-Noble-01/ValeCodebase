@@ -26,15 +26,15 @@
     /* ------------------------------------------------------------ */
     :root {
         /* Color Palette Variables */
-        --Vale_PrimaryBrand                : #555041;                      /* <-- Noble Architecture brand color */
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Vale Garden Houses brand blue */
         --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Light background */
         --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
         --Vale_BackgroundDark              : #3a3a3a;                      /* <-- Dark background for contrast */
-        --Vale_TextPrimary                 : #555041;                      /* <-- Primary text color */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
         --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
-        --Vale_TextSubtle                  : #86847d;                      /* <-- Subtle text */
+        --Vale_TextSubtle                  : #5a6d7a;                      /* <-- Subtle text (adjusted for blue) */
         --Vale_TextLight                   : #ffffff;                      /* <-- Light text on dark backgrounds */
-        --Vale_BorderPrimary               : #555041;                      /* <-- Primary border color */
+        --Vale_BorderPrimary               : #172b3a;                      /* <-- Primary border color */
         --Vale_BorderLight                 : #cccccc;                      /* <-- Light border color */
         --Vale_HoverBackground             : #e8e8e8;                      /* <-- Hover state background */
         --Vale_ActiveBackground            : #d0d0d0;                      /* <-- Active state background */
@@ -51,6 +51,7 @@
         --Vale_Spacing_Medium              : 16px;                         /* <-- Medium spacing unit */
         --Vale_Spacing_Large               : 24px;                         /* <-- Large spacing unit */
         --Vale_Spacing_XLarge              : 32px;                         /* <-- Extra large spacing unit */
+        --Vale_Spacing_XXLarge             : 50px;                         /* <-- Extra large spacing unit */
         
         /* Typography Variables */
         --Vale_FontFamily                  : 'Open Sans', sans-serif;      /* <-- Primary font */

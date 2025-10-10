@@ -23,6 +23,30 @@
     // COMPONENT | Home Page Landing Screen
     // ------------------------------------------------------------
     function HomePage({ onEnter }) {
+        const [showPinEntry, setShowPinEntry] = React.useState(false);   // <-- PIN modal visibility state
+        
+        // SUB FUNCTION | Handle Enter Button Click
+        // ---------------------------------------------------------------
+        const handleEnterClick = () => {
+            setShowPinEntry(true);                                       // <-- Show PIN entry modal
+        };
+        // ---------------------------------------------------------------
+        
+        // SUB FUNCTION | Handle PIN Success
+        // ---------------------------------------------------------------
+        const handlePinSuccess = () => {
+            setShowPinEntry(false);                                      // <-- Hide PIN modal
+            onEnter();                                                   // <-- Proceed to application
+        };
+        // ---------------------------------------------------------------
+        
+        // SUB FUNCTION | Handle PIN Cancel
+        // ---------------------------------------------------------------
+        const handlePinCancel = () => {
+            setShowPinEntry(false);                                      // <-- Hide PIN modal
+        };
+        // ---------------------------------------------------------------
+        
         return (
             <div className="homepage">
                 <img 
@@ -32,10 +56,17 @@
                 />
                 <button 
                     className="homepage__button"
-                    onClick={onEnter}
+                    onClick={handleEnterClick}
                 >
                     Enter Whitecardopedia
                 </button>
+                
+                {showPinEntry && (
+                    <PinEntry 
+                        onSuccess={handlePinSuccess}
+                        onCancel={handlePinCancel}
+                    />
+                )}
             </div>
         );
     }

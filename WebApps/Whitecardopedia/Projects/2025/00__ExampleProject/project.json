@@ -1,0 +1,25 @@
+{
+    "projectName": "Example Project",
+    "projectCode": "00001",
+    "projectDate": "10-Oct-2000",
+    "ratings": {
+        "quality": 1,
+        "prestige": 2,
+        "value": 3
+    },
+    "productionData": {
+        "input": "Example File",
+        "duration": 1,
+        "additionalNotes": "This is an example project."
+    },
+    "sketchUpModel": {
+        "urlNote": "If the model is not available, set the url to 'None' or 'nil' or 'Nil' or 'False'",
+        "url": "https://3dwarehouse.sketchup.com/model/example"
+    },
+    "images": [
+        "IMG01__TestImage-01.png",
+        "IMG02__TestImage-02.png",
+        "IMG03__TestImage-03.png"
+    ],
+    "description": "This is an example project."
+}

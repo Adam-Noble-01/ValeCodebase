@@ -1,6 +1,7 @@
 {
     "projectName": "Garden House Alpha",
     "projectCode": "VGH-2025-001",
+    "projectDate": "10-Oct-2025",
     "ratings": {
         "quality": 4,
         "prestige": 5,
@@ -16,11 +17,9 @@
         "url": "https://3dwarehouse.sketchup.com/model/example"
     },
     "images": [
-        "view_01_front.svg",
-        "view_02_side.svg",
-        "view_03_rear.svg",
-        "view_04_aerial.svg"
+        "IMG01__TestImage-01.png",
+        "IMG02__TestImage-02.png",
+        "IMG03__TestImage-03.png"
     ],
     "description": "Premium garden house design featuring contemporary lines and sustainable materials. Showcasing massing model for board review."
 }
-

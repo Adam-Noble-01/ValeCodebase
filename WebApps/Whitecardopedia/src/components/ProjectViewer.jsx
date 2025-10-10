@@ -54,16 +54,7 @@
         
         return (
             <>
-                <header className="app-header">
-                    <button 
-                        className="app-header__back-button"
-                        onClick={onBack}
-                    >
-                        ← Back to Gallery
-                    </button>
-                    <h1 className="app-header__title">Whitecardopedia</h1>
-                    <div style={{ width: '120px' }}></div>
-                </header>
+                <Header showBackButton={true} onBack={onBack} />
                 
                 <div className="project-viewer">
                     <div className="project-viewer__header">
@@ -100,6 +91,13 @@
                                 <span className="project-viewer__rating-label">Value</span>
                                 <StarRating rating={project.ratings?.value || project.value || 0} />
                             </div>
+                            
+                            {project.projectDate && (
+                                <div className="project-viewer__data-field">
+                                    <span className="project-viewer__data-label">Project Date</span>
+                                    <span className="project-viewer__data-value">{formatProjectDate(project.projectDate)}</span>
+                                </div>
+                            )}
                             
                             {project.productionData && (
                                 <>

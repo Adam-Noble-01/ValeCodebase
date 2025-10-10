@@ -60,16 +60,18 @@
         flex-direction                     : column;                       /* <-- Vertical stacking */
         align-items                        : center;                       /* <-- Center horizontally */
         justify-content                    : center;                       /* <-- Center vertically */
-        min-height                         : 100vh;                        /* <-- Full viewport height */
+        min-height                         : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Full viewport height minus header */
         background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
         padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+        padding-top                        : 0;                            /* <-- Remove top padding for tighter spacing */
+        margin-top                         : -80px;                        /* <-- Move content up */
     }
     
     .homepage__logo {
         max-width                          : 500px;                        /* <-- Maximum logo width */
         width                              : 80%;                          /* <-- Responsive width */
         height                             : auto;                         /* <-- Maintain aspect ratio */
-        margin-bottom                      : var(--Vale_Spacing_XXLarge);  /* <-- Space below logo */
+        margin-bottom                      : 100px;                        /* <-- Space below logo */
     }
     
     .homepage__button {
@@ -103,14 +105,39 @@
     /* HEADER | Application Header Bar */
     /* ------------------------------------------------------------ */
     .app-header {
+        position                           : relative;                     /* <-- Relative positioning for absolute children */
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Vertical centering */
         justify-content                    : space-between;                /* <-- Space between elements */
         height                             : var(--Vale_HeaderHeight);     /* <-- Fixed header height */
         padding                            : 0 var(--Vale_Spacing_Large);  /* <-- Horizontal padding */
-        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
-        color                              : var(--Vale_TextLight);        /* <-- Light text color */
-        box-shadow                         : 0 2px 4px rgba(0,0,0,0.1);   /* <-- Subtle shadow */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.08);  /* <-- Subtle shadow */
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue bottom border */
+    }
+    
+    .app-header__logo-container {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .app-header__logo-container--left {
+        justify-content                    : flex-start;                   /* <-- Align left */
+    }
+    
+    .app-header__logo-container--right {
+        justify-content                    : flex-end;                     /* <-- Align right */
+    }
+    
+    .app-header__logo-left {
+        height                             : 42px;                         /* <-- Vale logo height */
+        width                              : auto;                         /* <-- Maintain aspect ratio */
+    }
+    
+    .app-header__logo-right {
+        height                             : 36px;                         /* <-- Whitecardopedia logo height */
+        width                              : auto;                         /* <-- Maintain aspect ratio */
     }
     
     .app-header__title {
@@ -119,10 +146,13 @@
     }
     
     .app-header__back-button {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Center adjustment */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
-        background                         : rgba(255,255,255,0.2);        /* <-- Semi-transparent background */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
         border                             : none;                         /* <-- No border */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
         cursor                             : pointer;                      /* <-- Pointer cursor */
@@ -130,7 +160,13 @@
     }
     
     .app-header__back-button:hover {
-        background                         : rgba(255,255,255,0.3);        /* <-- Lighter on hover */
+        background                         : #0f1e28;                      /* <-- Darker blue on hover */
+        transform                          : translateX(-50%) translateY(-2px);  /* <-- Maintain center and lift */
+        box-shadow                         : 0 4px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
+    }
+    
+    .app-header__back-button:active {
+        transform                          : translateX(-50%) translateY(0);  /* <-- Reset lift on click */
     }
     /* ------------------------------------------------------------ */
 
@@ -150,16 +186,46 @@
         width                              : 100%;                         /* <-- Full width */
     }
     
-    .project-gallery__title {
-        font-size                          : var(--Vale_FontSize_Title);   /* <-- Title font size */
+    .project-gallery__sort-control {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between label and select */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below control */
+    }
+    
+    .project-gallery__sort-label {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
-        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below title */
-        text-align                         : center;                       /* <-- Center text */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+    }
+    
+    .project-gallery__sort-select {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Select padding */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium);  /* <-- Medium border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        min-width                          : 200px;                        /* <-- Minimum width for readability */
+    }
+    
+    .project-gallery__sort-select:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on hover */
+    }
+    
+    .project-gallery__sort-select:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1);  /* <-- Subtle focus ring */
     }
     
     .project-gallery__grid {
         display                            : grid;                         /* <-- CSS Grid layout */
-        grid-template-columns              : repeat(auto-fill, minmax(300px, 1fr));  /* <-- Responsive columns */
+        grid-template-columns              : repeat(auto-fill, minmax(350px, 1fr));  /* <-- Responsive columns */
         gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
         margin-top                         : var(--Vale_Spacing_Large);    /* <-- Space above grid */
     }
@@ -183,9 +249,9 @@
     
     .project-card__image {
         width                              : 100%;                         /* <-- Full card width */
-        height                             : 200px;                        /* <-- Fixed image height */
-        object-fit                         : cover;                        /* <-- Cover the area */
-        background                         : var(--Vale_BackgroundLight);  /* <-- Fallback background */
+        height                             : 250px;                        /* <-- Fixed image height */
+        object-fit                         : contain;                      /* <-- Contain full image without cropping */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
     }
     
     .project-card__content {
@@ -201,7 +267,14 @@
     .project-card__code {
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
         color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
-        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below code */
+        margin-bottom                      : var(--Vale_Spacing_XSmall);   /* <-- Reduced space below code */
+    }
+    
+    .project-card__date {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        color                              : var(--Vale_TextTertiary);     /* <-- Tertiary text color */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below date */
+        font-style                         : italic;                       /* <-- Italic style for date */
     }
     
     .project-card__ratings {
@@ -232,9 +305,9 @@
     /* PROJECT VIEWER | Full Project Display Layout */
     /* ------------------------------------------------------------ */
     .project-viewer {
-        flex                               : 1;                            /* <-- Expand to fill space */
         display                            : flex;                         /* <-- Flexbox layout */
         flex-direction                     : column;                       /* <-- Vertical stacking */
+        height                             : calc(90vh - var(--Vale_HeaderHeight));  /* <-- 90% viewport height minus header */
         padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
         max-width                          : var(--Vale_MaxContentWidth);  /* <-- Maximum content width */
         margin                             : 0 auto;                       /* <-- Center horizontally */
@@ -272,8 +345,10 @@
     
     .project-viewer__content {
         display                            : grid;                         /* <-- CSS Grid layout */
-        grid-template-columns              : 3fr 1fr;                      /* <-- 3:1 ratio columns (ratings panel ~50% reduced) */
+        grid-template-columns              : 5fr 1.6fr;                    /* <-- 5:1.6 ratio columns (data panel 80% of previous width) */
         gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
+        flex                               : 1;                            /* <-- Expand to fill available space */
+        min-height                         : 0;                            /* <-- Allow flexbox to shrink below content size */
     }
     
     .project-viewer__carousel-container {
@@ -281,6 +356,7 @@
         border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
         overflow                           : hidden;                       /* <-- Clip overflow content */
+        min-height                         : 0;                            /* <-- Allow flexbox to shrink below content size */
     }
     
     .project-viewer__ratings-panel {
@@ -384,8 +460,7 @@
     .image-carousel {
         position                           : relative;                     /* <-- Relative positioning for controls */
         width                              : 100%;                         /* <-- Full width */
-        min-height                         : 600px;                        /* <-- Minimum height (expands for tall images) */
-        max-height                         : 1200px;                       /* <-- Maximum height limit */
+        height                             : 100%;                         /* <-- Fill available container height */
         display                            : flex;                         /* <-- Flexbox layout */
         flex-direction                     : column;                       /* <-- Vertical stacking */
     }
@@ -395,7 +470,7 @@
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Center vertically */
         justify-content                    : center;                       /* <-- Center horizontally */
-        background                         : var(--Vale_BackgroundLight);  /* <-- Light background */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
         position                           : relative;                     /* <-- Relative positioning */
     }
     
@@ -469,7 +544,8 @@
     .image-carousel__counter {
         position                           : absolute;                     /* <-- Absolute positioning */
         bottom                             : var(--Vale_Spacing_Medium);   /* <-- Position from bottom */
-        right                              : var(--Vale_Spacing_Medium);   /* <-- Position from right */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Adjust for true centering */
         background                         : rgba(0,0,0,0.6);              /* <-- Semi-transparent dark background */
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Counter padding */

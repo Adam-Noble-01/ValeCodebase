@@ -44,7 +44,7 @@
         /* Layout Dimension Variables */
         --Vale_HeaderHeight                : 60px;                         /* <-- Fixed header height */
         --Vale_FooterHeight                : 50px;                         /* <-- Fixed footer height */
-        --Vale_MaxContentWidth             : 1400px;                       /* <-- Maximum content width */
+        --Vale_MaxContentWidth             : 1800px;                       /* <-- Maximum content width */
         --Vale_BorderWidth                 : 2px;                          /* <-- Standard border thickness */
         --Vale_BorderRadius                : 8px;                          /* <-- Standard border radius */
         --Vale_Spacing_Small               : 8px;                          /* <-- Small spacing unit */

@@ -4,11 +4,23 @@
     "projectsBasePath": "Projects/2025",
     "projects": [
         {
-            "folderId": "ExampleProject_GardenHouse_Alpha",
+            "folderId": "00__ExampleProject",
             "enabled": true
         },
         {
+            "folderId": "TemplateProject",
+            "enabled": false
+        },
+        {
             "folderId": "HS-61747__Harris",
+            "enabled": true
+        },
+        {
+            "folderId": "NY-29951__McNerney",
+            "enabled": true
+        },
+        {
+            "folderId": "JF-61131__Jolliffe",
             "enabled": true
         }
     ]

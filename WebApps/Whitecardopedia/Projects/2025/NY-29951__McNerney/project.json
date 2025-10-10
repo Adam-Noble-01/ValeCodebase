@@ -1,0 +1,28 @@
+{
+    "projectName": "McNerney",
+    "projectCode": "29951",
+    "projectDate": "09-Oct-2025",
+    "ratings": {
+        "quality": 4,
+        "prestige": 3,
+        "value": 3
+    },
+    "productionData": {
+        "input": "CAD File",
+        "duration": 3,
+        "additionalNotes": "Nil"
+    },
+    "sketchUpModel": {
+        "url": "https://app.sketchup.com/share/tc/europe/EjShVZJYLRU?source=desktop&stoken=rm282v4Fh7u95OzDk1ie2bQ6XgWXlDzq9FGpjEwYlxxcQXFtPgPxFkSWa_Ryt18l&rtc-engine-version=19&mode=present"
+    },
+    "images": [
+        "IMG01__3dView__MainShot__WhitecardImage__09-Oct-2025.png",
+        "IMG02__3dView__MainShot__WhitecardImage__09-Oct-2025.png",
+        "IMG03__3dView__FromLawnLevel__WhitecardImage__09-Oct-2025.png",
+        "IMG04__3dView__PatioView__WhitecardImage__09-Oct-2025.png",
+        "IMG05__3dView__RearView__WhitecardImage__09-Oct-2025.png",
+        "IMG06__3dView__TopDownView-01__WhitecardImage__09-Oct-2025.png",
+        "IMG07__3dView__TopDownView-02__WhitecardImage__09-Oct-2025.png"
+    ],
+    "description": "Nil"
+}

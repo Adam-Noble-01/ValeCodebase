@@ -48,26 +48,30 @@
         // ---------------------------------------------------------------
         
         return (
-            <div className="homepage">
-                <img 
-                    src="assets/AppLogo__Whitecardopedia__.png" 
-                    alt="Whitecardopedia Logo"
-                    className="homepage__logo"
-                />
-                <button 
-                    className="homepage__button"
-                    onClick={handleEnterClick}
-                >
-                    Enter Whitecardopedia
-                </button>
+            <>
+                <Header />
                 
-                {showPinEntry && (
-                    <PinEntry 
-                        onSuccess={handlePinSuccess}
-                        onCancel={handlePinCancel}
+                <div className="homepage">
+                    <img 
+                        src="assets/AppLogo__Whitecardopedia__.png" 
+                        alt="Whitecardopedia Logo"
+                        className="homepage__logo"
                     />
-                )}
-            </div>
+                    <button 
+                        className="homepage__button"
+                        onClick={handleEnterClick}
+                    >
+                        Enter Whitecardopedia
+                    </button>
+                    
+                    {showPinEntry && (
+                        <PinEntry 
+                            onSuccess={handlePinSuccess}
+                            onCancel={handlePinCancel}
+                        />
+                    )}
+                </div>
+            </>
         );
     }
     // ---------------------------------------------------------------

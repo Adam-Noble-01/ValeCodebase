@@ -149,25 +149,76 @@ Create `project.json` in the project folder:
     "sketchUpModel": {
         "url": "https://3dwarehouse.sketchup.com/model/example"
     },
-    "images": [
-        "front_view.jpg",
-        "side_view.jpg",
-        "aerial_view.jpg"
-    ],
+    "images": [],
     "description": "Modern garden house with sustainable design principles"
 }
 ```
 
+**Note**: You can leave the `images` array empty - the auto-discovery utility will populate it for you!
+
 ### Step 3: Add Project Images
 
-Add image files (JPG or PNG) to the project folder. Image filenames must match the names listed in `project.json`.
+Add image files to the project folder using the **IMG## prefix naming convention**:
 
 ```
 Projects/2025/MyNewProject_GardenHouse_Beta/
 ├── project.json
-├── front_view.jpg
-├── side_view.jpg
-└── aerial_view.jpg
+├── IMG01__3dView__FrontView__WhitecardImage__10-Oct-2025.png
+├── IMG02__3dView__SideView__WhitecardImage__10-Oct-2025.png
+├── IMG03__3dView__RearView__WhitecardImage__10-Oct-2025.png
+└── IMG04__3dView__AerialView__WhitecardImage__10-Oct-2025.png
+```
+
+**Image Naming Convention**:
+- ✅ **Required**: Must start with `IMG01__`, `IMG02__`, `IMG03__`, etc.
+- ✅ **Supported formats**: `.png`, `.jpg`, `.jpeg`, `.svg`, `.gif`, `.webp`
+- ✅ **Automatic sorting**: Images loaded in numeric order (IMG01, IMG02, IMG03...)
+- ✅ **Descriptive names**: Use descriptive filenames after the prefix for organization
+
+**Examples**:
+```
+IMG01__3dView__MainShot__WhitecardImage__09-Oct-2025.png
+IMG02__3dView__PatioView__WhitecardImage__09-Oct-2025.png
+IMG03__3dView__TopDownView__WhitecardImage__09-Oct-2025.png
+```
+
+### Step 3a: Auto-Discover Images (Recommended)
+
+Run the **Image Auto-Discovery Utility** to automatically populate the `images` array:
+
+**Windows**:
+```bash
+update_images.bat
+```
+
+**Python (All Platforms)**:
+```bash
+python update_project_images.py
+```
+
+**Preview Changes First (Dry-Run)**:
+```bash
+python update_project_images.py --dry-run
+```
+
+The utility will:
+- ✅ Scan all project folders for images with `IMG##__` prefix
+- ✅ Sort images by numeric prefix (IMG01, IMG02, IMG03...)
+- ✅ Automatically update `project.json` with discovered images
+- ✅ Provide summary report of all changes
+
+**Alternative - Manual Entry**:
+
+If you prefer manual control, you can still manually specify images in `project.json`:
+
+```json
+{
+    "images": [
+        "IMG01__3dView__FrontView__WhitecardImage__10-Oct-2025.png",
+        "IMG02__3dView__SideView__WhitecardImage__10-Oct-2025.png",
+        "IMG03__3dView__AerialView__WhitecardImage__10-Oct-2025.png"
+    ]
+}
 ```
 
 ### Step 4: Update Master Config
@@ -294,6 +345,81 @@ To add new features, follow these steps:
 3. Add corresponding CSS in `src/styles/app.css`
 4. Import component in `app.html`
 5. Integrate into `App.jsx` routing logic
+
+---
+
+## Utility Tools
+
+### Image Auto-Discovery Utility
+
+The **Image Auto-Discovery Utility** (`update_project_images.py`) automatically discovers and updates project images based on the `IMG##__` prefix naming convention.
+
+#### Features
+
+- ✅ **Automatic Discovery** - Scans all project folders for images with `IMG##__` prefix
+- ✅ **Numeric Sorting** - Sorts images by numeric prefix (IMG01, IMG02, IMG03...)
+- ✅ **Multiple Formats** - Supports PNG, JPG, JPEG, SVG, GIF, WEBP
+- ✅ **Safe Updates** - Preserves all other project.json fields
+- ✅ **Dry-Run Mode** - Preview changes before applying them
+- ✅ **Summary Report** - Shows detailed results for each project
+- ✅ **Colored Output** - Easy-to-read console feedback
+
+#### Usage
+
+**Update All Projects**:
+```bash
+python update_project_images.py
+```
+
+**Preview Changes (Dry-Run)**:
+```bash
+python update_project_images.py --dry-run
+```
+
+**Update Specific Project**:
+```bash
+python update_project_images.py --project NY-29951__McNerney
+```
+
+**Windows Batch File**:
+```bash
+# Update all projects
+update_images.bat
+
+# Preview changes only
+update_images.bat --dry-run
+```
+
+#### Example Output
+
+```
+================================================================================
+IMAGE DISCOVERY RESULTS
+================================================================================
+
+[+] NY-29951__McNerney
+    Images: 4 -> 7
+    Status: Updated
+
+[=] HS-61747__Harris
+    Images: 2 (no changes)
+
+================================================================================
+SUMMARY
+================================================================================
+Projects processed    : 2
+Successful operations : 2
+Projects changed      : 1
+Total images found    : 9
+================================================================================
+```
+
+#### When to Use
+
+- ✅ After adding new images to a project folder
+- ✅ When setting up a new project with multiple images
+- ✅ Before deploying to GitHub Pages
+- ✅ To verify all projects have correct image references
 
 ---
 

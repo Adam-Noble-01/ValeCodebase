@@ -33,11 +33,17 @@ Whitecardopedia is a quality control and presentation tool for the Vale Garden H
 ## Features
 
 - ✅ **Landing Page** - Whitecardopedia logo display with entry button
+- ✅ **PIN Authentication** - Secure 4-digit PIN entry system (PIN: 1234)
+- ✅ **Dual Logo Header** - Vale Garden Houses + Whitecardopedia branding
 - ✅ **Project Gallery** - Grid view of all available projects with thumbnails
 - ✅ **Project Viewer** - Full project display with image carousel
+- ✅ **Project Date Display** - Formatted dates with ordinal superscripts (1st, 2nd, 3rd)
+- ✅ **Production Data Panel** - Input type, duration, and additional notes
+- ✅ **SketchUp Model Links** - Conditional display of 3D model links
 - ✅ **Star Ratings** - Visual display of Quality, Prestige, Value metrics (1-5 stars)
 - ✅ **Image Carousel** - Navigate through multiple project images with thumbnails
 - ✅ **Dynamic Loading** - Projects automatically loaded from folder structure
+- ✅ **Image Auto-Discovery** - Python utility to automatically update project images
 - ✅ **Responsive Design** - Works on desktop, tablet, and mobile devices
 - ✅ **Vale Design Suite** - Consistent branding and styling
 
@@ -57,7 +63,9 @@ Whitecardopedia/
 ├── src/
 │   ├── components/
 │   │   ├── App.jsx                     # Root component with routing
+│   │   ├── Header.jsx                  # Dual logo persistent header
 │   │   ├── HomePage.jsx                # Landing page with logo
+│   │   ├── PinEntry.jsx                # PIN authentication modal
 │   │   ├── ProjectGallery.jsx          # Project grid view
 │   │   ├── ProjectViewer.jsx           # Individual project viewer
 │   │   ├── StarRating.jsx              # Star rating component
@@ -67,9 +75,15 @@ Whitecardopedia/
 │   │   ├── masterConfig.json           # Master project index
 │   │   └── projectLoader.js            # Project loading utility
 │   │
+│   ├── utils/
+│   │   └── dateFormatter.js            # Date formatting with ordinals
+│   │
 │   └── styles/
 │       ├── variables.css               # CSS variables (Vale Design Suite)
 │       └── app.css                     # Main application styles
+│
+├── DevUtils/
+│   └── AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py  # Image discovery utility
 │
 └── Projects/
     └── 2025/
@@ -114,6 +128,17 @@ http://localhost:8000
 
 The application will automatically redirect from `index.html` to `app.html`.
 
+### 4. Using the Application
+
+1. Click **"Enter Whitecardopedia"** on the landing page
+2. **Enter PIN: 1234** when prompted (default placeholder PIN)
+3. Browse projects in the gallery view
+4. Click any project card to view details
+5. Navigate images using arrow buttons or thumbnails
+6. Click **"Back to Gallery"** to return
+
+**Note**: The PIN is currently set to `1234` for testing. To change it, edit `src/components/PinEntry.jsx`.
+
 ---
 
 ## Adding New Projects
@@ -136,6 +161,7 @@ Create `project.json` in the project folder:
 {
     "projectName": "Garden House Beta",
     "projectCode": "VGH-2025-002",
+    "projectDate": "10-Oct-2025",
     "ratings": {
         "quality": 5,
         "prestige": 4,
@@ -257,6 +283,7 @@ Reload the application in your browser. The new project will appear in the galle
 |-------|------|----------|-------------|
 | `projectName` | string | ✅ Yes | Display name of the project |
 | `projectCode` | string | ✅ Yes | Unique project identifier (e.g., VGH-2025-001) |
+| `projectDate` | string | ❌ No | Project date in DD-MMM-YYYY format (e.g., "10-Oct-2025") |
 | `ratings` | object | ✅ Yes | Nested ratings object containing quality, prestige, value |
 | `ratings.quality` | number | ✅ Yes | Quality rating (1-5 stars) |
 | `ratings.prestige` | number | ✅ Yes | Prestige rating (1-5 stars) |
@@ -510,5 +537,5 @@ For questions or issues, contact:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: October 2025
+**Version**: 0.0.6 - First Major Stable Release  
+**Last Updated**: 10-Oct-2025

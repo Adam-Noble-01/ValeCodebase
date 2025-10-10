@@ -62,9 +62,20 @@ Projects/2025/MyProject_Name/
 {
     "projectName": "My Garden House",
     "projectCode": "VGH-2025-002",
-    "quality": 4,
-    "prestige": 5,
-    "value": 3,
+    "projectDate": "10-Oct-2025",
+    "ratings": {
+        "quality": 4,
+        "prestige": 5,
+        "value": 3
+    },
+    "productionData": {
+        "input": "CAD File",
+        "duration": 3,
+        "additionalNotes": "Project notes here"
+    },
+    "sketchUpModel": {
+        "url": "https://app.sketchup.com/share/..."
+    },
     "images": ["image1.jpg", "image2.jpg"],
     "description": "Project description here"
 }
@@ -154,5 +165,5 @@ Just push to GitHub - no build step required!
 
 **Questions?** Contact Adam Noble - Noble Architecture
 
-**Version**: 1.0.0
+**Version**: 0.0.6 - First Major Stable Release
 

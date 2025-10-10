@@ -435,7 +435,8 @@
         font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
         transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
         cursor                             : pointer;                      /* <-- Pointer cursor */
-        margin-top                         : var(--Vale_Spacing_Small);    /* <-- Space above button */
+        margin-top                         : 30px;                         /* <-- Space above button */
+        margin-bottom                      : 30px;                         /* <-- Space below button */
     }
     
     .project-viewer__model-button:hover {

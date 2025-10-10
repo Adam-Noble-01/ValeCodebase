@@ -75,22 +75,7 @@
                         </div>
                         
                         <div className="project-viewer__ratings-panel">
-                            <h2 className="project-viewer__data-title">Project Data</h2>
-                            
-                            <div className="project-viewer__rating-item">
-                                <span className="project-viewer__rating-label">Quality</span>
-                                <StarRating rating={project.ratings?.quality || project.quality || 0} />
-                            </div>
-                            
-                            <div className="project-viewer__rating-item">
-                                <span className="project-viewer__rating-label">Prestige</span>
-                                <StarRating rating={project.ratings?.prestige || project.prestige || 0} />
-                            </div>
-                            
-                            <div className="project-viewer__rating-item">
-                                <span className="project-viewer__rating-label">Value</span>
-                                <StarRating rating={project.ratings?.value || project.value || 0} />
-                            </div>
+                            <h2 className="project-viewer__data-title">Production Data</h2>
                             
                             {project.projectDate && (
                                 <div className="project-viewer__data-field">
@@ -101,8 +86,6 @@
                             
                             {project.productionData && (
                                 <>
-                                    <h3 className="project-viewer__production-title">Production Data</h3>
-                                    
                                     {project.productionData.input && (
                                         <div className="project-viewer__data-field">
                                             <span className="project-viewer__data-label">Input</span>
@@ -140,6 +123,23 @@
                                     </a>
                                 </>
                             )}
+                            
+                            <h3 className="project-viewer__production-title">Stats</h3>
+                            
+                            <div className="project-viewer__rating-item">
+                                <span className="project-viewer__rating-label">Output Quality</span>
+                                <StarRating rating={project.ratings?.quality || project.quality || 0} />
+                            </div>
+                            
+                            <div className="project-viewer__rating-item">
+                                <span className="project-viewer__rating-label">Job Prestige</span>
+                                <StarRating rating={project.ratings?.prestige || project.prestige || 0} />
+                            </div>
+                            
+                            <div className="project-viewer__rating-item">
+                                <span className="project-viewer__rating-label">Project Value</span>
+                                <StarRating rating={project.ratings?.value || project.value || 0} />
+                            </div>
                         </div>
                     </div>
                 </div>

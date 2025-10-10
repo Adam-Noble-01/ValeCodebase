@@ -545,7 +545,7 @@ Whitecardopedia is a **complete, production-ready** React application that provi
 **Download Button in Project Viewer:**
 - Located below star ratings section with horizontal separator
 - Downloads all project images as ZIP file
-- Filename format: `{ProjectCode}__{ProjectName}_Images_{DD-MMM-YYYY}.zip`
+- Filename format: `{FolderID}_Images_{DD-MMM-YYYY}.zip` (uses actual folder name with prefixes)
 - Loading spinner during download process
 - Button disabled while downloading
 - Error handling with user feedback
@@ -553,48 +553,73 @@ Whitecardopedia is a **complete, production-ready** React application that provi
 
 **Version-Locked Dependencies:**
 - New folder: `src/ThirdParty__VersionLockedDependencies/`
-- JSZip v3.10.1 hosted locally
-- Automatic CDN fallback if local file unavailable
-- Console warning when fallback is used
-- Ensures version stability and offline support
+- client-zip v2.4.5 (modern, lightweight ZIP library)
+- ES6 module import for better compatibility
+- No fallback needed - reliable and compact (6.3KB)
+- Ensures version stability
 
 ### Technical Implementation
 
 **Files Modified:**
-- `ProjectViewer.jsx` - Added `downloadProjectImages()` helper function (~35 lines)
+- `ProjectViewer.jsx` - Added `downloadProjectImages()` helper function (~45 lines)
+  - Path construction with trailing slash validation
+  - Parallel image fetching using Promise.all()
+  - Works directly with Response objects (no blob conversion)
 - `ProjectViewer.jsx` - Added download button JSX with loading states (~20 lines)
 - `app.css` - Added download button styles and animations (~65 lines)
-- `app.html` - Added JSZip script with fallback logic (~5 lines)
+- `app.html` - Updated to use client-zip with ES6 module import (~7 lines)
 - `masterConfig.json` - Version bump to 0.0.7
 
 **New Files:**
-- `jszip.min.js` - Version-locked JSZip library (81 KB)
+- `client-zip.js` - Version-locked client-zip library v2.4.5 (6.3 KB)
 - `Tempt__Icon__DownloadButtonSymbol__.svg` - Download button icon (1 KB)
+
+**Removed Files:**
+- `jszip.min.js` - Replaced with client-zip due to binary handling issues
+
+### Bug Fixes
+
+**Issues Resolved:**
+1. **Path Construction Bug** - Missing `/` between folder name and filename
+   - Fixed with trailing slash validation
+   - Now correctly handles folders with prefixes (NY-, AN-, HD-, etc.)
+   
+2. **Library Migration** - JSZip to client-zip
+   - JSZip had binary data handling issues causing corrupted PNG files
+   - client-zip works directly with Response objects (better performance)
+   - 93% smaller library size (6.3KB vs 97KB)
+   
+3. **Performance Improvements**
+   - Parallel image fetching with Promise.all()
+   - Eliminates unnecessary blob conversions
+   - Faster ZIP generation
 
 ### Statistics
 
 **Code Additions:**
-- JavaScript: ~55 lines
+- JavaScript: ~65 lines
 - CSS: ~65 lines
-- HTML: ~5 lines
-- **Total New Code**: ~125 lines
+- HTML: ~7 lines
+- **Total New Code**: ~137 lines
 
 **New Assets:**
-- JSZip library: 81 KB (minified)
+- client-zip library: 6.3 KB (minified)
 - Download icon: 1 KB
+- **Total**: 7.3 KB (vs 82 KB with JSZip - 91% reduction)
 
 ### Benefits
 
 - ✅ **Convenience** - Download all project images with one click
 - ✅ **Organization** - ZIP file includes all images in one archive
-- ✅ **Professional** - Formatted filenames with project code and date
-- ✅ **Offline Support** - Version-locked library works without internet
-- ✅ **Reliability** - CDN fallback ensures functionality
+- ✅ **Professional** - Formatted filenames with folder ID and date
+- ✅ **Reliable** - client-zip handles binary data correctly
+- ✅ **Performance** - 91% smaller library, parallel fetching
 - ✅ **User Feedback** - Loading states and error messages
+- ✅ **Lossless** - Full-size PNG files (10MB+) with zero corruption
 
 ---
 
 *Implementation completed: 10-Oct-2025*  
 *Adam Noble - Noble Architecture*  
-*Version 0.0.7 - Download Images Feature*
+*Version 0.0.7 - Download Images Feature (Final - Working)*
 

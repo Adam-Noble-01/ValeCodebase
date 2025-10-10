@@ -29,10 +29,65 @@ Added ability to download all project images as a single ZIP file directly from 
 - ✅ Professional Vale blue styling
 
 **Technical Implementation:**
-- ✅ JSZip library integration (version-locked)
-- ✅ Local library hosting with CDN fallback
+- ✅ client-zip library integration (modern, lightweight)
+- ✅ ES6 module loading for better compatibility
 - ✅ Browser-based ZIP generation (no server required)
 - ✅ Async/await for smooth user experience
+- ✅ Parallel image fetching with Promise.all()
+
+---
+
+### 🐛 BUG FIXES & IMPROVEMENTS
+
+**Library Migration - JSZip to client-zip:**
+
+During implementation testing, critical issues were discovered with the JSZip library that prevented proper download functionality. The following fixes were implemented:
+
+- ✅ **Replaced JSZip (97KB) with modern client-zip library (6.3KB)**
+  - JSZip had binary data handling issues causing corrupted PNG files
+  - client-zip works directly with Response objects (no blob conversion needed)
+  - Significantly smaller library size improves load times
+  
+- ✅ **Fixed path construction bug**
+  - Missing `/` between folder name and filename caused 404 errors
+  - Implemented trailing slash validation before filename concatenation
+  - Now correctly handles folders with prefixes (e.g., NY-, AN-, HD-)
+  
+- ✅ **Improved performance**
+  - Uses `Promise.all()` for parallel image fetching (faster downloads)
+  - Direct Response object handling eliminates unnecessary conversions
+  - Cleaner, more maintainable codebase
+  
+- ✅ **Better error handling**
+  - Validates fetch responses before adding to ZIP
+  - User-friendly error messages
+  - Library availability check with helpful feedback
+
+**Technical Changes:**
+```javascript
+// OLD (JSZip approach - had issues)
+const blob = await response.blob();
+zip.file(imageName, blob, { binary: true, compression: "STORE" });
+
+// NEW (client-zip approach - works perfectly)
+const files = await Promise.all(project.images.map(async (imageName) => ({
+    name: imageName,
+    input: await fetch(basePathWithSlash + imageName)
+})));
+const blob = await window.downloadZip(files).blob();
+```
+
+**Path Construction Fix:**
+```javascript
+// Ensures trailing slash to prevent: "folder/nameimage.png"
+const basePathWithSlash = basePath.endsWith('/') ? basePath : `${basePath}/`;
+```
+
+**Result:**
+- ✅ Full-size PNG downloads (10MB+) with zero corruption
+- ✅ Lossless delivery of original images
+- ✅ More reliable and maintainable code
+- ✅ Faster download performance
 
 ---
 
@@ -41,31 +96,35 @@ Added ability to download all project images as a single ZIP file directly from 
 **Third-Party Library Management:**
 
 New folder structure for version-locked dependencies:
-- `src/ThirdParty__VersionLockedDependencies/jszip.min.js` (JSZip v3.10.1)
+- `src/ThirdParty__VersionLockedDependencies/client-zip.js` (client-zip v2.4.5)
 
 **Loading Strategy:**
-1. **Primary**: Load from local version-locked file
-2. **Fallback**: Automatic CDN fallback if local file unavailable
-3. **Logging**: Console warning when fallback is used
+- ES6 module import for modern browser compatibility
+- Global `window.downloadZip` exposure for component access
+- No fallback needed (library is small and reliable)
 
 **Benefits:**
-- 🔒 Version stability (locked to 3.10.1)
-- 📴 Offline support (works without internet)
-- 🚀 Performance (local files load faster)
-- 🛡️ Resilience (CDN fallback ensures reliability)
+- 🔒 Version stability (locked to 2.4.5)
+- 📦 Minimal size (6.3KB vs JSZip's 97KB)
+- 🚀 Better performance (direct Response handling)
+- 🛡️ Reliable binary data handling
 
 ---
 
 ### 📂 Files Modified
 
 **New Files:**
-- `src/ThirdParty__VersionLockedDependencies/jszip.min.js` - JSZip library (v3.10.1)
+- `src/ThirdParty__VersionLockedDependencies/client-zip.js` - client-zip library v2.4.5 (6.3KB)
 - `assets/AppIcons/Tempt__Icon__DownloadButtonSymbol__.svg` - Download button icon
 
 **Modified Files:**
-- `app.html` - Added JSZip script with local-first loading strategy
-- `src/components/ProjectViewer.jsx` - Added download functionality and button
-  - New helper function: `downloadProjectImages()` (~35 lines)
+- `app.html` - Updated to use client-zip with ES6 module import
+  - Replaced JSZip script with client-zip module
+  - Global window.downloadZip exposure for component access
+- `src/components/ProjectViewer.jsx` - Implemented download functionality with client-zip
+  - New helper function: `downloadProjectImages()` (~45 lines)
+  - Path construction fix with trailing slash validation
+  - Parallel image fetching with Promise.all()
   - New state: `isDownloading` for loading management
   - New JSX: Download button with loading states
 - `src/styles/app.css` - Added download button styles (~65 lines)
@@ -76,6 +135,9 @@ New folder structure for version-locked dependencies:
   - `@keyframes spin` animation
 - `src/data/masterConfig.json` - Version bump to 0.0.7
 
+**Removed Files:**
+- `src/ThirdParty__VersionLockedDependencies/jszip.min.js` - Replaced with client-zip
+
 ---
 
 ### 🔧 Technical Details
@@ -84,20 +146,23 @@ New folder structure for version-locked dependencies:
 
 ```javascript
 downloadProjectImages(project, setIsDownloading)
-// - Creates ZIP archive using JSZip library
-// - Fetches all project images from project folder
-// - Generates ZIP file dynamically in browser
+// - Validates and constructs correct image paths with trailing slash
+// - Fetches all project images in parallel using Promise.all()
+// - Creates ZIP archive using modern client-zip library
+// - Generates ZIP file dynamically in browser (no server required)
 // - Triggers browser download with formatted filename
-// - Error handling with user-friendly messages
+// - Comprehensive error handling with user-friendly messages
+// - Library availability check before ZIP generation
 ```
 
 **Filename Format:**
 ```
-{ProjectCode}__{ProjectName}_Images_{DD-MMM-YYYY}.zip
+{FolderID}_Images_{DD-MMM-YYYY}.zip
 
 Examples:
-- 61616__Pilley_Images_10-Oct-2025.zip
-- 29951__McNerney_Images_10-Oct-2025.zip
+- PY-61616__Pilley_Images_10-Oct-2025.zip
+- NY-29951__McNerney_Images_10-Oct-2025.zip
+- HD-61716__Holland_Images_10-Oct-2025.zip
 - 61960__Acton_Images_10-Oct-2025.zip
 ```
 

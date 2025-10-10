@@ -5,11 +5,11 @@
      
      FILE       : app.html
      NAMESPACE  : Whitecardopedia
-     VERSION    : 0.0.7 - Download Images Feature
+     VERSION    : 0.0.7 - Download Images Feature (Final - Working)
      AUTHOR     : Adam Noble - Noble Architecture
      PURPOSE    : React application container for whitecard image review system
      CREATED    : 2025
-     UPDATED    : 10-Oct-2025
+     UPDATED    : 10-Oct-2025 (client-zip migration)
      
      DESCRIPTION:
      - React application container for Vale Garden Houses board review tool
@@ -42,10 +42,11 @@
     <!-- ----------------------------------------------------------------- -->
     
     <!-- ----------------------------------------------------------------- -->
-    <!-- JSZIP | ZIP File Generation Library (Local with CDN Fallback)    -->
+    <!-- CLIENT-ZIP | Modern ZIP File Generation Library                   -->
     <!-- ----------------------------------------------------------------- -->
-    <script src="src/ThirdParty__VersionLockedDependencies/jszip.min.js" 
-            onerror="this.onerror=null; this.remove(); var s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'; document.head.appendChild(s); console.warn('JSZip loaded from CDN fallback');">
+    <script type="module">
+        import { downloadZip } from './src/ThirdParty__VersionLockedDependencies/client-zip.js';
+        window.downloadZip = downloadZip;  // <-- Make available globally
     </script>
     <!-- ----------------------------------------------------------------- -->
     

@@ -47,27 +47,38 @@
         setIsDownloading(true);                                          // <-- Enable loading state
         
         try {
-            const zip = new JSZip();                                     // <-- Create new ZIP instance
-            const projectFolder = project.projectCode + '__' + project.projectName.replace(/\s+/g, '');  // <-- Format folder name
-            const basePath = `Projects/2025/${projectFolder}/`;          // <-- Base path for images
+            // FIX PATH CONSTRUCTION | Ensure trailing slash
+            const basePath = project.basePath || `Projects/2025/${project.folderId}`;  // <-- Use existing basePath or construct from folderId
+            const basePathWithSlash = basePath.endsWith('/') ? basePath : `${basePath}/`;  // <-- Ensure trailing slash
             
-            // LOAD IMAGES | Fetch and add each image to ZIP
-            for (const imageName of project.images) {
-                const imagePath = basePath + imageName;                  // <-- Full image path
+            // FETCH IMAGES | Create array of Response objects for client-zip
+            const imagePromises = project.images.map(async (imageName) => {
+                const imagePath = basePathWithSlash + imageName;         // <-- Full image path with correct slash
                 const response = await fetch(imagePath);                 // <-- Fetch image file
-                const blob = await response.blob();                      // <-- Convert to blob
-                const arrayBuffer = await blob.arrayBuffer();            // <-- Convert blob to ArrayBuffer for binary handling
-                zip.file(imageName, arrayBuffer, { binary: true });      // <-- Add to ZIP archive with binary flag
-            }
+                if (!response.ok) throw new Error(`Failed to fetch ${imageName}`);  // <-- Verify fetch success
+                return {
+                    name: imageName,                                     // <-- File name in ZIP
+                    input: response                                      // <-- client-zip works directly with Response objects
+                };
+            });
             
-            // GENERATE ZIP | Create ZIP file and trigger download
-            const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });  // <-- Generate ZIP blob with no compression (lossless)
+            const files = await Promise.all(imagePromises);              // <-- Wait for all images to fetch
+            
+            // GENERATE ZIP | Use client-zip to create ZIP file
+            if (!window.downloadZip) {
+                throw new Error('ZIP library not loaded. Please refresh the page.');  // <-- Check library availability
+            }
+            const blob = await window.downloadZip(files).blob();         // <-- Generate ZIP blob using client-zip
+            
+            // CREATE FILENAME | Format with date and folder name
             const today = new Date();                                    // <-- Get current date
             const dateStr = `${String(today.getDate()).padStart(2, '0')}-${today.toLocaleString('en-US', { month: 'short' })}-${today.getFullYear()}`;  // <-- Format date DD-MMM-YYYY
-            const filename = `${project.projectCode}__${project.projectName.replace(/\s+/g, '')}_Images_${dateStr}.zip`;  // <-- Create filename
+            const folderName = project.folderId || `${project.projectCode}__${project.projectName.replace(/\s+/g, '')}`;  // <-- Use folderId if available
+            const filename = `${folderName}_Images_${dateStr}.zip`;      // <-- Create filename with correct folder name
             
+            // DOWNLOAD FILE | Trigger browser download
             const link = document.createElement('a');                    // <-- Create download link
-            link.href = URL.createObjectURL(zipBlob);                    // <-- Create object URL
+            link.href = URL.createObjectURL(blob);                       // <-- Create object URL
             link.download = filename;                                    // <-- Set download filename
             link.click();                                                // <-- Trigger download
             URL.revokeObjectURL(link.href);                              // <-- Clean up object URL

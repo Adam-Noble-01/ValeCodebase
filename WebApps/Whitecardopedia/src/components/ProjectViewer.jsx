@@ -56,11 +56,12 @@
                 const imagePath = basePath + imageName;                  // <-- Full image path
                 const response = await fetch(imagePath);                 // <-- Fetch image file
                 const blob = await response.blob();                      // <-- Convert to blob
-                zip.file(imageName, blob);                               // <-- Add to ZIP archive
+                const arrayBuffer = await blob.arrayBuffer();            // <-- Convert blob to ArrayBuffer for binary handling
+                zip.file(imageName, arrayBuffer, { binary: true });      // <-- Add to ZIP archive with binary flag
             }
             
             // GENERATE ZIP | Create ZIP file and trigger download
-            const zipBlob = await zip.generateAsync({ type: 'blob' });   // <-- Generate ZIP blob
+            const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });  // <-- Generate ZIP blob with no compression (lossless)
             const today = new Date();                                    // <-- Get current date
             const dateStr = `${String(today.getDate()).padStart(2, '0')}-${today.toLocaleString('en-US', { month: 'short' })}-${today.getFullYear()}`;  // <-- Format date DD-MMM-YYYY
             const filename = `${project.projectCode}__${project.projectName.replace(/\s+/g, '')}_Images_${dateStr}.zip`;  // <-- Create filename

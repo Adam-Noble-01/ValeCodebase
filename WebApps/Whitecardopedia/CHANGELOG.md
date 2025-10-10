@@ -2,6 +2,50 @@
 
 ---
 
+## Version 1.2.0 - October 10, 2025
+
+### 📊 Production Data Fields
+
+**Added Production Information Panel**
+
+Enhanced project data display with new production tracking fields:
+
+**JSON Structure Update:**
+- Restructured ratings into nested `ratings` object
+- Added new `productionData` object with three fields:
+  - `input` - Source material type (e.g., "CAD File", "Hand Sketch")
+  - `duration` - Production time in hours (displayed as "X Hours")
+  - `additionalNotes` - Free-form production notes
+
+**UI Enhancements:**
+- Changed panel title from "Project Ratings" to "Project Data"
+- Added "Production Data" subhead with border separator
+- New data fields display below star ratings
+- Clean, structured layout with uppercase labels
+- Multi-line support for additional notes
+
+**Backward Compatibility:**
+- Components support both old and new JSON structures
+- Falls back to top-level `quality`, `prestige`, `value` if `ratings` object not present
+- Gracefully handles missing `productionData` object
+
+**Files Modified:**
+- `project.json` - Updated with nested structure
+- `ProjectViewer.jsx` - Added production data display
+- `ProjectGallery.jsx` - Updated to support nested ratings
+- `app.css` - Added ~60 lines of production data styles
+- `README.md` - Updated schema documentation
+- `Projects/.../README.md` - Updated example schema
+
+**New CSS Classes:**
+- `.project-viewer__data-title` - Main panel title
+- `.project-viewer__production-title` - Production data subhead
+- `.project-viewer__data-field` - Data field container
+- `.project-viewer__data-label` - Field label styling
+- `.project-viewer__data-value` - Field value styling
+
+---
+
 ## Version 1.1.0 - October 10, 2025
 
 ### 🎨 Branding Update

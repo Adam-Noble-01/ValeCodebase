@@ -63,22 +63,49 @@
                         </div>
                         
                         <div className="project-viewer__ratings-panel">
-                            <h2 className="project-viewer__ratings-title">Project Ratings</h2>
+                            <h2 className="project-viewer__data-title">Project Data</h2>
                             
                             <div className="project-viewer__rating-item">
                                 <span className="project-viewer__rating-label">Quality</span>
-                                <StarRating rating={project.quality} />
+                                <StarRating rating={project.ratings?.quality || project.quality || 0} />
                             </div>
                             
                             <div className="project-viewer__rating-item">
                                 <span className="project-viewer__rating-label">Prestige</span>
-                                <StarRating rating={project.prestige} />
+                                <StarRating rating={project.ratings?.prestige || project.prestige || 0} />
                             </div>
                             
                             <div className="project-viewer__rating-item">
                                 <span className="project-viewer__rating-label">Value</span>
-                                <StarRating rating={project.value} />
+                                <StarRating rating={project.ratings?.value || project.value || 0} />
                             </div>
+                            
+                            {project.productionData && (
+                                <>
+                                    <h3 className="project-viewer__production-title">Production Data</h3>
+                                    
+                                    {project.productionData.input && (
+                                        <div className="project-viewer__data-field">
+                                            <span className="project-viewer__data-label">Input</span>
+                                            <span className="project-viewer__data-value">{project.productionData.input}</span>
+                                        </div>
+                                    )}
+                                    
+                                    {project.productionData.duration && (
+                                        <div className="project-viewer__data-field">
+                                            <span className="project-viewer__data-label">Duration</span>
+                                            <span className="project-viewer__data-value">{project.productionData.duration} Hours</span>
+                                        </div>
+                                    )}
+                                    
+                                    {project.productionData.additionalNotes && (
+                                        <div className="project-viewer__data-field project-viewer__data-field--notes">
+                                            <span className="project-viewer__data-label">Additional Notes</span>
+                                            <span className="project-viewer__data-value">{project.productionData.additionalNotes}</span>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

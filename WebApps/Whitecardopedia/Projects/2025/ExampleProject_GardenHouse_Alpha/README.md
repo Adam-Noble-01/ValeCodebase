@@ -15,9 +15,16 @@ Each project folder should contain:
 {
     "projectName": "Garden House Alpha",
     "projectCode": "VGH-2025-001",
-    "quality": 4,
-    "prestige": 5,
-    "value": 3,
+    "ratings": {
+        "quality": 4,
+        "prestige": 5,
+        "value": 3
+    },
+    "productionData": {
+        "input": "CAD File",
+        "duration": 2,
+        "additionalNotes": "Preliminary design phase complete"
+    },
     "images": [
         "view_01_front.jpg",
         "view_02_side.jpg",
@@ -34,6 +41,13 @@ All ratings use 1-5 star scale:
 - **Quality** - Build quality and design execution
 - **Prestige** - Brand positioning and market perception
 - **Value** - Cost effectiveness and market competitiveness
+
+## Production Data Fields
+
+Additional production information:
+- **Input** - Source material type (e.g., "CAD File", "Hand Sketch", "3D Scan")
+- **Duration** - Production time in hours (displayed as "X Hours")
+- **Additional Notes** - Free-form text for production notes and comments
 
 ## Image Requirements
 

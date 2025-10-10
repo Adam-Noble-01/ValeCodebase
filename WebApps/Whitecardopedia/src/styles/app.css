@@ -284,11 +284,12 @@
         padding                            : var(--Vale_Spacing_Large);    /* <-- Panel padding */
     }
     
-    .project-viewer__ratings-title {
+    .project-viewer__data-title {
         font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below title */
         text-align                         : center;                       /* <-- Center text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
     }
     
     .project-viewer__rating-item {
@@ -300,6 +301,42 @@
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below label */
         display                            : block;                        /* <-- Block display */
+    }
+    
+    .project-viewer__production-title {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above subhead */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below subhead */
+        padding-top                        : var(--Vale_Spacing_Large);    /* <-- Padding above subhead */
+        border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Top border separator */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .project-viewer__data-field {
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space between fields */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between label and value */
+    }
+    
+    .project-viewer__data-field--notes {
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Extra space for notes field */
+    }
+    
+    .project-viewer__data-label {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        text-transform                     : uppercase;                    /* <-- Uppercase labels */
+        letter-spacing                     : 0.5px;                        /* <-- Letter spacing */
+    }
+    
+    .project-viewer__data-value {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
     }
     /* ------------------------------------------------------------ */
 

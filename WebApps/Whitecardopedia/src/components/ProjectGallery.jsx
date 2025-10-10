@@ -80,17 +80,17 @@
                                 <div className="project-card__ratings">
                                     <div className="project-card__rating-row">
                                         <span className="project-card__rating-label">Quality</span>
-                                        <StarRating rating={project.quality} />
+                                        <StarRating rating={project.ratings?.quality || project.quality || 0} />
                                     </div>
                                     
                                     <div className="project-card__rating-row">
                                         <span className="project-card__rating-label">Prestige</span>
-                                        <StarRating rating={project.prestige} />
+                                        <StarRating rating={project.ratings?.prestige || project.prestige || 0} />
                                     </div>
                                     
                                     <div className="project-card__rating-row">
                                         <span className="project-card__rating-label">Value</span>
-                                        <StarRating rating={project.value} />
+                                        <StarRating rating={project.ratings?.value || project.value || 0} />
                                     </div>
                                 </div>
                             </div>

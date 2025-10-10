@@ -1,9 +1,16 @@
 {
     "projectName": "Garden House Alpha",
     "projectCode": "VGH-2025-001",
-    "quality": 4,
-    "prestige": 5,
-    "value": 3,
+    "ratings": {
+        "quality": 4,
+        "prestige": 5,
+        "value": 3
+    },
+    "productionData": {
+        "input": "CAD File",
+        "duration": 2,
+        "additionalNotes": "Preliminary design phase complete. Ready for board review."
+    },
     "images": [
         "view_01_front.svg",
         "view_02_side.svg",

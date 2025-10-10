@@ -1,0 +1,24 @@
+{
+    "projectName": "Hendry",
+    "projectCode": "55239",
+    "projectDate": "05-Sep-2025",
+    "productionData": {
+        "input": "CAD File",
+        "duration": 4,
+        "additionalNotes": "Took a little while, no issues with the CAD File, Existing house was just a little bit tricky."
+    },
+    "ratings": {
+        "quality": 4,
+        "prestige": 3,
+        "value": 3
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Hendry__Exterior3dView01__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG02__Hendry__FrontElevation__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG03__Hendry__SideElevation__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG04__Hendry__TopDownView__Image__1.0.0.png"
+    ]
+}

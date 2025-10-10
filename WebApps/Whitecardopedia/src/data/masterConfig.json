@@ -1,6 +1,8 @@
 {
     "applicationName": "Whitecardopedia",
     "version": "0.0.7",
+    "deploymentModeNotes": "Live deployment for Pushed Branches, Dev deployment for Local Development",
+    "deploymentMode": "Live",
     "projectsBasePath": "Projects/2025",
     "projectFoldersBlacklist": [
         "01__TemplateProject",
@@ -24,7 +26,23 @@
             "enabled": true
         },
         {
+            "folderId": "CS-61737__Conyers",
+            "enabled": true
+        },
+        {
+            "folderId": "DE-52558__Ellard",
+            "enabled": true
+        },
+        {
+            "folderId": "GS-61695__Gibbs",
+            "enabled": true
+        },
+        {
             "folderId": "HD-61716__Holland",
+            "enabled": true
+        },
+        {
+            "folderId": "HN61484__Hannan",
             "enabled": true
         },
         {
@@ -36,7 +54,19 @@
             "enabled": true
         },
         {
+            "folderId": "HY-55239__Hendry",
+            "enabled": true
+        },
+        {
             "folderId": "JF-61131__Jolliffe",
+            "enabled": true
+        },
+        {
+            "folderId": "MH-61603__Mottershead",
+            "enabled": true
+        },
+        {
+            "folderId": "MU-61478__Mashru",
             "enabled": true
         },
         {
@@ -49,6 +79,10 @@
         },
         {
             "folderId": "RS-59923__Richards",
+            "enabled": true
+        },
+        {
+            "folderId": "VB-60009__VanDenBorn",
             "enabled": true
         }
     ]

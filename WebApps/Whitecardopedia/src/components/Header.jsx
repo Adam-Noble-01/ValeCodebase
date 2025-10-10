@@ -40,7 +40,12 @@
                         className="app-header__back-button"
                         onClick={onBack}
                     >
-                        ← Back to Gallery
+                        <img 
+                            src="assets/AppIcons/Icon__BackSymbol__WhiteVersion.svg" 
+                            alt="Back" 
+                            className="app-header__back-icon"
+                        />
+                        Back to Gallery
                     </button>
                 )}
                 

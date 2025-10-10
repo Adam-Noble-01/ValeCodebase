@@ -76,8 +76,9 @@
     
     .homepage__button {
         padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_XLarge);  /* <-- Button padding */
-        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Button text size */
-        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : 'Baskerville', serif;         /* <-- Baskerville font */
+        font-size                          : var(--Vale_FontSize_Heading);     /* <-- Button text size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular text */
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
         background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
         border                             : none;                         /* <-- No border */
@@ -146,27 +147,39 @@
     }
     
     .app-header__back-button {
+        display                            : flex;                         /* <-- Flexbox for icon alignment */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : center;                       /* <-- Horizontal centering */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
         position                           : absolute;                     /* <-- Absolute positioning */
         left                               : 50%;                          /* <-- Center horizontally */
         transform                          : translateX(-50%);             /* <-- Center adjustment */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
         background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
         border                             : none;                         /* <-- No border */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
         cursor                             : pointer;                      /* <-- Pointer cursor */
-        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
     }
     
     .app-header__back-button:hover {
         background                         : #0f1e28;                      /* <-- Darker blue on hover */
-        transform                          : translateX(-50%) translateY(-2px);  /* <-- Maintain center and lift */
-        box-shadow                         : 0 4px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
+        transform                          : translateX(-50%) scale(1.02); /* <-- Maintain center and slight grow */
+        box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Shadow on hover */
     }
     
     .app-header__back-button:active {
-        transform                          : translateX(-50%) translateY(0);  /* <-- Reset lift on click */
+        transform                          : translateX(-50%) scale(1.0);  /* <-- Reset scale on click */
+    }
+    
+    .app-header__back-icon {
+        width                              : 16px;                         /* <-- Icon width */
+        height                             : 16px;                         /* <-- Icon height */
+        filter                             : brightness(0) invert(1);      /* <-- Make SVG white to match button text */
     }
     /* ------------------------------------------------------------ */
 
@@ -728,17 +741,29 @@
     }
     /* ------------------------------------------------------------ */
 
+    /* PIN ENTRY | Input Wrapper */
+    /* ------------------------------------------------------------ */
+    .pin-entry__input-wrapper {
+        position                           : relative;                     /* <-- Relative positioning for button */
+        width                              : 100%;                         /* <-- Full width */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical center alignment */
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* PIN ENTRY | Input Field */
     /* ------------------------------------------------------------ */
     .pin-entry__input {
         width                              : 100%;                         /* <-- Full width */
         padding                            : var(--Vale_Spacing_Medium);   /* <-- Input padding */
+        padding-right                      : 50px;                         /* <-- Extra space for toggle button */
         font-size                          : var(--Vale_FontSize_Heading); /* <-- Large font for PIN */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         text-align                         : center;                       /* <-- Center text */
         border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border default */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
-        letter-spacing                     : 0.5em;                        /* <-- Space between characters */
+        letter-spacing                     : 0.2em;                        /* <-- Space between characters */
         transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
         font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
     }
@@ -750,10 +775,42 @@
     }
     
     .pin-entry__input::placeholder {
-        letter-spacing                     : 0.3em;                        /* <-- Space placeholder characters */
+        letter-spacing                     : 0.1em;                        /* <-- Space placeholder characters */
         color                              : var(--Vale_BorderLight);      /* <-- Light placeholder color */
     }
     /* ------------------------------------------------------------ */
+
+
+    /* PIN ENTRY | Toggle Password Button */
+    /* ------------------------------------------------------------ */
+    .pin-entry__toggle-button {
+        position                           : absolute;                     /* <-- Absolute positioning in wrapper */
+        right                              : 10px;                         /* <-- Position from right edge */
+        top                                : 50%;                          /* <-- Center vertically */
+        transform                          : translateY(-50%);             /* <-- Center adjustment */
+        background                         : transparent;                  /* <-- Transparent background */
+        border                             : none;                         /* <-- No border */
+        cursor                             : pointer;                      /* <-- Pointer cursor on hover */
+        font-size                          : 20px;                         /* <-- Icon size */
+        padding                            : 5px 10px;                     /* <-- Button padding */
+        display                            : flex;                         /* <-- Flexbox for icon centering */
+        align-items                        : center;                       /* <-- Center icon vertically */
+        justify-content                    : center;                       /* <-- Center icon horizontally */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        transition                         : all 0.2s ease;                /* <-- Smooth hover transition */
+        border-radius                      : 4px;                          /* <-- Slight corner rounding */
+    }
+    
+    .pin-entry__toggle-button:hover {
+        background                         : rgba(0,0,0,0.05);             /* <-- Light hover background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary color on hover */
+    }
+    
+    .pin-entry__toggle-button:active {
+        transform                          : translateY(-50%) scale(0.95); /* <-- Slight press effect */
+    }
+    /* ------------------------------------------------------------ */
+
 
     /* PIN ENTRY | Error Message */
     /* ------------------------------------------------------------ */

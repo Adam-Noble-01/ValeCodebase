@@ -218,7 +218,7 @@
                                     ) : (
                                         <>
                                             <img 
-                                                src="assets/AppIcons/Tempt__Icon__DownloadButtonSymbol__.svg" 
+                                                src="assets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
                                                 alt="Download" 
                                                 className="project-viewer__download-icon"
                                             />

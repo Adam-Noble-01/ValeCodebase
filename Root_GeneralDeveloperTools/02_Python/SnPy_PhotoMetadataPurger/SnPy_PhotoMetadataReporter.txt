@@ -1,4 +1,0 @@
-2025-07-03 11:47:48,391 | INFO | Starting Photo Metadata Reporter application.
-2025-07-03 11:47:59,961 | INFO | Application closed.
-2025-07-03 11:48:27,865 | INFO | Starting Photo Metadata Reporter application.
-2025-07-03 11:48:41,227 | INFO | Application closed.

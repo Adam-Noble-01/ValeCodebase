@@ -1,7 +1,0 @@
-2025-07-03 11:40:23,419 | INFO | Starting Photo Metadata Purger application.
-2025-07-03 11:40:30,197 | INFO | Application closed.
-2025-07-03 11:42:21,178 | INFO | Starting Photo Metadata Purger application.
-2025-07-03 11:42:30,378 | INFO | Successfully purged: D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools/02_Python/SnPy_PhotoMetadataPurger/01_TestingInput_TestImageSet/Image01__03-Jul-2025.jpg -> D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\SnPy_PhotoMetadataPurger\01_TestingInput_TestImageSet\Image01__03-Jul-2025_purged.jpg
-2025-07-03 11:42:30,475 | INFO | Successfully purged: D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools/02_Python/SnPy_PhotoMetadataPurger/01_TestingInput_TestImageSet/Image02__03-Jul-2025.jpg -> D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\SnPy_PhotoMetadataPurger\01_TestingInput_TestImageSet\Image02__03-Jul-2025_purged.jpg
-2025-07-03 11:42:30,568 | INFO | Successfully purged: D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools/02_Python/SnPy_PhotoMetadataPurger/01_TestingInput_TestImageSet/Image03__03-Jul-2025.jpg -> D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\SnPy_PhotoMetadataPurger\01_TestingInput_TestImageSet\Image03__03-Jul-2025_purged.jpg
-2025-07-03 11:42:32,934 | INFO | Application closed.

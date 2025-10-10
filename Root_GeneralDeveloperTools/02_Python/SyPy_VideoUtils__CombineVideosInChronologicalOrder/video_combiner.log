@@ -1,7 +1,0 @@
-2025-07-01 17:28:00,165 - ERROR - Error combining videos: No module named 'moviepy.editor'
-2025-07-01 17:28:06,666 - ERROR - Error combining videos: No module named 'moviepy.editor'
-2025-07-01 17:28:58,649 - ERROR - Error combining videos: No module named 'moviepy.editor'
-2025-07-01 17:32:04,580 - ERROR - Error combining videos: No module named 'moviepy.editor'
-2025-07-01 17:33:42,262 - ERROR - Error combining videos: No module named 'moviepy.editor'
-2025-07-01 17:37:12,002 - ERROR - Error combining videos: got an unexpected keyword argument 'verbose'
-2025-07-01 17:38:10,809 - ERROR - Error combining videos: got an unexpected keyword argument 'verbose'

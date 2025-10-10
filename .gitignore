@@ -1,6 +1,7 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+
 # Compiled Object files
 *.slo
 *.lo
@@ -81,3 +82,14 @@ Dev__EarlyStageDev__TestingFiles/Root__Photogrammetry__Video2Image__DataSetProce
 
 # TrueVision GLB model (239.09MB)
 Projects/2025/Morton/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_RJ03__OundleDrive_-_BuildingModel.glb
+
+
+# --------------------------------------------------------------
+
+# Unwanted Subfolders
+#  - Note these are bulky and unpredictable, so I've omitted these and I deal with them manually.
+Root_GeneralDeveloperTools/
+Root_ValeDesignSuite/
+Dev__EarlyStageDev__TestingFiles/
+Root_TrueVisionApp/
+Archive__ArchivedFiles/

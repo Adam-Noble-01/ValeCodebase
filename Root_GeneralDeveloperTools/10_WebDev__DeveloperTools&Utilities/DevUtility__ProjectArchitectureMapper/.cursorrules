@@ -248,7 +248,127 @@ LEG_DEPTH_MM            =   50                                            # <-- 
 
 ### ---------------------------------------------------------------------------
 
-## 7. HTML/CSS/JAVASCRIPT FORMATTING CONVENTIONS
+## 7. PYTHON REGIONAL STRUCTURE FOR IDE REGION COLORING
+
+### Python Regional Structure
+- Use Python comment format for regions with exact same pipe notation as Ruby
+- Use 98 equal signs for main region headers to enable IDE region coloring
+- Use `# REGION | Description` for main regions
+- Use `# METHOD | Description` for individual methods and functions
+- Use `# HELPER FUNC | Description` for utility functions
+- Use `# CLASS | Description` for class definitions
+- Use `# IMPORTS | Description` for import sections
+- End regions with `# endregion -------------------------------------------------------------------`
+- **CRITICAL**: Use exactly 98 equal signs for region dividers for proper IDE folding
+
+```python_region_example.py
+# ==================================================================================================
+# REGION | IMPORTS - Standard library imports
+# ==================================================================================================
+import os                                                    # <-- File system operations
+import sys                                                   # <-- System-specific parameters
+import json                                                  # <-- JSON processing
+
+# IMPORTS | Third-party dependencies
+# --------------------------------------------------------------------------------------------------
+import tkinter as tk                                         # <-- GUI framework
+from pathlib import Path                                     # <-- Modern path handling
+
+# endregion -------------------------------------------------------------------
+
+
+# ==================================================================================================
+# REGION | CLASS DEFINITIONS - Main Application Classes
+# ==================================================================================================
+
+# CLASS | Main Application Class
+# --------------------------------------------------------------------------------------------------
+class MyApplication:
+    def __init__(self):
+        self.config = None                                   # <-- Application configuration
+        self._initialize_components()                        # <-- Setup components
+
+    # ==================================================================================================
+    # REGION | USER INTERFACE METHODS - GUI Components and Interactions
+    # ==================================================================================================
+    
+    # METHOD | Initialize main user interface
+    # --------------------------------------------------------------------------------------------------
+    def _initialize_components(self):
+        self.main_window = tk.Tk()                           # <-- Main application window
+        self.main_window.title("Application Title")          # <-- Set window title
+        self._setup_menu_bar()                               # <-- Create menu system
+    
+    # METHOD | Setup application menu bar
+    # --------------------------------------------------------------------------------------------------
+    def _setup_menu_bar(self):
+        self.menu_bar = tk.Menu(self.main_window)            # <-- Create menu bar
+        self.main_window.config(menu=self.menu_bar)          # <-- Attach to window
+    
+    # endregion -------------------------------------------------------------------
+    
+    # ==================================================================================================
+    # REGION | UTILITY METHODS - Helper Functions and Support Methods
+    # ==================================================================================================
+    
+    # HELPER FUNC | Format file size for display
+    # --------------------------------------------------------------------------------------------------
+    def _format_file_size(self, size_bytes):
+        if size_bytes < 1024:                                # <-- Less than 1 KB
+            return f"{size_bytes}B"                          # <-- Display in bytes
+        kb = size_bytes / 1024.0                             # <-- Convert to kilobytes
+        return f"{kb:.1f}KB"                                 # <-- Display in KB
+    
+    # endregion -------------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+
+# ==================================================================================================
+# REGION | MAIN EXECUTION - Application Entry Point and Startup
+# ==================================================================================================
+
+# FUNCTION | Main application entry point
+# --------------------------------------------------------------------------------------------------
+def main():
+    app = MyApplication()                                    # <-- Create application instance
+    app.main_window.mainloop()                               # <-- Start GUI event loop
+
+# BLOCK | Main execution block
+# --------------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    main()                                                   # <-- Run main function
+
+# endregion -------------------------------------------------------------------
+```
+
+### Python Comment Structure and Organization
+- Use `# ==================================================================================================` (98 equal signs) for main region headers
+- Use `# REGION | Description` format for all region types
+- Use `# --------------------------------------------------------------------------------------------------` (98 hyphens) for method/function headers within regions
+- Maintain 4-space indentation within regions for collapsible structure
+- Use `# <--` for explanatory inline comments
+- Use `# endregion -------------------------------------------------------------------` to close regions
+- **CRITICAL**: The 98-character width ensures proper IDE region recognition and folding
+
+### Python Regional Organization Hierarchy
+1. **IMPORTS REGION** - All import statements grouped logically
+2. **CLASS DEFINITIONS REGION** - Main application classes with nested method regions
+3. **FUNCTION DEFINITIONS REGION** - Standalone functions outside classes
+4. **MAIN EXECUTION REGION** - Entry point and execution block
+5. **Within Classes**: Nest method regions inside class regions for logical grouping
+
+### Key Python Principles for IDE Region Coloring
+1. **98-Character Headers**: Use exactly 98 equal signs for main regions, 98 hyphens for sub-headers
+2. **Consistent Region Naming**: REGION, METHOD, HELPER FUNC, CLASS, IMPORTS, FUNCTION, BLOCK
+3. **Proper Endregion**: Always close regions with `# endregion -------------------------------------------------------------------`
+4. **Nested Structure**: Use regions within classes to group related methods
+5. **Logical Grouping**: Group imports, classes, functions, and execution separately
+6. **IDE Compatibility**: Format ensures proper folding in VS Code, PyCharm, and other IDEs
+
+### ---------------------------------------------------------------------------
+
+## 8. HTML/CSS/JAVASCRIPT FORMATTING CONVENTIONS
 
 ### HTML Regional Structure
 - Use HTML comment format for regions with exact same pipe notation as Ruby

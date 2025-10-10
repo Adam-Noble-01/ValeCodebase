@@ -39,6 +39,7 @@ from typing import List, Dict, Tuple
 # MODULE CONSTANTS | File Patterns and Paths
 # ------------------------------------------------------------
 PROJECTS_BASE_PATH      = "../Projects/2025"                          # <-- Base path for all projects (relative to DevUtils folder)
+MASTER_CONFIG_PATH      = "../src/data/masterConfig.json"             # <-- Master configuration file path (relative to DevUtils folder)
 IMAGE_PREFIX_PATTERN    = r'^IMG(\d{2})__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 PROJECT_JSON_FILENAME   = "project.json"                              # <-- Project metadata filename
 # ------------------------------------------------------------
@@ -63,24 +64,36 @@ COLOR_RED               = '\033[91m'                                  # <-- Erro
 # MODULE CONSTANTS | Command Line Help Text
 # ------------------------------------------------------------
 HELP_DESCRIPTION = """
-Whitecardopedia Image Auto-Discovery Utility
+Whitecardopedia Project Auto-Discovery & Image Update Utility
 
-Automatically discovers images in project folders based on the IMG## prefix 
-naming convention and updates project.json files with the discovered images.
+This utility performs TWO automated tasks:
+1. Auto-discovers all project folders and updates masterConfig.json
+2. Discovers images in each project folder and updates project.json files
 
-This utility simplifies project management by eliminating manual JSON editing
-for image references. Simply name your images with IMG01__, IMG02__, etc. 
-prefixes and run this script to automatically update all project configurations.
+FOLDER DISCOVERY:
+- Scans Projects/2025 directory for all subfolders
+- Generates projects array in masterConfig.json automatically
+- Uses blacklist exclusion (folders in projectFoldersBlacklist are disabled)
+- Eliminates manual project folder management
+
+IMAGE DISCOVERY:
+- Finds images with IMG## prefix naming convention
+- Updates project.json files with discovered image lists
+- Sorts images by numeric prefix (IMG01, IMG02, IMG03...)
+
+This utility eliminates ALL manual JSON editing for both project folders
+and image references. Just add folders and images, then run this script.
 """
 
 HELP_EPILOG = """
 Default Behavior:
   
   The script ALWAYS runs in safe mode:
-  1. First performs dry-run to preview changes
-  2. Shows what would be updated
-  3. Prompts for confirmation (yes/no)
-  4. Only proceeds if you confirm with 'yes' or 'y'
+  1. Auto-discovers project folders and updates masterConfig.json
+  2. Performs dry-run to preview image changes
+  3. Shows what would be updated
+  4. Prompts for confirmation (yes/no)
+  5. Only proceeds if you confirm with 'yes' or 'y'
 
 Examples:
   
@@ -95,6 +108,17 @@ Examples:
   
   Preview specific project only:
     python AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py --dry-run-only --project HS-61747__Harris
+
+Blacklist Management:
+  
+  To exclude folders from loading, add them to projectFoldersBlacklist in masterConfig.json:
+  
+  "projectFoldersBlacklist": [
+      "01__TemplateProject",
+      "00__TestProject"
+  ]
+  
+  The script will automatically mark blacklisted folders as "enabled": false
 
 Image Naming Convention:
   
@@ -152,6 +176,125 @@ def discover_project_images(project_path: Path) -> List[str]:
     
     images.sort(key=extract_image_number)                             # <-- Sort by numeric prefix
     return images                                                     # <-- Return sorted images list
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Folder Discovery and Master Config Management
+# -----------------------------------------------------------------------------
+
+# FUNCTION | Discover All Project Folders in Base Path
+# ------------------------------------------------------------
+def discover_all_project_folders(base_path: Path) -> List[str]:
+    folders = []                                                      # <-- Initialize folders list
+    
+    if not base_path.exists() or not base_path.is_dir():
+        return folders                                                # <-- Return empty if path invalid
+    
+    for item in sorted(base_path.iterdir()):
+        if item.is_dir() and not item.name.startswith('.'):           # <-- Check if directory and not hidden
+            folders.append(item.name)                                 # <-- Add folder name to list
+    
+    return folders                                                    # <-- Return sorted folder names
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Load Master Configuration File
+# ------------------------------------------------------------
+def load_master_config_file(config_path: Path) -> Tuple[Dict, bool]:
+    try:
+        with open(config_path, 'r', encoding='utf-8') as file:        # <-- Open config file
+            config = json.load(file)                                  # <-- Parse JSON content
+            return config, True                                       # <-- Return config and success flag
+    except Exception as error:
+        print(f"{COLOR_RED}Error reading {config_path}: {error}{COLOR_RESET}")  # <-- Log error
+        return None, False                                            # <-- Return None and failure flag
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Write Master Configuration File
+# ------------------------------------------------------------
+def write_master_config_file(config_path: Path, config: Dict) -> bool:
+    try:
+        with open(config_path, 'w', encoding='utf-8') as file:        # <-- Open config file for writing
+            json.dump(config, file, indent=4, ensure_ascii=False)     # <-- Write formatted JSON
+            file.write('\n')                                          # <-- Add trailing newline
+        return True                                                   # <-- Return success flag
+    except Exception as error:
+        print(f"{COLOR_RED}Error writing {config_path}: {error}{COLOR_RESET}")  # <-- Log error
+        return False                                                  # <-- Return failure flag
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Update Master Config Projects Array
+# ------------------------------------------------------------
+def update_master_config_projects(config_path: Path, all_folders: List[str], blacklist: List[str]) -> Tuple[bool, int, int]:
+    config, success = load_master_config_file(config_path)            # <-- Load existing config
+    
+    if not success or config is None:
+        return False, 0, 0                                            # <-- Return failure if load failed
+    
+    projects = []                                                     # <-- Initialize projects array
+    enabled_count = 0                                                 # <-- Initialize enabled counter
+    disabled_count = 0                                                # <-- Initialize disabled counter
+    
+    for folder_name in all_folders:
+        is_blacklisted = folder_name in blacklist                     # <-- Check if folder is blacklisted
+        enabled = not is_blacklisted                                  # <-- Set enabled flag
+        
+        projects.append({
+            "folderId": folder_name,
+            "enabled": enabled
+        })
+        
+        if enabled:
+            enabled_count += 1                                        # <-- Increment enabled counter
+        else:
+            disabled_count += 1                                       # <-- Increment disabled counter
+    
+    config['projects'] = projects                                     # <-- Update projects array
+    
+    success = write_master_config_file(config_path, config)           # <-- Write updated config
+    return success, enabled_count, disabled_count                     # <-- Return success and counts
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Process Folder Discovery and Update Master Config
+# ------------------------------------------------------------
+def process_folder_discovery(base_path: Path, config_path: Path) -> Tuple[bool, List[str], List[str]]:
+    print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")                      # <-- Print header divider
+    print(f"{COLOR_CYAN}PROJECT FOLDER DISCOVERY{COLOR_RESET}")      # <-- Print header title
+    print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")                    # <-- Print header divider
+    
+    all_folders = discover_all_project_folders(base_path)             # <-- Discover all project folders
+    
+    if not all_folders:
+        print(f"{COLOR_RED}No project folders found in {base_path}{COLOR_RESET}\n")  # <-- Log error
+        return False, [], []                                          # <-- Return failure
+    
+    print(f"{COLOR_BLUE}[DISCOVERY] Found {len(all_folders)} project folders{COLOR_RESET}")  # <-- Log folder count
+    
+    config, success = load_master_config_file(config_path)            # <-- Load master config
+    
+    if not success:
+        return False, [], []                                          # <-- Return failure if config load failed
+    
+    blacklist = config.get('projectFoldersBlacklist', [])             # <-- Get blacklist array
+    
+    if blacklist:
+        print(f"{COLOR_YELLOW}[DISCOVERY] Blacklisted: {len(blacklist)} folder(s) - {', '.join(blacklist)}{COLOR_RESET}")  # <-- Log blacklist
+    else:
+        print(f"{COLOR_GREEN}[DISCOVERY] No folders blacklisted{COLOR_RESET}")  # <-- Log no blacklist
+    
+    success, enabled_count, disabled_count = update_master_config_projects(config_path, all_folders, blacklist)  # <-- Update config
+    
+    if success:
+        print(f"{COLOR_GREEN}[+] masterConfig.json updated with {len(all_folders)} projects ({enabled_count} enabled, {disabled_count} disabled){COLOR_RESET}\n")  # <-- Log success
+    else:
+        print(f"{COLOR_RED}[X] Failed to update masterConfig.json{COLOR_RESET}\n")  # <-- Log failure
+    
+    return success, all_folders, blacklist                            # <-- Return success and lists
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -375,12 +518,21 @@ def main():
     
     script_dir = Path(__file__).parent                                # <-- Get script directory
     base_path = script_dir / PROJECTS_BASE_PATH                       # <-- Construct base projects path
+    config_path = script_dir / MASTER_CONFIG_PATH                     # <-- Construct master config path
     
-    print(f"\n{COLOR_CYAN}Whitecardopedia - Image Discovery Utility{COLOR_RESET}")  # <-- Print title
-    print(f"{COLOR_BLUE}Scanning: {base_path}{COLOR_RESET}")         # <-- Print scanning path
+    print(f"\n{COLOR_CYAN}Whitecardopedia - Project Auto-Discovery & Image Update Utility{COLOR_RESET}")  # <-- Print title
+    print(f"{COLOR_BLUE}Projects Path: {base_path}{COLOR_RESET}")    # <-- Print projects path
+    print(f"{COLOR_BLUE}Config Path: {config_path}{COLOR_RESET}\n")  # <-- Print config path
     
-    # STEP 1: Always run dry-run first to preview changes
-    print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")  # <-- Print dry-run mode
+    # STEP 0: Discover project folders and update masterConfig.json
+    discovery_success, all_folders, blacklist = process_folder_discovery(base_path, config_path)  # <-- Run folder discovery
+    
+    if not discovery_success:
+        print(f"{COLOR_RED}Folder discovery failed. Exiting.{COLOR_RESET}\n")  # <-- Log failure
+        return                                                        # <-- Exit if discovery failed
+    
+    # STEP 1: Always run dry-run first to preview image changes
+    print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode for image updates){COLOR_RESET}\n")  # <-- Print dry-run mode
     
     results = process_all_projects(base_path, args.project, dry_run=True)  # <-- Run dry-run first
     print_results(results, dry_run=True)                              # <-- Print preview results
@@ -402,12 +554,14 @@ def main():
         return                                                        # <-- Exit if user cancels
     
     # STEP 3: Run actual updates
-    print(f"{COLOR_GREEN}Mode: UPDATING FILES{COLOR_RESET}\n")       # <-- Print update mode
+    print(f"{COLOR_GREEN}Mode: UPDATING IMAGE FILES{COLOR_RESET}\n")  # <-- Print update mode
     
     results = process_all_projects(base_path, args.project, dry_run=False)  # <-- Run actual update
     print_results(results, dry_run=False)                             # <-- Print final results
     
-    print(f"{COLOR_GREEN}Update complete!{COLOR_RESET}\n")           # <-- Print completion message
+    print(f"{COLOR_GREEN}All updates complete!{COLOR_RESET}")         # <-- Print completion message
+    print(f"{COLOR_GREEN}  - masterConfig.json: {len(all_folders)} projects configured{COLOR_RESET}")  # <-- Print folder count
+    print(f"{COLOR_GREEN}  - project.json files: images updated{COLOR_RESET}\n")  # <-- Print image update status
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

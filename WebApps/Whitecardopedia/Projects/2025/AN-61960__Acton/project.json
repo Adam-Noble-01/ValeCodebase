@@ -1,0 +1,21 @@
+{
+    "projectName": "Acton",
+    "projectCode": "61960",
+    "projectDate": "01-Oct-2025",
+    "productionData": {
+        "input": "CAD File",
+        "duration": 5,
+        "additionalNotes": "Took me quite a while as the landscape was very complex, had to reference and align many images which took additional time."
+    },
+    "ratings": {
+        "quality": 3,
+        "prestige": 2,
+        "value": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__FrontRight__WhitecardImage__01-Oct-2025.png"
+    ]
+}

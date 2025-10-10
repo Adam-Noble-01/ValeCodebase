@@ -8,6 +8,10 @@
 *.o
 *.obj
 
+# Photoshop files
+*.psd
+*.psb
+
 # Precompiled Headers
 *.gch
 *.pch

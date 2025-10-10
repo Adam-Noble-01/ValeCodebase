@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     WHITECARDOPEDIA - REACT APPLICATION CONTAINER
+     =============================================================================
+     
+     FILE       : app.html
+     NAMESPACE  : Whitecardopedia
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : React application container for whitecard image review system
+     CREATED    : 2025
+     
+     DESCRIPTION:
+     - React application container for Vale Garden Houses board review tool
+     - Displays whitecard (massing model) images with project metadata
+     - Implements star ratings for Quality, Prestige, and Value metrics
+     - Dynamic project loading from folder structure
+     - Uses React CDN imports for rapid development
+     
+     =============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitecardopedia - Vale Garden Houses</title>
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- STYLES | Application Stylesheets                                  -->
+    <!-- ----------------------------------------------------------------- -->
+    <link rel="stylesheet" href="src/styles/variables.css">
+    <link rel="stylesheet" href="src/styles/app.css">
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REACT | CDN Imports for React Development                         -->
+    <!-- ----------------------------------------------------------------- -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- ----------------------------------------------------------------- -->
+    
+</head>
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REACT ROOT | Main Application Container                           -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="root"></div>
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- COMPONENTS | React Component Scripts                              -->
+    <!-- ----------------------------------------------------------------- -->
+    <script type="text/babel" src="src/data/projectLoader.js"></script>
+    <script type="text/babel" src="src/components/StarRating.jsx"></script>
+    <script type="text/babel" src="src/components/ImageCarousel.jsx"></script>
+    <script type="text/babel" src="src/components/HomePage.jsx"></script>
+    <script type="text/babel" src="src/components/ProjectGallery.jsx"></script>
+    <script type="text/babel" src="src/components/ProjectViewer.jsx"></script>
+    <script type="text/babel" src="src/components/App.jsx"></script>
+    <!-- ----------------------------------------------------------------- -->
+    
+</body>
+</html>
+

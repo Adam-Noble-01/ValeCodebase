@@ -1,0 +1,467 @@
+/* =============================================================================
+ * WHITECARDOPEDIA - MAIN APPLICATION STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : app.css
+ * NAMESPACE  : Whitecardopedia
+ * MODULE     : Main Application Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Core styling for Whitecardopedia React application
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Defines component styles for Whitecardopedia application
+ * - Implements Vale Design Suite standards for consistency
+ * - Provides responsive layout for project gallery and viewer
+ * - Includes star rating, image carousel, and navigation styles
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Base Layout and Reset Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* BASE STYLES | HTML and Body Reset */
+    /* ------------------------------------------------------------ */
+    * {
+        box-sizing                         : border-box;                   /* <-- Include padding in width calculations */
+        margin                             : 0;                            /* <-- Remove default margins */
+        padding                            : 0;                            /* <-- Remove default padding */
+    }
+    
+    html, body {
+        width                              : 100%;                         /* <-- Full viewport width */
+        height                             : 100%;                         /* <-- Full viewport height */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Apply Open Sans font */
+        background                         : var(--Vale_BackgroundLight);  /* <-- Application background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        overflow-x                         : hidden;                       /* <-- Prevent horizontal scroll */
+    }
+    
+    #root {
+        width                              : 100%;                         /* <-- Full width container */
+        min-height                         : 100vh;                        /* <-- Full viewport height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | HomePage Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* HOMEPAGE | Landing Page Layout */
+    /* ------------------------------------------------------------ */
+    .homepage {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        align-items                        : center;                       /* <-- Center horizontally */
+        justify-content                    : center;                       /* <-- Center vertically */
+        min-height                         : 100vh;                        /* <-- Full viewport height */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+    }
+    
+    .homepage__logo {
+        max-width                          : 400px;                        /* <-- Maximum logo width */
+        width                              : 80%;                          /* <-- Responsive width */
+        height                             : auto;                         /* <-- Maintain aspect ratio */
+        margin-bottom                      : var(--Vale_Spacing_XLarge);   /* <-- Space below logo */
+    }
+    
+    .homepage__button {
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_XLarge);  /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Button text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .homepage__button:hover {
+        background                         : var(--Vale_TextSecondary);    /* <-- Darker on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+    }
+    
+    .homepage__button:active {
+        transform                          : translateY(0);                /* <-- Reset on click */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* HEADER | Application Header Bar */
+    /* ------------------------------------------------------------ */
+    .app-header {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : space-between;                /* <-- Space between elements */
+        height                             : var(--Vale_HeaderHeight);     /* <-- Fixed header height */
+        padding                            : 0 var(--Vale_Spacing_Large);  /* <-- Horizontal padding */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        box-shadow                         : 0 2px 4px rgba(0,0,0,0.1);   /* <-- Subtle shadow */
+    }
+    
+    .app-header__title {
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+    }
+    
+    .app-header__back-button {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        background                         : rgba(255,255,255,0.2);        /* <-- Semi-transparent background */
+        border                             : none;                         /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+    }
+    
+    .app-header__back-button:hover {
+        background                         : rgba(255,255,255,0.3);        /* <-- Lighter on hover */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ProjectGallery Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PROJECT GALLERY | Grid Layout Container */
+    /* ------------------------------------------------------------ */
+    .project-gallery {
+        flex                               : 1;                            /* <-- Expand to fill space */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+        max-width                          : var(--Vale_MaxContentWidth);  /* <-- Maximum content width */
+        margin                             : 0 auto;                       /* <-- Center horizontally */
+        width                              : 100%;                         /* <-- Full width */
+    }
+    
+    .project-gallery__title {
+        font-size                          : var(--Vale_FontSize_Title);   /* <-- Title font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below title */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .project-gallery__grid {
+        display                            : grid;                         /* <-- CSS Grid layout */
+        grid-template-columns              : repeat(auto-fill, minmax(300px, 1fr));  /* <-- Responsive columns */
+        gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
+        margin-top                         : var(--Vale_Spacing_Large);    /* <-- Space above grid */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* PROJECT CARD | Individual Project Card */
+    /* ------------------------------------------------------------ */
+    .project-card {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White card background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        overflow                           : hidden;                       /* <-- Clip overflow content */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .project-card:hover {
+        transform                          : translateY(-4px);             /* <-- Lift effect on hover */
+        box-shadow                         : 0 8px 16px rgba(0,0,0,0.15);  /* <-- Enhanced shadow */
+    }
+    
+    .project-card__image {
+        width                              : 100%;                         /* <-- Full card width */
+        height                             : 200px;                        /* <-- Fixed image height */
+        object-fit                         : cover;                        /* <-- Cover the area */
+        background                         : var(--Vale_BackgroundLight);  /* <-- Fallback background */
+    }
+    
+    .project-card__content {
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Content padding */
+    }
+    
+    .project-card__name {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below name */
+    }
+    
+    .project-card__code {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below code */
+    }
+    
+    .project-card__ratings {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between ratings */
+    }
+    
+    .project-card__rating-row {
+        display                            : flex;                         /* <-- Flexbox layout */
+        justify-content                    : space-between;                /* <-- Space between label and stars */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .project-card__rating-label {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ProjectViewer Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PROJECT VIEWER | Full Project Display Layout */
+    /* ------------------------------------------------------------ */
+    .project-viewer {
+        flex                               : 1;                            /* <-- Expand to fill space */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
+        max-width                          : var(--Vale_MaxContentWidth);  /* <-- Maximum content width */
+        margin                             : 0 auto;                       /* <-- Center horizontally */
+        width                              : 100%;                         /* <-- Full width */
+    }
+    
+    .project-viewer__header {
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below header */
+    }
+    
+    .project-viewer__title {
+        font-size                          : var(--Vale_FontSize_Title);   /* <-- Title font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below title */
+    }
+    
+    .project-viewer__code {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below code */
+    }
+    
+    .project-viewer__description {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        line-height                        : 1.6;                          /* <-- Line height for readability */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below description */
+    }
+    
+    .project-viewer__content {
+        display                            : grid;                         /* <-- CSS Grid layout */
+        grid-template-columns              : 2fr 1fr;                      /* <-- 2:1 ratio columns */
+        gap                                : var(--Vale_Spacing_Large);    /* <-- Grid gap */
+    }
+    
+    .project-viewer__carousel-container {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        overflow                           : hidden;                       /* <-- Clip overflow content */
+    }
+    
+    .project-viewer__ratings-panel {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Panel padding */
+    }
+    
+    .project-viewer__ratings-title {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below title */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .project-viewer__rating-item {
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space between ratings */
+    }
+    
+    .project-viewer__rating-label {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below label */
+        display                            : block;                        /* <-- Block display */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | ImageCarousel Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* IMAGE CAROUSEL | Image Navigation Display */
+    /* ------------------------------------------------------------ */
+    .image-carousel {
+        position                           : relative;                     /* <-- Relative positioning for controls */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 600px;                        /* <-- Fixed height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+    }
+    
+    .image-carousel__main {
+        flex                               : 1;                            /* <-- Expand to fill space */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        background                         : var(--Vale_BackgroundLight);  /* <-- Light background */
+        position                           : relative;                     /* <-- Relative positioning */
+    }
+    
+    .image-carousel__image {
+        max-width                          : 100%;                         /* <-- Maximum width */
+        max-height                         : 100%;                         /* <-- Maximum height */
+        object-fit                         : contain;                      /* <-- Contain within bounds */
+    }
+    
+    .image-carousel__button {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 50%;                          /* <-- Center vertically */
+        transform                          : translateY(-50%);             /* <-- Adjust for centering */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Brand color background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        border                             : none;                         /* <-- No border */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Large font for arrows */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        border-radius                      : 50%;                          /* <-- Circular buttons */
+        width                              : 50px;                         /* <-- Fixed width */
+        height                             : 50px;                         /* <-- Fixed height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center content */
+        justify-content                    : center;                       /* <-- Center content */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        opacity                            : 0.7;                          /* <-- Semi-transparent */
+    }
+    
+    .image-carousel__button:hover {
+        opacity                            : 1;                            /* <-- Full opacity on hover */
+        background                         : var(--Vale_TextSecondary);    /* <-- Darker on hover */
+    }
+    
+    .image-carousel__button--prev {
+        left                               : var(--Vale_Spacing_Medium);   /* <-- Position left */
+    }
+    
+    .image-carousel__button--next {
+        right                              : var(--Vale_Spacing_Medium);   /* <-- Position right */
+    }
+    
+    .image-carousel__thumbnails {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between thumbnails */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Padding around thumbnails */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        overflow-x                         : auto;                         /* <-- Horizontal scroll if needed */
+    }
+    
+    .image-carousel__thumbnail {
+        width                              : 80px;                         /* <-- Fixed thumbnail width */
+        height                             : 80px;                         /* <-- Fixed thumbnail height */
+        object-fit                         : cover;                        /* <-- Cover thumbnail area */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        border                             : 2px solid transparent;        /* <-- Transparent border default */
+        border-radius                      : 4px;                          /* <-- Slight rounding */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        opacity                            : 0.6;                          /* <-- Semi-transparent default */
+    }
+    
+    .image-carousel__thumbnail:hover {
+        opacity                            : 0.9;                          /* <-- More opaque on hover */
+    }
+    
+    .image-carousel__thumbnail--active {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border */
+        opacity                            : 1;                            /* <-- Full opacity */
+    }
+    
+    .image-carousel__counter {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        bottom                             : var(--Vale_Spacing_Medium);   /* <-- Position from bottom */
+        right                              : var(--Vale_Spacing_Medium);   /* <-- Position from right */
+        background                         : rgba(0,0,0,0.6);              /* <-- Semi-transparent dark background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Counter padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | StarRating Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* STAR RATING | Star Display Component */
+    /* ------------------------------------------------------------ */
+    .star-rating {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : 4px;                          /* <-- Gap between stars */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .star-rating__star {
+        font-size                          : 20px;                         /* <-- Star size */
+        color                              : var(--Vale_StarEmpty);        /* <-- Empty star color */
+        transition                         : color var(--Vale_Transition_Fast);  /* <-- Fast color transition */
+    }
+    
+    .star-rating__star--filled {
+        color                              : var(--Vale_StarGold);         /* <-- Filled star color */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive Design Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    /* RESPONSIVE | Mobile and Tablet Adjustments */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 768px) {
+        .project-gallery__grid {
+            grid-template-columns          : 1fr;                          /* <-- Single column on mobile */
+        }
+        
+        .project-viewer__content {
+            grid-template-columns          : 1fr;                          /* <-- Single column on mobile */
+        }
+        
+        .image-carousel {
+            height                         : 400px;                        /* <-- Reduced height on mobile */
+        }
+        
+        .app-header {
+            padding                        : 0 var(--Vale_Spacing_Medium); /* <-- Reduced padding on mobile */
+        }
+        
+        .homepage__logo {
+            max-width                      : 300px;                        /* <-- Smaller logo on mobile */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

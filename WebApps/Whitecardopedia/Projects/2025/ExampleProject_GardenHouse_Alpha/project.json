@@ -1,0 +1,15 @@
+{
+    "projectName": "Garden House Alpha",
+    "projectCode": "VGH-2025-001",
+    "quality": 4,
+    "prestige": 5,
+    "value": 3,
+    "images": [
+        "view_01_front.svg",
+        "view_02_side.svg",
+        "view_03_rear.svg",
+        "view_04_aerial.svg"
+    ],
+    "description": "Premium garden house design featuring contemporary lines and sustainable materials. Showcasing massing model for board review."
+}
+

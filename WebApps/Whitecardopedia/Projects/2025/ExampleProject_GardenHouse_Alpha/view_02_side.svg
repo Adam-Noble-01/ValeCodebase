@@ -1,0 +1,9 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f5f5f5"/>
+  <rect x="100" y="150" width="600" height="350" fill="#656565"/>
+  <rect x="120" y="170" width="560" height="310" fill="#86847d"/>
+  <text x="400" y="320" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" text-anchor="middle">SIDE VIEW</text>
+  <text x="400" y="360" font-family="Arial, sans-serif" font-size="20" fill="#ffffff" text-anchor="middle">Garden House Alpha - Whitecard Model</text>
+  <text x="400" y="390" font-family="Arial, sans-serif" font-size="16" fill="#cccccc" text-anchor="middle">Replace with actual project image</text>
+</svg>
+

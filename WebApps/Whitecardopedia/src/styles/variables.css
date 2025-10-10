@@ -1,0 +1,79 @@
+/* =============================================================================
+ * WHITECARDOPEDIA - CSS VARIABLES
+ * =============================================================================
+ *
+ * FILE       : variables.css
+ * NAMESPACE  : Whitecardopedia
+ * MODULE     : CSS Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : CSS variables following Vale Design Suite standards
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Defines the visual design system for Whitecardopedia application
+ * - Implements Noble Architecture brand colors and typography
+ * - Provides consistent design tokens across the application
+ * - Aligned with Vale Design Suite standards for consistency
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | CSS Variables - Vale Design Suite Standards
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Color Palette and Design Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Color Palette Variables */
+        --Vale_PrimaryBrand                : #555041;                      /* <-- Noble Architecture brand color */
+        --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Light background */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
+        --Vale_BackgroundDark              : #3a3a3a;                      /* <-- Dark background for contrast */
+        --Vale_TextPrimary                 : #555041;                      /* <-- Primary text color */
+        --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
+        --Vale_TextSubtle                  : #86847d;                      /* <-- Subtle text */
+        --Vale_TextLight                   : #ffffff;                      /* <-- Light text on dark backgrounds */
+        --Vale_BorderPrimary               : #555041;                      /* <-- Primary border color */
+        --Vale_BorderLight                 : #cccccc;                      /* <-- Light border color */
+        --Vale_HoverBackground             : #e8e8e8;                      /* <-- Hover state background */
+        --Vale_ActiveBackground            : #d0d0d0;                      /* <-- Active state background */
+        --Vale_StarGold                    : #ffd700;                      /* <-- Star rating color */
+        --Vale_StarEmpty                   : #cccccc;                      /* <-- Empty star color */
+        
+        /* Layout Dimension Variables */
+        --Vale_HeaderHeight                : 60px;                         /* <-- Fixed header height */
+        --Vale_FooterHeight                : 50px;                         /* <-- Fixed footer height */
+        --Vale_MaxContentWidth             : 1400px;                       /* <-- Maximum content width */
+        --Vale_BorderWidth                 : 2px;                          /* <-- Standard border thickness */
+        --Vale_BorderRadius                : 8px;                          /* <-- Standard border radius */
+        --Vale_Spacing_Small               : 8px;                          /* <-- Small spacing unit */
+        --Vale_Spacing_Medium              : 16px;                         /* <-- Medium spacing unit */
+        --Vale_Spacing_Large               : 24px;                         /* <-- Large spacing unit */
+        --Vale_Spacing_XLarge              : 32px;                         /* <-- Extra large spacing unit */
+        
+        /* Typography Variables */
+        --Vale_FontFamily                  : 'Open Sans', sans-serif;      /* <-- Primary font */
+        --Vale_FontSize_Title              : 32px;                         /* <-- Application title size */
+        --Vale_FontSize_Heading            : 24px;                         /* <-- Heading text size */
+        --Vale_FontSize_SubHeading         : 18px;                         /* <-- Sub-heading text size */
+        --Vale_FontSize_Standard           : 14px;                         /* <-- Standard interface text */
+        --Vale_FontSize_Small              : 12px;                         /* <-- Small text size */
+        --Vale_FontWeight_Light            : 300;                          /* <-- Light font weight */
+        --Vale_FontWeight_Regular          : 400;                          /* <-- Regular font weight */
+        --Vale_FontWeight_SemiBold         : 600;                          /* <-- Semi-bold font weight */
+        
+        /* Z-Index Layer Management */
+        --Vale_ZIndex_Header               : 1000;                         /* <-- Header layer */
+        --Vale_ZIndex_Modal                : 2000;                         /* <-- Modal overlay layer */
+        --Vale_ZIndex_Tooltip              : 3000;                         /* <-- Tooltip layer */
+        
+        /* Animation Variables */
+        --Vale_Transition_Fast             : 0.15s ease;                   /* <-- Fast transition */
+        --Vale_Transition_Standard         : 0.3s ease;                    /* <-- Standard transition */
+        --Vale_Transition_Slow             : 0.5s ease;                    /* <-- Slow transition */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

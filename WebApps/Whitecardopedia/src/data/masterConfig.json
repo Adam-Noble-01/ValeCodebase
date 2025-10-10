@@ -1,0 +1,12 @@
+{
+    "applicationName": "Whitecardopedia",
+    "version": "1.0.0",
+    "projectsBasePath": "Projects/2025",
+    "projects": [
+        {
+            "folderId": "ExampleProject_GardenHouse_Alpha",
+            "enabled": true
+        }
+    ]
+}
+

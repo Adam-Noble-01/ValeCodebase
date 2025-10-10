@@ -1,9 +1,9 @@
 # Whitecardopedia - Implementation Summary
 
-**Version**: 0.0.6 - First Major Stable Release  
+**Version**: 0.0.7 - Download Images Feature  
 **Date**: 10-Oct-2025  
 **Developer**: Adam Noble - Noble Architecture  
-**Technology**: React 18 (CDN), Vanilla CSS, JSON Configuration  
+**Technology**: React 18 (CDN), Vanilla CSS, JSON Configuration, JSZip  
 **Status**: ✅ Complete and Production Ready
 
 ---
@@ -22,10 +22,12 @@ Whitecardopedia is a fully functional React-based image viewer application for V
 - [x] **Project Date Display** - Formatted dates with ordinal superscripts (1st, 2nd, 3rd)
 - [x] **Production Data Panel** - Input type, duration, and additional notes
 - [x] **SketchUp Model Links** - Conditional display of 3D model links
+- [x] **Download Images** - Download all project images as ZIP (NEW in v0.0.7)
 - [x] **Star Ratings** - Quality, Prestige, Value (1-5 stars)
 - [x] **Image Carousel** - Navigation with thumbnails and controls
 - [x] **Dynamic Loading** - Auto-load projects from folder structure
 - [x] **Image Auto-Discovery** - Python utility to automatically update project images
+- [x] **Version-Locked Dependencies** - Local hosting with CDN fallback (NEW in v0.0.7)
 - [x] **Responsive Design** - Mobile, tablet, and desktop support
 - [x] **Vale Design Suite** - Full compliance with coding standards
 

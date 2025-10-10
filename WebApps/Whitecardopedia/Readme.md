@@ -40,6 +40,7 @@ Whitecardopedia is a quality control and presentation tool for the Vale Garden H
 - ✅ **Project Date Display** - Formatted dates with ordinal superscripts (1st, 2nd, 3rd)
 - ✅ **Production Data Panel** - Input type, duration, and additional notes
 - ✅ **SketchUp Model Links** - Conditional display of 3D model links
+- ✅ **Download Images** - Download all project images as ZIP file (NEW in v0.0.7)
 - ✅ **Star Ratings** - Visual display of Quality, Prestige, Value metrics (1-5 stars)
 - ✅ **Image Carousel** - Navigate through multiple project images with thumbnails
 - ✅ **Dynamic Loading** - Projects automatically loaded from folder structure
@@ -56,9 +57,12 @@ Whitecardopedia/
 ├── index.html                          # Redirect to app.html
 ├── app.html                            # React application container
 ├── README.md                           # This file
+├── CHANGELOG.md                        # Version history and release notes
 │
 ├── assets/
-│   └── AppLogo__Whitecardopedia__.png  # Application logo
+│   ├── AppLogo__Whitecardopedia__.png  # Application logo
+│   └── AppIcons/
+│       └── Tempt__Icon__DownloadButtonSymbol__.svg  # Download button icon
 │
 ├── src/
 │   ├── components/
@@ -67,7 +71,7 @@ Whitecardopedia/
 │   │   ├── HomePage.jsx                # Landing page with logo
 │   │   ├── PinEntry.jsx                # PIN authentication modal
 │   │   ├── ProjectGallery.jsx          # Project grid view
-│   │   ├── ProjectViewer.jsx           # Individual project viewer
+│   │   ├── ProjectViewer.jsx           # Individual project viewer (with download)
 │   │   ├── StarRating.jsx              # Star rating component
 │   │   └── ImageCarousel.jsx           # Image navigation component
 │   │
@@ -78,9 +82,12 @@ Whitecardopedia/
 │   ├── utils/
 │   │   └── dateFormatter.js            # Date formatting with ordinals
 │   │
-│   └── styles/
-│       ├── variables.css               # CSS variables (Vale Design Suite)
-│       └── app.css                     # Main application styles
+│   ├── styles/
+│   │   ├── variables.css               # CSS variables (Vale Design Suite)
+│   │   └── app.css                     # Main application styles
+│   │
+│   └── ThirdParty__VersionLockedDependencies/
+│       └── jszip.min.js                # JSZip library v3.10.1 (version-locked)
 │
 ├── DevUtils/
 │   └── AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py  # Image discovery utility
@@ -537,5 +544,5 @@ For questions or issues, contact:
 
 ---
 
-**Version**: 0.0.6 - First Major Stable Release  
+**Version**: 0.0.7 - Download Images Feature  
 **Last Updated**: 10-Oct-2025

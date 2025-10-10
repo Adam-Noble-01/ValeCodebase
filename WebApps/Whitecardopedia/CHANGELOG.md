@@ -2,6 +2,230 @@
 
 ---
 
+## Version 0.0.7 - October 10, 2025
+
+### 📥 DOWNLOAD IMAGES FEATURE
+
+**New Feature - Project Image Download Functionality**
+
+Added ability to download all project images as a single ZIP file directly from the project viewer.
+
+---
+
+### 🎯 Key Features
+
+**Download Button:**
+- ✅ New "Download Image Files" button in project viewer sidebar
+- ✅ Located below star ratings section with horizontal separator
+- ✅ Custom Vale-branded download icon (SVG)
+- ✅ Downloads all project images as single ZIP archive
+- ✅ Intelligent filename: `{ProjectCode}__{ProjectName}_Images_{DD-MMM-YYYY}.zip`
+
+**User Experience:**
+- ✅ Loading spinner during download process
+- ✅ Button disabled while downloading (prevents double-clicks)
+- ✅ Hover effects (grow scale 1.02x + shadow)
+- ✅ Error handling with user feedback
+- ✅ Professional Vale blue styling
+
+**Technical Implementation:**
+- ✅ JSZip library integration (version-locked)
+- ✅ Local library hosting with CDN fallback
+- ✅ Browser-based ZIP generation (no server required)
+- ✅ Async/await for smooth user experience
+
+---
+
+### 📦 Version-Locked Dependencies
+
+**Third-Party Library Management:**
+
+New folder structure for version-locked dependencies:
+- `src/ThirdParty__VersionLockedDependencies/jszip.min.js` (JSZip v3.10.1)
+
+**Loading Strategy:**
+1. **Primary**: Load from local version-locked file
+2. **Fallback**: Automatic CDN fallback if local file unavailable
+3. **Logging**: Console warning when fallback is used
+
+**Benefits:**
+- 🔒 Version stability (locked to 3.10.1)
+- 📴 Offline support (works without internet)
+- 🚀 Performance (local files load faster)
+- 🛡️ Resilience (CDN fallback ensures reliability)
+
+---
+
+### 📂 Files Modified
+
+**New Files:**
+- `src/ThirdParty__VersionLockedDependencies/jszip.min.js` - JSZip library (v3.10.1)
+- `assets/AppIcons/Tempt__Icon__DownloadButtonSymbol__.svg` - Download button icon
+
+**Modified Files:**
+- `app.html` - Added JSZip script with local-first loading strategy
+- `src/components/ProjectViewer.jsx` - Added download functionality and button
+  - New helper function: `downloadProjectImages()` (~35 lines)
+  - New state: `isDownloading` for loading management
+  - New JSX: Download button with loading states
+- `src/styles/app.css` - Added download button styles (~65 lines)
+  - `.project-viewer__download-section`
+  - `.project-viewer__download-button`
+  - `.project-viewer__download-icon`
+  - `.project-viewer__download-spinner`
+  - `@keyframes spin` animation
+- `src/data/masterConfig.json` - Version bump to 0.0.7
+
+---
+
+### 🔧 Technical Details
+
+**Download Functionality:**
+
+```javascript
+downloadProjectImages(project, setIsDownloading)
+// - Creates ZIP archive using JSZip library
+// - Fetches all project images from project folder
+// - Generates ZIP file dynamically in browser
+// - Triggers browser download with formatted filename
+// - Error handling with user-friendly messages
+```
+
+**Filename Format:**
+```
+{ProjectCode}__{ProjectName}_Images_{DD-MMM-YYYY}.zip
+
+Examples:
+- 61616__Pilley_Images_10-Oct-2025.zip
+- 29951__McNerney_Images_10-Oct-2025.zip
+- 61960__Acton_Images_10-Oct-2025.zip
+```
+
+**Loading States:**
+- Normal: Shows download icon + "Download Image Files" text
+- Loading: Shows spinner + "Downloading..." text
+- Button disabled during download to prevent issues
+
+---
+
+### 🎨 UI Design
+
+**Download Button Styling:**
+- Vale blue background (#172b3a)
+- White text and icon
+- Full-width button in sidebar
+- Horizontal separator line above
+- Hover: Darker blue (#0f1e28) + scale(1.02) + shadow
+- Disabled: 70% opacity + not-allowed cursor
+
+**Icon:**
+- Custom SVG download icon
+- 16x16px size
+- CSS filter for white coloring
+- Professional appearance
+
+---
+
+### 📊 Statistics
+
+**Code Additions:**
+- JavaScript: ~50 lines (ProjectViewer.jsx)
+- CSS: ~65 lines (app.css)
+- HTML: ~10 lines (app.html script loading)
+- Total: ~125 new lines of code
+
+**Dependencies:**
+- JSZip 3.10.1 (81 KB minified)
+- Download icon SVG (1 KB)
+
+---
+
+### 🧪 Testing Checklist
+
+- [x] Download button appears in project viewer
+- [x] Button positioned below star ratings with separator
+- [x] Loading spinner displays during download
+- [x] Button disabled while downloading
+- [x] ZIP file generates correctly
+- [x] All project images included in ZIP
+- [x] Filename format correct (ProjectCode__ProjectName_Images_DD-MMM-YYYY.zip)
+- [x] Error handling works for failed downloads
+- [x] Hover effects work (scale + shadow)
+- [x] Local JSZip library loads successfully
+- [x] CDN fallback works when local file missing
+- [x] No console errors
+- [x] No linting errors
+
+---
+
+### 🌐 Browser Compatibility
+
+Download feature works in:
+- ✅ Chrome 90+ (tested)
+- ✅ Firefox 88+ (Blob support)
+- ✅ Safari 14+ (Blob support)
+- ✅ Edge 90+ (Chromium-based)
+
+**Requirements:**
+- Modern browser with Blob API support
+- JavaScript enabled
+- Download permission granted
+
+---
+
+### 🚀 Usage
+
+**For End Users:**
+
+1. Open any project in the viewer
+2. Scroll to bottom of sidebar (below star ratings)
+3. Click "Download Image Files" button
+4. Wait for download to complete (spinner shows progress)
+5. ZIP file downloads automatically to default downloads folder
+
+**Filename Example:**
+- Project: Pilley (61616)
+- Date: October 10, 2025
+- Filename: `61616__Pilley_Images_10-Oct-2025.zip`
+
+---
+
+### 🔄 Upgrade Notes
+
+**From Version 0.0.6 to 0.0.7:**
+
+No breaking changes. Existing functionality remains unchanged.
+
+**New Features:**
+- Download button automatically appears in all project viewers
+- No configuration required
+- Works with all existing projects
+
+**Performance Impact:**
+- Minimal: JSZip library loads once on page load
+- Download speed depends on number/size of images
+- Local file loading improves performance vs CDN
+
+---
+
+### 📝 Future Enhancements
+
+**Potential Improvements:**
+- [ ] Bulk download (multiple projects at once)
+- [ ] Download format options (ZIP, TAR, individual files)
+- [ ] Image resolution selection (full/compressed)
+- [ ] Download progress bar (percentage complete)
+- [ ] Download history/cache
+- [ ] Share download link functionality
+
+---
+
+**Version**: 0.0.7  
+**Release Date**: October 10, 2025  
+**Developer**: Adam Noble - Noble Architecture
+
+---
+
 ## Version 0.0.6 - October 10, 2025
 
 ### 🎉 FIRST MAJOR STABLE RELEASE

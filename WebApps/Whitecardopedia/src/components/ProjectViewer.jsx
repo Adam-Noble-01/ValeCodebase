@@ -41,9 +41,50 @@
     // ---------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Download All Project Images as ZIP
+    // ---------------------------------------------------------------
+    const downloadProjectImages = async (project, setIsDownloading) => {
+        setIsDownloading(true);                                          // <-- Enable loading state
+        
+        try {
+            const zip = new JSZip();                                     // <-- Create new ZIP instance
+            const projectFolder = project.projectCode + '__' + project.projectName.replace(/\s+/g, '');  // <-- Format folder name
+            const basePath = `Projects/2025/${projectFolder}/`;          // <-- Base path for images
+            
+            // LOAD IMAGES | Fetch and add each image to ZIP
+            for (const imageName of project.images) {
+                const imagePath = basePath + imageName;                  // <-- Full image path
+                const response = await fetch(imagePath);                 // <-- Fetch image file
+                const blob = await response.blob();                      // <-- Convert to blob
+                zip.file(imageName, blob);                               // <-- Add to ZIP archive
+            }
+            
+            // GENERATE ZIP | Create ZIP file and trigger download
+            const zipBlob = await zip.generateAsync({ type: 'blob' });   // <-- Generate ZIP blob
+            const today = new Date();                                    // <-- Get current date
+            const dateStr = `${String(today.getDate()).padStart(2, '0')}-${today.toLocaleString('en-US', { month: 'short' })}-${today.getFullYear()}`;  // <-- Format date DD-MMM-YYYY
+            const filename = `${project.projectCode}__${project.projectName.replace(/\s+/g, '')}_Images_${dateStr}.zip`;  // <-- Create filename
+            
+            const link = document.createElement('a');                    // <-- Create download link
+            link.href = URL.createObjectURL(zipBlob);                    // <-- Create object URL
+            link.download = filename;                                    // <-- Set download filename
+            link.click();                                                // <-- Trigger download
+            URL.revokeObjectURL(link.href);                              // <-- Clean up object URL
+            
+        } catch (error) {
+            console.error('Error downloading images:', error);           // <-- Log errors
+            alert('Failed to download images. Please try again.');       // <-- User feedback
+        } finally {
+            setIsDownloading(false);                                     // <-- Disable loading state
+        }
+    };
+    // ---------------------------------------------------------------
+
+
     // COMPONENT | Project Detail Viewer
     // ------------------------------------------------------------
     function ProjectViewer({ project, onBack }) {
+        const [isDownloading, setIsDownloading] = React.useState(false);  // <-- Track download state
         if (!project) {
             return (
                 <div className="project-viewer">
@@ -149,6 +190,30 @@
                             <div className="project-viewer__rating-item">
                                 <span className="project-viewer__rating-label">Project Value</span>
                                 <StarRating rating={project.ratings?.value || project.value || 0} />
+                            </div>
+                            
+                            <div className="project-viewer__download-section">
+                                <button 
+                                    className={`project-viewer__download-button ${isDownloading ? 'project-viewer__download-button--loading' : ''}`}
+                                    onClick={() => downloadProjectImages(project, setIsDownloading)}
+                                    disabled={isDownloading}
+                                >
+                                    {isDownloading ? (
+                                        <>
+                                            <span className="project-viewer__download-spinner"></span>
+                                            Downloading...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <img 
+                                                src="assets/AppIcons/Tempt__Icon__DownloadButtonSymbol__.svg" 
+                                                alt="Download" 
+                                                className="project-viewer__download-icon"
+                                            />
+                                            Download Image Files
+                                        </>
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>

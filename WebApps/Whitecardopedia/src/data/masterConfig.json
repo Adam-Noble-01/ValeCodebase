@@ -1,6 +1,6 @@
 {
     "applicationName": "Whitecardopedia",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "projectsBasePath": "Projects/2025",
     "projectFoldersBlacklist": [
         "01__TemplateProject",
@@ -14,6 +14,10 @@
         {
             "folderId": "01__TemplateProject",
             "enabled": false
+        },
+        {
+            "folderId": "61557__Shillabeer",
+            "enabled": true
         },
         {
             "folderId": "AN-61960__Acton",
@@ -33,6 +37,10 @@
         },
         {
             "folderId": "NY-29951__McNerney",
+            "enabled": true
+        },
+        {
+            "folderId": "PY-61616__Pilley",
             "enabled": true
         },
         {

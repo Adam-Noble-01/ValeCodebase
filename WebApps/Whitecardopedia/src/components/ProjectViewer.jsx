@@ -67,8 +67,9 @@
                 
                 <div className="project-viewer">
                     <div className="project-viewer__header">
-                        <h1 className="project-viewer__title">{project.projectName}</h1>
-                        <p className="project-viewer__code">{project.projectCode}</p>
+                        <h1 className="project-viewer__title">
+                            {project.projectName} <span className="project-viewer__code-inline">- {project.projectCode}</span>
+                        </h1>
                         {project.description && isValidTextContent(project.description) && (
                             <p className="project-viewer__description">{project.description}</p>
                         )}

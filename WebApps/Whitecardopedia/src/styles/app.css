@@ -242,13 +242,19 @@
     }
     
     .project-viewer__header {
-        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below header */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below header */
     }
     
     .project-viewer__title {
         font-size                          : var(--Vale_FontSize_Title);   /* <-- Title font size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
-        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below title */
+        margin-bottom                      : 0;                            /* <-- No space below title */
+    }
+    
+    .project-viewer__code-inline {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular font weight */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary grey text color */
     }
     
     .project-viewer__code {

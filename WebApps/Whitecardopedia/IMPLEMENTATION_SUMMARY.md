@@ -40,13 +40,16 @@ WebApps/Whitecardopedia/
 ├── index.html                          ✅ Redirect to app.html
 ├── app.html                            ✅ React container
 ├── README.md                           ✅ Full documentation
+├── CHANGELOG.md                        ✅ Version history
 ├── QUICKSTART.md                       ✅ Quick start guide
 ├── IMPLEMENTATION_SUMMARY.md           ✅ This file
 ├── start_server.bat                    ✅ Windows server launcher
 ├── start_server.sh                     ✅ Mac/Linux server launcher
 │
 ├── assets/
-│   └── AppLogo__Whitecardopedia__.png  ✅ Application logo
+│   ├── AppLogo__Whitecardopedia__.png  ✅ Application logo
+│   └── AppIcons/
+│       └── Tempt__Icon__DownloadButtonSymbol__.svg  ✅ Download icon (NEW v0.0.7)
 │
 ├── src/
 │   ├── components/
@@ -55,7 +58,7 @@ WebApps/Whitecardopedia/
 │   │   ├── HomePage.jsx                ✅ Landing page
 │   │   ├── PinEntry.jsx                ✅ PIN authentication modal
 │   │   ├── ProjectGallery.jsx          ✅ Project grid view
-│   │   ├── ProjectViewer.jsx           ✅ Project detail viewer
+│   │   ├── ProjectViewer.jsx           ✅ Project detail viewer (with download - v0.0.7)
 │   │   ├── StarRating.jsx              ✅ Star rating component
 │   │   └── ImageCarousel.jsx           ✅ Image navigation
 │   │
@@ -66,9 +69,12 @@ WebApps/Whitecardopedia/
 │   ├── utils/
 │   │   └── dateFormatter.js            ✅ Date formatting with ordinals
 │   │
-│   └── styles/
-│       ├── variables.css               ✅ CSS variables
-│       └── app.css                     ✅ Main styles (800+ lines)
+│   ├── styles/
+│   │   ├── variables.css               ✅ CSS variables
+│   │   └── app.css                     ✅ Main styles (870+ lines - v0.0.7)
+│   │
+│   └── ThirdParty__VersionLockedDependencies/  ✅ NEW in v0.0.7
+│       └── jszip.min.js                ✅ JSZip v3.10.1 (version-locked)
 │
 ├── DevUtils/
 │   └── AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py  ✅ Image discovery utility
@@ -76,13 +82,18 @@ WebApps/Whitecardopedia/
 └── Projects/
     └── 2025/
         ├── 00__ExampleProject/         ✅ Example project (3 images)
+        ├── 61557__Shillabeer/          ✅ Real project (3 images)
+        ├── AN-61960__Acton/            ✅ Real project (1 image)
+        ├── HD-61716__Holland/          ✅ Real project (5 images)
         ├── HS-61747__Harris/           ✅ Real project (2 images)
+        ├── JF-61131__Jolliffe/         ✅ Real project (8 images)
         ├── NY-29951__McNerney/         ✅ Real project (7 images)
-        └── JF-61131__Jolliffe/         ✅ Real project (8 images)
+        ├── PY-61616__Pilley/           ✅ Real project (3 images)
+        └── RS-59923__Richards/         ✅ Real project (4 images)
 ```
 
-**Total Files Created**: 28  
-**Total Lines of Code**: ~3,500+
+**Total Files Created**: 31 (+3 from v0.0.6)  
+**Total Lines of Code**: ~3,650+ (+150 from v0.0.6)
 
 ---
 
@@ -523,11 +534,67 @@ Whitecardopedia is a **complete, production-ready** React application that provi
 
 **Status**: ✅ **COMPLETE AND READY FOR USE**
 
-**Milestone**: This is the first major stable release (v0.0.6) with all core features implemented, tested, and deployed with real project data.
+**Milestone**: Version 0.0.7 adds download functionality with version-locked dependency management, completing the core feature set.
+
+---
+
+## 📥 Version 0.0.7 - Download Images Feature
+
+### New Functionality
+
+**Download Button in Project Viewer:**
+- Located below star ratings section with horizontal separator
+- Downloads all project images as ZIP file
+- Filename format: `{ProjectCode}__{ProjectName}_Images_{DD-MMM-YYYY}.zip`
+- Loading spinner during download process
+- Button disabled while downloading
+- Error handling with user feedback
+- Hover effects (scale 1.02x + shadow)
+
+**Version-Locked Dependencies:**
+- New folder: `src/ThirdParty__VersionLockedDependencies/`
+- JSZip v3.10.1 hosted locally
+- Automatic CDN fallback if local file unavailable
+- Console warning when fallback is used
+- Ensures version stability and offline support
+
+### Technical Implementation
+
+**Files Modified:**
+- `ProjectViewer.jsx` - Added `downloadProjectImages()` helper function (~35 lines)
+- `ProjectViewer.jsx` - Added download button JSX with loading states (~20 lines)
+- `app.css` - Added download button styles and animations (~65 lines)
+- `app.html` - Added JSZip script with fallback logic (~5 lines)
+- `masterConfig.json` - Version bump to 0.0.7
+
+**New Files:**
+- `jszip.min.js` - Version-locked JSZip library (81 KB)
+- `Tempt__Icon__DownloadButtonSymbol__.svg` - Download button icon (1 KB)
+
+### Statistics
+
+**Code Additions:**
+- JavaScript: ~55 lines
+- CSS: ~65 lines
+- HTML: ~5 lines
+- **Total New Code**: ~125 lines
+
+**New Assets:**
+- JSZip library: 81 KB (minified)
+- Download icon: 1 KB
+
+### Benefits
+
+- ✅ **Convenience** - Download all project images with one click
+- ✅ **Organization** - ZIP file includes all images in one archive
+- ✅ **Professional** - Formatted filenames with project code and date
+- ✅ **Offline Support** - Version-locked library works without internet
+- ✅ **Reliability** - CDN fallback ensures functionality
+- ✅ **User Feedback** - Loading states and error messages
 
 ---
 
 *Implementation completed: 10-Oct-2025*  
 *Adam Noble - Noble Architecture*  
-*Version 0.0.6 - First Major Stable Release*
+*Version 0.0.7 - Download Images Feature*
 

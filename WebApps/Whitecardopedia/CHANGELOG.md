@@ -638,7 +638,7 @@ Implemented security feature requiring 4-digit PIN before accessing application:
 
 ### 🔄 Upgrade Notes
 
-**From Version 1.0.0 to 1.1.0:**
+**From Version 0.0.0 to 0.0.1:**
 
 No breaking changes. Existing project structure and data remain compatible.
 
@@ -675,7 +675,7 @@ const CORRECT_PIN = '1234';  // Change to your desired PIN
 
 ---
 
-**Version**: 1.1.0  
+**Version**: 0.0.1  
 **Release Date**: October 10, 2025  
 **Developer**: Adam Noble - Noble Architecture
 

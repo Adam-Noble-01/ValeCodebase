@@ -67,6 +67,14 @@
             projectData.folderId = folderId;                             // <-- Add folder ID to data
             projectData.basePath = projectPath;                          // <-- Add base path to data
             
+            // PRE-PROCESS IMAGES | Build pairs map from JSON images array
+            if (projectData.images && projectData.images.length > 0) {
+                const { baseImages, pairsMap } = buildImagePairsMap(projectData.images);  // <-- Build pairs map
+                projectData.displayImages = baseImages;                  // <-- Base images for carousel
+                projectData.artPairsMap = pairsMap;                      // <-- Pre-built pairs map
+                projectData.allImages = projectData.images;              // <-- Keep original for downloads
+            }
+            
             return projectData;                                          // <-- Return project data object
             
         } catch (error) {
@@ -145,6 +153,46 @@
     }
     // ---------------------------------------------------------------
 
+
+    // FUNCTION | Build Image Pairs Map from JSON Images Array
+    // ------------------------------------------------------------
+    function buildImagePairsMap(images) {
+        const pairsMap = new Map();                                      // <-- Map: base image -> ART data
+        const baseImages = [];                                           // <-- Array of base images only
+        
+        for (const imageName of images) {
+            const parsed = parseImageFileName(imageName);                // <-- Parse filename
+            
+            if (!parsed) continue;                                       // <-- Skip invalid filenames
+            
+            if (parsed.isArtImage) {
+                // ART VARIANT - Find its base image in the map
+                const baseImgNum = parsed.imageNumber;                   // <-- Get image number (01, 02, etc)
+                
+                // Find the base image this ART variant belongs to
+                const baseImage = images.find(img => {
+                    const baseParsed = parseImageFileName(img);
+                    return baseParsed && !baseParsed.isArtImage && baseParsed.imageNumber === baseImgNum;
+                });
+                
+                if (baseImage) {
+                    const artData = {
+                        filename : imageName,                            // <-- ART filename
+                        artCode  : parsed.artCode,                       // <-- ART code (20, 10, etc)
+                        label    : getArtCodeLabel(parsed.artCode)       // <-- Human readable label
+                    };
+                    pairsMap.set(baseImage, artData);                    // <-- Map base -> ART
+                }
+            } else {
+                // BASE IMAGE
+                baseImages.push(imageName);                              // <-- Add to base images array
+            }
+        }
+        
+        return { baseImages, pairsMap };                                 // <-- Return structured data
+    }
+    // ---------------------------------------------------------------
+
     // -----------------------------------------------------------------------------
     // REGION | ART Image Loading Functions
     // -----------------------------------------------------------------------------
@@ -164,53 +212,25 @@
     // ---------------------------------------------------------------
 
 
-    // FUNCTION | Find All Possible ART Image Pairs for Whitecard Image
+    // FUNCTION | Get ART Pair for Base Image (Direct Lookup)
     // ------------------------------------------------------------
-    function findArtPairForImage(projectData, whitecardImage) {
-        const parsed = parseImageFileName(whitecardImage);               // <-- Parse whitecard filename
-        
-        if (!parsed || parsed.isArtImage) {
-            return [];                                                   // <-- Return empty array if invalid or ART image
+    function getArtPairForImage(projectData, baseImageName) {
+        if (!projectData.artPairsMap) {
+            return null;                                                 // <-- No pairs map available
         }
         
-        // CHECK IF FILENAME CONTAINS __Whitecard PATTERN
-        if (!whitecardImage.includes('__Whitecard.')) {
-            console.log(`[ART Detection] No __Whitecard pattern found in: ${whitecardImage}`);  // <-- Debug log
-            return [];                                                   // <-- Return empty array
+        const artData = projectData.artPairsMap.get(baseImageName);      // <-- Direct map lookup
+        
+        if (artData) {
+            return {
+                filename : artData.filename,
+                artCode  : artData.artCode,
+                label    : artData.label,
+                url      : `${projectData.basePath}/${artData.filename}`
+            };
         }
         
-        const imageNumber = parsed.imageNumber;                          // <-- Get image number
-        const candidates = [];                                           // <-- Initialize candidates array
-        
-        // DEFINE ART CODE MAPPINGS (code to descriptor in filename)
-        const artCodeMappings = {
-            '20' : 'Watercolour',                                        // <-- ART20 watercolour descriptor
-            '10' : 'TechnicalPen',                                       // <-- ART10 technical pen descriptor
-            '05' : 'CAD',                                                // <-- ART05 CAD descriptor
-            '00' : 'Sketch'                                              // <-- ART00 sketch descriptor
-        };
-        
-        // BUILD ALL POSSIBLE ART CANDIDATES
-        for (const [artCode, descriptor] of Object.entries(artCodeMappings)) {
-            // CONSTRUCT ART FILENAME
-            // Pattern: IMG01__Harris__Scheme-01__Whitecard.png
-            // Becomes: IMG01_ART20__Harris__Scheme-01__Watercolour.png
-            const artFilename = whitecardImage
-                .replace(/^(IMG\d{2})__/, `$1_ART${artCode}__`)          // <-- Insert ART code after IMG##
-                .replace(/__Whitecard\./, `__${descriptor}.`);           // <-- Replace Whitecard with descriptor
-            
-            console.log(`[ART Detection] Creating candidate: ${artFilename}`);  // <-- Debug log
-            
-            candidates.push({
-                filename : artFilename,                                  // <-- ART filename
-                artCode  : artCode,                                      // <-- ART code
-                label    : getArtCodeLabel(artCode),                     // <-- ART label
-                url      : `${projectData.basePath}/${artFilename}`      // <-- Full ART image URL
-            });
-        }
-        
-        console.log(`[ART Detection] Found ${candidates.length} candidates for: ${whitecardImage}`);  // <-- Debug log
-        return candidates;                                               // <-- Return all candidates for testing
+        return null;                                                     // <-- No ART pair exists
     }
     // ---------------------------------------------------------------
 

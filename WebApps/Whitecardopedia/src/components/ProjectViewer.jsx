@@ -56,56 +56,21 @@
             const basePath = project.basePath || `Projects/2025/${project.folderId}`;  // <-- Use existing basePath or construct from folderId
             const basePathWithSlash = basePath.endsWith('/') ? basePath : `${basePath}/`;  // <-- Ensure trailing slash
             
-            // FETCH WHITECARD IMAGES | Create array of Response objects for client-zip
-            const imagePromises = project.images.map(async (imageName) => {
-                const imagePath = basePathWithSlash + imageName;         // <-- Full image path with correct slash
+            // FETCH ALL IMAGES FROM JSON | Both base and ART are already in the array
+            const imagesToDownload = project.allImages || project.images;  // <-- Use allImages if available
+            const allImagePromises = imagesToDownload.map(async (imageName) => {
+                const imagePath = basePathWithSlash + imageName;         // <-- Full image path
                 const response = await fetch(imagePath);                 // <-- Fetch image file
                 if (!response.ok) throw new Error(`Failed to fetch ${imageName}`);  // <-- Verify fetch success
                 return {
                     name: imageName,                                     // <-- File name in ZIP
-                    input: response                                      // <-- client-zip works directly with Response objects
+                    input: response                                      // <-- Response for client-zip
                 };
             });
             
-            const files = await Promise.all(imagePromises);              // <-- Wait for all whitecard images to fetch
+            const allFiles = await Promise.all(allImagePromises);        // <-- Wait for all images
             
-            // FETCH ART IMAGES | Check for ART pairs and add to download
-            const artPromises = project.images.map(async (imageName) => {
-                const artCandidates = findArtPairForImage(project, imageName);  // <-- Get potential ART pairs
-                
-                if (!artCandidates || artCandidates.length === 0) {
-                    return [];                                           // <-- No ART candidates found
-                }
-                
-                const artFiles = [];                                     // <-- Initialize ART files array
-                
-                // TRY EACH ART CANDIDATE
-                for (const candidate of artCandidates) {
-                    try {
-                        const response = await fetch(candidate.url);     // <-- Attempt to fetch ART image
-                        if (response.ok) {
-                            console.log(`[Download] Adding ART image: ${candidate.filename}`);  // <-- Debug log
-                            artFiles.push({
-                                name: candidate.filename,                // <-- ART filename in ZIP
-                                input: response                          // <-- ART image response
-                            });
-                            break;                                       // <-- Stop after first successful ART image
-                        }
-                    } catch (error) {
-                        console.log(`[Download] ART image not found: ${candidate.filename}`);  // <-- Debug log
-                        continue;                                        // <-- Try next candidate
-                    }
-                }
-                
-                return artFiles;                                         // <-- Return found ART files
-            });
-            
-            const artFilesArrays = await Promise.all(artPromises);       // <-- Wait for all ART searches to complete
-            const artFiles = artFilesArrays.flat();                      // <-- Flatten array of arrays
-            
-            const allFiles = [...files, ...artFiles];                    // <-- Combine whitecard and ART images
-            
-            console.log(`[Download] Total files: ${allFiles.length} (${files.length} whitecard + ${artFiles.length} ART)`);  // <-- Debug log
+            console.log(`[Download] Total files: ${allFiles.length}`);   // <-- Debug log
             
             // GENERATE ZIP | Use client-zip to create ZIP file
             if (!window.downloadZip) {
@@ -170,7 +135,7 @@
                     <div className="project-viewer__content">
                         <div className="project-viewer__carousel-container">
                             <ImageCarousel 
-                                images={project.images} 
+                                images={project.displayImages || project.images}  // <-- Use pre-filtered base images
                                 projectData={project}
                             />
                         </div>

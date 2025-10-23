@@ -30,10 +30,6 @@
             "enabled": true
         },
         {
-            "folderId": "DE-52558__Ellard",
-            "enabled": true
-        },
-        {
             "folderId": "GS-61695__Gibbs",
             "enabled": true
         },
@@ -42,7 +38,7 @@
             "enabled": true
         },
         {
-            "folderId": "HN61484__Hannan",
+            "folderId": "HN-61484__Hannan",
             "enabled": true
         },
         {

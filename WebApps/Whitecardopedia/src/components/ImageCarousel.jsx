@@ -41,57 +41,28 @@
 // REGION | Art Image Detection & Loading
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Check for ART Image Pair for Current Image
+    // HELPER FUNCTION | Get ART Image Data for Current Image
     // ---------------------------------------------------------------
-    const checkForArtImage = async (currentIndex, images, projectData, setArtImageData, setShowHint, setSliderPosition, hintShownFor, setHintShownFor) => {
+    const getArtImageForCurrent = (currentIndex, images, projectData, setArtImageData, setShowHint, setSliderPosition, hintShownFor, setHintShownFor) => {
         const currentImage = images[currentIndex];                       // <-- Get current image
-        const artCandidates = findArtPairForImage(projectData, currentImage);  // <-- Get potential ART pairs
+        const artPair = getArtPairForImage(projectData, currentImage);   // <-- Direct lookup (no async)
         
-        console.log(`[ImageCarousel] Checking image: ${currentImage}`);  // <-- Debug log
-        
-        if (!artCandidates || artCandidates.length === 0) {
-            setArtImageData(null);                                       // <-- No ART pairs found
-            setShowHint(false);                                          // <-- Hide hint
-            return;
-        }
-        
-        // TRY EACH ART CANDIDATE TO SEE WHICH ONE ACTUALLY EXISTS
-        for (const candidate of artCandidates) {
-            try {
-                console.log(`[ImageCarousel] Trying to load: ${candidate.url}`);  // <-- Debug log
+        if (artPair) {
+            setArtImageData(artPair);                                    // <-- Set ART data
+            setSliderPosition(50);                                       // <-- Reset slider to center
+            
+            if (!hintShownFor.has(currentIndex)) {
+                setShowHint(true);                                       // <-- Show hint for new ART image
+                setHintShownFor(prev => new Set([...prev, currentIndex]));
                 
-                const img = new Image();                                 // <-- Create test image
-                await new Promise((resolve, reject) => {
-                    img.onload = resolve;                                // <-- Resolve on successful load
-                    img.onerror = reject;                                // <-- Reject on error
-                    img.src = candidate.url;                             // <-- Attempt to load image
-                });
-                
-                console.log(`[ImageCarousel] Successfully loaded ART image: ${candidate.filename}`);  // <-- Debug log
-                
-                setArtImageData(candidate);                              // <-- Set ART data for valid image
-                setSliderPosition(50);                                   // <-- Reset slider to center
-                
-                if (!hintShownFor.has(currentIndex)) {
-                    setShowHint(true);                                   // <-- Show hint for new ART image
-                    setHintShownFor(prev => new Set([...prev, currentIndex]));  // <-- Mark hint as shown
-                    
-                    setTimeout(() => {
-                        setShowHint(false);                              // <-- Auto-hide hint after 3 seconds
-                    }, 3000);
-                }
-                
-                return;                                                  // <-- Exit after finding valid ART image
-            } catch (error) {
-                console.log(`[ImageCarousel] Failed to load: ${candidate.filename}`);  // <-- Debug log
-                continue;                                                // <-- Try next candidate
+                setTimeout(() => {
+                    setShowHint(false);                                  // <-- Auto-hide hint
+                }, 3000);
             }
+        } else {
+            setArtImageData(null);                                       // <-- No ART pair
+            setShowHint(false);                                          // <-- Hide hint
         }
-        
-        // NO VALID ART IMAGE FOUND
-        console.log(`[ImageCarousel] No valid ART image found for: ${currentImage}`);  // <-- Debug log
-        setArtImageData(null);                                           // <-- Clear ART data
-        setShowHint(false);                                              // <-- Hide hint
     };
     // ---------------------------------------------------------------
 
@@ -223,10 +194,10 @@
         const [hintShownFor, setHintShownFor] = React.useState(new Set()); // <-- Track which images showed hint
         const containerRef = React.useRef(null);                         // <-- Reference to comparison container
         
-        // EFFECT | Check for ART Image When Index Changes
+        // EFFECT | Get ART Image When Index Changes
         // ---------------------------------------------------------------
         React.useEffect(() => {
-            checkForArtImage(currentIndex, images, projectData, setArtImageData, setShowHint, setSliderPosition, hintShownFor, setHintShownFor);
+            getArtImageForCurrent(currentIndex, images, projectData, setArtImageData, setShowHint, setSliderPosition, hintShownFor, setHintShownFor);
         }, [currentIndex, projectData, images]);
         // ---------------------------------------------------------------
         

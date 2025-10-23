@@ -6,19 +6,19 @@
 // NAMESPACE  : Whitecardopedia
 // MODULE     : ProjectViewer Component
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Individual project image viewer with ratings
+// PURPOSE    : Individual project image viewer with efficiency scale
 // CREATED    : 2025
 //
 // DESCRIPTION:
 // - Displays full project details with image carousel
 // - Shows project metadata (name, code, description)
-// - Displays star ratings for Quality, Prestige, Value
+// - Displays time efficiency scale for schedule performance
 // - Provides back navigation to project gallery
 //
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// REGION | ProjectViewer Component
+// REGION | Module Helper Functions
 // -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Validate SketchUp Model URL
@@ -40,8 +40,13 @@
     };
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // HELPER FUNCTION | Download All Project Images as ZIP
+// -----------------------------------------------------------------------------
+// REGION | Art Overlay Feature
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Download All Project Images as ZIP (Including ART Images)
     // ---------------------------------------------------------------
     const downloadProjectImages = async (project, setIsDownloading) => {
         setIsDownloading(true);                                          // <-- Enable loading state
@@ -51,7 +56,7 @@
             const basePath = project.basePath || `Projects/2025/${project.folderId}`;  // <-- Use existing basePath or construct from folderId
             const basePathWithSlash = basePath.endsWith('/') ? basePath : `${basePath}/`;  // <-- Ensure trailing slash
             
-            // FETCH IMAGES | Create array of Response objects for client-zip
+            // FETCH WHITECARD IMAGES | Create array of Response objects for client-zip
             const imagePromises = project.images.map(async (imageName) => {
                 const imagePath = basePathWithSlash + imageName;         // <-- Full image path with correct slash
                 const response = await fetch(imagePath);                 // <-- Fetch image file
@@ -62,13 +67,51 @@
                 };
             });
             
-            const files = await Promise.all(imagePromises);              // <-- Wait for all images to fetch
+            const files = await Promise.all(imagePromises);              // <-- Wait for all whitecard images to fetch
+            
+            // FETCH ART IMAGES | Check for ART pairs and add to download
+            const artPromises = project.images.map(async (imageName) => {
+                const artCandidates = findArtPairForImage(project, imageName);  // <-- Get potential ART pairs
+                
+                if (!artCandidates || artCandidates.length === 0) {
+                    return [];                                           // <-- No ART candidates found
+                }
+                
+                const artFiles = [];                                     // <-- Initialize ART files array
+                
+                // TRY EACH ART CANDIDATE
+                for (const candidate of artCandidates) {
+                    try {
+                        const response = await fetch(candidate.url);     // <-- Attempt to fetch ART image
+                        if (response.ok) {
+                            console.log(`[Download] Adding ART image: ${candidate.filename}`);  // <-- Debug log
+                            artFiles.push({
+                                name: candidate.filename,                // <-- ART filename in ZIP
+                                input: response                          // <-- ART image response
+                            });
+                            break;                                       // <-- Stop after first successful ART image
+                        }
+                    } catch (error) {
+                        console.log(`[Download] ART image not found: ${candidate.filename}`);  // <-- Debug log
+                        continue;                                        // <-- Try next candidate
+                    }
+                }
+                
+                return artFiles;                                         // <-- Return found ART files
+            });
+            
+            const artFilesArrays = await Promise.all(artPromises);       // <-- Wait for all ART searches to complete
+            const artFiles = artFilesArrays.flat();                      // <-- Flatten array of arrays
+            
+            const allFiles = [...files, ...artFiles];                    // <-- Combine whitecard and ART images
+            
+            console.log(`[Download] Total files: ${allFiles.length} (${files.length} whitecard + ${artFiles.length} ART)`);  // <-- Debug log
             
             // GENERATE ZIP | Use client-zip to create ZIP file
             if (!window.downloadZip) {
                 throw new Error('ZIP library not loaded. Please refresh the page.');  // <-- Check library availability
             }
-            const blob = await window.downloadZip(files).blob();         // <-- Generate ZIP blob using client-zip
+            const blob = await window.downloadZip(allFiles).blob();      // <-- Generate ZIP blob using client-zip
             
             // CREATE FILENAME | Format with date and folder name
             const today = new Date();                                    // <-- Get current date
@@ -92,6 +135,11 @@
     };
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Main Project Viewer Elements
+// -----------------------------------------------------------------------------
 
     // COMPONENT | Project Detail Viewer
     // ------------------------------------------------------------
@@ -146,10 +194,10 @@
                                         </div>
                                     )}
                                     
-                                    {project.productionData.duration && (
+                                    {project.scheduleData?.timeTaken && (
                                         <div className="project-viewer__data-field">
-                                            <span className="project-viewer__data-label">Duration</span>
-                                            <span className="project-viewer__data-value">{project.productionData.duration} Hours</span>
+                                            <span className="project-viewer__data-label">Time Taken</span>
+                                            <span className="project-viewer__data-value">{project.scheduleData.timeTaken} Hours</span>
                                         </div>
                                     )}
                                     
@@ -174,6 +222,7 @@
                             
                             {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
                                 <>
+                                    <hr className="project-viewer__divider" />
                                     <h3 className="project-viewer__production-title">SketchUp Model</h3>
                                     
                                     <a 
@@ -187,22 +236,15 @@
                                 </>
                             )}
                             
-                            <h3 className="project-viewer__production-title">Stats</h3>
+                            {project.scheduleData && (
+                                <>
+                                    <hr className="project-viewer__divider" />
+                                    <h3 className="project-viewer__production-title">Efficiency Scale</h3>
+                                    <EfficiencyScale scheduleData={project.scheduleData} compact={false} />
+                                </>
+                            )}
                             
-                            <div className="project-viewer__rating-item">
-                                <span className="project-viewer__rating-label">Output Quality</span>
-                                <StarRating rating={project.ratings?.quality || project.quality || 0} />
-                            </div>
-                            
-                            <div className="project-viewer__rating-item">
-                                <span className="project-viewer__rating-label">Job Prestige</span>
-                                <StarRating rating={project.ratings?.prestige || project.prestige || 0} />
-                            </div>
-                            
-                            <div className="project-viewer__rating-item">
-                                <span className="project-viewer__rating-label">Project Value</span>
-                                <StarRating rating={project.ratings?.value || project.value || 0} />
-                            </div>
+                            <h3 className="project-viewer__actions-title">Project Actions</h3>
                             
                             <div className="project-viewer__download-section">
                                 <button 

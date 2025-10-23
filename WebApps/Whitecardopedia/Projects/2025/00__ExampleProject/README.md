@@ -15,15 +15,13 @@ Each project folder should contain:
 {
     "projectName": "Garden House Alpha",
     "projectCode": "VGH-2025-001",
-    "ratings": {
-        "quality": 4,
-        "prestige": 5,
-        "value": 3
-    },
     "productionData": {
         "input": "CAD File",
-        "duration": 2,
         "additionalNotes": "Preliminary design phase complete"
+    },
+    "scheduleData": {
+        "timeAllocated": 3,
+        "timeTaken": 2
     },
     "sketchUpModel": {
         "url": "https://3dwarehouse.sketchup.com/model/example"
@@ -38,19 +36,18 @@ Each project folder should contain:
 }
 ```
 
-## Rating System
-
-All ratings use 1-5 star scale:
-- **Quality** - Build quality and design execution
-- **Prestige** - Brand positioning and market perception
-- **Value** - Cost effectiveness and market competitiveness
-
 ## Production Data Fields
 
 Additional production information:
 - **Input** - Source material type (e.g., "CAD File", "Hand Sketch", "3D Scan")
-- **Duration** - Production time in hours (displayed as "X Hours")
 - **Additional Notes** - Free-form text for production notes and comments
+
+## Schedule Data Fields
+
+Time tracking and efficiency information:
+- **Time Allocated** - Planned time for project in hours
+- **Time Taken** - Actual time taken to complete project in hours (displayed as "X Hours")
+- Efficiency scale shows performance vs schedule
 
 ## SketchUp Model Link
 

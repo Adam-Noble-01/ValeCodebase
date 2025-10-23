@@ -402,9 +402,25 @@
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
-        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above subhead */
-        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below subhead */
+        margin-bottom                      : var(--Vale_Spacing_Large);   /* <-- Space below subhead */
         padding-top                        : var(--Vale_Spacing_Large);    /* <-- Padding above subhead */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .project-viewer__divider {
+        border                             : none;                         /* <-- Remove default border */
+        border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Subtle top border */
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above divider */
+        margin-bottom                      : 0;                            /* <-- No space below (handled by title) */
+    }
+    
+    .project-viewer__actions-title {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above title */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space below title */
+        padding-top                        : var(--Vale_Spacing_Large);    /* <-- Padding above title */
         border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Top border separator */
         text-align                         : center;                       /* <-- Center text */
     }
@@ -467,8 +483,6 @@
     /* ------------------------------------------------------------ */
     .project-viewer__download-section {
         margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above section */
-        padding-top                        : var(--Vale_Spacing_Large);    /* <-- Padding above section */
-        border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Top border separator */
     }
     
     .project-viewer__download-button {
@@ -575,7 +589,7 @@
         justify-content                    : center;                       /* <-- Center content */
         transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
         opacity                            : 0.7;                          /* <-- Semi-transparent */
-    }
+        z-index                            : 90;                           /* <-- High up but not top, ensures buttons above images.
     
     .image-carousel__button:hover {
         opacity                            : 1;                            /* <-- Full opacity on hover */
@@ -629,6 +643,138 @@
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
         font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Larger font size for visibility */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        z-index                            : 100;                           /* <-- Highest z-index to appear above all carousel elements */
+    }
+    /* ------------------------------------------------------------ */
+    
+    /* IMAGE COMPARISON | ART Image Comparison Slider Styles */
+    /* ------------------------------------------------------------ */
+    .image-carousel__comparison-container {
+        position                           : relative;                     /* <-- Relative positioning for layers */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 100%;                         /* <-- Full height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        cursor                             : ew-resize;                    /* <-- Horizontal resize cursor */
+        user-select                        : none;                         /* <-- Prevent text selection */
+    }
+    
+    .image-carousel__image--base {
+        position                           : relative;                     /* <-- Base layer positioning */
+        z-index                            : 1;                            /* <-- Below ART layer */
+    }
+    
+    .image-carousel__comparison-layer {
+        position                           : absolute;                     /* <-- Absolute positioning for overlay */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 100%;                         /* <-- Full height */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        overflow                           : hidden;                       /* <-- Hide clipped content */
+        z-index                            : 2;                            /* <-- Above base layer */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+    }
+    
+    .image-carousel__image--art {
+        max-width                          : 100%;                         /* <-- Maximum width */
+        max-height                         : 100%;                         /* <-- Maximum height */
+        object-fit                         : contain;                      /* <-- Contain within bounds */
+    }
+    
+    .image-carousel__comparison-divider {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 0;                            /* <-- Align to top */
+        bottom                             : 0;                            /* <-- Extend to bottom */
+        width                              : 4px;                          /* <-- Divider width */
+        background                         : rgba(255, 255, 255, 0.9);     /* <-- Semi-transparent white */
+        box-shadow                         : 0 0 8px rgba(0, 0, 0, 0.3);   /* <-- Shadow for visibility */
+        z-index                            : 3;                            /* <-- Above both image layers */
+        transform                          : translateX(-2px);             /* <-- Center on position */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+    }
+    
+    .image-carousel__comparison-handle {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 50%;                          /* <-- Center vertically */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translate(-50%, -50%);        /* <-- Adjust for true centering */
+        pointer-events                     : auto;                         /* <-- Enable clicks on handle */
+        cursor                             : ew-resize;                    /* <-- Horizontal resize cursor */
+    }
+    
+    .image-carousel__comparison-handle svg {
+        filter                             : drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));  /* <-- Shadow for depth */
+    }
+    
+    .image-carousel__art-label {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : var(--Vale_Spacing_Medium);   /* <-- Position from top */
+        right                              : var(--Vale_Spacing_Medium);   /* <-- Position from right */
+        background                         : rgba(23, 43, 58, 0.9);        /* <-- Semi-transparent dark background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Label padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        z-index                            : 4;                            /* <-- Above all layers */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+    }
+    
+    .image-carousel__comparison-hint {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : 50%;                          /* <-- Center vertically */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translate(-50%, -50%);        /* <-- Adjust for true centering */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        align-items                        : center;                       /* <-- Center content */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between icon and text */
+        z-index                            : 5;                            /* <-- Above all other layers */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+        animation                          : hintPulse 2s ease-in-out infinite;  /* <-- Pulsing animation */
+    }
+    
+    .image-carousel__comparison-hint-icon {
+        animation                          : hintBounce 1.5s ease-in-out infinite;  /* <-- Bouncing animation */
+    }
+    
+    .image-carousel__comparison-hint-icon svg {
+        filter                             : drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));  /* <-- Shadow for visibility */
+    }
+    
+    .image-carousel__comparison-hint-text {
+        background                         : rgba(23, 43, 58, 0.95);       /* <-- Dark background */
+        color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);  /* <-- Text padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        white-space                        : nowrap;                       /* <-- Prevent text wrapping */
+    }
+    /* ------------------------------------------------------------ */
+    
+    /* ANIMATIONS | Comparison Hint Animations */
+    /* ------------------------------------------------------------ */
+    @keyframes hintPulse {
+        0%, 100% {
+            opacity                        : 1;                            /* <-- Full opacity */
+        }
+        50% {
+            opacity                        : 0.7;                          /* <-- Reduced opacity */
+        }
+    }
+    
+    @keyframes hintBounce {
+        0%, 100% {
+            transform                      : translateY(0);                /* <-- Normal position */
+        }
+        50% {
+            transform                      : translateY(-10px);            /* <-- Bounce up */
+        }
     }
     /* ------------------------------------------------------------ */
 
@@ -654,6 +800,166 @@
     
     .star-rating__star--filled {
         color                              : var(--Vale_StarGold);         /* <-- Filled star color */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | EfficiencyScale Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* EFFICIENCY SCALE | Time Efficiency Display Component */
+    /* ------------------------------------------------------------ */
+    .efficiency-scale {
+        width                              : 100%;                         /* <-- Full width container */
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between elements */
+        margin-top                         : var(--Vale_Spacing_Medium);   /* <-- Space above component */
+    }
+    
+    .efficiency-scale__pictograms {
+        display                            : flex;                         /* <-- Flexbox layout */
+        justify-content                    : space-between;                /* <-- Space between pictograms */
+        align-items                        : center;                       /* <-- Vertical centering */
+        padding                            : 0 10px;                       /* <-- Horizontal padding */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below pictograms */
+    }
+    
+    .efficiency-scale__pictogram {
+        height                             : 60px;                         /* <-- Pictogram height */
+        width                              : auto;                         /* <-- Maintain aspect ratio */
+        object-fit                         : contain;                      /* <-- Contain within bounds */
+    }
+    
+    .efficiency-scale__pictogram--left {
+        order                              : 1;                            /* <-- Position left */
+    }
+    
+    .efficiency-scale__pictogram--center {
+        order                              : 2;                            /* <-- Position center */
+    }
+    
+    .efficiency-scale__pictogram--right {
+        order                              : 3;                            /* <-- Position right */
+    }
+    
+    .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--left {
+        height                             : 48px;                         /* <-- 20% smaller than default 60px */
+    }
+    
+    .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--right {
+        height                             : 48px;                         /* <-- 20% smaller than default 60px */
+    }
+    
+    .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--center {
+        height                             : 60px;                         /* <-- Keep original size (appears larger) */
+    }
+    
+    .efficiency-scale__bar-container {
+        position                           : relative;                     /* <-- Relative positioning for marker */
+        width                              : 100%;                         /* <-- Full width */
+        padding                            : 20px 10px 10px;               /* <-- Padding for marker space */
+    }
+    
+    .efficiency-scale__bar {
+        position                           : relative;                     /* <-- Relative positioning */
+        width                              : 100%;                         /* <-- Full width */
+        height                             : 20px;                         /* <-- Bar height */
+        background                         : linear-gradient(to right, #ffebee 0%, #f5f5f5 50%, #e8f5e9 100%);  /* <-- Gradient background */
+        border-radius                      : 10px;                         /* <-- Rounded corners */
+        border                             : 2px solid var(--Vale_BorderMedium);  /* <-- Border */
+        overflow                           : visible;                      /* <-- Allow marker to overflow */
+    }
+    
+    .efficiency-scale__marker {
+        position                           : absolute;                     /* <-- Absolute positioning */
+        top                                : -20px;                        /* <-- Position above bar */
+        transform                          : translateX(-50%);             /* <-- Center on position */
+        width                              : 0;                            /* <-- Triangle base */
+        height                             : 0;                            /* <-- Triangle base */
+        border-left                        : 12px solid transparent;       /* <-- Left side of triangle */
+        border-right                       : 12px solid transparent;       /* <-- Right side of triangle */
+        border-top                         : 18px solid var(--Vale_PrimaryBrand);  /* <-- Triangle color */
+        filter                             : drop-shadow(0 2px 4px rgba(0,0,0,0.2));  /* <-- Shadow for depth */
+    }
+    
+    .efficiency-scale__marker--critical {
+        border-top-color                   : #d32f2f;                      /* <-- Critical red */
+    }
+    
+    .efficiency-scale__marker--behind {
+        border-top-color                   : #f57c00;                      /* <-- Behind orange */
+    }
+    
+    .efficiency-scale__marker--slightly-behind {
+        border-top-color                   : #ffa726;                      /* <-- Slightly behind light orange */
+    }
+    
+    .efficiency-scale__marker--on-target {
+        border-top-color                   : var(--Vale_PrimaryBrand);     /* <-- On target brand blue */
+    }
+    
+    .efficiency-scale__marker--slightly-ahead {
+        border-top-color                   : #66bb6a;                      /* <-- Slightly ahead light green */
+    }
+    
+    .efficiency-scale__marker--ahead {
+        border-top-color                   : #43a047;                      /* <-- Ahead green */
+    }
+    
+    .efficiency-scale__status {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between header and message */
+        margin-top                         : var(--Vale_Spacing_Medium);   /* <-- Space above status */
+        text-align                         : center;                       /* <-- Center text */
+    }
+    
+    .efficiency-scale__status-header {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        margin                             : 0;                            /* <-- Remove default margin */
+    }
+    
+    .efficiency-scale__status-subtext {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : #d32f2f;                      /* <-- Red for audit required */
+    }
+    
+    .efficiency-scale__status-message {
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+        margin                             : 0;                            /* <-- Remove default margin */
+    }
+    
+    .efficiency-scale--compact {
+        margin-top                         : var(--Vale_Spacing_Small);    /* <-- Reduced space for compact mode */
+        gap                                : var(--Vale_Spacing_Small);    /* <-- Smaller gap */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__pictogram {
+        height                             : 35px;                         /* <-- Smaller pictograms */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__bar-container {
+        padding                            : 15px 5px 5px;                 /* <-- Reduced padding */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__bar {
+        height                             : 12px;                         /* <-- Thinner bar */
+        border-radius                      : 6px;                          /* <-- Proportional rounding */
+    }
+    
+    .efficiency-scale--compact .efficiency-scale__marker {
+        top                                : -15px;                        /* <-- Adjust position */
+        border-left-width                  : 8px;                          /* <-- Smaller triangle */
+        border-right-width                 : 8px;                          /* <-- Smaller triangle */
+        border-top-width                   : 12px;                         /* <-- Smaller triangle */
     }
     /* ------------------------------------------------------------ */
 

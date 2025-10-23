@@ -4,13 +4,7 @@
     "projectDate": "01-Oct-2025",
     "productionData": {
         "input": "Hand Drawn Concept",
-        "duration": 5,
         "additionalNotes": "Used the texture projection technique to utilise Steph's Hand Drawn Concept, mapping it to the Whitecard model."
-    },
-    "ratings": {
-        "quality": 3,
-        "prestige": 2,
-        "value": 2
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -20,5 +14,9 @@
         "IMG02__Richards__FrontElevation__WhiteCard__LOD1__ImageFile__1.0.0__.dwg.png",
         "IMG03__Richards__Elevated3dView__WhiteCard__LOD1__ImageFile__1.0.0__.png",
         "IMG04__Richards__Elevated3d-04__WhiteCard__LOD1__ImageFile__1.0.0__.png"
-    ]
+    ],
+    "scheduleData": {
+        "timeAllocated": 1,
+        "timeTaken": 5
+    }
 }

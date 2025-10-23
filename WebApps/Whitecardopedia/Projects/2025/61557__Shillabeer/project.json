@@ -4,13 +4,7 @@
     "projectDate": "26-Sep-2025",
     "productionData": {
         "input": "CAD File",
-        "duration": 3,
         "additionalNotes": "Typical CAD File, No Issues to report, building being slightly out of line made it take longer than expected for a small job."
-    },
-    "ratings": {
-        "quality": 3,
-        "prestige": 2,
-        "value": 2
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -19,5 +13,9 @@
         "IMG01__3dView__FrontLeft__WhitecardImage__26-Sep-2025.png",
         "IMG02__3dView__SideView__WhitecardImage__26-Sep-2025.png",
         "IMG03__3dView__TopDown__WhitecardImage__26-Sep-2025.png"
-    ]
+    ],
+    "scheduleData": {
+        "timeAllocated": 1,
+        "timeTaken": 3
+    }
 }

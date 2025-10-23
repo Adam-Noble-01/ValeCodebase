@@ -2,18 +2,15 @@
     "projectName": "Jolliffe",
     "projectCode": "61131",
     "projectDate": "08-Oct-2025",
-    "ratings": {
-        "quality": 4,
-        "prestige": 3,
-        "value": 3
-    },
     "productionData": {
         "input": "CAD File",
-        "duration": 4,
-        "additionalNotes": "Preliminary CAD File, Adam added additional windows etc and scene dressings based on Photomatching."
+        "additionalNotes": "Jo provided outstanding quality drawings for this project, this made the mapping task a breeze."
+    },
+    "scheduleData": {
+        "timeAllocated": 4,
+        "timeTaken": 3
     },
     "sketchUpModel": {
-        "urlNote": "If the model is not available, set the url to 'None' or 'nil' or 'Nil' or 'False'",
         "url": "Nil"
     },
     "images": [
@@ -26,5 +23,5 @@
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__08-Oct-2025.png",
         "IMG23__Elevation__RightSideElevation__WhitecardImage__08-Oct-2025.png"
     ],
-    "description": "Premium garden house design featuring contemporary lines and sustainable materials. Showcasing massing model for board review."
+    "description": "Nil"
 }

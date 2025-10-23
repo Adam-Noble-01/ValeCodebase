@@ -1,0 +1,25 @@
+{
+    "projectName": "Holland",
+    "projectCode": "61716",
+    "projectDate": "02-Oct-2025",
+    "productionData": {
+        "input": "CAD File",
+        "duration": 2,
+        "additionalNotes": "Quick & Easy, Rachaels CAD Linework provided was tidy and easy to work with, No Issues at all."
+    },
+    "ratings": {
+        "quality": 4,
+        "prestige": 4,
+        "value": 4
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__FrontLeft__MainView__WhitecardImage__02-Oct-2025.png",
+        "IMG02__3dView__Front__CloserView__WhitecardImage__02-Oct-2025.png",
+        "IMG03__3dView__Front__ViewingDoors__WhitecardImage__02-Oct-2025.png",
+        "IMG04__Elevation__FrontElevation__WhitecardImage__02-Oct-2025.png",
+        "IMG05__Elevation__LeftSideElevation__WhitecardImage__02-Oct-2025.png"
+    ]
+}

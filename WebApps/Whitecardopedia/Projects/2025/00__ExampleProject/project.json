@@ -2,14 +2,8 @@
     "projectName": "Example Project",
     "projectCode": "00001",
     "projectDate": "10-Oct-2000",
-    "ratings": {
-        "quality": 1,
-        "prestige": 2,
-        "value": 3
-    },
     "productionData": {
         "input": "Example File",
-        "duration": 1,
         "additionalNotes": "This is an example project."
     },
     "sketchUpModel": {

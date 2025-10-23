@@ -452,15 +452,13 @@ python AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py --projec
     "projectName": "Project Name",
     "projectCode": "12345",
     "projectDate": "DD-MMM-YYYY",
-    "ratings": {
-        "quality": 1-5,
-        "prestige": 1-5,
-        "value": 1-5
-    },
     "productionData": {
         "input": "CAD File",
-        "duration": 3,
         "additionalNotes": "Notes here"
+    },
+    "scheduleData": {
+        "timeAllocated": 4,
+        "timeTaken": 3
     },
     "sketchUpModel": {
         "url": "https://app.sketchup.com/share/..."
@@ -555,11 +553,12 @@ isValidSketchUpUrl(url)
 Enhanced project data display with new production tracking fields:
 
 **JSON Structure Update:**
-- Restructured ratings into nested `ratings` object
-- Added new `productionData` object with three fields:
+- Added new `productionData` object with fields:
   - `input` - Source material type (e.g., "CAD File", "Hand Sketch")
-  - `duration` - Production time in hours (displayed as "X Hours")
   - `additionalNotes` - Free-form production notes
+- Added new `scheduleData` object with fields:
+  - `timeAllocated` - Time allocated for project in hours
+  - `timeTaken` - Actual time taken to complete project in hours (displayed as "X Hours")
 
 **UI Enhancements:**
 - Changed panel title from "Project Ratings" to "Project Data"

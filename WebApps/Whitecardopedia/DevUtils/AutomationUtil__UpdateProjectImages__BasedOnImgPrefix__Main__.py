@@ -40,7 +40,7 @@ from typing import List, Dict, Tuple
 # ------------------------------------------------------------
 PROJECTS_BASE_PATH      = "../Projects/2025"                          # <-- Base path for all projects (relative to DevUtils folder)
 MASTER_CONFIG_PATH      = "../src/data/masterConfig.json"             # <-- Master configuration file path (relative to DevUtils folder)
-IMAGE_PREFIX_PATTERN    = r'^IMG(\d{2})__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
+IMAGE_PREFIX_PATTERN    = r'^IMG(\d{2})(?!_ART)__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern (excludes ART images)
 PROJECT_JSON_FILENAME   = "project.json"                              # <-- Project metadata filename
 # ------------------------------------------------------------
 

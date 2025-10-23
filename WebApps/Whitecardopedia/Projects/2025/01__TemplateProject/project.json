@@ -4,13 +4,11 @@
     "projectDate": "10-Oct-2025",
     "productionData": {
         "input": "CAD File  -OR-  Hand Drawn Concept",
-        "duration": 2,
         "additionalNotes": "White A Description Here, Credit Artists or critique is work is sub par and caused issues."
     },
-    "ratings": {
-        "quality": 4,
-        "prestige": 5,
-        "value": 3
+    "scheduleData": {
+        "timeAllocated": 2,
+        "timeTaken": 2
     },
     "sketchUpModel": {
         "url": "Nil"

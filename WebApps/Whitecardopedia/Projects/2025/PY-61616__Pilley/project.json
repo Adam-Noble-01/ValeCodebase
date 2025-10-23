@@ -4,13 +4,7 @@
     "projectDate": "09-Sep-2025",
     "productionData": {
         "input": "Hand Drawn Concept",
-        "duration": 2,
         "additionalNotes": "Mapped Steph's Hand Drawn Concept to the Whitecard model, result is Stunning!"
-    },
-    "ratings": {
-        "quality": 4,
-        "prestige": 4,
-        "value": 4
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -19,5 +13,9 @@
         "IMG01__3dView__FrontLeft__WhitecardImage__30-Sep-2025.png",
         "IMG21__Elevation__FrontElevation__WhitecardImage__30-Sep-2025.png",
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__30-Sep-2025.png"
-    ]
+    ],
+    "scheduleData": {
+        "timeAllocated": 1,
+        "timeTaken": 2
+    }
 }

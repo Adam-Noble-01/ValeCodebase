@@ -2,7 +2,7 @@
 
 **React-based Image Viewer for Vale Garden Houses Board Review**
 
-A dynamic web application for reviewing whitecard (massing model) images with project metadata and star ratings.
+A dynamic web application for reviewing whitecard (massing model) images with project metadata and schedule tracking.
 
 ---
 
@@ -14,7 +14,6 @@ A dynamic web application for reviewing whitecard (massing model) images with pr
 - [Installation & Setup](#installation--setup)
 - [Adding New Projects](#adding-new-projects)
 - [Project Configuration](#project-configuration)
-- [Rating System](#rating-system)
 - [Development](#development)
 - [Deployment](#deployment)
 
@@ -22,7 +21,7 @@ A dynamic web application for reviewing whitecard (massing model) images with pr
 
 ## Overview
 
-Whitecardopedia is a quality control and presentation tool for the Vale Garden Houses board to review whitecard images (simple massing models). The application dynamically loads projects from a folder structure, displays project metadata, and presents star ratings for Quality, Prestige, and Value metrics.
+Whitecardopedia is a quality control and presentation tool for the Vale Garden Houses board to review whitecard images (simple massing models). The application dynamically loads projects from a folder structure, displays project metadata, and tracks production schedule efficiency.
 
 **Author**: Adam Noble - Noble Architecture  
 **Technology**: React (CDN), Vanilla CSS, JSON configuration  
@@ -169,15 +168,13 @@ Create `project.json` in the project folder:
     "projectName": "Garden House Beta",
     "projectCode": "VGH-2025-002",
     "projectDate": "10-Oct-2025",
-    "ratings": {
-        "quality": 5,
-        "prestige": 4,
-        "value": 4
-    },
     "productionData": {
         "input": "CAD File",
-        "duration": 3,
         "additionalNotes": "Modern garden house with sustainable design principles"
+    },
+    "scheduleData": {
+        "timeAllocated": 4,
+        "timeTaken": 3
     },
     "sketchUpModel": {
         "url": "https://3dwarehouse.sketchup.com/model/example"
@@ -291,14 +288,12 @@ Reload the application in your browser. The new project will appear in the galle
 | `projectName` | string | ✅ Yes | Display name of the project |
 | `projectCode` | string | ✅ Yes | Unique project identifier (e.g., VGH-2025-001) |
 | `projectDate` | string | ❌ No | Project date in DD-MMM-YYYY format (e.g., "10-Oct-2025") |
-| `ratings` | object | ✅ Yes | Nested ratings object containing quality, prestige, value |
-| `ratings.quality` | number | ✅ Yes | Quality rating (1-5 stars) |
-| `ratings.prestige` | number | ✅ Yes | Prestige rating (1-5 stars) |
-| `ratings.value` | number | ✅ Yes | Value rating (1-5 stars) |
 | `productionData` | object | ❌ No | Optional production information |
 | `productionData.input` | string | ❌ No | Source material type (e.g., "CAD File") |
-| `productionData.duration` | number | ❌ No | Production time in hours |
 | `productionData.additionalNotes` | string | ❌ No | Free-form production notes |
+| `scheduleData` | object | ❌ No | Optional schedule and time tracking information |
+| `scheduleData.timeAllocated` | number | ❌ No | Time allocated for project in hours |
+| `scheduleData.timeTaken` | number | ❌ No | Actual time taken to complete project in hours |
 | `sketchUpModel` | object | ❌ No | Optional SketchUp model link |
 | `sketchUpModel.url` | string | ❌ No | URL to SketchUp model (omit or set "None"/"nil" to hide) |
 | `images` | array | ✅ Yes | Array of image filenames |
@@ -314,28 +309,6 @@ Reload the application in your browser. The new project will appear in the galle
 | `projects` | array | Array of project entries |
 | `projects[].folderId` | string | Project folder name |
 | `projects[].enabled` | boolean | Whether project is active |
-
----
-
-## Rating System
-
-All ratings use a **1-5 star scale**:
-
-### Quality ⭐
-Build quality, design execution, and attention to detail.
-
-### Prestige ⭐
-Brand positioning, market perception, and luxury appeal.
-
-### Value ⭐
-Cost effectiveness, market competitiveness, and ROI potential.
-
-**Star Display**:
-- ★★★★★ - 5 stars (Excellent)
-- ★★★★☆ - 4 stars (Very Good)
-- ★★★☆☆ - 3 stars (Good)
-- ★★☆☆☆ - 2 stars (Fair)
-- ★☆☆☆☆ - 1 star (Poor)
 
 ---
 

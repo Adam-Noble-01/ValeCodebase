@@ -30,6 +30,18 @@
             "enabled": true
         },
         {
+            "folderId": "FN-62104__Fenner Scheme-01",
+            "enabled": true
+        },
+        {
+            "folderId": "FN-62104__Fenner Scheme-02",
+            "enabled": true
+        },
+        {
+            "folderId": "FN-62104__Fenner Scheme-03",
+            "enabled": true
+        },
+        {
             "folderId": "GS-61695__Gibbs",
             "enabled": true
         },
@@ -79,6 +91,18 @@
         },
         {
             "folderId": "VB-60009__VanDenBorn",
+            "enabled": true
+        },
+        {
+            "folderId": "VN-61445__Vaughan",
+            "enabled": true
+        },
+        {
+            "folderId": "WR-60556__Winter",
+            "enabled": true
+        },
+        {
+            "folderId": "WS-61782__Wiltshire",
             "enabled": true
         }
     ]

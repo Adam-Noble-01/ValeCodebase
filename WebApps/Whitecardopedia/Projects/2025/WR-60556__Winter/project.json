@@ -1,14 +1,14 @@
 {
     "projectName": "Winter",
     "projectCode": "60556",
-    "projectDate": "TBD",
+    "projectDate": "21-Oct-2025",
     "productionData": {
-        "input": "CAD File  -OR-  Hand Drawn Concept",
-        "additionalNotes": "White A Description Here, Credit Artists or critique is work is sub par and caused issues."
+        "input": "CAD File",
+        "additionalNotes": "A slight more work than usual due to the bay form, I had to model some basic columns as the usual cheat 2d techique was not possible."
     },
     "scheduleData": {
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "timeAllocated": 3,
+        "timeTaken": 4
     },
     "sketchUpModel": {
         "url": "Nil"

@@ -1,14 +1,14 @@
 {
     "projectName": "Wiltshire",
     "projectCode": "61782",
-    "projectDate": "TBD",
+    "projectDate": "17-Oct-2025",
     "productionData": {
-        "input": "CAD File  -OR-  Hand Drawn Concept",
-        "additionalNotes": "White A Description Here, Credit Artists or critique is work is sub par and caused issues."
+        "input": "Hand Drawn Concept",
+        "additionalNotes": "Slightly more work than expected, used a Photomatch reference image to help with filling in the missing elements (Chimney Dormer, Side elevation Context etc, Kept the side vague for Steph to iterate over as much or as little as required."
     },
     "scheduleData": {
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "timeAllocated": 3,
+        "timeTaken": 4
     },
     "sketchUpModel": {
         "url": "Nil"

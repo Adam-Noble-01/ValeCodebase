@@ -1,0 +1,28 @@
+{
+    "projectName": "Vaughan",
+    "projectCode": "61445",
+    "projectDate": "TBD",
+    "productionData": {
+        "input": "CAD File  -OR-  Hand Drawn Concept",
+        "additionalNotes": "White A Description Here, Credit Artists or critique is work is sub par and caused issues."
+    },
+    "scheduleData": {
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__FrontLeft__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__CloserView__WhitecardImage__22-Oct-2025.png",
+        "IMG03__3dView__FrontLeft__MidDistanceView__WhitecardImage__22-Oct-2025.png",
+        "IMG04__3dView__FrontRight__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG05__3dView__FrontRight__CloseView__WhitecardImage__22-Oct-2025.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__22-Oct-2025.png",
+        "IMG07__3dView__LeftSideView__WhitecardImage__22-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Oct-2025.png"
+    ]
+}

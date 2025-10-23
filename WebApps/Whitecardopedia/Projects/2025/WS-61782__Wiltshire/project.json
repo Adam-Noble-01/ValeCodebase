@@ -1,0 +1,23 @@
+{
+    "projectName": "Wiltshire",
+    "projectCode": "61782",
+    "projectDate": "TBD",
+    "productionData": {
+        "input": "CAD File  -OR-  Hand Drawn Concept",
+        "additionalNotes": "White A Description Here, Credit Artists or critique is work is sub par and caused issues."
+    },
+    "scheduleData": {
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__RightCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG02__3dView__FacingRearElevation__WhitecardImage__17-Oct-2025.png",
+        "IMG03__3dView__LeftCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG04__3dView__RightCornerView-02__WhitecardImage__17-Oct-2025.png",
+        "IMG05__3dView__TopDown__WhitecardImage__17-Oct-2025.png"
+    ]
+}

@@ -15,6 +15,7 @@
 # - Discovers latest content delivery folders with date stamps
 # - Copies IMG## prefixed images to Whitecardopedia project structure
 # - Generates project.json files from template with extracted metadata
+# - Automatically extracts project date from content folder name (e.g., __17-Oct-2025)
 # - Prevents manual duplication by automating project folder creation
 # - Skips existing projects to avoid overwriting manual changes
 #
@@ -86,8 +87,9 @@ WHAT IT DOES:
 2. Finds the latest content delivery folder (by date stamp)
 3. Discovers all IMG## and IMG##_ART## prefixed images
 4. Copies images to Whitecardopedia project structure
-5. Generates project.json with extracted metadata
-6. Strips __Whitecard suffix from destination folder names
+5. Generates project.json with extracted metadata (name, code, date)
+6. Extracts project date from content folder name (e.g., __17-Oct-2025)
+7. Strips __Whitecard suffix from destination folder names
 
 This utility eliminates manual folder duplication and ensures consistency
 between your local projects and the Whitecardopedia showcase.
@@ -150,7 +152,8 @@ Project JSON Generation:
   Each cloned project gets a project.json file with:
   - projectName: Extracted from folder name (e.g., "Vaughan")
   - projectCode: Extracted number only (e.g., "61445")
-  - projectDate: Set to "TBD" for manual update
+  - projectDate: Extracted from content folder date stamp (e.g., "17-Oct-2025")
+                 Falls back to "TBD" if no date found in folder name
   - images:      List of discovered IMG files
   - Other fields: Copied from template as placeholders
 
@@ -223,6 +226,18 @@ def parse_folder_date(folder_name: str) -> Optional[datetime]:
             return datetime.strptime(date_str, DATE_FORMAT)          # <-- Parse date string to datetime
         except ValueError:
             return None                                              # <-- Return None if parsing fails
+    
+    return None                                                      # <-- Return None if no date found
+# ---------------------------------------------------------------
+
+
+# HELPER FUNCTION | Extract Date String from Folder Name
+# ---------------------------------------------------------------
+def extract_folder_date_string(folder_name: str) -> Optional[str]:
+    match = re.search(DATE_SUFFIX_PATTERN, folder_name)             # <-- Search for date pattern
+    
+    if match:
+        return match.group(1)                                        # <-- Return date string (DD-MMM-YYYY)
     
     return None                                                      # <-- Return None if no date found
 # ---------------------------------------------------------------
@@ -378,13 +393,13 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 
 # FUNCTION | Create Project JSON File
 # ------------------------------------------------------------
-def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str]) -> bool:
+def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str) -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
     
     project_data = template.copy()                                    # <-- Copy template data
     project_data['projectName'] = project_name                        # <-- Set project name
     project_data['projectCode'] = project_code                        # <-- Set project code
-    project_data['projectDate'] = "TBD"                               # <-- Set placeholder date
+    project_data['projectDate'] = project_date                        # <-- Set extracted date from folder
     project_data['images'] = images                                   # <-- Set images array
     
     try:
@@ -464,6 +479,11 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         result['error'] = "Failed to copy images"                     # <-- Set error message
         return result                                                 # <-- Return error result
     
+    # EXTRACT DATE FROM LATEST FOLDER NAME
+    project_date = extract_folder_date_string(latest_folder.name)    # <-- Extract date from folder name
+    if not project_date:
+        project_date = "TBD"                                          # <-- Use TBD if no date found
+    
     # CREATE PROJECT JSON FILE
     template = load_template_json(template_path)                      # <-- Load template
     
@@ -476,7 +496,8 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         template,
         project_info['project_code'],
         project_info['project_name'],
-        images
+        images,
+        project_date
     )
     
     if not json_success:

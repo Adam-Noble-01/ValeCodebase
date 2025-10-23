@@ -260,11 +260,17 @@
         box-shadow                         : 0 8px 16px rgba(0,0,0,0.15);  /* <-- Enhanced shadow */
     }
     
-    .project-card__image {
+    .project-card__image-container {
+        position                           : relative;                     /* <-- Relative positioning for overlay */
         width                              : 100%;                         /* <-- Full card width */
-        height                             : 250px;                        /* <-- Fixed image height */
-        object-fit                         : contain;                      /* <-- Contain full image without cropping */
+        height                             : 250px;                        /* <-- Fixed container height */
         background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+    }
+    
+    .project-card__image {
+        width                              : 100%;                         /* <-- Full container width */
+        height                             : 100%;                         /* <-- Full container height */
+        object-fit                         : contain;                      /* <-- Contain full image without cropping */
     }
     
     .project-card__content {
@@ -306,6 +312,20 @@
         font-size                          : var(--Vale_FontSize_Small);   /* <-- Small font size */
         color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+    }
+
+    /* HAND DRAWN EFFECT | Conditional styling for White overlay for hand drawn projects */
+    /* ------------------------------------------------------------ */
+    /* Note : This is loaded only when the project is a hand drawn project as defined within project json file */
+    .project-card__white-overlay {
+        position                           : absolute;                     /* <-- Absolute positioning over image */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        right                              : 0;                            /* <-- Align to right */
+        bottom                             : 0;                            /* <-- Align to bottom */
+        background                         : rgba(255, 255, 255, 0.5);    /* <-- 30% white overlay */
+        pointer-events                     : none;                         /* <-- Allow clicks to pass through */
+        z-index                            : 10;                           /* <-- Layer above image */
     }
     /* ------------------------------------------------------------ */
 

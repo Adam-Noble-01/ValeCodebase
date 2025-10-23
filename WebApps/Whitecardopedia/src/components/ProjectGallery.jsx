@@ -155,11 +155,16 @@
                                 className="project-card"
                                 onClick={() => onSelectProject(project)}
                             >
-                                <img 
-                                    src={getThumbnailImage(project)} 
-                                    alt={project.projectName}
-                                    className="project-card__image"
-                                />
+                                <div className={`project-card__image-container ${getImageEffectClass(project)}`}>
+                                    <img 
+                                        src={getThumbnailImage(project)} 
+                                        alt={project.projectName}
+                                        className="project-card__image"
+                                    />
+                                    {isHandDrawnProject(project) && (
+                                        <div className="project-card__white-overlay"></div>
+                                    )}
+                                </div>
                                 
                                 <div className="project-card__content">
                                     <h3 className="project-card__name">{project.projectName}</h3>

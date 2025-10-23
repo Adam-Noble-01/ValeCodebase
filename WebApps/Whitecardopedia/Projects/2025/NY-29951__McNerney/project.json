@@ -20,7 +20,7 @@
     ],
     "description": "Nil",
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 4,
         "timeTaken": 3
     }
 }

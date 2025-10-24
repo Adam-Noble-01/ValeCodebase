@@ -23,7 +23,7 @@
 
     // COMPONENT | Project Gallery Grid View
     // ------------------------------------------------------------
-    function ProjectGallery({ onSelectProject }) {
+    function ProjectGallery({ onSelectProject, onOpenProjectEditor }) {
         const [projects, setProjects] = React.useState([]);              // <-- Projects array state
         const [loading, setLoading] = React.useState(true);              // <-- Loading state
         const [sortBy, setSortBy] = React.useState('date-newest');       // <-- Sort option state
@@ -83,10 +83,15 @@
                 
                 <div className="project-gallery">
                     <div className="project-gallery__controls">
-                        <SearchBox 
-                            searchTerm={searchTerm}
-                            onSearchChange={handleSearchChange}
-                        />
+                        <div className="project-gallery__controls-left">
+                            <HamburgerMenu 
+                                onProjectEditorClick={onOpenProjectEditor}
+                            />
+                            <SearchBox 
+                                searchTerm={searchTerm}
+                                onSearchChange={handleSearchChange}
+                            />
+                        </div>
                         <SortControls 
                             sortBy={sortBy}
                             onSortChange={handleSortChange}

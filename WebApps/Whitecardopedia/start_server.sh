@@ -21,17 +21,18 @@
 
 echo ""
 echo "========================================================================"
-echo " WHITECARDOPEDIA - LOCAL DEVELOPMENT SERVER"
+echo " WHITECARDOPEDIA - FLASK DEVELOPMENT SERVER"
 echo "========================================================================"
 echo ""
-echo " Starting Python HTTP server on port 8000..."
+echo " Starting Flask server on port 8000..."
 echo " Application will be available at: http://localhost:8000"
 echo ""
+echo " Project Editor tool is available on localhost"
 echo " Press Ctrl+C to stop the server"
 echo ""
 echo "========================================================================"
 echo ""
 
-# Start Python HTTP server
-python3 -m http.server 8000
+# Start Flask development server
+python3 server.py
 

@@ -1,0 +1,306 @@
+/* =============================================================================
+ * WHITECARDOPEDIA - TOOLS AND UTILITIES STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : tools.css
+ * NAMESPACE  : Whitecardopedia
+ * MODULE     : Tools Stylesheet
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styles for Project Editor and future utility tools
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Defines styles for Project Editor tool interface
+ * - Implements hamburger menu and dropdown navigation
+ * - Provides form styling for project data editing
+ * - Follows Vale Design Suite standards for consistency
+ * - Designed for future expansion with additional tools
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Hamburger Menu Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* HAMBURGER MENU | Container and Button */
+    /* ------------------------------------------------------------ */
+    .hamburger-menu {
+        position                           : relative;                      /* <-- Position for dropdown */
+        display                            : inline-block;                  /* <-- Inline with controls */
+        margin-right                       : 12px;                          /* <-- Space before search */
+    }
+    
+    .hamburger-menu__button {
+        display                            : flex;                          /* <-- Flexbox layout */
+        flex-direction                     : column;                        /* <-- Stack lines vertically */
+        justify-content                    : space-around;                  /* <-- Space between lines */
+        width                              : 30px;                          /* <-- Button width */
+        height                             : 30px;                          /* <-- Button height */
+        padding                            : 5px;                           /* <-- Internal padding */
+        background                         : transparent;                   /* <-- Transparent background */
+        border                             : none;                          /* <-- No border */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Smooth transition */
+    }
+    
+    .hamburger-menu__button:hover {
+        background                         : var(--Vale_HoverBackground);   /* <-- Light background on hover */
+    }
+    
+    .hamburger-menu__button:active {
+        background                         : var(--Vale_ActiveBackground);  /* <-- Active state background */
+    }
+    
+    .hamburger-menu__line {
+        width                              : 100%;                          /* <-- Full width lines */
+        height                             : 2px;                           /* <-- Line thickness */
+        background-color                   : var(--Vale_PrimaryBrand);      /* <-- Vale blue lines */
+        border-radius                      : 2px;                           /* <-- Rounded line ends */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Smooth transition */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HAMBURGER MENU | Dropdown Container */
+    /* ------------------------------------------------------------ */
+    .hamburger-menu__dropdown {
+        position                           : absolute;                      /* <-- Position absolutely */
+        top                                : calc(100% + 8px);              /* <-- Below button with gap */
+        left                               : 0;                             /* <-- Align left */
+        min-width                          : 220px;                         /* <-- Minimum dropdown width */
+        background                         : var(--Vale_BackgroundWhite);   /* <-- White background */
+        border                             : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        box-shadow                         : 0 4px 12px rgba(0, 0, 0, 0.15);  /* <-- Subtle shadow */
+        z-index                            : var(--Vale_ZIndex_Modal);      /* <-- Above other content */
+        overflow                           : hidden;                        /* <-- Contain items */
+    }
+    
+    .hamburger-menu__item {
+        display                            : block;                         /* <-- Block layout */
+        width                              : 100%;                          /* <-- Full width */
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Item padding */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        background                         : transparent;                   /* <-- Transparent background */
+        border                             : none;                          /* <-- No border */
+        border-bottom                      : 1px solid var(--Vale_BorderLight);  /* <-- Separator line */
+        text-align                         : left;                          /* <-- Left align text */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Smooth transition */
+    }
+    
+    .hamburger-menu__item:last-child {
+        border-bottom                      : none;                          /* <-- No border on last item */
+    }
+    
+    .hamburger-menu__item:hover {
+        background                         : var(--Vale_HoverBackground);   /* <-- Light background on hover */
+        color                              : var(--Vale_PrimaryBrand);      /* <-- Vale blue text on hover */
+    }
+    
+    .hamburger-menu__item:active {
+        background                         : var(--Vale_ActiveBackground);  /* <-- Active state background */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Project Editor View Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PROJECT EDITOR | Main Container */
+    /* ------------------------------------------------------------ */
+    .project-editor {
+        display                            : flex;                          /* <-- Flexbox layout */
+        flex-direction                     : column;                        /* <-- Vertical stacking */
+        min-height                         : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Full height minus header */
+        background                         : var(--Vale_BackgroundLight);   /* <-- Light background */
+    }
+    
+    .project-editor__content {
+        flex                               : 1;                             /* <-- Grow to fill space */
+        padding                            : var(--Vale_Spacing_Large);     /* <-- Content padding */
+        max-width                          : var(--Vale_MaxContentWidth);   /* <-- Maximum content width */
+        width                              : 100%;                          /* <-- Full width */
+        margin                             : 0 auto;                        /* <-- Center horizontally */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PROJECT EDITOR | Selection Mode Title */
+    /* ------------------------------------------------------------ */
+    .project-editor__title {
+        font-size                          : var(--Vale_FontSize_Heading);  /* <-- Large heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below title */
+        text-align                         : center;                        /* <-- Center align */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Project Editor Form Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* EDITOR FORM | Container and Layout */
+    /* ------------------------------------------------------------ */
+    .editor-form {
+        max-width                          : 800px;                         /* <-- Maximum form width */
+        margin                             : 0 auto;                        /* <-- Center horizontally */
+        padding                            : var(--Vale_Spacing_XLarge);    /* <-- Form padding */
+        background                         : var(--Vale_BackgroundWhite);   /* <-- White background */
+        border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.08); /* <-- Subtle shadow */
+    }
+    
+    .editor-form__title {
+        font-size                          : var(--Vale_FontSize_Heading);  /* <-- Heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below title */
+        padding-bottom                     : var(--Vale_Spacing_Medium);    /* <-- Bottom padding */
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue underline */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR FORM | Field Groups */
+    /* ------------------------------------------------------------ */
+    .editor-form__field {
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space between fields */
+    }
+    
+    .editor-form__label {
+        display                            : block;                         /* <-- Block layout */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Small);     /* <-- Space below label */
+    }
+    
+    .editor-form__input,
+    .editor-form__textarea {
+        width                              : 100%;                          /* <-- Full width */
+        padding                            : 12px;                          /* <-- Input padding */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);   /* <-- White background */
+        border                             : 2px solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Smooth transition */
+    }
+    
+    .editor-form__input:focus,
+    .editor-form__textarea:focus {
+        outline                            : none;                          /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);      /* <-- Vale blue border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1);  /* <-- Focus ring */
+    }
+    
+    .editor-form__textarea {
+        min-height                         : 120px;                         /* <-- Minimum textarea height */
+        resize                             : vertical;                      /* <-- Allow vertical resize only */
+    }
+    
+    .editor-form__help-text {
+        display                            : block;                         /* <-- Block layout */
+        margin-top                         : var(--Vale_Spacing_Small);     /* <-- Space above help text */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        font-style                         : italic;                        /* <-- Italic text */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR FORM | Button Group */
+    /* ------------------------------------------------------------ */
+    .editor-form__buttons {
+        display                            : flex;                          /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Medium);    /* <-- Space between buttons */
+        justify-content                    : flex-end;                      /* <-- Align right */
+        margin-top                         : var(--Vale_Spacing_XLarge);    /* <-- Space above buttons */
+        padding-top                        : var(--Vale_Spacing_Large);     /* <-- Top padding */
+        border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Top separator */
+    }
+    
+    .editor-form__button {
+        padding                            : 12px 24px;                     /* <-- Button padding */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        border                             : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .editor-form__button--primary {
+        color                              : var(--Vale_TextLight);         /* <-- Light text */
+        background                         : var(--Vale_PrimaryBrand);      /* <-- Vale blue background */
+    }
+    
+    .editor-form__button--primary:hover {
+        background                         : var(--Vale_TextSecondary);     /* <-- Darker on hover */
+        border-color                       : var(--Vale_TextSecondary);     /* <-- Darker border on hover */
+        transform                          : translateY(-2px);              /* <-- Slight lift effect */
+    }
+    
+    .editor-form__button--secondary {
+        color                              : var(--Vale_PrimaryBrand);      /* <-- Vale blue text */
+        background                         : var(--Vale_BackgroundWhite);   /* <-- White background */
+    }
+    
+    .editor-form__button--secondary:hover {
+        background                         : var(--Vale_HoverBackground);   /* <-- Light grey on hover */
+        transform                          : translateY(-2px);              /* <-- Slight lift effect */
+    }
+    
+    .editor-form__button:active {
+        transform                          : translateY(0);                 /* <-- Reset on click */
+    }
+    
+    .editor-form__button:disabled {
+        opacity                            : 0.5;                           /* <-- Reduced opacity */
+        cursor                             : not-allowed;                   /* <-- Not allowed cursor */
+        transform                          : none;                          /* <-- Disable transform */
+    }
+    
+    .editor-form__button:disabled:hover {
+        transform                          : none;                          /* <-- No hover effect when disabled */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR FORM | Status Messages */
+    /* ------------------------------------------------------------ */
+    .editor-form__message {
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Message padding */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below message */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight */
+    }
+    
+    .editor-form__message--success {
+        color                              : #155724;                       /* <-- Dark green text */
+        background-color                   : #d4edda;                       /* <-- Light green background */
+        border                             : 2px solid #28a745;             /* <-- Green border */
+    }
+    
+    .editor-form__message--error {
+        color                              : #721c24;                       /* <-- Dark red text */
+        background-color                   : #f8d7da;                       /* <-- Light red background */
+        border                             : 2px solid #dc3545;             /* <-- Red border */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

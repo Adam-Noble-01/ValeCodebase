@@ -1,0 +1,27 @@
+# =============================================================================
+# WHITECARDOPEDIA - FLASK SERVER DEPENDENCIES
+# =============================================================================
+#
+# FILE       : requirements.txt
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Version-locked Flask dependencies for Whitecardopedia server
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Flask web framework for API server
+# - Flask-CORS for cross-origin resource sharing
+# - Version-locked for consistent deployment
+#
+# INSTALLATION:
+# pip install -r src/ThirdParty__VersionLockedDependencies/SERVER__FlaskServerDepencies/requirements.txt
+#
+# =============================================================================
+
+Flask==3.0.0
+Flask-CORS==4.0.0
+Werkzeug==3.0.1
+click==8.1.7
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.3
+

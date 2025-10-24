@@ -27,6 +27,7 @@
         HOME                : 'HOME',                                    // <-- Home page with logo
         GALLERY             : 'GALLERY',                                 // <-- Project gallery grid
         VIEWER              : 'VIEWER',                                  // <-- Individual project viewer
+        EDITOR              : 'EDITOR',                                  // <-- Project editor tool
     };
     // ------------------------------------------------------------
 
@@ -60,6 +61,20 @@
         };
         // ---------------------------------------------------------------
         
+        // SUB FUNCTION | Handle Project Editor Navigation
+        // ---------------------------------------------------------------
+        const handleOpenProjectEditor = async () => {
+            const isLocal = await isLocalhost();                         // <-- Check localhost status
+            
+            if (!isLocal) {
+                showLocalhostRequiredAlert();                            // <-- Show alert for web version
+                return;                                                  // <-- Exit without navigating
+            }
+            
+            setCurrentView(APP_VIEWS.EDITOR);                            // <-- Navigate to editor
+        };
+        // ---------------------------------------------------------------
+        
         // RENDER | Conditional View Rendering
         // ---------------------------------------------------------------
         return (
@@ -69,7 +84,10 @@
                 )}
                 
                 {currentView === APP_VIEWS.GALLERY && (
-                    <ProjectGallery onSelectProject={handleSelectProject} />
+                    <ProjectGallery 
+                        onSelectProject={handleSelectProject}
+                        onOpenProjectEditor={handleOpenProjectEditor}
+                    />
                 )}
                 
                 {currentView === APP_VIEWS.VIEWER && (
@@ -77,6 +95,10 @@
                         project={selectedProject} 
                         onBack={handleBackToGallery}
                     />
+                )}
+                
+                {currentView === APP_VIEWS.EDITOR && (
+                    <ProjectEditor onBack={handleBackToGallery} />
                 )}
             </>
         );

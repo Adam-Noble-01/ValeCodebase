@@ -203,16 +203,22 @@
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Vertical centering */
         justify-content                    : space-between;                /* <-- Search left, sort right */
-        gap                                : var(--Vale_Spacing_Large);    /* <-- Gap between search and sort */
+        gap                                : 0;                            /* <-- No gap, components control their own spacing */
         margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below controls */
         flex-wrap                          : wrap;                         /* <-- Wrap on small screens */
+    }
+    
+    .project-gallery__controls-left {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        gap                                : 0;                            /* <-- No gap, components control their own spacing */
     }
     
     .project-gallery__search-box {
         position                           : relative;                     /* <-- Relative for clear button positioning */
         flex                               : 1;                            /* <-- Grow to fill available space */
-        min-width                          : 250px;                        /* <-- Minimum width */
-        max-width                          : 400px;                        /* <-- Maximum width */
+        min-width                          : 600px;                        /* <-- Minimum width */
+        max-width                          : 1200px;                        /* <-- Maximum width */
     }
     
     .project-gallery__search-input {

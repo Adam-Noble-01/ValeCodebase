@@ -1,0 +1,72 @@
+# =============================================================================
+# WHITECARDOPEDIA - ROBOTS.TXT
+# =============================================================================
+#
+# FILE       : robots.txt
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Block all search engine crawlers and web scrapers
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Blocks all automated crawlers from accessing the Whitecardopedia app
+# - Prevents indexing by major search engines (Google, Bing, Yahoo, etc.)
+# - Prevents archiving by web archive services
+# - This is an internal tool and should not be publicly discoverable
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# UNIVERSAL BLOCKING | Block All Bots and Crawlers
+# -----------------------------------------------------------------------------
+
+User-agent: *
+Disallow: /
+
+# -----------------------------------------------------------------------------
+# SPECIFIC BOT BLOCKING | Explicit Blocks for Major Search Engines
+# -----------------------------------------------------------------------------
+
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Googlebot-Image
+Disallow: /
+
+User-agent: Googlebot-Mobile
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: Slurp
+Disallow: /
+
+User-agent: DuckDuckBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: Sogou
+Disallow: /
+
+User-agent: Exabot
+Disallow: /
+
+User-agent: facebot
+Disallow: /
+
+User-agent: facebookexternalhit
+Disallow: /
+
+User-agent: Twitterbot
+Disallow: /
+
+# -----------------------------------------------------------------------------
+

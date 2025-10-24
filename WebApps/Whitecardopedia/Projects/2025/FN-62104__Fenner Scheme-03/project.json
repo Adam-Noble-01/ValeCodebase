@@ -3,17 +3,42 @@
     "projectCode": "62104",
     "productionData": {
         "input": "Hand Drawn Concept",
-        "additionalNotes": "The third instalment of the Fenner Project, this scheme abuts the main house and is a poolhouse, it took longer than expected due to the complexity of the scheme and I had to use a Photomatch reference image to help with filling in the missing elements and to help with back and forth communication with Dan to decide on the final level of detail required, such as how much detail to show on the topo levels etc."
+        "additionalNotes": "The third instalment of the Fenner Project, this scheme abuts the main house and is a poolhouse, it took longer than expected due to the complexity of the scheme and I had to use a Photomatch reference image to help with filling in the missing elements and to help with back and forth communication with Dan to decide on the final level of detail required, such as how much detail to show on the topo levels etc.",
+        "conceptArtist": "Dan"
     },
     "scheduleData": {
         "timeAllocated": 5,
         "timeTaken": 7,
-        "dateFulfilled": "17-Oct-2025"
+        "dateFulfilled": "18-Oct-2025",
+        "dateReceived": "15-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"
     },
     "images": [
+        "IMG01__LeftCorner__Shot-01__WhitecardImage__17-Oct-2025.png",
+        "IMG02__LeftCorner__Closer__WhitecardImage__17-Oct-2025.png",
+        "IMG03__LeftSide__WhitecardImage__17-Oct-2025.png",
+        "IMG04__BackDoors__WhitecardImage__17-Oct-2025.png",
+        "IMG05__RightSide__WhitecardImage__17-Oct-2025.png",
+        "IMG06__RightCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG08__ViewFromBalcony__WhitecardImage__17-Oct-2025.png",
+        "IMG09__OccludedArea__WhitecardImage__17-Oct-2025.png"
+    ],
+    "folderId": "FN-62104__Fenner Scheme-03",
+    "basePath": "Projects/2025/FN-62104__Fenner Scheme-03",
+    "displayImages": [
+        "IMG01__LeftCorner__Shot-01__WhitecardImage__17-Oct-2025.png",
+        "IMG02__LeftCorner__Closer__WhitecardImage__17-Oct-2025.png",
+        "IMG03__LeftSide__WhitecardImage__17-Oct-2025.png",
+        "IMG04__BackDoors__WhitecardImage__17-Oct-2025.png",
+        "IMG05__RightSide__WhitecardImage__17-Oct-2025.png",
+        "IMG06__RightCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG08__ViewFromBalcony__WhitecardImage__17-Oct-2025.png",
+        "IMG09__OccludedArea__WhitecardImage__17-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
         "IMG01__LeftCorner__Shot-01__WhitecardImage__17-Oct-2025.png",
         "IMG02__LeftCorner__Closer__WhitecardImage__17-Oct-2025.png",
         "IMG03__LeftSide__WhitecardImage__17-Oct-2025.png",

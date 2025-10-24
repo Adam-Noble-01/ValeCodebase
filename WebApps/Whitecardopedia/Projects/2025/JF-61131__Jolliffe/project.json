@@ -3,12 +3,14 @@
     "projectCode": "61131",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "Jo provided outstanding quality drawings for this project, this made the mapping task a breeze."
+        "additionalNotes": "Steph gave me Toms CAD Survey, I had to fill out a few areas and used a Photomatched image to ensure nothing was missed. I used my new window builder plugin to add the windows as these were just simple bounding boxes with no detail in the CAD File",
+        "conceptArtist": "Steph"
     },
     "scheduleData": {
-        "timeAllocated": 4,
-        "timeTaken": 3,
-        "dateFulfilled": "08-Oct-2025"
+        "timeAllocated": 5,
+        "timeTaken": 4,
+        "dateFulfilled": "08-Oct-2025",
+        "dateReceived": "07-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -23,5 +25,28 @@
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__08-Oct-2025.png",
         "IMG23__Elevation__RightSideElevation__WhitecardImage__08-Oct-2025.png"
     ],
-    "description": "Nil"
+    "description": "Nil",
+    "folderId": "JF-61131__Jolliffe",
+    "basePath": "Projects/2025/JF-61131__Jolliffe",
+    "displayImages": [
+        "IMG01__3dView__MainShot__Higher__Eye-2.5m__WhitecardImage__08-Oct-2025.png",
+        "IMG03__3dView__FrontLeft__MainView__WhitecardImage__08-Oct-2025.png",
+        "IMG04__3dView__PatioView__WhitecardImage__08-Oct-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__08-Oct-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__08-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__08-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__08-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__08-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__Higher__Eye-2.5m__WhitecardImage__08-Oct-2025.png",
+        "IMG03__3dView__FrontLeft__MainView__WhitecardImage__08-Oct-2025.png",
+        "IMG04__3dView__PatioView__WhitecardImage__08-Oct-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__08-Oct-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__08-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__08-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__08-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__08-Oct-2025.png"
+    ]
 }

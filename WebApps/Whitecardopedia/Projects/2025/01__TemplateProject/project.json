@@ -1,9 +1,9 @@
 {
-    "projectName": "Garden House Alpha",
-    "projectCode": "VGH-2025-001",
+    "projectName": "Default Project Name",
+    "projectCode": "12345",
     "productionData": {
-        "input": "CAD File",
-        "conceptArtist": "Rachael",
+        "input": "Default Input Type",
+        "conceptArtist": "Default Concept Artist",
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
     },
     "scheduleData": {

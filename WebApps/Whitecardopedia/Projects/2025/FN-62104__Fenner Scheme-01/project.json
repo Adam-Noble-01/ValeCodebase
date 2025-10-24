@@ -3,17 +3,34 @@
     "projectCode": "62104",
     "productionData": {
         "input": "Hand Drawn Concept",
-        "additionalNotes": "Top notch concept art from Dan, was a pleasure to work with."
+        "additionalNotes": "Top notch concept art from Dan, was a pleasure to work with.",
+        "conceptArtist": "Dan"
     },
     "scheduleData": {
-        "timeAllocated": 4.5,
+        "timeAllocated": 4,
         "timeTaken": 4,
-        "dateFulfilled": "16-Oct-2025"
+        "dateFulfilled": "16-Oct-2025",
+        "dateReceived": "15-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"
     },
     "images": [
+        "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025.png",
+        "IMG02__Scheme-01__Shot-02__WhitecardImage__16-Oct-2025.png",
+        "IMG03__Scheme-01__Shot-03__WhitecardImage__16-Oct-2025.png",
+        "IMG04__Scheme-01__Shot-04__WhitecardImage__16-Oct-2025.png"
+    ],
+    "folderId": "FN-62104__Fenner Scheme-01",
+    "basePath": "Projects/2025/FN-62104__Fenner Scheme-01",
+    "displayImages": [
+        "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025.png",
+        "IMG02__Scheme-01__Shot-02__WhitecardImage__16-Oct-2025.png",
+        "IMG03__Scheme-01__Shot-03__WhitecardImage__16-Oct-2025.png",
+        "IMG04__Scheme-01__Shot-04__WhitecardImage__16-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
         "IMG01__Scheme-01__Shot-01__WhitecardImage__16-Oct-2025.png",
         "IMG02__Scheme-01__Shot-02__WhitecardImage__16-Oct-2025.png",
         "IMG03__Scheme-01__Shot-03__WhitecardImage__16-Oct-2025.png",

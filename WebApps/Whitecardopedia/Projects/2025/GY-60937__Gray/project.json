@@ -1,0 +1,36 @@
+{
+    "projectName": "Gray",
+    "projectCode": "60937",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Amy",
+        "additionalNotes": "CAD provided was great, Amy did a brilliant job, I ended up adding a Photomatch and modelling out the landscape as they was a rather complex topographic level situation, so modelled the surrounding hardscape context which took additional time over the allocated schedule."
+    },
+    "scheduleData": {
+        "dateReceived": "06-Aug-2025",
+        "dateFulfilled": "07-Aug-2025",
+        "timeAllocated": 5,
+        "timeTaken": 7
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView-01__MainView__WhitecardImage__24-Oct-2025.png",
+        "IMG02__3dView-02__FrontDoors__WhitecardImage__24-Oct-2025.png",
+        "IMG03__3dView-03__TopDownView__WhitecardImage__24-Oct-2025.png"
+    ],
+    "folderId": "GY-60937__Gray",
+    "basePath": "Projects/2025/GY-60937__Gray",
+    "displayImages": [
+        "IMG01__3dView-01__MainView__WhitecardImage__24-Oct-2025.png",
+        "IMG02__3dView-02__FrontDoors__WhitecardImage__24-Oct-2025.png",
+        "IMG03__3dView-03__TopDownView__WhitecardImage__24-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView-01__MainView__WhitecardImage__24-Oct-2025.png",
+        "IMG02__3dView-02__FrontDoors__WhitecardImage__24-Oct-2025.png",
+        "IMG03__3dView-03__TopDownView__WhitecardImage__24-Oct-2025.png"
+    ]
+}

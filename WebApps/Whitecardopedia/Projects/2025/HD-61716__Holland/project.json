@@ -3,7 +3,8 @@
     "projectCode": "61716",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "Quick & Easy, Rachaels CAD Linework provided was tidy and easy to work with, No Issues at all."
+        "additionalNotes": "Quick & Easy, Rachaels CAD Linework provided was tidy and easy to work with, No Issues at all.",
+        "conceptArtist": "Rachael"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -18,6 +19,24 @@
     "scheduleData": {
         "timeAllocated": 5,
         "timeTaken": 4,
-        "dateFulfilled": "02-Oct-2025"
-    }
+        "dateFulfilled": "02-Oct-2025",
+        "dateReceived": "01-Oct-2025"
+    },
+    "folderId": "HD-61716__Holland",
+    "basePath": "Projects/2025/HD-61716__Holland",
+    "displayImages": [
+        "IMG01__3dView__FrontLeft__MainView__WhitecardImage__02-Oct-2025.png",
+        "IMG02__3dView__Front__CloserView__WhitecardImage__02-Oct-2025.png",
+        "IMG03__3dView__Front__ViewingDoors__WhitecardImage__02-Oct-2025.png",
+        "IMG04__Elevation__FrontElevation__WhitecardImage__02-Oct-2025.png",
+        "IMG05__Elevation__LeftSideElevation__WhitecardImage__02-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__FrontLeft__MainView__WhitecardImage__02-Oct-2025.png",
+        "IMG02__3dView__Front__CloserView__WhitecardImage__02-Oct-2025.png",
+        "IMG03__3dView__Front__ViewingDoors__WhitecardImage__02-Oct-2025.png",
+        "IMG04__Elevation__FrontElevation__WhitecardImage__02-Oct-2025.png",
+        "IMG05__Elevation__LeftSideElevation__WhitecardImage__02-Oct-2025.png"
+    ]
 }

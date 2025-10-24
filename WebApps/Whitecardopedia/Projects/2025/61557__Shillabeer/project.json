@@ -3,7 +3,8 @@
     "projectCode": "61557",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "Typical CAD File, No Issues to report, building being slightly out of line made it take longer than expected for a small job."
+        "additionalNotes": "Typical CAD File, No Issues to report, building being slightly out of line made it take longer than expected for a small job.",
+        "conceptArtist": "Rachael"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -14,8 +15,22 @@
         "IMG03__3dView__TopDown__WhitecardImage__26-Sep-2025.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 3,
         "timeTaken": 3,
-        "dateFulfilled": "26-Sep-2025"
-    }
+        "dateFulfilled": "26-Sep-2025",
+        "dateReceived": "26-Sep-2025"
+    },
+    "folderId": "61557__Shillabeer",
+    "basePath": "Projects/2025/61557__Shillabeer",
+    "displayImages": [
+        "IMG01__3dView__FrontLeft__WhitecardImage__26-Sep-2025.png",
+        "IMG02__3dView__SideView__WhitecardImage__26-Sep-2025.png",
+        "IMG03__3dView__TopDown__WhitecardImage__26-Sep-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__FrontLeft__WhitecardImage__26-Sep-2025.png",
+        "IMG02__3dView__SideView__WhitecardImage__26-Sep-2025.png",
+        "IMG03__3dView__TopDown__WhitecardImage__26-Sep-2025.png"
+    ]
 }

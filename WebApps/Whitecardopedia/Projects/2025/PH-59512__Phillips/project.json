@@ -1,0 +1,30 @@
+{
+    "projectName": "Phillips",
+    "projectCode": "59512",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "This was a simple standalone small pool house type structure, ended up turning it around extremely quickly, but it was as easy as they come and Anna gave me a perfect CAD File."
+    },
+    "scheduleData": {
+        "dateReceived": "12-Aug-2025",
+        "dateFulfilled": "12-Aug-2025",
+        "timeAllocated": 2,
+        "timeTaken": 1
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Phillips__PerspectiveView__WhiteCard__LOD1__IsoA4__1.0.0.png"
+    ],
+    "folderId": "PH-59512__Phillips",
+    "basePath": "Projects/2025/PH-59512__Phillips",
+    "displayImages": [
+        "IMG01__Phillips__PerspectiveView__WhiteCard__LOD1__IsoA4__1.0.0.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Phillips__PerspectiveView__WhiteCard__LOD1__IsoA4__1.0.0.png"
+    ]
+}

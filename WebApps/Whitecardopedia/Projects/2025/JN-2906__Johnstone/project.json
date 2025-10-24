@@ -1,0 +1,30 @@
+{
+    "projectName": "Johnstone",
+    "projectCode": "2906",
+    "productionData": {
+        "input": "Hand Drawn Concept",
+        "conceptArtist": "James",
+        "additionalNotes": "Only one view required for James to deliver to Andy in an in-person meeting, fairly standard project using a decent enough artists drawing as an input, nothing negative to report."
+    },
+    "scheduleData": {
+        "dateReceived": "01-Oct-2025",
+        "dateFulfilled": "22-Oct-2025",
+        "timeAllocated": 5,
+        "timeTaken": 4
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView-01__FrontLeft__.png"
+    ],
+    "folderId": "JN-2906__Johnstone",
+    "basePath": "Projects/2025/JN-2906__Johnstone",
+    "displayImages": [
+        "IMG01__3dView-01__FrontLeft__.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView-01__FrontLeft__.png"
+    ]
+}

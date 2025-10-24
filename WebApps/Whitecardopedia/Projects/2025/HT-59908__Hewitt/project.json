@@ -20,5 +20,24 @@
         "timeAllocated": 1,
         "timeTaken": 3,
         "dateFulfilled": "22-Sep-2025"
-    }
+    },
+    "folderId": "HT-59908__Hewitt",
+    "basePath": "Projects/2025/HT-59908__Hewitt",
+    "displayImages": [
+        "IMG01__3dView__FrontRight__WhitecardImage__10-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__WhitecardImage__10-Oct-2025.png",
+        "IMG11__3dView__TopDown__WhitecardImage__10-Oct-2025.png",
+        "IMG12__3dView__TopDown-02__WhitecardImage__10-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__10-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__FrontRight__WhitecardImage__10-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__WhitecardImage__10-Oct-2025.png",
+        "IMG11__3dView__TopDown__WhitecardImage__10-Oct-2025.png",
+        "IMG12__3dView__TopDown-02__WhitecardImage__10-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__10-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
+    ]
 }

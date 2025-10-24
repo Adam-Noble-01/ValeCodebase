@@ -36,6 +36,10 @@
             "enabled": true
         },
         {
+            "folderId": "__BACKUP__2025-10-24_15-21-50",
+            "enabled": true
+        },
+        {
             "folderId": "AN-61960__Acton",
             "enabled": true
         },
@@ -57,6 +61,10 @@
         },
         {
             "folderId": "GS-61695__Gibbs",
+            "enabled": true
+        },
+        {
+            "folderId": "GY-60937__Gray",
             "enabled": true
         },
         {
@@ -84,6 +92,10 @@
             "enabled": true
         },
         {
+            "folderId": "JN-2906__Johnstone",
+            "enabled": true
+        },
+        {
             "folderId": "MH-61603__Mottershead",
             "enabled": true
         },
@@ -93,6 +105,10 @@
         },
         {
             "folderId": "NY-29951__McNerney",
+            "enabled": true
+        },
+        {
+            "folderId": "PH-59512__Phillips",
             "enabled": true
         },
         {

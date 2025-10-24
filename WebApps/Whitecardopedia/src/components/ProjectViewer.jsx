@@ -185,22 +185,6 @@
                                 </>
                             )}
                             
-                            {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
-                                <>
-                                    <hr className="project-viewer__divider" />
-                                    <h3 className="project-viewer__production-title">SketchUp Model</h3>
-                                    
-                                    <a 
-                                        href={project.sketchUpModel.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="project-viewer__model-button"
-                                    >
-                                        View SketchUp Model
-                                    </a>
-                                </>
-                            )}
-                            
                             {project.scheduleData && (
                                 <>
                                     <hr className="project-viewer__divider" />
@@ -210,6 +194,24 @@
                             )}
                             
                             <h3 className="project-viewer__actions-title">Project Actions</h3>
+                            
+                            {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
+                                <div className="project-viewer__download-section">
+                                    <a 
+                                        href={project.sketchUpModel.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="project-viewer__download-button"
+                                    >
+                                        <img 
+                                            src="assets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
+                                            alt="SketchUp" 
+                                            className="project-viewer__download-icon"
+                                        />
+                                        View SketchUp Model
+                                    </a>
+                                </div>
+                            )}
                             
                             <div className="project-viewer__download-section">
                                 <button 

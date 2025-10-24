@@ -509,11 +509,12 @@
         display                            : flex;                         /* <-- Flexbox for icon alignment */
         align-items                        : center;                       /* <-- Vertical centering */
         justify-content                    : center;                       /* <-- Horizontal centering */
-        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between icon and text */
         width                              : 100%;                         /* <-- Full width button */
         padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
         background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
+        text-decoration                    : none;                         /* <-- Remove underline from anchor tags */
         border                             : none;                         /* <-- No border */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */

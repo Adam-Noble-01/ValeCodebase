@@ -11,7 +11,7 @@
 //
 // DESCRIPTION:
 // - Form component for editing project metadata
-// - Editable fields: projectName, projectCode, projectDate, productionData, scheduleData, sketchUp URL
+// - Editable fields: projectName, projectCode, productionData, scheduleData, sketchUp URL
 // - Production data: input type (dropdown), concept artist (dropdown), additional notes
 // - Schedule data: timeAllocated, timeTaken, dateReceived, dateFulfilled
 // - Dropdown options dynamically loaded from masterConfig.json
@@ -31,7 +31,6 @@
         const [formData, setFormData] = React.useState({
             projectName         : project.projectName || '',                 // <-- Project name field
             projectCode         : project.projectCode || '',                 // <-- Project code field
-            projectDate         : project.projectDate || '',                 // <-- Project date field
             productionInput     : project.productionData?.input || '',       // <-- Production input field
             conceptArtist       : project.productionData?.conceptArtist || '', // <-- Concept artist field
             productionNotes     : project.productionData?.additionalNotes || '',  // <-- Production notes field
@@ -97,11 +96,6 @@
                 return false;                                                // <-- Validation failed
             }
             
-            if (!formData.projectDate.trim()) {
-                setMessage({ type: 'error', text: 'Project date is required' });  // <-- Validation error
-                return false;                                                // <-- Validation failed
-            }
-            
             // VALIDATE TIME ALLOCATED (OPTIONAL BUT MUST BE POSITIVE IF PROVIDED)
             if (formData.timeAllocated !== '') {
                 const timeAllocatedNum = parseFloat(formData.timeAllocated);     // <-- Parse to number
@@ -150,7 +144,6 @@
                 ...project,                                                  // <-- Spread existing project data
                 projectName         : formData.projectName.trim(),           // <-- Update project name
                 projectCode         : formData.projectCode.trim(),           // <-- Update project code
-                projectDate         : formData.projectDate.trim(),           // <-- Update project date
                 productionData      : {
                     ...project.productionData,                               // <-- Spread existing production data
                     input           : formData.productionInput.trim(),       // <-- Update input field
@@ -290,26 +283,6 @@
                         disabled={isSaving}
                         required
                     />
-                </div>
-                
-                {/* PROJECT DATE FIELD */}
-                <div className="editor-form__field">
-                    <label className="editor-form__label" htmlFor="projectDate">
-                        Project Date
-                    </label>
-                    <input
-                        type="text"
-                        id="projectDate"
-                        className="editor-form__input"
-                        value={formData.projectDate}
-                        onChange={(e) => handleInputChange('projectDate', e.target.value)}
-                        placeholder="DD-MMM-YYYY (e.g., 16-Oct-2025)"
-                        disabled={isSaving}
-                        required
-                    />
-                    <span className="editor-form__help-text">
-                        Format: DD-MMM-YYYY (e.g., 16-Oct-2025)
-                    </span>
                 </div>
                 
                 {/* PRODUCTION INPUT FIELD */}

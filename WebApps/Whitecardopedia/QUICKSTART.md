@@ -62,12 +62,14 @@ Projects/2025/MyProject_Name/
 {
     "projectName": "My Garden House",
     "projectCode": "VGH-2025-002",
-    "projectDate": "10-Oct-2025",
     "productionData": {
         "input": "CAD File",
+        "conceptArtist": "Anna",
         "additionalNotes": "Project notes here"
     },
     "scheduleData": {
+        "dateReceived": "08-Oct-2025",
+        "dateFulfilled": "10-Oct-2025",
         "timeAllocated": 4,
         "timeTaken": 3
     },

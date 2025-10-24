@@ -124,8 +124,8 @@
                                 <div className="project-card__content">
                                     <h3 className="project-card__name">{project.projectName}</h3>
                                     <p className="project-card__code">{project.projectCode}</p>
-                                    {project.projectDate && (
-                                        <p className="project-card__date">{formatProjectDate(project.projectDate)}</p>
+                                    {project.scheduleData?.dateFulfilled && (
+                                        <p className="project-card__date">{formatProjectDate(project.scheduleData.dateFulfilled)}</p>
                                     )}
                                 </div>
                             </div>

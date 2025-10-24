@@ -30,8 +30,8 @@
         switch (sortBy) {
             case 'date-newest':
                 return sorted.sort((a, b) => {
-                    const dateA = parseProjectDate(a.projectDate);           // <-- Parse date A
-                    const dateB = parseProjectDate(b.projectDate);           // <-- Parse date B
+                    const dateA = parseProjectDate(a.scheduleData?.dateFulfilled);  // <-- Parse dateFulfilled A
+                    const dateB = parseProjectDate(b.scheduleData?.dateFulfilled);  // <-- Parse dateFulfilled B
                     if (!dateA) return 1;                                    // <-- Handle invalid dates
                     if (!dateB) return -1;                                   // <-- Handle invalid dates
                     return dateB - dateA;                                    // <-- Newest first (descending)
@@ -39,8 +39,8 @@
                 
             case 'date-oldest':
                 return sorted.sort((a, b) => {
-                    const dateA = parseProjectDate(a.projectDate);           // <-- Parse date A
-                    const dateB = parseProjectDate(b.projectDate);           // <-- Parse date B
+                    const dateA = parseProjectDate(a.scheduleData?.dateFulfilled);  // <-- Parse dateFulfilled A
+                    const dateB = parseProjectDate(b.scheduleData?.dateFulfilled);  // <-- Parse dateFulfilled B
                     if (!dateA) return 1;                                    // <-- Handle invalid dates
                     if (!dateB) return -1;                                   // <-- Handle invalid dates
                     return dateA - dateB;                                    // <-- Oldest first (ascending)

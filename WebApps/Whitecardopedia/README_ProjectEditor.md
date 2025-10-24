@@ -289,7 +289,7 @@ The Project Editor tool is designed for future expansion:
 ## Technical Notes
 
 ### JSON Validation
-- Required fields: `projectName`, `projectCode`, `projectDate`
+- Required fields: `projectName`, `projectCode`
 - Validates structure before sending to API
 - Prevents saving malformed JSON
 

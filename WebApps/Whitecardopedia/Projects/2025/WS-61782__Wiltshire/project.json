@@ -3,17 +3,36 @@
     "projectCode": "61782",
     "productionData": {
         "input": "Hand Drawn Concept",
-        "additionalNotes": "Slightly more work than expected, used a Photomatch reference image to help with filling in the missing elements (Chimney Dormer, Side elevation Context etc, Kept the side vague for Steph to iterate over as much or as little as required."
+        "additionalNotes": "Slightly more work than expected, used a Photomatch reference image to help with filling in the missing elements (Chimney Dormer, Side elevation Context etc, Kept the side vague for Steph to iterate over as much or as little as required.",
+        "conceptArtist": "Steph"
     },
     "scheduleData": {
         "timeAllocated": 3,
         "timeTaken": 4,
-        "dateFulfilled": "18-Oct-2025"
+        "dateFulfilled": "18-Oct-2025",
+        "dateReceived": "15-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"
     },
     "images": [
+        "IMG01__3dView__RightCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG02__3dView__FacingRearElevation__WhitecardImage__17-Oct-2025.png",
+        "IMG03__3dView__LeftCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG04__3dView__RightCornerView-02__WhitecardImage__17-Oct-2025.png",
+        "IMG05__3dView__TopDown__WhitecardImage__17-Oct-2025.png"
+    ],
+    "folderId": "WS-61782__Wiltshire",
+    "basePath": "Projects/2025/WS-61782__Wiltshire",
+    "displayImages": [
+        "IMG01__3dView__RightCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG02__3dView__FacingRearElevation__WhitecardImage__17-Oct-2025.png",
+        "IMG03__3dView__LeftCorner__WhitecardImage__17-Oct-2025.png",
+        "IMG04__3dView__RightCornerView-02__WhitecardImage__17-Oct-2025.png",
+        "IMG05__3dView__TopDown__WhitecardImage__17-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
         "IMG01__3dView__RightCorner__WhitecardImage__17-Oct-2025.png",
         "IMG02__3dView__FacingRearElevation__WhitecardImage__17-Oct-2025.png",
         "IMG03__3dView__LeftCorner__WhitecardImage__17-Oct-2025.png",

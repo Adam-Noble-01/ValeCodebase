@@ -167,12 +167,14 @@ Create `project.json` in the project folder:
 {
     "projectName": "Garden House Beta",
     "projectCode": "VGH-2025-002",
-    "projectDate": "10-Oct-2025",
     "productionData": {
         "input": "CAD File",
+        "conceptArtist": "Anna",
         "additionalNotes": "Modern garden house with sustainable design principles"
     },
     "scheduleData": {
+        "dateReceived": "08-Oct-2025",
+        "dateFulfilled": "10-Oct-2025",
         "timeAllocated": 4,
         "timeTaken": 3
     },
@@ -287,11 +289,13 @@ Reload the application in your browser. The new project will appear in the galle
 |-------|------|----------|-------------|
 | `projectName` | string | ✅ Yes | Display name of the project |
 | `projectCode` | string | ✅ Yes | Unique project identifier (e.g., VGH-2025-001) |
-| `projectDate` | string | ❌ No | Project date in DD-MMM-YYYY format (e.g., "10-Oct-2025") |
 | `productionData` | object | ❌ No | Optional production information |
-| `productionData.input` | string | ❌ No | Source material type (e.g., "CAD File") |
+| `productionData.input` | string | ❌ No | Source material type (e.g., "CAD File", "Hand Drawn Concept") |
+| `productionData.conceptArtist` | string | ❌ No | Designer who created the concept (e.g., "Anna", "James") |
 | `productionData.additionalNotes` | string | ❌ No | Free-form production notes |
 | `scheduleData` | object | ❌ No | Optional schedule and time tracking information |
+| `scheduleData.dateReceived` | string | ❌ No | Date project was received in DD-MMM-YYYY format |
+| `scheduleData.dateFulfilled` | string | ❌ No | Date project was completed in DD-MMM-YYYY format |
 | `scheduleData.timeAllocated` | number | ❌ No | Time allocated for project in hours |
 | `scheduleData.timeTaken` | number | ❌ No | Actual time taken to complete project in hours |
 | `sketchUpModel` | object | ❌ No | Optional SketchUp model link |

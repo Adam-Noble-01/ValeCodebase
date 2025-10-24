@@ -80,7 +80,7 @@ def get_project_path(folder_id):
 # ------------------------------------------------------------
 def validate_project_json(data):
     """Validate that project JSON has required fields"""
-    required_fields = ['projectName', 'projectCode', 'projectDate']     # <-- Required top-level fields
+    required_fields = ['projectName', 'projectCode']                     # <-- Required top-level fields
     
     for field in required_fields:
         if field not in data:

@@ -46,8 +46,8 @@
     // ------------------------------------------------------------
     function showLocalhostRequiredAlert() {
         alert(
-            'Sorry this tool is not yet available in the Web Version, ' +
-            'Run on Local Host To Edit Project Details'
+            'OI! You Need To Run On Local Host To Edit Project Details' + '\n' +
+            'This tool is NOT yet available in the Web Version'
         );                                                                  // <-- Display alert message
     }
     // ---------------------------------------------------------------

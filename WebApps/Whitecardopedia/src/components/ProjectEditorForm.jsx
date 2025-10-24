@@ -11,8 +11,9 @@
 //
 // DESCRIPTION:
 // - Form component for editing project metadata
-// - Editable fields: projectName, projectCode, projectDate, productionData, sketchUp URL
-// - Validates input before saving to Flask API
+// - Editable fields: projectName, projectCode, projectDate, productionData, scheduleData, sketchUp URL
+// - Schedule data includes: timeAllocated (expected hours) and timeTaken (actual hours)
+// - Validates input before saving to Flask API (positive numbers for time fields)
 // - Displays success/error messages after save operation
 // - Disabled state during save operation
 //
@@ -31,7 +32,9 @@
             projectDate         : project.projectDate || '',                 // <-- Project date field
             productionInput     : project.productionData?.input || '',       // <-- Production input field
             productionNotes     : project.productionData?.additionalNotes || '',  // <-- Production notes field
-            sketchUpUrl         : project.sketchUpModel?.url || ''           // <-- SketchUp URL field
+            sketchUpUrl         : project.sketchUpModel?.url || '',          // <-- SketchUp URL field
+            timeAllocated       : project.scheduleData?.timeAllocated || '', // <-- Time expected field
+            timeTaken           : project.scheduleData?.timeTaken || ''      // <-- Time taken field
         });
         
         const [isSaving, setIsSaving] = React.useState(false);               // <-- Saving state
@@ -68,6 +71,24 @@
                 return false;                                                // <-- Validation failed
             }
             
+            // VALIDATE TIME ALLOCATED (OPTIONAL BUT MUST BE POSITIVE IF PROVIDED)
+            if (formData.timeAllocated !== '') {
+                const timeAllocatedNum = parseFloat(formData.timeAllocated);     // <-- Parse to number
+                if (isNaN(timeAllocatedNum) || timeAllocatedNum < 0) {
+                    setMessage({ type: 'error', text: 'Time expected must be a positive number' });  // <-- Validation error
+                    return false;                                            // <-- Validation failed
+                }
+            }
+            
+            // VALIDATE TIME TAKEN (OPTIONAL BUT MUST BE POSITIVE IF PROVIDED)
+            if (formData.timeTaken !== '') {
+                const timeTakenNum = parseFloat(formData.timeTaken);             // <-- Parse to number
+                if (isNaN(timeTakenNum) || timeTakenNum < 0) {
+                    setMessage({ type: 'error', text: 'Time taken must be a positive number' });  // <-- Validation error
+                    return false;                                            // <-- Validation failed
+                }
+            }
+            
             return true;                                                     // <-- Validation passed
         };
         // ---------------------------------------------------------------
@@ -76,7 +97,7 @@
         // SUB FUNCTION | Build Updated Project JSON Object
         // ---------------------------------------------------------------
         const buildUpdatedProject = () => {
-            return {
+            const updatedProject = {
                 ...project,                                                  // <-- Spread existing project data
                 projectName         : formData.projectName.trim(),           // <-- Update project name
                 projectCode         : formData.projectCode.trim(),           // <-- Update project code
@@ -91,6 +112,23 @@
                     url             : formData.sketchUpUrl.trim()            // <-- Update URL field
                 }
             };
+            
+            // ADD SCHEDULE DATA IF ANY TIME VALUES PROVIDED
+            if (formData.timeAllocated !== '' || formData.timeTaken !== '') {
+                updatedProject.scheduleData = {
+                    ...project.scheduleData                                  // <-- Spread existing schedule data
+                };
+                
+                if (formData.timeAllocated !== '') {
+                    updatedProject.scheduleData.timeAllocated = parseInt(formData.timeAllocated);  // <-- Set time allocated
+                }
+                
+                if (formData.timeTaken !== '') {
+                    updatedProject.scheduleData.timeTaken = parseInt(formData.timeTaken);  // <-- Set time taken
+                }
+            }
+            
+            return updatedProject;                                           // <-- Return updated project
         };
         // ---------------------------------------------------------------
         
@@ -241,6 +279,44 @@
                         placeholder="Additional production notes and details..."
                         disabled={isSaving}
                     />
+                </div>
+                
+                {/* TIME EXPECTED FIELD */}
+                <div className="editor-form__field">
+                    <label className="editor-form__label" htmlFor="timeAllocated">
+                        Time Expected (Hours)
+                    </label>
+                    <input
+                        type="text"
+                        id="timeAllocated"
+                        className="editor-form__input"
+                        value={formData.timeAllocated}
+                        onChange={(e) => handleInputChange('timeAllocated', e.target.value)}
+                        placeholder="e.g., 2"
+                        disabled={isSaving}
+                    />
+                    <span className="editor-form__help-text">
+                        Optional - Planned time for project in hours
+                    </span>
+                </div>
+                
+                {/* TIME TAKEN FIELD */}
+                <div className="editor-form__field">
+                    <label className="editor-form__label" htmlFor="timeTaken">
+                        Time Taken (Hours)
+                    </label>
+                    <input
+                        type="text"
+                        id="timeTaken"
+                        className="editor-form__input"
+                        value={formData.timeTaken}
+                        onChange={(e) => handleInputChange('timeTaken', e.target.value)}
+                        placeholder="e.g., 3"
+                        disabled={isSaving}
+                    />
+                    <span className="editor-form__help-text">
+                        Optional - Actual time taken to complete project in hours
+                    </span>
                 </div>
                 
                 {/* SKETCHUP MODEL URL FIELD */}

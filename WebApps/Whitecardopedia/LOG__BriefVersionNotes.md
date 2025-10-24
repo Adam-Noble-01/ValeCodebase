@@ -18,6 +18,7 @@ STATUS  =  Stable and Pushed To WebHost
 - Updated server handling to allow for project editor tool functionality.
 - This required the addition of a Flask server to the project.
 - All version locked dependencies for the Flask server are now stored in the src/ThirdParty__VersionLockedDependencies/SERVER__FlaskServerDepencies/ folder.
+### IMPROVED | Added More Datapoints to Project Editor Form
 
 -----------------------------------------------------------------------------
 

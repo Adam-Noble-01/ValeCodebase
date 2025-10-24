@@ -1,0 +1,27 @@
+{
+    "projectName": "Winter",
+    "projectCode": "60556",
+    "projectDate": "21-Oct-2025",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "A slight more work than usual due to the bay form, I had to model some basic columns as the usual cheat 2d techique was not possible."
+    },
+    "scheduleData": {
+        "timeAllocated": 3,
+        "timeTaken": 4
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__LeftCorner__MainShot__WhitecardImage__21-Oct-2025.png",
+        "IMG02__3dView__LeftCorner__NoBoundaryContext__WhitecardImage__21-Oct-2025.png",
+        "IMG03__3dView__BackDoors__WhitecardImage__21-Oct-2025.png",
+        "IMG04__3dView__RightSode__View-01__WhitecardImage__21-Oct-2025.png",
+        "IMG05__3dView__RightSode__View-02__WhitecardImage__21-Oct-2025.png",
+        "IMG06__3dView__TopDownView__WhitecardImage__21-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__21-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__21-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__21-Oct-2025.png"
+    ]
+}

@@ -1,7 +1,6 @@
 {
     "projectName": "Mashru",
     "projectCode": "61478",
-    "projectDate": "21-Aug-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Very tricky due to some discrepancies found whilst working things up, had to use photomatch method for validation"
@@ -14,6 +13,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 3,
-        "timeTaken": 6
+        "timeTaken": 6,
+        "dateFulfilled": "21-Aug-2025"
     }
 }

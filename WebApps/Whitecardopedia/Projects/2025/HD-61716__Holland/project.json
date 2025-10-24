@@ -1,7 +1,6 @@
 {
     "projectName": "Holland",
     "projectCode": "61716",
-    "projectDate": "02-Oct-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Quick & Easy, Rachaels CAD Linework provided was tidy and easy to work with, No Issues at all."
@@ -18,6 +17,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 5,
-        "timeTaken": 4
+        "timeTaken": 4,
+        "dateFulfilled": "02-Oct-2025"
     }
 }

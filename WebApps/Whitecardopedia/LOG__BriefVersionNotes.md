@@ -19,6 +19,8 @@ STATUS  =  Stable and Pushed To WebHost
 - This required the addition of a Flask server to the project.
 - All version locked dependencies for the Flask server are now stored in the src/ThirdParty__VersionLockedDependencies/SERVER__FlaskServerDepencies/ folder.
 ### IMPROVED | Added More Datapoints to Project Editor Form
+- Added Designers List to Master Config.
+- Added Input Type List to Master Config.
 
 -----------------------------------------------------------------------------
 

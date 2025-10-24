@@ -1,7 +1,6 @@
 {
     "projectName": "Hewitt",
     "projectCode": "59908",
-    "projectDate": "22-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A Standard Job, Rachael provided a good CAD File, No Issues to report."
@@ -19,6 +18,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 3
+        "timeTaken": 3,
+        "dateFulfilled": "22-Sep-2025"
     }
 }

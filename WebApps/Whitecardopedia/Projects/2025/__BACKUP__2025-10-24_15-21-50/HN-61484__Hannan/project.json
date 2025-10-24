@@ -1,0 +1,40 @@
+{
+    "projectName": "Hannan",
+    "projectCode": "61484",
+    "projectDate": "20-Aug-2025",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "Took a while, existing house was a bit tricky, Architects drawings provided missed a critical area that I had to figure out, time should be worth it though due to project value as its essentially two projects in one."
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Hannan__Exterior3dView01__LargerOrangery__ImageFile__1.2.0.png",
+        "IMG02__Hannan__Exterior3dView02__SmallerOrangery__ImageFile__1.2.0.png",
+        "IMG11__Hannan__ElevationView01__BothOrangeries__FrontView__ImageFile__1.2.0.png",
+        "IMG12__Hannan__ElevationView02__LargerOrangery__RightSide__ImageFile__1.2.0.png",
+        "IMG13__Hannan__ElevationView03__SmallerOrangery__LeftSide__ImageFile__1.2.0.png"
+    ],
+    "scheduleData": {
+        "timeAllocated": 6,
+        "timeTaken": 8
+    },
+    "folderId": "HN-61484__Hannan",
+    "basePath": "Projects/2025/HN-61484__Hannan",
+    "displayImages": [
+        "IMG01__Hannan__Exterior3dView01__LargerOrangery__ImageFile__1.2.0.png",
+        "IMG02__Hannan__Exterior3dView02__SmallerOrangery__ImageFile__1.2.0.png",
+        "IMG11__Hannan__ElevationView01__BothOrangeries__FrontView__ImageFile__1.2.0.png",
+        "IMG12__Hannan__ElevationView02__LargerOrangery__RightSide__ImageFile__1.2.0.png",
+        "IMG13__Hannan__ElevationView03__SmallerOrangery__LeftSide__ImageFile__1.2.0.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Hannan__Exterior3dView01__LargerOrangery__ImageFile__1.2.0.png",
+        "IMG02__Hannan__Exterior3dView02__SmallerOrangery__ImageFile__1.2.0.png",
+        "IMG11__Hannan__ElevationView01__BothOrangeries__FrontView__ImageFile__1.2.0.png",
+        "IMG12__Hannan__ElevationView02__LargerOrangery__RightSide__ImageFile__1.2.0.png",
+        "IMG13__Hannan__ElevationView03__SmallerOrangery__LeftSide__ImageFile__1.2.0.png"
+    ]
+}

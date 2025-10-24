@@ -1,14 +1,14 @@
 {
     "projectName": "Winter",
     "projectCode": "60556",
-    "projectDate": "21-Oct-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A slight more work than usual due to the bay form, I had to model some basic columns as the usual cheat 2d techique was not possible."
     },
     "scheduleData": {
         "timeAllocated": 3,
-        "timeTaken": 4
+        "timeTaken": 4,
+        "dateFulfilled": "21-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"

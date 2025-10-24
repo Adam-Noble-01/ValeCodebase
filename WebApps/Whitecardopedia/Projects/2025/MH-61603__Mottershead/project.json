@@ -1,7 +1,6 @@
 {
     "projectName": "Mottershead",
     "projectCode": "61603",
-    "projectDate": "19-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A Timelapse video was provided, No Issues to report, Rachael provided a good CAD File, this went smoothly."
@@ -18,6 +17,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 3
+        "timeTaken": 3,
+        "dateFulfilled": "19-Sep-2025"
     }
 }

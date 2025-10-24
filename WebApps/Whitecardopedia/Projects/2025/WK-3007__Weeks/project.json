@@ -1,14 +1,14 @@
 {
     "projectName": "Weeks",
     "projectCode": "59494",
-    "projectDate": "16-Oct-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A very complex model to build, required patching together previous hand drawings, Nicks site survey, and numerous Photomatch Images reference images to build an accurate complete model of all the elevations visible as they concept department required this for a planning application drawing."
     },
     "scheduleData": {
         "timeAllocated": 8,
-        "timeTaken": 12.5
+        "timeTaken": 12.5,
+        "dateFulfilled": "16-Oct-2025"
     },
     "sketchUpModel": {
         "url": "https://app.sketchup.com/share/tc/europe/luls66XZsNs?source=desktop&stoken=b3A7Z7eyGs20QIcsOxb61KYZyCAUDSRydPnuBP7tSiB0VQrs80IExamPKdRZ6VAx&rtc-engine-version=19"

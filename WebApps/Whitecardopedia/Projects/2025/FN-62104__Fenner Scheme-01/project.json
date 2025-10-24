@@ -1,14 +1,14 @@
 {
     "projectName": "Fenner Scheme-01",
     "projectCode": "62104",
-    "projectDate": "16-Oct-2025",
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "Top notch concept art from Dan, was a pleasure to work with."
     },
     "scheduleData": {
         "timeAllocated": 4.5,
-        "timeTaken": 4
+        "timeTaken": 4,
+        "dateFulfilled": "16-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"

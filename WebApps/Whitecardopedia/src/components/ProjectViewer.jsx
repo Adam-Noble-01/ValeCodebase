@@ -143,19 +143,19 @@
                         <div className="project-viewer__ratings-panel">
                             <h2 className="project-viewer__data-title">Production Data</h2>
                             
-                            {project.projectDate && (
-                                <div className="project-viewer__data-field">
-                                    <span className="project-viewer__data-label">Project Date</span>
-                                    <span className="project-viewer__data-value">{formatProjectDate(project.projectDate)}</span>
-                                </div>
-                            )}
-                            
                             {project.productionData && (
                                 <>
-                                    {project.productionData.input && (
+                                    {project.scheduleData?.dateReceived && (
                                         <div className="project-viewer__data-field">
-                                            <span className="project-viewer__data-label">Input</span>
-                                            <span className="project-viewer__data-value">{project.productionData.input}</span>
+                                            <span className="project-viewer__data-label">Date Received</span>
+                                            <span className="project-viewer__data-value">{formatProjectDate(project.scheduleData.dateReceived)}</span>
+                                        </div>
+                                    )}
+                                    
+                                    {project.scheduleData?.dateFulfilled && (
+                                        <div className="project-viewer__data-field">
+                                            <span className="project-viewer__data-label">Date Fulfilled</span>
+                                            <span className="project-viewer__data-value">{formatProjectDate(project.scheduleData.dateFulfilled)}</span>
                                         </div>
                                     )}
                                     
@@ -163,6 +163,20 @@
                                         <div className="project-viewer__data-field">
                                             <span className="project-viewer__data-label">Time Taken</span>
                                             <span className="project-viewer__data-value">{project.scheduleData.timeTaken} Hours</span>
+                                        </div>
+                                    )}
+                                    
+                                    {project.productionData.conceptArtist && (
+                                        <div className="project-viewer__data-field">
+                                            <span className="project-viewer__data-label">Concept Artist</span>
+                                            <span className="project-viewer__data-value">{project.productionData.conceptArtist}</span>
+                                        </div>
+                                    )}
+                                    
+                                    {project.productionData.input && (
+                                        <div className="project-viewer__data-field">
+                                            <span className="project-viewer__data-label">Input Type</span>
+                                            <span className="project-viewer__data-value">{project.productionData.input}</span>
                                         </div>
                                     )}
                                     

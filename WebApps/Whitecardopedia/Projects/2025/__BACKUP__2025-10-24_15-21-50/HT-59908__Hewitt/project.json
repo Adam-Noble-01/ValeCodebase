@@ -1,0 +1,24 @@
+{
+    "projectName": "Hewitt",
+    "projectCode": "59908",
+    "projectDate": "22-Sep-2025",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "A Standard Job, Rachael provided a good CAD File, No Issues to report."
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__FrontRight__WhitecardImage__10-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__WhitecardImage__10-Oct-2025.png",
+        "IMG11__3dView__TopDown__WhitecardImage__10-Oct-2025.png",
+        "IMG12__3dView__TopDown-02__WhitecardImage__10-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__10-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
+    ],
+    "scheduleData": {
+        "timeAllocated": 1,
+        "timeTaken": 3
+    }
+}

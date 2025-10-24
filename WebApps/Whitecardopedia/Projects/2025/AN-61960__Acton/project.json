@@ -1,7 +1,6 @@
 {
     "projectName": "Acton",
     "projectCode": "61960",
-    "projectDate": "01-Oct-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Took me quite a while as the landscape was very complex, had to reference and align many images which took additional time."
@@ -14,6 +13,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 5
+        "timeTaken": 5,
+        "dateFulfilled": "01-Oct-2025"
     }
 }

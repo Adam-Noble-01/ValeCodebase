@@ -1,7 +1,6 @@
 {
     "projectName": "Pilley",
     "projectCode": "61616",
-    "projectDate": "09-Sep-2025",
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "Mapped Steph's Hand Drawn Concept to the Whitecard model, result is Stunning!"
@@ -16,6 +15,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 2
+        "timeTaken": 2,
+        "dateFulfilled": "09-Sep-2025"
     }
 }

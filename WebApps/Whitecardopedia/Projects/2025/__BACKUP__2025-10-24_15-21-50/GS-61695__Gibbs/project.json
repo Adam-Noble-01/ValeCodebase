@@ -1,0 +1,22 @@
+{
+    "projectName": "Gibbs",
+    "projectCode": "61695",
+    "projectDate": "11-Sep-2025",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "A small but fairly complex existing house, No Issues to report, took a slightly longer time than expected."
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Gibbs__3dVisual__WhiteCard_LOD-01__ForArtist__1.0.0__.png",
+        "IMG02__Gibbs__FrontElevation__ForValidationPurposes__1.0.0__.png",
+        "IMG03__Gibbs__3dView-02__TopDown__ForValidationPurposes__1.0.0__.png",
+        "IMG04__Gibbs__3dView-03__ForValidationPurposes__1.0.0__.png"
+    ],
+    "scheduleData": {
+        "timeAllocated": 1,
+        "timeTaken": 3
+    }
+}

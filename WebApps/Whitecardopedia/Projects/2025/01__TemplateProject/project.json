@@ -1,12 +1,14 @@
 {
     "projectName": "Garden House Alpha",
     "projectCode": "VGH-2025-001",
-    "projectDate": "10-Oct-2025",
     "productionData": {
-        "input": "CAD File  -OR-  Hand Drawn Concept",
-        "additionalNotes": "White A Description Here, Credit Artists or critique is work is sub par and caused issues."
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
     },
     "scheduleData": {
+        "dateReceived": "10-Oct-2025",
+        "dateFulfilled": "12-Oct-2025",
         "timeAllocated": 2,
         "timeTaken": 2
     },

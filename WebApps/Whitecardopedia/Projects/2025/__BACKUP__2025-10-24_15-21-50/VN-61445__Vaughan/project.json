@@ -1,0 +1,58 @@
+{
+    "projectName": "Vaughan",
+    "projectCode": "61445",
+    "projectDate": "22-Oct-2025",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "Top Notch CAD Work again from Anna as always.",
+        "conceptArtist": "Anna"
+    },
+    "scheduleData": {
+        "timeAllocated": 4,
+        "timeTaken": 3,
+        "dateReceived": "21-Oct-2025",
+        "dateFulfilled": "22-Oct-2025"
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__FrontLeft__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__CloserView__WhitecardImage__22-Oct-2025.png",
+        "IMG03__3dView__FrontLeft__MidDistanceView__WhitecardImage__22-Oct-2025.png",
+        "IMG04__3dView__FrontRight__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG05__3dView__FrontRight__CloseView__WhitecardImage__22-Oct-2025.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__22-Oct-2025.png",
+        "IMG07__3dView__LeftSideView__WhitecardImage__22-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Oct-2025.png"
+    ],
+    "folderId": "VN-61445__Vaughan",
+    "basePath": "Projects/2025/VN-61445__Vaughan",
+    "displayImages": [
+        "IMG01__3dView__FrontLeft__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__CloserView__WhitecardImage__22-Oct-2025.png",
+        "IMG03__3dView__FrontLeft__MidDistanceView__WhitecardImage__22-Oct-2025.png",
+        "IMG04__3dView__FrontRight__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG05__3dView__FrontRight__CloseView__WhitecardImage__22-Oct-2025.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__22-Oct-2025.png",
+        "IMG07__3dView__LeftSideView__WhitecardImage__22-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__FrontLeft__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG02__3dView__FrontLeft__CloserView__WhitecardImage__22-Oct-2025.png",
+        "IMG03__3dView__FrontLeft__MidDistanceView__WhitecardImage__22-Oct-2025.png",
+        "IMG04__3dView__FrontRight__FarView__WhitecardImage__22-Oct-2025.png",
+        "IMG05__3dView__FrontRight__CloseView__WhitecardImage__22-Oct-2025.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__22-Oct-2025.png",
+        "IMG07__3dView__LeftSideView__WhitecardImage__22-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__22-Oct-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Oct-2025.png"
+    ]
+}

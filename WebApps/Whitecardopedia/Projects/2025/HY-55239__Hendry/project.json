@@ -1,7 +1,6 @@
 {
     "projectName": "Hendry",
     "projectCode": "55239",
-    "projectDate": "05-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Took a little while, no issues with the CAD File, Existing house was just a little bit tricky."
@@ -17,6 +16,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 4
+        "timeTaken": 4,
+        "dateFulfilled": "05-Sep-2025"
     }
 }

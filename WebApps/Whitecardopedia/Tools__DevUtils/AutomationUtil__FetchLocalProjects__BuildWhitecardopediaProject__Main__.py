@@ -15,7 +15,7 @@
 # - Discovers latest content delivery folders with date stamps
 # - Copies IMG## prefixed images to Whitecardopedia project structure
 # - Generates project.json files from template with extracted metadata
-# - Automatically extracts project date from content folder name (e.g., __17-Oct-2025)
+# - Automatically extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
 # - Prevents manual duplication by automating project folder creation
 # - Skips existing projects to avoid overwriting manual changes
 #
@@ -87,8 +87,8 @@ WHAT IT DOES:
 2. Finds the latest content delivery folder (by date stamp)
 3. Discovers all IMG## and IMG##_ART## prefixed images
 4. Copies images to Whitecardopedia project structure
-5. Generates project.json with extracted metadata (name, code, date)
-6. Extracts project date from content folder name (e.g., __17-Oct-2025)
+5. Generates project.json with extracted metadata (name, code, dateFulfilled)
+6. Extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
 7. Strips __Whitecard suffix from destination folder names
 
 This utility eliminates manual folder duplication and ensures consistency
@@ -152,8 +152,8 @@ Project JSON Generation:
   Each cloned project gets a project.json file with:
   - projectName: Extracted from folder name (e.g., "Vaughan")
   - projectCode: Extracted number only (e.g., "61445")
-  - projectDate: Extracted from content folder date stamp (e.g., "17-Oct-2025")
-                 Falls back to "TBD" if no date found in folder name
+  - scheduleData.dateFulfilled: Extracted from content folder date stamp (e.g., "17-Oct-2025")
+                                Falls back to "TBD" if no date found in folder name
   - images:      List of discovered IMG files
   - Other fields: Copied from template as placeholders
 
@@ -399,8 +399,12 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     project_data = template.copy()                                    # <-- Copy template data
     project_data['projectName'] = project_name                        # <-- Set project name
     project_data['projectCode'] = project_code                        # <-- Set project code
-    project_data['projectDate'] = project_date                        # <-- Set extracted date from folder
     project_data['images'] = images                                   # <-- Set images array
+    
+    # SET DATE FULFILLED IN SCHEDULE DATA INSTEAD OF PROJECT DATE
+    if 'scheduleData' not in project_data:
+        project_data['scheduleData'] = {}                             # <-- Create scheduleData if missing
+    project_data['scheduleData']['dateFulfilled'] = project_date      # <-- Set extracted date as dateFulfilled
     
     try:
         with open(project_json_path, 'w', encoding='utf-8') as file:  # <-- Open file for writing

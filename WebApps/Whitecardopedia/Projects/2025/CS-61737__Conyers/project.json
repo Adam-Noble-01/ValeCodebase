@@ -1,7 +1,6 @@
 {
     "projectName": "Conyers",
     "projectCode": "61737",
-    "projectDate": "11-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A great CAD File, No Issues to report, Anna did a great job with the CAD File."
@@ -14,6 +13,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 2.5
+        "timeTaken": 2.5,
+        "dateFulfilled": "11-Sep-2025"
     }
 }

@@ -218,7 +218,7 @@
         position                           : relative;                     /* <-- Relative for clear button positioning */
         flex                               : 1;                            /* <-- Grow to fill available space */
         min-width                          : 600px;                        /* <-- Minimum width */
-        max-width                          : 1200px;                        /* <-- Maximum width */
+        max-width                          : 900px;                        /* <-- Maximum width */
     }
     
     .project-gallery__search-input {

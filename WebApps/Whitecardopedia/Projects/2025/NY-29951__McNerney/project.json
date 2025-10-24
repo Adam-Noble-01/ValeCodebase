@@ -1,7 +1,6 @@
 {
     "projectName": "McNerney",
     "projectCode": "29951",
-    "projectDate": "09-Oct-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "This was the first project to the SketchUp Model Link feature, allowing anyone with a link to the Whitecard 3D model to view it in their Web browser. Top Notch CAD Linework was provided by Concept Artist Anna."
@@ -21,6 +20,7 @@
     "description": "Nil",
     "scheduleData": {
         "timeAllocated": 4,
-        "timeTaken": 3
+        "timeTaken": 3,
+        "dateFulfilled": "09-Oct-2025"
     }
 }

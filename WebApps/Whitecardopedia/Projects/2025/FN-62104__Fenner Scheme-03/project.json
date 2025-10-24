@@ -1,14 +1,14 @@
 {
     "projectName": "Fenner Scheme-03",
     "projectCode": "62104",
-    "projectDate": "17-Oct-2025",
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "The third instalment of the Fenner Project, this scheme abuts the main house and is a poolhouse, it took longer than expected due to the complexity of the scheme and I had to use a Photomatch reference image to help with filling in the missing elements and to help with back and forth communication with Dan to decide on the final level of detail required, such as how much detail to show on the topo levels etc."
     },
     "scheduleData": {
         "timeAllocated": 5,
-        "timeTaken": 7
+        "timeTaken": 7,
+        "dateFulfilled": "17-Oct-2025"
     },
     "sketchUpModel": {
         "url": "Nil"

@@ -1,7 +1,6 @@
 {
     "projectName": "Shillabeer",
     "projectCode": "61557",
-    "projectDate": "26-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Typical CAD File, No Issues to report, building being slightly out of line made it take longer than expected for a small job."
@@ -16,6 +15,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 3
+        "timeTaken": 3,
+        "dateFulfilled": "26-Sep-2025"
     }
 }

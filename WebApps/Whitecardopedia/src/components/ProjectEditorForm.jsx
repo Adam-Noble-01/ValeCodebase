@@ -12,8 +12,10 @@
 // DESCRIPTION:
 // - Form component for editing project metadata
 // - Editable fields: projectName, projectCode, projectDate, productionData, scheduleData, sketchUp URL
-// - Schedule data includes: timeAllocated (expected hours) and timeTaken (actual hours)
-// - Validates input before saving to Flask API (positive numbers for time fields)
+// - Production data: input type (dropdown), concept artist (dropdown), additional notes
+// - Schedule data: timeAllocated, timeTaken, dateReceived, dateFulfilled
+// - Dropdown options dynamically loaded from masterConfig.json
+// - Validates input before saving to Flask API (positive numbers, date format DD-MMM-YYYY)
 // - Displays success/error messages after save operation
 // - Disabled state during save operation
 //
@@ -31,14 +33,43 @@
             projectCode         : project.projectCode || '',                 // <-- Project code field
             projectDate         : project.projectDate || '',                 // <-- Project date field
             productionInput     : project.productionData?.input || '',       // <-- Production input field
+            conceptArtist       : project.productionData?.conceptArtist || '', // <-- Concept artist field
             productionNotes     : project.productionData?.additionalNotes || '',  // <-- Production notes field
             sketchUpUrl         : project.sketchUpModel?.url || '',          // <-- SketchUp URL field
             timeAllocated       : project.scheduleData?.timeAllocated || '', // <-- Time expected field
-            timeTaken           : project.scheduleData?.timeTaken || ''      // <-- Time taken field
+            timeTaken           : project.scheduleData?.timeTaken || '',     // <-- Time taken field
+            dateReceived        : project.scheduleData?.dateReceived || '',  // <-- Date received field
+            dateFulfilled       : project.scheduleData?.dateFulfilled || ''  // <-- Date fulfilled field
         });
         
         const [isSaving, setIsSaving] = React.useState(false);               // <-- Saving state
         const [message, setMessage] = React.useState(null);                  // <-- Status message state
+        const [dropdownOptions, setDropdownOptions] = React.useState({
+            inputTypes          : [],                                        // <-- Input type options from config
+            artists             : []                                         // <-- Artist options from config
+        });
+        
+        
+        // EFFECT | Load Dropdown Options from Master Config
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            const loadDropdownOptions = async () => {
+                try {
+                    const config = await loadMasterConfig();                 // <-- Load master configuration
+                    if (config) {
+                        setDropdownOptions({
+                            inputTypes  : config.vale__ProductionInput__OptionsList || [],  // <-- Input types list
+                            artists     : config.vale__ConceptArtist__OptionsList || [] // <-- Artists list
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading dropdown options:', error);  // <-- Log error
+                }
+            };
+            
+            loadDropdownOptions();                                           // <-- Execute on mount
+        }, []);
+        // ---------------------------------------------------------------
         
         
         // SUB FUNCTION | Handle Input Field Changes
@@ -89,6 +120,24 @@
                 }
             }
             
+            // VALIDATE DATE RECEIVED FORMAT (OPTIONAL BUT MUST MATCH DD-MMM-YYYY IF PROVIDED)
+            if (formData.dateReceived !== '') {
+                const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{4}$/;           // <-- DD-MMM-YYYY pattern
+                if (!datePattern.test(formData.dateReceived.trim())) {
+                    setMessage({ type: 'error', text: 'Date received must be in DD-MMM-YYYY format (e.g., 10-Oct-2025)' });  // <-- Validation error
+                    return false;                                            // <-- Validation failed
+                }
+            }
+            
+            // VALIDATE DATE FULFILLED FORMAT (OPTIONAL BUT MUST MATCH DD-MMM-YYYY IF PROVIDED)
+            if (formData.dateFulfilled !== '') {
+                const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{4}$/;           // <-- DD-MMM-YYYY pattern
+                if (!datePattern.test(formData.dateFulfilled.trim())) {
+                    setMessage({ type: 'error', text: 'Date fulfilled must be in DD-MMM-YYYY format (e.g., 12-Oct-2025)' });  // <-- Validation error
+                    return false;                                            // <-- Validation failed
+                }
+            }
+            
             return true;                                                     // <-- Validation passed
         };
         // ---------------------------------------------------------------
@@ -113,8 +162,13 @@
                 }
             };
             
-            // ADD SCHEDULE DATA IF ANY TIME VALUES PROVIDED
-            if (formData.timeAllocated !== '' || formData.timeTaken !== '') {
+            // ADD CONCEPT ARTIST IF PROVIDED
+            if (formData.conceptArtist !== '') {
+                updatedProject.productionData.conceptArtist = formData.conceptArtist.trim();  // <-- Set concept artist
+            }
+            
+            // ADD SCHEDULE DATA IF ANY VALUES PROVIDED
+            if (formData.timeAllocated !== '' || formData.timeTaken !== '' || formData.dateReceived !== '' || formData.dateFulfilled !== '') {
                 updatedProject.scheduleData = {
                     ...project.scheduleData                                  // <-- Spread existing schedule data
                 };
@@ -125,6 +179,14 @@
                 
                 if (formData.timeTaken !== '') {
                     updatedProject.scheduleData.timeTaken = parseInt(formData.timeTaken);  // <-- Set time taken
+                }
+                
+                if (formData.dateReceived !== '') {
+                    updatedProject.scheduleData.dateReceived = formData.dateReceived.trim();  // <-- Set date received
+                }
+                
+                if (formData.dateFulfilled !== '') {
+                    updatedProject.scheduleData.dateFulfilled = formData.dateFulfilled.trim();  // <-- Set date fulfilled
                 }
             }
             
@@ -255,15 +317,40 @@
                     <label className="editor-form__label" htmlFor="productionInput">
                         Production Input
                     </label>
-                    <input
-                        type="text"
+                    <select
                         id="productionInput"
                         className="editor-form__input"
                         value={formData.productionInput}
                         onChange={(e) => handleInputChange('productionInput', e.target.value)}
-                        placeholder="e.g., CAD File, Hand Drawing, etc."
                         disabled={isSaving}
-                    />
+                    >
+                        <option value="">Select input type...</option>
+                        {dropdownOptions.inputTypes.map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                </div>
+                
+                {/* CONCEPT ARTIST FIELD */}
+                <div className="editor-form__field">
+                    <label className="editor-form__label" htmlFor="conceptArtist">
+                        Concept Artist
+                    </label>
+                    <select
+                        id="conceptArtist"
+                        className="editor-form__input"
+                        value={formData.conceptArtist}
+                        onChange={(e) => handleInputChange('conceptArtist', e.target.value)}
+                        disabled={isSaving}
+                    >
+                        <option value="">Not specified</option>
+                        {dropdownOptions.artists.map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                    <span className="editor-form__help-text">
+                        Optional - Select the designer who created the concept
+                    </span>
                 </div>
                 
                 {/* PRODUCTION NOTES FIELD */}
@@ -316,6 +403,44 @@
                     />
                     <span className="editor-form__help-text">
                         Optional - Actual time taken to complete project in hours
+                    </span>
+                </div>
+                
+                {/* DATE RECEIVED FIELD */}
+                <div className="editor-form__field">
+                    <label className="editor-form__label" htmlFor="dateReceived">
+                        Date Received
+                    </label>
+                    <input
+                        type="text"
+                        id="dateReceived"
+                        className="editor-form__input"
+                        value={formData.dateReceived}
+                        onChange={(e) => handleInputChange('dateReceived', e.target.value)}
+                        placeholder="DD-MMM-YYYY (e.g., 10-Oct-2025)"
+                        disabled={isSaving}
+                    />
+                    <span className="editor-form__help-text">
+                        Optional - Date project was received (DD-MMM-YYYY format)
+                    </span>
+                </div>
+                
+                {/* DATE FULFILLED FIELD */}
+                <div className="editor-form__field">
+                    <label className="editor-form__label" htmlFor="dateFulfilled">
+                        Date Fulfilled
+                    </label>
+                    <input
+                        type="text"
+                        id="dateFulfilled"
+                        className="editor-form__input"
+                        value={formData.dateFulfilled}
+                        onChange={(e) => handleInputChange('dateFulfilled', e.target.value)}
+                        placeholder="DD-MMM-YYYY (e.g., 12-Oct-2025)"
+                        disabled={isSaving}
+                    />
+                    <span className="editor-form__help-text">
+                        Optional - Date project was completed (DD-MMM-YYYY format)
                     </span>
                 </div>
                 

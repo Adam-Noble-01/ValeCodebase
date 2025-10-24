@@ -1,7 +1,6 @@
 {
     "projectName": "Gibbs",
     "projectCode": "61695",
-    "projectDate": "11-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A small but fairly complex existing house, No Issues to report, took a slightly longer time than expected."
@@ -17,6 +16,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 3
+        "timeTaken": 3,
+        "dateFulfilled": "11-Sep-2025"
     }
 }

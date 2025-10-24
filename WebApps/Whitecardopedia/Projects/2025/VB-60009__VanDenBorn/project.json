@@ -1,7 +1,6 @@
 {
     "projectName": "VanDenBorn",
     "projectCode": "60009",
-    "projectDate": "17-Sep-2025",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A Standard Job, No Issues to report, rafter feet maybe added a tiny bit more time but not significant."
@@ -18,6 +17,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 3
+        "timeTaken": 3,
+        "dateFulfilled": "17-Sep-2025"
     }
 }

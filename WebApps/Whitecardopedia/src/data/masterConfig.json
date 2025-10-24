@@ -1,12 +1,26 @@
 {
     "applicationName": "Whitecardopedia",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "deploymentModeNotes": "Live deployment for Pushed Branches, Dev deployment for Local Development",
     "deploymentMode": "Live",
     "projectsBasePath": "Projects/2025",
     "projectFoldersBlacklist": [
         "01__TemplateProject",
         "00__ExampleProject"
+    ],
+    "vale__ProductionInput__OptionsList": [
+        "CAD File",
+        "Hand Drawn Concept",
+        "Early Stage Sketch"
+    ],
+    "vale__ConceptArtist__OptionsList": [
+        "James",
+        "Amy",
+        "Anna",
+        "Rachael",
+        "Steph",
+        "Dan",
+        "Jo"
     ],
     "projects": [
         {

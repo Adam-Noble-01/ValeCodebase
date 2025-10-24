@@ -1,7 +1,6 @@
 {
     "projectName": "Richards",
     "projectCode": "59923",
-    "projectDate": "01-Oct-2025",
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "Used the texture projection technique to utilise Steph's Hand Drawn Concept, mapping it to the Whitecard model."
@@ -17,6 +16,7 @@
     ],
     "scheduleData": {
         "timeAllocated": 1,
-        "timeTaken": 5
+        "timeTaken": 5,
+        "dateFulfilled": "01-Oct-2025"
     }
 }

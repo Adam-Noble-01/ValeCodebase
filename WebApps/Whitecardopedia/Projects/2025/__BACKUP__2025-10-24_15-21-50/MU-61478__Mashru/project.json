@@ -1,0 +1,19 @@
+{
+    "projectName": "Mashru",
+    "projectCode": "61478",
+    "projectDate": "21-Aug-2025",
+    "productionData": {
+        "input": "CAD File",
+        "additionalNotes": "Very tricky due to some discrepancies found whilst working things up, had to use photomatch method for validation"
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"
+    ],
+    "scheduleData": {
+        "timeAllocated": 3,
+        "timeTaken": 6
+    }
+}

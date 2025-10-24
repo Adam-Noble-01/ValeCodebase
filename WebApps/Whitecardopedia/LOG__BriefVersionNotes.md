@@ -14,5 +14,7 @@ STATUS  =  Stable and Pushed To WebHost
 ### ADDED | Search & Sorting Features Functionality
 - Added a search box top left of the project gallery to filter projects by name or code
 - Added a sort dropdown top right of the project gallery.
+### ADDED | Anti Bot Protection System
+- Created Anti Bot Protection System to prevent automated bots and search engine crawlers from accessing the application. 
 -----------------------------------------------------------------------------
 

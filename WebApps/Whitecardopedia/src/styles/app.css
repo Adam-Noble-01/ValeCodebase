@@ -199,12 +199,79 @@
         width                              : 100%;                         /* <-- Full width */
     }
     
+    .project-gallery__controls {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : space-between;                /* <-- Search left, sort right */
+        gap                                : var(--Vale_Spacing_Large);    /* <-- Gap between search and sort */
+        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below controls */
+        flex-wrap                          : wrap;                         /* <-- Wrap on small screens */
+    }
+    
+    .project-gallery__search-box {
+        position                           : relative;                     /* <-- Relative for clear button positioning */
+        flex                               : 1;                            /* <-- Grow to fill available space */
+        min-width                          : 250px;                        /* <-- Minimum width */
+        max-width                          : 400px;                        /* <-- Maximum width */
+    }
+    
+    .project-gallery__search-input {
+        width                              : 100%;                         /* <-- Full width of container */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Input padding */
+        padding-right                      : 40px;                         /* <-- Extra space for clear button */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium);  /* <-- Medium border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+    }
+    
+    .project-gallery__search-input::placeholder {
+        color                              : var(--Vale_TextTertiary);     /* <-- Tertiary text for placeholder */
+        opacity                            : 0.7;                          /* <-- Slightly transparent */
+    }
+    
+    .project-gallery__search-input:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on hover */
+    }
+    
+    .project-gallery__search-input:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1);  /* <-- Subtle focus ring */
+    }
+    
+    .project-gallery__search-clear {
+        position                           : absolute;                     /* <-- Absolute positioning within search box */
+        right                              : var(--Vale_Spacing_Small);    /* <-- Position from right edge */
+        top                                : 50%;                          /* <-- Center vertically */
+        transform                          : translateY(-50%);             /* <-- Adjust for centering */
+        background                         : transparent;                  /* <-- Transparent background */
+        border                             : none;                         /* <-- No border */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        font-size                          : 24px;                         /* <-- Large X icon */
+        line-height                        : 1;                            /* <-- Tight line height */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        padding                            : 4px 8px;                      /* <-- Small padding for click area */
+        transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
+        border-radius                      : 4px;                          /* <-- Slight rounding for hover effect */
+    }
+    
+    .project-gallery__search-clear:hover {
+        color                              : var(--Vale_TextPrimary);      /* <-- Darker on hover */
+        background                         : rgba(0, 0, 0, 0.05);          /* <-- Subtle hover background */
+    }
+    
+    .project-gallery__search-clear:active {
+        transform                          : translateY(-50%) scale(0.9);  /* <-- Slight press effect */
+    }
+    
     .project-gallery__sort-control {
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Vertical centering */
-        justify-content                    : center;                       /* <-- Center horizontally */
         gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between label and select */
-        margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below control */
     }
     
     .project-gallery__sort-label {
@@ -1223,6 +1290,19 @@
     /* RESPONSIVE | Mobile and Tablet Adjustments */
     /* ------------------------------------------------------------ */
     @media (max-width: 768px) {
+        .project-gallery__controls {
+            flex-direction                 : column;                       /* <-- Stack vertically on mobile */
+            align-items                    : stretch;                      /* <-- Full width elements */
+        }
+        
+        .project-gallery__search-box {
+            max-width                      : 100%;                         /* <-- Full width on mobile */
+        }
+        
+        .project-gallery__sort-control {
+            justify-content                : center;                       /* <-- Center sort control on mobile */
+        }
+        
         .project-gallery__grid {
             grid-template-columns          : 1fr;                          /* <-- Single column on mobile */
         }

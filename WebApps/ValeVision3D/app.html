@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALEVISION3D - REACT + BABYLON.JS APPLICATION CONTAINER
+     =============================================================================
+     
+     FILE       : app.html
+     NAMESPACE  : ValeVision3D
+     VERSION    : 1.0.0
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : React + Babylon.js 3D photogrammetry viewer application
+     CREATED    : 2025
+     
+     DESCRIPTION:
+     - React + Babylon.js application for viewing large-scale photogrammetry
+     - Optimized for tablet-first navigation with touch controls
+     - Loads GLB models and HDRI environments from Cloudflare CDN
+     - Progressive loading screen with download progress tracking
+     - Uses locally bundled Babylon.js 8.2.0 for version stability
+     - Pure static HTML - no server required
+     
+     =============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ValeVision3D - Site Photogrammetry Viewer</title>
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- SEARCH ENGINE BLOCKING | Prevent Indexing and Crawling            -->
+    <!-- ----------------------------------------------------------------- -->
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="slurp" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="duckduckbot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="baiduspider" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="yandex" content="noindex, nofollow, noarchive, nosnippet">
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- BRANDING | Favicon and Brand Icons                                -->
+    <!-- ----------------------------------------------------------------- -->
+    <link rel="icon" type="image/svg+xml" href="assets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="assets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="theme-color" content="#172b3a">
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- META TAGS | Open Graph for Link Previews                          -->
+    <!-- ----------------------------------------------------------------- -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ValeVision3D - Site Photogrammetry Viewer">
+    <meta property="og:description" content="Professional 3D photogrammetry site viewer for large-scale architectural site analysis">
+    <meta property="og:image" content="assets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ValeVision3D - Site Photogrammetry Viewer">
+    <meta name="twitter:description" content="Professional 3D photogrammetry site viewer for large-scale architectural site analysis">
+    <meta name="twitter:image" content="assets/AppIcons/Icon__MainValeIcon__.svg">
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- STYLES | Application Stylesheets                                  -->
+    <!-- ----------------------------------------------------------------- -->
+    <link rel="stylesheet" href="src/styles/variables.css">
+    <link rel="stylesheet" href="src/styles/app.css">
+    <link rel="stylesheet" href="src/styles/babylon.css">
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- BABYLON.JS | Latest Version 8.33.2 via jsDelivr CDN              -->
+    <!-- ----------------------------------------------------------------- -->
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs@8.33.2/babylon.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.33.2/babylonjs.loaders.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babylonjs-gui@8.33.2/babylon.gui.js"></script>
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REACT | CDN Imports for React Development                         -->
+    <!-- ----------------------------------------------------------------- -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- ----------------------------------------------------------------- -->
+    
+</head>
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REACT ROOT | Main Application Container                           -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="root"></div>
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UTILITIES | Helper Functions and Data Loaders                     -->
+    <!-- ----------------------------------------------------------------- -->
+    <script type="text/babel" src="src/utils/configLoader.js"></script>
+    <script type="text/babel" src="src/utils/glbCdnLoader.js"></script>
+    <script type="text/babel" src="src/utils/modelLoader.js"></script>
+    <script type="text/babel" src="src/utils/hdriLoader.js"></script>
+    <script type="text/babel" src="src/utils/cameraManager.js"></script>
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- COMPONENTS | React Component Scripts                              -->
+    <!-- ----------------------------------------------------------------- -->
+    <script type="text/babel" src="src/components/LoadingScreen.jsx"></script>
+    <script type="text/babel" src="src/components/Header.jsx"></script>
+    <script type="text/babel" src="src/components/CameraControls.jsx"></script>
+    <script type="text/babel" src="src/components/InfoPanel.jsx"></script>
+    <script type="text/babel" src="src/components/BabylonScene.jsx"></script>
+    <script type="text/babel" src="src/components/App.jsx"></script>
+    <!-- ----------------------------------------------------------------- -->
+    
+</body>
+</html>
+

@@ -283,7 +283,7 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
 
     // HELPER FUNCTION | Process Loaded Model Meshes
     // ------------------------------------------------------------
-    function processLoadedMeshes() {
+    async function processLoadedMeshes() {
         // ADD ALL MESHES TO SHADOW CASTING SYSTEM
         scene.meshes.forEach(function (mesh) {
             if (mesh !== sceneEnvironment.ground) {                          // <-- Exclude ground from shadows
@@ -300,9 +300,8 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
         // THEN check if HDRI is active and update materials accordingly
         const hdriLogic = window.TrueVision3D?.SceneConfig?.HdriLightingLogic;
         if (hdriLogic && hdriLogic.getHdriState && hdriLogic.getHdriState().enabled) {
-            setTimeout(() => {                                               // <-- Small delay to ensure materials are applied
-                updateMaterialsForHdri();                                    // <-- Update materials for HDRI environment
-            }, 100);
+            await new Promise(resolve => setTimeout(resolve, 100));          // <-- Wait for material application delay
+            updateMaterialsForHdri();                                        // <-- Update materials for HDRI environment
         }
     }
     // ---------------------------------------------------------------
@@ -424,7 +423,10 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
             await loadModelSegment(ffFurnitureModelPath, "firstFloorFurniture", !FURNITURE_MODELS_OPTIONAL);
             
             // PROCESS ALL LOADED MESHES
-            processLoadedMeshes();                                                                               // <-- Apply materials and shadows
+            await processLoadedMeshes();                                                                         // <-- Apply materials and shadows, wait for completion
+            
+            // ADD 2-SECOND DELAY TO ENSURE FULL RENDERING
+            await new Promise(resolve => setTimeout(resolve, 2000));                                             // <-- Wait for scene to fully render
             
             console.log("=== SEGMENTED MODEL LOADING COMPLETE ===");
             console.log("Models loaded:", modelsLoaded);

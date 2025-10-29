@@ -87,6 +87,8 @@ Dev__EarlyStageDev__TestingFiles/Root__Photogrammetry__Video2Image__DataSetProce
 # TrueVision GLB model (239.09MB)
 Projects/2025/Morton/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_RJ03__OundleDrive_-_BuildingModel.glb
 
+# ValeVision3D 3D Assets folder (contains large GLB models and textures)
+WebApps/ValeVision3D/3dAssets/
 
 # --------------------------------------------------------------
 

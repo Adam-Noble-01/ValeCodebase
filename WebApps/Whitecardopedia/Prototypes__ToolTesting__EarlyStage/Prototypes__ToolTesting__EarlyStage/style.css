@@ -1,0 +1,363 @@
+/* =============================================================================
+   VALEDESIGNSUITE - ARTIST TIMELINE VISUALIZER
+   =============================================================================
+   
+   FILE       : style.css
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Styling for Whitecardopedia Artist Timeline Visualization Tool
+   CREATED    : 24-Oct-2025
+   
+   DESCRIPTION:
+   - CSS styling for D3.js-based data visualization tool
+   - Uses Vale Design Suite color scheme and typography standards
+   - Column-aligned properties for consistency
+   - Responsive layout for various screen sizes
+   
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* CSS Variables - Vale Design Suite Standards                      */
+/* ----------------------------------------------------------------- */
+
+:root {
+    /* Color Variables */
+    --FontCol_ValeTitleTextColour      : #172b3a;
+    --FontCol_ValeTitleHeadingColour   : #172b3a;
+    --FontCol_ValeStandardTextColour   : #1e1e1e;
+    --FontCol_ValeLinkTextColour       : #336699;
+    --FontCol_ValeHoverTextColour      : #3377aa;
+    --FontCol_ValeDisabledTextColour   : #999999;
+    --ValeBackgroundColor              : #f5f7fa;
+    --ValeCardBackground               : #ffffff;
+    --ValeBorderColor                  : #d1d8e0;
+    --ValeAccentBlue                   : #4a90e2;
+    --ValeAccentGreen                  : #52c41a;
+    --ValeAccentRed                    : #f5222d;
+    --ValeAccentOrange                 : #fa8c16;
+    
+    /* Typography Variables */
+    --FontType_ValeTitleText           : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --FontType_ValeStandardText        : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size                          : 14px;
+    --FontSize_ValeTitleText           : 1.8rem;
+    --FontSize_ValeTitleHeading01      : 1.4rem;
+    --FontSize_ValeTitleHeading02      : 1.1rem;
+    --FontSize_ValeStandardText        : 0.95rem;
+    --FontSize_ValeSmallText           : 0.85rem;
+    
+    /* Spacing Variables */
+    --Spacing_Standard                 : 20px;
+    --Spacing_Small                    : 10px;
+    --Spacing_Large                    : 30px;
+    --BorderRadius_Standard            : 8px;
+}
+
+/* ----------------------------------------------------------------- */
+/* Base Layout Styles                                               */
+/* ----------------------------------------------------------------- */
+
+* {
+    margin                             : 0;
+    padding                            : 0;
+    box-sizing                         : border-box;
+}
+
+html, body {
+    margin                             : 0;
+    padding                            : 0;
+    font-family                        : var(--FontType_ValeStandardText);
+    font-size                          : var(--FontSize_ValeStandardText);
+    color                              : var(--FontCol_ValeStandardTextColour);
+    background-color                   : var(--ValeBackgroundColor);
+    min-height                         : 100vh;
+    line-height                        : 1.6;
+}
+
+/* ----------------------------------------------------------------- */
+/* Page Header Styles                                               */
+/* ----------------------------------------------------------------- */
+
+.page-header {
+    background-color                   : var(--ValeCardBackground);
+    padding                            : var(--Spacing_Large) var(--Spacing_Standard);
+    border-bottom                      : 2px solid var(--ValeAccentBlue);
+    box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align                         : center;
+    margin-bottom                      : var(--Spacing_Large);
+}
+
+.page-header h1 {
+    font-family                        : var(--FontType_ValeTitleText);
+    font-size                          : var(--FontSize_ValeTitleText);
+    color                              : var(--FontCol_ValeTitleTextColour);
+    margin-bottom                      : var(--Spacing_Small);
+    font-weight                        : 600;
+}
+
+.subtitle {
+    font-size                          : var(--FontSize_ValeTitleHeading02);
+    color                              : var(--FontCol_ValeDisabledTextColour);
+    font-weight                        : 400;
+}
+
+/* ----------------------------------------------------------------- */
+/* Main Container Styles                                            */
+/* ----------------------------------------------------------------- */
+
+.container {
+    max-width                          : 1400px;
+    margin                             : 0 auto;
+    padding                            : var(--Spacing_Standard);
+}
+
+/* ----------------------------------------------------------------- */
+/* Control Panel & Status Styles                                    */
+/* ----------------------------------------------------------------- */
+
+.control-panel {
+    background-color                   : var(--ValeCardBackground);
+    padding                            : var(--Spacing_Standard);
+    border-radius                      : var(--BorderRadius_Standard);
+    margin-bottom                      : var(--Spacing_Large);
+    border                             : 1px solid var(--ValeBorderColor);
+    display                            : flex;
+    align-items                        : center;
+    gap                                : var(--Spacing_Standard);
+    flex-wrap                          : wrap;
+}
+
+.btn-primary {
+    background-color                   : var(--ValeAccentBlue);
+    color                              : white;
+    border                             : none;
+    padding                            : 12px 24px;
+    font-size                          : var(--FontSize_ValeStandardText);
+    font-weight                        : 600;
+    border-radius                      : var(--BorderRadius_Standard);
+    cursor                             : pointer;
+    transition                         : all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color                   : var(--ValeAccentBlue);
+    filter                             : brightness(1.1);
+    transform                          : translateY(-1px);
+    box-shadow                         : 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.btn-primary:active {
+    transform                          : translateY(0);
+}
+
+.status-message {
+    font-size                          : var(--FontSize_ValeStandardText);
+    color                              : var(--FontCol_ValeStandardTextColour);
+    font-weight                        : 500;
+}
+
+.data-summary {
+    font-size                          : var(--FontSize_ValeStandardText);
+    color                              : var(--FontCol_ValeDisabledTextColour);
+    flex-grow                          : 1;
+    text-align                         : right;
+}
+
+/* ----------------------------------------------------------------- */
+/* Visualization Section Styles                                     */
+/* ----------------------------------------------------------------- */
+
+.visualization-section {
+    background-color                   : var(--ValeCardBackground);
+    padding                            : var(--Spacing_Standard);
+    border-radius                      : var(--BorderRadius_Standard);
+    margin-bottom                      : var(--Spacing_Large);
+    border                             : 1px solid var(--ValeBorderColor);
+    box-shadow                         : 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+    font-family                        : var(--FontType_ValeTitleText);
+    font-size                          : var(--FontSize_ValeTitleHeading01);
+    color                              : var(--FontCol_ValeTitleHeadingColour);
+    margin-bottom                      : var(--Spacing_Standard);
+    padding-bottom                     : var(--Spacing_Small);
+    border-bottom                      : 2px solid var(--ValeBorderColor);
+    font-weight                        : 600;
+}
+
+.chart-container {
+    min-height                         : 400px;
+    padding                            : var(--Spacing_Standard);
+    overflow-x                         : auto;
+}
+
+.table-container {
+    overflow-x                         : auto;
+    padding                            : var(--Spacing_Small);
+}
+
+/* ----------------------------------------------------------------- */
+/* Timeline Controls Styles                                         */
+/* ----------------------------------------------------------------- */
+
+.timeline-controls {
+    display                            : flex;
+    gap                                : var(--Spacing_Standard);
+    margin-bottom                      : var(--Spacing_Standard);
+    padding                            : var(--Spacing_Small);
+    background-color                   : var(--ValeBackgroundColor);
+    border-radius                      : var(--BorderRadius_Standard);
+}
+
+.timeline-controls label {
+    font-size                          : var(--FontSize_ValeStandardText);
+    color                              : var(--FontCol_ValeStandardTextColour);
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+}
+
+.timeline-controls select {
+    padding                            : 6px 12px;
+    border                             : 1px solid var(--ValeBorderColor);
+    border-radius                      : 4px;
+    font-size                          : var(--FontSize_ValeStandardText);
+    background-color                   : white;
+}
+
+/* ----------------------------------------------------------------- */
+/* Statistics Table Styles                                          */
+/* ----------------------------------------------------------------- */
+
+.stats-table {
+    width                              : 100%;
+    border-collapse                    : collapse;
+    font-size                          : var(--FontSize_ValeStandardText);
+}
+
+.stats-table th {
+    background-color                   : var(--ValeBackgroundColor);
+    color                              : var(--FontCol_ValeTitleHeadingColour);
+    padding                            : 12px 16px;
+    text-align                         : left;
+    font-weight                        : 600;
+    border-bottom                      : 2px solid var(--ValeBorderColor);
+}
+
+.stats-table td {
+    padding                            : 10px 16px;
+    border-bottom                      : 1px solid var(--ValeBorderColor);
+}
+
+.stats-table tr:hover {
+    background-color                   : var(--ValeBackgroundColor);
+}
+
+.stats-table .number-cell {
+    text-align                         : right;
+    font-family                        : 'Consolas', monospace;
+}
+
+/* ----------------------------------------------------------------- */
+/* D3.js Chart Element Styles                                       */
+/* ----------------------------------------------------------------- */
+
+.bar {
+    transition                         : opacity 0.3s ease;
+}
+
+.bar:hover {
+    opacity                            : 0.8;
+}
+
+.axis text {
+    font-size                          : var(--FontSize_ValeSmallText);
+    color                              : var(--FontCol_ValeStandardTextColour);
+}
+
+.axis path,
+.axis line {
+    stroke                             : var(--ValeBorderColor);
+}
+
+.grid line {
+    stroke                             : var(--ValeBorderColor);
+    stroke-opacity                     : 0.3;
+    stroke-dasharray                   : 2, 2;
+}
+
+/* ----------------------------------------------------------------- */
+/* Tooltip Styles                                                   */
+/* ----------------------------------------------------------------- */
+
+.tooltip {
+    position                           : absolute;
+    padding                            : 12px 16px;
+    background-color                   : rgba(23, 43, 58, 0.95);
+    color                              : white;
+    border-radius                      : 6px;
+    font-size                          : var(--FontSize_ValeSmallText);
+    pointer-events                     : none;
+    opacity                            : 0;
+    transition                         : opacity 0.2s ease;
+    z-index                            : 1000;
+    box-shadow                         : 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width                          : 300px;
+}
+
+.tooltip.visible {
+    opacity                            : 1;
+}
+
+.tooltip-title {
+    font-weight                        : 600;
+    margin-bottom                      : 6px;
+    font-size                          : 1rem;
+}
+
+.tooltip-content {
+    line-height                        : 1.5;
+}
+
+/* ----------------------------------------------------------------- */
+/* Loading State Styles                                             */
+/* ----------------------------------------------------------------- */
+
+.loading {
+    color                              : var(--ValeAccentBlue);
+    font-weight                        : 600;
+}
+
+.success {
+    color                              : var(--ValeAccentGreen);
+    font-weight                        : 600;
+}
+
+.error {
+    color                              : var(--ValeAccentRed);
+    font-weight                        : 600;
+}
+
+/* ----------------------------------------------------------------- */
+/* Responsive Design Adjustments                                    */
+/* ----------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .container {
+        padding                        : var(--Spacing_Small);
+    }
+    
+    .control-panel {
+        flex-direction                 : column;
+        align-items                    : stretch;
+    }
+    
+    .data-summary {
+        text-align                     : left;
+    }
+    
+    .timeline-controls {
+        flex-direction                 : column;
+    }
+}
+

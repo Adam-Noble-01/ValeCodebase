@@ -1,0 +1,115 @@
+{
+    "applicationName": "ValeVision3D",
+    "version": "1.0.0",
+    "description": "3D Photogrammetry Site Viewer - Vale Design Suite",
+    "cloudflare": {
+        "cdnBasePath": "https://cdn.noble-architecture.com/VaApps/3dAssets/",
+        "modelsPath": "3dAssets",
+        "environmentsPath": "environments"
+    },
+    "models": [
+
+        {
+            "id": "fullsite-100k",
+            "name": "Full Site 100k - Local Version 2.0",
+            "description": "Large photogrammetry model with external textures (local files)",
+            "glbUrl": "3dAssets/02__FullSite__100k__OnlineVersion__2.0.0__.glb",
+            "enabled": true,
+            "useCdnLoader": false,
+            "externalTextures": [
+                "3dAssets/02__FullSite__100k__OnlineVersion__2.0.0___u0_v0_diffuse.png",
+                "3dAssets/02__FullSite__100k__OnlineVersion__2.0.0___u1_v0_diffuse.png"
+            ],
+            "rotation": {
+                "rotateX": -90,
+                "rotateY": -180,
+                "rotateZ": -90
+            },
+            "defaultCamera": {
+                "alpha": 0.5,
+                "beta": 1.2,
+                "radius": 30
+            },
+            "metadata": {
+                "captureDate": "2025",
+                "location": "Full Site Photogrammetry",
+                "fileSize": "464 MB (Total with textures)"
+            }
+        },
+        {
+            "id": "fullsite-100k-cdn",
+            "name": "Full Site 100k - CDN Version 2.0",
+            "description": "Large photogrammetry model with external textures from CDN",
+            "glbUrl": "https://cdn.noble-architecture.com/VaApps/3dAssets/02__FullSite__100k__OnlineVersion__2.0.0__.glb",
+            "enabled": false,
+            "useCdnLoader": true,
+            "externalTextures": [
+                "https://cdn.noble-architecture.com/VaApps/3dAssets/02__FullSite__100k__OnlineVersion__2.0.0___u0_v0_diffuse.png",
+                "https://cdn.noble-architecture.com/VaApps/3dAssets/02__FullSite__100k__OnlineVersion__2.0.0___u1_v0_diffuse.png"
+            ],
+            "rotation": {
+                "rotateX": 90,
+                "rotateY": 90,
+                "rotateZ": -90
+            },
+            "defaultCamera": {
+                "alpha": 0,
+                "beta": 1.0,
+                "radius": 100
+            },
+            "metadata": {
+                "captureDate": "2025",
+                "location": "Full Site Photogrammetry",
+                "fileSize": "464 MB (Total with textures)"
+            }
+        }
+    ],
+    "environments": [
+        {
+            "id": "hdri-rural-autumn",
+            "name": "Rural Landscape - Autumn Field",
+            "description": "Sunny autumn field HDRI from Cloudflare CDN (4k)",
+            "hdrUrl": "https://pub-237fa2e044864e20a21464d0713c7d4e.r2.dev/VaApps/HdriAssets/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr",
+            "intensity": 1.0,
+            "enabled": true,
+            "rotation": 0
+        },
+        {
+            "id": "hdri-cloudflare-example",
+            "name": "Cloudflare CDN HDRI (Disabled)",
+            "description": "Example configuration for Cloudflare-hosted HDRI",
+            "hdrUrl": "https://cdn.yourcloudflare.com/valevision3d/environments/outdoor.hdr",
+            "intensity": 0.8,
+            "enabled": false,
+            "rotation": 0
+        }
+    ],
+    "cameraSettings": {
+        "touchSensitivity": 0.8,
+        "wheelPrecision": 0.5,
+        "inertia": 0.9,
+        "pinchPrecision": 12.0,
+        "panningSensibility": 50,
+        "minZ": 0.1,
+        "maxZ": 10000,
+        "lowerRadiusLimit": 5,
+        "upperRadiusLimit": 500,
+        "lowerBetaLimit": 0.1,
+        "upperBetaLimit": 1.5,
+        "allowUpsideDown": false
+    },
+    "renderSettings": {
+        "enableAntialiasing": true,
+        "enableShadows": false,
+        "enableGlow": false,
+        "enableAmbientOcclusion": false,
+        "targetFPS": 60
+    },
+    "uiSettings": {
+        "showModelInfo": true,
+        "showCameraControls": true,
+        "showLoadingProgress": true,
+        "defaultView": "fullsite-100k"
+    }
+}
+

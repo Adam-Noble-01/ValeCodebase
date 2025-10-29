@@ -1,0 +1,85 @@
+# =============================================================================
+# VALEVISION3D - ROBOTS.TXT
+# =============================================================================
+#
+# FILE       : robots.txt
+# PURPOSE    : Prevent search engine indexing of ValeVision3D application
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Blocks all search engine crawlers from indexing application
+# - Private internal tool for Vale Design Suite
+# - No public search engine discovery required
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# UNIVERSAL CRAWLER BLOCKING
+# -----------------------------------------------------------------------------
+
+User-agent: *
+Disallow: /
+
+# -----------------------------------------------------------------------------
+# SPECIFIC CRAWLER BLOCKING
+# -----------------------------------------------------------------------------
+
+# Google
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Googlebot-Image
+Disallow: /
+
+User-agent: Googlebot-News
+Disallow: /
+
+# Bing
+User-agent: Bingbot
+Disallow: /
+
+User-agent: BingPreview
+Disallow: /
+
+# Yahoo
+User-agent: Slurp
+Disallow: /
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Disallow: /
+
+# Baidu
+User-agent: Baiduspider
+Disallow: /
+
+# Yandex
+User-agent: Yandex
+Disallow: /
+
+# Facebook
+User-agent: facebookexternalhit
+Disallow: /
+
+# Twitter
+User-agent: Twitterbot
+Disallow: /
+
+# Common Crawlers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# -----------------------------------------------------------------------------
+# SITEMAP (None provided for private application)
+# -----------------------------------------------------------------------------
+# Sitemap: none
+

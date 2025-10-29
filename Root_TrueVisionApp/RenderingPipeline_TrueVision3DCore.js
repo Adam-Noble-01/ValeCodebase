@@ -27,6 +27,13 @@
 // - Shadow generation and environmental setup
 // - SSAO render effects integration
 //
+// 2025 - Version 1.1.0
+// - Migrated to CDN-only model loading
+// - Removed local model file support
+// - Implemented configuration-driven model URLs from Data_-_MainAppConfig.json
+// - Added automatic texture handling with explicit fallback support
+// - Simplified loading from segmented to single model approach
+//
 // =============================================================================
 
 // Ensure TrueVision3D namespace exists
@@ -39,24 +46,6 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
 // -----------------------------------------------------------------------------
 // REGION | Rendering Pipeline Configuration Constants
 // -----------------------------------------------------------------------------
-
-    // MODULE CONSTANTS | 3D Model Resource Configuration
-    // ------------------------------------------------------------
-    const MODEL_BASE_PATH              = "./Assets_PluginAssets/3DModels_GlbFormatModels/";                     // <-- Base path for all models
-    const MODEL_NAME_PREFIX            = "TrueVision_-_Testing3D_-_PatterdaleCloseModel";                       // <-- Model name prefix
-    
-    // MODULE CONSTANTS | Segmented Model File Suffixes
-    // ------------------------------------------------------------
-    const MODEL_BUILDING_SUFFIX        = "_-_BuildingModel.glb";                                                // <-- Building model suffix
-    const MODEL_GF_FURNITURE_SUFFIX    = "_-_GF_FurnishingsModel.glb";                                         // <-- Ground floor furniture suffix
-    const MODEL_FF_FURNITURE_SUFFIX    = "_-_FF_FurnishingsModel.glb";                                         // <-- First floor furniture suffix
-    // ---------------------------------------------------------------
-
-    // MODULE CONSTANTS | Model Loading Configuration
-    // ------------------------------------------------------------
-    const VALIDATE_BUILDING_MODEL      = true;                                                                   // <-- Building model requires validation
-    const FURNITURE_MODELS_OPTIONAL    = true;                                                                   // <-- Furniture models are optional
-    // ---------------------------------------------------------------
 
     // MODULE CONSTANTS | Render Quality and Environment Settings
     // ------------------------------------------------------------
@@ -104,13 +93,7 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
 
     // MODULE VARIABLES | Model Loading State
     // ------------------------------------------------------------
-    let modelsLoaded                   = {                                                                       // <-- Track loaded models
-        building                       : false,
-        groundFloorFurniture          : false,
-        firstFloorFurniture           : false
-    };
-    let totalModelsToLoad              = 0;                                                                     // <-- Total number of models to load
-    let modelsLoadedCount              = 0;                                                                     // <-- Current number of loaded models
+    let modelLoaded                    = false;                                                                 // <-- Track if model is loaded
     let furnitureMeshes                = [];                                                                    // <-- Array to store furniture mesh references
     let furnishingsVisible             = true;                                                                  // <-- Default furnishings visibility state
     // ---------------------------------------------------------------
@@ -328,127 +311,111 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
     }
     // ---------------------------------------------------------------
 
-    // SUB FUNCTION | Load Single Model Segment
+    // FUNCTION | Load 3D Model from CDN
     // ------------------------------------------------------------
-    function loadModelSegment(modelPath, modelType, isRequired) {
-        return new Promise((resolve, reject) => {
-            console.log(`Loading ${modelType} model: ${modelPath}`);                                            // <-- Log model loading attempt
-            
-            // STORE INITIAL MESH COUNT
-            const meshCountBefore = scene.meshes.length;                                                        // <-- Count meshes before loading
-            
-            BABYLON.SceneLoader.Append("", modelPath, scene, 
-                function () {                                                                                    // <-- Success callback function
-                    modelsLoadedCount++;                                                                         // <-- Increment loaded count
-                    modelsLoaded[modelType] = true;                                                             // <-- Mark model as loaded
-                    
-                    // TRACK FURNITURE MESHES
-                    if (modelType === "groundFloorFurniture" || modelType === "firstFloorFurniture") {
-                        const meshCountAfter = scene.meshes.length;                                             // <-- Count meshes after loading
-                        const newMeshes = scene.meshes.slice(meshCountBefore, meshCountAfter);                  // <-- Get newly added meshes
-                        
-                        // ADD NEW MESHES TO FURNITURE ARRAY
-                        newMeshes.forEach(mesh => {
-                            furnitureMeshes.push(mesh);                                                         // <-- Store furniture mesh reference
-                            mesh.isVisible = furnishingsVisible;                                                // <-- Set initial visibility
-                        });
-                        
-                        console.log(`✅ Added ${newMeshes.length} furniture meshes from ${modelType}`);
-                    }
-                    
-                    console.log(`✅ ${modelType} model loaded successfully (${modelsLoadedCount}/${totalModelsToLoad})`);
-                    
-                    // UPDATE LOADING PROGRESS
-                    if (loadingOverlay) {
-                        const progressPercent = (modelsLoadedCount / totalModelsToLoad) * 100;
-                        console.log(`Overall loading progress: ${progressPercent.toFixed(0)}%`);
-                    }
-                    
-                    resolve(true);                                                                               // <-- Resolve promise
-                }, 
-                function (event) {                                                                               // <-- Progress callback function
-                    if (event.lengthComputable) {
-                        const progress = (event.loaded / event.total) * 100;
-                        console.log(`${modelType} loading progress: ${progress.toFixed(1)}%`);                   // <-- Log progress
-                    }
-                },
-                function (scene, message, exception) {                                                           // <-- Error callback function
-                    console.error(`Error loading ${modelType} model:`, message, exception);                     // <-- Log error details
-                    
-                    if (isRequired) {
-                        reject(new Error(`Failed to load required ${modelType} model: ${message}`));            // <-- Reject if required
-                    } else {
-                        console.warn(`⚠️ Optional ${modelType} model not found, continuing...`);                // <-- Warn if optional
-                        modelsLoadedCount++;                                                                     // <-- Still increment count
-                        resolve(false);                                                                          // <-- Resolve with false
-                    }
-                }
-            );
-        });
-    }
-    // ---------------------------------------------------------------
-
-    // FUNCTION | Load All Segmented Models in Sequence
-    // ------------------------------------------------------------
-    async function loadSegmentedModels() {
+    async function loadCdnModel() {
         if (loadingOverlay) loadingOverlay.classList.remove("hidden");                                          // <-- Show loading overlay
         if (errorMessage) errorMessage.style.display = "none";                                                  // <-- Hide error message
         
         try {
-            // RESET LOADING STATE
-            modelsLoadedCount = 0;                                                                               // <-- Reset counter
-            totalModelsToLoad = 3;                                                                               // <-- We have 3 models to attempt loading
+            // GET MODEL CONFIGURATION FROM JSON
+            const appConfig = window.TrueVision3D?.AppConfig;                                                   // <-- Get app configuration
+            const modelConfig = appConfig?.ModelConfig;                                                         // <-- Get model configuration
             
-            // CONSTRUCT MODEL PATHS
-            const buildingModelPath = MODEL_BASE_PATH + MODEL_NAME_PREFIX + MODEL_BUILDING_SUFFIX;               // <-- Building model path
-            const gfFurnitureModelPath = MODEL_BASE_PATH + MODEL_NAME_PREFIX + MODEL_GF_FURNITURE_SUFFIX;        // <-- Ground floor furniture path
-            const ffFurnitureModelPath = MODEL_BASE_PATH + MODEL_NAME_PREFIX + MODEL_FF_FURNITURE_SUFFIX;        // <-- First floor furniture path
-            
-            console.log("=== STARTING SEGMENTED MODEL LOADING ===");
-            console.log("Building Model:", buildingModelPath);
-            console.log("GF Furniture Model:", gfFurnitureModelPath);
-            console.log("FF Furniture Model:", ffFurnitureModelPath);
-            
-            // LOAD BUILDING MODEL FIRST (REQUIRED)
-            const buildingLoaded = await loadModelSegment(buildingModelPath, "building", VALIDATE_BUILDING_MODEL);
-            
-            if (!buildingLoaded && VALIDATE_BUILDING_MODEL) {
-                throw new Error("Building model is required but failed to load");                               // <-- Throw error if required model fails
+            if (!modelConfig?.ModelUrl) {
+                throw new Error("Model configuration not found in AppConfig.ModelConfig.ModelUrl");             // <-- Error if no config
             }
             
-            // LOAD GROUND FLOOR FURNITURE (OPTIONAL)
-            await loadModelSegment(gfFurnitureModelPath, "groundFloorFurniture", !FURNITURE_MODELS_OPTIONAL);
+            const modelUrl = modelConfig.ModelUrl;                                                              // <-- Get CDN model URL
             
-            // LOAD FIRST FLOOR FURNITURE (OPTIONAL)
-            await loadModelSegment(ffFurnitureModelPath, "firstFloorFurniture", !FURNITURE_MODELS_OPTIONAL);
+            console.log("=== STARTING CDN MODEL LOADING ===");
+            console.log("Model URL:", modelUrl);
+            
+            // LOAD MODEL FROM CDN
+            await new Promise((resolve, reject) => {
+                BABYLON.SceneLoader.Append("", modelUrl, scene, 
+                    function () {                                                                                // <-- Success callback function
+                        modelLoaded = true;                                                                      // <-- Mark model as loaded
+                        console.log(`✅ CDN model loaded successfully`);
+                        resolve(true);                                                                           // <-- Resolve promise
+                    }, 
+                    function (event) {                                                                           // <-- Progress callback function
+                        if (event.lengthComputable) {
+                            const progress = (event.loaded / event.total) * 100;
+                            console.log(`Model loading progress: ${progress.toFixed(1)}%`);                      // <-- Log progress
+                        }
+                    },
+                    function (scene, message, exception) {                                                       // <-- Error callback function
+                        console.error(`Error loading CDN model:`, message, exception);                          // <-- Log error details
+                        reject(new Error(`Failed to load CDN model: ${message}`));                              // <-- Reject promise
+                    }
+                );
+            });
             
             // PROCESS ALL LOADED MESHES
-            await processLoadedMeshes();                                                                         // <-- Apply materials and shadows, wait for completion
+            await processLoadedMeshes();                                                                         // <-- Apply materials and shadows
+            
+            // CHECK IF TEXTURE LOADING FALLBACK IS NEEDED
+            const textureAutoLoad = modelConfig?.ModelTextures?.TextureAutoLoad === true;                       // <-- Get auto-load setting
+            if (!textureAutoLoad) {
+                console.log("Attempting explicit texture loading fallback...");
+                await loadExplicitTextures(modelConfig.ModelTextures);                                          // <-- Load textures explicitly
+            }
             
             // ADD 2-SECOND DELAY TO ENSURE FULL RENDERING
             await new Promise(resolve => setTimeout(resolve, 2000));                                             // <-- Wait for scene to fully render
             
-            console.log("=== SEGMENTED MODEL LOADING COMPLETE ===");
-            console.log("Models loaded:", modelsLoaded);
+            console.log("=== CDN MODEL LOADING COMPLETE ===");
             
             if (loadingOverlay) loadingOverlay.classList.add("hidden");                                         // <-- Hide loading overlay
             
         } catch (error) {
-            console.error("Fatal error during model loading:", error);                                          // <-- Log fatal error
+            console.error("Fatal error during CDN model loading:", error);                                      // <-- Log fatal error
             if (loadingOverlay) loadingOverlay.classList.add("hidden");                                         // <-- Hide loading overlay
             if (errorMessage) {
                 errorMessage.style.display = "block";                                                           // <-- Show error message
-                errorMessage.textContent = error.message || "Failed to load 3D models";                         // <-- Set error text
+                errorMessage.textContent = error.message || "Failed to load 3D model from CDN";                 // <-- Set error text
             }
         }
     }
     // ---------------------------------------------------------------
 
-    // DEPRECATED FUNCTION | Load Single Model (Kept for backward compatibility)
-    // ------------------------------------------------------------
-    function loadThreeDModel() {
-        console.warn("loadThreeDModel is deprecated. Using loadSegmentedModels instead.");                      // <-- Deprecation warning
-        loadSegmentedModels();                                                                                  // <-- Call new function
+    // HELPER FUNCTION | Load Explicit Textures as Fallback
+    // ---------------------------------------------------------------
+    async function loadExplicitTextures(textureConfig) {
+        if (!textureConfig) return;                                                                             // <-- Exit if no config
+        
+        try {
+            const diffuseUrls = [];                                                                             // <-- Array for diffuse texture URLs
+            
+            if (textureConfig.DiffuseTexture_u0_v0) {
+                diffuseUrls.push(textureConfig.DiffuseTexture_u0_v0);                                           // <-- Add u0_v0 texture
+            }
+            if (textureConfig.DiffuseTexture_u1_v0) {
+                diffuseUrls.push(textureConfig.DiffuseTexture_u1_v0);                                           // <-- Add u1_v0 texture
+            }
+            
+            console.log(`Loading ${diffuseUrls.length} explicit textures...`);
+            
+            // LOAD EACH TEXTURE AND APPLY TO MATERIALS
+            for (const textureUrl of diffuseUrls) {
+                const texture = new BABYLON.Texture(textureUrl, scene);                                         // <-- Load texture from CDN
+                console.log(`✅ Loaded texture: ${textureUrl}`);
+                
+                // APPLY TEXTURE TO MATERIALS (BASIC IMPLEMENTATION)
+                scene.materials.forEach(material => {
+                    if (material instanceof BABYLON.PBRMaterial && !material.albedoTexture) {
+                        material.albedoTexture = texture;                                                       // <-- Apply to PBR materials
+                        console.log(`Applied texture to material: ${material.name}`);
+                    }
+                });
+            }
+            
+            console.log("Explicit texture loading complete");
+            
+        } catch (error) {
+            console.error("Error loading explicit textures:", error);                                           // <-- Log error
+        }
     }
     // ---------------------------------------------------------------
 
@@ -628,8 +595,8 @@ window.TrueVision3D.RenderingPipeline = window.TrueVision3D.RenderingPipeline ||
         // CREATE AND CONFIGURE SCENE
         createScene();                                                                                           // <-- Create complete 3D scene
         
-        // LOAD SEGMENTED 3D MODELS
-        loadSegmentedModels();                                                                                   // <-- Load segmented models
+        // LOAD 3D MODEL FROM CDN
+        loadCdnModel();                                                                                          // <-- Load model from CDN
         
         console.log("Rendering pipeline initialized successfully");                                              // <-- Log initialization success
         return { engine: engine, scene: scene, sunLight: sunLight };                                            // <-- Return core references

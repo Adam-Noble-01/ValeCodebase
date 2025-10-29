@@ -14,7 +14,7 @@
             "name": "Full Site 100k - Local Version 2.0",
             "description": "Large photogrammetry model with external textures (local files)",
             "glbUrl": "3dAssets/02__FullSite__100k__OnlineVersion__2.0.0__.glb",
-            "enabled": true,
+            "enabled": false,
             "useCdnLoader": false,
             "externalTextures": [
                 "3dAssets/02__FullSite__100k__OnlineVersion__2.0.0___u0_v0_diffuse.png",
@@ -41,7 +41,7 @@
             "name": "Full Site 100k - CDN Version 2.0",
             "description": "Large photogrammetry model with external textures from CDN",
             "glbUrl": "https://cdn.noble-architecture.com/VaApps/3dAssets/02__FullSite__100k__OnlineVersion__2.0.0__.glb",
-            "enabled": false,
+            "enabled": true,
             "useCdnLoader": true,
             "externalTextures": [
                 "https://cdn.noble-architecture.com/VaApps/3dAssets/02__FullSite__100k__OnlineVersion__2.0.0___u0_v0_diffuse.png",
@@ -109,7 +109,7 @@
         "showModelInfo": true,
         "showCameraControls": true,
         "showLoadingProgress": true,
-        "defaultView": "fullsite-100k"
+        "defaultView": "fullsite-100k-cdn"
     }
 }
 

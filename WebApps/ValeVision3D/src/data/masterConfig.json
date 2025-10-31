@@ -41,7 +41,7 @@
             "name": "Rural Landscape - Autumn Field",
             "description": "Sunny autumn field HDRI from Cloudflare CDN (4k)",
             "hdrUrl": "https://pub-237fa2e044864e20a21464d0713c7d4e.r2.dev/VaApps/HdriAssets/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr",
-            "intensity": 1.0,
+            "intensity": 0.5,
             "enabled": true,
             "rotation": 0
         },
@@ -71,9 +71,9 @@
     },
     "renderSettings": {
         "enableAntialiasing": true,
-        "enableShadows": false,
+        "enableShadows": true,
         "enableGlow": false,
-        "enableAmbientOcclusion": false,
+        "enableAmbientOcclusion": true,
         "targetFPS": 60
     },
     "uiSettings": {

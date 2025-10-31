@@ -10,10 +10,11 @@
 // CREATED    : 2025
 //
 // DESCRIPTION:
-// - Application header with Vale branding
-// - Displays application name and version
+// - Persistent header component displayed across all pages
+// - Features Vale Garden Houses logo on left
+// - Features ValeVision3D title text on right
+// - White background with subtle shadow and Vale blue bottom border
 // - Responsive design for tablet and mobile
-// - Fixed position at top of viewport
 //
 // =============================================================================
 
@@ -21,7 +22,7 @@
 // REGION | Header Component
 // -----------------------------------------------------------------------------
 
-    // COMPONENT | Application Header Bar
+    // COMPONENT | Application Header Bar with Dual Logo Layout
     // ------------------------------------------------------------
     const Header = ({ config }) => {
         
@@ -30,17 +31,20 @@
         
         return (
             <header className="vale-header">
-                
-                {/* APPLICATION TITLE */}
-                <div className="vale-header__title">
-                    {appName}
+                <div className="vale-header__logo-container vale-header__logo-container--left">
+                    <img 
+                        src="assets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                        alt="Vale Garden Houses"
+                        className="vale-header__logo-left"
+                    />
                 </div>
                 
-                {/* HEADER INFO */}
-                <div className="vale-header__info">
-                    <span className="vale-header__version">v{version}</span>
+                <div className="vale-header__logo-container vale-header__logo-container--right">
+                    <div className="vale-header__title">
+                        {appName}
+                        <span className="vale-header__version"> v{version}</span>
+                    </div>
                 </div>
-                
             </header>
         );
     };

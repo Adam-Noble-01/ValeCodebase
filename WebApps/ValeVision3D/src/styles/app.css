@@ -62,34 +62,49 @@
     /* HEADER STYLES | Application Header Bar */
     /* ------------------------------------------------------------ */
     .vale-header {
-        width                              : 100%;
-        height                             : var(--Vale_HeaderHeight);
-        background-color                   : var(--Vale_PrimaryBrand);
-        color                              : var(--Vale_TextLight);
-        display                            : flex;
-        align-items                        : center;
-        justify-content                    : space-between;
-        padding                            : 0 var(--Vale_Spacing_Large);
-        box-shadow                         : var(--Vale_Shadow_Medium);
+        position                           : relative;                     /* <-- Relative positioning for absolute children */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : space-between;                /* <-- Space between elements */
+        height                             : var(--Vale_HeaderHeight);     /* <-- Fixed header height */
+        padding                            : 0 var(--Vale_Spacing_Large);  /* <-- Horizontal padding */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.08);  /* <-- Subtle shadow */
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue bottom border */
         z-index                            : var(--Vale_ZIndex_Header);
-        position                           : relative;
+        width                              : 100%;
     }
-
+    
+    .vale-header__logo-container {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Vertical centering */
+    }
+    
+    .vale-header__logo-container--left {
+        justify-content                    : flex-start;                   /* <-- Align left */
+    }
+    
+    .vale-header__logo-container--right {
+        justify-content                    : flex-end;                     /* <-- Align right */
+    }
+    
+    .vale-header__logo-left {
+        height                             : 42px;                         /* <-- Vale logo height */
+        width                              : auto;                         /* <-- Maintain aspect ratio */
+    }
+    
     .vale-header__title {
-        font-size                          : var(--Vale_FontSize_Title);
-        font-weight                        : var(--Vale_FontWeight_SemiBold);
-        letter-spacing                     : -0.5px;
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
     }
-
-    .vale-header__info {
-        display                            : flex;
-        align-items                        : center;
-        gap                                : var(--Vale_Spacing_Medium);
-        font-size                          : var(--Vale_FontSize_Small);
-    }
-
+    
     .vale-header__version {
-        opacity                            : 0.8;
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular font weight */
+        opacity                            : 0.7;                          /* <-- Slightly muted */
+        margin-left                        : 4px;                          /* <-- Small spacing from title */
     }
     /* ------------------------------------------------------------ */
 
@@ -338,8 +353,12 @@
             padding                        : 0 var(--Vale_Spacing_Medium);
         }
 
+        .vale-header__logo-left {
+            height                         : 36px;                         /* <-- Smaller logo on mobile */
+        }
+
         .vale-header__title {
-            font-size                      : var(--Vale_FontSize_Heading);
+            font-size                      : var(--Vale_FontSize_SubHeading);  /* <-- Smaller title on mobile */
         }
 
         .vale-controls {

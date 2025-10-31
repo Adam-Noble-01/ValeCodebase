@@ -140,6 +140,59 @@
         // ---------------------------------------------------------------
         
         
+        // FUNCTION | Get Render Settings from Configuration
+        // ---------------------------------------------------------------
+        getRenderSettings(config) {
+            if (!config || !config.renderSettings) {                      // <-- Validate config structure
+                return this.getDefaultRenderSettings();                    // <-- Return defaults
+            }
+            
+            return config.renderSettings;                                  // <-- Return render settings
+        },
+        // ---------------------------------------------------------------
+        
+        
+        // HELPER FUNCTION | Get Default Render Settings
+        // ---------------------------------------------------------------
+        getDefaultRenderSettings() {
+            return {
+                enableAntialiasing: true,                                  // <-- Default antialiasing enabled
+                enableShadows: true,                                       // <-- Default shadows enabled
+                enableGlow: false,                                         // <-- Default glow disabled
+                enableAmbientOcclusion: true,                              // <-- Default ambient occlusion enabled
+                targetFPS: 60                                              // <-- Default target FPS
+            };
+        },
+        // ---------------------------------------------------------------
+        
+        
+        // FUNCTION | Get Shadow Enabled Setting from Configuration
+        // ---------------------------------------------------------------
+        getShadowEnabled(config) {
+            const renderSettings = this.getRenderSettings(config);         // <-- Get render settings
+            return renderSettings.enableShadows === true;                 // <-- Return shadow enabled (strict equality)
+        },
+        // ---------------------------------------------------------------
+        
+        
+        // FUNCTION | Get Ambient Occlusion Enabled Setting from Configuration
+        // ---------------------------------------------------------------
+        getAmbientOcclusionEnabled(config) {
+            const renderSettings = this.getRenderSettings(config);         // <-- Get render settings
+            return renderSettings.enableAmbientOcclusion === true;        // <-- Return AO enabled (strict equality)
+        },
+        // ---------------------------------------------------------------
+        
+        
+        // FUNCTION | Get Antialiasing Enabled Setting from Configuration
+        // ---------------------------------------------------------------
+        getAntialiasingEnabled(config) {
+            const renderSettings = this.getRenderSettings(config);         // <-- Get render settings
+            return renderSettings.enableAntialiasing === true;             // <-- Return antialiasing enabled (strict equality)
+        },
+        // ---------------------------------------------------------------
+        
+        
         // FUNCTION | Validate Configuration Structure
         // ---------------------------------------------------------------
         validateConfig(config) {

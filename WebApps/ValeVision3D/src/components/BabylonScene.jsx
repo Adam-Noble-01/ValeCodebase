@@ -67,10 +67,15 @@
         const initializeBabylonScene = () => {
             const canvas = canvasRef.current;                            // <-- Get canvas element
             
+            // GET RENDER SETTINGS FROM CONFIGURATION (USE DEFAULTS IF CONFIG NOT LOADED)
+            const enableAntialiasing = config ? window.ValeVision3D.ConfigLoader.getAntialiasingEnabled(config) : true;
+            const enableShadows = config ? window.ValeVision3D.ConfigLoader.getShadowEnabled(config) : true;
+            const enableAmbientOcclusion = config ? window.ValeVision3D.ConfigLoader.getAmbientOcclusionEnabled(config) : true;
+            
             // CREATE BABYLON ENGINE
             const engine = new BABYLON.Engine(
                 canvas,                                                  // <-- Canvas element
-                true,                                                    // <-- Antialiasing
+                enableAntialiasing,                                      // <-- Antialiasing from config
                 { 
                     preserveDrawingBuffer: true,                         // <-- Enable screenshots
                     stencil: true,                                       // <-- Enable stencil
@@ -96,6 +101,18 @@
             
             // SETUP DEFAULT LIGHTING
             const defaultLight = window.ValeVision3D.HDRILoader.createDefaultLighting(scene);
+            
+            // INITIALIZE SHADOW GENERATOR (IF ENABLED)
+            // NOTE: Pass null to let shadow renderer create its own directional light
+            // Hemispheric lights cannot cast shadows, so shadow renderer will create appropriate light
+            if (enableShadows) {                                         // <-- Check if shadows enabled
+                window.ValeVision3D.ShadowRenderer.initialize(scene, null, enableShadows);
+            }
+            
+            // INITIALIZE SSAO PIPELINE (IF ENABLED)
+            if (enableAmbientOcclusion) {                               // <-- Check if SSAO enabled
+                window.ValeVision3D.SSAORenderer.initialize(scene, camera, enableAmbientOcclusion);
+            }
             
             // LOAD HDRI ENVIRONMENT
             loadEnvironment();                                           // <-- Load HDRI environment
@@ -241,6 +258,12 @@
         // ---------------------------------------------------------------
         const cleanup = () => {
             console.log('Cleaning up Babylon.js resources...');          // <-- Log cleanup
+            
+            // DISPOSE RENDER EFFECTS
+            if (sceneRef.current) {
+                window.ValeVision3D.ShadowRenderer.dispose(sceneRef.current); // <-- Dispose shadow generator
+                window.ValeVision3D.SSAORenderer.dispose(sceneRef.current);   // <-- Dispose SSAO pipeline
+            }
             
             // DISPOSE MODEL
             if (sceneRef.current) {

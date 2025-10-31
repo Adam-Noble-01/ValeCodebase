@@ -1,0 +1,51 @@
+{
+    "projectName": "Sheppard",
+    "projectCode": "61866",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "Top notch CAD Work by Anna as always, slight bit of extra time allocated due to complexity of existing conditions, added an extra 1 Hour to my typical expectation which seems accurate now. Credit also to Dan on this, the situation is very tricky and the design fits into an awkward space and works really well in my opinion."
+    },
+    "scheduleData": {
+        "dateReceived": "29-Oct-2025",
+        "dateFulfilled": "31-Oct-2025",
+        "timeAllocated": 5,
+        "timeTaken": 5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__MainShot__WhitecardImage__31-Oct-2025.png",
+        "IMG02__3dView__Front__ViewingDoor__WhitecardImage__31-Oct-2025.png",
+        "IMG03__3dView__RightCorner__Further__WhitecardImage__31-Oct-2025.png",
+        "IMG04__3dView__LeftSide__ViewingDoor__WhitecardImage__31-Oct-2025.png",
+        "IMG05__3dView__RightCorner__Atlernate__WhitecardImage__31-Oct-2025.png",
+        "IMG06__3dView__LowDownView__WhitecardImage__31-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__31-Oct-2025.png",
+        "IMG22__Elevation__RightSideElevation__WhitecardImage__31-Oct-2025.png"
+    ],
+    "folderId": "SD-61866__Sheppard",
+    "basePath": "Projects/2025/SD-61866__Sheppard",
+    "displayImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__31-Oct-2025.png",
+        "IMG02__3dView__Front__ViewingDoor__WhitecardImage__31-Oct-2025.png",
+        "IMG03__3dView__RightCorner__Further__WhitecardImage__31-Oct-2025.png",
+        "IMG04__3dView__LeftSide__ViewingDoor__WhitecardImage__31-Oct-2025.png",
+        "IMG05__3dView__RightCorner__Atlernate__WhitecardImage__31-Oct-2025.png",
+        "IMG06__3dView__LowDownView__WhitecardImage__31-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__31-Oct-2025.png",
+        "IMG22__Elevation__RightSideElevation__WhitecardImage__31-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__31-Oct-2025.png",
+        "IMG02__3dView__Front__ViewingDoor__WhitecardImage__31-Oct-2025.png",
+        "IMG03__3dView__RightCorner__Further__WhitecardImage__31-Oct-2025.png",
+        "IMG04__3dView__LeftSide__ViewingDoor__WhitecardImage__31-Oct-2025.png",
+        "IMG05__3dView__RightCorner__Atlernate__WhitecardImage__31-Oct-2025.png",
+        "IMG06__3dView__LowDownView__WhitecardImage__31-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__31-Oct-2025.png",
+        "IMG22__Elevation__RightSideElevation__WhitecardImage__31-Oct-2025.png"
+    ]
+}

@@ -80,7 +80,7 @@
         "showModelInfo": true,
         "showCameraControls": true,
         "showLoadingProgress": true,
-        "defaultView": "fullsite-100k-cdn"
+        "defaultView": "Test Model"
     }
 }
 

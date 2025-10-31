@@ -96,7 +96,18 @@
             // GET DEFAULT MODEL FROM UI SETTINGS OR FIRST ENABLED MODEL
             let defaultModelId = config.uiSettings?.defaultView;         // <-- Check UI settings
             
-            if (!defaultModelId) {                                       // <-- No default specified
+            // VALIDATE DEFAULT MODEL EXISTS
+            if (defaultModelId) {                                        // <-- Default specified
+                const modelExists = window.ValeVision3D.ConfigLoader.getModelById(config, defaultModelId);
+                
+                if (!modelExists) {                                      // <-- Model doesn't exist
+                    console.warn(`Default model "${defaultModelId}" not found, using first enabled model`);
+                    defaultModelId = null;                               // <-- Reset to use fallback
+                }
+            }
+            
+            // FALLBACK TO FIRST ENABLED MODEL IF NO DEFAULT OR DEFAULT INVALID
+            if (!defaultModelId) {                                       // <-- No default specified or invalid
                 const enabledModels = window.ValeVision3D.ConfigLoader.getEnabledModels(config);
                 
                 if (enabledModels.length > 0) {                          // <-- Use first enabled model

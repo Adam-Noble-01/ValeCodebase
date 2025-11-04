@@ -36,6 +36,7 @@
         const sceneRef = React.useRef(null);                             // <-- Scene reference
         const engineRef = React.useRef(null);                            // <-- Engine reference
         const cameraRef = React.useRef(null);                            // <-- Camera reference
+        const defaultLightRef = React.useRef(null);                      // <-- Default light reference
         
         
         // EFFECT | Initialize Babylon.js Scene
@@ -59,6 +60,16 @@
             
             loadCurrentModel();                                          // <-- Load new model
         }, [currentModelId, config]);
+        // ---------------------------------------------------------------
+        
+        
+        // EFFECT | Reload Environment When Config Changes
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            if (!sceneRef.current || !config) return;                   // <-- Wait for scene and config
+            
+            loadEnvironment();                                           // <-- Reload environment with updated lighting settings
+        }, [config]);
         // ---------------------------------------------------------------
         
         
@@ -99,8 +110,9 @@
             );
             cameraRef.current = camera;                                  // <-- Store camera reference
             
-            // SETUP DEFAULT LIGHTING
+            // SETUP DEFAULT LIGHTING (WILL BE DISABLED WHEN HDRI LOADS)
             const defaultLight = window.ValeVision3D.HDRILoader.createDefaultLighting(scene);
+            defaultLightRef.current = defaultLight;                       // <-- Store default light reference
             
             // INITIALIZE SHADOW GENERATOR (IF ENABLED)
             // NOTE: Pass null to let shadow renderer create its own directional light
@@ -151,13 +163,68 @@
             
             const primaryEnv = environments[0];                          // <-- Use first enabled environment
             
+            // GET LIGHTING SETTINGS FROM CONFIG
+            const lightingSettings = window.ValeVision3D.ConfigLoader.getLightingSettings(config);  // <-- Get lighting settings
+            
             try {
                 await window.ValeVision3D.HDRILoader.loadEnvironment(
                     sceneRef.current,
                     primaryEnv.hdrUrl,
                     primaryEnv.intensity,
-                    primaryEnv.rotation
+                    primaryEnv.rotation,
+                    lightingSettings                                     // <-- Pass lighting settings
                 );
+                
+                // DISABLE DEFAULT LIGHTING WHEN HDRI IS LOADED
+                if (defaultLightRef.current) {                            // <-- Check if default light exists
+                    defaultLightRef.current.setEnabled(false);            // <-- Disable default light
+                    console.log('Default lighting disabled (HDRI active)'); // <-- Log disable
+                }
+                
+                // APPLY TONE MAPPING EXPOSURE IF AVAILABLE
+                if (!sceneRef.current.imageProcessingConfiguration) {   // <-- Create if doesn't exist
+                    sceneRef.current.imageProcessingConfiguration = new BABYLON.ImageProcessingConfiguration();
+                }
+                sceneRef.current.imageProcessingConfiguration.exposure = lightingSettings.toneMappingExposure;  // <-- Apply exposure
+                
+                // APPLY CONTRAST ADJUSTMENT
+                sceneRef.current.imageProcessingConfiguration.contrast = lightingSettings.contrast;  // <-- Apply contrast
+                
+                // APPLY COLOR TEMPERATURE AND TINT TO NEUTRALIZE BLUE CAST
+                const colorTemp = lightingSettings.colorTemperature ?? 5500;  // <-- Get color temperature (default neutral)
+                const tint = lightingSettings.tint ?? 0.0;                    // <-- Get tint value (default neutral)
+                const blueReduction = lightingSettings.blueReduction ?? 0.0;   // <-- Get blue reduction amount
+                
+                // CALCULATE COLOR TEMPERATURE TINT (warm to cool)
+                // Lower values = warmer (orange), higher values = cooler (blue)
+                // We want to neutralize blue, so we'll add warmth
+                const tempNormalized = (colorTemp - 5500) / 2000;            // <-- Normalize to -1 to +1 range
+                const warmth = Math.max(-0.4, Math.min(0.4, -tempNormalized * 0.3));  // <-- Add warmth to counteract blue
+                
+                // CALCULATE TINT ADJUSTMENT (green to magenta)
+                // Positive = magenta (warmer), negative = green (cooler)
+                const tintAdjustment = tint * 0.15;                          // <-- Scale tint adjustment
+                
+                // APPLY COLOR GRADING TO NEUTRALIZE BLUE
+                sceneRef.current.imageProcessingConfiguration.colorGradingEnabled = true;  // <-- Enable color grading
+                
+                // ADJUST TONE MAPPING TO NEUTRALIZE BLUE CAST
+                sceneRef.current.imageProcessingConfiguration.toneMappingEnabled = true;  // <-- Enable tone mapping
+                
+                // CREATE COLOR CORRECTION TO COUNTERACT BLUE
+                // Adjust RGB channels to reduce blue dominance
+                if (!sceneRef.current.imageProcessingConfiguration.colorCurves) {
+                    sceneRef.current.imageProcessingConfiguration.colorCurves = new BABYLON.ColorCurves();
+                }
+                
+                // REDUCE BLUE CHANNEL AND BOOST RED/GREEN TO COUNTERACT BLUE CAST
+                // Negative values reduce the channel, positive values boost it
+                sceneRef.current.imageProcessingConfiguration.colorCurves.globalBlue = -(warmth + blueReduction);  // <-- Reduce blue channel significantly
+                sceneRef.current.imageProcessingConfiguration.colorCurves.globalRed = warmth * 0.6 + tintAdjustment;  // <-- Boost red to add warmth
+                sceneRef.current.imageProcessingConfiguration.colorCurves.globalGreen = warmth * 0.4;  // <-- Boost green slightly
+                
+                // APPLY SATURATION ADJUSTMENT TO REDUCE OVERALL BLUE CAST
+                sceneRef.current.imageProcessingConfiguration.saturation = 1.0 - (blueReduction * 0.3);  // <-- Slightly reduce saturation to tone down blue
                 
                 console.log('HDRI environment loaded');                  // <-- Log success
                 

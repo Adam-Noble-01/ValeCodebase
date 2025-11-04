@@ -41,17 +41,8 @@
             "name": "Rural Landscape - Autumn Field",
             "description": "Sunny autumn field HDRI from Cloudflare CDN (4k)",
             "hdrUrl": "https://pub-237fa2e044864e20a21464d0713c7d4e.r2.dev/VaApps/HdriAssets/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr",
-            "intensity": 0.5,
+            "intensity": 1.0,
             "enabled": true,
-            "rotation": 0
-        },
-        {
-            "id": "hdri-cloudflare-example",
-            "name": "Cloudflare CDN HDRI (Disabled)",
-            "description": "Example configuration for Cloudflare-hosted HDRI",
-            "hdrUrl": "https://cdn.yourcloudflare.com/valevision3d/environments/outdoor.hdr",
-            "intensity": 0.8,
-            "enabled": false,
             "rotation": 0
         }
     ],
@@ -75,6 +66,17 @@
         "enableGlow": false,
         "enableAmbientOcclusion": true,
         "targetFPS": 60
+    },
+    "lightingSettings": {
+        "sceneEnvironmentIntensity": 0.8,
+        "materialEnvironmentIntensity": 0.6,
+        "skyboxExposure": 0.05,
+        "toneMappingExposure": 1.0,
+        "ambientContribution": 0.05,
+        "contrast": 2.0,
+        "colorTemperature": 4800,
+        "tint": 0.1,
+        "blueReduction": 1.0
     },
     "uiSettings": {
         "showModelInfo": true,

@@ -193,6 +193,36 @@
         // ---------------------------------------------------------------
         
         
+        // FUNCTION | Get Lighting Settings from Configuration
+        // ---------------------------------------------------------------
+        getLightingSettings(config) {
+            if (!config || !config.lightingSettings) {                     // <-- Validate config structure
+                return this.getDefaultLightingSettings();                  // <-- Return defaults
+            }
+            
+            return config.lightingSettings;                                 // <-- Return lighting settings
+        },
+        // ---------------------------------------------------------------
+        
+        
+        // HELPER FUNCTION | Get Default Lighting Settings
+        // ---------------------------------------------------------------
+        getDefaultLightingSettings() {
+            return {
+                sceneEnvironmentIntensity    : 0.7,                        // <-- Default scene environment intensity
+                materialEnvironmentIntensity : 0.8,                        // <-- Default material environment intensity
+                skyboxExposure               : 0.2,                        // <-- Default skybox exposure
+                toneMappingExposure          : 1.0,                        // <-- Default tone mapping exposure
+                ambientContribution          : 0.1,                        // <-- Default ambient contribution
+                contrast                     : 1.0,                        // <-- Default contrast
+                colorTemperature             : 5500,                       // <-- Default color temperature (neutral daylight)
+                tint                         : 0.0,                        // <-- Default tint (neutral, no color shift)
+                blueReduction                 : 0.0                         // <-- Default blue reduction (0 = no reduction)
+            };
+        },
+        // ---------------------------------------------------------------
+        
+        
         // FUNCTION | Validate Configuration Structure
         // ---------------------------------------------------------------
         validateConfig(config) {

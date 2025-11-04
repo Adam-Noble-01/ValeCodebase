@@ -1,0 +1,57 @@
+{
+    "projectName": "Lawrence",
+    "projectCode": "60678",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "A nice easy job, simple forms, excellent quality CAD input. Completed ahead of schedule. Recorded a timelapse video."
+    },
+    "scheduleData": {
+        "dateReceived": "04-Nov-2025",
+        "dateFulfilled": "04-Nov-2025",
+        "timeAllocated": 3,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__MainShot__TwoPoint__WhitecardImage__04-Nov-2025.png",
+        "IMG01__3dView__MainShot__WhitecardImage__04-Nov-2025.png",
+        "IMG02__3dView__StraightOn__Front__WhitecardImage__04-Nov-2025.png",
+        "IMG03__3dView__StraightOn__Side__WhitecardImage__04-Nov-2025.png",
+        "IMG04__PatioView__WhitecardImage__04-Nov-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__04-Nov-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__04-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__04-Nov-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__04-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__04-Nov-2025.png"
+    ],
+    "folderId": "LW-60678__Lawrence",
+    "basePath": "Projects/2025/LW-60678__Lawrence",
+    "displayImages": [
+        "IMG01__3dView__MainShot__TwoPoint__WhitecardImage__04-Nov-2025.png",
+        "IMG01__3dView__MainShot__WhitecardImage__04-Nov-2025.png",
+        "IMG02__3dView__StraightOn__Front__WhitecardImage__04-Nov-2025.png",
+        "IMG03__3dView__StraightOn__Side__WhitecardImage__04-Nov-2025.png",
+        "IMG04__PatioView__WhitecardImage__04-Nov-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__04-Nov-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__04-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__04-Nov-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__04-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__04-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__TwoPoint__WhitecardImage__04-Nov-2025.png",
+        "IMG01__3dView__MainShot__WhitecardImage__04-Nov-2025.png",
+        "IMG02__3dView__StraightOn__Front__WhitecardImage__04-Nov-2025.png",
+        "IMG03__3dView__StraightOn__Side__WhitecardImage__04-Nov-2025.png",
+        "IMG04__PatioView__WhitecardImage__04-Nov-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__04-Nov-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__04-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__04-Nov-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__04-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__04-Nov-2025.png"
+    ]
+}

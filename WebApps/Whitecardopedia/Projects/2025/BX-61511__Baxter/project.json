@@ -1,0 +1,45 @@
+{
+    "projectName": "Baxter",
+    "projectCode": "61511",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Steph",
+        "additionalNotes": "Fairly easy job, Source CAD File did not have any windows added, only bounding boxes for features existed so I had to complete the details missing on the CAD File, it wasn't difficult, although did add around 25% extra time vs having it."
+    },
+    "scheduleData": {
+        "dateReceived": "04-Nov-2025",
+        "dateFulfilled": "05-Nov-2025",
+        "timeAllocated": 5,
+        "timeTaken": 6
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__MainShot__WhitecardImage__05-Nov-2025.png",
+        "IMG02__3dView__LeftCorner__WhitecardImage__05-Nov-2025.png",
+        "IMG03__3dView__DoubleDoors__WhitecardImage__05-Nov-2025.png",
+        "IMG04__3dView__FrontFascade__WhitecardImage__05-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__05-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Nov-2025.png"
+    ],
+    "folderId": "BX-61511__Baxter",
+    "basePath": "Projects/2025/BX-61511__Baxter",
+    "displayImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__05-Nov-2025.png",
+        "IMG02__3dView__LeftCorner__WhitecardImage__05-Nov-2025.png",
+        "IMG03__3dView__DoubleDoors__WhitecardImage__05-Nov-2025.png",
+        "IMG04__3dView__FrontFascade__WhitecardImage__05-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__05-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__05-Nov-2025.png",
+        "IMG02__3dView__LeftCorner__WhitecardImage__05-Nov-2025.png",
+        "IMG03__3dView__DoubleDoors__WhitecardImage__05-Nov-2025.png",
+        "IMG04__3dView__FrontFascade__WhitecardImage__05-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__05-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Nov-2025.png"
+    ]
+}

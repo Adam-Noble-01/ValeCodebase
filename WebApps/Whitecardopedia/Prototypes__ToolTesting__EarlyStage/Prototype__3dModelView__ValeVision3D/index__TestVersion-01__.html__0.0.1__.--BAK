@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitecard 3D Model Viewer - ValeVision3D</title>
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  External CDN Library Imports                           -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Babylon.js Core and Loaders -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  CSS Styling - ValeVision3D Standards              -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <style>
+        /* Base Layout - Full Screen Canvas */
+        * {
+            margin                             : 0;
+            padding                            : 0;
+            box-sizing                         : border-box;
+        }
+        
+        html, body {
+            width                              : 100%;
+            height                             : 100%;
+            overflow                           : hidden;
+            background-color                   : #ffffff;
+            font-family                        : -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        /* Canvas Container */
+        #root {
+            width                              : 100vw;
+            height                             : 100vh;
+            display                            : flex;
+            align-items                        : center;
+            justify-content                    : center;
+        }
+        
+        /* Babylon.js Render Canvas */
+        #renderCanvas {
+            width                              : 100%;
+            height                             : 100%;
+            touch-action                       : none;
+            outline                            : none;
+            display                            : block;
+        }
+        
+        /* Loading Indicator */
+        .loading-indicator {
+            position                           : absolute;
+            top                                : 50%;
+            left                               : 50%;
+            transform                          : translate(-50%, -50%);
+            font-size                          : 1.2rem;
+            color                              : #172b3a;
+            text-align                         : center;
+        }
+        
+        /* Debug Info Overlay */
+        .debug-info {
+            position                           : absolute;
+            top                                : 10px;
+            left                               : 10px;
+            background-color                   : rgba(0, 0, 0, 0.7);
+            color                              : #00ff00;
+            padding                            : 10px;
+            font-family                        : 'Courier New', monospace;
+            font-size                          : 0.85rem;
+            border-radius                      : 4px;
+            z-index                            : 1000;
+            max-width                          : 350px;
+        }
+        
+        .debug-info h4 {
+            margin                             : 0 0 8px 0;
+            color                              : #ffffff;
+            font-size                          : 0.95rem;
+        }
+        
+        .debug-info p {
+            margin                             : 4px 0;
+            line-height                        : 1.4;
+        }
+    </style>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Application Configuration Data                         -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script id="appConfigData" type="application/json">
+        {
+            "appMetadata": {
+                "appName": "Whitecardopedia__ValeVision3D",
+                "appVersion": "1.0.0",
+                "appDescription": "A 3D model viewer for the Vale Garden Houses board to review whitecard images (simple massing models).",
+                "appAuthor": "Adam Noble - Noble Architecture",
+                "appCreated": "2025"
+            },
+            "appConfig": {
+                "devMode_Enabled": true,
+                "devMode_ShowDebugInfo": true,
+                "devMode_ShowAxisHelper": true,
+                "devMode_LogCameraPosition": false,
+                "devMode_Description": "Various typical app config options, enables debug tools and analysis tools"
+            },
+            "navigationConfig": {
+                "navigationMode_MoveSpeed_MPH": 20.0,
+                "navigationMode_MoveSpeed_Description": "This value is the max speed of the camera movement in Miles Per Hour.",
+                "navigationMode_AngularSensitivity": 1000,
+                "navigationMode_AngularSensitivity_Description": "Mouse rotation sensitivity (higher = less sensitive).",
+                "navigationMode_Inertia": 0.5,
+                "navigationMode_Inertia_Description": "Movement smoothing (0 = no smoothing, 1 = maximum smoothing).",
+                "navigationMode_EnableCollision": false,
+                "navigationMode_EnableGravity": false
+            },
+            "renderConfig": {
+                "render_EnableAntialiasing": true,
+                "render_BackgroundColor_R": 1.0,
+                "render_BackgroundColor_G": 1.0,
+                "render_BackgroundColor_B": 1.0,
+                "render_BackgroundColor_A": 1.0,
+                "render_Description": "Rendering pipeline configuration options."
+            },
+            "lightingConfig": {
+                "lighting_HemisphereIntensity": 1.0,
+                "lighting_HemisphereDiffuse_R": 1.0,
+                "lighting_HemisphereDiffuse_G": 1.0,
+                "lighting_HemisphereDiffuse_B": 1.0,
+                "lighting_HemisphereSpecular_R": 0.1,
+                "lighting_HemisphereSpecular_G": 0.1,
+                "lighting_HemisphereSpecular_B": 0.1,
+                "lighting_HemisphereGround_R": 0.9,
+                "lighting_HemisphereGround_G": 0.9,
+                "lighting_HemisphereGround_B": 0.9,
+                "lighting_Description": "Hemisphere lighting configuration for whitecard aesthetic."
+            },
+            "shaderConfig": {
+                "shader_EdgeThreshold": 0.3,
+                "shader_EdgeThreshold_Description": "Edge detection sensitivity (lower = more edges).",
+                "shader_FresnelEdgeMin": 0.2,
+                "shader_FresnelEdgeMax": 0.4,
+                "shader_SurfaceBrightness": 0.95,
+                "shader_EdgeColor_R": 0.1,
+                "shader_EdgeColor_G": 0.1,
+                "shader_EdgeColor_B": 0.1,
+                "shader_Description": "Technical pen shader configuration for edge detection and surface rendering."
+            },
+            "modelConfig": {
+                "model_DefaultURL": "https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__3.0.0__.glb",
+                "model_AutoCenter": true,
+                "model_AutoFrameCamera": true,
+                "model_CameraDistanceMultiplier": 2.0,
+                "model_Description": "Model loading and positioning configuration."
+            }
+        }
+    </script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+</head>
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  React Application Root Container                       -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <div id="root"></div>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  React + Babylon.js Application Logic                    -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script type="text/babel">
+        // -----------------------------------------------------------------------------
+        // REGION | Application Configuration Management
+        // -----------------------------------------------------------------------------
+        
+            // MODULE VARIABLES | Application Configuration State
+            // ------------------------------------------------------------
+            let appConfig        = null;                                     // <-- Global config object
+            let appMetadata      = null;                                     // <-- App metadata
+            let navConfig        = null;                                     // <-- Navigation configuration
+            let renderConfig     = null;                                     // <-- Render configuration
+            let lightingConfig   = null;                                     // <-- Lighting configuration
+            let shaderConfig     = null;                                     // <-- Shader configuration
+            let modelConfig      = null;                                     // <-- Model configuration
+            // ---------------------------------------------------------------
+            
+            // FUNCTION | Load Application Configuration from JSON
+            // ------------------------------------------------------------
+            function loadAppConfiguration() {
+                try {
+                    const configElement = document.getElementById('appConfigData');  // <-- Get config script element
+                    if (!configElement) {
+                        console.error('Configuration data not found');      // <-- Log error
+                        return false;                                        // <-- Return failure
+                    }
+                    
+                    const configData = JSON.parse(configElement.textContent);  // <-- Parse JSON config
+                    
+                    // Store configuration sections globally
+                    appMetadata      = configData.appMetadata;               // <-- Store app metadata
+                    appConfig        = configData.appConfig;                 // <-- Store app config
+                    navConfig        = configData.navigationConfig;          // <-- Store navigation config
+                    renderConfig     = configData.renderConfig;              // <-- Store render config
+                    lightingConfig   = configData.lightingConfig;            // <-- Store lighting config
+                    shaderConfig     = configData.shaderConfig;              // <-- Store shader config
+                    modelConfig      = configData.modelConfig;               // <-- Store model config
+                    
+                    // Log configuration load if dev mode enabled
+                    if (appConfig?.devMode_Enabled === true) {
+                        console.log('=== ValeVision3D Configuration Loaded ===');
+                        console.log(`App: ${appMetadata.appName} v${appMetadata.appVersion}`);
+                        console.log(`Author: ${appMetadata.appAuthor}`);
+                        console.log('Dev Mode: ENABLED');
+                        console.log('=======================================');
+                    }
+                    
+                    return true;                                             // <-- Return success
+                    
+                } catch (error) {
+                    console.error('Error loading configuration:', error);   // <-- Log error
+                    return false;                                            // <-- Return failure
+                }
+            }
+            // ---------------------------------------------------------------
+            
+            // HELPER FUNCTION | Convert MPH to Babylon.js Units Per Second
+            // ---------------------------------------------------------------
+            function convertMPHtoBabylonSpeed(mph) {
+                // Babylon.js uses units per second
+                // 1 mph = 0.44704 meters/second
+                // Assuming 1 Babylon unit = 1 meter
+                const metersPerSecond = mph * 0.44704;                       // <-- Convert MPH to m/s
+                return metersPerSecond;                                      // <-- Return Babylon speed
+            }
+            // ---------------------------------------------------------------
+            
+            // HELPER FUNCTION | Get Configuration Value with Fallback
+            // ---------------------------------------------------------------
+            function getConfigValue(configObject, key, fallback) {
+                return (configObject && configObject[key] !== undefined) ? configObject[key] : fallback;
+            }
+            // ---------------------------------------------------------------
+            
+            // Initialize configuration immediately
+            loadAppConfiguration();                                          // <-- Load config on script load
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | React Component Structure
+        // -----------------------------------------------------------------------------
+        
+            const { useEffect, useRef, useState } = React;
+            
+            // FUNCTION | Main Whitecard Viewer Component
+            // ------------------------------------------------------------
+            function WhitecardViewer() {
+                const canvasRef          = useRef(null);                     // <-- Canvas element reference
+                const engineRef          = useRef(null);                     // <-- Babylon engine reference
+                const sceneRef           = useRef(null);                     // <-- Babylon scene reference
+                const [isLoading, setIsLoading] = useState(true);            // <-- Loading state
+                const [loadError, setLoadError] = useState(null);            // <-- Error state
+                
+                // SUB FUNCTION | Initialize Babylon.js Scene and Load Model
+                // ---------------------------------------------------------------
+                useEffect(() => {
+                    if (!canvasRef.current) return;                          // <-- Exit if canvas not ready
+                    
+                    initializeBabylonScene();                                // <-- Set up Babylon scene
+                    
+                    return () => {                                           // <-- Cleanup on unmount
+                        cleanupBabylonResources();                           // <-- Dispose resources
+                    };
+                }, []);
+                // ---------------------------------------------------------------
+                
+                // FUNCTION | Initialize Complete Babylon Scene
+                // ------------------------------------------------------------
+                function initializeBabylonScene() {
+                    try {
+                        const canvas = canvasRef.current;                    // <-- Get canvas element
+                        
+                        // Create Babylon engine with antialiasing
+                        const engine = new BABYLON.Engine(canvas, true, { 
+                            preserveDrawingBuffer: true, 
+                            stencil: true 
+                        });
+                        engineRef.current = engine;                          // <-- Store engine reference
+                        
+                        // Create scene
+                        const scene = new BABYLON.Scene(engine);             // <-- Initialize scene
+                        sceneRef.current = scene;                            // <-- Store scene reference
+                        
+                        setupSceneEnvironment(scene);                        // <-- Configure scene environment
+                        setupCamera(scene, canvas);                          // <-- Configure FPS camera
+                        setupKeyboardControls(scene);                        // <-- Setup keyboard shortcuts
+                        loadModelWithShader(scene, setIsLoading, setLoadError);  // <-- Load model with state setters
+                        setupRenderLoop(engine, scene);                       // <-- Start render loop
+                        setupWindowResize(engine);                           // <-- Handle window resize
+                        
+                    } catch (error) {
+                        console.error('Babylon initialization error:', error);  // <-- Log errors
+                        setLoadError(error.message);                         // <-- Set error state
+                        setIsLoading(false);                                 // <-- Stop loading indicator
+                    }
+                }
+                // ---------------------------------------------------------------
+                
+                return (
+                    <>
+                        <canvas ref={canvasRef} id="renderCanvas" />
+                        {isLoading && (
+                            <div className="loading-indicator">
+                                Loading Whitecard Model...
+                            </div>
+                        )}
+                        {loadError && (
+                            <div className="loading-indicator" style={{color: '#cc0000'}}>
+                                Error: {loadError}
+                            </div>
+                        )}
+                        {appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true && (
+                            <div className="debug-info">
+                                <h4>🔧 Debug Info</h4>
+                                <p><strong>App:</strong> {appMetadata?.appName} v{appMetadata?.appVersion}</p>
+                                <p><strong>Controls:</strong> WASD = Move | Q = Down | E = Up | Mouse = Look</p>
+                                <p><strong>Shortcuts:</strong> H or X = Toggle Axis Helper</p>
+                                <p><strong>Speed:</strong> {navConfig?.navigationMode_MoveSpeed_MPH} MPH</p>
+                                <p><strong>Dev Mode:</strong> Active</p>
+                                <p style={{fontSize: '0.75rem', marginTop: '8px', opacity: 0.7}}>
+                                    Check console for detailed logs
+                                </p>
+                            </div>
+                        )}
+                    </>
+                );
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Babylon Scene Configuration
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Setup Scene Environment and Lighting
+            // ------------------------------------------------------------
+            function setupSceneEnvironment(scene) {
+                // Set background color from configuration
+                const bgR = getConfigValue(renderConfig, 'render_BackgroundColor_R', 1.0);
+                const bgG = getConfigValue(renderConfig, 'render_BackgroundColor_G', 1.0);
+                const bgB = getConfigValue(renderConfig, 'render_BackgroundColor_B', 1.0);
+                const bgA = getConfigValue(renderConfig, 'render_BackgroundColor_A', 1.0);
+                scene.clearColor = new BABYLON.Color4(bgR, bgG, bgB, bgA);  // <-- Background from config
+                
+                // Create hemisphere light for soft ambient lighting
+                const light = new BABYLON.HemisphericLight(
+                    "hemisphereLight",                                       // <-- Light name
+                    new BABYLON.Vector3(0, 1, 0),                           // <-- Light direction (upward)
+                    scene                                                    // <-- Parent scene
+                );
+                
+                // Configure light from configuration
+                light.intensity = getConfigValue(lightingConfig, 'lighting_HemisphereIntensity', 1.0);
+                
+                light.diffuse = new BABYLON.Color3(
+                    getConfigValue(lightingConfig, 'lighting_HemisphereDiffuse_R', 1.0),
+                    getConfigValue(lightingConfig, 'lighting_HemisphereDiffuse_G', 1.0),
+                    getConfigValue(lightingConfig, 'lighting_HemisphereDiffuse_B', 1.0)
+                );
+                
+                light.specular = new BABYLON.Color3(
+                    getConfigValue(lightingConfig, 'lighting_HemisphereSpecular_R', 0.1),
+                    getConfigValue(lightingConfig, 'lighting_HemisphereSpecular_G', 0.1),
+                    getConfigValue(lightingConfig, 'lighting_HemisphereSpecular_B', 0.1)
+                );
+                
+                light.groundColor = new BABYLON.Color3(
+                    getConfigValue(lightingConfig, 'lighting_HemisphereGround_R', 0.9),
+                    getConfigValue(lightingConfig, 'lighting_HemisphereGround_G', 0.9),
+                    getConfigValue(lightingConfig, 'lighting_HemisphereGround_B', 0.9)
+                );
+                
+                // Add debug helpers if dev mode enabled - store reference for toggling
+                scene.axisHelper = null;                                     // <-- Initialize axis helper reference
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowAxisHelper === true) {
+                    const axisSize = 5;                                      // <-- Axis helper size
+                    scene.axisHelper = new BABYLON.AxesViewer(scene, axisSize);  // <-- Create axis helper
+                    console.log('Axis helper enabled (size:', axisSize, ')');
+                }
+                
+                // FUNCTION | Toggle Axis Helper Visibility
+                // ---------------------------------------------------------------
+                scene.toggleAxisHelper = function() {
+                    if (scene.axisHelper) {
+                        scene.axisHelper.dispose();                           // <-- Remove axis helper
+                        scene.axisHelper = null;                             // <-- Clear reference
+                        console.log('Axis helper disabled');
+                    } else {
+                        const axisSize = 5;                                  // <-- Axis helper size
+                        scene.axisHelper = new BABYLON.AxesViewer(scene, axisSize);  // <-- Create axis helper
+                        console.log('Axis helper enabled (size:', axisSize, ')');
+                    }
+                };
+                // ---------------------------------------------------------------
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Camera Configuration - FPS Controls
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Setup Universal Camera with FPS Controls
+            // ------------------------------------------------------------
+            function setupCamera(scene, canvas) {
+                // Create Universal Camera for FPS-style navigation
+                const camera = new BABYLON.UniversalCamera(
+                    "fpsCamera",                                             // <-- Camera name
+                    new BABYLON.Vector3(0, 5, -10),                         // <-- Initial position (back and up)
+                    scene                                                    // <-- Parent scene
+                );
+                
+                camera.setTarget(BABYLON.Vector3.Zero());                    // <-- Look at origin
+                camera.attachControl(canvas, true);                          // <-- Enable mouse control
+                
+                // Configure WASD keyboard controls
+                camera.keysUp      = [87];                                   // <-- W key for forward
+                camera.keysDown    = [83];                                   // <-- S key for backward
+                camera.keysLeft    = [65];                                   // <-- A key for left
+                camera.keysRight   = [68];                                   // <-- D key for right
+                
+                // Configure Q/E vertical navigation controls
+                camera.keysUpward     = [69];                                // <-- E key for up
+                camera.keysDownward   = [81];                                // <-- Q key for down
+                
+                // Configure movement and rotation speeds from configuration
+                const speedMPH = getConfigValue(navConfig, 'navigationMode_MoveSpeed_MPH', 5.0);
+                camera.speed = convertMPHtoBabylonSpeed(speedMPH);          // <-- Convert MPH to Babylon units
+                
+                camera.angularSensibility = getConfigValue(navConfig, 'navigationMode_AngularSensitivity', 1000);
+                camera.inertia = getConfigValue(navConfig, 'navigationMode_Inertia', 0.5);
+                
+                // Configure collision and gravity from configuration
+                camera.checkCollisions = getConfigValue(navConfig, 'navigationMode_EnableCollision', false);
+                camera.applyGravity = getConfigValue(navConfig, 'navigationMode_EnableGravity', false);
+                
+                // Log camera configuration if dev mode enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true) {
+                    console.log('=== Camera Configuration ===');
+                    console.log(`Speed: ${speedMPH} MPH (${camera.speed.toFixed(3)} units/sec)`);
+                    console.log(`Angular Sensitivity: ${camera.angularSensibility}`);
+                    console.log(`Inertia: ${camera.inertia}`);
+                    console.log(`Collision: ${camera.checkCollisions}`);
+                    console.log(`Gravity: ${camera.applyGravity}`);
+                    console.log(`Controls: WASD = Move | Q = Down | E = Up | Mouse = Look`);
+                    console.log('===========================');
+                }
+                
+                // Add camera position logging if enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_LogCameraPosition === true) {
+                    scene.registerBeforeRender(() => {
+                        if (Math.random() < 0.01) {                          // <-- Log 1% of frames to avoid spam
+                            console.log(`Camera Position: ${camera.position.toString()}`);
+                        }
+                    });
+                }
+                
+                return camera;                                               // <-- Return camera reference
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Technical Pen Shader Implementation
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Create Custom Technical Drawing Shader Material
+            // ------------------------------------------------------------
+            function createTechnicalPenShader(scene) {
+                // Get shader configuration values
+                const edgeThreshold       = getConfigValue(shaderConfig, 'shader_EdgeThreshold', 0.3);
+                const fresnelEdgeMin      = getConfigValue(shaderConfig, 'shader_FresnelEdgeMin', 0.2);
+                const fresnelEdgeMax      = getConfigValue(shaderConfig, 'shader_FresnelEdgeMax', 0.4);
+                const surfaceBrightness   = getConfigValue(shaderConfig, 'shader_SurfaceBrightness', 0.95);
+                const edgeColorR          = getConfigValue(shaderConfig, 'shader_EdgeColor_R', 0.1);
+                const edgeColorG          = getConfigValue(shaderConfig, 'shader_EdgeColor_G', 0.1);
+                const edgeColorB          = getConfigValue(shaderConfig, 'shader_EdgeColor_B', 0.1);
+                
+                // Log shader configuration if dev mode enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true) {
+                    console.log('=== Shader Configuration ===');
+                    console.log(`Edge Threshold: ${edgeThreshold}`);
+                    console.log(`Fresnel Range: ${fresnelEdgeMin} - ${fresnelEdgeMax}`);
+                    console.log(`Surface Brightness: ${surfaceBrightness}`);
+                    console.log(`Edge Color: RGB(${edgeColorR}, ${edgeColorG}, ${edgeColorB})`);
+                    console.log('===========================');
+                }
+                
+                // Define custom shader material with vertex and fragment shaders
+                BABYLON.Effect.ShadersStore["technicalPenVertexShader"] = `
+                    precision highp float;
+                    
+                    // Attributes
+                    attribute vec3 position;
+                    attribute vec3 normal;
+                    
+                    // Uniforms
+                    uniform mat4 worldViewProjection;
+                    uniform mat4 world;
+                    uniform mat4 view;
+                    
+                    // Varying
+                    varying vec3 vNormal;
+                    varying vec3 vViewNormal;
+                    varying vec3 vPosition;
+                    
+                    void main(void) {
+                        gl_Position = worldViewProjection * vec4(position, 1.0);
+                        
+                        // Transform normal to world space
+                        vNormal = normalize(mat3(world) * normal);
+                        
+                        // Transform normal to view space for edge detection
+                        vViewNormal = normalize(mat3(view * world) * normal);
+                        
+                        // Pass world position
+                        vPosition = (world * vec4(position, 1.0)).xyz;
+                    }
+                `;
+                
+                BABYLON.Effect.ShadersStore["technicalPenFragmentShader"] = `
+                    precision highp float;
+                    
+                    // Varying
+                    varying vec3 vNormal;
+                    varying vec3 vViewNormal;
+                    varying vec3 vPosition;
+                    
+                    // Uniforms
+                    uniform vec3 cameraPosition;
+                    uniform float edgeThreshold;
+                    uniform float fresnelEdgeMin;
+                    uniform float fresnelEdgeMax;
+                    uniform float surfaceBrightness;
+                    uniform vec3 edgeColor;
+                    
+                    void main(void) {
+                        // Edge detection based on view-space normal
+                        float edgeFactor = abs(vViewNormal.z);               // <-- Detect edges perpendicular to view
+                        
+                        // Create sharp edge threshold for technical pen look
+                        float edgeWidth = smoothstep(edgeThreshold - 0.05, edgeThreshold + 0.05, edgeFactor);
+                        
+                        // Additional edge detection using fresnel effect
+                        vec3 viewDirection = normalize(cameraPosition - vPosition);
+                        float fresnel = dot(vNormal, viewDirection);
+                        float fresnelEdge = smoothstep(fresnelEdgeMin, fresnelEdgeMax, 1.0 - abs(fresnel));
+                        
+                        // Combine edge factors
+                        float finalEdge = max(1.0 - edgeWidth, fresnelEdge);
+                        
+                        // Simple toon shading for surface
+                        float lightIntensity = dot(vNormal, normalize(vec3(0.5, 1.0, 0.3)));
+                        lightIntensity = smoothstep(0.0, 0.1, lightIntensity);
+                        
+                        // Color: white surface with black edges
+                        vec3 surfaceColor = vec3(surfaceBrightness + lightIntensity * 0.05);
+                        
+                        // Mix surface and edge colors
+                        vec3 finalColor = mix(edgeColor, surfaceColor, 1.0 - finalEdge);
+                        
+                        gl_FragColor = vec4(finalColor, 1.0);
+                    }
+                `;
+                
+                // Create shader material
+                const shaderMaterial = new BABYLON.ShaderMaterial(
+                    "technicalPenShader",                                    // <-- Material name
+                    scene,                                                   // <-- Parent scene
+                    {
+                        vertex: "technicalPen",                              // <-- Vertex shader name
+                        fragment: "technicalPen",                            // <-- Fragment shader name
+                    },
+                    {
+                        attributes: ["position", "normal"],                  // <-- Required vertex attributes
+                        uniforms: [
+                            "world", "worldView", "worldViewProjection", "view", "cameraPosition",
+                            "edgeThreshold", "fresnelEdgeMin", "fresnelEdgeMax", 
+                            "surfaceBrightness", "edgeColor"
+                        ],
+                    }
+                );
+                
+                // Set shader configuration uniforms
+                shaderMaterial.setFloat("edgeThreshold", edgeThreshold);     // <-- Set edge threshold
+                shaderMaterial.setFloat("fresnelEdgeMin", fresnelEdgeMin);   // <-- Set fresnel min
+                shaderMaterial.setFloat("fresnelEdgeMax", fresnelEdgeMax);   // <-- Set fresnel max
+                shaderMaterial.setFloat("surfaceBrightness", surfaceBrightness);  // <-- Set surface brightness
+                shaderMaterial.setVector3("edgeColor", new BABYLON.Vector3(edgeColorR, edgeColorG, edgeColorB));
+                
+                // Set shader to update automatically
+                shaderMaterial.backFaceCulling = true;                       // <-- Cull back faces
+                
+                return shaderMaterial;                                       // <-- Return configured shader
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Keyboard Controls and Shortcuts
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Setup Keyboard Shortcuts
+            // ------------------------------------------------------------
+            function setupKeyboardControls(scene) {
+                // Add keyboard event listener for shortcuts
+                window.addEventListener('keydown', function(event) {
+                    // Only process if not typing in an input field
+                    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                        return;                                              // <-- Ignore when typing
+                    }
+                    
+                    // Toggle axis helper with 'H' or 'X' key
+                    const key = event.key.toLowerCase();                      // <-- Get lowercase key
+                    if ((key === 'h' || key === 'x') && scene && scene.toggleAxisHelper) {
+                        scene.toggleAxisHelper();                            // <-- Toggle axis helper visibility
+                        event.preventDefault();                                // <-- Prevent default browser behavior
+                    }
+                });
+                
+                // Log keyboard controls if dev mode enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true) {
+                    console.log('=== Keyboard Controls ===');
+                    console.log('H or X = Toggle Axis Helper');
+                    console.log('WASD = Move | Q = Down | E = Up | Mouse = Look');
+                    console.log('========================');
+                }
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Model Loading and Material Application
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Load GLB Model and Apply Technical Pen Shader
+            // ------------------------------------------------------------
+            function loadModelWithShader(scene, setIsLoading, setLoadError) {
+                // Get model URL from configuration
+                const modelUrl = getConfigValue(modelConfig, 'model_DefaultURL', 
+                    "https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__3.0.0__.glb"
+                );
+                
+                // Log model loading if dev mode enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true) {
+                    console.log('=== Model Loading ===');
+                    console.log(`URL: ${modelUrl}`);
+                    console.log(`Auto Center: ${getConfigValue(modelConfig, 'model_AutoCenter', true)}`);
+                    console.log(`Auto Frame: ${getConfigValue(modelConfig, 'model_AutoFrameCamera', true)}`);
+                    console.log('====================');
+                }
+                
+                // Create technical pen shader material
+                const technicalPenMaterial = createTechnicalPenShader(scene);  // <-- Create custom shader
+                
+                // Load the GLB model
+                BABYLON.SceneLoader.ImportMesh(
+                    "",                                                      // <-- Load all meshes
+                    "",                                                      // <-- Base URL (empty, using full URL)
+                    modelUrl,                                                // <-- Full model URL
+                    scene,                                                   // <-- Target scene
+                    function(meshes) {                                       // <-- Success callback
+                        handleModelLoadSuccess(meshes, technicalPenMaterial, scene, setIsLoading);
+                    },
+                    null,                                                    // <-- Progress callback
+                    function(scene, message, exception) {                   // <-- Error callback
+                        handleModelLoadError(message, exception, setIsLoading, setLoadError);
+                    }
+                );
+            }
+            // ---------------------------------------------------------------
+            
+            // SUB FUNCTION | Handle Successful Model Load
+            // ---------------------------------------------------------------
+            function handleModelLoadSuccess(meshes, material, scene, setIsLoading) {
+                console.log(`Loaded ${meshes.length} meshes`);              // <-- Log mesh count
+                
+                // Apply shader to all meshes
+                meshes.forEach(mesh => {
+                    if (mesh.material || mesh.subMeshes) {                   // <-- Only process renderable meshes
+                        mesh.material = material;                            // <-- Apply technical pen shader
+                    }
+                });
+                
+                // Calculate bounding box for all meshes
+                const bounds = calculateSceneBounds(meshes);                 // <-- Get model bounds
+                
+                // Log model bounds if dev mode enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true) {
+                    console.log('=== Model Bounds ===');
+                    console.log(`Center: ${bounds.center.toString()}`);
+                    console.log(`Size: ${bounds.size.toString()}`);
+                    console.log(`Max Dimension: ${bounds.maxDimension.toFixed(2)}`);
+                    console.log('===================');
+                }
+                
+                // Center model at origin if configured
+                const shouldCenter = getConfigValue(modelConfig, 'model_AutoCenter', true);
+                if (shouldCenter === true) {
+                    const center = bounds.center;                            // <-- Get center point
+                    meshes.forEach(mesh => {
+                        mesh.position.subtractInPlace(center);               // <-- Move to origin
+                    });
+                    
+                    if (appConfig?.devMode_Enabled === true) {
+                        console.log('Model centered at origin');
+                    }
+                }
+                
+                // Position camera based on model size if configured
+                const shouldFrameCamera = getConfigValue(modelConfig, 'model_AutoFrameCamera', true);
+                if (shouldFrameCamera === true) {
+                    adjustCameraToModel(scene, bounds);                      // <-- Position camera appropriately
+                }
+                
+                if (setIsLoading) {
+                    setIsLoading(false);                                     // <-- Hide loading indicator
+                }
+            }
+            // ---------------------------------------------------------------
+            
+            // SUB FUNCTION | Handle Model Load Error
+            // ---------------------------------------------------------------
+            function handleModelLoadError(message, exception, setIsLoading, setLoadError) {
+                console.error('Model load error:', message, exception);      // <-- Log error details
+                if (setLoadError) {
+                    setLoadError(message || 'Failed to load model');         // <-- Set error state
+                }
+                if (setIsLoading) {
+                    setIsLoading(false);                                     // <-- Hide loading indicator
+                }
+            }
+            // ---------------------------------------------------------------
+            
+            // HELPER FUNCTION | Calculate Scene Bounding Box
+            // ---------------------------------------------------------------
+            function calculateSceneBounds(meshes) {
+                let min = new BABYLON.Vector3(Infinity, Infinity, Infinity);
+                let max = new BABYLON.Vector3(-Infinity, -Infinity, -Infinity);
+                
+                meshes.forEach(mesh => {
+                    if (mesh.getBoundingInfo) {
+                        const boundingBox = mesh.getBoundingInfo().boundingBox;
+                        min = BABYLON.Vector3.Minimize(min, boundingBox.minimumWorld);
+                        max = BABYLON.Vector3.Maximize(max, boundingBox.maximumWorld);
+                    }
+                });
+                
+                const center = BABYLON.Vector3.Center(min, max);             // <-- Calculate center
+                const size = max.subtract(min);                              // <-- Calculate size
+                const maxDimension = Math.max(size.x, size.y, size.z);      // <-- Get largest dimension
+                
+                return { min, max, center, size, maxDimension };            // <-- Return bounds info
+            }
+            // ---------------------------------------------------------------
+            
+            // HELPER FUNCTION | Adjust Camera Position to Frame Model
+            // ---------------------------------------------------------------
+            function adjustCameraToModel(scene, bounds) {
+                const camera = scene.activeCamera;                           // <-- Get active camera
+                if (!camera) return;                                         // <-- Exit if no camera
+                
+                // Get distance multiplier from configuration
+                const distanceMultiplier = getConfigValue(modelConfig, 'model_CameraDistanceMultiplier', 2.0);
+                const distance = bounds.maxDimension * distanceMultiplier;   // <-- Calculate appropriate distance
+                
+                camera.position = new BABYLON.Vector3(
+                    distance * 0.5,                                          // <-- Position to side
+                    distance * 0.5,                                          // <-- Position above
+                    -distance                                                // <-- Position back
+                );
+                
+                camera.setTarget(BABYLON.Vector3.Zero());                    // <-- Look at model center
+                
+                // Log camera position if dev mode enabled
+                if (appConfig?.devMode_Enabled === true && appConfig?.devMode_ShowDebugInfo === true) {
+                    console.log('=== Camera Positioned ===');
+                    console.log(`Position: ${camera.position.toString()}`);
+                    console.log(`Distance: ${distance.toFixed(2)} units`);
+                    console.log(`Multiplier: ${distanceMultiplier}x`);
+                    console.log('========================');
+                }
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Rendering Pipeline
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Setup Render Loop
+            // ------------------------------------------------------------
+            function setupRenderLoop(engine, scene) {
+                engine.runRenderLoop(() => {
+                    scene.render();                                          // <-- Render scene each frame
+                });
+            }
+            // ---------------------------------------------------------------
+            
+            // FUNCTION | Setup Window Resize Handler
+            // ------------------------------------------------------------
+            function setupWindowResize(engine) {
+                window.addEventListener('resize', () => {
+                    engine.resize();                                         // <-- Resize engine on window resize
+                });
+            }
+            // ---------------------------------------------------------------
+            
+            // FUNCTION | Cleanup Babylon Resources
+            // ------------------------------------------------------------
+            function cleanupBabylonResources() {
+                if (sceneRef.current) {
+                    sceneRef.current.dispose();                              // <-- Dispose scene
+                    sceneRef.current = null;                                 // <-- Clear reference
+                }
+                
+                if (engineRef.current) {
+                    engineRef.current.dispose();                             // <-- Dispose engine
+                    engineRef.current = null;                                // <-- Clear reference
+                }
+            }
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | React Application Bootstrap
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Initialize React Application
+            // ------------------------------------------------------------
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<WhitecardViewer />);                                // <-- Render main component
+            // ---------------------------------------------------------------
+            
+        // endregion -------------------------------------------------------------------
+        
+    </script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+</body>
+</html>

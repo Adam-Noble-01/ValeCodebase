@@ -1,0 +1,165 @@
+/* ================================================================= */
+/* REGION  |  UI Components - Loading & Debug Overlays              */
+/* ================================================================= */
+
+/* Loading Indicator - Centered Overlay */
+/* ----------------------------------------------------------------- */
+.loading-indicator {
+    position                           : absolute;
+    top                                : 50%;
+    left                               : 50%;
+    transform                          : translate(-50%, -50%);
+    font-size                          : 1.2rem;
+    font-weight                        : 400;
+    color                              : #172b3a;
+    text-align                         : center;
+}
+
+
+/* Debug Info Overlay - Top Left Panel */
+/* ----------------------------------------------------------------- */
+.debug-info {
+    position                           : absolute;
+    top                                : 10px;
+    left                               : 10px;
+    background-color                   : rgba(0, 0, 0, 0.7);
+    color                              : #00ff00;
+    padding                            : 10px;
+    font-family                        : 'Open Sans', 'Courier New', monospace;
+    font-size                          : 0.85rem;
+    font-weight                        : 400;
+    border-radius                      : 4px;
+    z-index                            : 1000;
+    max-width                          : 350px;
+}
+
+
+/* Debug Info - Header Styles */
+/* ----------------------------------------------------------------- */
+.debug-info h4 {
+    margin                             : 0 0 8px 0;
+    color                              : #ffffff;
+    font-size                          : 0.95rem;
+    font-weight                        : 600;
+}
+
+
+/* Debug Info - Paragraph Styles */
+/* ----------------------------------------------------------------- */
+.debug-info p {
+    margin                             : 4px 0;
+    line-height                        : 1.4;
+}
+
+
+/* Debug Info - Strong/Bold Elements */
+/* ----------------------------------------------------------------- */
+.debug-info p strong {
+    font-weight                        : 600;
+}
+
+
+/* Camera Position Overlay - Top Right Panel */
+/* ----------------------------------------------------------------- */
+.camera-position-overlay {
+    position                           : absolute;
+    top                                : 20px;
+    right                              : 20px;
+    background-color                   : rgba(0, 0, 0, 0.7);
+    color                              : #ffffff;
+    padding                            : 12px 16px;
+    font-size                          : 0.85rem;
+    font-weight                        : 400;
+    border-radius                      : 4px;
+    z-index                            : 1001;
+    pointer-events                     : none;
+    box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter                    : blur(4px);
+    min-width                          : 180px;
+}
+
+
+/* Camera Overlay - Content Container */
+/* ----------------------------------------------------------------- */
+.camera-overlay-content {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 8px;
+}
+
+
+/* Camera Overlay - Title */
+/* ----------------------------------------------------------------- */
+.camera-overlay-title {
+    font-weight                        : 600;
+    font-size                          : 0.95rem;
+    margin                             : 0 0 4px 0;
+    color                              : #ffffff;
+    border-bottom                      : 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom                     : 6px;
+}
+
+
+/* Camera Overlay - Data Container */
+/* ----------------------------------------------------------------- */
+.camera-overlay-data {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 4px;
+}
+
+
+/* Camera Overlay - Data Row */
+/* ----------------------------------------------------------------- */
+.camera-overlay-row {
+    display                            : flex;
+    justify-content                    : space-between;
+    align-items                        : center;
+    gap                                : 12px;
+}
+
+
+/* Camera Overlay - Label */
+/* ----------------------------------------------------------------- */
+.camera-overlay-label {
+    color                              : rgba(255, 255, 255, 0.7);
+    font-weight                        : 400;
+    min-width                          : 20px;
+}
+
+
+/* Camera Overlay - Value */
+/* ----------------------------------------------------------------- */
+.camera-overlay-value {
+    color                              : #ffffff;
+    font-weight                        : 600;
+    font-family                        : 'Courier New', monospace;
+    text-align                         : right;
+    min-width                          : 80px;
+}
+
+
+/* Camera Overlay - Section Container */
+/* ----------------------------------------------------------------- */
+.camera-overlay-section {
+    margin-top                         : 8px;
+}
+
+.camera-overlay-section:first-child {
+    margin-top                         : 0;
+}
+
+
+/* Camera Overlay - Section Title */
+/* ----------------------------------------------------------------- */
+.camera-overlay-section-title {
+    font-weight                        : 600;
+    font-size                          : 0.8rem;
+    margin                             : 0 0 4px 0;
+    color                              : rgba(255, 255, 255, 0.85);
+    border-bottom                      : 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom                     : 4px;
+}
+
+/* endregion -------------------------------------------------------- */
+

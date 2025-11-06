@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babylon.js Test Environment - ValeVision3D</title>
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  External CDN Library Imports                           -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Babylon.js Core and Loaders -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  ValeVision3D Stylesheet Imports                        -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Main Stylesheet Index (imports all component stylesheets) -->
+    <link rel="stylesheet" href="src__Styles/index.css">
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Navigation Module Import                               -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script src="src__Navigation/Navigation__UniversalCamera.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Camera Position Overlay Import                         -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script src="src__CameraUtils/CameraUtil__CameraPositionOverlay.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Font Loading Detection Script                          -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script>
+        // FUNCTION | DetectFontLoading - Monitors Open Sans font loading
+        // --------------------------------------------------------
+        (function detectFontLoading() {
+            if ('fonts' in document) {
+                // Modern Font Loading API
+                // ------------------------------------
+                Promise.all([
+                    document.fonts.load('400 1em "Open Sans"'),
+                    document.fonts.load('600 1em "Open Sans"'),
+                    document.fonts.load('300 1em "Open Sans"')
+                ]).then(function() {
+                    console.log('=== Custom Fonts Loaded ===');
+                    console.log('Open Sans Regular (400) - Loaded');
+                    console.log('Open Sans SemiBold (600) - Loaded');
+                    console.log('Open Sans Light (300) - Loaded');
+                    console.log('===========================');
+                }).catch(function(error) {
+                    console.warn('Font loading failed, using fallback fonts:', error);
+                });
+                
+                // Monitor overall font loading state
+                // ------------------------------------
+                document.fonts.ready.then(function() {
+                    console.log('All fonts ready for use');
+                });
+                
+            } else {
+                // Fallback for browsers without Font Loading API
+                // ------------------------------------
+                console.log('Font Loading API not supported, fonts will load naturally');
+            }
+        })();
+        // --------------------------------------------------------
+    </script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+</head>
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Application Root Container                             -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <div id="root">
+        <canvas id="renderCanvas"></canvas>
+        
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loadingIndicator">
+            Loading Scene...
+        </div>
+        
+        <!-- Debug Info Overlay -->
+        <div class="debug-info" id="debugInfo">
+            <h4>🔧 Debug Info</h4>
+            <p><strong>App:</strong> Babylon.js Test Environment</p>
+            <p><strong>Controls:</strong> WASD = Move | Q = Down | E = Up | Mouse = Look</p>
+            <p><strong>Status:</strong> <span id="statusText">Initializing...</span></p>
+            <p style="font-size: 0.75rem; margin-top: 8px; opacity: 0.7">
+                Check console for detailed logs
+            </p>
+        </div>
+    </div>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Babylon.js Application Logic                           -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <script>
+        // #Region ------------------------------------------------
+        // BABYLON.JS SETUP | Initialize engine, scene, camera, and lighting
+        // --------------------------------------------------------
+        
+        const canvas = document.getElementById('renderCanvas');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const statusText = document.getElementById('statusText');
+        
+        // Create Babylon engine with antialiasing
+        // ------------------------------------
+        const engine = new BABYLON.Engine(canvas, true, {
+            preserveDrawingBuffer: true,
+            stencil: true
+        });
+
+
+        // FUNCTION | CreateScene - Sets up the basic 3D scene
+        // --------------------------------------------------------
+        function createScene() {
+            // Update status
+            // ------------------------------------
+            if (statusText) statusText.textContent = 'Creating scene...';
+            
+            
+            // Create scene
+            // ------------------------------------
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(1.0, 1.0, 1.0);  // <-- White background matching ValeVision3D
+
+
+            // Setup UniversalCamera navigation
+            // ------------------------------------
+            if (statusText) statusText.textContent = 'Setting up camera...';
+            setupUniversalCamera(scene, canvas);
+
+
+            // Create lighting
+            // ------------------------------------
+            if (statusText) statusText.textContent = 'Configuring lighting...';
+            
+            const hemisphericLight = new BABYLON.HemisphericLight(
+                'hemisphericLight',
+                new BABYLON.Vector3(0, 1, 0),
+                scene
+            );
+            hemisphericLight.intensity = 0.7;
+
+            const directionalLight = new BABYLON.DirectionalLight(
+                'directionalLight',
+                new BABYLON.Vector3(-1, -2, -1),
+                scene
+            );
+            directionalLight.intensity = 0.5;
+
+
+            // Scene ready - hide loading indicator
+            // ------------------------------------
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+            if (statusText) statusText.textContent = 'Ready';
+
+            console.log('=========================================');
+            console.log('=== Babylon.js Test Environment Ready ===');
+            console.log('Scene initialized successfully');
+            console.log('=========================================');
+
+
+            return scene;
+        }
+        // --------------------------------------------------------
+
+
+        // Initialize scene
+        // ------------------------------------
+        createScene();
+
+
+        // Render loop
+        // ------------------------------------
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+
+        // Handle window resize
+        // ------------------------------------
+        window.addEventListener('resize', () => {
+            engine.resize();                                     // <-- Resize engine (handles device pixel ratio automatically)
+        });
+
+        // #endregion ---------------------------------------------
+    </script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Model Loader Import                                    -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Load GLB Model -->
+    <script src="src__ModelLoaders/ModelLoader__LoadGlbFromCdn.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Material Color Changer Import                          -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Change material colors after model loads -->
+    <script src="TargetElement__ChangeMaterialColors.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    
+</body>
+</html>
+
+
+
+

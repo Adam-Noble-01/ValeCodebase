@@ -21,15 +21,15 @@ const NAV_INERTIA                  = 0.5;                                       
 
 // Physics and Collision Settings
 // ------------------------------------
-const NAV_ENABLE_COLLISION         = true;                                       // <-- Enable collision detection
+const NAV_ENABLE_COLLISION         = false;                                       // <-- Enable collision detection
 const NAV_COLLISION_ELLIPSOID      = new BABYLON.Vector3(1.5, 0.7, 1.5);         // <-- Collision bubble size (X=width, Y=height, Z=depth) - Default: (0.5, 1, 0.5)
 const NAV_ENABLE_GRAVITY           = false;                                      // <-- Enable gravity
 
 
 // Initial Camera Transform
 // ------------------------------------
-const NAV_INITIAL_POSITION         = new BABYLON.Vector3(37.25, 2.09, -2.39);    // <-- Initial camera position
-const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0045, -0.7470, 0);    // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
+const NAV_INITIAL_POSITION         = new BABYLON.Vector3(15.00, 2.00, -6.16);    // <-- Initial camera position
+const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0253, -0.0183, 0);    // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
 const NAV_INITIAL_TARGET           = new BABYLON.Vector3(0, 0, 0);               // <-- Initial camera target
 
 // #endregion ---------------------------------------------

@@ -46,6 +46,24 @@
     
     
     <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Lighting Module Import                                 -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script src="src__Lighting/Lighting__SceneSetup.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Post-Processing Module Import                          -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script src="src__PostProcessing/PostProcessing__GreyscaleFilter.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Font Loading Detection Script                          -->
     <!-- ----------------------------------------------------------------- -->
     
@@ -154,26 +172,19 @@
             // Setup UniversalCamera navigation
             // ------------------------------------
             if (statusText) statusText.textContent = 'Setting up camera...';
-            setupUniversalCamera(scene, canvas);
+            const camera = setupUniversalCamera(scene, canvas);
 
 
-            // Create lighting
+            // Setup scene lighting
             // ------------------------------------
             if (statusText) statusText.textContent = 'Configuring lighting...';
-            
-            const hemisphericLight = new BABYLON.HemisphericLight(
-                'hemisphericLight',
-                new BABYLON.Vector3(0, 1, 0),
-                scene
-            );
-            hemisphericLight.intensity = 0.7;
+            setupSceneLighting(scene);
 
-            const directionalLight = new BABYLON.DirectionalLight(
-                'directionalLight',
-                new BABYLON.Vector3(-1, -2, -1),
-                scene
-            );
-            directionalLight.intensity = 0.5;
+
+            // Setup post-processing effects
+            // ------------------------------------
+            if (statusText) statusText.textContent = 'Applying post-processing...';
+            setupGreyscaleFilter(camera, engine);
 
 
             // Scene ready - hide loading indicator
@@ -233,12 +244,22 @@
     <!-- ----------------------------------------------------------------- -->
     
     <!-- Change material colors after model loads -->
-    <script src="TargetElement__ChangeMaterialColors.js"></script>
+    <script src="src__MaterialsHandling/TargetElement__ChangeMaterialColors.js"></script>
     
     <!-- endregion -------------------------------------------------------- -->
     
     
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Rear Face Material Modifier Import                     -->
+    <!-- ----------------------------------------------------------------- -->
     
+    <!-- Disable back face culling and apply white material to all meshes -->
+    <script src="src__ModifyModelFaces/ModifyRearFaceMaterial.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+
 </body>
 </html>
 

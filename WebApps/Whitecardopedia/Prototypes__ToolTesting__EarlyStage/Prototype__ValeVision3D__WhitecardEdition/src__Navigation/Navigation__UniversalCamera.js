@@ -6,15 +6,32 @@
 // #Region ------------------------------------------------
 // CONFIGURATION | Navigation settings and constants
 // --------------------------------------------------------
+
+// Movement Speed Settings
+// ------------------------------------
 const NAV_SPEED_MPH                = 2.0;                                        // <-- Movement speed in miles per hour
 const NAV_SPEED_MULTIPLIER         = 3.0;                                        // <-- Speed multiplier when Shift is held
+
+
+// Camera Control Settings
+// ------------------------------------
 const NAV_ANGULAR_SENSITIVITY      = 1000;                                       // <-- Mouse rotation sensitivity (higher = less sensitive)
 const NAV_INERTIA                  = 0.5;                                        // <-- Movement smoothing (0 = no smoothing, 1 = maximum smoothing)
-const NAV_ENABLE_COLLISION         = false;                                      // <-- Enable collision detection
+
+
+// Physics and Collision Settings
+// ------------------------------------
+const NAV_ENABLE_COLLISION         = true;                                       // <-- Enable collision detection
+const NAV_COLLISION_ELLIPSOID      = new BABYLON.Vector3(1.5, 0.7, 1.5);         // <-- Collision bubble size (X=width, Y=height, Z=depth) - Default: (0.5, 1, 0.5)
 const NAV_ENABLE_GRAVITY           = false;                                      // <-- Enable gravity
+
+
+// Initial Camera Transform
+// ------------------------------------
 const NAV_INITIAL_POSITION         = new BABYLON.Vector3(37.25, 2.09, -2.39);    // <-- Initial camera position
 const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0045, -0.7470, 0);    // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
 const NAV_INITIAL_TARGET           = new BABYLON.Vector3(0, 0, 0);               // <-- Initial camera target
+
 // #endregion ---------------------------------------------
 
 
@@ -105,6 +122,7 @@ function setupUniversalCamera(scene, canvas) {
     // Configure collision and gravity
     // ------------------------------------
     camera.checkCollisions = NAV_ENABLE_COLLISION;                // <-- Enable/disable collision detection
+    camera.ellipsoid = NAV_COLLISION_ELLIPSOID;                   // <-- Set collision bubble size
     camera.applyGravity = NAV_ENABLE_GRAVITY;                    // <-- Enable/disable gravity
 
 
@@ -157,20 +175,6 @@ function setupUniversalCamera(scene, canvas) {
     window.addEventListener('keyup', handleKeyUp);
 
 
-    // --------------------------------------------------------
-    // LOGGING | Camera configuration debug output
-    // --------------------------------------------------------
-    console.log('=== UniversalCamera Navigation Setup ===');
-    console.log(`Initial Position: (${NAV_INITIAL_POSITION.x.toFixed(2)}, ${NAV_INITIAL_POSITION.y.toFixed(2)}, ${NAV_INITIAL_POSITION.z.toFixed(2)})`);
-    console.log(`Initial Rotation: (${NAV_INITIAL_ROTATION.x.toFixed(4)}, ${NAV_INITIAL_ROTATION.y.toFixed(4)}, ${NAV_INITIAL_ROTATION.z.toFixed(4)}) radians`);
-    console.log(`Current Rotation: (${camera.rotation.x.toFixed(4)}, ${camera.rotation.y.toFixed(4)}, ${camera.rotation.z.toFixed(4)}) radians`);
-    console.log(`Speed: ${NAV_SPEED_MPH} MPH (${camera.speed.toFixed(3)} units/sec)`);
-    console.log(`Angular Sensitivity: ${camera.angularSensibility}`);
-    console.log(`Inertia: ${camera.inertia}`);
-    console.log(`Collision: ${camera.checkCollisions}`);
-    console.log(`Gravity: ${camera.applyGravity}`);
-    console.log(`Controls: WASD = Move | Q = Down | E = Up | Mouse = Look | Shift = Speed Boost (${NAV_SPEED_MULTIPLIER}x)`);
-    console.log('========================================');
 
 
     return camera;                                              // <-- Return camera reference

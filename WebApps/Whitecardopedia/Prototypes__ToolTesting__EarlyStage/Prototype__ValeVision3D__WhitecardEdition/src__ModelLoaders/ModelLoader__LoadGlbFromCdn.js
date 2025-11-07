@@ -6,7 +6,8 @@
 // #Region ------------------------------------------------
 // MODEL LOADER | Load GLB model from CDN
 // --------------------------------------------------------
-const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__4.5.0__.glb';
+// const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__4.5.0__.glb';
+const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__BallJob__1.4.1__.glb';
 let loadedMeshes = [];
 let loadedModelRoot = null;
 
@@ -15,6 +16,12 @@ let loadedModelRoot = null;
 // --------------------------------------------------------
 async function loadGLBModel() {
     try {
+        // Store environment state before loading (to detect automatic creation)    
+        // ------------------------------------
+        const environmentBeforeLoad = scene.environmentTexture;
+        const environmentIntensityBeforeLoad = scene.environmentIntensity;
+
+
         // Load all meshes from the GLB file
         // ------------------------------------
         const result = await BABYLON.SceneLoader.ImportMeshAsync(
@@ -23,6 +30,26 @@ async function loadGLBModel() {
             glbModelUrl,           // Full URL to GLB file
             scene                  // Target scene
         );
+
+
+        // Check if GLB loader created automatic environment lighting
+        // ------------------------------------
+        const environmentAfterLoad = scene.environmentTexture;
+        if (environmentAfterLoad !== environmentBeforeLoad) {
+            console.warn('=== GLB Loader Created Automatic Environment Lighting ===');
+            console.warn('Automatic environment lighting detected after model load');
+            console.warn('This may conflict with manual lighting setup');
+            
+            // Disable automatic environment if configured
+            // ------------------------------------
+            if (typeof LIGHT_DISABLE_AUTO_ENVIRONMENT !== 'undefined' && LIGHT_DISABLE_AUTO_ENVIRONMENT === true) {
+                console.log('Removing automatic environment lighting...');
+                scene.environmentTexture = environmentBeforeLoad;
+                scene.environmentIntensity = environmentIntensityBeforeLoad || 1.0;
+                console.log('Automatic environment lighting removed');
+            }
+            console.warn('===========================================================');
+        }
 
 
         // Store loaded meshes and root node
@@ -53,6 +80,30 @@ async function loadGLBModel() {
         // Log success
         // ------------------------------------
         console.log('GLB model loaded successfully:', loadedMeshes.length, 'meshes');
+
+
+        // Enable collision detection on loaded meshes (front and back faces)
+        // ------------------------------------
+        loadedMeshes.forEach(mesh => {
+            if (mesh) {
+                mesh.checkCollisions = true;                          // <-- Enable collision detection
+                
+                // Enable two-sided collision by ensuring geometry considers both faces
+                // ------------------------------------
+                if (mesh.geometry) {
+                    // Force mesh to use double-sided collision
+                    mesh.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
+                }
+            }
+        });
+        console.log('Collision detection enabled (two-sided) on', loadedMeshes.length, 'meshes');
+
+
+        // Check lighting state after model load
+        // ------------------------------------
+        if (typeof checkLightingAfterModelLoad === 'function') {
+            checkLightingAfterModelLoad(scene);
+        }
 
 
         // Change material colors after model loads

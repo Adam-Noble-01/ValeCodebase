@@ -1,0 +1,39 @@
+{
+    "projectName": "Plumbly-Clegg",
+    "projectCode": "61922",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Easy project due to only a limited area that needed modelling."
+    },
+    "scheduleData": {
+        "dateReceived": "07-Nov-2025",
+        "dateFulfilled": "07-Nov-2025",
+        "timeAllocated": 3,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__MainShot__Closer__WhitecardImage__07-Nov-2025.png",
+        "IMG02__3dView__MainShot__Further__WhitecardImage__07-Nov-2025.png",
+        "IMG03__3dView__MainShot__EvenFurtherAway__WhitecardImage__07-Nov-2025.png",
+        "IMG04__3dView__FrontViewOfDoors__WhitecardImage__07-Nov-2025.png"
+    ],
+    "folderId": "PC-61922__PlumblyClegg",
+    "basePath": "Projects/2025/PC-61922__PlumblyClegg",
+    "displayImages": [
+        "IMG01__3dView__MainShot__Closer__WhitecardImage__07-Nov-2025.png",
+        "IMG02__3dView__MainShot__Further__WhitecardImage__07-Nov-2025.png",
+        "IMG03__3dView__MainShot__EvenFurtherAway__WhitecardImage__07-Nov-2025.png",
+        "IMG04__3dView__FrontViewOfDoors__WhitecardImage__07-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__Closer__WhitecardImage__07-Nov-2025.png",
+        "IMG02__3dView__MainShot__Further__WhitecardImage__07-Nov-2025.png",
+        "IMG03__3dView__MainShot__EvenFurtherAway__WhitecardImage__07-Nov-2025.png",
+        "IMG04__3dView__FrontViewOfDoors__WhitecardImage__07-Nov-2025.png"
+    ]
+}

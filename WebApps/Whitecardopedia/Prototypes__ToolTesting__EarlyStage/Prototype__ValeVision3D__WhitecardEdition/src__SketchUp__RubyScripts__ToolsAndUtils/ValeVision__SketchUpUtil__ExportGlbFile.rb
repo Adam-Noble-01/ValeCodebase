@@ -519,6 +519,11 @@ module GLBBuilderUtility
                                     if entity.respond_to?(:material) && entity.material
                                         material = entity.material
                                         edge_color = material.color if material.respond_to?(:color)
+                                        
+                                        # Check if material color is white (default/unset) and force to nil
+                                        if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                            edge_color = nil  # Force to nil so it falls through to other checks
+                                        end
                                     end
                                 rescue => material_error
                                     # Ignore material errors
@@ -528,6 +533,14 @@ module GLBBuilderUtility
                                     begin
                                         # SECOND: Check edge color property
                                         edge_color = entity.color if entity.respond_to?(:color)
+                                        
+                                        # Check if SketchUp returned a default/unset color (white) and force to black
+                                        if edge_color && !edge_color.nil?
+                                            # Check if it's white (255,255,255) which SketchUp uses as default
+                                            if edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                                edge_color = nil  # Force to nil so it falls through to black default
+                                            end
+                                        end
                                     rescue => color_error
                                         # Ignore color errors
                                     end
@@ -538,6 +551,11 @@ module GLBBuilderUtility
                                         # THIRD: Fall back to layer color
                                         layer = entity.layer
                                         edge_color = layer.color if layer && layer.respond_to?(:color)
+                                        
+                                        # Check if layer color is white (default/unset) and force to nil
+                                        if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                            edge_color = nil  # Force to nil so it falls through to black default
+                                        end
                                     rescue => layer_error
                                         # Ignore layer color errors
                                     end
@@ -546,6 +564,12 @@ module GLBBuilderUtility
                                 # FOURTH: Default to black if no color found
                                 if edge_color.nil?
                                     edge_color = Sketchup::Color.new(0, 0, 0)            # Black default
+                                end
+                                
+                                # FINAL CHECK: Force white/default colors to black for Babylon.js
+                                # Check if color is white (255,255,255) which indicates default/unset color
+                                if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                    edge_color = Sketchup::Color.new(0, 0, 0)            # Force to black
                                 end
                                 
                                 # Create group key by layer
@@ -1424,14 +1448,34 @@ module GLBBuilderUtility
                 
                 # Get edge color (fallback to black if none)
                 edge_color = entity.color
+                
+                # Check if SketchUp returned a default/unset color (white) and force to black
+                if edge_color && !edge_color.nil?
+                    # Check if it's white (255,255,255) which SketchUp uses as default
+                    if edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                        edge_color = nil  # Force to nil so it falls through to black default
+                    end
+                end
+                
                 if edge_color.nil?
                     # Try to get layer color
                     edge_color = entity.layer.color rescue nil
+                    
+                    # Check if layer color is white (default/unset) and force to nil
+                    if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                        edge_color = nil  # Force to nil so it falls through to black default
+                    end
                 end
                 
                 # Default to black if no color found
                 if edge_color.nil?
                     edge_color = Sketchup::Color.new(0, 0, 0)                     # Black default
+                end
+                
+                # FINAL CHECK: Force white/default colors to black for Babylon.js
+                # Check if color is white (255,255,255) which indicates default/unset color
+                if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                    edge_color = Sketchup::Color.new(0, 0, 0)                     # Force to black
                 end
                 
                 # Convert color to normalized RGB (0.0-1.0)

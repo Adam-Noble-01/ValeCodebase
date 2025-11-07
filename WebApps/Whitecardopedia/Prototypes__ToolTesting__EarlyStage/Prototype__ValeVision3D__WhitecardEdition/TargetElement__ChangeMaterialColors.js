@@ -8,7 +8,7 @@ function TargetElement__ChangeMaterialColors(ValeVision__MainModel__ModelRoot) {
     // Define target material names and white color
     // ------------------------------------
     const targetMaterialNames = ["85__WhiteCard__Glass", "85__GroundPlane"];
-    const whiteColor = new BABYLON.Color3(0, 0, 0); // RGB 255,255,255
+    const whiteColor = new BABYLON.Color3(1, 1, 1); // RGB 255,255,255
     let changedCount = 0;
 
 

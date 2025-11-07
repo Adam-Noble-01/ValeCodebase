@@ -6,7 +6,7 @@
 // #Region ------------------------------------------------
 // MODEL LOADER | Load GLB model from CDN
 // --------------------------------------------------------
-const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__4.3.0__.glb';
+const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__4.5.0__.glb';
 let loadedMeshes = [];
 let loadedModelRoot = null;
 

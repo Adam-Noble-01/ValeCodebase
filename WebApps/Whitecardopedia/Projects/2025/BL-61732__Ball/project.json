@@ -1,0 +1,37 @@
+{
+    "projectName": "Ball",
+    "projectCode": "61732",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Dan",
+        "additionalNotes": "Extremely quick turnaround vs typical Whitecard pipeline due to having a model already produced from some preliminary  detailing work. James & Dan nailed it with this watercolour embellishment, its my favourite final piece to date."
+    },
+    "scheduleData": {
+        "dateReceived": "07-Oct-2025",
+        "dateFulfilled": "07-Nov-2025",
+        "timeAllocated": 4,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__Ball_MainView__Whitecard__.png",
+        "IMG01_ART20__Ball_MainView__Watercolour__.png",
+        "IMG02__Ball_TopDownView__Whitecard__.png",
+        "IMG02_ART20__Ball_TopDownView__Watercolour__.png"
+    ],
+    "folderId": "BL-61732__Ball",
+    "basePath": "Projects/2025/BL-61732__Ball",
+    "displayImages": [
+        "IMG01__Ball_MainView__Whitecard__.png",
+        "IMG02__Ball_TopDownView__Whitecard__.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Ball_MainView__Whitecard__.png",
+        "IMG01_ART20__Ball_MainView__Watercolour__.png",
+        "IMG02__Ball_TopDownView__Whitecard__.png",
+        "IMG02_ART20__Ball_TopDownView__Watercolour__.png"
+    ]
+}

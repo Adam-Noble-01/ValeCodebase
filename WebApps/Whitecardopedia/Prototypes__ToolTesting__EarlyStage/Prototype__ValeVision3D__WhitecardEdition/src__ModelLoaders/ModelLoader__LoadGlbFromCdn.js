@@ -8,6 +8,7 @@
 // --------------------------------------------------------
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__4.5.0__.glb';
 const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__BallJob__1.5.0__.glb';
+// const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/PlumblyClegg__WebLiveModel__.1.0.0__.glb';
 let loadedMeshes = [];
 let loadedModelRoot = null;
 

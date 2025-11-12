@@ -3,7 +3,8 @@
     "projectCode": "60009",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "A Standard Job, No Issues to report, rafter feet maybe added a tiny bit more time but not significant."
+        "additionalNotes": "A Standard Job, No Issues to report, rafter feet maybe added a tiny bit more time but not significant.",
+        "conceptArtist": "Anna"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -16,8 +17,26 @@
         "IMG05__3dView__TopDown-02__WhitecardImage__17-Sep-2025.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 3,
         "timeTaken": 3,
-        "dateFulfilled": "17-Sep-2025"
-    }
+        "dateFulfilled": "17-Sep-2025",
+        "dateReceived": "16-Sep-2025"
+    },
+    "folderId": "VB-60009__VanDenBorn",
+    "basePath": "Projects/2025/VB-60009__VanDenBorn",
+    "displayImages": [
+        "IMG01__3dView__FrontLeft__WhitecardImage__17-Sep-2025.png",
+        "IMG02__FrontElevation__WhitecardImage__17-Sep-2025.png",
+        "IMG03__LeftSideElevation__WhitecardImage__17-Sep-2025.png",
+        "IMG04__3dView__TopDown__WhitecardImage__17-Sep-2025.png",
+        "IMG05__3dView__TopDown-02__WhitecardImage__17-Sep-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__FrontLeft__WhitecardImage__17-Sep-2025.png",
+        "IMG02__FrontElevation__WhitecardImage__17-Sep-2025.png",
+        "IMG03__LeftSideElevation__WhitecardImage__17-Sep-2025.png",
+        "IMG04__3dView__TopDown__WhitecardImage__17-Sep-2025.png",
+        "IMG05__3dView__TopDown-02__WhitecardImage__17-Sep-2025.png"
+    ]
 }

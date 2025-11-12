@@ -3,7 +3,8 @@
     "projectCode": "61603",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "A Timelapse video was provided, No Issues to report, Rachael provided a good CAD File, this went smoothly."
+        "additionalNotes": "A Timelapse video was provided, No Issues to report, Rachael provided a good CAD File, this went smoothly.",
+        "conceptArtist": "Rachael"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -16,8 +17,26 @@
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 3,
         "timeTaken": 3,
-        "dateFulfilled": "19-Sep-2025"
-    }
+        "dateFulfilled": "19-Sep-2025",
+        "dateReceived": "17-Sep-2025"
+    },
+    "folderId": "MH-61603__Mottershead",
+    "basePath": "Projects/2025/MH-61603__Mottershead",
+    "displayImages": [
+        "IMG01__3dView__FrontLeft__WhitecardImage__10-Oct-2025.png",
+        "IMG02__3dView__TopDown__WhitecardImage__10-Oct-2025.png",
+        "IMG03__3dView__TopDown-02__WhitecardImage__10-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__10-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__FrontLeft__WhitecardImage__10-Oct-2025.png",
+        "IMG02__3dView__TopDown__WhitecardImage__10-Oct-2025.png",
+        "IMG03__3dView__TopDown-02__WhitecardImage__10-Oct-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__10-Oct-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
+    ]
 }

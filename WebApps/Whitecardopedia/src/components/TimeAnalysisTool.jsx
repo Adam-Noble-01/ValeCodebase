@@ -328,7 +328,7 @@
                 const end = parseDate(project.scheduleData?.dateFulfilled);        // <-- Parse end date
                 const diffTime = Math.abs(end - start);                             // <-- Calculate time difference
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));      // <-- Convert to days
-                return diffDays;                                                    // <-- Return number of days
+                return diffDays === 0 ? 1 : diffDays;                               // <-- Treat same-day deliveries as 1 day
             }
             // ---------------------------------------------------------------
 
@@ -353,6 +353,7 @@
                 renderBarChart();                                                   // <-- Render artist productivity bar chart
                 renderTimelineChart();                                              // <-- Render project timeline chart
                 renderStatisticsTable();                                            // <-- Render statistics table
+                renderEfficiencyLegend();                                           // <-- Render efficiency legend
                 renderEfficiencyChart();                                            // <-- Render efficiency comparison chart
                 populateArtistFilter();                                              // <-- Populate artist filter dropdown
             }
@@ -539,7 +540,8 @@
                     .attr('width', d => {
                         const start = parseDate(d.scheduleData?.dateReceived);
                         const end = parseDate(d.scheduleData?.dateFulfilled);
-                        return x(end) - x(start);
+                        const calculatedWidth = x(end) - x(start);
+                        return Math.max(calculatedWidth, 3);                        // <-- Minimum 3px width for same-day deliveries
                     })
                     .attr('height', y.bandwidth())
                     .attr('fill', d => colorScale(d.productionData?.conceptArtist))
@@ -597,12 +599,11 @@
                 thead.innerHTML = `
                     <tr>
                         <th>Artist</th>
-                        <th>Projects</th>
-                        <th>Avg Turnaround</th>
-                        <th>Hours Allocated</th>
-                        <th>Hours Taken</th>
-                        <th>Efficiency</th>
-                        <th>Active Period</th>
+                        <th class="number-cell">Projects</th>
+                        <th class="number-cell">Avg Turnaround</th>
+                        <th class="number-cell">Hours Allocated</th>
+                        <th class="number-cell">Hours Taken</th>
+                        <th class="number-cell">Efficiency</th>
                     </tr>
                 `;
                 table.appendChild(thead);
@@ -613,7 +614,6 @@
                 data.forEach(artist => {                                            // <-- Iterate through each artist
                     const avgTurnaround = calculateAverageTurnaround(artist);       // <-- Calculate average turnaround
                     const efficiency = calculateEfficiency(artist);                 // <-- Calculate efficiency percentage
-                    const activePeriod = `${formatDate(artist.earliestDate)} - ${formatDate(artist.latestDate)}`;
                     
                     const row = document.createElement('tr');                       // <-- Create table row
                     row.innerHTML = `
@@ -623,13 +623,55 @@
                         <td class="number-cell">${artist.totalTimeAllocated}h</td>
                         <td class="number-cell">${artist.totalTimeTaken}h</td>
                         <td class="number-cell">${efficiency}%</td>
-                        <td>${activePeriod}</td>
                     `;
                     tbody.appendChild(row);                                          // <-- Add row to table body
                 });
                 
                 table.appendChild(tbody);                                            // <-- Add body to table
                 container.appendChild(table);                                       // <-- Add table to container
+            }
+            // ---------------------------------------------------------------
+
+            // HELPER FUNCTION | Render Efficiency Legend in HTML Container
+            // ---------------------------------------------------------------
+            function renderEfficiencyLegend() {
+                const legendContainer = document.getElementById('efficiencyLegend');   // <-- Get legend container
+                if (!legendContainer) return;                                         // <-- Exit if container not found
+                
+                legendContainer.innerHTML = '';                                       // <-- Clear existing content
+                
+                // Create legend HTML structure
+                const legend = document.createElement('div');                          // <-- Create legend wrapper
+                legend.className = 'chart-legend-html';                              // <-- Apply CSS class
+                
+                // Allocated legend item
+                const allocatedItem = document.createElement('div');                   // <-- Create allocated item
+                allocatedItem.className = 'legend-item-html';
+                allocatedItem.innerHTML = `
+                    <span class="legend-rect-html allocated"></span>
+                    <span class="legend-text-html">Allocated</span>
+                `;
+                legend.appendChild(allocatedItem);
+                
+                // Actual (under) legend item
+                const underItem = document.createElement('div');                       // <-- Create under item
+                underItem.className = 'legend-item-html';
+                underItem.innerHTML = `
+                    <span class="legend-rect-html actual-under"></span>
+                    <span class="legend-text-html">Actual (Under)</span>
+                `;
+                legend.appendChild(underItem);
+                
+                // Actual (over) legend item
+                const overItem = document.createElement('div');                        // <-- Create over item
+                overItem.className = 'legend-item-html';
+                overItem.innerHTML = `
+                    <span class="legend-rect-html actual-over"></span>
+                    <span class="legend-text-html">Actual (Over)</span>
+                `;
+                legend.appendChild(overItem);
+                
+                legendContainer.appendChild(legend);                                  // <-- Add legend to container
             }
             // ---------------------------------------------------------------
 
@@ -657,7 +699,7 @@
                 const paddingRight = parseFloat(containerStyle.paddingRight) || 0;   // <-- Get right padding
                 const availableWidth = containerRect.width - paddingLeft - paddingRight; // <-- Calculate available width
                 
-                const margin = { top: 50, right: 180, bottom: 50, left: 120 };     // <-- Define chart margins (increased right for legend)
+                const margin = { top: 20, right: 30, bottom: 50, left: 120 };      // <-- Define chart margins (reduced top since legend is in HTML)
                 const width = Math.max(500, availableWidth - margin.left - margin.right); // <-- Calculate chart width dynamically
                 const height = Math.max(400, data.length * 60) - margin.top - margin.bottom; // <-- Dynamic height with more spacing
                 
@@ -774,70 +816,8 @@
                     .attr('class', 'axis')
                     .call(d3.axisLeft(y));
                 
-                // Add legend with all three colors - positioned horizontally in single line
-                const legendItemSpacing = 25;                                        // <-- Spacing between legend items
-                const legendRectSize = 18;                                            // <-- Size of legend color squares
-                const legendTextOffset = 23;                                          // <-- Offset from rect to text
-                const legendY = 13;                                                   // <-- Vertical position for all items (centered)
-                
-                // Calculate legend width based on all items
-                const allocatedTextWidth = 60;                                        // <-- Approximate width of "Allocated"
-                const underTextWidth = 90;                                            // <-- Approximate width of "Actual (Under)"
-                const overTextWidth = 85;                                             // <-- Approximate width of "Actual (Over)"
-                const legendWidth = allocatedTextWidth + underTextWidth + overTextWidth + (legendItemSpacing * 2);
-                
-                const legendX = Math.max(0, Math.min(width - legendWidth, width - 10)); // <-- Position legend at right edge
-                const legend = svg.append('g')                                      // <-- Create legend
-                    .attr('class', 'chart-legend')
-                    .attr('transform', `translate(${legendX}, -35)`);
-                
-                // Allocated legend item
-                let currentX = 0;                                                     // <-- Start position
-                legend.append('rect')
-                    .attr('class', 'legend-rect allocated')
-                    .attr('x', currentX)
-                    .attr('y', 0)
-                    .attr('width', legendRectSize)
-                    .attr('height', legendRectSize)
-                    .attr('rx', 2);
-                
-                legend.append('text')
-                    .attr('class', 'legend-item')
-                    .attr('x', currentX + legendTextOffset)
-                    .attr('y', legendY)
-                    .text('Allocated');
-                
-                // Actual (under) legend item
-                currentX += allocatedTextWidth + legendItemSpacing;                   // <-- Move to next position
-                legend.append('rect')
-                    .attr('class', 'legend-rect actual-under')
-                    .attr('x', currentX)
-                    .attr('y', 0)
-                    .attr('width', legendRectSize)
-                    .attr('height', legendRectSize)
-                    .attr('rx', 2);
-                
-                legend.append('text')
-                    .attr('class', 'legend-item')
-                    .attr('x', currentX + legendTextOffset)
-                    .attr('y', legendY)
-                    .text('Actual (Under)');
-                
-                // Actual (over) legend item
-                currentX += underTextWidth + legendItemSpacing;                       // <-- Move to next position
-                legend.append('rect')
-                    .attr('class', 'legend-rect actual-over')
-                    .attr('x', currentX)
-                    .attr('y', 0)
-                    .attr('width', legendRectSize)
-                    .attr('height', legendRectSize)
-                    .attr('rx', 2);
-                
-                legend.append('text')
-                    .attr('class', 'legend-item')
-                    .attr('x', currentX + legendTextOffset)
-                    .attr('y', legendY)
-                    .text('Actual (Over)');
+                // Render legend in separate HTML container (not in SVG)
+                renderEfficiencyLegend();
             }
             // ---------------------------------------------------------------
 
@@ -956,7 +936,7 @@
                     <div className="time-analysis-tool">
                         <div className="time-analysis-tool__content">
                             <h1 className="time-analysis-tool__title">
-                                Artist Timescale Data Visualion Tool
+                                Artist Efficiency Data Visualisation Tool
                             </h1>
                             <p className="time-analysis-tool__subtitle">
                                 This Tool Offers Data Driven Analysis & Artist Key Performance Metrics
@@ -989,6 +969,14 @@
                             </div>
                             
                             <div className="visualization-section">
+                                <div className="section-title-with-legend">
+                                    <h2 className="section-title section-title-no-border">Time Efficiency - Allocated vs Actual Hours</h2>
+                                    <div id="efficiencyLegend" className="chart-legend-container"></div>
+                                </div>
+                                <div id="efficiencyChart" className="chart-container"></div>
+                            </div>
+                            
+                            <div className="visualization-section">
                                 <h2 className="section-title">Project Timeline - Request to Delivery</h2>
                                 <div className="timeline-controls">
                                     <label>
@@ -1008,11 +996,6 @@
                                     </label>
                                 </div>
                                 <div id="timelineChart" className="chart-container"></div>
-                            </div>
-                            
-                            <div className="visualization-section">
-                                <h2 className="section-title">Time Efficiency - Allocated vs Actual Hours</h2>
-                                <div id="efficiencyChart" className="chart-container"></div>
                             </div>
                         </div>
                     </div>

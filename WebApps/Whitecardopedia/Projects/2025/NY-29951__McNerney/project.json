@@ -3,7 +3,8 @@
     "projectCode": "29951",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "This was the first project to the SketchUp Model Link feature, allowing anyone with a link to the Whitecard 3D model to view it in their Web browser. Top Notch CAD Linework was provided by Concept Artist Anna."
+        "additionalNotes": "This was the first project to the SketchUp Model Link feature, allowing anyone with a link to the Whitecard 3D model to view it in their Web browser. Top Notch CAD Linework was provided by Concept Artist Anna.",
+        "conceptArtist": "Anna"
     },
     "sketchUpModel": {
         "url": "https://app.sketchup.com/share/tc/europe/EjShVZJYLRU?source=desktop&stoken=rm282v4Fh7u95OzDk1ie2bQ6XgWXlDzq9FGpjEwYlxxcQXFtPgPxFkSWa_Ryt18l&rtc-engine-version=19&mode=present"
@@ -21,6 +22,28 @@
     "scheduleData": {
         "timeAllocated": 4,
         "timeTaken": 3,
-        "dateFulfilled": "09-Oct-2025"
-    }
+        "dateFulfilled": "09-Oct-2025",
+        "dateReceived": "08-Oct-2025"
+    },
+    "folderId": "NY-29951__McNerney",
+    "basePath": "Projects/2025/NY-29951__McNerney",
+    "displayImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__09-Oct-2025.png",
+        "IMG02__3dView__MainShot__WhitecardImage__09-Oct-2025.png",
+        "IMG03__3dView__FromLawnLevel__WhitecardImage__09-Oct-2025.png",
+        "IMG04__3dView__PatioView__WhitecardImage__09-Oct-2025.png",
+        "IMG05__3dView__RearView__WhitecardImage__09-Oct-2025.png",
+        "IMG06__3dView__TopDownView-01__WhitecardImage__09-Oct-2025.png",
+        "IMG07__3dView__TopDownView-02__WhitecardImage__09-Oct-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__09-Oct-2025.png",
+        "IMG02__3dView__MainShot__WhitecardImage__09-Oct-2025.png",
+        "IMG03__3dView__FromLawnLevel__WhitecardImage__09-Oct-2025.png",
+        "IMG04__3dView__PatioView__WhitecardImage__09-Oct-2025.png",
+        "IMG05__3dView__RearView__WhitecardImage__09-Oct-2025.png",
+        "IMG06__3dView__TopDownView-01__WhitecardImage__09-Oct-2025.png",
+        "IMG07__3dView__TopDownView-02__WhitecardImage__09-Oct-2025.png"
+    ]
 }

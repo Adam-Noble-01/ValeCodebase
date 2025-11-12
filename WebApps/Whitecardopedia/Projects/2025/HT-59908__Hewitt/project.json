@@ -3,7 +3,8 @@
     "projectCode": "59908",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "A Standard Job, Rachael provided a good CAD File, No Issues to report."
+        "additionalNotes": "A Standard Job, Rachael provided a good CAD File, No Issues to report.",
+        "conceptArtist": "Rachael"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -17,9 +18,10 @@
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__10-Oct-2025.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 3,
         "timeTaken": 3,
-        "dateFulfilled": "22-Sep-2025"
+        "dateFulfilled": "22-Sep-2025",
+        "dateReceived": "22-Sep-2025"
     },
     "folderId": "HT-59908__Hewitt",
     "basePath": "Projects/2025/HT-59908__Hewitt",

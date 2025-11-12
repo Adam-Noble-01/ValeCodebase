@@ -3,7 +3,8 @@
     "projectCode": "59923",
     "productionData": {
         "input": "Hand Drawn Concept",
-        "additionalNotes": "Used the texture projection technique to utilise Steph's Hand Drawn Concept, mapping it to the Whitecard model."
+        "additionalNotes": "Used the texture projection technique to utilise Steph's Hand Drawn Concept, mapping it to the Whitecard model.",
+        "conceptArtist": "Steph"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -15,8 +16,24 @@
         "IMG04__Richards__Elevated3d-04__WhiteCard__LOD1__ImageFile__1.0.0__.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 4,
         "timeTaken": 5,
-        "dateFulfilled": "01-Oct-2025"
-    }
+        "dateFulfilled": "10-Oct-2025",
+        "dateReceived": "09-Oct-2025"
+    },
+    "folderId": "RS-59923__Richards",
+    "basePath": "Projects/2025/RS-59923__Richards",
+    "displayImages": [
+        "IMG01__Richards__Exterior3dView01__WhiteCard__LOD1__ImageFile__1.0.0__.png",
+        "IMG02__Richards__FrontElevation__WhiteCard__LOD1__ImageFile__1.0.0__.dwg.png",
+        "IMG03__Richards__Elevated3dView__WhiteCard__LOD1__ImageFile__1.0.0__.png",
+        "IMG04__Richards__Elevated3d-04__WhiteCard__LOD1__ImageFile__1.0.0__.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Richards__Exterior3dView01__WhiteCard__LOD1__ImageFile__1.0.0__.png",
+        "IMG02__Richards__FrontElevation__WhiteCard__LOD1__ImageFile__1.0.0__.dwg.png",
+        "IMG03__Richards__Elevated3dView__WhiteCard__LOD1__ImageFile__1.0.0__.png",
+        "IMG04__Richards__Elevated3d-04__WhiteCard__LOD1__ImageFile__1.0.0__.png"
+    ]
 }

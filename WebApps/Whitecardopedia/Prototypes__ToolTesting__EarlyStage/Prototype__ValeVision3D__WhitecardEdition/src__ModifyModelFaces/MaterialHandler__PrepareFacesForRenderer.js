@@ -28,6 +28,7 @@
         if (!material) return false;                                      // <-- Validate material exists
         
         material.backFaceCulling = false;                                 // <-- Disable culling for two-sided rendering
+        material.twoSidedLighting = true;                                 // <-- CRITICAL: Enable proper lighting on both sides
         return true;                                                      // <-- Return success
     }
     // ---------------------------------------------------------------

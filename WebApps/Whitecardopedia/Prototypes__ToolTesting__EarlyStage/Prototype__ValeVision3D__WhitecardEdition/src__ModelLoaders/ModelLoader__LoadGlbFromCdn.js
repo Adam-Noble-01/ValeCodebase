@@ -6,10 +6,15 @@
 // #Region ------------------------------------------------
 // MODEL LOADER | Load GLB model from CDN
 // --------------------------------------------------------
+
+// OLD MODELS
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__4.5.0__.glb';
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__BallJob__1.5.0__.glb';
-const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/HexBigConservatory__SketchUpExport__1.2.0__.glb';
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/PlumblyClegg__WebLiveModel__.1.0.0__.glb';
+
+// CURRENT MODEL
+const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/HexBigConservatory__SketchUpExport__1.2.0__.glb';
+
 let loadedMeshes = [];
 let loadedModelRoot = null;
 
@@ -90,12 +95,8 @@ async function loadGLBModel() {
             if (mesh) {
                 mesh.checkCollisions = true;                          // <-- Enable collision detection
                 
-                // Enable two-sided collision by ensuring geometry considers both faces
-                // ------------------------------------
-                if (mesh.geometry) {
-                    // Force mesh to use double-sided collision
-                    mesh.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
-                }
+                // NOTE: Two-sided rendering is handled by material.backFaceCulling = false
+                // in MaterialHandler__PrepareFacesForRenderer.js to prevent rendering conflicts
             }
         });
         console.log('Collision detection enabled (two-sided) on', loadedMeshes.length, 'meshes');
@@ -106,17 +107,6 @@ async function loadGLBModel() {
         if (typeof checkLightingAfterModelLoad === 'function') {
             checkLightingAfterModelLoad(scene);
         }
-
-
-        // Change material colors after model loads
-        // ------------------------------------
-        if (typeof TargetElement__ChangeMaterialColors === 'function') {
-            setTimeout(() => {
-                const count = TargetElement__ChangeMaterialColors(scene);
-                console.log(`Changed ${count} material(s) to white`);
-            }, 100);
-        }
-
 
         return result;
 

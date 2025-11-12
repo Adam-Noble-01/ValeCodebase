@@ -1,0 +1,42 @@
+{
+    "projectName": "Mukherjee",
+    "projectCode": "59473",
+    "productionData": {
+        "input": "Hand Drawn Concept",
+        "conceptArtist": "Steph",
+        "additionalNotes": "I worked from earlier stage sketches on this one, and since there weren’t many good site reference photos, I had to infer quite a bit of the surrounding context and background from a single, partially aligned photomatch. That naturally reduced the overall accuracy slightly. My stage took a bit longer as the concept version I received was still in its early stages, but I think that may have balanced things out by reducing any potential waiting time later in the process. So overall, there’s probably no real time impact across the full design schedule. My stage did  take longer than expected though."
+    },
+    "scheduleData": {
+        "dateReceived": "11-Nov-2025",
+        "dateFulfilled": "11-Nov-2025",
+        "timeAllocated": 3,
+        "timeTaken": 4
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__RightCorner__MainView____WhitecardImage__11-Nov-2025.png",
+        "IMG02__RightCorner__AlternativeFurtherView____WhitecardImage__11-Nov-2025.png",
+        "IMG03__SideView____WhitecardImage__11-Nov-2025.png",
+        "IMG04__FrontDoors____WhitecardImage__11-Nov-2025.png",
+        "IMG05__LeftCorner____WhitecardImage__11-Nov-2025.png"
+    ],
+    "folderId": "MJ-59473__Mukherjee",
+    "basePath": "Projects/2025/MJ-59473__Mukherjee",
+    "displayImages": [
+        "IMG01__RightCorner__MainView____WhitecardImage__11-Nov-2025.png",
+        "IMG02__RightCorner__AlternativeFurtherView____WhitecardImage__11-Nov-2025.png",
+        "IMG03__SideView____WhitecardImage__11-Nov-2025.png",
+        "IMG04__FrontDoors____WhitecardImage__11-Nov-2025.png",
+        "IMG05__LeftCorner____WhitecardImage__11-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__RightCorner__MainView____WhitecardImage__11-Nov-2025.png",
+        "IMG02__RightCorner__AlternativeFurtherView____WhitecardImage__11-Nov-2025.png",
+        "IMG03__SideView____WhitecardImage__11-Nov-2025.png",
+        "IMG04__FrontDoors____WhitecardImage__11-Nov-2025.png",
+        "IMG05__LeftCorner____WhitecardImage__11-Nov-2025.png"
+    ]
+}

@@ -3,7 +3,8 @@
     "projectCode": "61737",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "A great CAD File, No Issues to report, Anna did a great job with the CAD File."
+        "additionalNotes": "A great CAD File, No Issues to report, Anna did a great job with the CAD File.",
+        "conceptArtist": "Anna"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -12,8 +13,18 @@
         "IMG01__Conyers__Exterior3dView01__ImageFile__1.0.0__.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
-        "timeTaken": 2.5,
-        "dateFulfilled": "11-Sep-2025"
-    }
+        "timeAllocated": 4,
+        "timeTaken": 2,
+        "dateFulfilled": "17-Sep-2025",
+        "dateReceived": "13-Sep-2025"
+    },
+    "folderId": "CS-61737__Conyers",
+    "basePath": "Projects/2025/CS-61737__Conyers",
+    "displayImages": [
+        "IMG01__Conyers__Exterior3dView01__ImageFile__1.0.0__.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Conyers__Exterior3dView01__ImageFile__1.0.0__.png"
+    ]
 }

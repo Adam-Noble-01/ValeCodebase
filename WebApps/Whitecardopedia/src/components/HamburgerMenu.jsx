@@ -24,7 +24,7 @@
 
     // COMPONENT | Hamburger Menu Navigation
     // ------------------------------------------------------------
-    function HamburgerMenu({ onProjectEditorClick }) {
+    function HamburgerMenu({ onProjectEditorClick, onTimeAnalysisClick }) {
         const [isOpen, setIsOpen] = React.useState(false);                   // <-- Menu open state
         const menuRef = React.useRef(null);                                  // <-- Menu DOM reference
         
@@ -41,6 +41,14 @@
         const handleProjectEditorClick = () => {
             setIsOpen(false);                                                // <-- Close menu
             onProjectEditorClick();                                          // <-- Call parent handler
+        };
+        // ---------------------------------------------------------------
+        
+        // SUB FUNCTION | Handle Time Analysis Tool Click
+        // ---------------------------------------------------------------
+        const handleTimeAnalysisClick = () => {
+            setIsOpen(false);                                                // <-- Close menu
+            onTimeAnalysisClick();                                           // <-- Call parent handler
         };
         // ---------------------------------------------------------------
         
@@ -84,6 +92,12 @@
                             onClick={handleProjectEditorClick}
                         >
                             Project Editor
+                        </button>
+                        <button 
+                            className="hamburger-menu__item"
+                            onClick={handleTimeAnalysisClick}
+                        >
+                            Time Analysis Tool
                         </button>
                         {/* FUTURE TOOLS: Additional menu items will be added here */}
                     </div>

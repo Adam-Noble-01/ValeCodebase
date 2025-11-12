@@ -1,0 +1,426 @@
+/* =============================================================================
+ * WHITECARDOPEDIA - TIME ANALYSIS TOOL STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : timeAnalysis.css
+ * NAMESPACE  : Whitecardopedia
+ * MODULE     : Time Analysis Tool Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styles for Time Analysis Tool visualization component
+ * CREATED    : 24-Oct-2025
+ *
+ * DESCRIPTION:
+ * - CSS styling for D3.js-based data visualization tool
+ * - Uses Vale Design Suite color scheme and typography standards
+ * - Column-aligned properties for consistency
+ * - Responsive layout for various screen sizes
+ * - Reuses existing app styles where possible
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Time Analysis Tool Container Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TIME ANALYSIS TOOL | Main Container */
+    /* ------------------------------------------------------------ */
+    .time-analysis-tool {
+        display                            : flex;                          /* <-- Flexbox layout */
+        flex-direction                     : column;                        /* <-- Vertical stacking */
+        min-height                         : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Full height minus header */
+        background                         : var(--Vale_BackgroundLight);   /* <-- Light background */
+    }
+    
+    .time-analysis-tool__content {
+        flex                               : 1;                             /* <-- Grow to fill space */
+        padding                            : var(--Vale_Spacing_Large);     /* <-- Content padding */
+        max-width                          : var(--Vale_MaxContentWidth);    /* <-- Maximum content width */
+        width                              : 100%;                          /* <-- Full width */
+        margin                             : 0 auto;                        /* <-- Center horizontally */
+    }
+    
+    .time-analysis-tool__title {
+        font-size                          : var(--Vale_FontSize_Title);     /* <-- Large title size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);        /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Small);     /* <-- Space below title */
+        text-align                         : center;                        /* <-- Center align */
+    }
+    
+    .time-analysis-tool__subtitle {
+        font-size                          : var(--Vale_FontSize_SubHeading); /* <-- Sub-heading size */
+        color                              : var(--Vale_TextSecondary);      /* <-- Secondary text color */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight */
+        text-align                         : center;                        /* <-- Center align */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below subtitle */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Control Panel & Status Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTROL PANEL | Data Loading Controls */
+    /* ------------------------------------------------------------ */
+    .control-panel {
+        background-color                   : var(--Vale_BackgroundWhite);   /* <-- White background */
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Panel padding */
+        border-radius                      : var(--Vale_BorderRadius);       /* <-- Rounded corners */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below panel */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Center items vertically */
+        gap                                : var(--Vale_Spacing_Medium);    /* <-- Space between items */
+        flex-wrap                          : wrap;                          /* <-- Allow wrapping */
+    }
+    
+    .btn-primary {
+        background-color                   : var(--Vale_PrimaryBrand);      /* <-- Vale blue background */
+        color                              : var(--Vale_TextLight);         /* <-- Light text */
+        border                             : none;                          /* <-- No border */
+        padding                            : 12px 24px;                     /* <-- Button padding */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+    }
+    
+    .btn-primary:hover {
+        background                         : var(--Vale_TextSecondary);    /* <-- Darker on hover */
+        transform                          : translateY(-2px);             /* <-- Slight lift effect */
+        box-shadow                         : 0 4px 12px rgba(23, 43, 58, 0.3);  /* <-- Shadow on hover */
+    }
+    
+    .btn-primary:active {
+        transform                          : translateY(0);                 /* <-- Reset on click */
+    }
+    
+    .status-message {
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);        /* <-- Primary text color */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight */
+    }
+    
+    .status-message.loading {
+        color                              : var(--Vale_PrimaryBrand);      /* <-- Vale blue for loading */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+    
+    .status-message.success {
+        color                              : #52c41a;                       /* <-- Green for success */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+    
+    .status-message.error {
+        color                              : #f5222d;                       /* <-- Red for error */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+    
+    .data-summary {
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        flex-grow                          : 1;                             /* <-- Grow to fill space */
+        text-align                         : right;                          /* <-- Right align */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Visualization Section Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* VISUALIZATION SECTION | Chart Container */
+    /* ------------------------------------------------------------ */
+    .visualization-section {
+        background-color                   : var(--Vale_BackgroundWhite);   /* <-- White background */
+        padding                            : var(--Vale_Spacing_Medium);     /* <-- Section padding */
+        border-radius                      : var(--Vale_BorderRadius);       /* <-- Rounded corners */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below section */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        box-shadow                         : 0 2px 4px rgba(0, 0, 0, 0.05);  /* <-- Subtle shadow */
+    }
+    
+    .section-title {
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Heading);  /* <-- Heading size */
+        color                              : var(--Vale_TextPrimary);        /* <-- Primary text color */
+        margin-bottom                      : var(--Vale_Spacing_Medium);    /* <-- Space below title */
+        padding-bottom                     : var(--Vale_Spacing_Small);     /* <-- Bottom padding */
+        border-bottom                      : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Bottom border */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+    
+    .chart-container {
+        min-height                         : 400px;                         /* <-- Minimum chart height */
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Chart padding */
+        overflow                          : hidden;                        /* <-- Prevent horizontal scroll */
+        width                             : 100%;                          /* <-- Full width */
+        box-sizing                        : border-box;                    /* <-- Include padding in width calculation */
+    }
+    
+    .table-container {
+        overflow-x                         : auto;                          /* <-- Allow horizontal scroll */
+        padding                            : var(--Vale_Spacing_Small);     /* <-- Table padding */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Timeline Controls Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TIMELINE CONTROLS | Filter and Group Controls */
+    /* ------------------------------------------------------------ */
+    .timeline-controls {
+        display                            : flex;                          /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Medium);    /* <-- Space between controls */
+        margin-bottom                      : var(--Vale_Spacing_Medium);    /* <-- Space below controls */
+        padding                            : var(--Vale_Spacing_Small);     /* <-- Control padding */
+        background-color                   : var(--Vale_BackgroundLight);  /* <-- Light background */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+    }
+    
+    .timeline-controls label {
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);        /* <-- Primary text color */
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Center items vertically */
+        gap                                : 8px;                           /* <-- Space between label and control */
+    }
+    
+    .timeline-controls select {
+        padding                            : 6px 12px;                      /* <-- Select padding */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : 4px;                          /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        background-color                   : var(--Vale_BackgroundWhite);   /* <-- White background */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        color                              : var(--Vale_TextPrimary);        /* <-- Primary text color */
+    }
+    
+    .timeline-controls select:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);      /* <-- Vale blue border on focus */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Statistics Table Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* STATS TABLE | Artist Performance Metrics Table */
+    /* ------------------------------------------------------------ */
+    .stats-table {
+        width                              : 100%;                          /* <-- Full width */
+        border-collapse                    : collapse;                     /* <-- Collapse borders */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+    }
+    
+    .stats-table th {
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Light background */
+        color                              : var(--Vale_TextPrimary);        /* <-- Primary text color */
+        padding                            : 12px 16px;                     /* <-- Header padding */
+        text-align                         : left;                          /* <-- Left align */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        border-bottom                      : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Bottom border */
+    }
+    
+    .stats-table td {
+        padding                            : 10px 16px;                     /* <-- Cell padding */
+        border-bottom                      : 1px solid var(--Vale_BorderLight);  /* <-- Bottom border */
+    }
+    
+    .stats-table tr:hover {
+        background-color                   : var(--Vale_HoverBackground);  /* <-- Hover background */
+    }
+    
+    .stats-table .number-cell {
+        text-align                         : right;                         /* <-- Right align numbers */
+        font-family                        : 'Consolas', monospace;        /* <-- Monospace font */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | D3.js Chart Element Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* D3 CHARTS | Chart Container and SVG */
+    /* ------------------------------------------------------------ */
+    .chart-container {
+        position                           : relative;                      /* <-- Relative positioning for overflow control */
+    }
+    
+    .chart-container svg {
+        max-width                          : 100%;                          /* <-- Ensure SVG doesn't exceed container */
+        height                             : auto;                          /* <-- Maintain aspect ratio */
+        display                            : block;                         /* <-- Block display */
+        overflow                           : visible;                       /* <-- Allow content to be visible */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* D3 CHARTS | Bar Styles */
+    /* ------------------------------------------------------------ */
+    .bar {
+        transition                         : opacity var(--Vale_Transition_Standard);  /* <-- Smooth opacity transition */
+    }
+    
+    .bar:hover {
+        opacity                            : 0.8;                           /* <-- Reduce opacity on hover */
+    }
+    
+    .bar-allocated {
+        fill                               : #8c8c8c;                      /* <-- Darker grey for allocated bars */
+    }
+    
+    /* Bar actual colors set via .under-allocated and .over-allocated classes */
+    
+    .bar-actual.under-allocated {
+        fill                               : #52c41a;                      /* <-- Green when under allocated */
+    }
+    
+    .bar-actual.over-allocated {
+        fill                               : #fa8c16;                      /* <-- Orange when over allocated */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* D3 CHARTS | Label Styles */
+    /* ------------------------------------------------------------ */
+    .label-allocated,
+    .label-actual {
+        font-size                          : 11px;                         /* <-- Label font size */
+        fill                               : #333;                         /* <-- Label text color */
+        font-weight                        : 500;                          /* <-- Medium font weight */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+    }
+    
+    .axis-label {
+        font-size                          : 12px;                         /* <-- Axis label font size */
+        fill                               : #333;                         /* <-- Axis label text color */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        text-anchor                        : middle;                       /* <-- Center text anchor */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* D3 CHARTS | Legend Styles */
+    /* ------------------------------------------------------------ */
+    .legend-item {
+        font-size                          : 12px;                         /* <-- Legend text size */
+        fill                               : #333;                         /* <-- Legend text color */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+    }
+    
+    .legend-rect.allocated {
+        fill                               : #8c8c8c;                      /* <-- Allocated color */
+    }
+    
+    .legend-rect.actual-under {
+        fill                               : #52c41a;                      /* <-- Actual under color */
+    }
+    
+    .legend-rect.actual-over {
+        fill                               : #fa8c16;                      /* <-- Actual over color */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* D3 CHARTS | Axis Styles */
+    /* ------------------------------------------------------------ */
+    .axis text {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
+        fill                               : var(--Vale_TextPrimary);        /* <-- Primary text color */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+    }
+    
+    .axis path,
+    .axis line {
+        stroke                             : var(--Vale_BorderLight);       /* <-- Light border color */
+    }
+    
+    .grid line {
+        stroke                             : var(--Vale_BorderLight);       /* <-- Light border color */
+        stroke-opacity                     : 0.3;                           /* <-- Reduced opacity */
+        stroke-dasharray                   : 2, 2;                          /* <-- Dashed line */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Tooltip Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TOOLTIP | Chart Hover Tooltip */
+    /* ------------------------------------------------------------ */
+    .tooltip {
+        position                           : absolute;                      /* <-- Absolute positioning */
+        padding                            : 12px 16px;                     /* <-- Tooltip padding */
+        background-color                   : rgba(23, 43, 58, 0.95);        /* <-- Dark semi-transparent background */
+        color                              : var(--Vale_TextLight);         /* <-- Light text */
+        border-radius                      : 6px;                           /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
+        pointer-events                     : none;                         /* <-- Don't block mouse events */
+        opacity                            : 0;                            /* <-- Hidden by default */
+        transition                         : opacity var(--Vale_Transition_Fast);  /* <-- Smooth opacity transition */
+        z-index                            : var(--Vale_ZIndex_Tooltip);   /* <-- Above other content */
+        box-shadow                         : 0 4px 12px rgba(0, 0, 0, 0.3);  /* <-- Shadow */
+        max-width                          : 300px;                         /* <-- Maximum width */
+    }
+    
+    .tooltip.visible {
+        opacity                            : 1;                            /* <-- Visible when active */
+    }
+    
+    .tooltip-title {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        margin-bottom                      : 6px;                           /* <-- Space below title */
+        font-size                          : 1rem;                          /* <-- Slightly larger */
+    }
+    
+    .tooltip-content {
+        line-height                        : 1.5;                           /* <-- Line height */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive Design Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    /* RESPONSIVE | Mobile and Tablet Adjustments */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 768px) {
+        .time-analysis-tool__content {
+            padding                        : var(--Vale_Spacing_Small);     /* <-- Reduced padding on mobile */
+        }
+        
+        .control-panel {
+            flex-direction                 : column;                        /* <-- Stack vertically */
+            align-items                    : stretch;                       /* <-- Stretch items */
+        }
+        
+        .data-summary {
+            text-align                     : left;                          /* <-- Left align on mobile */
+        }
+        
+        .timeline-controls {
+            flex-direction                 : column;                        /* <-- Stack controls vertically */
+        }
+        
+        .chart-container {
+            min-height                     : 300px;                         /* <-- Reduced height on mobile */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

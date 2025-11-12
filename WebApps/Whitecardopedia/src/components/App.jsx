@@ -28,6 +28,7 @@
         GALLERY             : 'GALLERY',                                 // <-- Project gallery grid
         VIEWER              : 'VIEWER',                                  // <-- Individual project viewer
         EDITOR              : 'EDITOR',                                  // <-- Project editor tool
+        TIME_ANALYSIS       : 'TIME_ANALYSIS',                            // <-- Time analysis visualization tool
     };
     // ------------------------------------------------------------
 
@@ -75,6 +76,20 @@
         };
         // ---------------------------------------------------------------
         
+        // SUB FUNCTION | Handle Time Analysis Tool Navigation
+        // ---------------------------------------------------------------
+        const handleOpenTimeAnalysis = async () => {
+            const isLocal = await isLocalhost();                         // <-- Check localhost status
+            
+            if (!isLocal) {
+                showLocalhostRequiredAlert();                            // <-- Show alert for web version
+                return;                                                  // <-- Exit without navigating
+            }
+            
+            setCurrentView(APP_VIEWS.TIME_ANALYSIS);                     // <-- Navigate to time analysis tool
+        };
+        // ---------------------------------------------------------------
+        
         // RENDER | Conditional View Rendering
         // ---------------------------------------------------------------
         return (
@@ -87,6 +102,7 @@
                     <ProjectGallery 
                         onSelectProject={handleSelectProject}
                         onOpenProjectEditor={handleOpenProjectEditor}
+                        onOpenTimeAnalysis={handleOpenTimeAnalysis}
                     />
                 )}
                 
@@ -99,6 +115,10 @@
                 
                 {currentView === APP_VIEWS.EDITOR && (
                     <ProjectEditor onBack={handleBackToGallery} />
+                )}
+                
+                {currentView === APP_VIEWS.TIME_ANALYSIS && (
+                    <TimeAnalysisTool onBack={handleBackToGallery} />
                 )}
             </>
         );

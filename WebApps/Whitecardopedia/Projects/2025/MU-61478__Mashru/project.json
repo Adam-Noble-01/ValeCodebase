@@ -3,7 +3,8 @@
     "projectCode": "61478",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "Very tricky due to some discrepancies found whilst working things up, had to use photomatch method for validation"
+        "additionalNotes": "Very tricky due to some discrepancies found whilst working things up, had to use photomatch method for validation",
+        "conceptArtist": "Rachael"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -14,6 +15,16 @@
     "scheduleData": {
         "timeAllocated": 3,
         "timeTaken": 6,
-        "dateFulfilled": "21-Aug-2025"
-    }
+        "dateFulfilled": "21-Aug-2025",
+        "dateReceived": "20-Aug-2025"
+    },
+    "folderId": "MU-61478__Mashru",
+    "basePath": "Projects/2025/MU-61478__Mashru",
+    "displayImages": [
+        "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"
+    ]
 }

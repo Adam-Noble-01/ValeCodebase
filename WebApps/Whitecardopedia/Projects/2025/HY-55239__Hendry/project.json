@@ -3,7 +3,8 @@
     "projectCode": "55239",
     "productionData": {
         "input": "CAD File",
-        "additionalNotes": "Took a little while, no issues with the CAD File, Existing house was just a little bit tricky."
+        "additionalNotes": "Took a little while, no issues with the CAD File, Existing house was just a little bit tricky.",
+        "conceptArtist": "Steph"
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -15,8 +16,24 @@
         "IMG04__Hendry__TopDownView__Image__1.0.0.png"
     ],
     "scheduleData": {
-        "timeAllocated": 1,
+        "timeAllocated": 4,
         "timeTaken": 4,
-        "dateFulfilled": "05-Sep-2025"
-    }
+        "dateFulfilled": "05-Sep-2025",
+        "dateReceived": "04-Sep-2025"
+    },
+    "folderId": "HY-55239__Hendry",
+    "basePath": "Projects/2025/HY-55239__Hendry",
+    "displayImages": [
+        "IMG01__Hendry__Exterior3dView01__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG02__Hendry__FrontElevation__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG03__Hendry__SideElevation__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG04__Hendry__TopDownView__Image__1.0.0.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__Hendry__Exterior3dView01__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG02__Hendry__FrontElevation__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG03__Hendry__SideElevation__!ArtistsMainShot!__ImageFile__1.0.0.png",
+        "IMG04__Hendry__TopDownView__Image__1.0.0.png"
+    ]
 }

@@ -19,15 +19,23 @@
 #
 # API ENDPOINTS:
 # - GET  /api/check-localhost     : Localhost detection endpoint
+# - GET  /api/refresh-status      : Get refresh counter for client polling
 # - GET  /api/projects            : List all projects from masterConfig.json
+# - GET  /api/projects/discover   : Discover all project folders by scanning filesystem
 # - GET  /api/projects/<folder>   : Get specific project.json data
 # - POST /api/projects/<folder>   : Save updated project.json data
+#
+# CONSOLE COMMANDS:
+# - --refresh / --Refresh         : Trigger refresh signal to all active clients
+# - --reboot / --Reboot           : Restart the Flask server process
 #
 # =============================================================================
 
 import os
 import sys
 import json
+import threading
+import time
 from pathlib import Path
 
 # Add bundled Flask dependencies to Python path
@@ -51,6 +59,7 @@ SERVER_PORT             = 8000                                           # <-- D
 SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
 PROJECTS_BASE_PATH      = 'Projects/2025'                                # <-- Projects directory path
 MASTER_CONFIG_PATH      = 'src/data/masterConfig.json'                   # <-- Master config file path
+REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
 # ------------------------------------------------------------
 
 
@@ -89,6 +98,108 @@ def validate_project_json(data):
     return True, None                                                    # <-- Validation passed
 # ------------------------------------------------------------
 
+
+# HELPER FUNCTION | Trigger Client Refresh
+# ------------------------------------------------------------
+def trigger_refresh():
+    """Increment refresh counter to signal clients to refresh"""
+    global REFRESH_COUNTER
+    REFRESH_COUNTER += 1                                                 # <-- Increment refresh counter
+    print(f' [REFRESH] Refresh signal sent to all clients (counter: {REFRESH_COUNTER})')
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Reboot Server Process
+# ------------------------------------------------------------
+def reboot_server():
+    """Restart the Flask server by re-executing the Python process"""
+    print(' [REBOOT] Restarting server...')
+    print()
+    
+    # Get current Python executable and script path
+    python_executable = sys.executable                                    # <-- Get Python interpreter path
+    script_path = os.path.abspath(__file__)                              # <-- Get current script path
+    
+    # Re-execute the script with same arguments
+    os.execv(python_executable, [python_executable, script_path] + sys.argv[1:])
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Get Project Folders Blacklist from Config
+# ------------------------------------------------------------
+def get_project_blacklist():
+    """Load project folders blacklist from masterConfig.json"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                        # <-- Load master config
+        
+        return config.get('projectFoldersBlacklist', [])                 # <-- Return blacklist array
+    except Exception:
+        return []                                                         # <-- Return empty list on error
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Discover All Project Folders Recursively
+# ------------------------------------------------------------
+def discover_project_folders():
+    """Recursively scan Projects/2025 directory for all project.json files"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        projects_path = os.path.join(base_dir, PROJECTS_BASE_PATH)       # <-- Build projects path
+        
+        if not os.path.exists(projects_path):                            # <-- Check if projects directory exists
+            return []                                                     # <-- Return empty list if not found
+        
+        blacklist = get_project_blacklist()                              # <-- Get blacklist from config
+        discovered_folders = []                                           # <-- Initialize folder list
+        
+        # Recursively find all project.json files
+        for root, dirs, files in os.walk(projects_path):                 # <-- Walk directory tree
+            if 'project.json' in files:                                  # <-- Check if project.json exists
+                # Get relative path from Projects/2025
+                rel_path = os.path.relpath(root, projects_path)           # <-- Get relative folder path
+                
+                # Extract folder name (handle nested paths)
+                folder_name = rel_path.replace(os.sep, '/')              # <-- Normalize path separators
+                
+                # Check if folder is blacklisted
+                if folder_name not in blacklist:                         # <-- Skip blacklisted folders
+                    discovered_folders.append(folder_name)               # <-- Add to discovered list
+        
+        return sorted(discovered_folders)                                 # <-- Return sorted folder list
+        
+    except Exception as e:
+        print(f' [ERROR] Error discovering project folders: {str(e)}')   # <-- Log discovery error
+        return []                                                         # <-- Return empty list on error
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Console Command Handler Thread
+# ------------------------------------------------------------
+def console_command_handler():
+    """Handle console input commands in separate thread"""
+    while True:
+        try:
+            command = input().strip()                                     # <-- Read console input
+            command_lower = command.lower()                               # <-- Normalize to lowercase
+            
+            # Check for refresh commands
+            if command_lower == '--refresh':
+                trigger_refresh()                                         # <-- Trigger client refresh
+            
+            # Check for reboot commands
+            elif command_lower == '--reboot':
+                reboot_server()                                           # <-- Restart server
+            
+        except (EOFError, KeyboardInterrupt):
+            break                                                         # <-- Exit on EOF or interrupt
+        except Exception as e:
+            print(f' [ERROR] Console command error: {str(e)}')            # <-- Log errors
+# ------------------------------------------------------------
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -103,6 +214,19 @@ def check_localhost():
     return jsonify({
         'isLocalhost': True,                                             # <-- Confirm localhost status
         'message': 'Server running on localhost'                         # <-- Status message
+    })
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Get Refresh Status
+# ------------------------------------------------------------
+@app.route('/api/refresh-status', methods=['GET'])
+def get_refresh_status():
+    """Get current refresh counter for client polling"""
+    global REFRESH_COUNTER
+    return jsonify({
+        'refreshCounter': REFRESH_COUNTER,                               # <-- Current refresh counter value
+        'timestamp': time.time()                                         # <-- Current timestamp
     })
 # ------------------------------------------------------------
 
@@ -218,6 +342,26 @@ def save_project(folder_id):
         }), 500
 # ------------------------------------------------------------
 
+
+# API ENDPOINT | Discover All Project Folders
+# ------------------------------------------------------------
+@app.route('/api/projects/discover', methods=['GET'])
+def discover_projects():
+    """Discover all project folders by recursively scanning for project.json files"""
+    try:
+        folders = discover_project_folders()                             # <-- Discover project folders
+        
+        return jsonify({
+            'folders': folders,                                          # <-- Return discovered folder list
+            'count': len(folders)                                        # <-- Return folder count
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error discovering projects: {str(e)}'     # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -258,8 +402,16 @@ if __name__ == '__main__':
     print(f' Server running at: http://{SERVER_HOST}:{SERVER_PORT}')
     print(f' Press Ctrl+C to stop the server')
     print()
+    print(' Console Commands:')
+    print('   --refresh / --Refresh  : Refresh all active clients')
+    print('   --reboot / --Reboot    : Restart the server')
+    print()
     print('=' * 77)
     print()
+    
+    # Start console command handler in background thread
+    console_thread = threading.Thread(target=console_command_handler, daemon=True) # <-- Create daemon thread
+    console_thread.start()                                                # <-- Start console handler
     
     app.run(
         host=SERVER_HOST,                                                # <-- Bind to localhost

@@ -22,7 +22,7 @@ html, body {
 }
 
 
-/* Root Container - Flexbox Centering */
+/* Root Container - Full Screen Layout */
 /* ----------------------------------------------------------------- */
 #root {
     width                              : 100vw;
@@ -30,6 +30,7 @@ html, body {
     display                            : flex;
     align-items                        : center;
     justify-content                    : center;
+    position                           : relative;                     /* <-- Relative positioning for absolute children */
 }
 
 /* endregion -------------------------------------------------------- */

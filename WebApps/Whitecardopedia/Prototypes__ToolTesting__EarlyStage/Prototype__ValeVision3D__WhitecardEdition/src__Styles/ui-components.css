@@ -16,11 +16,11 @@
 }
 
 
-/* Debug Info Overlay - Top Left Panel */
+/* Debug Info Overlay - Top Left Panel (Below Header) */
 /* ----------------------------------------------------------------- */
 .debug-info {
     position                           : absolute;
-    top                                : 10px;
+    top                                : calc(var(--Vale_HeaderHeight) + 10px);  /* <-- Position below header */
     left                               : 10px;
     background-color                   : rgba(0, 0, 0, 0.7);
     color                              : #00ff00;
@@ -59,12 +59,12 @@
 }
 
 
-/* Camera Position Overlay - Top Right Panel */
+/* Camera Position Overlay - Top Left Panel (Below Debug Info) */
 /* ----------------------------------------------------------------- */
 .camera-position-overlay {
     position                           : absolute;
-    top                                : 20px;
-    right                              : 20px;
+    top                                : calc(var(--Vale_HeaderHeight) + 200px);  /* <-- Position below header */
+    left                               : 20px;
     background-color                   : rgba(0, 0, 0, 0.7);
     color                              : #ffffff;
     padding                            : 12px 16px;
@@ -159,6 +159,57 @@
     color                              : rgba(255, 255, 255, 0.85);
     border-bottom                      : 1px solid rgba(255, 255, 255, 0.15);
     padding-bottom                     : 4px;
+}
+
+
+/* Download Screenshot Button - Top Right Panel (Below Header) */
+/* ----------------------------------------------------------------- */
+.download-screenshot-button {
+    position                           : absolute;
+    top                                : calc(var(--Vale_HeaderHeight) + 20px);  /* <-- Position below header */
+    right                              : 20px;
+    background-color                   : #172b3a;
+    color                              : #ffffff;
+    border                             : none;
+    padding                            : 12px 20px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.9rem;
+    font-weight                        : 600;
+    border-radius                      : 4px;
+    cursor                             : pointer;
+    z-index                            : 1002;
+    box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter                    : blur(4px);
+    transition                         : all 0.2s ease;
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+}
+
+
+/* Download Button - Hover State */
+/* ----------------------------------------------------------------- */
+.download-screenshot-button:hover:not(.disabled) {
+    background-color                   : #1e3a4f;
+    transform                          : translateY(-1px);
+    box-shadow                         : 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+
+/* Download Button - Active State */
+/* ----------------------------------------------------------------- */
+.download-screenshot-button:active:not(.disabled) {
+    transform                          : translateY(0);
+    box-shadow                         : 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Download Button - Disabled State */
+/* ----------------------------------------------------------------- */
+.download-screenshot-button.disabled {
+    opacity                            : 0.6;
+    cursor                             : not-allowed;
+    pointer-events                     : none;
 }
 
 /* endregion -------------------------------------------------------- */

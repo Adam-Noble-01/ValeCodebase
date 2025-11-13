@@ -35,9 +35,13 @@ const NAV_ENABLE_GRAVITY           = false;                                     
 
 
 // Initial Camera Transform
-// ------------------------------------
-const NAV_INITIAL_POSITION         = new BABYLON.Vector3(65.09, 1.67, 49.55);    // <-- Initial camera position
-const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0268, -0.7724, 0);    // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
+// ------------------------------------3
+    // Hex Manor Model
+    // const NAV_INITIAL_POSITION         = new BABYLON.Vector3(65.09, 1.67, 49.55);    // <-- Initial camera position
+    // const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0268, -0.7724, 0);    // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
+
+const NAV_INITIAL_POSITION         = new BABYLON.Vector3(5.06, 1.87, -1.57);     // <-- Initial camera position
+const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0194, 0.6157, 0.0000); // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
 const NAV_INITIAL_TARGET           = new BABYLON.Vector3(0, 0, 0);               // <-- Initial camera target
 
 // #endregion ---------------------------------------------

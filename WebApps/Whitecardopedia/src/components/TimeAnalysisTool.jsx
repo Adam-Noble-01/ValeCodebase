@@ -541,7 +541,7 @@
                         const start = parseDate(d.scheduleData?.dateReceived);
                         const end = parseDate(d.scheduleData?.dateFulfilled);
                         const calculatedWidth = x(end) - x(start);
-                        return Math.max(calculatedWidth, 3);                        // <-- Minimum 3px width for same-day deliveries
+                        return Math.max(calculatedWidth, 18);                        // <-- Minimum 9px width for same-day deliveries (3x wider for visibility)
                     })
                     .attr('height', y.bandwidth())
                     .attr('fill', d => colorScale(d.productionData?.conceptArtist))

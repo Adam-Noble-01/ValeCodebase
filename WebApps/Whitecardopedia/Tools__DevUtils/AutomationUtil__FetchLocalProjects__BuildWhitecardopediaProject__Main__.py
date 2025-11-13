@@ -51,7 +51,7 @@ PROJECT_JSON_FILENAME              = "project.json"                          # <
 
 # MODULE CONSTANTS | Regex Patterns
 # ------------------------------------------------------------
-WHITECARD_FOLDER_PATTERN           = r'^([A-Z]{2}-\d+)__([^_]+)__Whitecard$'  # <-- Pattern for Whitecard project folders
+WHITECARD_FOLDER_PATTERN           = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Pattern for Whitecard project folders
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 DATE_SUFFIX_PATTERN                = r'__(\d{2}-[A-Za-z]{3}-\d{4})$'         # <-- Date suffix pattern (DD-MMM-YYYY)
 DATE_FORMAT                        = '%d-%b-%Y'                              # <-- Date format for parsing

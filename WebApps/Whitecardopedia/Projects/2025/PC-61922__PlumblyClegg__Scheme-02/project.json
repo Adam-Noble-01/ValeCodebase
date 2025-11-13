@@ -1,0 +1,39 @@
+{
+    "projectName": "Plumbly-Clegg‎ ‎ ‎ —‎ ‎ ‎ Scheme-02",
+    "projectCode": "61922",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "A revision to the original scheme, came together much quicker than expected due to almost the same footprint and only frame element updates."
+    },
+    "scheduleData": {
+        "dateReceived": "13-Nov-2025",
+        "dateFulfilled": "13-Nov-2025",
+        "timeAllocated": 2,
+        "timeTaken": 1
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG21__3dView__MainShot__Closer__WhitecardImage__13-Nov-2025.png",
+        "IMG22__3dView__MainShot__Further__WhitecardImage__13-Nov-2025.png",
+        "IMG23__3dView__MainShot__EvenFurtherAway__WhitecardImage__13-Nov-2025.png",
+        "IMG24__3dView__FrontViewOfDoors__WhitecardImage__13-Nov-2025.png"
+    ],
+    "folderId": "PC-61922__PlumblyClegg__Scheme-02",
+    "basePath": "Projects/2025/PC-61922__PlumblyClegg__Scheme-02",
+    "displayImages": [
+        "IMG21__3dView__MainShot__Closer__WhitecardImage__13-Nov-2025.png",
+        "IMG22__3dView__MainShot__Further__WhitecardImage__13-Nov-2025.png",
+        "IMG23__3dView__MainShot__EvenFurtherAway__WhitecardImage__13-Nov-2025.png",
+        "IMG24__3dView__FrontViewOfDoors__WhitecardImage__13-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG21__3dView__MainShot__Closer__WhitecardImage__13-Nov-2025.png",
+        "IMG22__3dView__MainShot__Further__WhitecardImage__13-Nov-2025.png",
+        "IMG23__3dView__MainShot__EvenFurtherAway__WhitecardImage__13-Nov-2025.png",
+        "IMG24__3dView__FrontViewOfDoors__WhitecardImage__13-Nov-2025.png"
+    ]
+}

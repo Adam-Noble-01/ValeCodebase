@@ -7,7 +7,7 @@
 // --------------------------------------------------------
 
 const SCREENSHOT_ENABLED                = true;                                    // <-- Toggle to enable/disable screenshot feature
-const SCREENSHOT_QUALITY_MULTIPLIER     = 2.5;                                     // <-- Image quality multiplier (1.0 = 100%, 1.5 = 150% size increase)
+const SCREENSHOT_QUALITY_MULTIPLIER     = 3.0;                                     // <-- Image quality multiplier (1.0 = 100%, 1.5 = 150% size increase)
 const SCREENSHOT_FILENAME_PREFIX        = "ValeVision3D_Screenshot";               // <-- Base filename prefix for downloaded images
 const SCREENSHOT_INCLUDE_TIMESTAMP      = true;                                    // <-- Add timestamp to filename for unique naming
 

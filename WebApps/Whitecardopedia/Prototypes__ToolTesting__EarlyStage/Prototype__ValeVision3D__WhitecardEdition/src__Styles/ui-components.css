@@ -212,5 +212,138 @@
     pointer-events                     : none;
 }
 
+
+/* Camera Lens Adjustment Overlay - Top Right Panel (Below Download Button) */
+/* ----------------------------------------------------------------- */
+.camera-lens-adjustment-overlay {
+    position                           : absolute;
+    top                                : calc(var(--Vale_HeaderHeight) + 80px);  /* <-- Position below download button */
+    right                              : 20px;
+    background-color                   : rgba(0, 0, 0, 0.7);
+    color                              : #ffffff;
+    padding                            : 12px 16px;
+    font-size                          : 0.85rem;
+    font-weight                        : 400;
+    border-radius                      : 4px;
+    z-index                            : 1003;
+    pointer-events                     : auto;
+    box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.3);
+    backdrop-filter                    : blur(4px);
+    min-width                          : 220px;
+}
+
+
+/* Camera Lens Adjustment - Content Container */
+/* ----------------------------------------------------------------- */
+.camera-lens-adjustment-content {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 8px;
+}
+
+
+/* Camera Lens Adjustment - Title */
+/* ----------------------------------------------------------------- */
+.camera-lens-adjustment-title {
+    font-weight                        : 600;
+    font-size                          : 0.95rem;
+    margin                             : 0 0 4px 0;
+    color                              : #ffffff;
+    border-bottom                      : 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom                     : 6px;
+}
+
+
+/* Camera Lens Adjustment - Section Container */
+/* ----------------------------------------------------------------- */
+.camera-lens-adjustment-section {
+    margin-top                         : 4px;
+}
+
+
+/* Camera Lens Adjustment - Controls Container */
+/* ----------------------------------------------------------------- */
+.camera-lens-adjustment-controls {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 8px;
+}
+
+
+/* Camera Lens Adjustment - Label */
+/* ----------------------------------------------------------------- */
+.camera-lens-label {
+    color                              : rgba(255, 255, 255, 0.85);
+    font-weight                        : 500;
+    font-size                          : 0.85rem;
+}
+
+
+/* Camera Lens Adjustment - Slider Container */
+/* ----------------------------------------------------------------- */
+.camera-lens-slider-container {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 12px;
+}
+
+
+/* Camera Lens Adjustment - Slider Input */
+/* ----------------------------------------------------------------- */
+.camera-lens-slider {
+    flex                                : 1;
+    height                             : 6px;
+    border-radius                      : 3px;
+    background                         : rgba(255, 255, 255, 0.2);
+    outline                            : none;
+    -webkit-appearance                 : none;
+    appearance                        : none;
+}
+
+.camera-lens-slider::-webkit-slider-thumb {
+    -webkit-appearance                 : none;
+    appearance                        : none;
+    width                             : 18px;
+    height                            : 18px;
+    border-radius                     : 50%;
+    background                        : #ffffff;
+    cursor                            : pointer;
+    box-shadow                         : 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition                        : all 0.2s ease;
+}
+
+.camera-lens-slider::-webkit-slider-thumb:hover {
+    background                        : #f0f0f0;
+    transform                         : scale(1.1);
+}
+
+.camera-lens-slider::-moz-range-thumb {
+    width                             : 18px;
+    height                            : 18px;
+    border-radius                     : 50%;
+    background                        : #ffffff;
+    cursor                            : pointer;
+    box-shadow                         : 0 2px 4px rgba(0, 0, 0, 0.3);
+    border                            : none;
+    transition                        : all 0.2s ease;
+}
+
+.camera-lens-slider::-moz-range-thumb:hover {
+    background                        : #f0f0f0;
+    transform                         : scale(1.1);
+}
+
+
+/* Camera Lens Adjustment - Value Display */
+/* ----------------------------------------------------------------- */
+.camera-lens-value {
+    color                              : #ffffff;
+    font-weight                        : 600;
+    font-family                        : 'Courier New', monospace;
+    font-size                          : 0.9rem;
+    min-width                          : 60px;
+    text-align                         : right;
+}
+
 /* endregion -------------------------------------------------------- */
 

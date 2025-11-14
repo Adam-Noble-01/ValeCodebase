@@ -510,26 +510,66 @@ module GLBBuilderUtility
                                 start_pos = parent_transform * start_vertex.position
                                 end_pos = parent_transform * end_vertex.position
                                 
-                                # Get edge color with fallback chain
+                                # Get edge color with proper fallback chain
+                                # Priority: 1. Edge material, 2. Edge color, 3. Layer color, 4. Default black
                                 edge_color = nil
+                                
                                 begin
-                                    edge_color = entity.color if entity.respond_to?(:color)
-                                rescue => color_error
-                                    # Ignore color errors
+                                    # FIRST: Check if edge has a material assigned
+                                    if entity.respond_to?(:material) && entity.material
+                                        material = entity.material
+                                        edge_color = material.color if material.respond_to?(:color)
+                                        
+                                        # Check if material color is white (default/unset) and force to nil
+                                        if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                            edge_color = nil  # Force to nil so it falls through to other checks
+                                        end
+                                    end
+                                rescue => material_error
+                                    # Ignore material errors
                                 end
                                 
                                 if edge_color.nil?
                                     begin
+                                        # SECOND: Check edge color property
+                                        edge_color = entity.color if entity.respond_to?(:color)
+                                        
+                                        # Check if SketchUp returned a default/unset color (white) and force to black
+                                        if edge_color && !edge_color.nil?
+                                            # Check if it's white (255,255,255) which SketchUp uses as default
+                                            if edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                                edge_color = nil  # Force to nil so it falls through to black default
+                                            end
+                                        end
+                                    rescue => color_error
+                                        # Ignore color errors
+                                    end
+                                end
+                                
+                                if edge_color.nil?
+                                    begin
+                                        # THIRD: Fall back to layer color
                                         layer = entity.layer
                                         edge_color = layer.color if layer && layer.respond_to?(:color)
+                                        
+                                        # Check if layer color is white (default/unset) and force to nil
+                                        if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                            edge_color = nil  # Force to nil so it falls through to black default
+                                        end
                                     rescue => layer_error
                                         # Ignore layer color errors
                                     end
                                 end
                                 
-                                # Default to black if no color found
+                                # FOURTH: Default to black if no color found
                                 if edge_color.nil?
                                     edge_color = Sketchup::Color.new(0, 0, 0)            # Black default
+                                end
+                                
+                                # FINAL CHECK: Force white/default colors to black for Babylon.js
+                                # Check if color is white (255,255,255) which indicates default/unset color
+                                if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                                    edge_color = Sketchup::Color.new(0, 0, 0)            # Force to black
                                 end
                                 
                                 # Create group key by layer
@@ -677,6 +717,16 @@ module GLBBuilderUtility
                 material_index = @material_map[group_data[:material]]
             end
             
+            # Check if material has texture but mesh doesn't have UVs - use default material instead
+            has_uvs = !group_data[:uvs].empty?
+            if material_index > 0 && !has_uvs
+                material = @material_map.keys[material_index]
+                if material && material.texture && material.texture.valid?
+                    puts "        Warning: Material has texture but mesh has no UVs - using default material"
+                    material_index = 0  # Use default material
+                end
+            end
+            
             # Create primitive
             primitive = {
                 "attributes" => {},
@@ -698,8 +748,8 @@ module GLBBuilderUtility
             )
             primitive["attributes"]["NORMAL"] = normal_accessor
             
-            # Add UV accessor if we have UVs and material has texture
-            if !group_data[:uvs].empty? && group_data[:material] && group_data[:material].texture
+            # Add UV accessor if we have UVs
+            if has_uvs
                 uv_accessor = add_accessor(
                     group_data[:uvs], gltf, binary_buffer,
                     5126, "VEC2", false, 34962  # FLOAT, VEC2, no bounds, ARRAY_BUFFER
@@ -1398,14 +1448,34 @@ module GLBBuilderUtility
                 
                 # Get edge color (fallback to black if none)
                 edge_color = entity.color
+                
+                # Check if SketchUp returned a default/unset color (white) and force to black
+                if edge_color && !edge_color.nil?
+                    # Check if it's white (255,255,255) which SketchUp uses as default
+                    if edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                        edge_color = nil  # Force to nil so it falls through to black default
+                    end
+                end
+                
                 if edge_color.nil?
                     # Try to get layer color
                     edge_color = entity.layer.color rescue nil
+                    
+                    # Check if layer color is white (default/unset) and force to nil
+                    if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                        edge_color = nil  # Force to nil so it falls through to black default
+                    end
                 end
                 
                 # Default to black if no color found
                 if edge_color.nil?
                     edge_color = Sketchup::Color.new(0, 0, 0)                     # Black default
+                end
+                
+                # FINAL CHECK: Force white/default colors to black for Babylon.js
+                # Check if color is white (255,255,255) which indicates default/unset color
+                if edge_color && edge_color.red == 255 && edge_color.green == 255 && edge_color.blue == 255
+                    edge_color = Sketchup::Color.new(0, 0, 0)                     # Force to black
                 end
                 
                 # Convert color to normalized RGB (0.0-1.0)
@@ -1589,16 +1659,7 @@ module GLBBuilderUtility
                         puts "        ERROR: Failed to create texture!"
                     end
                 else
-                    puts "        No texture - using RGB color fallback"
-                    # No texture: Create 1x1 pixel image from material color
-                    texture_index = create_rgb_fallback_texture(material.color, gltf, binary_buffer)
-                    if texture_index
-                        pbr["baseColorTexture"] = {
-                            "index" => texture_index,
-                            "texCoord" => 0
-                        }
-                        puts "        Assigned RGB fallback texture index: #{texture_index}"
-                    end
+                    puts "        No texture - using baseColorFactor only"
                 end
                 
                 gltf_material["pbrMetallicRoughness"] = pbr                       # Set PBR
@@ -1878,6 +1939,28 @@ module GLBBuilderUtility
             end
         end
         # ---------------------------------------------------------------
+    
+        # HELPER FUNCTION | Ensure Line Material Exists for Vertex Colors
+        # ---------------------------------------------------------------
+        def self.ensure_line_material_exists(gltf)
+            # Check if line material already exists
+            line_material_index = gltf["materials"].find_index { |m| m["name"] == "LineMaterial_VertexColors" }
+            return line_material_index if line_material_index
+            
+            # Create new line material that uses vertex colors
+            gltf["materials"] << {
+                "name" => "LineMaterial_VertexColors",
+                "pbrMetallicRoughness" => {
+                    "baseColorFactor" => [1.0, 1.0, 1.0, 1.0],        # <-- White - multiplies with vertex colors
+                    "metallicFactor" => 0.0,                          # <-- Non-metallic
+                    "roughnessFactor" => 1.0                          # <-- Fully rough for unlit appearance
+                }
+            }
+            
+            puts "        Created line material for vertex colors"
+            gltf["materials"].length - 1
+        end
+        # ---------------------------------------------------------------
 
     # endregion -------------------------------------------------------------------
     
@@ -1906,6 +1989,23 @@ module GLBBuilderUtility
             
             # Create primitive for each material
             material_groups.each do |material_index, indices|
+                # Check if this specific material has a texture
+                material_has_texture = false
+                if material_index < @material_map.length && material_index >= 0
+                    material = @material_map.keys[material_index]
+                    material_has_texture = material && material.texture && material.texture.valid?
+                end
+                
+                # Check if we have UVs
+                has_uvs = !mesh_data[:uvs].empty?
+                
+                # If material has texture but no UVs, use default material instead
+                if material_has_texture && !has_uvs
+                    puts "        Warning: Material #{material_index} has texture but mesh has no UVs - using default material"
+                    material_index = 0  # Use default material
+                    material_has_texture = false
+                end
+                
                 primitive = {
                     "attributes" => {},                                           # <-- Vertex attributes
                     "material" => material_index,                                 # <-- Material index
@@ -1926,27 +2026,16 @@ module GLBBuilderUtility
                 )
                 primitive["attributes"]["NORMAL"] = normal_accessor               # Set attribute
                 
-                # Check if we have textured materials
-                has_textured_materials = @material_map.keys.any? { |mat| mat && mat.texture }
-                
-                # Debug UV export
-                if material_index < @material_map.length
-                    material = @material_map.keys[material_index]
-                    if material && material.texture
-                        puts "        Material #{material_index} has texture, UV count: #{mesh_data[:uvs].length / 2}"
-                    end
-                end
-                
-                # Add UV accessor only if we have textures in use
-                if has_textured_materials && !mesh_data[:uvs].empty?
+                # Add UV accessor if we have UVs
+                if has_uvs
                     uv_accessor = add_accessor(
                         mesh_data[:uvs], gltf, binary_buffer,
                         5126, "VEC2", false, 34962                                # FLOAT, VEC2, no bounds, ARRAY_BUFFER
                     )
                     primitive["attributes"]["TEXCOORD_0"] = uv_accessor           # Set attribute
                     puts "        Added TEXCOORD_0 accessor: #{uv_accessor}"
-                elsif has_textured_materials
-                    puts "        WARNING: Have textured materials but no UV data!"
+                elsif material_has_texture
+                    puts "        WARNING: Material has texture but no UV data - using default material"
                 end
                 
                 # Add indices accessor
@@ -1978,9 +2067,13 @@ module GLBBuilderUtility
         def self.add_line_mesh_to_gltf(edge_data, gltf, binary_buffer, mesh_name = "EdgeMesh")
             mesh_index = gltf["meshes"].length                                    # Current mesh index
             
-            # Create line primitive
+            # Ensure line material exists and get its index
+            line_material_index = ensure_line_material_exists(gltf)
+            
+            # Create line primitive with material assigned
             primitive = {
                 "attributes" => {},                                               # <-- Vertex attributes
+                "material" => line_material_index,                                # <-- Material for vertex colors
                 "mode" => 1                                                       # <-- LINES mode (instead of TRIANGLES=4)
             }
             

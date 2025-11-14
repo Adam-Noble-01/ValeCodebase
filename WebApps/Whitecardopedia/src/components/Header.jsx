@@ -29,7 +29,7 @@
             <header className="app-header">
                 <div className="app-header__logo-container app-header__logo-container--left">
                     <img 
-                        src="assets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                        src="../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
                         alt="Vale Garden Houses"
                         className="app-header__logo-left"
                     />
@@ -41,7 +41,7 @@
                         onClick={onBack}
                     >
                         <img 
-                            src="assets/AppIcons/Icon__BackSymbol__WhiteVersion.svg" 
+                            src="../assets__CommonApplicationAssets/AppIcons/Icon__BackSymbol__WhiteVersion.svg" 
                             alt="Back" 
                             className="app-header__back-icon"
                         />
@@ -51,7 +51,7 @@
                 
                 <div className="app-header__logo-container app-header__logo-container--right">
                     <img 
-                        src="assets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
+                        src="../assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
                         alt="Whitecardopedia"
                         className="app-header__logo-right"
                     />

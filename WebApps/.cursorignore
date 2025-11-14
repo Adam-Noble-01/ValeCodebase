@@ -1,0 +1,10 @@
+/00_Archive/
+
+*.lnk                                                                                                    
+*.rbe                                                   
+*.lang                                                  
+*.lock                                             
+*.lock.json                                             
+*.zip
+
+*.--BAK

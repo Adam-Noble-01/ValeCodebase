@@ -123,9 +123,9 @@
         
         // DETERMINE PICTOGRAM PATHS BASED ON MODE
         const imageSuffix = compact ? '__LightGreyVersion.png' : '.png';     // <-- Grey for gallery, colored for project page
-        const behindScheduleImg = `assets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__BehindSchedule${imageSuffix}`;
-        const targetTimeImg = `assets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__TargetTime${imageSuffix}`;
-        const aheadOfScheduleImg = `assets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__AheadOfSchedule${imageSuffix}`;
+        const behindScheduleImg = `../assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__BehindSchedule${imageSuffix}`;
+        const targetTimeImg = `../assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__TargetTime${imageSuffix}`;
+        const aheadOfScheduleImg = `../assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__AheadOfSchedule${imageSuffix}`;
         
         return (
             <div className={componentClass}>

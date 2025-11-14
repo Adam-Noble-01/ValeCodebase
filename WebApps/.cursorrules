@@ -1,0 +1,915 @@
+# =============================================================================
+# WEB APPS - CURSOR AI CODING CONVENTIONS
+# =============================================================================
+#
+# This file defines the coding conventions for Whitecardopedia and ValeVision3D
+# web applications. Cursor AI will automatically apply these rules to all code
+# generation and editing within this workspace.
+#
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Ensure consistent coding style across web applications
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Coding conventions for JavaScript, Python, CSS, and HTML
+# - Applies to Whitecardopedia (React/Flask) and ValeVision3D (Babylon.js)
+# - Ensures maintainability through consistent style and structure
+# - Regional organization enables collapsible code folding
+#
+# =============================================================================
+
+## CORE PRINCIPLE
+You are working on web applications (Whitecardopedia and ValeVision3D) and must replicate Adam Noble's exact coding style. The goal is to write code that is indistinguishable from Adam's personal style to ensure maintainability and consistency across the codebase.
+
+
+# TASK |  Ensure All Code Style Is In Adam Noble Web Apps Styling Conventions
+- You must replicate the commenting, regional structuring, and code annotation style used by Adam Noble for JavaScript, Python, CSS, and HTML code.
+- The goal is for AI to **write code, structure, and comment in a manner indistinguishable from Adam's personal style.
+- This ensures maintainability of the codebase by ensuring a consistent style is used.
+
+### ---------------------------------------------------------------------------
+
+## 1. REGIONAL DIVIDERS & SECTION STRUCTURE
+- Use a strict regional structure with a top-level region, sub-region, and function headers.
+- Ensure all functions and constants are within a region and named appropriately.
+- Each object type has its own header line and divider.
+- **CRITICAL**: All content within regions must be indented with 4 spaces for collapsible code folding.
+- Regions create logical groupings that can be collapsed/expanded in code editors.
+
+### ---------------------------------------------------------------------------
+
+## 2. SECTION HEADERS AND FUNCTION ANNOTATION
+
+### Region Headers - Two Formats Supported
+
+**Format 1: Whitecardopedia Style (Preferred for JavaScript/React)**
+- Use `// REGION | Description` with pipe notation
+- Overline and underline with 77 hyphens: `// -----------------------------------------------------------------------------`
+- End with `// endregion -------------------------------------------------------------------`
+- **NO INDENTATION** for region headers - they are at the root level.
+
+**Format 2: ValeVision3D Style (Used for Babylon.js modules)**
+- Use `// #Region` and `// #endregion` format
+- Use `// --------------------------------------------------------` for dividers (65 characters)
+- **NO INDENTATION** for region headers - they are at the root level.
+
+```region_header_example.js
+// -----------------------------------------------------------------------------
+// REGION | Project Filtering and Search Functions
+// -----------------------------------------------------------------------------
+
+    // All content within region is indented 4 spaces
+    // This enables collapsible code folding
+
+// endregion -------------------------------------------------------------------
+```
+
+```region_header_example_valevision.js
+// #Region ------------------------------------------------
+// CONFIGURATION | Navigation settings and constants
+// --------------------------------------------------------
+
+    // All content within region is indented 4 spaces
+    // This enables collapsible code folding
+
+// #endregion ---------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+### Function and Object Headers Within Regions
+- Each function/sub-region gets its own header line.
+- Use all caps to describe the object type, e.g. `FUNCTION`, `SUB FUNCTION`, `SUB HELPER FUNCTION`, `HELPER FUNCTION`, `MODULE CONSTANTS`, `COMPONENT`, `API ENDPOINT`, etc.
+- Use a single pipe ` | ` to separate the object type from the description.
+- Be concise, e.g. `FUNCTION | Filter Projects by Search Term`
+- **INDENTED 4 SPACES** within regions for collapsible structure.
+- Underline with 58 hyphens (creates 60-character line with comment and space).
+- End with `// ---------------------------------------------------------------` (60 characters total).
+
+```function_header_example.js
+// -----------------------------------------------------------------------------
+// REGION | Search Filtering Functions
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Filter Projects by Search Term
+    // ------------------------------------------------------------
+    function filterProjects(projects, searchTerm) {
+        if (!searchTerm || searchTerm.trim() === '') {
+            return projects;                                                 // <-- Return all projects if no search term
+        }
+        
+        const normalizedSearch = searchTerm.toLowerCase().trim();            // <-- Normalize search term for comparison
+        
+        return projects.filter(project => {
+            const projectName = (project.projectName || '').toLowerCase();   // <-- Get project name in lowercase
+            const projectCode = (project.projectCode || '').toLowerCase();   // <-- Get project code in lowercase
+            
+            return projectName.includes(normalizedSearch) ||                 // <-- Check if name matches
+                   projectCode.includes(normalizedSearch);                   // <-- Check if code matches
+        });
+    }
+    // ---------------------------------------------------------------
+
+    // HELPER FUNCTION | Validate Text Field Content
+    // ---------------------------------------------------------------
+    const isValidTextContent = (text) => {
+        if (!text || typeof text !== 'string') return false;                // <-- Check if text exists and is string
+        const invalidValues = ['nil', 'none', 'false', 'n/a'];             // <-- Invalid placeholder values
+        return !invalidValues.includes(text.toLowerCase().trim());          // <-- Exclude invalid values
+    };
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+```
+
+```react_component_example.jsx
+// -----------------------------------------------------------------------------
+// REGION | App Component
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Application View States
+    // ------------------------------------------------------------
+    const APP_VIEWS = {
+        HOME                : 'HOME',                                    // <-- Home page with logo
+        GALLERY             : 'GALLERY',                                 // <-- Project gallery grid
+        VIEWER              : 'VIEWER',                                  // <-- Individual project viewer
+        EDITOR              : 'EDITOR',                                  // <-- Project editor tool
+        TIME_ANALYSIS       : 'TIME_ANALYSIS',                            // <-- Time analysis visualization tool
+    };
+    // ------------------------------------------------------------
+
+    // COMPONENT | Main Application Root
+    // ------------------------------------------------------------
+    function App() {
+        const [currentView, setCurrentView] = React.useState(APP_VIEWS.HOME);  // <-- Current view state
+        const [selectedProject, setSelectedProject] = React.useState(null);      // <-- Selected project state
+        
+        // SUB FUNCTION | Handle Enter from Home Page
+        // ---------------------------------------------------------------
+        const handleEnterApp = () => {
+            setCurrentView(APP_VIEWS.GALLERY);                               // <-- Navigate to gallery
+        };
+        // ---------------------------------------------------------------
+        
+        return (
+            <>
+                {currentView === APP_VIEWS.HOME && (
+                    <HomePage onEnter={handleEnterApp} />
+                )}
+            </>
+        );
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+```
+
+```python_flask_example.py
+# -----------------------------------------------------------------------------
+# REGION | API Endpoints
+# -----------------------------------------------------------------------------
+
+    # API ENDPOINT | Get Specific Project Data
+    # ------------------------------------------------------------
+    @app.route('/api/projects/<folder_id>', methods=['GET'])
+    def get_project(folder_id):
+        """Get specific project.json data by folder ID"""
+        try:
+            project_path = get_project_path(folder_id)                       # <-- Get project directory
+            json_path = os.path.join(project_path, 'project.json')           # <-- Build JSON file path
+            
+            if not os.path.exists(json_path):
+                return jsonify({
+                    'error': f'Project not found: {folder_id}'               # <-- Project not found
+                }), 404
+            
+            with open(json_path, 'r', encoding='utf-8') as f:
+                project_data = json.load(f)                                  # <-- Load project JSON
+            
+            return jsonify(project_data)                                     # <-- Return project data
+            
+        except json.JSONDecodeError:
+            return jsonify({
+                'error': f'Invalid JSON in project: {folder_id}'             # <-- JSON parse error
+            }), 500
+            
+        except Exception as e:
+            return jsonify({
+                'error': f'Server error: {str(e)}'                           # <-- Generic error
+            }), 500
+    # ------------------------------------------------------------
+
+    # HELPER FUNCTION | Get Absolute Path for Project File
+    # ------------------------------------------------------------
+    def get_project_path(folder_id):
+        """Construct absolute path to project folder"""
+        base_dir = os.path.dirname(os.path.abspath(__file__))               # <-- Get server directory
+        project_path = os.path.join(base_dir, PROJECTS_BASE_PATH, folder_id) # <-- Build project path
+        return project_path                                                  # <-- Return absolute path
+    # ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+## 3. INDENTATION HIERARCHY FOR COLLAPSIBLE STRUCTURE
+
+### Indentation Rules
+- **Region Headers**                   :  No indentation (0 spaces)
+- **Function Headers within Regions**  :  4 spaces indentation
+- **Function Bodies within Regions**   :  8 spaces indentation (4 for region + 4 for function)
+- **Nested Code within Functions**     :  12+ spaces as needed
+
+### Function Organization Hierarchy
+1. **FUNCTION**             :  Main public functions
+2. **SUB FUNCTION**         :  Major sub-functions that break down main function logic
+3. **SUB HELPER FUNCTION**  :  Helper functions that support sub-functions
+4. **HELPER FUNCTION**      :  Reusable utility functions
+5. **COMPONENT**            :  React components
+6. **API ENDPOINT**         :  Flask route handlers
+
+### Function Definition Order
+- **Helpers First** :  Define helper functions before main functions (unless circular dependencies exist)
+- **Logical Flow**  :  Organize from general to specific
+- **Dependencies**  :  Ensure functions are defined before they're called
+
+```hierarchy_example.js
+// -----------------------------------------------------------------------------
+// REGION | Project Data Processing
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Validate Project Data Structure
+    // ---------------------------------------------------------------
+    function validateProjectData(project) {
+        return project && project.projectName && project.projectCode;      // <-- Validate required fields
+    }
+    // ---------------------------------------------------------------
+
+    // SUB HELPER FUNCTION | Normalize Project Name
+    // ---------------------------------------------------------------
+    function normalizeProjectName(name) {
+        return name.trim().toLowerCase();                                   // <-- Normalize for comparison
+    }
+    // ---------------------------------------------------------------
+
+    // SUB FUNCTION | Process Project List
+    // ---------------------------------------------------------------
+    function processProjectList(projects) {
+        return projects
+            .filter(validateProjectData)                                    // <-- Filter valid projects
+            .map(project => ({
+                ...project,
+                normalizedName: normalizeProjectName(project.projectName)    // <-- Add normalized name
+            }));
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Get Filtered Projects
+    // ------------------------------------------------------------
+    function getFilteredProjects(projects, searchTerm) {
+        if (!searchTerm) return processProjectList(projects);               // <-- Return all if no search
+        return processProjectList(projects).filter(project =>              // <-- Filter by search term
+            project.normalizedName.includes(searchTerm.toLowerCase())
+        );
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+## 4. FUNCTION & CONSTANT COLUMNISATION
+
+### Column Alignment
+**Constants & Mappings**: 
+- Always columnise related constants, typically with a fixed-width left indent, so items align vertically.
+- Always two white spaces between the key and the equals sign (or colon for JavaScript).
+- This creates breathing space between the key and the value.
+
+```column_alignment_example.js
+    // MODULE CONSTANTS | Server Configuration
+    // ------------------------------------------------------------
+    const SERVER_PORT             = 8000;                                    // <-- Development server port
+    const SERVER_HOST             = '127.0.0.1';                             // <-- Localhost binding
+    const PROJECTS_BASE_PATH      = 'Projects/2025';                        // <-- Projects directory path
+    const MASTER_CONFIG_PATH      = 'src/data/masterConfig.json';            // <-- Master config file path
+    const REFRESH_COUNTER         = 0;                                       // <-- Refresh counter for clients
+    // ------------------------------------------------------------
+```
+
+```column_alignment_example.py
+    # MODULE CONSTANTS | Server Configuration
+    # ------------------------------------------------------------
+    SERVER_PORT             = 8000                                           # <-- Development server port
+    SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
+    PROJECTS_BASE_PATH      = 'Projects/2025'                                # <-- Projects directory path
+    MASTER_CONFIG_PATH      = 'src/data/masterConfig.json'                   # <-- Master config file path
+    REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
+    # ------------------------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+## 5. INLINE COMMENTING
+
+### Inline Arrows
+**Inline Comments**
+- Use `// <-- Comment` for explanatory comments in JavaScript
+- Use `# <-- Comment` for explanatory comments in Python
+- Use `/* <-- Comment */` for explanatory comments in CSS
+- Always on the same line as the code, directly after the item being described
+- Do not place comments on a separate line above or below unless absolutely necessary
+- One quick phrase or note; avoid full sentences unless clarification is essential
+- "Columnise" by aligning the comments vertically when there are multiple related lines
+
+```comment_example.js
+    // SUB FUNCTION | Update Project Configuration
+    // ------------------------------------------------------------
+    function updateProjectConfig(project, updates) {
+        project.projectName = updates.name || project.projectName;          // <-- Set new name
+        project.projectCode = updates.code || project.projectCode;          // <-- Set new code
+        project.description = updates.description || project.description;    // <-- Set new description
+        
+        const metadata = project.metadata || {};                             // Get metadata object
+        metadata.lastUpdated = new Date().toISOString();                     // Update timestamp
+        project.metadata = metadata;                                         // Save updated metadata
+    }
+    // ---------------------------------------------------------------
+```
+
+```comment_example.py
+    # SUB FUNCTION | Update Project Configuration
+    # ------------------------------------------------------------
+    def update_project_config(project, updates):
+        project['projectName'] = updates.get('name', project.get('projectName'))  # <-- Set new name
+        project['projectCode'] = updates.get('code', project.get('projectCode'))  # <-- Set new code
+        project['description'] = updates.get('description', project.get('description'))  # <-- Set new description
+        
+        metadata = project.get('metadata', {})                                # Get metadata object
+        metadata['lastUpdated'] = datetime.now().isoformat()                 # Update timestamp
+        project['metadata'] = metadata                                        # Save updated metadata
+    # ---------------------------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+## 6. FILE HEADERS
+
+### Header Block
+- File/module headers use comment blocks with `=` dividers
+- Include: File name, Namespace, Module, Author, Purpose, Created (NO VERSION field)
+- Follow with a description section using bullet points
+- Use exactly 77 `=` characters for divider lines
+- Close with final `=` divider line
+
+```file_header_example.js
+// =============================================================================
+// WHITECARDOPEDIA - MAIN APPLICATION COMPONENT
+// =============================================================================
+//
+// FILE       : App.jsx
+// NAMESPACE  : Whitecardopedia
+// MODULE     : App Root Component
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Root React component with routing and state management
+// CREATED    : 2025
+//
+// DESCRIPTION:
+// - Main application component handling routing between views
+// - Manages application state (current view, selected project)
+// - Coordinates HomePage, ProjectGallery, and ProjectViewer components
+// - Implements simple client-side routing without external libraries
+//
+// =============================================================================
+```
+
+```file_header_example.py
+# =============================================================================
+# WHITECARDOPEDIA - FLASK API SERVER
+# =============================================================================
+#
+# FILE       : server.py
+# NAMESPACE  : Whitecardopedia
+# MODULE     : Flask API Server
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Flask API server for localhost project editing capabilities
+# CREATED    : 2025
+#
+# DESCRIPTION:
+# - Comprehensive Flask API server for Whitecardopedia development
+# - Provides endpoints for reading and writing project.json files
+# - Enables Project Editor tool functionality on localhost
+# - Serves static files from application directory
+# - Implements CORS for local development
+#
+# =============================================================================
+```
+
+```file_header_example.css
+/* =============================================================================
+ * WHITECARDOPEDIA - CSS VARIABLES
+ * =============================================================================
+ *
+ * FILE       : variables.css
+ * NAMESPACE  : Whitecardopedia
+ * MODULE     : CSS Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : CSS variables following Vale Design Suite standards
+ * CREATED    : 2025
+ *
+ * DESCRIPTION:
+ * - Defines the visual design system for Whitecardopedia application
+ * - Implements Noble Architecture brand colors and typography
+ * - Provides consistent design tokens across the application
+ * - Aligned with Vale Design Suite standards for consistency
+ *
+ * =============================================================================
+ */
+```
+
+### ---------------------------------------------------------------------------
+
+## 7. HTML/CSS/JAVASCRIPT FORMATTING CONVENTIONS
+
+### HTML Regional Structure
+- Use HTML comment format for regions with exact same pipe notation
+- Use 65 hyphens for HTML dividers (to account for HTML comment syntax)
+- Use `<!-- REGION  |  Description -->` for main regions
+- Use `<!-- UI MENU | Description -->` for sub-sections and interface elements
+- End regions with `<!-- endregion ----------------------------------------------------------------- -->`
+
+```html_region_example.html
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION  |  User Interface HTML Layout & Elements                  -->
+<!-- ----------------------------------------------------------------- -->
+    <body>
+    <h1>Whitecardopedia</h1>
+
+    <div class="section-title">Project Gallery</div>
+    
+    <!-- ---------------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | Navigation and Search Controls                           -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <div class="section-title">Search and Filter</div>
+    
+    <!-- ---------------------------------------------------------------- -->
+    
+    <!-- endregion ----------------------------------------------------------------- -->
+```
+
+### CSS Variables and Property Alignment
+- Use CSS custom properties (variables) defined in `:root` selector
+- **CRITICAL**: Column-align CSS properties using consistent spacing
+- Align property colons in a consistent column (typically 39-40 characters)
+- Use exactly 2 spaces before the colon for property alignment
+- Align values and comments consistently
+
+```css_alignment_example.css
+/* -----------------------------------------------------------------------------
+ * REGION | CSS Variables - Vale Design Suite Standards
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Color Palette and Design Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Color Palette Variables */
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Vale Garden Houses brand blue */
+        --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Light background */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
+        --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
+        
+        /* Layout Dimension Variables */
+        --Vale_HeaderHeight                : 60px;                         /* <-- Fixed header height */
+        --Vale_MaxContentWidth             : 1800px;                       /* <-- Maximum content width */
+        --Vale_BorderRadius                : 8px;                          /* <-- Standard border radius */
+        --Vale_Spacing_Small               : 8px;                          /* <-- Small spacing unit */
+        --Vale_Spacing_Medium              : 16px;                         /* <-- Medium spacing unit */
+        
+        /* Typography Variables */
+        --Vale_FontFamily                  : 'Open Sans', sans-serif;      /* <-- Primary font */
+        --Vale_FontSize_Title              : 32px;                         /* <-- Application title size */
+        --Vale_FontSize_Standard           : 14px;                         /* <-- Standard interface text */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Base Layout Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* BASE STYLES | HTML and Body Reset */
+    /* ------------------------------------------------------------ */
+    html, body {
+        width                              : 100%;                         /* <-- Full viewport width */
+        height                             : 100%;                         /* <-- Full viewport height */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Apply Open Sans font */
+        background                         : var(--Vale_BackgroundLight);   /* <-- Application background */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        overflow-x                         : hidden;                       /* <-- Prevent horizontal scroll */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+```
+
+### JavaScript Regional Structure
+- Follow exact same regional structure with JavaScript comment syntax
+- Use `// -----------------------------------------------------------------------------` for 77-character dividers
+- Use `// REGION | Description` for regions (Whitecardopedia style)
+- Use `// #Region` for ValeVision3D/Babylon.js modules
+- Use `// MODULE VARIABLES | Description` for variable sections
+- Use `// HELPER FUNCTION | Description` for helper functions with 58-character underlines
+- Use `// FUNCTION | Description` for functions with 58-character underlines
+- Use `// SUB FUNCTION | Description` for sub-functions with 58-character underlines
+- Use same 4-space indentation within regions
+- Use same `// <--` inline commenting style for explanations
+- End regions with `// endregion -------------------------------------------------------------------` or `// #endregion`
+
+```javascript_region_example.js
+// -----------------------------------------------------------------------------
+// REGION | Search Filtering Functions
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | Search Configuration
+    // ------------------------------------------------------------
+    const SEARCH_MIN_LENGTH         = 2;                                     // <-- Minimum characters for search
+    const SEARCH_DEBOUNCE_MS        = 300;                                   // <-- Debounce delay in milliseconds
+    const SEARCH_CASE_SENSITIVE     = false;                                 // <-- Case sensitivity flag
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Normalize Search Term
+    // ------------------------------------------------------------
+    function normalizeSearchTerm(term) {
+        if (!term || typeof term !== 'string') return '';                    // <-- Return empty string if invalid
+        return term.trim().toLowerCase();                                    // <-- Normalize to lowercase
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Filter Projects by Search Term
+    // ------------------------------------------------------------
+    function filterProjects(projects, searchTerm) {
+        if (!searchTerm || searchTerm.trim() === '') {
+            return projects;                                                 // <-- Return all projects if no search term
+        }
+        
+        const normalizedSearch = normalizeSearchTerm(searchTerm);            // <-- Normalize search term for comparison
+        
+        return projects.filter(project => {
+            const projectName = (project.projectName || '').toLowerCase();   // <-- Get project name in lowercase
+            const projectCode = (project.projectCode || '').toLowerCase();   // <-- Get project code in lowercase
+            
+            return projectName.includes(normalizedSearch) ||                 // <-- Check if name matches
+                   projectCode.includes(normalizedSearch);                   // <-- Check if code matches
+        });
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+```
+
+```valevision_region_example.js
+// #Region ------------------------------------------------
+// CONFIGURATION | Navigation settings and constants
+// --------------------------------------------------------
+
+// Movement Speed Settings
+// ------------------------------------
+const NAV_SPEED_MPH                = 2.0;                                        // <-- Movement speed in miles per hour
+const NAV_SPEED_MULTIPLIER         = 3.0;                                        // <-- Speed multiplier when Shift is held
+
+// Camera Control Settings
+// ------------------------------------
+const NAV_ANGULAR_SENSITIVITY      = 1000;                                       // <-- Mouse rotation sensitivity
+const NAV_INERTIA                  = 0.5;                                        // <-- Movement smoothing
+
+// #endregion ---------------------------------------------
+
+// #Region ------------------------------------------------
+// HELPER FUNCTIONS | Utility functions for navigation
+// --------------------------------------------------------
+
+// FUNCTION | ConvertMPHtoBabylonSpeed - Converts MPH to Babylon.js units per second
+// --------------------------------------------------------
+function convertMPHtoBabylonSpeed(mph) {
+    const metersPerSecond = mph * 0.44704;                    // <-- Convert MPH to m/s
+    return metersPerSecond;                                    // <-- Return Babylon speed
+}
+// --------------------------------------------------------
+
+// #endregion ---------------------------------------------
+```
+
+### CSS Comment Structure and Organization
+- Use `/* REGION | Description */` for regional sections
+- Use `/* Section Name */` for style groupings
+- Maintain clear logical groupings for related styles
+- Use consistent indentation (4 spaces) for nested selectors and media queries
+
+```css_comment_structure.css
+/* -----------------------------------------------------------------------------
+ * REGION | Base Layout and Reset Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* BASE STYLES | HTML and Body Reset */
+    /* ------------------------------------------------------------ */
+    * {
+        box-sizing                         : border-box;                   /* <-- Include padding in width calculations */
+        margin                             : 0;                            /* <-- Remove default margins */
+        padding                            : 0;                            /* <-- Remove default padding */
+    }
+    
+    html, body {
+        width                              : 100%;                         /* <-- Full viewport width */
+        height                             : 100%;                         /* <-- Full viewport height */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Apply Open Sans font */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Typography Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TYPOGRAPHY | Heading Styles */
+    /* ------------------------------------------------------------ */
+    h1 {
+        font-family                        : var(--Vale_FontFamily);       /* <-- Primary font */
+        font-size                          : var(--Vale_FontSize_Title);  /* <-- Title size */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+```
+
+### Key HTML/CSS/JavaScript Principles
+1. **Consistent Regional Structure**: Apply same regional formatting across all languages
+2. **Column Alignment**: Maintain strict column alignment in CSS properties
+3. **Inline Comments**: Use language-appropriate comment syntax but same arrow notation
+4. **Logical Organization**: Group related functionality using clear section headers
+5. **4-Space Indentation**: Maintain consistent indentation within regions
+6. **Variable Naming**: Use descriptive variable names with consistent patterns
+7. **CSS Variables**: Use CSS custom properties for consistent design system values
+8. **Responsive Design**: Organize responsive styles in clear media query sections
+
+### ---------------------------------------------------------------------------
+
+## 8. LANGUAGE-SPECIFIC CONVENTIONS
+
+### JavaScript/React Conventions
+- Use `const` for variables that don't change, `let` for variables that do
+- Use arrow functions for callbacks and short functions
+- Use function declarations for main functions and React components
+- React components should be PascalCase
+- Use descriptive prop names and destructure when appropriate
+- Prefer functional components with hooks over class components
+
+```react_conventions.jsx
+// -----------------------------------------------------------------------------
+// REGION | Project Card Component
+// -----------------------------------------------------------------------------
+
+    // COMPONENT | Project Card Display
+    // ------------------------------------------------------------
+    function ProjectCard({ project, onSelect }) {
+        const [isHovered, setIsHovered] = React.useState(false);            // <-- Track hover state
+        
+        // SUB FUNCTION | Handle Card Click
+        // ---------------------------------------------------------------
+        const handleClick = () => {
+            if (onSelect) {
+                onSelect(project);                                           // <-- Trigger selection callback
+            }
+        };
+        // ---------------------------------------------------------------
+        
+        return (
+            <div 
+                className="project-card"
+                onClick={handleClick}
+                onMouseEnter={() => setIsHovered(true)}                      // <-- Set hover state
+                onMouseLeave={() => setIsHovered(false)}                     // <-- Clear hover state
+            >
+                <img src={project.thumbnail} alt={project.projectName} />     {/* Project thumbnail image */}
+                <h3>{project.projectName}</h3>                                {/* Project name */}
+                <p>{project.projectCode}</p>                                  {/* Project code */}
+            </div>
+        );
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+```
+
+### Python Flask Conventions
+- Use snake_case for function and variable names
+- Use UPPER_CASE for constants
+- Use descriptive docstrings for functions
+- Group related endpoints in regions
+- Use try/except blocks for error handling
+- Return consistent JSON response structures
+
+```python_flask_conventions.py
+# -----------------------------------------------------------------------------
+# REGION | Helper Functions
+# -----------------------------------------------------------------------------
+
+    # HELPER FUNCTION | Get Absolute Path for Project File
+    # ------------------------------------------------------------
+    def get_project_path(folder_id):
+        """Construct absolute path to project folder"""
+        base_dir = os.path.dirname(os.path.abspath(__file__))               # <-- Get server directory
+        project_path = os.path.join(base_dir, PROJECTS_BASE_PATH, folder_id) # <-- Build project path
+        return project_path                                                  # <-- Return absolute path
+    # ------------------------------------------------------------
+
+    # HELPER FUNCTION | Validate JSON Structure for Project Data
+    # ------------------------------------------------------------
+    def validate_project_json(data):
+        """Validate that project JSON has required fields"""
+        required_fields = ['projectName', 'projectCode']                     # <-- Required top-level fields
+        
+        for field in required_fields:
+            if field not in data:
+                return False, f"Missing required field: {field}"             # <-- Return validation error
+        
+        return True, None                                                    # <-- Validation passed
+    # ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | API Endpoints
+# -----------------------------------------------------------------------------
+
+    # API ENDPOINT | Get Specific Project Data
+    # ------------------------------------------------------------
+    @app.route('/api/projects/<folder_id>', methods=['GET'])
+    def get_project(folder_id):
+        """Get specific project.json data by folder ID"""
+        try:
+            project_path = get_project_path(folder_id)                       # <-- Get project directory
+            json_path = os.path.join(project_path, 'project.json')           # <-- Build JSON file path
+            
+            if not os.path.exists(json_path):
+                return jsonify({
+                    'error': f'Project not found: {folder_id}'               # <-- Project not found
+                }), 404
+            
+            with open(json_path, 'r', encoding='utf-8') as f:
+                project_data = json.load(f)                                  # <-- Load project JSON
+            
+            return jsonify(project_data)                                     # <-- Return project data
+            
+        except json.JSONDecodeError:
+            return jsonify({
+                'error': f'Invalid JSON in project: {folder_id}'             # <-- JSON parse error
+            }), 500
+            
+        except Exception as e:
+            return jsonify({
+                'error': f'Server error: {str(e)}'                           # <-- Generic error
+            }), 500
+    # ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+```
+
+### Babylon.js Module Conventions
+- Use `// #Region` format for ValeVision3D modules
+- Group configuration constants at the top
+- Use descriptive constant names with prefixes (e.g., `NAV_`, `LIGHT_`)
+- Document camera and lighting setup functions clearly
+- Use Babylon.js naming conventions for objects
+
+```babylon_conventions.js
+// #Region ------------------------------------------------
+// CONFIGURATION | Lighting settings and constants
+// --------------------------------------------------------
+const LIGHT_HEMISPHERIC_INTENSITY     = 2.0;                                  // <-- Hemispheric light intensity
+const LIGHT_DIRECTIONAL_INTENSITY     = 0.5;                                  // <-- Directional light intensity
+const LIGHT_HEMISPHERIC_DIRECTION     = new BABYLON.Vector3(0, 1, 0);         // <-- Hemispheric light direction
+const LIGHT_DIRECTIONAL_DIRECTION     = new BABYLON.Vector3(-1, -2, -1);      // <-- Directional light direction
+const LIGHT_SCENE_AMBIENT_COLOR       = new BABYLON.Color3(1.0, 1.0, 1.0);    // <-- Scene ambient color
+// #endregion ---------------------------------------------
+
+// #Region ------------------------------------------------
+// LIGHTING SETUP | Scene lighting creation and configuration
+// --------------------------------------------------------
+
+// FUNCTION | SetupSceneLighting - Creates and configures scene lighting
+// --------------------------------------------------------
+function setupSceneLighting(scene) {
+    // Set scene ambient color (prevents pure black shadows)
+    // ------------------------------------
+    scene.ambientColor = LIGHT_SCENE_AMBIENT_COLOR;
+
+    // Create HemisphericLight for ambient lighting
+    // ------------------------------------
+    const hemisphericLight = new BABYLON.HemisphericLight(
+        'hemisphericLight',
+        LIGHT_HEMISPHERIC_DIRECTION,
+        scene
+    );
+    hemisphericLight.intensity = LIGHT_HEMISPHERIC_INTENSITY;
+
+    return {
+        hemisphericLight: hemisphericLight
+    };
+}
+// --------------------------------------------------------
+
+// #endregion ---------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+## 9. COMPLETE STRUCTURE EXAMPLE
+
+```complete_example.js
+// =============================================================================
+// WHITECARDOPEDIA - SEARCH FILTER UTILITY
+// =============================================================================
+//
+// FILE       : searchFilter.js
+// NAMESPACE  : Whitecardopedia
+// MODULE     : SearchFilter
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Project search filtering utility
+// CREATED    : 2025
+//
+// DESCRIPTION:
+// - Utility function for filtering projects by search term
+// - Searches project name and project code (ID number)
+// - Case-insensitive search for better user experience
+// - Returns filtered array of projects matching search criteria
+//
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// REGION | Search Filtering Functions
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Search Configuration
+    // ------------------------------------------------------------
+    const SEARCH_MIN_LENGTH         = 2;                                     // <-- Minimum characters for search
+    const SEARCH_DEBOUNCE_MS        = 300;                                   // <-- Debounce delay in milliseconds
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Normalize Search Term
+    // ---------------------------------------------------------------
+    function normalizeSearchTerm(term) {
+        if (!term || typeof term !== 'string') return '';                    // <-- Return empty string if invalid
+        return term.trim().toLowerCase();                                    // <-- Normalize to lowercase
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Filter Projects by Search Term
+    // ------------------------------------------------------------
+    function filterProjects(projects, searchTerm) {
+        if (!searchTerm || searchTerm.trim() === '') {
+            return projects;                                                 // <-- Return all projects if no search term
+        }
+        
+        const normalizedSearch = normalizeSearchTerm(searchTerm);            // <-- Normalize search term for comparison
+        
+        return projects.filter(project => {
+            const projectName = (project.projectName || '').toLowerCase();   // <-- Get project name in lowercase
+            const projectCode = (project.projectCode || '').toLowerCase();   // <-- Get project code in lowercase
+            
+            return projectName.includes(normalizedSearch) ||                 // <-- Check if name matches
+                   projectCode.includes(normalizedSearch);                   // <-- Check if code matches
+        });
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+```
+
+### ---------------------------------------------------------------------------
+
+## 10. KEY PRINCIPLES SUMMARY
+1. **Collapsible Structure**       :  Use 4-space indentation within regions for code folding
+2. **Helpers First**               :  Define helper functions before main functions when possible
+3. **Logical Hierarchy**           :  Organize functions from general to specific
+4. **Consistent Commenting**       :  Use inline arrows `// <--` for explanations, simple `//` for descriptions
+5. **Column Alignment**            :  Align related constants and comments vertically
+6. **Regional Organization**       :  Group related functionality into logical regions
+7. **Clear Headers**               :  Use descriptive headers with proper object type classification
+8. **Proper Spacing**              :  Maintain consistent spacing and line breaks for readability
+9. **Cross-Language Consistency**  :  Apply same structural principles to HTML, CSS, JavaScript, and Python
+10. **CSS Property Alignment**     :  Maintain strict column alignment for CSS properties and values
+11. **File Headers**              :  Always include comprehensive file headers with metadata
+12. **Two Regional Formats**      :  Support both `// REGION |` (Whitecardopedia) and `// #Region` (ValeVision3D) formats
+
+### ---------------------------------------------------------------------------

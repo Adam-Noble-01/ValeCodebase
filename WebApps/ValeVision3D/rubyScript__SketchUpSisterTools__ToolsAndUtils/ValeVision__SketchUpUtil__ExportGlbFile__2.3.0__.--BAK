@@ -448,8 +448,6 @@ module GLBBuilderUtility
                             when Sketchup::Edge
                                 # Verify edge is still valid
                                 next unless entity.valid?
-                                next if entity.hidden?                                                      # <-- Skip hidden edges
-                                next if entity.soft? && entity.smooth?                                       # <-- Skip soft+smooth edges (smoothing boundaries)
                                 
                                 begin
                                     # Get edge endpoints with validation
@@ -519,48 +517,6 @@ module GLBBuilderUtility
                 
                 puts "    Collected #{total_edges} edges into #{edge_groups.length} layer groups"
                 edge_groups
-            end
-            # ---------------------------------------------------------------
-        
-        # SUB-REGION | Edge Smoothing and Visibility
-        # ------------------------------------------------------------
-        # NOTE: Functions below are for potential future use with vertex welding
-        # Currently only edge filtering (soft+smooth edges excluded from line export) is implemented
-        
-            # HELPER FUNCTION | Check if Edge is Soft and Smooth (Currently Unused)
-            # ---------------------------------------------------------------
-            def self.edge_is_soft_smooth?(p_a, p_b, soft_smooth_edge_map)
-                pts = [[p_a.x, p_a.y, p_a.z], [p_b.x, p_b.y, p_b.z]].sort_by { |p| [p[0], p[1], p[2]] }
-                key = pts.flatten.map { |v| (v.to_f * 10000).round }
-                soft_smooth_edge_map.key?(key)
-            end
-            # ---------------------------------------------------------------
-            
-            # FUNCTION | Build Soft+Smooth Edge Map from Active Entities (Currently Unused)
-            # ---------------------------------------------------------------
-            def self.build_soft_smooth_edge_map
-                soft_smooth_edge_map = {}
-                edge_count = 0
-                
-                # Iterate over all top-level edges after explosion
-                Sketchup.active_model.active_entities.grep(Sketchup::Edge).each do |edge|
-                    next unless edge.valid?                                                      # <-- Skip invalid edges
-                    next unless edge.soft? && edge.smooth?                                       # <-- Must be both soft and smooth
-                    next if edge.hidden?                                                         # <-- Treat hidden soft/smooth edges as non-smoothing boundaries
-                    
-                    p1 = edge.start.position                                                     # <-- Get start position
-                    p2 = edge.end.position                                                        # <-- Get end position
-                    
-                    # Create stable quantized key from edge endpoints
-                    pts = [[p1.x, p1.y, p1.z], [p2.x, p2.y, p2.z]].sort_by { |p| [p[0], p[1], p[2]] }
-                    key = pts.flatten.map { |v| (v.to_f * 10000).round }                        # <-- Quantize to avoid tiny float differences
-                    
-                    soft_smooth_edge_map[key] = true                                             # <-- Mark as smooth boundary
-                    edge_count += 1
-                end
-                
-                puts "    Built soft+smooth edge map with #{edge_count} edges"
-                soft_smooth_edge_map
             end
             # ---------------------------------------------------------------
         
@@ -762,45 +718,45 @@ module GLBBuilderUtility
                                 -normal.y                 # -Y becomes Z
                             ]
                             
-                            # Get UV coordinates using appropriate method
-                            uv = [0.0, 0.0]
-                            
-                            # Check if this face has positioned texture
-                            has_positioned_texture = has_positioned_texture?(face, material)
-                            
-                            if has_positioned_texture && material
-                                # NEW METHOD: Use positioned texture extraction
-                                uv = extract_positioned_texture_uv(face, position, material)
-                            elsif uv_helper
-                                # ORIGINAL METHOD: Use standard UVHelper
-                                begin
-                                    uvq = uv_helper.get_front_UVQ(position)
-                                    if uvq
-                                        uv = [uvq.x.to_f, uvq.y.to_f]
-                                        uv[1] = 1.0 - uv[1]  # Flip V for glTF
-                                    end
-                                rescue => e
-                                    # Use default UV on error
+                                            # Get UV coordinates using appropriate method
+                        uv = [0.0, 0.0]
+                        
+                        # Check if this face has positioned texture
+                        has_positioned_texture = has_positioned_texture?(face, material)
+                        
+                        if has_positioned_texture && material
+                            # NEW METHOD: Use positioned texture extraction
+                            uv = extract_positioned_texture_uv(face, position, material)
+                        elsif uv_helper
+                            # ORIGINAL METHOD: Use standard UVHelper
+                            begin
+                                uvq = uv_helper.get_front_UVQ(position)
+                                if uvq
+                                    uv = [uvq.x.to_f, uvq.y.to_f]
+                                    uv[1] = 1.0 - uv[1]  # Flip V for glTF
                                 end
+                            rescue => e
+                                # Use default UV on error
+                            end
+                        end
+                                
+                                # Add vertex data
+                                group_data[:positions].concat(gltf_pos)
+                                group_data[:normals].concat(gltf_normal)
+                                group_data[:uvs].concat(uv)
+                                
+                                face_indices << vertex_count
+                                vertex_count += 1
                             end
                             
-                            # Add vertex data
-                            group_data[:positions].concat(gltf_pos)
-                            group_data[:normals].concat(gltf_normal)
-                            group_data[:uvs].concat(uv)
-                            
-                            face_indices << vertex_count
-                            vertex_count += 1
+                            # Add face indices
+                            group_data[:indices].concat(face_indices)
                         end
-                        
-                        # Add face indices
-                        group_data[:indices].concat(face_indices)
                     end
+                    
+                    # Update vertex count
+                    group_data[:vertex_count] = vertex_count
                 end
-                
-                # Update vertex count
-                group_data[:vertex_count] = vertex_count
-            end
                 # ---------------------------------------------------------------
         
         # SUB-REGION | Entity Processing
@@ -1543,8 +1499,6 @@ module GLBBuilderUtility
                 
                 entities.each do |entity|
                     next unless entity.is_a?(Sketchup::Edge)                          # Only process edges
-                    next if entity.hidden?                                            # <-- Skip hidden edges
-                    next if entity.soft? && entity.smooth?                            # <-- Skip soft+smooth edges (smoothing boundaries)
                     
                     edge_count += 1
                     

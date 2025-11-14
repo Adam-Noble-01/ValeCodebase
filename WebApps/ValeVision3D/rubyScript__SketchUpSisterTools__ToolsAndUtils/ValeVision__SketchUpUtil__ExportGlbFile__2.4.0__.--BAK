@@ -524,10 +524,8 @@ module GLBBuilderUtility
         
         # SUB-REGION | Edge Smoothing and Visibility
         # ------------------------------------------------------------
-        # NOTE: Functions below are for potential future use with vertex welding
-        # Currently only edge filtering (soft+smooth edges excluded from line export) is implemented
         
-            # HELPER FUNCTION | Check if Edge is Soft and Smooth (Currently Unused)
+            # HELPER FUNCTION | Check if Edge is Soft and Smooth
             # ---------------------------------------------------------------
             def self.edge_is_soft_smooth?(p_a, p_b, soft_smooth_edge_map)
                 pts = [[p_a.x, p_a.y, p_a.z], [p_b.x, p_b.y, p_b.z]].sort_by { |p| [p[0], p[1], p[2]] }
@@ -536,7 +534,7 @@ module GLBBuilderUtility
             end
             # ---------------------------------------------------------------
             
-            # FUNCTION | Build Soft+Smooth Edge Map from Active Entities (Currently Unused)
+            # FUNCTION | Build Soft+Smooth Edge Map from Active Entities
             # ---------------------------------------------------------------
             def self.build_soft_smooth_edge_map
                 soft_smooth_edge_map = {}
@@ -569,7 +567,7 @@ module GLBBuilderUtility
         
             # SUB FUNCTION | Create glTF Structure from Face Groups
             # ---------------------------------------------------------------
-            def self.create_gltf_from_face_groups(face_groups)
+            def self.create_gltf_from_face_groups(face_groups, soft_smooth_edge_map = {})
                 # Initialize GLTF structure
                 gltf = {
                     "asset" => {
@@ -607,7 +605,7 @@ module GLBBuilderUtility
                     puts "    Processing group: #{group_key}"
                     
                     # Extract vertex data from faces
-                    extract_global_face_data(group_data, gltf, binary_buffer)
+                    extract_global_face_data(group_data, gltf, binary_buffer, soft_smooth_edge_map)
                     
                     # Skip if no geometry
                     next if group_data[:positions].empty?
@@ -708,8 +706,11 @@ module GLBBuilderUtility
         
             # SUB FUNCTION | Extract Global Face Data (Already in World Coordinates)
             # ---------------------------------------------------------------
-            def self.extract_global_face_data(group_data, gltf, binary_buffer)
+            def self.extract_global_face_data(group_data, gltf, binary_buffer, soft_smooth_edge_map = {})
                 vertex_count = group_data[:vertex_count]
+                
+                # Initialize vertex map for welding
+                group_data[:vertex_map] ||= {}
                 
                 group_data[:faces].each_with_index do |face, face_index|
                     next unless face.valid?
@@ -742,7 +743,10 @@ module GLBBuilderUtility
                         
                         face_indices = []
                         
-                        polygon_points.each do |point_index|
+                        # Get all vertex positions in SketchUp space for edge checking
+                        triangle_positions = polygon_points.map { |pi| mesh.point_at(pi) }
+                        
+                        polygon_points.each_with_index do |point_index, vertex_idx|
                             # Get vertex position - already in global coordinates
                             position = mesh.point_at(point_index)
                             normal = mesh.normal_at(point_index)
@@ -784,13 +788,54 @@ module GLBBuilderUtility
                                 end
                             end
                             
-                            # Add vertex data
-                            group_data[:positions].concat(gltf_pos)
-                            group_data[:normals].concat(gltf_normal)
-                            group_data[:uvs].concat(uv)
+                            # Build base key from glTF position and UV (quantized)
+                            base_key = [
+                                (gltf_pos[0] * 10000).round,  # <-- Quantize glTF X
+                                (gltf_pos[1] * 10000).round,  # <-- Quantize glTF Y
+                                (gltf_pos[2] * 10000).round,  # <-- Quantize glTF Z
+                                (uv[0]       * 10000).round,  # <-- Quantize UV U
+                                (uv[1]       * 10000).round   # <-- Quantize UV V
+                            ]
                             
-                            face_indices << vertex_count
-                            vertex_count += 1
+                            # Check if this vertex lies on a hard boundary
+                            # Get neighbor positions in this triangle
+                            neighbor_positions = triangle_positions.reject.with_index { |_, i| i == vertex_idx }
+                            
+                            # Check if any edge from this vertex to neighbors is NOT soft+smooth
+                            hard_boundary = neighbor_positions.any? { |nbr_pos|
+                                !edge_is_soft_smooth?(position, nbr_pos, soft_smooth_edge_map)
+                            }
+                            
+                            # Tag key with :hard marker if on hard boundary
+                            key = hard_boundary ? base_key + [:hard] : base_key
+                            
+                            # Perform vertex welding and normal accumulation
+                            if group_data[:vertex_map].key?(key)
+                                # Reuse existing vertex index
+                                idx = group_data[:vertex_map][key]
+                                
+                                # Accumulate normals for smoothing
+                                n0 = group_data[:normals][idx * 3 + 0]
+                                n1 = group_data[:normals][idx * 3 + 1]
+                                n2 = group_data[:normals][idx * 3 + 2]
+                                
+                                group_data[:normals][idx * 3 + 0] = n0 + gltf_normal[0]
+                                group_data[:normals][idx * 3 + 1] = n1 + gltf_normal[1]
+                                group_data[:normals][idx * 3 + 2] = n2 + gltf_normal[2]
+                                
+                                face_indices << idx
+                            else
+                                # Create new vertex
+                                idx = group_data[:vertex_count]
+                                group_data[:vertex_map][key] = idx
+                                
+                                group_data[:positions].concat(gltf_pos)
+                                group_data[:normals].concat(gltf_normal)
+                                group_data[:uvs].concat(uv)
+                                
+                                face_indices << idx
+                                group_data[:vertex_count] += 1
+                            end
                         end
                         
                         # Add face indices
@@ -798,8 +843,18 @@ module GLBBuilderUtility
                     end
                 end
                 
-                # Update vertex count
-                group_data[:vertex_count] = vertex_count
+                # Normalize all normals after all faces processed
+                (0...group_data[:vertex_count]).each do |i|
+                    nx, ny, nz = group_data[:normals][i * 3, 3]
+                    len = Math.sqrt(nx * nx + ny * ny + nz * nz)
+                    next if len <= 0.0
+                    group_data[:normals][i * 3 + 0] = nx / len
+                    group_data[:normals][i * 3 + 1] = ny / len
+                    group_data[:normals][i * 3 + 2] = nz / len
+                end
+                
+                # Update vertex count (already updated during processing)
+                group_data[:vertex_count]
             end
                 # ---------------------------------------------------------------
         
@@ -936,13 +991,17 @@ module GLBBuilderUtility
                     # Step 3: Explode all nested hierarchies to get global coordinates
                     exploded_faces = explode_all_to_global(entities)
                     
-                    # Step 4: Group faces by material and layer
+                    # Step 4: Build soft+smooth edge map for vertex welding
+                    puts "    Building soft+smooth edge map..."
+                    soft_smooth_edge_map = build_soft_smooth_edge_map
+                    
+                    # Step 5: Group faces by material and layer
                     face_groups = group_faces_by_properties(exploded_faces)
                     
-                    # Step 5: Create glTF structure from grouped faces
-                    gltf, binary_buffer = create_gltf_from_face_groups(face_groups)
+                    # Step 6: Create glTF structure from grouped faces
+                    gltf, binary_buffer = create_gltf_from_face_groups(face_groups, soft_smooth_edge_map)
                     
-                    # Step 6: Export edges as line primitives (already collected in Step 2)
+                    # Step 7: Export edges as line primitives (already collected in Step 2)
                     puts "    Processing edges for line export..."
                     
                     # Create edge nodes and add to scene
@@ -970,10 +1029,10 @@ module GLBBuilderUtility
                         puts "      No edges found to export"
                     end
                     
-                    # Step 7: Write GLB file
+                    # Step 8: Write GLB file
                     write_glb_file(filepath, gltf, binary_buffer)
                     
-                    # Step 8: Restore original model state (undo all explosions)
+                    # Step 9: Restore original model state (undo all explosions)
                     model.abort_operation
                     
                     # Restore selection (filter out invalid entities)

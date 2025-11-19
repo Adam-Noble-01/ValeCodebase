@@ -27,8 +27,8 @@
     function configureRearFaceRendering(material) {
         if (!material) return false;                                      // <-- Validate material exists
         
-        material.backFaceCulling = false;                                 // <-- Disable culling for two-sided rendering
-        material.twoSidedLighting = true;                                 // <-- CRITICAL: Enable proper lighting on both sides
+        material.backFaceCulling = true;                                 // <-- Disable culling for two-sided rendering
+        material.twoSidedLighting = false;                                 // <-- CRITICAL: Enable proper lighting on both sides
         return true;                                                      // <-- Return success
     }
     // ---------------------------------------------------------------

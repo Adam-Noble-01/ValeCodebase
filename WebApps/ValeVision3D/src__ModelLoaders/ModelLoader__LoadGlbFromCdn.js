@@ -12,9 +12,10 @@
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Test__SketchUpExport__UsingOwnGlbExporter__BallJob__1.5.0__.glb';
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/PlumblyClegg__WebLiveModel__.1.0.0__.glb';
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/HexBigConservatory__SketchUpExport__1.3.1__.glb';
+// const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Rodger__WhitecardModel__ValeVisionModel__1.2.0__.glb';
 
 // CURRENT MODEL
-const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Rodger__WhitecardModel__ValeVisionModel__1.2.0__.glb';
+const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Stayley__ValeVisionModel__1.2.0__.glb';
 
 let loadedMeshes = [];
 let loadedModelRoot = null;
@@ -105,7 +106,25 @@ async function loadGLBModel() {
 
         // Apply depth bias to line meshes to prevent z-fighting with faces
         // ------------------------------------
-        applyDepthBiasToLineMeshes(loadedMeshes);
+        // Use setTimeout to ensure scene hierarchy is fully established after load
+        // ------------------------------------
+        setTimeout(() => {
+            const edgeLayers = applyDepthBiasToLineMeshes(loadedMeshes, scene);  // <-- Get found edge layer meshes
+            
+            // Setup dynamic camera-relative offset for edge layers
+            // ------------------------------------
+            if (edgeLayers && edgeLayers.length > 0) {
+                const camera = scene.activeCamera;                                // <-- Get active camera reference
+                if (camera) {
+                    console.log('Setting up dynamic edge offset with camera:', camera.name || 'Unnamed');
+                    setupDynamicEdgeOffset(scene, camera, edgeLayers);            // <-- Enable dynamic per-frame updates
+                } else {
+                    console.warn('Camera not available for dynamic edge offset');
+                }
+            } else {
+                console.warn('No edge layers found - static depth bias may not be sufficient');
+            }
+        }, 100);                                                                   // <-- Small delay to ensure hierarchy is ready
 
 
         // Check lighting state after model load

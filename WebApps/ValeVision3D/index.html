@@ -68,10 +68,10 @@
     
     
     <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Post-Processing Module Import                          -->
+    <!-- REGION  |  Rendering Pipeline Module Import                        -->
     <!-- ----------------------------------------------------------------- -->
     
-    <script src="src__PostProcessing/PostProcessing__GreyscaleFilter.js"></script>
+    <script src="src__WhitecardRenderingPipeline/WhitecardRenderingPipeline__Setup.js"></script>
     
     <!-- endregion -------------------------------------------------------- -->
     
@@ -224,10 +224,10 @@
             setupSceneLighting(scene);
 
 
-            // Setup post-processing effects
+            // Setup rendering pipeline effects
             // ------------------------------------
-            if (statusText) statusText.textContent = 'Applying post-processing...';
-            setupGreyscaleFilter(camera, engine);
+            if (statusText) statusText.textContent = 'Applying rendering pipeline...';
+            setupWhitecardRenderingPipeline(camera, scene, engine);
 
 
             // Scene ready - hide loading indicator

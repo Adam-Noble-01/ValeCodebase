@@ -88,6 +88,10 @@
             "enabled": true
         },
         {
+            "folderId": "HT-60180__Hurst",
+            "enabled": true
+        },
+        {
             "folderId": "HY-55239__Hendry",
             "enabled": true
         },
@@ -117,10 +121,6 @@
         },
         {
             "folderId": "NY-29951__McNerney",
-            "enabled": true
-        },
-        {
-            "folderId": "PC-61922__PlumblyClegg",
             "enabled": true
         },
         {

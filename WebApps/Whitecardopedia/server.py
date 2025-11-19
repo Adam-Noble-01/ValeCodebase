@@ -142,6 +142,17 @@ def get_project_blacklist():
 # ------------------------------------------------------------
 
 
+# HELPER FUNCTION | Get Absolute Path to Shared Assets Directory
+# ------------------------------------------------------------
+def get_assets_path():
+    """Get absolute path to assets__CommonApplicationAssets directory (one level up)"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))                # <-- Get server directory
+    parent_dir = os.path.dirname(base_dir)                                # <-- Get parent directory (one level up)
+    assets_path = os.path.join(parent_dir, 'assets__CommonApplicationAssets') # <-- Build assets path
+    return assets_path                                                    # <-- Return absolute assets path
+# ------------------------------------------------------------
+
+
 # HELPER FUNCTION | Discover All Project Folders Recursively
 # ------------------------------------------------------------
 def discover_project_folders():
@@ -367,6 +378,28 @@ def discover_projects():
 # -----------------------------------------------------------------------------
 # REGION | Static File Serving
 # -----------------------------------------------------------------------------
+
+# API ENDPOINT | Serve Shared Assets from Parent Directory
+# ------------------------------------------------------------
+@app.route('/assets__CommonApplicationAssets/<path:filename>', methods=['GET'])
+def serve_shared_assets(filename):
+    """Serve static assets from assets__CommonApplicationAssets directory (one level up)"""
+    try:
+        assets_dir = get_assets_path()                                   # <-- Get absolute path to assets directory
+        
+        if not os.path.exists(assets_dir):                               # <-- Check if assets directory exists
+            return jsonify({
+                'error': 'Assets directory not found'                    # <-- Assets directory missing
+            }), 404
+        
+        return send_from_directory(assets_dir, filename)                 # <-- Serve file securely
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Error serving asset: {str(e)}'                   # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
 
 # ROUTE HANDLER | Serve Static Files
 # ------------------------------------------------------------

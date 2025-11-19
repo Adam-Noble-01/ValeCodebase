@@ -12,7 +12,7 @@
 // DESCRIPTION:
 // - Displays modal overlay with PIN entry form
 // - Loads password from masterConfig.json based on deploymentMode
-// - Live mode uses password: ClosetClown60
+// - Live mode uses passwords: ClosetClown60, Vale1982
 // - Dev mode uses password: 1234
 // - Supports alphanumeric password input with show/hide toggle
 // - Shows error message for incorrect attempts
@@ -28,7 +28,7 @@
     // MODULE CONSTANTS | Default Password Configuration
     // ------------------------------------------------------------
     const PASSWORD_CONFIG = {
-        Live                : 'ClosetClown60',                           // <-- Live deployment password
+        Live                : ['ClosetClown60', 'Vale1982'],             // <-- Live deployment passwords (multiple allowed)
         Dev                 : '1234',                                    // <-- Development deployment password
     };
     // ------------------------------------------------------------
@@ -40,7 +40,7 @@
         const [pin, setPin] = React.useState('');                        // <-- PIN input state
         const [error, setError] = React.useState('');                    // <-- Error message state
         const [showPassword, setShowPassword] = React.useState(false);   // <-- Password visibility state
-        const [correctPassword, setCorrectPassword] = React.useState(PASSWORD_CONFIG.Dev); // <-- Correct password based on deployment mode
+        const [validPasswords, setValidPasswords] = React.useState([PASSWORD_CONFIG.Dev]); // <-- Valid passwords array based on deployment mode
         const inputRef = React.useRef(null);                             // <-- Reference to input element
         
         // EFFECT | Load Configuration and Set Password
@@ -73,8 +73,9 @@
                 const config = await response.json();                    // <-- Parse JSON response
                 const deploymentMode = config.deploymentMode || 'Dev';   // <-- Get deployment mode with fallback
                 
-                const password = PASSWORD_CONFIG[deploymentMode] || PASSWORD_CONFIG.Dev; // <-- Get password for mode
-                setCorrectPassword(password);                            // <-- Update correct password state
+                const passwords = PASSWORD_CONFIG[deploymentMode] || PASSWORD_CONFIG.Dev; // <-- Get password(s) for mode
+                const passwordArray = Array.isArray(passwords) ? passwords : [passwords]; // <-- Convert to array if single password
+                setValidPasswords(passwordArray);                        // <-- Update valid passwords state
                 
             } catch (error) {
                 console.error('Error loading config:', error);           // <-- Log error
@@ -109,7 +110,7 @@
                 return;
             }
             
-            if (pin === correctPassword) {
+            if (validPasswords.includes(pin)) {
                 onSuccess();                                             // <-- Call success callback
             } else {
                 setError('Incorrect PIN. Please try again.');            // <-- Show error for wrong PIN

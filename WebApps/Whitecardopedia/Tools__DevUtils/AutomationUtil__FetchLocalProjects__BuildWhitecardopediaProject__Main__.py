@@ -45,7 +45,15 @@ LOCAL_PROJECTS_BASE_PATH           = r"C:\01__ValeProjects\ValeProjects__2025"  
 WHITECARDOPEDIA_PROJECTS_PATH      = "../Projects/2025"                     # <-- Destination path for Whitecardopedia projects
 WHITECARDOPEDIA_TEMPLATE_PATH      = "../Projects/2025/01__TemplateProject" # <-- Template project path
 CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"          # <-- Content delivery subfolder name
+GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"              # <-- GLB files subfolder name
 PROJECT_JSON_FILENAME              = "project.json"                          # <-- Project metadata filename
+DEFAULT_PROJECT_YEAR               = "2025"                                  # <-- Default project year
+# ------------------------------------------------------------
+
+
+# MODULE CONSTANTS | ValeVision CDN Configuration
+# ------------------------------------------------------------
+CDN_BASE_URL                       = "https://cdn.noble-architecture.com/VaApps/Projects"  # <-- CDN base URL for ValeVision models
 # ------------------------------------------------------------
 
 
@@ -53,6 +61,7 @@ PROJECT_JSON_FILENAME              = "project.json"                          # <
 # ------------------------------------------------------------
 WHITECARD_FOLDER_PATTERN           = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Pattern for Whitecard project folders
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
+GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 DATE_SUFFIX_PATTERN                = r'__(\d{2}-[A-Za-z]{3}-\d{4})$'         # <-- Date suffix pattern (DD-MMM-YYYY)
 DATE_FORMAT                        = '%d-%b-%Y'                              # <-- Date format for parsing
 # ------------------------------------------------------------
@@ -86,10 +95,13 @@ WHAT IT DOES:
 1. Scans local Vale Projects folder for projects with __Whitecard suffix
 2. Finds the latest content delivery folder (by date stamp)
 3. Discovers all IMG## and IMG##_ART## prefixed images
-4. Copies images to Whitecardopedia project structure
-5. Generates project.json with extracted metadata (name, code, dateFulfilled)
-6. Extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
-7. Strips __Whitecard suffix from destination folder names
+4. Discovers .glb model files in ValeVision__GlbFileSync folders
+5. Generates CDN URLs for ValeVision 3D models
+6. Copies images to Whitecardopedia project structure
+7. Generates project.json with extracted metadata (name, code, dateFulfilled)
+8. Adds valeVision_ModelUrl field with Cloudflare CDN URLs
+9. Extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
+10. Strips __Whitecard suffix from destination folder names
 
 This utility eliminates manual folder duplication and ensures consistency
 between your local projects and the Whitecardopedia showcase.
@@ -155,7 +167,18 @@ Project JSON Generation:
   - scheduleData.dateFulfilled: Extracted from content folder date stamp (e.g., "17-Oct-2025")
                                 Falls back to "TBD" if no date found in folder name
   - images:      List of discovered IMG files
+  - valeVision_ModelUrl: CDN URL(s) for .glb model files
+                         Single model: stored as string
+                         Multiple models: stored as array
   - Other fields: Copied from template as placeholders
+
+ValeVision Model URL Generation:
+  
+  If .glb files are found in ValeVision__GlbFileSync folder:
+  - Generates Cloudflare CDN URLs automatically
+  - Format: https://cdn.noble-architecture.com/VaApps/Projects/2025/[ProjectFolder]/[ModelFile].glb
+  - Example: https://cdn.noble-architecture.com/VaApps/Projects/2025/VE-61058__Staley/Stayley__ValeVisionModel__1.2.0__.glb
+  - URLs enable direct model loading in ValeVision3D viewer
 
 Skip Existing Projects:
   
@@ -273,6 +296,19 @@ def find_latest_content_folder(project_path: Path) -> Optional[Path]:
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | ValeVision CDN URL Builder
+# -----------------------------------------------------------------------------
+
+# FUNCTION | Build ValeVision Model CDN URL
+# ------------------------------------------------------------
+def build_valevision_model_url(year: str, dest_folder_name: str, glb_filename: str) -> str:
+    """Build CDN URL for ValeVision 3D model"""
+    return f"{CDN_BASE_URL}/{year}/{dest_folder_name}/{glb_filename}"  # <-- Construct full CDN URL
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | Image Discovery Functions
 # -----------------------------------------------------------------------------
 
@@ -304,6 +340,29 @@ def discover_image_files(content_folder: Path) -> List[str]:
     
     images.sort(key=extract_image_number)                             # <-- Sort by numeric prefix
     return images                                                     # <-- Return sorted images list
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Discover GLB Files in ValeVision Sync Folder
+# ------------------------------------------------------------
+def discover_glb_files(project_path: Path) -> List[str]:
+    """Discover .glb files in ValeVision sync folder"""
+    glb_files = []                                                    # <-- Initialize GLB files list
+    
+    # CONSTRUCT PATH TO GLB SYNC FOLDER
+    glb_sync_path = project_path / CONTENT_DELIVERED_SUBFOLDER / GLB_SYNC_SUBFOLDER  # <-- Build path to sync folder
+    
+    if not glb_sync_path.exists() or not glb_sync_path.is_dir():
+        return glb_files                                              # <-- Return empty if path invalid
+    
+    for item in glb_sync_path.iterdir():
+        if item.is_file():                                            # <-- Check if item is file
+            filename = item.name                                      # <-- Get filename
+            if re.match(GLB_FILE_PATTERN, filename, re.IGNORECASE):   # <-- Check pattern match
+                glb_files.append(filename)                            # <-- Add to GLB files list
+    
+    glb_files.sort()                                                  # <-- Sort alphabetically
+    return glb_files                                                  # <-- Return sorted GLB files list
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -393,7 +452,7 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 
 # FUNCTION | Create Project JSON File
 # ------------------------------------------------------------
-def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str) -> bool:
+def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, glb_files: List[str], dest_folder_name: str, year: str) -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
     
     project_data = template.copy()                                    # <-- Copy template data
@@ -405,6 +464,15 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     if 'scheduleData' not in project_data:
         project_data['scheduleData'] = {}                             # <-- Create scheduleData if missing
     project_data['scheduleData']['dateFulfilled'] = project_date      # <-- Set extracted date as dateFulfilled
+    
+    # BUILD VALEVISION MODEL URLS
+    if glb_files:
+        model_urls = [build_valevision_model_url(year, dest_folder_name, glb) for glb in glb_files]  # <-- Generate CDN URLs
+        
+        if len(model_urls) == 1:
+            project_data['valeVision_ModelUrl'] = model_urls[0]       # <-- Single model as string
+        else:
+            project_data['valeVision_ModelUrl'] = model_urls          # <-- Multiple models as array
     
     try:
         with open(project_json_path, 'w', encoding='utf-8') as file:  # <-- Open file for writing
@@ -442,6 +510,8 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         'skipped': False,
         'images_found': 0,
         'images_copied': 0,
+        'glb_files_found': 0,
+        'glb_model_urls': [],
         'latest_folder': None,
         'error': None
     }
@@ -465,6 +535,17 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
     # DISCOVER IMAGES IN LATEST FOLDER
     images = discover_image_files(latest_folder)                      # <-- Discover images
     result['images_found'] = len(images)                              # <-- Store images count
+    
+    # DISCOVER GLB FILES IN PROJECT
+    glb_files = discover_glb_files(project_info['source_path'])       # <-- Discover GLB files
+    result['glb_files_found'] = len(glb_files)                        # <-- Store GLB count
+    
+    # BUILD GLB MODEL URLS FOR PREVIEW
+    if glb_files:
+        result['glb_model_urls'] = [
+            build_valevision_model_url(DEFAULT_PROJECT_YEAR, project_info['dest_folder_name'], glb)
+            for glb in glb_files
+        ]
     
     if not images:
         result['error'] = "No IMG## files found in content folder"    # <-- Set warning message
@@ -501,7 +582,10 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         project_info['project_code'],
         project_info['project_name'],
         images,
-        project_date
+        project_date,
+        glb_files,
+        project_info['dest_folder_name'],
+        DEFAULT_PROJECT_YEAR
     )
     
     if not json_success:
@@ -564,6 +648,7 @@ def print_results(results: List[Dict], dry_run: bool):
     skipped = sum(1 for r in results if r['skipped'])                 # <-- Count skipped
     errors = sum(1 for r in results if not r['success'] and not r['skipped'])  # <-- Count errors
     total_images = sum(r['images_found'] for r in results)            # <-- Count total images
+    total_glb_files = sum(r['glb_files_found'] for r in results)      # <-- Count total GLB files
     
     for result in results:
         dest_name = result['dest_name']                               # <-- Get destination name
@@ -591,6 +676,13 @@ def print_results(results: List[Dict], dry_run: bool):
         print(f"    Images: {result['images_found']} found")          # <-- Print images found
         if not dry_run:
             print(f"    Copied: {result['images_copied']} files")     # <-- Print copied count
+        print(f"    GLB Models: {result['glb_files_found']} found")   # <-- Print GLB count
+        
+        # PRINT GLB MODEL URLS
+        if result['glb_model_urls']:
+            for url in result['glb_model_urls']:
+                print(f"      {COLOR_CYAN}→ {url}{COLOR_RESET}")     # <-- Print each CDN URL
+        
         print(f"    Latest Folder: {result['latest_folder']}")        # <-- Print folder name
         print(f"    Status: {'Would clone' if dry_run else 'Cloned successfully'}\n")  # <-- Print status
     
@@ -602,6 +694,7 @@ def print_results(results: List[Dict], dry_run: bool):
     print(f"Skipped (exists)      : {skipped}")                       # <-- Print skipped count
     print(f"Errors/Warnings       : {errors}")                        # <-- Print error count
     print(f"Total images found    : {total_images}")                  # <-- Print total images
+    print(f"Total GLB models      : {total_glb_files}")               # <-- Print total GLB files
     
     if dry_run:
         print(f"\n{COLOR_YELLOW}DRY RUN MODE: No files were modified{COLOR_RESET}")  # <-- Print dry-run notice

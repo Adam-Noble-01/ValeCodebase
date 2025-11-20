@@ -2,6 +2,9 @@
 .vs/
 
 
+# Critical Environment Variables
+*.env
+
 # Compiled Object files
 *.slo
 *.lo

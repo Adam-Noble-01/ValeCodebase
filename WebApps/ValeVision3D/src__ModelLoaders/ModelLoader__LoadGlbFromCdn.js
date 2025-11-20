@@ -14,7 +14,7 @@
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/HexBigConservatory__SketchUpExport__1.3.1__.glb';
 // const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Rodger__WhitecardModel__ValeVisionModel__1.2.0__.glb';
 
-// CURRENT MODEL
+// CURRENT MODEL (DEFAULT)
 const glbModelUrl = 'https://cdn.noble-architecture.com/VaApps/3dAssets/Stayley__ValeVisionModel__1.2.0__.glb';
 
 let loadedMeshes = [];
@@ -23,8 +23,12 @@ let loadedModelRoot = null;
 
 // FUNCTION | LoadGLBModel - Asynchronously loads GLB model from CDN
 // --------------------------------------------------------
-async function loadGLBModel() {
+async function loadGLBModel(modelUrl = null) {
+    // USE PROVIDED URL OR DEFAULT
+    const glbUrl = modelUrl || glbModelUrl;                           // <-- Use parameter or default URL
+    
     try {
+        console.log(`[GLB Loader] Loading model from: ${glbUrl}`);   // <-- Log URL being loaded
         // Store environment state before loading (to detect automatic creation)    
         // ------------------------------------
         const environmentBeforeLoad = scene.environmentTexture;
@@ -36,7 +40,7 @@ async function loadGLBModel() {
         const result = await BABYLON.SceneLoader.ImportMeshAsync(
             '',                    // Import all meshes (empty string = all)
             '',                    // Base URL (empty since using full URL)
-            glbModelUrl,           // Full URL to GLB file
+            glbUrl,                // Full URL to GLB file (parameter or default)
             scene                  // Target scene
         );
 
@@ -102,29 +106,6 @@ async function loadGLBModel() {
             }
         });
         console.log('Collision detection enabled (two-sided) on', loadedMeshes.length, 'meshes');
-
-
-        // Apply depth bias to line meshes to prevent z-fighting with faces
-        // ------------------------------------
-        // Use setTimeout to ensure scene hierarchy is fully established after load
-        // ------------------------------------
-        setTimeout(() => {
-            const edgeLayers = applyDepthBiasToLineMeshes(loadedMeshes, scene);  // <-- Get found edge layer meshes
-            
-            // Setup dynamic camera-relative offset for edge layers
-            // ------------------------------------
-            if (edgeLayers && edgeLayers.length > 0) {
-                const camera = scene.activeCamera;                                // <-- Get active camera reference
-                if (camera) {
-                    console.log('Setting up dynamic edge offset with camera:', camera.name || 'Unnamed');
-                    setupDynamicEdgeOffset(scene, camera, edgeLayers);            // <-- Enable dynamic per-frame updates
-                } else {
-                    console.warn('Camera not available for dynamic edge offset');
-                }
-            } else {
-                console.warn('No edge layers found - static depth bias may not be sufficient');
-            }
-        }, 100);                                                                   // <-- Small delay to ensure hierarchy is ready
 
 
         // Check lighting state after model load

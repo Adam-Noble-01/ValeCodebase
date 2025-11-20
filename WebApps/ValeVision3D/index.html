@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ValeVision3D |  0.2.4_LivePreview</title>
+    <title>ValeVision3D |  0.2.5_LivePreview</title>
     
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  BRANDING | Favicon and Brand Icons                     -->
@@ -186,8 +186,11 @@
     <!-- REGION  |  Model Loader Import                                    -->
     <!-- ----------------------------------------------------------------- -->
     
-    <!-- Load GLB Model -->
+    <!-- Load GLB Model - Basic Loader -->
     <script src="src__ModelLoaders/ModelLoader__LoadGlbFromCdn.js"></script>
+    
+    <!-- Load GLB Model - Dynamic Loader from Whitecardopedia -->
+    <script src="src__ModelLoaders/ModelLoader__DynamicUrlFromWhitecardopedia.js"></script>
     
     <!-- endregion -------------------------------------------------------- -->
     
@@ -268,9 +271,9 @@
         // --------------------------------------------------------
 
 
-        // FUNCTION | StartLoadingSequence - Orchestrates event-driven loading
+        // FUNCTION | StartLoadingSequence - Orchestrates event-driven loading with dynamic/fallback logic
         // --------------------------------------------------------
-        function startLoadingSequence() {
+        async function startLoadingSequence() {
             console.log('Starting event-driven loading sequence...');
             
             // Step 1: Create scene and setup basic components
@@ -278,11 +281,34 @@
             createScene();
             
             
-            // Step 2: Load model (will dispatch modelLoaded event)
+            // Step 2: Check for project parameter and load model accordingly
             // ------------------------------------
             if (statusText) statusText.textContent = 'Loading 3D model...';
-            console.log('Loading GLB model...');
-            loadGLBModel();
+            console.log('Checking for project parameter...');
+            
+            const projectCode = getProjectCodeFromUrl();                  // <-- Get project code from URL
+            
+            if (projectCode) {
+                // DYNAMIC LOADER PATH - Load from Whitecardopedia project data
+                console.log(`[Orchestration] Project parameter detected: ${projectCode}`);
+                console.log('[Orchestration] Using dynamic loader...');
+                
+                try {
+                    await loadModelDynamically(projectCode);              // <-- Use dynamic loader
+                    console.log('[Orchestration] Dynamic loader succeeded');
+                } catch (error) {
+                    console.error('[Orchestration] Dynamic loader failed:', error);
+                    console.warn('[Orchestration] Falling back to basic loader...');
+                    
+                    if (statusText) statusText.textContent = 'Loading fallback model...';
+                    await loadGLBModel();                                 // <-- Fallback to basic loader
+                }
+            } else {
+                // BASIC LOADER PATH - Use default hardcoded model
+                console.log('[Orchestration] No project parameter found');
+                console.log('[Orchestration] Using basic loader with default model...');
+                await loadGLBModel();                                     // <-- Use basic loader
+            }
         }
         // --------------------------------------------------------
 

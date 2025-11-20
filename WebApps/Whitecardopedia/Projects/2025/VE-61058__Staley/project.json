@@ -1,0 +1,26 @@
+{
+    "projectName": "Staley",
+    "projectCode": "61058",
+    "productionData": {
+        "input": "Default Input Type",
+        "conceptArtist": "Default Concept Artist",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "10-Oct-2025",
+        "dateFulfilled": "20-Nov-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/VE-61058__Staley/Stayley__ValeVisionModel__1.0.0__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/VE-61058__Staley/Stayley__ValeVisionModel__1.1.0__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/VE-61058__Staley/Stayley__ValeVisionModel__1.2.0__.glb"
+    ],
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__20-Nov-2025.png"
+    ]
+}

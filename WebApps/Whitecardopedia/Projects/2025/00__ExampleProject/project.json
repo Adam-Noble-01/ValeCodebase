@@ -10,6 +10,7 @@
         "urlNote": "If the model is not available, set the url to 'None' or 'nil' or 'Nil' or 'False'",
         "url": "https://3dwarehouse.sketchup.com/model/example"
     },
+    "valeVision_ModelUrl": null,
     "images": [
         "IMG01__TestImage-01.png",
         "IMG02__TestImage-02.png",

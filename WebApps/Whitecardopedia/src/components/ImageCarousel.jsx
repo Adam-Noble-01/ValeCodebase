@@ -35,6 +35,36 @@
     };
     // ---------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Check if Project has ValeVision Model URL
+    // ---------------------------------------------------------------
+    const hasValeVisionModel = (projectData) => {
+        if (!projectData) return false;                                  // <-- Check if project data exists
+        const url = projectData.valeVision_ModelUrl;                     // <-- Get model URL
+        if (!url) return false;                                          // <-- Return false if no URL
+        if (Array.isArray(url)) return url.length > 0;                   // <-- Check array has items
+        return typeof url === 'string' && url.length > 0;                // <-- Check string is not empty
+    };
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Generate ValeVision3D URL with Project Parameter
+    // ---------------------------------------------------------------
+    const getValeVisionUrl = (projectCode) => {
+        return `../ValeVision3D/index.html?project=${projectCode}`;      // <-- Build ValeVision URL with parameter
+    };
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle ValeVision Button Click
+    // ---------------------------------------------------------------
+    const handleValeVisionClick = (projectData) => {
+        const projectCode = projectData.folderId;                        // <-- Get project folder ID
+        const valeVisionUrl = getValeVisionUrl(projectCode);             // <-- Generate ValeVision URL
+        window.open(valeVisionUrl, '_blank');                            // <-- Open in new tab
+    };
+    // ---------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
@@ -243,11 +273,22 @@
                 <div className="image-carousel__main">
                     {!hasArtPair ? (
                         // NORMAL IMAGE DISPLAY (NO ART PAIR)
-                        <img 
-                            src={currentImageUrl} 
-                            alt={`Project image ${currentIndex + 1}`}
-                            className="image-carousel__image"
-                        />
+                        <div className="image-carousel__image-wrapper">
+                            <img 
+                                src={currentImageUrl} 
+                                alt={`Project image ${currentIndex + 1}`}
+                                className="image-carousel__image"
+                            />
+                            {hasValeVisionModel(projectData) && (
+                                <img 
+                                    src="../assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__50%-Opacity__1.0.0__.png"
+                                    alt="Load in ValeVision3D"
+                                    className="image-carousel__valevision-overlay"
+                                    onClick={() => handleValeVisionClick(projectData)}
+                                    title="Load 3D Model in ValeVision3D"
+                                />
+                            )}
+                        </div>
                     ) : (
                         // COMPARISON DISPLAY (WITH ART PAIR)
                         <div 
@@ -310,6 +351,17 @@
                                         Drag to reveal {artImageData.label.toLowerCase()}
                                     </div>
                                 </div>
+                            )}
+                            
+                            {/* VALEVISION OVERLAY */}
+                            {hasValeVisionModel(projectData) && (
+                                <img 
+                                    src="../assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__50%-Opacity__1.0.0__.png"
+                                    alt="Load in ValeVision3D"
+                                    className="image-carousel__valevision-overlay"
+                                    onClick={() => handleValeVisionClick(projectData)}
+                                    title="Load 3D Model in ValeVision3D"
+                                />
                             )}
                         </div>
                     )}

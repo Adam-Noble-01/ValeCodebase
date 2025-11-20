@@ -44,12 +44,13 @@
     /* ------------------------------------------------------------ */
     .image-carousel__valevision-overlay {
         position                           : absolute;                   /* <-- Position over image */
-        bottom                             : 30px;                       /* <-- Distance from bottom */
-        right                              : 30px;                       /* <-- Distance from right */
-        width                              : 180px;                      /* <-- Button width */
+        top                                : 50%;                        /* <-- Vertical center */
+        left                               : 50%;                        /* <-- Horizontal center */
+        transform                          : translate(-50%, -50%);      /* <-- Center offset */
+        width                              : 270px;                      /* <-- Button width (1.5x larger) */
         height                             : auto;                       /* <-- Maintain aspect ratio */
         cursor                             : pointer;                    /* <-- Pointer cursor on hover */
-        opacity                            : 0.5;                        /* <-- Semi-transparent by default */
+        opacity                            : 0.8;                        /* <-- Semi-transparent by default */
         transition                         : opacity 0.3s ease,           /* <-- Smooth opacity transition */
                                              transform 0.3s ease;         /* <-- Smooth transform transition */
         z-index                            : 10;                         /* <-- Above image but below controls */
@@ -59,11 +60,11 @@
     
     .image-carousel__valevision-overlay:hover {
         opacity                            : 1.0;                        /* <-- Full opacity on hover */
-        transform                          : scale(1.05);                /* <-- Slight scale up on hover */
+        transform                          : translate(-50%, -50%) scale(1.05);  /* <-- Maintain center + scale up */
     }
     
     .image-carousel__valevision-overlay:active {
-        transform                          : scale(0.98);                /* <-- Slight scale down on click */
+        transform                          : translate(-50%, -50%) scale(0.98);  /* <-- Maintain center + scale down */
     }
     /* ------------------------------------------------------------ */
 
@@ -77,9 +78,7 @@
     /* ------------------------------------------------------------ */
     @media (max-width: 1024px) {
         .image-carousel__valevision-overlay {
-            width                          : 150px;                      /* <-- Smaller button */
-            bottom                         : 20px;                       /* <-- Closer to bottom */
-            right                          : 20px;                       /* <-- Closer to right */
+            width                          : 225px;                      /* <-- Smaller button (1.5x of 150px) */
         }
     }
     /* ------------------------------------------------------------ */
@@ -89,9 +88,7 @@
     /* ------------------------------------------------------------ */
     @media (max-width: 768px) {
         .image-carousel__valevision-overlay {
-            width                          : 120px;                      /* <-- Even smaller button */
-            bottom                         : 15px;                       /* <-- Closer to bottom */
-            right                          : 15px;                       /* <-- Closer to right */
+            width                          : 180px;                      /* <-- Even smaller button (1.5x of 120px) */
         }
     }
     /* ------------------------------------------------------------ */

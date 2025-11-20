@@ -48,10 +48,26 @@
     // ---------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Detect if Running on Localhost
+    // ---------------------------------------------------------------
+    const isRunningOnLocalhost = () => {
+        const hostname = window.location.hostname;                       // <-- Get current hostname
+        const port = window.location.port;                               // <-- Get current port
+        return hostname === 'localhost' || hostname === '127.0.0.1' || port === '8000';  // <-- Check localhost indicators
+    };
+    // ---------------------------------------------------------------
+
+
     // HELPER FUNCTION | Generate ValeVision3D URL with Project Parameter
     // ---------------------------------------------------------------
     const getValeVisionUrl = (projectCode) => {
-        return `../ValeVision3D/index.html?project=${projectCode}`;      // <-- Build ValeVision URL with parameter
+        if (isRunningOnLocalhost()) {
+            // LOCALHOST MODE - Use Flask server route
+            return `/ValeVision3D/index.html?project=${projectCode}`;    // <-- Server-relative path
+        } else {
+            // STATIC MODE - Use relative file path
+            return `../ValeVision3D/index.html?project=${projectCode}`;  // <-- File-relative path
+        }
     };
     // ---------------------------------------------------------------
 
@@ -281,7 +297,7 @@
                             />
                             {hasValeVisionModel(projectData) && (
                                 <img 
-                                    src="../assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__50%-Opacity__1.0.0__.png"
+                                    src="../assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__1.0.0__.png"
                                     alt="Load in ValeVision3D"
                                     className="image-carousel__valevision-overlay"
                                     onClick={() => handleValeVisionClick(projectData)}

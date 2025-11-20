@@ -34,17 +34,49 @@ function getProjectCodeFromUrl() {
 // #endregion ---------------------------------------------
 
 // #Region ------------------------------------------------
+// ENVIRONMENT DETECTION | Detect Localhost vs Static Deployment
+// --------------------------------------------------------
+
+// FUNCTION | IsRunningOnLocalhost - Detect if running on Flask development server
+// --------------------------------------------------------
+function isRunningOnLocalhost() {
+    const hostname = window.location.hostname;                        // <-- Get current hostname
+    const port = window.location.port;                                // <-- Get current port
+    
+    // CHECK FOR LOCALHOST INDICATORS
+    const isLocalhost = hostname === 'localhost' ||                   // <-- Check for localhost
+                        hostname === '127.0.0.1' ||                   // <-- Check for 127.0.0.1
+                        port === '8000';                              // <-- Check for Flask port
+    
+    console.log(`[Dynamic Loader] Environment: ${isLocalhost ? 'Localhost (Flask)' : 'Static (GitHub Pages)'}`);
+    return isLocalhost;                                               // <-- Return detection result
+}
+// --------------------------------------------------------
+
+// #endregion ---------------------------------------------
+
+// #Region ------------------------------------------------
 // PROJECT DATA FETCHING | Load Project JSON
 // --------------------------------------------------------
 
 // FUNCTION | FetchProjectJson - Load project.json from Whitecardopedia
 // --------------------------------------------------------
 async function fetchProjectJson(projectCode) {
-    const projectJsonUrl = `../Whitecardopedia/Projects/2025/${projectCode}/project.json`;  // <-- Build relative path to project.json
-    
     try {
         console.log(`[Dynamic Loader] Fetching project data for: ${projectCode}`);
-        console.log(`[Dynamic Loader] URL: ${projectJsonUrl}`);
+        
+        // DETERMINE URL BASED ON ENVIRONMENT
+        let projectJsonUrl;
+        
+        if (isRunningOnLocalhost()) {
+            // LOCALHOST MODE - Use Flask API endpoint
+            projectJsonUrl = `http://localhost:8000/api/projects/${projectCode}`;  // <-- API endpoint
+            console.log(`[Dynamic Loader] Using API endpoint: ${projectJsonUrl}`);
+        } else {
+            // STATIC MODE - Use relative file path
+            projectJsonUrl = `../Whitecardopedia/Projects/2025/${projectCode}/project.json`;  // <-- Relative path
+            console.log(`[Dynamic Loader] Using relative path: ${projectJsonUrl}`);
+        }
         
         const response = await fetch(projectJsonUrl);                 // <-- Fetch project.json
         

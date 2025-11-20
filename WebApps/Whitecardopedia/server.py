@@ -24,6 +24,8 @@
 # - GET  /api/projects/discover   : Discover all project folders by scanning filesystem
 # - GET  /api/projects/<folder>   : Get specific project.json data
 # - POST /api/projects/<folder>   : Save updated project.json data
+# - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
+# - GET  /assets__CommonApplicationAssets/<path> : Serve shared assets
 #
 # CONSOLE COMMANDS:
 # - --refresh / --Refresh         : Trigger refresh signal to all active clients
@@ -397,6 +399,34 @@ def serve_shared_assets(filename):
     except Exception as e:
         return jsonify({
             'error': f'Error serving asset: {str(e)}'                   # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve ValeVision3D Files
+# ------------------------------------------------------------
+@app.route('/ValeVision3D/<path:filename>', methods=['GET'])
+def serve_valevision(filename):
+    """Serve ValeVision3D files from sibling directory"""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
+        parent_dir = os.path.dirname(base_dir)                            # <-- Get parent directory
+        valevision_dir = os.path.join(parent_dir, 'ValeVision3D')        # <-- Build ValeVision3D path
+        
+        if not os.path.exists(valevision_dir):                           # <-- Check if ValeVision3D directory exists
+            return jsonify({
+                'error': 'ValeVision3D directory not found'              # <-- Directory missing
+            }), 404
+        
+        # Handle default index.html for directory requests
+        if filename == '' or filename.endswith('/'):
+            filename = os.path.join(filename, 'index.html')              # <-- Append index.html
+        
+        return send_from_directory(valevision_dir, filename)             # <-- Serve file securely
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Error serving ValeVision3D file: {str(e)}'       # <-- Generic error
         }), 500
 # ------------------------------------------------------------
 

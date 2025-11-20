@@ -11,6 +11,8 @@ REM
 REM DESCRIPTION:
 REM - Automatically discovers Whitecard projects from local Vale Projects folder
 REM - Clones projects to Whitecardopedia structure with images and metadata
+REM - Discovers .glb model files and generates Cloudflare CDN URLs
+REM - Automatically adds projects to masterConfig.json as enabled
 REM - Always runs preview first before making changes
 REM - Prompts for confirmation before cloning projects
 REM

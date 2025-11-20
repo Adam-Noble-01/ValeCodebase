@@ -67,10 +67,75 @@ async function fetchProjectJson(projectCode) {
 // #endregion ---------------------------------------------
 
 // #Region ------------------------------------------------
+// VERSION PARSING | Extract and Compare Semantic Versions
+// --------------------------------------------------------
+
+// HELPER FUNCTION | ParseVersionFromUrl - Extract version number from URL
+// --------------------------------------------------------
+function parseVersionFromUrl(url) {
+    const versionMatch = url.match(/__(\d+)\.(\d+)\.(\d+)__\.glb$/);  // <-- Match version pattern
+    if (versionMatch) {
+        return {
+            major: parseInt(versionMatch[1]),                         // <-- Major version
+            minor: parseInt(versionMatch[2]),                         // <-- Minor version
+            patch: parseInt(versionMatch[3]),                         // <-- Patch version
+            string: `${versionMatch[1]}.${versionMatch[2]}.${versionMatch[3]}`  // <-- Full version string
+        };
+    }
+    return null;                                                      // <-- No version found
+}
+// --------------------------------------------------------
+
+
+// HELPER FUNCTION | CompareVersions - Compare two semantic versions
+// --------------------------------------------------------
+function compareVersions(v1, v2) {
+    if (v1.major !== v2.major) return v1.major - v2.major;           // <-- Compare major version
+    if (v1.minor !== v2.minor) return v1.minor - v2.minor;           // <-- Compare minor version
+    return v1.patch - v2.patch;                                       // <-- Compare patch version
+}
+// --------------------------------------------------------
+
+
+// FUNCTION | GetLatestVersionUrl - Select latest version from array of URLs
+// --------------------------------------------------------
+function getLatestVersionUrl(urlArray) {
+    if (!Array.isArray(urlArray) || urlArray.length === 0) {
+        return null;                                                  // <-- Invalid array
+    }
+    
+    if (urlArray.length === 1) {
+        return urlArray[0];                                           // <-- Single URL, return it
+    }
+    
+    let latestUrl = urlArray[0];                                      // <-- Start with first URL
+    let latestVersion = parseVersionFromUrl(latestUrl);               // <-- Parse first version
+    
+    // ITERATE THROUGH ALL URLs TO FIND LATEST
+    for (let i = 1; i < urlArray.length; i++) {
+        const currentUrl = urlArray[i];                               // <-- Current URL
+        const currentVersion = parseVersionFromUrl(currentUrl);       // <-- Parse current version
+        
+        if (currentVersion && latestVersion) {
+            if (compareVersions(currentVersion, latestVersion) > 0) { // <-- Current is newer
+                latestUrl = currentUrl;                               // <-- Update latest URL
+                latestVersion = currentVersion;                       // <-- Update latest version
+            }
+        }
+    }
+    
+    console.log(`[Dynamic Loader] Latest version selected: ${latestVersion?.string || 'unknown'}`);
+    return latestUrl;                                                 // <-- Return latest version URL
+}
+// --------------------------------------------------------
+
+// #endregion ---------------------------------------------
+
+// #Region ------------------------------------------------
 // MODEL URL EXTRACTION | Get Model URL from Project Data
 // --------------------------------------------------------
 
-// FUNCTION | GetModelUrl - Extract model URL from project.json
+// FUNCTION | GetModelUrl - Extract model URL from project.json with version selection
 // --------------------------------------------------------
 function getModelUrl(projectJson) {
     const modelUrl = projectJson.valeVision_ModelUrl;                 // <-- Get model URL field
@@ -80,11 +145,13 @@ function getModelUrl(projectJson) {
     }
     
     if (Array.isArray(modelUrl)) {
-        console.log(`[Dynamic Loader] Multiple model URLs found, using first: ${modelUrl[0]}`);
-        return modelUrl[0];                                           // <-- Use first model if multiple
+        console.log(`[Dynamic Loader] Multiple model URLs found (${modelUrl.length}), selecting latest version...`);
+        const latestUrl = getLatestVersionUrl(modelUrl);              // <-- Get latest version
+        console.log(`[Dynamic Loader] Selected URL: ${latestUrl}`);
+        return latestUrl;                                             // <-- Return latest version
     }
     
-    console.log(`[Dynamic Loader] Model URL: ${modelUrl}`);
+    console.log(`[Dynamic Loader] Single model URL: ${modelUrl}`);
     return modelUrl;                                                  // <-- Return single URL
 }
 // --------------------------------------------------------

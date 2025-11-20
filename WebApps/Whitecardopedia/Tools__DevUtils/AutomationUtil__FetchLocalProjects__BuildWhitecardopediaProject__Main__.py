@@ -44,6 +44,7 @@ from typing import List, Dict, Tuple, Optional
 LOCAL_PROJECTS_BASE_PATH           = r"C:\01__ValeProjects\ValeProjects__2025"  # <-- Source path for local Vale projects
 WHITECARDOPEDIA_PROJECTS_PATH      = "../Projects/2025"                     # <-- Destination path for Whitecardopedia projects
 WHITECARDOPEDIA_TEMPLATE_PATH      = "../Projects/2025/01__TemplateProject" # <-- Template project path
+MASTER_CONFIG_PATH                 = "../src/data/masterConfig.json"         # <-- Master configuration file path
 CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"          # <-- Content delivery subfolder name
 GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"              # <-- GLB files subfolder name
 PROJECT_JSON_FILENAME              = "project.json"                          # <-- Project metadata filename
@@ -96,12 +97,13 @@ WHAT IT DOES:
 2. Finds the latest content delivery folder (by date stamp)
 3. Discovers all IMG## and IMG##_ART## prefixed images
 4. Discovers .glb model files in ValeVision__GlbFileSync folders
-5. Generates CDN URLs for ValeVision 3D models
+5. Generates CDN URLs for ValeVision 3D models (sorted by semantic version)
 6. Copies images to Whitecardopedia project structure
 7. Generates project.json with extracted metadata (name, code, dateFulfilled)
 8. Adds valeVision_ModelUrl field with Cloudflare CDN URLs
-9. Extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
-10. Strips __Whitecard suffix from destination folder names
+9. Automatically adds project to masterConfig.json as enabled
+10. Extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
+11. Strips __Whitecard suffix from destination folder names
 
 This utility eliminates manual folder duplication and ensures consistency
 between your local projects and the Whitecardopedia showcase.
@@ -176,9 +178,19 @@ ValeVision Model URL Generation:
   
   If .glb files are found in ValeVision__GlbFileSync folder:
   - Generates Cloudflare CDN URLs automatically
+  - Sorts models by semantic version (1.0.0, 1.1.0, 1.2.0, etc.)
   - Format: https://cdn.noble-architecture.com/VaApps/Projects/2025/[ProjectFolder]/[ModelFile].glb
   - Example: https://cdn.noble-architecture.com/VaApps/Projects/2025/VE-61058__Staley/Stayley__ValeVisionModel__1.2.0__.glb
   - URLs enable direct model loading in ValeVision3D viewer
+  - ValeVision3D automatically selects latest version when multiple models exist
+
+Master Config Auto-Update:
+  
+  Successfully cloned projects are automatically added to masterConfig.json:
+  - New project entries are set to "enabled": true
+  - Blacklisted projects are set to "enabled": false
+  - Eliminates manual masterConfig.json editing
+  - Projects appear in Whitecardopedia gallery immediately
 
 Skip Existing Projects:
   
@@ -343,6 +355,20 @@ def discover_image_files(content_folder: Path) -> List[str]:
 # ---------------------------------------------------------------
 
 
+# HELPER FUNCTION | Parse Semantic Version from GLB Filename
+# ---------------------------------------------------------------
+def parse_glb_version(filename: str) -> Tuple[int, int, int]:
+    """Extract semantic version from GLB filename for sorting"""
+    version_match = re.search(r'__(\d+)\.(\d+)\.(\d+)__\.glb$', filename, re.IGNORECASE)  # <-- Match version pattern
+    if version_match:
+        major = int(version_match.group(1))                           # <-- Extract major version
+        minor = int(version_match.group(2))                           # <-- Extract minor version
+        patch = int(version_match.group(3))                           # <-- Extract patch version
+        return (major, minor, patch)                                  # <-- Return version tuple
+    return (0, 0, 0)                                                  # <-- Default version for non-versioned files
+# ---------------------------------------------------------------
+
+
 # FUNCTION | Discover GLB Files in ValeVision Sync Folder
 # ------------------------------------------------------------
 def discover_glb_files(project_path: Path) -> List[str]:
@@ -361,8 +387,8 @@ def discover_glb_files(project_path: Path) -> List[str]:
             if re.match(GLB_FILE_PATTERN, filename, re.IGNORECASE):   # <-- Check pattern match
                 glb_files.append(filename)                            # <-- Add to GLB files list
     
-    glb_files.sort()                                                  # <-- Sort alphabetically
-    return glb_files                                                  # <-- Return sorted GLB files list
+    glb_files.sort(key=parse_glb_version)                             # <-- Sort by semantic version
+    return glb_files                                                  # <-- Return version-sorted GLB files list
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -398,6 +424,79 @@ def discover_whitecard_projects(source_base: Path) -> List[Dict]:
             })
     
     return projects                                                   # <-- Return discovered projects list
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Master Config Management Functions
+# -----------------------------------------------------------------------------
+
+# FUNCTION | Load Master Configuration File
+# ------------------------------------------------------------
+def load_master_config_file(config_path: Path) -> Tuple[Dict, bool]:
+    """Load masterConfig.json file"""
+    try:
+        with open(config_path, 'r', encoding='utf-8') as file:        # <-- Open config file
+            config = json.load(file)                                  # <-- Parse JSON content
+            return config, True                                       # <-- Return config and success flag
+    except Exception as error:
+        print(f"{COLOR_RED}Error reading {config_path}: {error}{COLOR_RESET}")  # <-- Log error
+        return None, False                                            # <-- Return None and failure flag
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Write Master Configuration File
+# ------------------------------------------------------------
+def write_master_config_file(config_path: Path, config: Dict) -> bool:
+    """Write masterConfig.json file"""
+    try:
+        with open(config_path, 'w', encoding='utf-8') as file:        # <-- Open config file for writing
+            json.dump(config, file, indent=4, ensure_ascii=False)     # <-- Write formatted JSON
+            file.write('\n')                                          # <-- Add trailing newline
+        return True                                                   # <-- Return success flag
+    except Exception as error:
+        print(f"{COLOR_RED}Error writing {config_path}: {error}{COLOR_RESET}")  # <-- Log error
+        return False                                                  # <-- Return failure flag
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Add Project to Master Config
+# ------------------------------------------------------------
+def add_project_to_master_config(config_path: Path, folder_id: str) -> bool:
+    """Add newly cloned project to masterConfig.json"""
+    config, success = load_master_config_file(config_path)            # <-- Load existing config
+    
+    if not success or config is None:
+        return False                                                  # <-- Return failure if load failed
+    
+    projects = config.get('projects', [])                             # <-- Get projects array
+    blacklist = config.get('projectFoldersBlacklist', [])             # <-- Get blacklist
+    
+    # CHECK IF PROJECT ALREADY EXISTS IN CONFIG
+    existing = next((p for p in projects if p['folderId'] == folder_id), None)  # <-- Find existing entry
+    
+    if existing:
+        return True                                                   # <-- Already exists, no action needed
+    
+    # ADD NEW PROJECT
+    is_blacklisted = folder_id in blacklist                           # <-- Check if blacklisted
+    enabled = not is_blacklisted                                      # <-- Set enabled flag
+    
+    projects.append({
+        "folderId": folder_id,
+        "enabled": enabled
+    })
+    
+    config['projects'] = projects                                     # <-- Update projects array
+    
+    success = write_master_config_file(config_path, config)           # <-- Write updated config
+    
+    if success:
+        status = "enabled" if enabled else "disabled (blacklisted)"
+        print(f"    {COLOR_GREEN}[+] Added to masterConfig.json ({status}){COLOR_RESET}")  # <-- Log success
+    
+    return success                                                    # <-- Return success flag
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -591,6 +690,14 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
     if not json_success:
         result['error'] = "Failed to create project.json"             # <-- Set error message
         return result                                                 # <-- Return error result
+    
+    # ADD PROJECT TO MASTER CONFIG
+    script_dir = Path(__file__).parent                                # <-- Get script directory
+    config_path = script_dir / MASTER_CONFIG_PATH                     # <-- Construct config path
+    config_success = add_project_to_master_config(config_path, project_info['dest_folder_name'])  # <-- Add to config
+    
+    if not config_success:
+        print(f"    {COLOR_YELLOW}[!] Warning: Failed to add to masterConfig.json{COLOR_RESET}")  # <-- Log warning
     
     result['success'] = True                                          # <-- Mark as successful
     return result                                                     # <-- Return success result

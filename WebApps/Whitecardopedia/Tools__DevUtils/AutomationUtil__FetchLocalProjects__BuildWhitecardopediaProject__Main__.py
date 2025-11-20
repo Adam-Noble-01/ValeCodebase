@@ -290,6 +290,10 @@ def find_latest_content_folder(project_path: Path) -> Optional[Path]:
     
     for item in content_base.iterdir():
         if item.is_dir() and not item.name.startswith('.'):          # <-- Check if directory and not hidden
+            # EXCLUDE GLB SYNC FOLDER FROM CONTENT FOLDER SEARCH
+            if item.name == GLB_SYNC_SUBFOLDER:
+                continue                                              # <-- Skip GLB sync folder
+            
             folder_date = parse_folder_date(item.name)               # <-- Parse date from folder name
             
             if folder_date:

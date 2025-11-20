@@ -170,6 +170,10 @@
         {
             "folderId": "WS-61782__Wiltshire",
             "enabled": true
+        },
+        {
+            "folderId": "RD-61662__Rodger",
+            "enabled": true
         }
     ]
 }

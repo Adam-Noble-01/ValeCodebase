@@ -2,7 +2,7 @@
     "projectName": "Staley",
     "projectCode": "61058",
     "productionData": {
-        "input": "Hand Drawn Concept",
+        "input": "CAD File",
         "conceptArtist": "Dan",
         "additionalNotes": "Used a concept plan provided by Dan. Me and James chatted and decided that it seems much quicker to \"CADize\" concepts rather than trying to work with the Hybrid workflow (i.e. mapping cut up drawings to edges) The Cadization methods eliminates having to laboriously fill out areas not drawn whilst also allowing for fabrication of missing elements quickly such as a missing elevation hand drawing etc. As a result this method was proven quick with this project."
     },

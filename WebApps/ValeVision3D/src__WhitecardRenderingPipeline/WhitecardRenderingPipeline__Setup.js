@@ -14,7 +14,7 @@ const PIPELINE_SSAO_SSAO_RATIO           = 1.0;                                 
 const PIPELINE_SSAO_BLUR_RATIO           = 1.0;                                   // <-- Blur post-process resolution ratio (0.5 = half resolution for performance)
 const PIPELINE_SSAO_TOTAL_STRENGTH       = 50.0;                                   // <-- Overall strength of SSAO effect (0.0 to 2.0, higher = more pronounced shadows)
 const PIPELINE_SSAO_RADIUS               = 0.035;                                  // <-- Radius around each pixel to sample for occlusion (smaller = tighter shadows, camera-distance independent)
-const PIPELINE_SSAO_SAMPLES              = 32;                                    // <-- Number of samples per pixel (higher = better quality but more performance cost)
+const PIPELINE_SSAO_SAMPLES              = 16;                                    // <-- Number of samples per pixel (higher = better quality but more performance cost)
 const PIPELINE_SSAO_EXPENSIVE_BLUR       = true;                                  // <-- Use high-quality blur (true = better quality, false = better performance)
 const PIPELINE_SSAO_MAX_Z                = 200.0;                                 // <-- Maximum depth value to consider for occlusion calculations
 const PIPELINE_SSAO_MIN_Z_ASPECT         = 0.2;                                   // <-- Minimum Z aspect ratio for depth calculations
@@ -207,9 +207,31 @@ function setupWhitecardRenderingPipeline(camera, scene, engine) {
     console.log('Whitecard rendering pipeline setup completed');                     // <-- Log overall pipeline completion
 
 
+    // Dispatch pipelineReady event for application coordination
+    // ------------------------------------
+    console.log('Dispatching pipelineReady event...');
+    window.dispatchEvent(new CustomEvent('pipelineReady', {
+        detail: {
+            ssaoPipeline: pipelineResult.ssaoPipeline,
+            greyscalePostProcess: pipelineResult.greyscalePostProcess,
+            prePassRenderer: pipelineResult.prePassRenderer
+        }
+    }));
+
+
     return pipelineResult;
 }
 // --------------------------------------------------------
+
+// #endregion ---------------------------------------------
+
+
+// #Region ------------------------------------------------
+// EVENT-DRIVEN INITIALIZATION | Listen for materialsReady event
+// --------------------------------------------------------
+
+// NOTE: Pipeline setup is now event-driven and coordinated with material preparation
+// The pipeline is applied only after materials are ready to prevent black flash issues
 
 // #endregion ---------------------------------------------
 

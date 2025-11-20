@@ -167,16 +167,36 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Auto-Initialization
+// REGION | Event-Driven Initialization
 // -----------------------------------------------------------------------------
 
-    // AUTO-INITIALIZATION | Automatically apply to scene when loaded
+    // EVENT LISTENER | Wait for modelLoaded event before applying materials
     // ------------------------------------------------------------
-    setTimeout(() => {
-        if (typeof scene !== 'undefined') {
-            PrepareFacesForRenderer(scene);                                // <-- Apply material configuration
+    window.addEventListener('modelLoaded', (event) => {
+        console.log('MaterialHandler: Received modelLoaded event');
+        
+        const scene = event.detail?.scene;                                 // <-- Get scene from event
+        
+        if (!scene) {
+            console.warn('MaterialHandler: No scene provided in modelLoaded event');
+            return;
         }
-    }, 200);                                                              // <-- Wait 200ms for scene to be ready
+        
+        // Apply material configuration
+        // ------------------------------------------------------------
+        const modifiedCount = PrepareFacesForRenderer(scene);              // <-- Apply material configuration
+        
+        // Dispatch materialsReady event for pipeline coordination
+        // ------------------------------------------------------------
+        console.log('MaterialHandler: Dispatching materialsReady event...');
+        window.dispatchEvent(new CustomEvent('materialsReady', {
+            detail: {
+                scene: scene,
+                modifiedCount: modifiedCount
+            }
+        }));
+    });
+    // ---------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 

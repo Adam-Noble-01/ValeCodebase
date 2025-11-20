@@ -2,6 +2,23 @@
 /* REGION  |  UI Components - Loading & Debug Overlays              */
 /* ================================================================= */
 
+/* Canvas Visibility Control - Hide during initialization */
+/* ----------------------------------------------------------------- */
+#renderCanvas.canvas-hidden {
+    opacity                            : 0;                            /* <-- Initially transparent */
+    pointer-events                     : none;                         /* <-- Disable interaction during load */
+}
+
+
+/* Canvas Visibility Control - Show with fade-in animation */
+/* ----------------------------------------------------------------- */
+#renderCanvas.canvas-visible {
+    opacity                            : 1;                            /* <-- Fully visible */
+    pointer-events                     : auto;                         /* <-- Enable interaction */
+    transition                         : opacity 0.8s ease-in;         /* <-- Smooth fade-in over 800ms */
+}
+
+
 /* Loading Indicator - Centered Overlay */
 /* ----------------------------------------------------------------- */
 .loading-indicator {

@@ -156,7 +156,13 @@
     <!-- ----------------------------------------------------------------- -->
     
     <div id="root">
-        <canvas id="renderCanvas"></canvas>
+        <!-- Loading Overlay (Vale Blue Spinner) -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading ValeVision3D...</p>
+        </div>
+        
+        <canvas id="renderCanvas" class="canvas-hidden"></canvas>
         
         <!-- Loading Indicator -->
         <div class="loading-indicator" id="loadingIndicator">
@@ -177,15 +183,36 @@
     
     
     <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Model Loader Import                                    -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Load GLB Model -->
+    <script src="src__ModelLoaders/ModelLoader__LoadGlbFromCdn.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Material Handler Import                                -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Prepare materials for renderer with rear face support and opacity control -->
+    <script src="src__ModifyModelFaces/MaterialHandler__PrepareFacesForRenderer.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Babylon.js Application Logic                           -->
     <!-- ----------------------------------------------------------------- -->
 
     <script>
         // #Region ------------------------------------------------
-        // BABYLON.JS SETUP | Initialize engine, scene, camera, and lighting
+        // BABYLON.JS SETUP | Initialize engine, scene, camera, and lighting with event-driven loading
         // --------------------------------------------------------
         
         const canvas = document.getElementById('renderCanvas');
+        const loadingOverlay = document.getElementById('loadingOverlay');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const statusText = document.getElementById('statusText');
         
@@ -203,6 +230,7 @@
             // Update status
             // ------------------------------------
             if (statusText) statusText.textContent = 'Creating scene...';
+            console.log('Creating Babylon.js scene...');
             
             
             // Create scene
@@ -214,31 +242,24 @@
             // Setup UniversalCamera navigation
             // ------------------------------------
             if (statusText) statusText.textContent = 'Setting up camera...';
+            console.log('Setting up camera...');
             const camera = setupUniversalCamera(scene, canvas);
 
 
             // Setup scene lighting
             // ------------------------------------
             if (statusText) statusText.textContent = 'Configuring lighting...';
+            console.log('Configuring lighting...');
             setupSceneLighting(scene);
 
 
-            // Setup rendering pipeline effects
+            // NOTE: Rendering pipeline is now applied AFTER materials are ready
+            // This prevents black flash during initialization
             // ------------------------------------
-            if (statusText) statusText.textContent = 'Applying rendering pipeline...';
-            setupWhitecardRenderingPipeline(camera, scene, engine);
 
-
-            // Scene ready - hide loading indicator
-            // ------------------------------------
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
-            }
-            if (statusText) statusText.textContent = 'Ready';
 
             console.log('=========================================');
-            console.log('=== Babylon.js Test Environment Ready ===');
-            console.log('Scene initialized successfully');
+            console.log('=== Scene Initialized - Ready to Load Model ===');
             console.log('=========================================');
 
 
@@ -247,9 +268,92 @@
         // --------------------------------------------------------
 
 
-        // Initialize scene
+        // FUNCTION | StartLoadingSequence - Orchestrates event-driven loading
+        // --------------------------------------------------------
+        function startLoadingSequence() {
+            console.log('Starting event-driven loading sequence...');
+            
+            // Step 1: Create scene and setup basic components
+            // ------------------------------------
+            createScene();
+            
+            
+            // Step 2: Load model (will dispatch modelLoaded event)
+            // ------------------------------------
+            if (statusText) statusText.textContent = 'Loading 3D model...';
+            console.log('Loading GLB model...');
+            loadGLBModel();
+        }
+        // --------------------------------------------------------
+
+
+        // EVENT LISTENER | Handle materialsReady event and apply rendering pipeline
+        // --------------------------------------------------------
+        window.addEventListener('materialsReady', (event) => {
+            console.log('Main: Received materialsReady event');
+            
+            if (statusText) statusText.textContent = 'Applying rendering effects...';
+            
+            const camera = scene.activeCamera;                               // <-- Get active camera
+            
+            if (camera && scene && engine) {
+                console.log('Applying rendering pipeline...');
+                setupWhitecardRenderingPipeline(camera, scene, engine);      // <-- Apply pipeline (will dispatch pipelineReady)
+            } else {
+                console.warn('Cannot apply rendering pipeline: missing camera, scene, or engine');
+            }
+        });
+        // --------------------------------------------------------
+
+
+        // EVENT LISTENER | Handle pipelineReady event and show scene
+        // --------------------------------------------------------
+        window.addEventListener('pipelineReady', () => {
+            console.log('Main: Received pipelineReady event');
+            
+            if (statusText) statusText.textContent = 'Complete - ValeVision3D Ready';
+            
+            // Hide loading overlay with fade-out
+            // ------------------------------------
+            if (loadingOverlay) {
+                console.log('Hiding loading overlay...');
+                loadingOverlay.classList.add('hidden');
+                
+                // Remove overlay from DOM after fade-out completes
+                // ------------------------------------
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);                                                     // <-- Match CSS transition duration
+            }
+            
+            
+            // Show canvas with fade-in animation
+            // ------------------------------------
+            if (canvas) {
+                console.log('Showing canvas with fade-in...');
+                canvas.classList.remove('canvas-hidden');
+                canvas.classList.add('canvas-visible');
+            }
+            
+            
+            // Hide old loading indicator
+            // ------------------------------------
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+            
+            
+            console.log('=========================================');
+            console.log('=== ValeVision3D Initialization Complete ===');
+            console.log('All systems ready - Scene visible');
+            console.log('=========================================');
+        });
+        // --------------------------------------------------------
+
+
+        // Initialize loading sequence
         // ------------------------------------
-        createScene();
+        startLoadingSequence();
 
 
         // Render loop
@@ -269,39 +373,7 @@
     </script>
     
     <!-- endregion -------------------------------------------------------- -->
-    
-    
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Model Loader Import                                    -->
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- Load GLB Model -->
-    <script src="src__ModelLoaders/ModelLoader__LoadGlbFromCdn.js"></script>
-    
-    <!-- endregion -------------------------------------------------------- -->
-    
-    
-    <!-- TEMP - DISABLED THIS FOR THE WHITECARD EDITION VERSION AS IT FUCKS UP LOADING AND CAUSES TRANSPARENT ISSUES -->
-        <!-- ----------------------------------------------------------------- -->
-        <!-- REGION  |  Material Color Changer Import                          -->
-        <!-- ----------------------------------------------------------------- -->
-        
-        <!-- Change material colors after model loads -->
-        <!-- <script src="src__MaterialsHandling/TargetElement__ChangeMaterialColors.js"></script> -->
-        
-        <!-- endregion -------------------------------------------------------- -->
-        
-        
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Material Handler Import                                -->
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- Prepare materials for renderer with rear face support and opacity control -->
-    <script src="src__ModifyModelFaces/MaterialHandler__PrepareFacesForRenderer.js"></script>
-    
-    <!-- endregion -------------------------------------------------------- -->
-    
-    
+
 
 </body>
 </html>

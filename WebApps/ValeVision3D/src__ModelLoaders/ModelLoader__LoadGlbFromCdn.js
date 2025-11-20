@@ -133,6 +133,18 @@ async function loadGLBModel() {
             checkLightingAfterModelLoad(scene);
         }
 
+
+        // Dispatch modelLoaded event for event-driven coordination
+        // ------------------------------------
+        console.log('Dispatching modelLoaded event...');
+        window.dispatchEvent(new CustomEvent('modelLoaded', {
+            detail: {
+                meshes: loadedMeshes,
+                root: loadedModelRoot,
+                scene: scene
+            }
+        }));
+
         return result;
 
         
@@ -140,6 +152,13 @@ async function loadGLBModel() {
     // ------------------------------------
     } catch (error) {
         console.error('Error loading GLB model:', error);
+        
+        // Dispatch error event
+        // ------------------------------------
+        window.dispatchEvent(new CustomEvent('modelLoadError', {
+            detail: { error: error }
+        }));
+        
         throw error;
     }
 }
@@ -147,8 +166,7 @@ async function loadGLBModel() {
 // #endregion ---------------------------------------------
 
 // #Region ------------------------------------------------
-// Initialize model loading
-// ------------------------------------
-loadGLBModel();
-
+// NOTE: Model loading is now controlled by main script orchestration
+// The loadGLBModel() function is exported and called when scene is ready
+// No automatic execution on script load
 // #endregion ---------------------------------------------

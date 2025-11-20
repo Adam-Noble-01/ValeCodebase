@@ -40,5 +40,10 @@
 /* ----------------------------------------------------------------- */
 @import url('controls-instructions-panel.css');
 
+
+/* Loading Overlay - Scene Initialization Loader */
+/* ----------------------------------------------------------------- */
+@import url('loading-overlay.css');
+
 /* endregion -------------------------------------------------------- */
 

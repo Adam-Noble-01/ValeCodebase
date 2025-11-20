@@ -40,9 +40,16 @@ const NAV_ENABLE_GRAVITY           = false;                                     
     // const NAV_INITIAL_POSITION         = new BABYLON.Vector3(65.09, 1.67, 49.55);    // <-- Initial camera position
     // const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0268, -0.7724, 0);    // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
 
-const NAV_INITIAL_POSITION         = new BABYLON.Vector3(5.06, 1.87, -1.57);     // <-- Initial camera position
-const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0194, 0.6157, 0.0000); // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
-const NAV_INITIAL_TARGET           = new BABYLON.Vector3(0, 0, 0);               // <-- Initial camera target
+    // Ball Model
+    // const NAV_INITIAL_POSITION         = new BABYLON.Vector3(5.06, 1.87, -1.57);     // <-- Initial camera position
+    // const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.0194, 0.6157, 0.0000); // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
+    // const NAV_INITIAL_TARGET           = new BABYLON.Vector3(0, 0, 0);               // <-- Initial camera target
+
+// Stayley Model
+const NAV_INITIAL_POSITION         = new BABYLON.Vector3(31.2693, 2.9121, -9.308);     // <-- Initial camera position
+const NAV_INITIAL_ROTATION         = new BABYLON.Vector3(0.035696, -0.486522, 0);      // <-- Initial camera rotation (Vector3 in radians: pitch, yaw, roll)
+const NAV_INITIAL_TARGET           = new BABYLON.Vector3(0, 0, 0);                     // <-- Initial camera target
+const NAV_INITIAL_LENS_MM          = 51;                                                // <-- Initial camera lens focal length (mm)
 
 // #endregion ---------------------------------------------
 

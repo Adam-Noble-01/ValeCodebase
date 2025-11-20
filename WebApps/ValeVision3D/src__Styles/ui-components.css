@@ -162,6 +162,59 @@
 }
 
 
+/* Camera Position Download Button - Below Camera Stats Overlay */
+/* ----------------------------------------------------------------- */
+.camera-position-download-button {
+    position                            : absolute;
+    top                                 : calc(var(--Vale_HeaderHeight) + 530px);  /* <-- Position below lens section at bottom of stats */
+    left                                : 20px;
+    background-color                    : #172b3a;
+    color                               : #ffffff;
+    border                              : none;
+    padding                             : 10px 16px;
+    font-family                         : 'Open Sans', sans-serif;
+    font-size                           : 0.85rem;
+    font-weight                         : 600;
+    border-radius                       : 4px;
+    cursor                              : pointer;
+    z-index                             : 1002;
+    box-shadow                          : 0 2px 6px rgba(0, 0, 0, 0.3);
+    backdrop-filter                     : blur(4px);
+    transition                          : all 0.2s ease;
+    display                             : flex;
+    align-items                         : center;
+    justify-content                     : center;
+    gap                                 : 6px;
+    min-width                           : 180px;
+}
+
+
+/* Camera Position Download Button - Hover State */
+/* ----------------------------------------------------------------- */
+.camera-position-download-button:hover:not(.disabled) {
+    background-color                    : #1e3a4f;
+    transform                           : translateY(-1px);
+    box-shadow                          : 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+
+/* Camera Position Download Button - Active State */
+/* ----------------------------------------------------------------- */
+.camera-position-download-button:active:not(.disabled) {
+    transform                           : translateY(0);
+    box-shadow                          : 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Camera Position Download Button - Disabled State */
+/* ----------------------------------------------------------------- */
+.camera-position-download-button.disabled {
+    opacity                             : 0.6;
+    cursor                              : not-allowed;
+    pointer-events                      : none;
+}
+
+
 /* Download Screenshot Button - Top Right Panel (Below Header) */
 /* ----------------------------------------------------------------- */
 .download-screenshot-button {

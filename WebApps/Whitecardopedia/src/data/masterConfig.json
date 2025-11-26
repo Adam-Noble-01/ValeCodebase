@@ -182,6 +182,10 @@
         {
             "folderId": "WS-61782__Wiltshire",
             "enabled": true
+        },
+        {
+            "folderId": "LX-61040__Loxton",
+            "enabled": true
         }
     ]
 }

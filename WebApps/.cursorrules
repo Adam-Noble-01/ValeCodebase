@@ -324,6 +324,17 @@ You are working on web applications (Whitecardopedia and ValeVision3D) and must 
 - One quick phrase or note; avoid full sentences unless clarification is essential
 - "Columnise" by aligning the comments vertically when there are multiple related lines
 
+### File Reference Comments
+**External Function/Module References**
+- When calling functions from external files, always add a comment above the call referencing the source file path
+- Format: `// Reference: path/to/file.js` (placed on the line immediately before the function call)
+- This helps track where functions are defined and improves code maintainability
+- Example:
+```javascript
+// Reference: src/Effects__PostProcessEffects/PostFx__EffectsLayerStack__HeirechyMap__.js
+await setupPostProcessEffectsLayerStack(scene, camera, engine);
+```
+
 ```comment_example.js
     // SUB FUNCTION | Update Project Configuration
     // ------------------------------------------------------------
@@ -911,5 +922,6 @@ function setupSceneLighting(scene) {
 10. **CSS Property Alignment**     :  Maintain strict column alignment for CSS properties and values
 11. **File Headers**              :  Always include comprehensive file headers with metadata
 12. **Two Regional Formats**      :  Support both `// REGION |` (Whitecardopedia) and `// #Region` (ValeVision3D) formats
+13. **File Reference Comments**   :  Always add `// Reference: path/to/file.js` above calls to external functions
 
 ### ---------------------------------------------------------------------------

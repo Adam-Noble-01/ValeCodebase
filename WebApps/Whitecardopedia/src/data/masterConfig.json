@@ -48,7 +48,15 @@
             "enabled": true
         },
         {
+            "folderId": "CF-61898__Chadfield",
+            "enabled": true
+        },
+        {
             "folderId": "CS-61737__Conyers",
+            "enabled": true
+        },
+        {
+            "folderId": "FM-56662__Foreman",
             "enabled": true
         },
         {
@@ -140,6 +148,10 @@
             "enabled": true
         },
         {
+            "folderId": "RD-61662__Rodger",
+            "enabled": true
+        },
+        {
             "folderId": "RS-59923__Richards",
             "enabled": true
         },
@@ -169,10 +181,6 @@
         },
         {
             "folderId": "WS-61782__Wiltshire",
-            "enabled": true
-        },
-        {
-            "folderId": "RD-61662__Rodger",
             "enabled": true
         }
     ]

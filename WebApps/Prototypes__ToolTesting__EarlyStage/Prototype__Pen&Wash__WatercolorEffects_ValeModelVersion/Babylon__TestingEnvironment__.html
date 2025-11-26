@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen & Wash Watercolor Effects - Testing Scene</title>
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  External CDN Library Imports                           -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Babylon.js Core and Loaders -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Post-Process Effects Module Import                     -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <!-- Material Preprocessing - Remove Reflections -->
+    <script src="src/Materials__MaterialsPreProcessors/MaterialPreProcess__RemoveReflections__.js"></script>
+    
+    <!-- Paper Bump Displacement Post-Process Effect -->
+    <script src="src/Effects__PostProcessEffects/PostFx__PaperBumpEffect.js"></script>
+    
+    <!-- Paper Overlay Post-Process Effect -->
+    <script src="src/Effects__PostProcessEffects/PostFx__PaperOverlayEffect.js"></script>
+    
+    <!-- Toon Shader Post-Process Effect -->
+    <script src="src/Effects__PostProcessEffects/PostFx__ToonShaderEffect.js"></script>
+    
+    <!-- Pencil Line Post-Process Effect -->
+    <script src="src/Effects__PostProcessEffects/PostFx__PencilLineEffect.js"></script>
+    
+    <!-- TEST SCRIPT - Check if scripts load at this position -->
+    <script>
+        console.error('!!! TEST SCRIPT BEFORE KUWAHARA IS LOADING !!!');
+    </script>
+    
+    <!-- Kuwahara Painterly Abstraction Post-Process Effect -->
+    <script src="src/Effects__PostProcessEffects/PostFx__KuwaharaEffect.js"></script>
+    
+    <!-- Color Grading Post-Process Effect -->
+    <script src="src/Effects__PostProcessEffects/PostFx__ColorGradingEffect.js"></script>
+    
+    <!-- Post-Process Effects Layer Stack -->
+    <script src="src/Effects__PostProcessEffects/PostFx__EffectsLayerStack__HeirechyMap__.js"></script>
+    
+    <!-- TEST SCRIPT - Check if scripts load after Kuwahara -->
+    <script>
+        console.error('!!! TEST SCRIPT AFTER KUWAHARA IS LOADING !!!');
+    </script>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    <style>
+        /* =============================================================================
+         * PEN & WASH WATERCOLOR EFFECTS - BASIC STYLES
+         * =============================================================================
+         *
+         * FILE       : index.html (embedded styles)
+         * NAMESPACE  : PenWashWatercolorEffects
+         * MODULE     : Basic Scene Styles
+         * AUTHOR     : Adam Noble - Noble Architecture
+         * PURPOSE    : Basic styling for Babylon.js canvas
+         * CREATED    : 2025
+         *
+         * DESCRIPTION:
+         * - Full viewport canvas styling
+         * - Removes default margins and padding
+         * - Ensures canvas fills entire viewport
+         *
+         * ============================================================================= */
+        
+        /* -----------------------------------------------------------------------------
+         * REGION | Base Reset Styles
+         * ----------------------------------------------------------------------------- */
+        
+            /* BASE STYLES | HTML and Body Reset */
+            /* ------------------------------------------------------------ */
+            * {
+                margin                             : 0;                            /* <-- Remove default margins */
+                padding                            : 0;                            /* <-- Remove default padding */
+                box-sizing                         : border-box;                   /* <-- Include padding in width */
+            }
+            
+            html, body {
+                width                              : 100%;                         /* <-- Full viewport width */
+                height                             : 100%;                         /* <-- Full viewport height */
+                overflow                           : hidden;                       /* <-- Prevent scrollbars */
+            }
+            /* ------------------------------------------------------------ */
+            
+            /* CANVAS STYLES | Babylon.js Render Canvas */
+            /* ------------------------------------------------------------ */
+            #renderCanvas {
+                width                              : 100%;                         /* <-- Full viewport width */
+                height                             : 100%;                         /* <-- Full viewport height */
+                display                            : block;                        /* <-- Remove inline spacing */
+                touch-action                       : none;                         /* <-- Prevent touch gestures */
+            }
+            /* ------------------------------------------------------------ */
+        
+        /* endregion ------------------------------------------------------------------- */
+    </style>
+</head>
+<body>
+    <!-- =============================================================================
+         * PEN & WASH WATERCOLOR EFFECTS - MAIN APPLICATION
+         * =============================================================================
+         *
+         * FILE       : index.html
+         * NAMESPACE  : PenWashWatercolorEffects
+         * MODULE     : Main Application Scene
+         * AUTHOR     : Adam Noble - Noble Architecture
+         * PURPOSE    : Simple Babylon.js testing scene for Pen & Wash Watercolor Effects tool
+         * CREATED    : 2025
+         *
+         * DESCRIPTION:
+         * - Basic Babylon.js scene setup for testing watercolor effects
+         * - Loads GLB model from relative path
+         * - Implements WASD camera movement with mouse look
+         * - Basic lighting setup for model visualization
+         * - Ready for future watercolor effects integration
+         *
+         * ============================================================================= -->
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Canvas Element for Babylon.js Rendering                -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <canvas id="renderCanvas"></canvas>
+    
+    <!-- endregion -------------------------------------------------------- -->
+    
+    
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Babylon.js Application Logic                           -->
+    <!-- ----------------------------------------------------------------- -->
+    
+    <script>
+        // =============================================================================
+        // PEN & WASH WATERCOLOR EFFECTS - BABYLON.JS SCENE SETUP
+        // =============================================================================
+        //
+        // FILE       : index.html (embedded script)
+        // NAMESPACE  : PenWashWatercolorEffects
+        // MODULE     : Scene Initialization and Configuration
+        // AUTHOR     : Adam Noble - Noble Architecture
+        // PURPOSE    : Initialize Babylon.js scene with model, lighting, and camera
+        // CREATED    : 2025
+        //
+        // DESCRIPTION:
+        // - Creates Babylon.js engine and scene
+        // - Sets up UniversalCamera with WASD movement and mouse look
+        // - Configures basic lighting (HemisphericLight and DirectionalLight)
+        // - Loads GLB model from relative path
+        // - Implements render loop and window resize handling
+        //
+        // =============================================================================
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Configuration Constants
+        // -----------------------------------------------------------------------------
+        
+            // MODULE CONSTANTS | Scene Configuration
+            // ------------------------------------------------------------
+            const MODEL_PATH                    = '3dModel__GlbFiles/ValeModelTest__Stayley__0.1.0__.glb';  // <-- Relative path to GLB model
+            const SCENE_BACKGROUND_COLOR       = new BABYLON.Color3(1.0, 1.0, 1.0);              // <-- White background
+            // ------------------------------------------------------------
+            
+            // MODULE CONSTANTS | Camera Configuration
+            // ------------------------------------------------------------
+            const CAMERA_INITIAL_POSITION      = new BABYLON.Vector3(0, 5, -10);                // <-- Initial camera position
+            const CAMERA_SPEED                 = 0.5;                                           // <-- Camera movement speed
+            const CAMERA_ANGULAR_SENSITIVITY   = 2000;                                          // <-- Mouse rotation sensitivity (higher = less sensitive)
+            const CAMERA_INERTIA               = 0.9;                                           // <-- Movement smoothing (0-1, higher = more smoothing)
+            // ------------------------------------------------------------
+            
+            // MODULE CONSTANTS | Lighting Configuration
+            // ------------------------------------------------------------
+            const LIGHT_HEMISPHERIC_INTENSITY  = 1.2;                                           // <-- Hemispheric light intensity
+            const LIGHT_DIRECTIONAL_INTENSITY  = 0.5;                                           // <-- Directional light intensity
+            const LIGHT_HEMISPHERIC_DIRECTION  = new BABYLON.Vector3(0, 1, 0);                  // <-- Hemispheric light direction (upward)
+            const LIGHT_DIRECTIONAL_DIRECTION  = new BABYLON.Vector3(-1, -2, -1);               // <-- Directional light direction
+            const LIGHT_SCENE_AMBIENT_COLOR    = new BABYLON.Color3(0.8, 0.8, 0.8);             // <-- Scene ambient color (prevents pure black shadows)
+            const LIGHT_HEMISPHERIC_GROUND_COLOR = new BABYLON.Color3(0.6, 0.6, 0.6);           // <-- Ground reflection color (illuminates undersides)
+            // ------------------------------------------------------------
+            
+            // MODULE CONSTANTS | Model Scaling Configuration
+            // ------------------------------------------------------------
+            const MODEL_SCALE_PERCENT          = 100.0;                                          // <-- Uniform scale percentage (100 = 100%)
+            // ------------------------------------------------------------
+            
+            // MODULE CONSTANTS | Model Transform Configuration
+            // ------------------------------------------------------------
+            // Note: SketchUp uses Z-up coordinate system, below is Y-up coordinate system used for Babylon.js
+            const MODEL_DEFAULT_POSITION_X         =  30.0;                                       // <-- Default X position offset
+            const MODEL_DEFAULT_POSITION_Z         =  30.0;                                      // <-- Default Z position offset
+            const MODEL_DEFAULT_POSITION_Y         = -0.0;                                      // <-- Default Y position offset
+            // ------------------------------------------------------------
+            const MODEL_DEFAULT_ROTATION_DEGREES_X =  0.0;                                       // <-- Default X rotation in degrees
+            const MODEL_DEFAULT_ROTATION_DEGREES_Z =  0.0;                                       // <-- Default Z rotation in degrees
+            const MODEL_DEFAULT_ROTATION_DEGREES_Y =  220.0;                                     // <-- Default Y rotation in degrees
+            // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Scene Initialization
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Initialize Scene - Creates Babylon.js engine and scene
+            // ------------------------------------------------------------
+            function initializeScene() {
+                const canvas = document.getElementById('renderCanvas');                            // <-- Get canvas element
+                
+                if (!canvas) {
+                    console.error('Canvas element not found');                                  // <-- Error if canvas missing
+                    return null;
+                }
+                
+                // Create Babylon engine
+                // ------------------------------------
+                const engine = new BABYLON.Engine(canvas, true, {                               // <-- Create engine with antialiasing
+                    preserveDrawingBuffer: true                                                 // <-- Preserve drawing buffer for screenshots
+                });
+                
+                // Create scene
+                // ------------------------------------
+                const scene = new BABYLON.Scene(engine);                                        // <-- Create new scene
+                scene.clearColor = SCENE_BACKGROUND_COLOR;                                      // <-- Set white background
+                
+                return { scene, engine };                                                       // <-- Return scene and engine
+            }
+            // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Camera Setup
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Setup Camera - Creates and configures UniversalCamera with WASD controls
+            // ------------------------------------------------------------
+            function setupCamera(scene, canvas) {
+                // Create UniversalCamera
+                // ------------------------------------
+                const camera = new BABYLON.UniversalCamera(                                     // <-- Create UniversalCamera
+                    'mainCamera',                                                               // <-- Camera name
+                    CAMERA_INITIAL_POSITION,                                                    // <-- Initial position
+                    scene                                                                       // <-- Parent scene
+                );
+                
+                // Configure camera controls
+                // ------------------------------------
+                camera.attachControl(canvas, true);                                              // <-- Attach controls to canvas (keyboard + mouse)
+                
+                // Configure WASD keyboard controls
+                // ------------------------------------
+                camera.keysUp      = [87];                                                      // <-- W key for forward
+                camera.keysDown    = [83];                                                      // <-- S key for backward
+                camera.keysLeft    = [65];                                                      // <-- A key for left
+                camera.keysRight   = [68];                                                      // <-- D key for right
+                
+                // Configure Q/E vertical controls
+                // ------------------------------------
+                camera.keysUpward     = [69];                                                  // <-- E key for elevate (move up)
+                camera.keysDownward   = [81];                                                  // <-- Q key for decline (move down)
+                
+                // Configure camera movement properties
+                // ------------------------------------
+                camera.speed = CAMERA_SPEED;                                                     // <-- Set movement speed
+                camera.angularSensibility = CAMERA_ANGULAR_SENSITIVITY;                         // <-- Set mouse rotation sensitivity
+                camera.inertia = CAMERA_INERTIA;                                                // <-- Set movement smoothing
+                
+                return camera;                                                                  // <-- Return configured camera
+            }
+            // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Lighting Setup
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Setup Lighting - Creates and configures scene lighting
+            // ------------------------------------------------------------
+            function setupLighting(scene) {
+                // Set scene ambient color
+                // ------------------------------------
+                scene.ambientColor = LIGHT_SCENE_AMBIENT_COLOR;                                  // <-- Set ambient color to prevent pure black shadows
+                
+                // Create HemisphericLight for ambient lighting
+                // ------------------------------------
+                const hemisphericLight = new BABYLON.HemisphericLight(                          // <-- Create HemisphericLight
+                    'hemisphericLight',                                                          // <-- Light name
+                    LIGHT_HEMISPHERIC_DIRECTION,                                                 // <-- Light direction
+                    scene                                                                        // <-- Parent scene
+                );
+                hemisphericLight.intensity = LIGHT_HEMISPHERIC_INTENSITY;                        // <-- Set light intensity
+                hemisphericLight.groundColor = LIGHT_HEMISPHERIC_GROUND_COLOR;                   // <-- Set ground reflection color (illuminates undersides)
+                
+                // Create DirectionalLight for directional lighting
+                // ------------------------------------
+                const directionalLight = new BABYLON.DirectionalLight(                          // <-- Create DirectionalLight
+                    'directionalLight',                                                          // <-- Light name
+                    LIGHT_DIRECTIONAL_DIRECTION,                                                 // <-- Light direction
+                    scene                                                                        // <-- Parent scene
+                );
+                directionalLight.intensity = LIGHT_DIRECTIONAL_INTENSITY;                        // <-- Set light intensity
+                
+                return {                                                                        // <-- Return light references
+                    hemisphericLight: hemisphericLight,
+                    directionalLight: directionalLight
+                };
+            }
+            // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Model Loading
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Load Model - Loads GLB model from relative path
+            // ------------------------------------------------------------
+            async function loadModel(scene) {
+                try {
+                    console.log(`Loading model from: ${MODEL_PATH}`);                            // <-- Log model path
+                    
+                    // Load model using SceneLoader
+                    // ------------------------------------
+                    const result = await BABYLON.SceneLoader.ImportMeshAsync(                   // <-- Load all meshes from GLB
+                        '',                                                                     // <-- Import all meshes (empty string = all)
+                        '',                                                                     // <-- Base URL (empty for relative path)
+                        MODEL_PATH,                                                              // <-- Model file path
+                        scene                                                                    // <-- Target scene
+                    );
+                    
+                    console.log(`Model loaded successfully. Meshes: ${result.meshes.length}`);  // <-- Log success
+                    
+                    // Center model if needed (optional)
+                    // ------------------------------------
+                    if (result.meshes.length > 0) {
+                        const rootMesh = result.meshes[0];                                       // <-- Get root mesh
+                        if (rootMesh) {
+                            const boundingInfo = rootMesh.getBoundingInfo();                     // <-- Get bounding box
+                            const center = boundingInfo.boundingBox.centerWorld;                 // <-- Get center point
+                            rootMesh.position.subtractInPlace(center);                            // <-- Center model at origin
+                        }
+                    }
+                    
+                    return result;                                                               // <-- Return load result
+                    
+                } catch (error) {
+                    console.error('Error loading model:', error);                                // <-- Log error
+                    return null;                                                                 // <-- Return null on error
+                }
+            }
+            // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Model Scaling
+        // -----------------------------------------------------------------------------
+        
+            // HELPER FUNCTION | Convert Percentage to Scale Factor
+            // ------------------------------------------------------------
+            function percentageToScale(percent) {
+                return percent / 100.0;                                                          // <-- Convert percentage to scale factor (100% = 1.0)
+            }
+            // ------------------------------------------------------------
+            
+            // HELPER FUNCTION | Convert Degrees to Radians
+            // ------------------------------------------------------------
+            function degreesToRadians(degrees) {
+                return BABYLON.Tools.ToRadians(degrees);                                        // <-- Convert degrees to radians using Babylon.js utility
+            }
+            // ------------------------------------------------------------
+            
+            // FUNCTION | Scale Model - Scales loaded GLB model as one global unit
+            // ------------------------------------------------------------
+            function scaleModel(loadResult, scene) {
+                if (!loadResult || !loadResult.meshes || loadResult.meshes.length === 0) {       // <-- Check if model loaded successfully
+                    console.warn('Cannot scale model: No meshes found');                        // <-- Warn if no meshes
+                    return;
+                }
+                
+                // Convert percentage value to uniform scale factor
+                // ------------------------------------
+                const uniformScale = percentageToScale(MODEL_SCALE_PERCENT);                     // <-- Convert percentage to scale factor (100% = 1.0)
+                
+                // Calculate center point of all meshes
+                // ------------------------------------
+                let minX = Infinity, minY = Infinity, minZ = Infinity;                          // <-- Initialize min bounds
+                let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;                       // <-- Initialize max bounds
+                
+                loadResult.meshes.forEach((mesh) => {                                            // <-- Iterate through all meshes
+                    if (mesh && mesh.getBoundingInfo) {                                          // <-- Check if mesh has bounding info
+                        const boundingInfo = mesh.getBoundingInfo();                             // <-- Get bounding box
+                        const min = boundingInfo.boundingBox.minimumWorld;                        // <-- Get minimum bounds
+                        const max = boundingInfo.boundingBox.maximumWorld;                        // <-- Get maximum bounds
+                        
+                        minX = Math.min(minX, min.x);                                            // <-- Update min X
+                        minY = Math.min(minY, min.y);                                            // <-- Update min Y
+                        minZ = Math.min(minZ, min.z);                                            // <-- Update min Z
+                        maxX = Math.max(maxX, max.x);                                            // <-- Update max X
+                        maxY = Math.max(maxY, max.y);                                            // <-- Update max Y
+                        maxZ = Math.max(maxZ, max.z);                                            // <-- Update max Z
+                    }
+                });
+                
+                // Calculate center point
+                // ------------------------------------
+                const centerX = (minX + maxX) / 2;                                               // <-- Calculate center X
+                const centerY = (minY + maxY) / 2;                                               // <-- Calculate center Y
+                const centerZ = (minZ + maxZ) / 2;                                               // <-- Calculate center Z
+                const centerPoint = new BABYLON.Vector3(centerX, centerY, centerZ);              // <-- Create center point vector
+                
+                // Apply global position offset
+                // ------------------------------------
+                const finalPosition = new BABYLON.Vector3(                                        // <-- Create final position vector
+                    centerX + MODEL_DEFAULT_POSITION_X,                                          // <-- Add X offset to center
+                    centerY + MODEL_DEFAULT_POSITION_Y,                                          // <-- Add Y offset to center
+                    centerZ + MODEL_DEFAULT_POSITION_Z                                           // <-- Add Z offset to center
+                );
+                
+                // Create parent transform node at final position
+                // ------------------------------------
+                const parentNode = new BABYLON.TransformNode('modelRoot', scene);                // <-- Create parent transform node
+                parentNode.position = finalPosition;                                              // <-- Position at center point with offset
+                
+                // Parent all meshes to the transform node
+                // ------------------------------------
+                loadResult.meshes.forEach((mesh) => {                                            // <-- Iterate through all meshes
+                    if (mesh && mesh.parent !== parentNode) {                                    // <-- Check if not already parented
+                        const worldPosition = mesh.getAbsolutePosition();                        // <-- Get world position before parenting
+                        const localPosition = worldPosition.subtract(centerPoint);               // <-- Calculate local position relative to center
+                        mesh.setParent(parentNode);                                               // <-- Set parent to transform node
+                        mesh.position = localPosition;                                            // <-- Set local position relative to parent
+                    }
+                });
+                
+                // Scale the parent node (scales entire model as one unit)
+                // ------------------------------------
+                parentNode.scaling = new BABYLON.Vector3(uniformScale, uniformScale, uniformScale);  // <-- Apply uniform scale to parent
+                
+                // Apply rotation to parent node (rotates entire model as one unit)
+                // ------------------------------------
+                const rotationX = degreesToRadians(MODEL_DEFAULT_ROTATION_DEGREES_X);            // <-- Convert X rotation to radians
+                const rotationY = degreesToRadians(MODEL_DEFAULT_ROTATION_DEGREES_Y);            // <-- Convert Y rotation to radians
+                const rotationZ = degreesToRadians(MODEL_DEFAULT_ROTATION_DEGREES_Z);            // <-- Convert Z rotation to radians
+                parentNode.rotation = new BABYLON.Vector3(rotationX, rotationY, rotationZ);        // <-- Apply rotation to parent
+                
+                console.log(`Model scaled uniformly to ${MODEL_SCALE_PERCENT}% as one global unit`);  // <-- Log scaling operation
+                console.log(`Model rotated to ${MODEL_DEFAULT_ROTATION_DEGREES_X}° X, ${MODEL_DEFAULT_ROTATION_DEGREES_Y}° Y, ${MODEL_DEFAULT_ROTATION_DEGREES_Z}° Z`);  // <-- Log rotation operation
+            }
+            // ------------------------------------------------------------
+        
+        // endregion -------------------------------------------------------------------
+        
+        
+        // -----------------------------------------------------------------------------
+        // REGION | Main Application Entry Point
+        // -----------------------------------------------------------------------------
+        
+            // FUNCTION | Initialize Application - Main entry point
+            // ------------------------------------------------------------
+            async function initializeApplication() {
+                // Initialize scene and engine
+                // ------------------------------------
+                const { scene, engine } = initializeScene();                                      // <-- Create scene and engine
+                
+                if (!scene || !engine) {
+                    console.error('Failed to initialize scene');                                 // <-- Error if initialization failed
+                    return;
+                }
+                
+                // Setup camera
+                // ------------------------------------
+                const canvas = document.getElementById('renderCanvas');                          // <-- Get canvas element
+                const camera = setupCamera(scene, canvas);                                      // <-- Setup camera with controls
+                
+                // Setup lighting
+                // ------------------------------------
+                setupLighting(scene);                                                            // <-- Setup scene lighting
+                
+                // Load model
+                // ------------------------------------
+                const loadResult = await loadModel(scene);                                       // <-- Load GLB model
+                
+                // Scale model if loaded successfully
+                // ------------------------------------
+                if (loadResult) {
+                    scaleModel(loadResult, scene);                                              // <-- Scale model as one global unit
+                }
+                
+                // Remove reflections from materials (make materials 100% flat)
+                // ------------------------------------
+                try {
+                    removeReflectionsFromMaterials(scene);                                      // <-- Remove all reflective properties from materials
+                } catch (error) {
+                    console.error('Failed to remove reflections from materials:', error);        // <-- Log error but continue
+                }
+                
+                // Setup render loop
+                // ------------------------------------
+                engine.runRenderLoop(() => {                                                     // <-- Start render loop
+                    scene.render();                                                               // <-- Render scene each frame
+                });
+                
+                // #Region ------------------------------------------------
+                // Setup post-process effects (after render loop starts)
+                // --------------------------------------------------------
+                // Reference: src/Effects__PostProcessEffects/PostFx__EffectsLayerStack__HeirechyMap__.js
+                await setupPostProcessEffectsLayerStack(scene, camera, engine);  // <-- Setup post-process effects layer stack
+                // #endregion ------------------------------------------------
+                
+                // Handle window resize
+                // ------------------------------------
+                window.addEventListener('resize', () => {                                        // <-- Listen for window resize
+                    engine.resize();                                                              // <-- Resize engine to match window
+                });
+                
+                console.log('Pen & Wash Watercolor Effects - Scene initialized successfully');  // <-- Log success
+            }
+            // ------------------------------------------------------------
+            
+            // Start application when DOM is ready
+            // ------------------------------------
+            if (document.readyState === 'loading') {                                             // <-- Check if DOM is loading
+                document.addEventListener('DOMContentLoaded', initializeApplication);            // <-- Wait for DOM ready
+            } else {
+                initializeApplication();                                                          // <-- DOM already ready, start immediately
+            }
+        
+        // endregion -------------------------------------------------------------------
+    </script>
+</body>
+</html>

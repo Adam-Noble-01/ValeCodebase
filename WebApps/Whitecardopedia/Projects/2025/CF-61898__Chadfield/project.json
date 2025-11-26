@@ -1,0 +1,28 @@
+{
+    "projectName": "Chadfield",
+    "projectCode": "61898",
+    "productionData": {
+        "input": "Default Input Type",
+        "conceptArtist": "Default Concept Artist",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "10-Oct-2025",
+        "dateFulfilled": "25-Nov-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Nov-2025.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__25-Nov-2025.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__25-Nov-2025.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__25-Nov-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__25-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__25-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__25-Nov-2025.png"
+    ]
+}

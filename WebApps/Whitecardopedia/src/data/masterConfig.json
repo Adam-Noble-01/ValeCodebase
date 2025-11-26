@@ -20,7 +20,9 @@
         "Rachael",
         "Steph",
         "Dan",
-        "Jo"
+        "Jo",
+        "Martin",
+        "Tom"
     ],
     "projects": [
         {
@@ -185,6 +187,10 @@
         },
         {
             "folderId": "LX-61040__Loxton",
+            "enabled": true
+        },
+        {
+            "folderId": "RC-62302__Richards",
             "enabled": true
         }
     ]

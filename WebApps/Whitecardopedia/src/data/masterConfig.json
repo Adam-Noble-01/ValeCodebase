@@ -192,6 +192,10 @@
         {
             "folderId": "RC-62302__Richards",
             "enabled": true
+        },
+        {
+            "folderId": "MS-62254__Meister",
+            "enabled": true
         }
     ]
 }

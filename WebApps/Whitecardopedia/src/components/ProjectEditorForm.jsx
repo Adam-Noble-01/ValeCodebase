@@ -35,8 +35,8 @@
             conceptArtist       : project.productionData?.conceptArtist || '', // <-- Concept artist field
             productionNotes     : project.productionData?.additionalNotes || '',  // <-- Production notes field
             sketchUpUrl         : project.sketchUpModel?.url || '',          // <-- SketchUp URL field
-            timeAllocated       : project.scheduleData?.timeAllocated || '', // <-- Time expected field
-            timeTaken           : project.scheduleData?.timeTaken || '',     // <-- Time taken field
+            timeAllocated       : project.scheduleData?.timeAllocated !== undefined && project.scheduleData?.timeAllocated !== null ? String(project.scheduleData.timeAllocated) : '', // <-- Time expected field (convert number to string)
+            timeTaken           : project.scheduleData?.timeTaken !== undefined && project.scheduleData?.timeTaken !== null ? String(project.scheduleData.timeTaken) : '',     // <-- Time taken field (convert number to string)
             dateReceived        : project.scheduleData?.dateReceived || '',  // <-- Date received field
             dateFulfilled       : project.scheduleData?.dateFulfilled || ''  // <-- Date fulfilled field
         });
@@ -167,11 +167,11 @@
                 };
                 
                 if (formData.timeAllocated !== '') {
-                    updatedProject.scheduleData.timeAllocated = parseInt(formData.timeAllocated);  // <-- Set time allocated
+                    updatedProject.scheduleData.timeAllocated = parseFloat(formData.timeAllocated);  // <-- Set time allocated (supports decimals)
                 }
                 
                 if (formData.timeTaken !== '') {
-                    updatedProject.scheduleData.timeTaken = parseInt(formData.timeTaken);  // <-- Set time taken
+                    updatedProject.scheduleData.timeTaken = parseFloat(formData.timeTaken);  // <-- Set time taken (supports decimals)
                 }
                 
                 if (formData.dateReceived !== '') {
@@ -352,11 +352,11 @@
                         className="editor-form__input"
                         value={formData.timeAllocated}
                         onChange={(e) => handleInputChange('timeAllocated', e.target.value)}
-                        placeholder="e.g., 2"
+                        placeholder="e.g., 2 or 1.5"
                         disabled={isSaving}
                     />
                     <span className="editor-form__help-text">
-                        Optional - Planned time for project in hours
+                        Optional - Planned time for project in hours (supports decimals, e.g., 0.25 for 15 minutes, 0.5 for 30 minutes)
                     </span>
                 </div>
                 
@@ -371,11 +371,11 @@
                         className="editor-form__input"
                         value={formData.timeTaken}
                         onChange={(e) => handleInputChange('timeTaken', e.target.value)}
-                        placeholder="e.g., 3"
+                        placeholder="e.g., 3 or 1.5"
                         disabled={isSaving}
                     />
                     <span className="editor-form__help-text">
-                        Optional - Actual time taken to complete project in hours
+                        Optional - Actual time taken to complete project in hours (supports decimals, e.g., 0.25 for 15 minutes, 0.5 for 30 minutes)
                     </span>
                 </div>
                 

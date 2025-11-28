@@ -1,0 +1,48 @@
+{
+    "projectName": "Baxter  -  Scheme No.02",
+    "projectCode": "61511",
+    "productionData": {
+        "input": "VizDpt SketchUp Model",
+        "conceptArtist": "Tom",
+        "additionalNotes": "Tom requested some amendments to the project, we increased the size of the scheme and updated the windows to suit, we then rendered the concept and James embellished a final layer on top."
+    },
+    "scheduleData": {
+        "dateReceived": "28-Nov-2025",
+        "dateFulfilled": "28-Nov-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__MainShot__WhitecardImage__28-Nov-2025.jpg",
+        "IMG01_ART20__3dView__MainShot__WhitecardImage__28-Nov-2025.jpg",
+        "IMG02__3dView__LeftCorner__WhitecardImage__28-Nov-2025.png",
+        "IMG03__3dView__DoubleDoors__WhitecardImage__28-Nov-2025.png",
+        "IMG04__3dView__FrontFascade__WhitecardImage__28-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__28-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__28-Nov-2025.png"
+    ],
+    "folderId": "BX-61511__Baxter__Scheme-02",
+    "basePath": "Projects/2025/BX-61511__Baxter__Scheme-02",
+    "displayImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__28-Nov-2025.jpg",
+        "IMG02__3dView__LeftCorner__WhitecardImage__28-Nov-2025.png",
+        "IMG03__3dView__DoubleDoors__WhitecardImage__28-Nov-2025.png",
+        "IMG04__3dView__FrontFascade__WhitecardImage__28-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__28-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__28-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__28-Nov-2025.jpg",
+        "IMG01_ART20__3dView__MainShot__WhitecardImage__28-Nov-2025.jpg",
+        "IMG02__3dView__LeftCorner__WhitecardImage__28-Nov-2025.png",
+        "IMG03__3dView__DoubleDoors__WhitecardImage__28-Nov-2025.png",
+        "IMG04__3dView__FrontFascade__WhitecardImage__28-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__28-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__28-Nov-2025.png"
+    ]
+}

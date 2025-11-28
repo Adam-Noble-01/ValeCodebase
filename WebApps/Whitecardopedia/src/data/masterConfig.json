@@ -11,7 +11,9 @@
     "vale__ProductionInput__OptionsList": [
         "CAD File",
         "Hand Drawn Concept",
-        "Early Stage Sketch"
+        "Early Stage Sketch",
+        "VizDpt SketchUp Model",
+        "Designers SketchUp Model"
     ],
     "vale__ConceptArtist__OptionsList": [
         "James",
@@ -118,11 +120,19 @@
             "enabled": true
         },
         {
+            "folderId": "LX-61040__Loxton",
+            "enabled": true
+        },
+        {
             "folderId": "MH-61603__Mottershead",
             "enabled": true
         },
         {
             "folderId": "MJ-59473__Mukherjee",
+            "enabled": true
+        },
+        {
+            "folderId": "MS-62254__Meister",
             "enabled": true
         },
         {
@@ -147,6 +157,10 @@
         },
         {
             "folderId": "PY-61616__Pilley",
+            "enabled": true
+        },
+        {
+            "folderId": "RC-62302__Richards",
             "enabled": true
         },
         {
@@ -186,15 +200,11 @@
             "enabled": true
         },
         {
-            "folderId": "LX-61040__Loxton",
+            "folderId": "BX-61511__Baxter__Scheme-02",
             "enabled": true
         },
         {
-            "folderId": "RC-62302__Richards",
-            "enabled": true
-        },
-        {
-            "folderId": "MS-62254__Meister",
+            "folderId": "PN-62106__Pennington",
             "enabled": true
         }
     ]

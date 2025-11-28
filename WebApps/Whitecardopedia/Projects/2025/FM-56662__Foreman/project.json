@@ -2,12 +2,12 @@
     "projectName": "Foreman",
     "projectCode": "56662",
     "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Quick and easy typical job, nothing to report."
     },
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "19-Nov-2025",
         "dateFulfilled": "20-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 2
@@ -17,6 +17,29 @@
     },
     "valeVision_ModelUrl": null,
     "images": [
+        "IMG01__3dView__MainShot__WhitecardImage__20-Nov-2025.png",
+        "IMG02__3dView__MainShot__Further__WhitecardImage__20-Nov-2025.png",
+        "IMG03__3dView__AlternateShot__WhitecardImage__20-Nov-2025.png",
+        "IMG04__3dView__Front__ViewingDoors__WhitecardImage__20-Nov-2025.png",
+        "IMG05__3dView__LeftCorner__WhitecardImage__20-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__20-Nov-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__20-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__20-Nov-2025.png"
+    ],
+    "folderId": "FM-56662__Foreman",
+    "basePath": "Projects/2025/FM-56662__Foreman",
+    "displayImages": [
+        "IMG01__3dView__MainShot__WhitecardImage__20-Nov-2025.png",
+        "IMG02__3dView__MainShot__Further__WhitecardImage__20-Nov-2025.png",
+        "IMG03__3dView__AlternateShot__WhitecardImage__20-Nov-2025.png",
+        "IMG04__3dView__Front__ViewingDoors__WhitecardImage__20-Nov-2025.png",
+        "IMG05__3dView__LeftCorner__WhitecardImage__20-Nov-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__20-Nov-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__20-Nov-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__20-Nov-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
         "IMG01__3dView__MainShot__WhitecardImage__20-Nov-2025.png",
         "IMG02__3dView__MainShot__Further__WhitecardImage__20-Nov-2025.png",
         "IMG03__3dView__AlternateShot__WhitecardImage__20-Nov-2025.png",

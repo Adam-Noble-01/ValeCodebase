@@ -1,6 +1,6 @@
 {
     "applicationName": "Whitecardopedia",
-    "version": "0.0.8",
+    "version": "0.2.7",
     "deploymentModeNotes": "Live deployment for Pushed Branches, Dev deployment for Local Development",
     "deploymentMode": "Live",
     "projectsBasePath": "Projects/2025",

@@ -3,11 +3,24 @@
 =========================================================
 
 ---
-7
+Product :  Whitecardopedia & ValeVision3D
+Version :  0.2.6
 Date    :  ??-Nov-2025
 Status  :  Under Development
-Goal    :  Dynamic Camera position loading based on Whitecardopedia project selection.
-- Need to add camera config to each project.json file.
+Goal    :  Template
+Added   :  
+
+---
+---
+
+Product :  Whitecardopedia
+Version :  0.2.7
+Date    :  28-Nov-2025
+Status  :  Pushed to GitHub Pages
+Added   :  Added Content Indicator Icons to the Project Gallery.
+- Project gallery now displays a small icon in the bottom right corner of the project card to indicate the type of content available.
+- Watercolor artwork is indicated by a small watercolor icon.
+- 3D model is indicated by a small 3D model icon.
 
 ---
 

@@ -123,11 +123,14 @@
                                 </div>
                                 
                                 <div className="project-card__content">
-                                    <h3 className="project-card__name">{project.projectName}</h3>
-                                    <p className="project-card__code">{project.projectCode}</p>
-                                    {project.scheduleData?.dateFulfilled && (
-                                        <p className="project-card__date">{formatProjectDate(project.scheduleData.dateFulfilled)}</p>
-                                    )}
+                                    <div className="project-card__text-content">
+                                        <h3 className="project-card__name">{project.projectName}</h3>
+                                        <p className="project-card__code">{project.projectCode}</p>
+                                        {project.scheduleData?.dateFulfilled && (
+                                            <p className="project-card__date">{formatProjectDate(project.scheduleData.dateFulfilled)}</p>
+                                        )}
+                                    </div>
+                                    <ContentIndicatorIcons project={project} />
                                 </div>
                             </div>
                         ))
@@ -135,6 +138,46 @@
                     </div>
                 </div>
             </>
+        );
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Content Indicator Icon Components
+// -----------------------------------------------------------------------------
+
+    // COMPONENT | Content Indicator Icons for Project Cards
+    // ------------------------------------------------------------
+    function ContentIndicatorIcons({ project }) {
+        const showWatercolorIcon = hasWatercolorContent(project);            // <-- Check if project has watercolor content
+        const show3DModelIcon = has3DModelContent(project);                  // <-- Check if project has 3D model content
+        
+        // Only render container if at least one icon should be shown
+        if (!showWatercolorIcon && !show3DModelIcon) {
+            return null;                                                     // <-- Return null if no icons to display
+        }
+        
+        return (
+            <div className="project-card__content-icons">
+                {showWatercolorIcon && (
+                    <img 
+                        src="../assets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__WatercolourPainting__512px__.png"
+                        alt="Watercolor Artwork Available"
+                        className="project-card__content-icon"
+                        title="Watercolor Artwork Available"
+                    />
+                )}
+                {show3DModelIcon && (
+                    <img 
+                        src="../assets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__ValeVision3d__512px__10PcWhiteFilter__.png"
+                        alt="3D Model Available"
+                        className="project-card__content-icon"
+                        title="3D Model Available"
+                    />
+                )}
+            </div>
         );
     }
     // ---------------------------------------------------------------

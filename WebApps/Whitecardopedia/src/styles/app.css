@@ -348,6 +348,15 @@
     
     .project-card__content {
         padding                            : var(--Vale_Spacing_Medium);   /* <-- Content padding */
+        display                            : flex;                         /* <-- Flexbox layout */
+        justify-content                    : space-between;                /* <-- Space between text and icons */
+        align-items                        : flex-start;                   /* <-- Align to top */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between text and icons */
+    }
+    
+    .project-card__text-content {
+        flex                               : 1;                            /* <-- Allow text to take available space */
+        min-width                          : 0;                            /* <-- Allow text to shrink if needed */
     }
     
     .project-card__name {
@@ -399,6 +408,24 @@
         background                         : rgba(255, 255, 255, 0.5);    /* <-- 30% white overlay */
         pointer-events                     : none;                         /* <-- Allow clicks to pass through */
         z-index                            : 10;                           /* <-- Layer above image */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* CONTENT INDICATOR ICONS | Icons showing available content types (watercolor, 3D models) */
+    /* ------------------------------------------------------------ */
+    .project-card__content-icons {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical stacking */
+        gap                                : 6px;                          /* <-- 6px gap between icons */
+        flex-shrink                        : 0;                            /* <-- Prevent icons from shrinking */
+        z-index                            : 15;                           /* <-- Layer above image */
+    }
+    
+    .project-card__content-icon {
+        width                              : 80px;                         /* <-- Fixed icon width */
+        height                             : 80px;                         /* <-- Fixed icon height */
+        opacity                            : 0.9;                          /* <-- Slight Reduced opacity to soften icons to make them less intrusive */
+        z-index                            : 15;                           /* <-- Layer above image */
     }
     /* ------------------------------------------------------------ */
 

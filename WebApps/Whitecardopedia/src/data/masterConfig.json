@@ -206,6 +206,10 @@
         {
             "folderId": "PN-62106__Pennington",
             "enabled": true
+        },
+        {
+            "folderId": "ED-62117__Edmiston",
+            "enabled": true
         }
     ]
 }

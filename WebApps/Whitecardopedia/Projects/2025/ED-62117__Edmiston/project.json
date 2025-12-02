@@ -1,0 +1,55 @@
+{
+    "projectName": "Edmiston",
+    "projectCode": "62117",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "Well prepared CAD Files, all complete, no issues. Completed within expected timeframe."
+    },
+    "scheduleData": {
+        "dateReceived": "02-Dec-2025",
+        "dateFulfilled": "02-Dec-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__AlternateOption-02____WhitecardImage__02-Dec-2025.png",
+        "IMG02__3dView__AlternateOption-01____WhitecardImage__02-Dec-2025.png",
+        "IMG03__3dView__ViewOption-02__TwoPointPerspective____WhitecardImage__02-Dec-2025.png",
+        "IMG04__3dView__RightCorner____WhitecardImage__02-Dec-2025.png",
+        "IMG05__3dView__Side__ViewingDoors__WhitecardImage__02-Dec-2025.png",
+        "IMG06__3dView__Front__ViewingWindows__WhitecardImage__02-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__02-Dec-2025.png"
+    ],
+    "folderId": "ED-62117__Edmiston",
+    "basePath": "Projects/2025/ED-62117__Edmiston",
+    "displayImages": [
+        "IMG01__3dView__AlternateOption-02____WhitecardImage__02-Dec-2025.png",
+        "IMG02__3dView__AlternateOption-01____WhitecardImage__02-Dec-2025.png",
+        "IMG03__3dView__ViewOption-02__TwoPointPerspective____WhitecardImage__02-Dec-2025.png",
+        "IMG04__3dView__RightCorner____WhitecardImage__02-Dec-2025.png",
+        "IMG05__3dView__Side__ViewingDoors__WhitecardImage__02-Dec-2025.png",
+        "IMG06__3dView__Front__ViewingWindows__WhitecardImage__02-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__02-Dec-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__AlternateOption-02____WhitecardImage__02-Dec-2025.png",
+        "IMG02__3dView__AlternateOption-01____WhitecardImage__02-Dec-2025.png",
+        "IMG03__3dView__ViewOption-02__TwoPointPerspective____WhitecardImage__02-Dec-2025.png",
+        "IMG04__3dView__RightCorner____WhitecardImage__02-Dec-2025.png",
+        "IMG05__3dView__Side__ViewingDoors__WhitecardImage__02-Dec-2025.png",
+        "IMG06__3dView__Front__ViewingWindows__WhitecardImage__02-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__02-Dec-2025.png"
+    ]
+}

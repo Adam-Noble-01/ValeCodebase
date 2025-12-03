@@ -210,6 +210,10 @@
         {
             "folderId": "ED-62117__Edmiston",
             "enabled": true
+        },
+        {
+            "folderId": "NW-61997__Newby",
+            "enabled": true
         }
     ]
 }

@@ -1,0 +1,58 @@
+{
+    "projectName": "Newby",
+    "projectCode": "61997",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Tom",
+        "additionalNotes": "Steph sent me the project, but I worked from Toms CAD File, the file was a roughed out wire frame so additional time was needed for windows and doors etc as only openings were modelled in the 2D CAD. Toms file itself was good though, accurate tidy, and lightweight."
+    },
+    "scheduleData": {
+        "dateReceived": "02-Dec-2025",
+        "dateFulfilled": "02-Dec-2025",
+        "timeAllocated": 2.5,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Dec-2025.png",
+        "IMG02__3dView__ViewOption-03__Alternate____WhitecardImage__02-Dec-2025.png",
+        "IMG03__3dView__ViewOption-02__Further____WhitecardImage__02-Dec-2025.png",
+        "IMG04__3dView__Front__ViewingDoors__WhitecardImage__02-Dec-2025.png",
+        "IMG05__3dView__RightCorner-01__WhitecardImage__02-Dec-2025.png",
+        "IMG06__3dView__LeftSide__ViewingWindows__WhitecardImage__02-Dec-2025.png",
+        "IMG07__3dView__RightCorner-02__WhitecardImage__02-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__02-Dec-2025.png"
+    ],
+    "folderId": "NW-61997__Newby",
+    "basePath": "Projects/2025/NW-61997__Newby",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Dec-2025.png",
+        "IMG02__3dView__ViewOption-03__Alternate____WhitecardImage__02-Dec-2025.png",
+        "IMG03__3dView__ViewOption-02__Further____WhitecardImage__02-Dec-2025.png",
+        "IMG04__3dView__Front__ViewingDoors__WhitecardImage__02-Dec-2025.png",
+        "IMG05__3dView__RightCorner-01__WhitecardImage__02-Dec-2025.png",
+        "IMG06__3dView__LeftSide__ViewingWindows__WhitecardImage__02-Dec-2025.png",
+        "IMG07__3dView__RightCorner-02__WhitecardImage__02-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__02-Dec-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Dec-2025.png",
+        "IMG02__3dView__ViewOption-03__Alternate____WhitecardImage__02-Dec-2025.png",
+        "IMG03__3dView__ViewOption-02__Further____WhitecardImage__02-Dec-2025.png",
+        "IMG04__3dView__Front__ViewingDoors__WhitecardImage__02-Dec-2025.png",
+        "IMG05__3dView__RightCorner-01__WhitecardImage__02-Dec-2025.png",
+        "IMG06__3dView__LeftSide__ViewingWindows__WhitecardImage__02-Dec-2025.png",
+        "IMG07__3dView__RightCorner-02__WhitecardImage__02-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__02-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__02-Dec-2025.png"
+    ]
+}

@@ -214,6 +214,10 @@
         {
             "folderId": "NW-61997__Newby",
             "enabled": true
+        },
+        {
+            "folderId": "FM-56662__Foreman__Scheme-02",
+            "enabled": true
         }
     ]
 }

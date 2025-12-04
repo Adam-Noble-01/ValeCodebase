@@ -55,7 +55,7 @@
         
         /* Typography Variables */
         --Vale_FontFamily                  : 'Open Sans', sans-serif;      /* <-- Primary font */
-        --Vale_FontSize_Title              : 32px;                         /* <-- Application title size */
+        --Vale_FontSize_Title              : 26px;                         /* <-- Application title size */
         --Vale_FontSize_Heading            : 24px;                         /* <-- Heading text size */
         --Vale_FontSize_SubHeading         : 18px;                         /* <-- Sub-heading text size */
         --Vale_FontSize_Standard           : 14px;                         /* <-- Standard interface text */

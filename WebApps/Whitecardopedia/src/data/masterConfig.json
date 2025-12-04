@@ -222,6 +222,10 @@
         {
             "folderId": "CC-62383__CapeConstruction__EgyptHouse",
             "enabled": true
+        },
+        {
+            "folderId": "NW-62108__Newington",
+            "enabled": true
         }
     ]
 }

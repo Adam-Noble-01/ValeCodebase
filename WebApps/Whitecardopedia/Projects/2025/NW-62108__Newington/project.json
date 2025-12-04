@@ -1,0 +1,55 @@
+{
+    "projectName": "Newington",
+    "projectCode": "62108",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "No site survey was conducted, so Rachael provided a CAD file with the Orangery framework only (No host building or site levels etc). Because of the split levels I took it upon myself to model the site context and host building, however I went completely by eye (Got the levels by brick gauge counting the retaining wall). I warned Rachael if she uses the CAD file that I sent to take everything as very loose, as I'd usually use a pair of Photomatched Images to validate the model, however, only a handful of unsuitable photos existed. I allowed an extra hour for this but I managed to add the existing site and building context quicker than expected."
+    },
+    "scheduleData": {
+        "dateReceived": "04-Dec-2025",
+        "dateFulfilled": "04-Dec-2025",
+        "timeAllocated": 3,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__04-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__04-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__04-Dec-2025.png",
+        "IMG04__3dView__Side__ViewingDoors__WhitecardImage__04-Dec-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__04-Dec-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__04-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__04-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__04-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__04-Dec-2025.png"
+    ],
+    "folderId": "NW-62108__Newington",
+    "basePath": "Projects/2025/NW-62108__Newington",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__04-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__04-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__04-Dec-2025.png",
+        "IMG04__3dView__Side__ViewingDoors__WhitecardImage__04-Dec-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__04-Dec-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__04-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__04-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__04-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__04-Dec-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__04-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__04-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__04-Dec-2025.png",
+        "IMG04__3dView__Side__ViewingDoors__WhitecardImage__04-Dec-2025.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__04-Dec-2025.png",
+        "IMG06__3dView__LeftSideView__WhitecardImage__04-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__04-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__04-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__04-Dec-2025.png"
+    ]
+}

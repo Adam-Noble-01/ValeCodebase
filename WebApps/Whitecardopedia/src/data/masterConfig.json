@@ -218,6 +218,10 @@
         {
             "folderId": "FM-56662__Foreman__Scheme-02",
             "enabled": true
+        },
+        {
+            "folderId": "CC-62383__CapeConstruction__EgyptHouse",
+            "enabled": true
         }
     ]
 }

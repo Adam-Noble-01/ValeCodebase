@@ -1,0 +1,33 @@
+{
+    "projectName": "Cape Const.  -  Egypt House",
+    "projectCode": "62383",
+    "productionData": {
+        "input": "Early Stage Sketch",
+        "conceptArtist": "Tom",
+        "additionalNotes": "This one was a little different, I reverse engineered the Whitecard from first taking a frame from the Architects CGI Video, Then using SketchUp Photomatch to align this with SketchUp's axis, Modelled the Orangery from Top's CAD & Base SketchUp File, then bounced out just Vale elements and the missing chimney, then crudely sketched over the image in photoshop before passing it into the Digital Concept 5 Stage Pipeline to get the Final Watercolour Image."
+    },
+    "scheduleData": {
+        "dateReceived": "03-Dec-2025",
+        "dateFulfilled": "04-Dec-2025",
+        "timeAllocated": 5,
+        "timeTaken": 4
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__06__FinalImage__WhitecardConversion__.png",
+        "IMG01_ART20__EgyptHouse__Concept-01__FinalImage__ColourCorrected__02__.png"
+    ],
+    "folderId": "CC-62383__CapeConstruction__EgyptHouse",
+    "basePath": "Projects/2025/CC-62383__CapeConstruction__EgyptHouse",
+    "displayImages": [
+        "IMG01__06__FinalImage__WhitecardConversion__.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__06__FinalImage__WhitecardConversion__.png",
+        "IMG01_ART20__EgyptHouse__Concept-01__FinalImage__ColourCorrected__02__.png"
+    ]
+}

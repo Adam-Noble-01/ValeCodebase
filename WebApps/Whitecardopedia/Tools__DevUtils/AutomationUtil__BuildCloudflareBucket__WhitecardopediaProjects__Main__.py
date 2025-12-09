@@ -51,7 +51,8 @@ ENV_FILE_PATH                      = "API__Cloudflare/Token__CloudflareAPI.env" 
 
 # MODULE CONSTANTS | Regex Patterns
 # ------------------------------------------------------------
-WHITECARD_FOLDER_PATTERN           = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Pattern for Whitecard project folders
+WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
+WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 # ------------------------------------------------------------
 
@@ -276,13 +277,23 @@ def upload_file_to_r2(s3_client: boto3.client, bucket_name: str, local_path: Pat
 # ------------------------------------------------------------
 def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """Extract project code and name from Whitecard folder name"""
-    match = re.match(WHITECARD_FOLDER_PATTERN, folder_name)          # <-- Match folder pattern
+    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
+    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
     
-    if match:
-        full_code = match.group(1)                                    # <-- Extract full code (e.g., "VE-61058")
-        project_name = match.group(2)                                 # <-- Extract project name (e.g., "Staley")
+    if match_old:
+        full_code = match_old.group(1)                                 # <-- Extract full code (e.g., "VE-61058")
+        project_name = match_old.group(2)                              # <-- Extract project name (e.g., "Staley")
         project_code = full_code.split('-')[1] if '-' in full_code else full_code  # <-- Extract numeric code
-        return full_code, project_code, project_name                  # <-- Return extracted metadata
+        return full_code, project_code, project_name                   # <-- Return extracted metadata
+    
+    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
+    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
+    
+    if match_new:
+        project_code = match_new.group(1)                              # <-- Extract numeric code (e.g., "12345")
+        project_name = match_new.group(2)                              # <-- Extract project name (e.g., "Example")
+        full_code = project_code                                       # <-- Use numeric code as full code for new format
+        return full_code, project_code, project_name                    # <-- Return extracted metadata
     
     return None, None, None                                           # <-- Return None if pattern doesn't match
 # ---------------------------------------------------------------
@@ -292,12 +303,21 @@ def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[
 # ------------------------------------------------------------
 def generate_destination_folder_name(folder_name: str) -> Optional[str]:
     """Generate R2 folder name by stripping __Whitecard suffix"""
-    match = re.match(WHITECARD_FOLDER_PATTERN, folder_name)          # <-- Match folder pattern
+    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
+    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
     
-    if match:
-        full_code = match.group(1)                                    # <-- Extract full code
-        project_name = match.group(2)                                 # <-- Extract project name
+    if match_old:
+        full_code = match_old.group(1)                                # <-- Extract full code
+        project_name = match_old.group(2)                             # <-- Extract project name
         return f"{full_code}__{project_name}"                         # <-- Return name without __Whitecard suffix
+    
+    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
+    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
+    
+    if match_new:
+        project_code = match_new.group(1)                             # <-- Extract numeric code
+        project_name = match_new.group(2)                             # <-- Extract project name
+        return f"{project_code}__{project_name}"                      # <-- Return name without suffix
     
     return None                                                       # <-- Return None if pattern doesn't match
 # ---------------------------------------------------------------

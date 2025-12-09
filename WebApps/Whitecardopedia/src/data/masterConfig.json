@@ -6,7 +6,11 @@
     "projectsBasePath": "Projects/2025",
     "projectFoldersBlacklist": [
         "01__TemplateProject",
-        "00__ExampleProject"
+        "00__ExampleProject",
+        "12345__Test",
+        "12345__Example",
+        "12345__Example__Whitecard",
+        "12345__Test__Whitecard"
     ],
     "vale__ProductionInput__OptionsList": [
         "CAD File",
@@ -225,6 +229,10 @@
         },
         {
             "folderId": "NW-62108__Newington",
+            "enabled": true
+        },
+        {
+            "folderId": "55876__Swain",
             "enabled": true
         }
     ]

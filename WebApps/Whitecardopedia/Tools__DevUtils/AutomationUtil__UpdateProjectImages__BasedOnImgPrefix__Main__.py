@@ -106,9 +106,11 @@ Examples:
   
   Update specific project with confirmation:
     python AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py --project NY-29951__McNerney
+    python AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py --project 12345__Example
   
   Preview specific project only:
     python AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py --dry-run-only --project HS-61747__Harris
+    python AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py --dry-run-only --project 12345__Example
 
 Blacklist Management:
   

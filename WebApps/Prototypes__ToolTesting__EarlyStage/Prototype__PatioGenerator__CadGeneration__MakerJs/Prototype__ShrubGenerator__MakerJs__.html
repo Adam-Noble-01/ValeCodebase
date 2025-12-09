@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parametric 2D Bush Generator (Real-Time)</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bezier-js@2.1.0/dist/bezier.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js@0.7.3/dist/opentype.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/makerjs@0/target/js/browser.maker.js"></script>
+
+    <!-- CAD Generator Modules -->
+    <script src="CadGenerator__ViewportAndNavigation.js"></script>
+    <script src="CadGenerator__DynamicUI.js"></script>
+    <script src="CadGenerator__DxfExportFunction.js"></script>
+
+    <style>
+        /* ---------------------------------------------------------------------
+         * REGION | Page Layout Styles
+         * ------------------------------------------------------------------ */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            background: #f0f2f5; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .bush-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bush-type-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .bush-type-btn:hover {
+            border-color: #007bff;
+        }
+        
+        .bush-type-btn.active {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+        /* endregion -------------------------------------------------------- */
+    </style>
+</head>
+<body>
+
+    <!-- Bush Type Selector -->
+    <div class="bush-type-selector">
+        <button class="bush-type-btn active" data-type="round">Round Bush</button>
+        <button class="bush-type-btn" data-type="wild">Wild Bush</button>
+        <button class="bush-type-btn" data-type="topiary">Topiary Pointed</button>
+    </div>
+
+    <!-- Control Panel (Built by DynamicUI) -->
+    <div id="controls"></div>
+
+    <!-- Canvas Wrapper (Managed by Viewport) -->
+    <div id="canvas-wrapper"></div>
+    
+    <!-- Status Bar -->
+    <div id="status-bar">Initializing...</div>
+
+    <script>
+        // =====================================================================
+        // REGION | UI Configuration
+        // =====================================================================
+        // INDEX: UI elements configuration
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │ BUSH TYPES: round, wild, topiary                                   │
+        // │ INPUTS: Width, Height, Leaf Scale, Roughness, Base Lift            │
+        // │ BUTTONS: Reset View, Download DXF                                  │
+        // └────────────────────────────────────────────────────────────────────┘
+        const UI_CONFIG = {
+            containerId:      'controls',
+            statusBarId:      'status-bar',
+            canvasWrapperId:  'canvas-wrapper',
+            loadingText:      'Loading CAD Libraries...',
+            
+            inputs: [
+                { id: 'pWidth',     label: 'Width',      default: 500,  min: 200,  max: 3000, step: 10,  unit: 'mm', onChange: 'onParamChange', width: '130px' },
+                { id: 'pHeight',    label: 'Height',     default: 750,  min: 200,  max: 1500, step: 10,  unit: 'mm', onChange: 'onParamChange', width: '130px' },
+                { id: 'pLeafSize',  label: 'Leaf Scale', default: 25,   min: 10,   max: 60,   step: 1,               onChange: 'onParamChange', width: '120px' },
+                { id: 'pRoughness', label: 'Roughness',  default: 50,   min: 0,    max: 100,  step: 1,               onChange: 'onParamChange', width: '120px' },
+                { id: 'pBaseLift',  label: 'Base Lift',  default: 0,    min: 0,    max: 100,  step: 1,               onChange: 'onParamChange', width: '120px' }
+            ],
+            
+            buttons: [
+                { id: 'regenerate-btn', label: 'Reset View',   action: 'onRegenerate',   style: 'primary' },
+                { id: 'dxf-btn',        label: 'Download DXF', action: 'onDownloadDXF',  style: 'success' }
+            ]
+        };
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | Global Constants
+        // =====================================================================
+        const GLOBAL_ORIGIN = [0, 0];                                            // <-- Single source of truth for 0,0
+        
+        const GENERATOR_CONFIG = {
+            filenamePrefix:        'Bush_Parametric',
+            vertexResolutionLimit: 3                                              // <-- mm - minimum vertex spacing
+        };
+        
+        const BUSH_TYPES = {
+            round:   'round',
+            wild:    'wild',
+            topiary: 'topiary'
+        };
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | Global State
+        // =====================================================================
+        let currentModel    = null;
+        let currentBushType = BUSH_TYPES.round;                                  // <-- Default bush type
+        let guidesConfig    = { showGround: true, showAxis: true };
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | UI Event Handlers
+        // =====================================================================
+        const UI_HANDLERS = {
+            onParamChange: (paramId, value) => regenerateModel(true),
+            onRegenerate:  ()               => regenerateModel(false),
+            onDownloadDXF: ()               => downloadDXF()
+        };
+        
+        // Setup bush type buttons
+        function setupBushTypeButtons() {
+            document.querySelectorAll('.bush-type-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.bush-type-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentBushType = btn.dataset.type;
+                    regenerateModel(false);
+                });
+            });
+        }
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | Main Generation Pipeline
+        // =====================================================================
+        // COORDINATE CONVENTION: Base at Y=0, crown extends into NEGATIVE Y
+        // (Viewport applies scaleY(-1), so negative Y appears UP on screen)
+        //
+        // PIPELINE FLOW:
+        // 1. Generate BASE SHAPE (simple vector outline based on bush type)
+        // 2. Apply BASE LIFT (trunk/stem - moves crown further negative)
+        // 3. Apply ROUGHNESS post-process (leaf edges)
+        // 4. Simplify path (reduce vertex count)
+        // =====================================================================
+        
+        function regenerateModel(preserveCamera = false) {
+            const UI       = window.CadGenerator.DynamicUI;
+            const Viewport = window.CadGenerator.Viewport;
+            const M        = Viewport.getMakerJS();
+
+            if (!M) {
+                UI.setStatus('Error: Maker.js not loaded.');
+                return;
+            }
+
+            // Gather parameters
+            const params = {
+                width:     Math.max(200, Math.min(2500, UI.getValue('pWidth'))),
+                height:    Math.max(200, Math.min(1500, UI.getValue('pHeight'))),
+                leafSize:  UI.getValue('pLeafSize'),
+                roughness: UI.getValue('pRoughness'),
+                baseLift:  UI.getValue('pBaseLift'),
+                bushType:  currentBushType
+            };
+
+            // === GENERATION PIPELINE ===
+            // Step 1: Generate base shape
+            let basePoints = generateBaseShape(params);
+            
+            // Step 2: Apply base lift (trunk)
+            basePoints = applyBaseLift(basePoints, params);
+            
+            // Step 3: Apply roughness (leaf effect)
+            let detailedPoints = applyRoughness(basePoints, params);
+            
+            // Step 4: Simplify path
+            detailedPoints = simplifyPath(detailedPoints, GENERATOR_CONFIG.vertexResolutionLimit);
+
+            // Create MakerJS model
+            currentModel = {
+                models: { silhouette: new M.models.ConnectTheDots(true, detailedPoints) },
+                units: M.unitType.Millimeter
+            };
+
+            // Render
+            Viewport.render(currentModel, guidesConfig, { preserveCamera });
+            if (!preserveCamera) Viewport.zoomExtents();
+
+            // Update status
+            const vertexCount = detailedPoints.length;
+            const typeLabel = { round: 'Round', wild: 'Wild', topiary: 'Topiary' }[currentBushType];
+            UI.setStatus(`${typeLabel} Bush | ${vertexCount} pts | Lift: ${params.baseLift}% (max 10% of height)`);
+        }
+        
+        function downloadDXF() {
+            window.CadGenerator.DxfExport.download(currentModel, GENERATOR_CONFIG.filenamePrefix);
+        }
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | BASE SHAPE GENERATORS
+        // =====================================================================
+        // Each generator returns array of {x, y, isBase} points
+        // COORDINATE: Base at Y=0, crown in NEGATIVE Y space
+        // isBase RULE: true if y >= GLOBAL_ORIGIN[1] - 5 (near ground)
+        // =====================================================================
+        
+        function generateBaseShape(params) {
+            switch (params.bushType) {
+                case BUSH_TYPES.wild:    return generateWildShape(params);
+                case BUSH_TYPES.topiary: return generateTopiaryShape(params);
+                case BUSH_TYPES.round:
+                default:                 return generateRoundShape(params);
+            }
+        }
+        
+        // -----------------------------------------------------------------
+        // ROUND BUSH: Full ellipse shape, base at Y=0, crown in NEGATIVE Y
+        // (Viewport applies scaleY(-1), so negative Y appears UP)
+        // -----------------------------------------------------------------
+        function generateRoundShape(params) {
+            const { width, height } = params;
+            const rx = width / 2;
+            const ry = height / 2;
+            const centerX = GLOBAL_ORIGIN[0];
+            const centerY = GLOBAL_ORIGIN[1] - ry;                                // <-- Center BELOW ground (negative Y)
+            
+            const points = [];
+            const steps = 48;
+            
+            // Generate full ellipse in NEGATIVE Y space
+            // theta from 0 to 2*PI traces full ellipse, starting at right going counter-clockwise
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const theta = t * Math.PI * 2;
+                
+                const x = centerX + Math.cos(theta) * rx;
+                const y = centerY + Math.sin(theta) * ry;
+                
+                // Points near Y=0 are base points
+                const isAtBase = (y >= GLOBAL_ORIGIN[1] - 5);
+                points.push({ x, y, isBase: isAtBase });
+            }
+            
+            return points;
+        }
+        
+        // -----------------------------------------------------------------
+        // WILD BUSH: Irregular ellipse with random bulges, NEGATIVE Y
+        // -----------------------------------------------------------------
+        function generateWildShape(params) {
+            const { width, height } = params;
+            const rx = width / 2;
+            const ry = height / 2;
+            const centerX = GLOBAL_ORIGIN[0];
+            const centerY = GLOBAL_ORIGIN[1] - ry;                                // <-- Center BELOW ground
+            
+            const points = [];
+            const steps = 48;
+            
+            // Generate irregular full ellipse with random variations
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const theta = t * Math.PI * 2;
+                
+                // Random radial variation (±15%)
+                const variation = 1.0 + (Math.random() - 0.5) * 0.3;
+                const x = centerX + Math.cos(theta) * rx * variation;
+                let y = centerY + Math.sin(theta) * ry * variation;
+                
+                // Clamp to ground (Y cannot go above 0)
+                if (y > GLOBAL_ORIGIN[1]) y = GLOBAL_ORIGIN[1];
+                
+                const isAtBase = (y >= GLOBAL_ORIGIN[1] - 5);
+                points.push({ x, y, isBase: isAtBase });
+            }
+            
+            return points;
+        }
+        
+        // -----------------------------------------------------------------
+        // TOPIARY BUSH: Pointed/conical shape, base at Y=0, point in NEGATIVE Y
+        // -----------------------------------------------------------------
+        function generateTopiaryShape(params) {
+            const { width, height } = params;
+            const rx = width / 2;
+            const centerX = GLOBAL_ORIGIN[0];
+            const baseY = GLOBAL_ORIGIN[1];
+            const tipY = baseY - height;                                          // <-- Tip at NEGATIVE Y
+            
+            const points = [];
+            const steps = 40;
+            
+            // Generate pointed shape (teardrop/cone) going DOWN into negative Y
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const theta = t * Math.PI * 2;
+                
+                // Vertical position (0 at base, 1 at tip)
+                const verticalT = (1 - Math.abs(Math.cos(theta))) * 0.5 + 0.5 * Math.abs(Math.sin(theta));
+                
+                // Width varies: widest at base, narrow at tip
+                const widthFactor = Math.pow(1 - verticalT, 0.6);
+                
+                const x = centerX + Math.cos(theta) * rx * widthFactor;
+                const y = baseY - verticalT * height;                             // <-- Goes DOWN (negative)
+                
+                const isAtBase = (y >= baseY - 5);
+                points.push({ x, y, isBase: isAtBase });
+            }
+            
+            return points;
+        }
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | POST-PROCESS: Base Lift (Trunk)
+        // =====================================================================
+        // Shape is in NEGATIVE Y space (base at Y=0, crown at negative Y)
+        // Lifting moves crown further DOWN (more negative)
+        // Trunk connects from lifted crown UP to ground (Y=0)
+        // =====================================================================
+        
+        function applyBaseLift(points, params) {
+            const { baseLift } = params;
+            if (baseLift <= 0) return points;
+            
+            // --- STEP 1: Calculate bounding box ---
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            for (const p of points) {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            }
+            
+            const boundingBoxHeight = maxY - minY;                                // <-- Height of shape
+            const boundingBoxWidth = maxX - minX;
+            
+            // --- STEP 2: Calculate lift (max 10% of bbox height) ---
+            const liftAmount = boundingBoxHeight * 0.10 * (baseLift / 100);
+            
+            if (liftAmount < 1) return points;
+            
+            // Trunk width = 5% of bounding box width (narrower trunk)
+            const trunkWidth = boundingBoxWidth * 0.03;
+            
+            // --- STEP 3: Lift crown points DOWN (subtract from Y) ---
+            const result = [];
+            
+            for (const p of points) {
+                if (!p.isBase) {
+                    // Move crown points DOWN (more negative)
+                    result.push({
+                        x: p.x,
+                        y: p.y - liftAmount,
+                        isBase: false,
+                        isCrown: true
+                    });
+                }
+            }
+            
+            // --- STEP 4: Add trunk connecting crown to ground ---
+            const crownBaseY = GLOBAL_ORIGIN[1] - liftAmount;                     // <-- Where crown now sits (negative)
+            const groundY = GLOBAL_ORIGIN[1];                                     // <-- Ground at Y=0
+            
+            // Right side of trunk (from crown up to ground)
+            result.push({ x: GLOBAL_ORIGIN[0] + trunkWidth, y: crownBaseY, isBase: false, isTrunk: true });
+            result.push({ x: GLOBAL_ORIGIN[0] + trunkWidth, y: groundY, isBase: true, isTrunk: true });
+            
+            // Left side of trunk (from ground back down to crown)
+            result.push({ x: GLOBAL_ORIGIN[0] - trunkWidth, y: groundY, isBase: true, isTrunk: true });
+            result.push({ x: GLOBAL_ORIGIN[0] - trunkWidth, y: crownBaseY, isBase: false, isTrunk: true });
+            
+            return result;
+        }
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | POST-PROCESS: Roughness (Leaf Effect)
+        // =====================================================================
+        // Adds jagged leaf-like edges to the outline
+        // Applied to crown edges only (not trunk or base)
+        // Shape is in NEGATIVE Y space, so clamp Y to not exceed 0
+        // =====================================================================
+        
+        function applyRoughness(points, params) {
+            const { roughness, leafSize } = params;
+            
+            // If no roughness, just convert to array format
+            if (roughness <= 0) {
+                return points.map(p => [p.x, p.y]);
+            }
+            
+            const roughnessFactor = roughness / 100;
+            const detailedPoints = [];
+            
+            for (let i = 0; i < points.length; i++) {
+                const p1 = points[i];
+                const p2 = points[(i + 1) % points.length];
+                
+                // Add the main point
+                detailedPoints.push([p1.x, p1.y]);
+                
+                // Skip roughness for base and trunk segments
+                if (p1.isBase && p2.isBase) continue;
+                if (p1.isTrunk || p2.isTrunk) continue;
+                
+                // Calculate segment properties
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 2) continue;
+                
+                // Number of leaf spikes based on segment length and leaf size
+                const numSpikes = Math.max(1, Math.floor(dist / (leafSize * 0.5)));
+                
+                // Add jagged points along segment
+                for (let j = 1; j < numSpikes; j++) {
+                    const t = j / numSpikes;
+                    let mx = p1.x + dx * t;
+                    let my = p1.y + dy * t;
+                    
+                    // Perpendicular normal
+                    const nx = -dy / dist;
+                    const ny = dx / dist;
+                    
+                    // Random amplitude based on roughness and leaf size
+                    const amp = leafSize * roughnessFactor * (Math.random() - 0.5) * 1.5;
+                    mx += nx * amp;
+                    my += ny * amp;
+                    
+                    // Clamp to ground (shape is in negative Y, so Y cannot exceed 0)
+                    if (my > GLOBAL_ORIGIN[1]) my = GLOBAL_ORIGIN[1];
+                    
+                    detailedPoints.push([mx, my]);
+                }
+            }
+            
+            return detailedPoints;
+        }
+        // endregion ===========================================================
+
+
+        // =====================================================================
+        // REGION | Utility Functions
+        // =====================================================================
+        
+        function simplifyPath(points, minDistance) {
+            if (points.length < 3) return points;
+            
+            const result = [points[0]];
+            let lastPoint = points[0];
+            
+            for (let i = 1; i < points.length; i++) {
+                const curr = points[i];
+                const dx = curr[0] - lastPoint[0];
+                const dy = curr[1] - lastPoint[1];
+                
+                if (Math.sqrt(dx * dx + dy * dy) >= minDistance) {
+                    result.push(curr);
+                    lastPoint = curr;
+                }
+            }
+            
+            // Check loop closure
+            const first = result[0];
+            const last = result[result.length - 1];
+            const dx = first[0] - last[0];
+            const dy = first[1] - last[1];
+            
+            if (Math.sqrt(dx * dx + dy * dy) < minDistance) {
+                result.pop();
+            }
+            
+            return result;
+        }
+        // endregion ===========================================================
+
+        // =====================================================================
+        // REGION | Initialization
+        // =====================================================================
+        window.onload = function() {
+            const UI = window.CadGenerator.DynamicUI;
+            const Viewport = window.CadGenerator.Viewport;
+
+            // Build UI
+            UI.build(UI_CONFIG, UI_HANDLERS);
+            setupBushTypeButtons();
+
+            // Initialize viewport
+            Viewport.init('canvas-wrapper', {
+                strokeColor: '#2c3e50',
+                fillColor: '#e8f5e9'
+            });
+
+            // Wait for MakerJS
+            let attempts = 0;
+            const checkInterval = setInterval(() => {
+                if (Viewport.getMakerJS()) {
+                    clearInterval(checkInterval);
+                    UI.showLoading(false);
+                    regenerateModel(false);
+                } else if (attempts > 30) {
+                    clearInterval(checkInterval);
+                    UI.setStatus('Failed to load libraries.');
+                }
+                attempts++;
+            }, 200);
+        };
+        // endregion ===========================================================
+    </script>
+</body>
+</html>

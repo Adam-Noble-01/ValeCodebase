@@ -60,7 +60,8 @@ CDN_BASE_URL                       = "https://cdn.noble-architecture.com/VaApps/
 
 # MODULE CONSTANTS | Regex Patterns
 # ------------------------------------------------------------
-WHITECARD_FOLDER_PATTERN           = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Pattern for Whitecard project folders
+WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
+WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 DATE_SUFFIX_PATTERN                = r'__(\d{2}-[A-Za-z]{3}-\d{4})$'         # <-- Date suffix pattern (DD-MMM-YYYY)
@@ -137,10 +138,15 @@ Examples:
 Folder Name Transformation:
   
   Source folders with __Whitecard suffix are renamed in destination:
-  - Source:      VN-61445__Vaughan__Whitecard
-  - Destination: VN-61445__Vaughan
+  - Legacy Format:
+    Source:      VN-61445__Vaughan__Whitecard
+    Destination: VN-61445__Vaughan
+  - New Format:
+    Source:      12345__Example__Whitecard
+    Destination: 12345__Example
   
   The __Whitecard suffix is purely for discovery on local machines.
+  Both legacy (EX-12345__Name__Whitecard) and new (12345__Name__Whitecard) formats are supported.
 
 Latest Content Folder Detection:
   
@@ -219,13 +225,23 @@ For more information, visit:
 # FUNCTION | Extract Project Metadata from Folder Name
 # ------------------------------------------------------------
 def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    match = re.match(WHITECARD_FOLDER_PATTERN, folder_name)         # <-- Match folder pattern
+    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
+    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
     
-    if match:
-        full_code = match.group(1)                                   # <-- Extract full code (e.g., "VN-61445")
-        project_name = match.group(2)                                # <-- Extract project name (e.g., "Vaughan")
+    if match_old:
+        full_code = match_old.group(1)                               # <-- Extract full code (e.g., "VN-61445")
+        project_name = match_old.group(2)                             # <-- Extract project name (e.g., "Vaughan")
         project_code = full_code.split('-')[1] if '-' in full_code else full_code  # <-- Extract numeric code only
-        return full_code, project_code, project_name                 # <-- Return extracted metadata
+        return full_code, project_code, project_name                  # <-- Return extracted metadata
+    
+    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
+    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
+    
+    if match_new:
+        project_code = match_new.group(1)                              # <-- Extract numeric code (e.g., "12345")
+        project_name = match_new.group(2)                              # <-- Extract project name (e.g., "Example")
+        full_code = project_code                                       # <-- Use numeric code as full code for new format
+        return full_code, project_code, project_name                  # <-- Return extracted metadata
     
     return None, None, None                                          # <-- Return None if pattern doesn't match
 # ---------------------------------------------------------------
@@ -234,14 +250,23 @@ def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[
 # FUNCTION | Generate Destination Folder Name
 # ------------------------------------------------------------
 def generate_destination_folder_name(folder_name: str) -> Optional[str]:
-    match = re.match(WHITECARD_FOLDER_PATTERN, folder_name)         # <-- Match folder pattern
+    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
+    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
     
-    if match:
-        full_code = match.group(1)                                   # <-- Extract full code
-        project_name = match.group(2)                                # <-- Extract project name
-        return f"{full_code}__{project_name}"                        # <-- Return name without __Whitecard suffix
+    if match_old:
+        full_code = match_old.group(1)                                # <-- Extract full code
+        project_name = match_old.group(2)                             # <-- Extract project name
+        return f"{full_code}__{project_name}"                         # <-- Return name without __Whitecard suffix
     
-    return None                                                      # <-- Return None if pattern doesn't match
+    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
+    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
+    
+    if match_new:
+        project_code = match_new.group(1)                             # <-- Extract numeric code
+        project_name = match_new.group(2)                             # <-- Extract project name
+        return f"{project_code}__{project_name}"                      # <-- Return name without suffix
+    
+    return None                                                       # <-- Return None if pattern doesn't match
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -401,13 +426,34 @@ def discover_glb_files(project_path: Path) -> List[str]:
 # REGION | Folder Discovery Functions
 # -----------------------------------------------------------------------------
 
+# FUNCTION | Get Project Folders Blacklist from Config
+# ------------------------------------------------------------
+def get_project_blacklist() -> List[str]:
+    """Load project folders blacklist from masterConfig.json"""
+    try:
+        script_dir = Path(__file__).parent                             # <-- Get script directory
+        config_path = script_dir / MASTER_CONFIG_PATH                  # <-- Build config path
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                      # <-- Load master config
+        
+        return config.get('projectFoldersBlacklist', [])              # <-- Return blacklist array
+    except Exception:
+        return []                                                      # <-- Return empty list on error
+# ---------------------------------------------------------------
+
+
 # FUNCTION | Discover All Whitecard Projects in Source Path
 # ------------------------------------------------------------
-def discover_whitecard_projects(source_base: Path) -> List[Dict]:
+def discover_whitecard_projects(source_base: Path, blacklist: List[str] = None) -> List[Dict]:
     projects = []                                                     # <-- Initialize projects list
+    skipped_blacklisted = []                                          # <-- Track blacklisted projects
     
     if not source_base.exists() or not source_base.is_dir():
         return projects                                               # <-- Return empty if path invalid
+    
+    if blacklist is None:
+        blacklist = get_project_blacklist()                           # <-- Load blacklist if not provided
     
     for item in sorted(source_base.iterdir()):
         if not item.is_dir() or item.name.startswith('.'):
@@ -418,6 +464,11 @@ def discover_whitecard_projects(source_base: Path) -> List[Dict]:
         if full_code and project_code and project_name:               # <-- Check if valid Whitecard project
             dest_folder_name = generate_destination_folder_name(item.name)  # <-- Generate destination name
             
+            # CHECK IF PROJECT IS BLACKLISTED
+            if dest_folder_name in blacklist:                          # <-- Skip blacklisted projects
+                skipped_blacklisted.append(dest_folder_name)           # <-- Track skipped project
+                continue                                                # <-- Skip this project
+            
             projects.append({
                 'source_path': item,
                 'source_folder_name': item.name,
@@ -426,6 +477,10 @@ def discover_whitecard_projects(source_base: Path) -> List[Dict]:
                 'project_code': project_code,
                 'project_name': project_name
             })
+    
+    # LOG BLACKLISTED PROJECTS IF ANY
+    if skipped_blacklisted:
+        print(f"{COLOR_YELLOW}[BLACKLIST] Skipped {len(skipped_blacklisted)} blacklisted project(s): {', '.join(skipped_blacklisted)}{COLOR_RESET}")  # <-- Log blacklisted projects
     
     return projects                                                   # <-- Return discovered projects list
 # ---------------------------------------------------------------

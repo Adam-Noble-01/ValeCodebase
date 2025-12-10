@@ -92,8 +92,8 @@
             sessionStorage.setItem('whitecardopedia_redirect', location.pathname + location.search + location.hash);
             
             // REDIRECT TO APP.HTML
-            // Use absolute path for GitHub Pages subdirectory
-            location.replace('/ValeCodebase/WebApps/Whitecardopedia/app.html');
+            // Always use fixed subdirectory path for GitHub Pages
+            location.replace('/ValeCodebase/WebApps/Whitecardopedia/app.html');  // <-- GitHub Pages subdirectory
         })();
     </script>
 </head>

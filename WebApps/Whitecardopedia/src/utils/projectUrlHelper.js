@@ -43,7 +43,7 @@
         
         // DETECT ENVIRONMENT AND SET BASE PATH
         if (hostname.includes('github.io')) {
-            // GITHUB PAGES - Use fixed base path
+            // GITHUB PAGES - Always use fixed subdirectory deployment path
             base += '/ValeCodebase/WebApps/Whitecardopedia';              // <-- GitHub Pages subdirectory
         }
         // LOCALHOST - Base is just the domain (no additional path)

@@ -32,7 +32,7 @@
     // FUNCTION | Get Current Base URL
     // ------------------------------------------------------------
     function getBaseUrl() {
-        const { protocol, hostname, port, pathname } = window.location;   // <-- Destructure location
+        const { protocol, hostname, port } = window.location;             // <-- Destructure location
         
         // CONSTRUCT BASE URL WITH PORT IF NON-STANDARD
         let base = `${protocol}//${hostname}`;                            // <-- Start with protocol and hostname
@@ -41,24 +41,15 @@
             base += `:${port}`;                                           // <-- Add port if non-standard
         }
         
-        // ADD BASE PATH (for GitHub Pages subdirectories)
-        const pathParts = pathname.split('/').filter(p => p);             // <-- Split and filter empty
+        // GET BASE PATH FROM BASE TAG (set dynamically in HTML)
+        const baseTag = document.querySelector('base');                   // <-- Get base tag element
         
-        // CHECK IF WE'RE IN A SUBDIRECTORY (e.g., /ValeCodebase/WebApps/Whitecardopedia)
-        if (pathParts.length > 0) {
-            // DETECT GITHUB PAGES PATTERN
-            if (hostname.includes('github.io')) {
-                // INCLUDE REPO AND SUBDIRECTORY PATH
-                const basePath = pathParts.slice(0, -1).join('/');        // <-- Remove last segment (e.g., projects2025)
-                if (basePath) {
-                    base += `/${basePath}`;                               // <-- Add base path
-                }
-            } else {
-                // LOCAL OR CUSTOM DOMAIN - Use directory structure
-                const basePath = pathParts.slice(0, -1).join('/');        // <-- Remove last segment
-                if (basePath) {
-                    base += `/${basePath}`;                               // <-- Add base path
-                }
+        if (baseTag && baseTag.href) {
+            // EXTRACT PATH FROM BASE TAG HREF
+            const baseUrl = new URL(baseTag.href);                        // <-- Parse base href
+            const basePath = baseUrl.pathname.replace(/\/$/, '');         // <-- Remove trailing slash
+            if (basePath && basePath !== '/') {
+                base += basePath;                                         // <-- Add base path from tag
             }
         }
         

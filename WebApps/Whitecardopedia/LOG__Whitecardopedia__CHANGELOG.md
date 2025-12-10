@@ -32,10 +32,8 @@
 - Enhanced `App.jsx` with deep link detection on mount and browser history API integration
 - Extended `projectLoader.js` with URL manifest loading and project lookup by code
 - Updated Flask server (`server.py`) with explicit route handler for deep link URLs (`/projects<year>/<project_code>`)
-- Converted all relative asset paths to absolute paths in components and HTML (critical for deep links)
+- Converted all relative asset paths to absolute paths in components and HTML
 - Added ShareButton component to Header bar (positioned next to Back to Gallery button)
-- Implemented GitHub Pages 404 redirect handler to support deep link URLs on static hosting
-- Added sessionStorage-based URL restoration for seamless deep link navigation
 
 ### Files Modified
 - `server.py` - Added deep link route handler
@@ -53,8 +51,6 @@
 - `src/data/urlManifest.json` - Auto-generated manifest mapping project codes to URLs
 - `src/utils/projectUrlHelper.js` - URL helper utility module
 - `src/components/ShareButton.jsx` - Share link button component
-- `404.html` - GitHub Pages 404 handler for deep link URL support
-- `.nojekyll` - Disables Jekyll processing on GitHub Pages
 
 ### URL Structure
 - Format: `{{BaseURL}}/projects2025/55876` where `55876` is the project code

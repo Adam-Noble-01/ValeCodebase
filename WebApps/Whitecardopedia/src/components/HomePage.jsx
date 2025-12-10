@@ -53,7 +53,7 @@
                 
                 <div className="homepage">
                     <img 
-                        src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__.png" 
+                        src="../assets__CommonApplicationAssets/AppLogo__Whitecardopedia__.png" 
                         alt="Whitecardopedia Logo"
                         className="homepage__logo"
                     />

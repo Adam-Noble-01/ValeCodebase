@@ -5,7 +5,7 @@
      
      FILE       : app.html
      NAMESPACE  : Whitecardopedia
-     VERSION    : 0.2.7 - Content Indicator Icons (Final - Working)
+     VERSION    : 0.2.8 - Deep Linking & Shareable URLs (Final - Working)
      AUTHOR     : Adam Noble - Noble Architecture
      PURPOSE    : React application container for whitecard image review system
      CREATED    : 2025
@@ -41,8 +41,8 @@
     <!-- ----------------------------------------------------------------- -->
     <!-- BRANDING | Favicon and Brand Icons                                -->
     <!-- ----------------------------------------------------------------- -->
-    <link rel="icon" type="image/svg+xml" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <link rel="apple-touch-icon" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="icon" type="image/svg+xml" href="/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <meta name="theme-color" content="#172b3a">
     <!-- ----------------------------------------------------------------- -->
     
@@ -63,11 +63,11 @@
     <!-- ----------------------------------------------------------------- -->
     <!-- STYLES | Application Stylesheets                                  -->
     <!-- ----------------------------------------------------------------- -->
-    <link rel="stylesheet" href="src/styles/variables.css">
-    <link rel="stylesheet" href="src/styles/app.css">
-    <link rel="stylesheet" href="src/styles/imageCarouselOverlay.css">
-    <link rel="stylesheet" href="src/styles/tools.css">
-    <link rel="stylesheet" href="src/styles/timeAnalysis.css">
+    <link rel="stylesheet" href="/src/styles/variables.css">
+    <link rel="stylesheet" href="/src/styles/app.css">
+    <link rel="stylesheet" href="/src/styles/imageCarouselOverlay.css">
+    <link rel="stylesheet" href="/src/styles/tools.css">
+    <link rel="stylesheet" href="/src/styles/timeAnalysis.css">
     <!-- ----------------------------------------------------------------- -->
     
     <!-- ----------------------------------------------------------------- -->
@@ -88,13 +88,28 @@
     <!-- CLIENT-ZIP | Modern ZIP File Generation Library                   -->
     <!-- ----------------------------------------------------------------- -->
     <script type="module">
-        import { downloadZip } from './src/ThirdParty__VersionLockedDependencies/client-zip.js';
+        import { downloadZip } from '/src/ThirdParty__VersionLockedDependencies/client-zip.js';
         window.downloadZip = downloadZip;  // <-- Make available globally
     </script>
     <!-- ----------------------------------------------------------------- -->
     
 </head>
 <body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- GITHUB PAGES 404 REDIRECT HANDLER                                 -->
+    <!-- ----------------------------------------------------------------- -->
+    <script>
+        (function() {
+            // RESTORE URL FROM 404 REDIRECT
+            const redirect = sessionStorage.getItem('whitecardopedia_redirect');
+            if (redirect) {
+                sessionStorage.removeItem('whitecardopedia_redirect');
+                history.replaceState(null, null, redirect);
+            }
+        })();
+    </script>
+    <!-- ----------------------------------------------------------------- -->
+    
     <!-- ----------------------------------------------------------------- -->
     <!-- REACT ROOT | Main Application Container                           -->
     <!-- ----------------------------------------------------------------- -->
@@ -104,28 +119,30 @@
     <!-- ----------------------------------------------------------------- -->
     <!-- COMPONENTS | React Component Scripts                              -->
     <!-- ----------------------------------------------------------------- -->
-    <script type="text/babel" src="src/data/projectLoader.js"></script>
-    <script type="text/babel" src="src/utils/dateFormatter.js"></script>
-    <script type="text/babel" src="src/utils/searchFilter.js"></script>
-    <script type="text/babel" src="src/utils/sortProjects.js"></script>
-    <script type="text/babel" src="src/utils/GalleryView__ImageEffects.js"></script>
-    <script type="text/babel" src="src/utils/projectContentDetector.js"></script>
-    <script type="text/babel" src="src/utils/localhostDetector.js"></script>
-    <script type="text/babel" src="src/components/StarRating.jsx"></script>
-    <script type="text/babel" src="src/components/EfficiencyScale.jsx"></script>
-    <script type="text/babel" src="src/components/ImageCarousel.jsx"></script>
-    <script type="text/babel" src="src/components/PinEntry.jsx"></script>
-    <script type="text/babel" src="src/components/SearchBox.jsx"></script>
-    <script type="text/babel" src="src/components/SortControls.jsx"></script>
-    <script type="text/babel" src="src/components/HamburgerMenu.jsx"></script>
-    <script type="text/babel" src="src/components/Header.jsx"></script>
-    <script type="text/babel" src="src/components/HomePage.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectGallery.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectViewer.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectEditorForm.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectEditor.jsx"></script>
-    <script type="text/babel" src="src/components/TimeAnalysisTool.jsx"></script>
-    <script type="text/babel" src="src/components/App.jsx"></script>
+    <script type="text/babel" src="/src/data/projectLoader.js"></script>
+    <script type="text/babel" src="/src/utils/dateFormatter.js"></script>
+    <script type="text/babel" src="/src/utils/searchFilter.js"></script>
+    <script type="text/babel" src="/src/utils/sortProjects.js"></script>
+    <script type="text/babel" src="/src/utils/GalleryView__ImageEffects.js"></script>
+    <script type="text/babel" src="/src/utils/projectContentDetector.js"></script>
+    <script type="text/babel" src="/src/utils/localhostDetector.js"></script>
+    <script type="text/babel" src="/src/utils/projectUrlHelper.js"></script>
+    <script type="text/babel" src="/src/components/StarRating.jsx"></script>
+    <script type="text/babel" src="/src/components/EfficiencyScale.jsx"></script>
+    <script type="text/babel" src="/src/components/ImageCarousel.jsx"></script>
+    <script type="text/babel" src="/src/components/PinEntry.jsx"></script>
+    <script type="text/babel" src="/src/components/SearchBox.jsx"></script>
+    <script type="text/babel" src="/src/components/SortControls.jsx"></script>
+    <script type="text/babel" src="/src/components/HamburgerMenu.jsx"></script>
+    <script type="text/babel" src="/src/components/ShareButton.jsx"></script>
+    <script type="text/babel" src="/src/components/Header.jsx"></script>
+    <script type="text/babel" src="/src/components/HomePage.jsx"></script>
+    <script type="text/babel" src="/src/components/ProjectGallery.jsx"></script>
+    <script type="text/babel" src="/src/components/ProjectViewer.jsx"></script>
+    <script type="text/babel" src="/src/components/ProjectEditorForm.jsx"></script>
+    <script type="text/babel" src="/src/components/ProjectEditor.jsx"></script>
+    <script type="text/babel" src="/src/components/TimeAnalysisTool.jsx"></script>
+    <script type="text/babel" src="/src/components/App.jsx"></script>
     <!-- ----------------------------------------------------------------- -->
     
 </body>

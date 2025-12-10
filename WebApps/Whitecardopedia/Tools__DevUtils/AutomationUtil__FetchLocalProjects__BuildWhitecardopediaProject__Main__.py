@@ -45,6 +45,7 @@ LOCAL_PROJECTS_BASE_PATH           = r"C:\01__ValeProjects\ValeProjects__2025"  
 WHITECARDOPEDIA_PROJECTS_PATH      = "../Projects/2025"                     # <-- Destination path for Whitecardopedia projects
 WHITECARDOPEDIA_TEMPLATE_PATH      = "../Projects/2025/01__TemplateProject" # <-- Template project path
 MASTER_CONFIG_PATH                 = "../src/data/masterConfig.json"         # <-- Master configuration file path
+URL_MANIFEST_PATH                  = "../src/data/urlManifest.json"          # <-- URL manifest file path
 CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"          # <-- Content delivery subfolder name
 GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"              # <-- GLB files subfolder name
 PROJECT_JSON_FILENAME              = "project.json"                          # <-- Project metadata filename
@@ -871,6 +872,87 @@ def print_results(results: List[Dict], dry_run: bool):
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | URL Manifest Generation Functions
+# -----------------------------------------------------------------------------
+
+# FUNCTION | Generate URL Manifest from Cloned Projects
+# ------------------------------------------------------------
+def generate_url_manifest(dest_base_path: Path, year: str = DEFAULT_PROJECT_YEAR) -> Dict:
+    """Generate URL manifest mapping project codes to folder IDs"""
+    manifest = {
+        'generatedDate': datetime.now().isoformat() + 'Z',               # <-- ISO timestamp with Z suffix
+        'baseYear': year,                                                 # <-- Default year for projects
+        'projects': {}                                                    # <-- Project mapping dictionary
+    }
+    
+    projects_path = dest_base_path                                        # <-- Path to projects directory
+    
+    if not projects_path.exists() or not projects_path.is_dir():
+        return manifest                                                   # <-- Return empty manifest if invalid
+    
+    for item in sorted(projects_path.iterdir()):
+        if not item.is_dir() or item.name.startswith('.'):
+            continue                                                      # <-- Skip non-directories and hidden
+        
+        # SKIP TEMPLATE AND EXAMPLE FOLDERS
+        if item.name.startswith('00__') or item.name.startswith('01__'):
+            continue                                                      # <-- Skip template folders
+        
+        # EXTRACT PROJECT CODE FROM FOLDER NAME
+        full_code, project_code, project_name = extract_project_metadata(item.name + '__Whitecard')  # <-- Add suffix for pattern match
+        
+        # TRY DIRECT PATTERN MATCH WITHOUT SUFFIX
+        if not project_code:
+            # LEGACY PATTERN (e.g., VN-61445__Name)
+            match_old = re.match(r'^([A-Z]{2}-\d+)__(.+?)$', item.name)  # <-- Match legacy pattern without suffix
+            if match_old:
+                full_code = match_old.group(1)                            # <-- Extract full code
+                project_code = full_code.split('-')[1] if '-' in full_code else full_code  # <-- Extract numeric code
+                project_name = match_old.group(2)                         # <-- Extract name
+            
+            # NEW PATTERN (e.g., 12345__Name)
+            match_new = re.match(r'^(\d+)__(.+?)$', item.name)            # <-- Match new pattern without suffix
+            if match_new:
+                project_code = match_new.group(1)                         # <-- Extract numeric code
+                project_name = match_new.group(2)                         # <-- Extract name
+        
+        if project_code:
+            manifest['projects'][project_code] = {
+                'folderId': item.name,                                    # <-- Folder name without suffix
+                'projectCode': project_code,                              # <-- Numeric project code
+                'year': year,                                             # <-- Project year
+                'url': f'projects{year}/{project_code}'                   # <-- Shareable URL path
+            }
+    
+    return manifest                                                       # <-- Return generated manifest
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Write URL Manifest to File
+# ------------------------------------------------------------
+def write_url_manifest(script_dir: Path, manifest: Dict) -> bool:
+    """Write URL manifest JSON file"""
+    try:
+        manifest_path = script_dir / URL_MANIFEST_PATH                    # <-- Construct manifest path
+        
+        # ENSURE DIRECTORY EXISTS
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)           # <-- Create directory if needed
+        
+        with open(manifest_path, 'w', encoding='utf-8') as file:          # <-- Open manifest file for writing
+            json.dump(manifest, file, indent=4, ensure_ascii=False)       # <-- Write formatted JSON
+            file.write('\n')                                              # <-- Add trailing newline
+        
+        print(f"    {COLOR_GREEN}[+] URL manifest generated: {manifest_path.name}{COLOR_RESET}")  # <-- Log success
+        print(f"    {COLOR_CYAN}    → {len(manifest['projects'])} project URL(s) mapped{COLOR_RESET}")  # <-- Log count
+        return True                                                       # <-- Return success
+    except Exception as error:
+        print(f"{COLOR_RED}Error writing URL manifest: {error}{COLOR_RESET}")  # <-- Log error
+        return False                                                      # <-- Return failure
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | User Confirmation Functions
 # -----------------------------------------------------------------------------
 
@@ -972,6 +1054,13 @@ def main():
     
     successful_count = sum(1 for r in results if r['success'] and not r['skipped'])  # <-- Count successful
     print(f"{COLOR_GREEN}Cloning complete! {successful_count} project(s) successfully cloned.{COLOR_RESET}\n")  # <-- Print completion
+    
+    # STEP 5: Generate URL manifest for deep linking
+    if successful_count > 0 or not args.project:                          # <-- Generate if any projects cloned or full run
+        print(f"{COLOR_CYAN}Generating URL manifest for deep linking...{COLOR_RESET}\n")  # <-- Log generation
+        manifest = generate_url_manifest(dest_base, DEFAULT_PROJECT_YEAR)  # <-- Generate manifest
+        write_url_manifest(script_dir, manifest)                          # <-- Write manifest file
+        print()                                                           # <-- Blank line after manifest
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

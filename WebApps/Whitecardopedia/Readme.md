@@ -39,7 +39,9 @@ Whitecardopedia is a quality control and presentation tool for the Vale Garden H
 - ✅ **Project Date Display** - Formatted dates with ordinal superscripts (1st, 2nd, 3rd)
 - ✅ **Production Data Panel** - Input type, duration, and additional notes
 - ✅ **SketchUp Model Links** - Conditional display of 3D model links
-- ✅ **Download Images** - Download all project images as ZIP file (NEW in v0.0.7)
+- ✅ **Download Images** - Download all project images as ZIP file
+- ✅ **Deep Link URLs** - Shareable direct links to specific projects (NEW in v0.2.8)
+- ✅ **Share Link Button** - Copy project URL to clipboard with one click (NEW in v0.2.8)
 - ✅ **Star Ratings** - Visual display of Quality, Prestige, Value metrics (1-5 stars)
 - ✅ **Image Carousel** - Navigate through multiple project images with thumbnails
 - ✅ **Dynamic Loading** - Projects automatically loaded from folder structure
@@ -521,5 +523,5 @@ For questions or issues, contact:
 
 ---
 
-**Version**: 0.0.7 - Download Images Feature  
-**Last Updated**: 10-Oct-2025
+**Version**: 0.2.8 - Deep Linking & Shareable URLs  
+**Last Updated**: 10-Dec-2025

@@ -123,9 +123,9 @@
         
         // DETERMINE PICTOGRAM PATHS BASED ON MODE
         const imageSuffix = compact ? '__LightGreyVersion.png' : '.png';     // <-- Grey for gallery, colored for project page
-        const behindScheduleImg = `../assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__BehindSchedule${imageSuffix}`;
-        const targetTimeImg = `../assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__TargetTime${imageSuffix}`;
-        const aheadOfScheduleImg = `../assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__AheadOfSchedule${imageSuffix}`;
+        const behindScheduleImg = `https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__BehindSchedule${imageSuffix}`;
+        const targetTimeImg = `https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__TargetTime${imageSuffix}`;
+        const aheadOfScheduleImg = `https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Element__TimeEfficiencyScale/Pictogram__EfficiencyScale__AheadOfSchedule${imageSuffix}`;
         
         return (
             <div className={componentClass}>

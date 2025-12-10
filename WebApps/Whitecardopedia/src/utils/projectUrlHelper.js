@@ -41,17 +41,12 @@
             base += `:${port}`;                                           // <-- Add port if non-standard
         }
         
-        // GET BASE PATH FROM BASE TAG (set dynamically in HTML)
-        const baseTag = document.querySelector('base');                   // <-- Get base tag element
-        
-        if (baseTag && baseTag.href) {
-            // EXTRACT PATH FROM BASE TAG HREF
-            const baseUrl = new URL(baseTag.href);                        // <-- Parse base href
-            const basePath = baseUrl.pathname.replace(/\/$/, '');         // <-- Remove trailing slash
-            if (basePath && basePath !== '/') {
-                base += basePath;                                         // <-- Add base path from tag
-            }
+        // DETECT ENVIRONMENT AND SET BASE PATH
+        if (hostname.includes('github.io')) {
+            // GITHUB PAGES - Use fixed base path
+            base += '/ValeCodebase/WebApps/Whitecardopedia';              // <-- GitHub Pages subdirectory
         }
+        // LOCALHOST - Base is just the domain (no additional path)
         
         return base;                                                      // <-- Return base URL
     }

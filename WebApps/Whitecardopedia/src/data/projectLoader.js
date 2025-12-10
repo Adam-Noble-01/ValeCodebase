@@ -25,15 +25,8 @@
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
         masterConfigPath    : 'src/data/masterConfig.json',              // <-- Master configuration file path
-        urlManifestPath     : 'src/data/urlManifest.json',               // <-- URL manifest file path
         projectBasePath     : 'Projects/2025',                           // <-- Base path for projects
     };
-    // ------------------------------------------------------------
-    
-    
-    // MODULE VARIABLES | Cached URL Manifest
-    // ------------------------------------------------------------
-    let cachedUrlManifest = null;                                         // <-- Cache for URL manifest
     // ------------------------------------------------------------
 
 
@@ -115,8 +108,7 @@
     // FUNCTION | Get Image URL for Project
     // ------------------------------------------------------------
     function getImageUrl(projectData, imageName) {
-        const basePath = projectData.basePath || `Projects/2025/${projectData.folderId}`;  // <-- Fallback basePath
-        return `${basePath}/${imageName}`;                               // <-- Construct image URL (base tag handles resolution)
+        return `${projectData.basePath}/${imageName}`;                   // <-- Construct full image URL
     }
     // ---------------------------------------------------------------
 
@@ -129,76 +121,6 @@
         }
         
         return getImageUrl(projectData, projectData.images[0]);          // <-- Return first image as thumbnail
-    }
-    // ---------------------------------------------------------------
-
-
-    // FUNCTION | Load URL Manifest
-    // ------------------------------------------------------------
-    async function loadUrlManifest() {
-        // CHECK IF ALREADY CACHED
-        if (cachedUrlManifest) {
-            return cachedUrlManifest;                                     // <-- Return cached manifest
-        }
-        
-        try {
-            const response = await fetch(PROJECT_LOADER_CONFIG.urlManifestPath);  // <-- Fetch URL manifest
-            
-            if (!response.ok) {
-                console.warn('URL manifest not found - deep linking disabled');  // <-- Log warning
-                return null;                                              // <-- Return null on error
-            }
-            
-            const manifest = await response.json();                       // <-- Parse JSON response
-            cachedUrlManifest = manifest;                                 // <-- Cache manifest
-            return manifest;                                              // <-- Return manifest object
-            
-        } catch (error) {
-            console.error('Error loading URL manifest:', error);          // <-- Log error
-            return null;                                                  // <-- Return null on error
-        }
-    }
-    // ---------------------------------------------------------------
-
-
-    // FUNCTION | Find Project by Code
-    // ------------------------------------------------------------
-    async function findProjectByCode(projectCode, year = '2025') {
-        const manifest = await loadUrlManifest();                         // <-- Load URL manifest
-        
-        if (!manifest || !manifest.projects) {
-            return null;                                                  // <-- Return null if no manifest
-        }
-        
-        const projectEntry = manifest.projects[projectCode];             // <-- Lookup project by code
-        
-        if (!projectEntry) {
-            return null;                                                  // <-- Return null if not found
-        }
-        
-        // VERIFY YEAR MATCHES
-        if (projectEntry.year !== year) {
-            return null;                                                  // <-- Return null if year mismatch
-        }
-        
-        return projectEntry;                                              // <-- Return project entry
-    }
-    // ---------------------------------------------------------------
-
-
-    // FUNCTION | Load Project by Code
-    // ------------------------------------------------------------
-    async function loadProjectByCode(projectCode, year = '2025') {
-        const projectEntry = await findProjectByCode(projectCode, year);  // <-- Find project entry
-        
-        if (!projectEntry) {
-            console.error(`Project not found for code: ${projectCode}, year: ${year}`);  // <-- Log error
-            return null;                                                  // <-- Return null if not found
-        }
-        
-        // LOAD PROJECT DATA USING FOLDER ID
-        const projectData = await loadProjectData(projectEntry.folderId);  // <-- Load project data
-        return projectData;                                               // <-- Return project data
     }
     // ---------------------------------------------------------------
 

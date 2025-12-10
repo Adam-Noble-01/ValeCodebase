@@ -146,20 +146,14 @@
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
     }
     
-    .app-header__button-group {
-        display                            : flex;                         /* <-- Flexbox for button layout */
-        align-items                        : center;                       /* <-- Vertical centering */
-        gap                                : 15px;                         /* <-- Gap between buttons */
-        position                           : absolute;                     /* <-- Absolute positioning */
-        left                               : 50%;                          /* <-- Center horizontally */
-        transform                          : translateX(-50%);             /* <-- Center adjustment */
-    }
-    
     .app-header__back-button {
         display                            : flex;                         /* <-- Flexbox for icon alignment */
         align-items                        : center;                       /* <-- Vertical centering */
         justify-content                    : center;                       /* <-- Horizontal centering */
         gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
+        position                           : absolute;                     /* <-- Absolute positioning */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Center adjustment */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
@@ -174,12 +168,12 @@
     
     .app-header__back-button:hover {
         background                         : #0f1e28;                      /* <-- Darker blue on hover */
-        transform                          : scale(1.02);                  /* <-- Slight grow on hover */
+        transform                          : translateX(-50%) scale(1.02); /* <-- Maintain center and slight grow */
         box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Shadow on hover */
     }
     
     .app-header__back-button:active {
-        transform                          : scale(1.0);                   /* <-- Reset scale on click */
+        transform                          : translateX(-50%) scale(1.0);  /* <-- Reset scale on click */
     }
     
     .app-header__back-icon {
@@ -652,62 +646,6 @@
         opacity                            : 0.7;                          /* <-- Reduced opacity when disabled */
         cursor                             : not-allowed;                  /* <-- Not allowed cursor */
     }
-    
-    /* SHARE BUTTON | Project URL Sharing Component */
-    /* ------------------------------------------------------------ */
-    .share-button {
-        display                            : inline-flex;                  /* <-- Inline flex for icon alignment */
-        align-items                        : center;                       /* <-- Vertical centering */
-        justify-content                    : center;                       /* <-- Horizontal centering */
-        gap                                : 8px;                          /* <-- Gap between icon and text */
-        padding                            : 10px 20px;                    /* <-- Button padding */
-        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
-        color                              : var(--Vale_TextLight);        /* <-- Light text color */
-        border                             : none;                         /* <-- No border */
-        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
-        font-size                          : 0.9rem;                       /* <-- Standard font size */
-        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
-        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
-        cursor                             : pointer;                      /* <-- Pointer cursor */
-        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
-        white-space                        : nowrap;                       /* <-- Prevent text wrapping */
-    }
-    
-    .share-button:hover {
-        background                         : #0f1e28;                      /* <-- Darker blue on hover */
-        transform                          : translateY(-1px);             /* <-- Slight lift effect */
-        box-shadow                         : 0 3px 8px rgba(0,0,0,0.2);   /* <-- Shadow on hover */
-    }
-    
-    .share-button:active {
-        transform                          : translateY(0);                /* <-- Reset on click */
-    }
-    
-    .share-button--copied {
-        background                         : #28a745;                      /* <-- Green for success */
-    }
-    
-    .share-button--copied:hover {
-        background                         : #218838;                      /* <-- Darker green on hover */
-    }
-    
-    .share-button--error {
-        background                         : #dc3545;                      /* <-- Red for error */
-    }
-    
-    .share-button--error:hover {
-        background                         : #c82333;                      /* <-- Darker red on hover */
-    }
-    
-    .share-button__icon {
-        font-size                          : 1.1rem;                       /* <-- Icon size */
-        line-height                        : 1;                            /* <-- Remove line height spacing */
-    }
-    
-    .share-button__text {
-        font-size                          : 0.9rem;                       /* <-- Text size */
-    }
-    /* ------------------------------------------------------------ */
     
     .project-viewer__download-icon {
         width                              : 16px;                         /* <-- Icon width */

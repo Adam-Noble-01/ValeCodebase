@@ -431,16 +431,6 @@ def serve_valevision(filename):
 # ------------------------------------------------------------
 
 
-# ROUTE HANDLER | Serve Deep Link Routes (projects2025/12345)
-# ------------------------------------------------------------
-@app.route('/projects<int:year>/<project_code>')
-def serve_deep_link(year, project_code):
-    """Handle deep link URLs by serving app.html"""
-    base_dir = os.path.dirname(os.path.abspath(__file__))                # <-- Get server directory
-    return send_from_directory(base_dir, 'app.html')                     # <-- Serve app.html for deep links
-# ------------------------------------------------------------
-
-
 # ROUTE HANDLER | Serve Static Files
 # ------------------------------------------------------------
 @app.route('/', defaults={'path': ''})
@@ -456,7 +446,7 @@ def serve_static(path):
     if os.path.isfile(file_path):
         return send_from_directory(base_dir, path)                       # <-- Serve file
     else:
-        return send_from_directory(base_dir, 'app.html')                 # <-- Fallback to app.html for SPA
+        return send_from_directory(base_dir, 'index.html')               # <-- Fallback to index
 # ------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

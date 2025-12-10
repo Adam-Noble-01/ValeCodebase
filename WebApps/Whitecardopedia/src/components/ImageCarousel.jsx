@@ -297,7 +297,7 @@
                             />
                             {hasValeVisionModel(projectData) && (
                                 <img 
-                                    src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__1.0.0__.png"
+                                    src="../assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__1.0.0__.png"
                                     alt="Load in ValeVision3D"
                                     className="image-carousel__valevision-overlay"
                                     onClick={() => handleValeVisionClick(projectData)}
@@ -372,7 +372,7 @@
                             {/* VALEVISION OVERLAY */}
                             {hasValeVisionModel(projectData) && (
                                 <img 
-                                    src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__50%-Opacity__1.0.0__.png"
+                                    src="../assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__ClickHereVersion__50%-Opacity__1.0.0__.png"
                                     alt="Load in ValeVision3D"
                                     className="image-carousel__valevision-overlay"
                                     onClick={() => handleValeVisionClick(projectData)}

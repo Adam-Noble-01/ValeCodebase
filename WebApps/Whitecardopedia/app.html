@@ -5,7 +5,7 @@
      
      FILE       : app.html
      NAMESPACE  : Whitecardopedia
-     VERSION    : 0.2.8 - Deep Linking & Shareable URLs (Final - Working)
+     VERSION    : 0.2.7 - Content Indicator Icons (Final - Working)
      AUTHOR     : Adam Noble - Noble Architecture
      PURPOSE    : React application container for whitecard image review system
      CREATED    : 2025
@@ -27,30 +27,6 @@
     <title>Whitecardopedia - Vale Garden Houses</title>
     
     <!-- ----------------------------------------------------------------- -->
-    <!-- DYNAMIC BASE TAG | Set base URL for localhost vs GitHub Pages     -->
-    <!-- ----------------------------------------------------------------- -->
-    <script>
-        // SET BASE TAG DYNAMICALLY BASED ON HOSTNAME
-        (function() {
-            const base = document.createElement('base');
-            // DETECT BASE PATH FROM CURRENT LOCATION
-            if (window.location.hostname.includes('github.io')) {
-                // GITHUB PAGES - Extract base path from pathname
-                const pathname = window.location.pathname;
-                if (pathname.includes('/ValeCodebase/WebApps/Whitecardopedia/')) {
-                    base.href = '/ValeCodebase/WebApps/Whitecardopedia/';  // <-- Subdirectory deployment
-                } else {
-                    base.href = '/';                                        // <-- Root deployment
-                }
-            } else {
-                base.href = '/';                                            // <-- Localhost root
-            }
-            document.head.insertBefore(base, document.head.firstChild.nextSibling);
-        })();
-    </script>
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
     <!-- SEARCH ENGINE BLOCKING | Prevent Indexing and Crawling            -->
     <!-- ----------------------------------------------------------------- -->
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
@@ -65,8 +41,8 @@
     <!-- ----------------------------------------------------------------- -->
     <!-- BRANDING | Favicon and Brand Icons                                -->
     <!-- ----------------------------------------------------------------- -->
-    <link rel="icon" type="image/svg+xml" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <link rel="apple-touch-icon" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="icon" type="image/svg+xml" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <meta name="theme-color" content="#172b3a">
     <!-- ----------------------------------------------------------------- -->
     
@@ -76,12 +52,12 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Whitecardopedia - Vale Garden Houses">
     <meta property="og:description" content="Professional whitecard massing model review system for Vale Garden Houses architectural projects">
-    <meta property="og:image" content="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta property="og:image" content="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <meta property="og:url" content="">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Whitecardopedia - Vale Garden Houses">
     <meta name="twitter:description" content="Professional whitecard massing model review system for Vale Garden Houses architectural projects">
-    <meta name="twitter:image" content="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="twitter:image" content="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <!-- ----------------------------------------------------------------- -->
     
     <!-- ----------------------------------------------------------------- -->
@@ -120,21 +96,6 @@
 </head>
 <body>
     <!-- ----------------------------------------------------------------- -->
-    <!-- GITHUB PAGES 404 REDIRECT HANDLER                                 -->
-    <!-- ----------------------------------------------------------------- -->
-    <script>
-        (function() {
-            // RESTORE URL FROM 404 REDIRECT
-            const redirect = sessionStorage.getItem('whitecardopedia_redirect');
-            if (redirect) {
-                sessionStorage.removeItem('whitecardopedia_redirect');
-                history.replaceState(null, null, redirect);
-            }
-        })();
-    </script>
-    <!-- ----------------------------------------------------------------- -->
-    
-    <!-- ----------------------------------------------------------------- -->
     <!-- REACT ROOT | Main Application Container                           -->
     <!-- ----------------------------------------------------------------- -->
     <div id="root"></div>
@@ -150,7 +111,6 @@
     <script type="text/babel" src="src/utils/GalleryView__ImageEffects.js"></script>
     <script type="text/babel" src="src/utils/projectContentDetector.js"></script>
     <script type="text/babel" src="src/utils/localhostDetector.js"></script>
-    <script type="text/babel" src="src/utils/projectUrlHelper.js"></script>
     <script type="text/babel" src="src/components/StarRating.jsx"></script>
     <script type="text/babel" src="src/components/EfficiencyScale.jsx"></script>
     <script type="text/babel" src="src/components/ImageCarousel.jsx"></script>
@@ -158,7 +118,6 @@
     <script type="text/babel" src="src/components/SearchBox.jsx"></script>
     <script type="text/babel" src="src/components/SortControls.jsx"></script>
     <script type="text/babel" src="src/components/HamburgerMenu.jsx"></script>
-    <script type="text/babel" src="src/components/ShareButton.jsx"></script>
     <script type="text/babel" src="src/components/Header.jsx"></script>
     <script type="text/babel" src="src/components/HomePage.jsx"></script>
     <script type="text/babel" src="src/components/ProjectGallery.jsx"></script>

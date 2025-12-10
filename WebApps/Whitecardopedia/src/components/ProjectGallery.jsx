@@ -163,7 +163,7 @@
             <div className="project-card__content-icons">
                 {showWatercolorIcon && (
                     <img 
-                        src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__WatercolourPainting__512px__.png"
+                        src="../assets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__WatercolourPainting__512px__.png"
                         alt="Watercolor Artwork Available"
                         className="project-card__content-icon"
                         title="Watercolor Artwork Available"
@@ -171,7 +171,7 @@
                 )}
                 {show3DModelIcon && (
                     <img 
-                        src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__ValeVision3d__512px__10PcWhiteFilter__.png"
+                        src="../assets__CommonApplicationAssets/Icons__ProjectGallery__ContentIndicatorIcons/Icon__ProjectGallery__ContentIndicatorIcon__ValeVision3d__512px__10PcWhiteFilter__.png"
                         alt="3D Model Available"
                         className="project-card__content-icon"
                         title="3D Model Available"

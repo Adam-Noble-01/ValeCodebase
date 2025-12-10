@@ -120,13 +120,7 @@
         
         return (
             <>
-                <Header 
-                    showBackButton={true} 
-                    onBack={onBack}
-                    showShareButton={true}
-                    projectCode={project.projectCode}
-                    projectName={project.projectName}
-                />
+                <Header showBackButton={true} onBack={onBack} />
                 
                 <div className="project-viewer">
                     <div className="project-viewer__header">
@@ -224,7 +218,7 @@
                                         className="project-viewer__download-button"
                                     >
                                         <img 
-                                            src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
+                                            src="../assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
                                             alt="SketchUp" 
                                             className="project-viewer__download-icon"
                                         />
@@ -247,7 +241,7 @@
                                     ) : (
                                         <>
                                             <img 
-                                                src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
+                                                src="../assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
                                                 alt="Download" 
                                                 className="project-viewer__download-icon"
                                             />

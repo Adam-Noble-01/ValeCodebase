@@ -24,44 +24,34 @@
 
     // COMPONENT | Application Header Bar with Dual Logo Layout
     // ------------------------------------------------------------
-    function Header({ showBackButton = false, onBack = null, showShareButton = false, projectCode = null, projectName = null }) {
+    function Header({ showBackButton = false, onBack = null }) {
         return (
             <header className="app-header">
                 <div className="app-header__logo-container app-header__logo-container--left">
                     <img 
-                        src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                        src="../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
                         alt="Vale Garden Houses"
                         className="app-header__logo-left"
                     />
                 </div>
                 
-                <div className="app-header__button-group">
-                    {showBackButton && onBack && (
-                        <button 
-                            className="app-header__back-button"
-                            onClick={onBack}
-                        >
-                            <img 
-                                src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__BackSymbol__WhiteVersion.svg" 
-                                alt="Back" 
-                                className="app-header__back-icon"
-                            />
-                            Back to Gallery
-                        </button>
-                    )}
-                    
-                    {showShareButton && projectCode && (
-                        <ShareButton 
-                            projectCode={projectCode} 
-                            year="2025"
-                            projectName={projectName}
+                {showBackButton && onBack && (
+                    <button 
+                        className="app-header__back-button"
+                        onClick={onBack}
+                    >
+                        <img 
+                            src="../assets__CommonApplicationAssets/AppIcons/Icon__BackSymbol__WhiteVersion.svg" 
+                            alt="Back" 
+                            className="app-header__back-icon"
                         />
-                    )}
-                </div>
+                        Back to Gallery
+                    </button>
+                )}
                 
                 <div className="app-header__logo-container app-header__logo-container--right">
                     <img 
-                        src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
+                        src="../assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
                         alt="Whitecardopedia"
                         className="app-header__logo-right"
                     />

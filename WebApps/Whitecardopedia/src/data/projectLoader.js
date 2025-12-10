@@ -24,8 +24,8 @@
     // MODULE VARIABLES | Project Loading State
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
-        masterConfigPath    : '/src/data/masterConfig.json',             // <-- Master configuration file path (absolute)
-        urlManifestPath     : '/src/data/urlManifest.json',              // <-- URL manifest file path (absolute)
+        masterConfigPath    : 'src/data/masterConfig.json',              // <-- Master configuration file path
+        urlManifestPath     : 'src/data/urlManifest.json',               // <-- URL manifest file path
         projectBasePath     : 'Projects/2025',                           // <-- Base path for projects
     };
     // ------------------------------------------------------------
@@ -64,7 +64,7 @@
         const projectPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}`;  // <-- Construct project path
         
         try {
-            const response = await fetch(`/${projectPath}/project.json`);  // <-- Fetch project metadata (absolute path)
+            const response = await fetch(`${projectPath}/project.json`);  // <-- Fetch project metadata
             
             if (!response.ok) {
                 throw new Error(`Failed to load project: ${folderId}`);  // <-- Handle fetch error
@@ -115,9 +115,8 @@
     // FUNCTION | Get Image URL for Project
     // ------------------------------------------------------------
     function getImageUrl(projectData, imageName) {
-        // USE ABSOLUTE PATH FROM ROOT TO HANDLE DEEP LINK URLS
         const basePath = projectData.basePath || `Projects/2025/${projectData.folderId}`;  // <-- Fallback basePath
-        return `/${basePath}/${imageName}`;                              // <-- Construct absolute image URL from root
+        return `${basePath}/${imageName}`;                               // <-- Construct image URL (base tag handles resolution)
     }
     // ---------------------------------------------------------------
 

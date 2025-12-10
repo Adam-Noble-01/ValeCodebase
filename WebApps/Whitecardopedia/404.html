@@ -28,9 +28,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <title>Whitecardopedia - Vale Garden Houses</title>
-    <link rel="icon" type="image/svg+xml" href="/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    
+    <script>
+        // SET BASE TAG DYNAMICALLY BASED ON HOSTNAME
+        (function() {
+            const base = document.createElement('base');
+            if (window.location.hostname.includes('github.io')) {
+                base.href = '/ValeCodebase/WebApps/Whitecardopedia/';  // <-- GitHub Pages subdirectory
+            } else {
+                base.href = '/';                                        // <-- Localhost root
+            }
+            document.head.insertBefore(base, document.head.firstChild.nextSibling);
+        })();
+    </script>
+    
+    <link rel="icon" type="image/svg+xml" href="assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
     <meta name="theme-color" content="#172b3a">
     
     <style>

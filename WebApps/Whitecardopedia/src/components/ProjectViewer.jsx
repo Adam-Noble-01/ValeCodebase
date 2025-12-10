@@ -224,7 +224,7 @@
                                         className="project-viewer__download-button"
                                     >
                                         <img 
-                                            src="/assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
+                                            src="assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
                                             alt="SketchUp" 
                                             className="project-viewer__download-icon"
                                         />
@@ -247,7 +247,7 @@
                                     ) : (
                                         <>
                                             <img 
-                                                src="/assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
+                                                src="assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
                                                 alt="Download" 
                                                 className="project-viewer__download-icon"
                                             />

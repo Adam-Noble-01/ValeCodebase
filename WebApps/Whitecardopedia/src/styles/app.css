@@ -152,7 +152,7 @@
         justify-content                    : center;                       /* <-- Horizontal centering */
         gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
         position                           : absolute;                     /* <-- Absolute positioning */
-        left                               : 50%;                          /* <-- Center horizontally */
+        left                               : 40%;                          /* <-- Center horizontally */
         transform                          : translateX(-50%);             /* <-- Center adjustment */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
@@ -188,14 +188,14 @@
         justify-content                    : center;                       /* <-- Horizontal centering */
         gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
         position                           : absolute;                     /* <-- Absolute positioning */
-        left                               : 50%;                          /* <-- Center horizontally */
-        transform                          : translateX(calc(-50% + 140px));  /* <-- Position to right of back button */
+        left                               : 40%;                          /* <-- Center horizontally */
+        transform                          : translateX(calc(-50% + 260px));  /* <-- Position to right of back button with spacing */
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
         font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
         color                              : var(--Vale_TextLight);        /* <-- Light text color */
-        background                         : #2d8659;                      /* <-- Green background for share action */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background (same as back button) */
         border                             : none;                         /* <-- No border */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
         cursor                             : pointer;                      /* <-- Pointer cursor */
@@ -203,13 +203,13 @@
     }
     
     .app-header__share-button:hover {
-        background                         : #246e48;                      /* <-- Darker green on hover */
-        transform                          : translateX(calc(-50% + 140px)) scale(1.02);  /* <-- Maintain position and slight grow */
+        background                         : #0f1e28;                      /* <-- Darker blue on hover (same as back button) */
+        transform                          : translateX(calc(-50% + 260px)) scale(1.02);  /* <-- Maintain position and slight grow */
         box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Shadow on hover */
     }
     
     .app-header__share-button:active {
-        transform                          : translateX(calc(-50% + 140px)) scale(1.0);  /* <-- Reset scale on click */
+        transform                          : translateX(calc(-50% + 260px)) scale(1.0);  /* <-- Reset scale on click */
     }
     
     .app-header__share-icon {
@@ -225,7 +225,7 @@
         transform                          : translateX(-50%);             /* <-- Center adjustment */
         margin-top                         : 8px;                          /* <-- Space above message */
         padding                            : 4px 12px;                     /* <-- Message padding */
-        background                         : #2d8659;                      /* <-- Green background */
+        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background (same as button) */
         color                              : white;                        /* <-- White text */
         font-size                          : 12px;                         /* <-- Smaller font */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */

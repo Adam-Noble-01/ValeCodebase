@@ -40,6 +40,9 @@
         const [selectedProject, setSelectedProject] = React.useState(null);    // <-- Selected project state
         const [urlProjectId, setUrlProjectId] = React.useState(null);          // <-- URL-based project ID state
         const [isLoadingUrlProject, setIsLoadingUrlProject] = React.useState(false);  // <-- URL project loading state
+        const [isAuthenticated, setIsAuthenticated] = React.useState(false);    // <-- PIN authentication status
+        const [pendingUrlProjectId, setPendingUrlProjectId] = React.useState(null);  // <-- Store project ID from URL until authenticated
+        const [showPinEntry, setShowPinEntry] = React.useState(false);        // <-- Control PIN modal visibility
         
         // EFFECT | Check for URL Project ID on Mount
         // ---------------------------------------------------------------
@@ -47,26 +50,9 @@
             const projectIdFromUrl = getProjectIdFromUrl();              // <-- Extract project ID from URL
             
             if (projectIdFromUrl) {
-                setUrlProjectId(projectIdFromUrl);                       // <-- Store URL project ID
-                setIsLoadingUrlProject(true);                            // <-- Set loading state
-                
-                // Load all projects and find matching project
-                loadAllProjects().then(projects => {
-                    const matchingProject = projects.find(
-                        p => p.projectCode === projectIdFromUrl         // <-- Find by project code
-                    );
-                    
-                    if (matchingProject) {
-                        setSelectedProject(matchingProject);             // <-- Set selected project
-                        setCurrentView(APP_VIEWS.VIEWER);                // <-- Navigate to viewer
-                    } else {
-                        console.error(`Project not found: ${projectIdFromUrl}`);  // <-- Log error
-                        alert(`Project "${projectIdFromUrl}" not found. Redirecting to gallery.`);  // <-- User feedback
-                        setCurrentView(APP_VIEWS.GALLERY);               // <-- Navigate to gallery
-                    }
-                    
-                    setIsLoadingUrlProject(false);                       // <-- Clear loading state
-                });
+                // Store project ID but don't load yet - require PIN authentication first
+                setPendingUrlProjectId(projectIdFromUrl);                 // <-- Store pending project ID
+                setShowPinEntry(true);                                    // <-- Show PIN entry immediately
             }
         }, []);                                                          // <-- Run only on mount
         // ---------------------------------------------------------------
@@ -93,6 +79,50 @@
             setSelectedProject(null);                                    // <-- Clear selected project
             setCurrentView(APP_VIEWS.GALLERY);                           // <-- Navigate to gallery
             clearProjectIdFromUrl();                                     // <-- Remove URL query parameter
+        };
+        // ---------------------------------------------------------------
+        
+        // SUB FUNCTION | Handle PIN Success
+        // ---------------------------------------------------------------
+        const handlePinSuccess = () => {
+            setIsAuthenticated(true);                                    // <-- Set authentication status
+            setShowPinEntry(false);                                      // <-- Hide PIN modal
+            
+            if (pendingUrlProjectId) {
+                // Load project from shared link after authentication
+                setIsLoadingUrlProject(true);                            // <-- Set loading state
+                
+                loadAllProjects().then(projects => {
+                    const matchingProject = projects.find(
+                        p => p.projectCode === pendingUrlProjectId       // <-- Find by project code
+                    );
+                    
+                    if (matchingProject) {
+                        setSelectedProject(matchingProject);             // <-- Set selected project
+                        setCurrentView(APP_VIEWS.VIEWER);                // <-- Navigate to viewer
+                    } else {
+                        console.error(`Project not found: ${pendingUrlProjectId}`);  // <-- Log error
+                        alert(`Project "${pendingUrlProjectId}" not found. Redirecting to gallery.`);  // <-- User feedback
+                        setCurrentView(APP_VIEWS.GALLERY);               // <-- Navigate to gallery
+                    }
+                    
+                    setPendingUrlProjectId(null);                       // <-- Clear pending project ID
+                    setIsLoadingUrlProject(false);                       // <-- Clear loading state
+                });
+            } else {
+                // Normal flow - proceed to gallery
+                handleEnterApp();                                        // <-- Navigate to gallery
+            }
+        };
+        // ---------------------------------------------------------------
+        
+        // SUB FUNCTION | Handle PIN Cancel
+        // ---------------------------------------------------------------
+        const handlePinCancel = () => {
+            setPendingUrlProjectId(null);                                // <-- Clear pending project ID
+            clearProjectIdFromUrl();                                     // <-- Clear URL parameter
+            setShowPinEntry(false);                                      // <-- Hide PIN modal
+            setCurrentView(APP_VIEWS.HOME);                             // <-- Navigate to HOME view
         };
         // ---------------------------------------------------------------
         
@@ -128,11 +158,20 @@
         // ---------------------------------------------------------------
         return (
             <>
-                {currentView === APP_VIEWS.HOME && (
+                {/* PIN Entry Modal - Shows when authentication required for shared links */}
+                {showPinEntry && (
+                    <PinEntry 
+                        onSuccess={handlePinSuccess}
+                        onCancel={handlePinCancel}
+                    />
+                )}
+                
+                {/* Normal Application Views - Only show when PIN entry is not active */}
+                {!showPinEntry && currentView === APP_VIEWS.HOME && (
                     <HomePage onEnter={handleEnterApp} />
                 )}
                 
-                {currentView === APP_VIEWS.GALLERY && (
+                {!showPinEntry && currentView === APP_VIEWS.GALLERY && (
                     <ProjectGallery 
                         onSelectProject={handleSelectProject}
                         onOpenProjectEditor={handleOpenProjectEditor}
@@ -140,18 +179,18 @@
                     />
                 )}
                 
-                {currentView === APP_VIEWS.VIEWER && (
+                {!showPinEntry && currentView === APP_VIEWS.VIEWER && (
                     <ProjectViewer 
                         project={selectedProject} 
                         onBack={handleBackToGallery}
                     />
                 )}
                 
-                {currentView === APP_VIEWS.EDITOR && (
+                {!showPinEntry && currentView === APP_VIEWS.EDITOR && (
                     <ProjectEditor onBack={handleBackToGallery} />
                 )}
                 
-                {currentView === APP_VIEWS.TIME_ANALYSIS && (
+                {!showPinEntry && currentView === APP_VIEWS.TIME_ANALYSIS && (
                     <TimeAnalysisTool onBack={handleBackToGallery} />
                 )}
             </>

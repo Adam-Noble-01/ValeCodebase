@@ -120,7 +120,12 @@
         
         return (
             <>
-                <Header showBackButton={true} onBack={onBack} />
+                <Header 
+                    showBackButton={true} 
+                    onBack={onBack} 
+                    showShareButton={true} 
+                    currentProject={project} 
+                />
                 
                 <div className="project-viewer">
                     <div className="project-viewer__header">

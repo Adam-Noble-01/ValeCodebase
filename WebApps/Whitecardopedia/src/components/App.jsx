@@ -38,6 +38,38 @@
     function App() {
         const [currentView, setCurrentView] = React.useState(APP_VIEWS.HOME);  // <-- Current view state
         const [selectedProject, setSelectedProject] = React.useState(null);    // <-- Selected project state
+        const [urlProjectId, setUrlProjectId] = React.useState(null);          // <-- URL-based project ID state
+        const [isLoadingUrlProject, setIsLoadingUrlProject] = React.useState(false);  // <-- URL project loading state
+        
+        // EFFECT | Check for URL Project ID on Mount
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            const projectIdFromUrl = getProjectIdFromUrl();              // <-- Extract project ID from URL
+            
+            if (projectIdFromUrl) {
+                setUrlProjectId(projectIdFromUrl);                       // <-- Store URL project ID
+                setIsLoadingUrlProject(true);                            // <-- Set loading state
+                
+                // Load all projects and find matching project
+                loadAllProjects().then(projects => {
+                    const matchingProject = projects.find(
+                        p => p.projectCode === projectIdFromUrl         // <-- Find by project code
+                    );
+                    
+                    if (matchingProject) {
+                        setSelectedProject(matchingProject);             // <-- Set selected project
+                        setCurrentView(APP_VIEWS.VIEWER);                // <-- Navigate to viewer
+                    } else {
+                        console.error(`Project not found: ${projectIdFromUrl}`);  // <-- Log error
+                        alert(`Project "${projectIdFromUrl}" not found. Redirecting to gallery.`);  // <-- User feedback
+                        setCurrentView(APP_VIEWS.GALLERY);               // <-- Navigate to gallery
+                    }
+                    
+                    setIsLoadingUrlProject(false);                       // <-- Clear loading state
+                });
+            }
+        }, []);                                                          // <-- Run only on mount
+        // ---------------------------------------------------------------
         
         // SUB FUNCTION | Handle Enter from Home Page
         // ---------------------------------------------------------------
@@ -51,6 +83,7 @@
         const handleSelectProject = (project) => {
             setSelectedProject(project);                                 // <-- Set selected project
             setCurrentView(APP_VIEWS.VIEWER);                            // <-- Navigate to viewer
+            updateUrlWithProjectId(project.projectCode);                 // <-- Update URL with project ID
         };
         // ---------------------------------------------------------------
         
@@ -59,6 +92,7 @@
         const handleBackToGallery = () => {
             setSelectedProject(null);                                    // <-- Clear selected project
             setCurrentView(APP_VIEWS.GALLERY);                           // <-- Navigate to gallery
+            clearProjectIdFromUrl();                                     // <-- Remove URL query parameter
         };
         // ---------------------------------------------------------------
         

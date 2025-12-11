@@ -24,7 +24,28 @@
 
     // COMPONENT | Application Header Bar with Dual Logo Layout
     // ------------------------------------------------------------
-    function Header({ showBackButton = false, onBack = null }) {
+    function Header({ showBackButton = false, onBack = null, showShareButton = false, currentProject = null }) {
+        const [showCopiedMessage, setShowCopiedMessage] = React.useState(false);  // <-- Copied confirmation state
+        
+        // SUB FUNCTION | Handle Share Link Generation
+        // ---------------------------------------------------------------
+        const handleShareLink = async () => {
+            if (!currentProject || !currentProject.projectCode) {
+                console.error('No project available for sharing');      // <-- Log error
+                return;                                                  // <-- Exit if no project
+            }
+            
+            const result = await copyShareLinkToClipboard(currentProject.projectCode);  // <-- Copy to clipboard
+            
+            if (result.success) {
+                setShowCopiedMessage(true);                             // <-- Show confirmation
+                setTimeout(() => setShowCopiedMessage(false), 3000);    // <-- Hide after 3 seconds
+            } else {
+                alert(`Failed to copy link. URL: ${result.url}`);       // <-- Show error with URL
+            }
+        };
+        // ---------------------------------------------------------------
+        
         return (
             <header className="app-header">
                 <div className="app-header__logo-container app-header__logo-container--left">
@@ -46,6 +67,24 @@
                             className="app-header__back-icon"
                         />
                         Back to Gallery
+                    </button>
+                )}
+                
+                {showShareButton && currentProject && (
+                    <button 
+                        className="app-header__share-button"
+                        onClick={handleShareLink}
+                        title="Copy sharing link to clipboard"
+                    >
+                        <img 
+                            src="../assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
+                            alt="Share" 
+                            className="app-header__share-icon"
+                        />
+                        Copy Share Link
+                        {showCopiedMessage && (
+                            <span className="app-header__copied-message">Copied!</span>
+                        )}
                     </button>
                 )}
                 

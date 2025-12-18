@@ -246,6 +246,10 @@
         {
             "folderId": "59908__Hewitt__Scheme-03",
             "enabled": true
+        },
+        {
+            "folderId": "62258__Gray",
+            "enabled": true
         }
     ]
 }

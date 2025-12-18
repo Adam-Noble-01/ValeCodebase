@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parametric Window Configurator (Maker.js)</title>
+    
+    <!-- Master Stylesheet -->
+    <link rel="stylesheet" href="WindowConfigurator__MasterStylesSheet.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bezier-js@2.1.0/dist/bezier.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js@0.7.3/dist/opentype.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/makerjs@0/target/js/browser.maker.js"></script>
+
+
+    <!-- CAD Generator - DXF Export Module -->
+    <script src="WindowConfigurator__Feature__CadGeneration__DxfExportFunction.js"></script>
+
+    <script>
+        // =====================================================================
+        // REGION | CadGenerator - Dynamic UI Module (INLINED)
+        // =====================================================================
+        (function() {
+            'use strict';
+
+            let _config = null;
+            let _handlers = {};
+            let _stylesInjected = false;
+            let _containerEl = null;
+            let _statusBarEl = null;
+            let _canvasWrapperEl = null;
+            let _inputElements = {};
+
+            function injectStyles(customStyles = '') {
+                if (_stylesInjected) return;
+                // Only inject custom styles if provided (base styles are in external CSS)
+                if (customStyles && customStyles.trim()) {
+                    const styleEl = document.createElement('style');
+                    styleEl.id = 'cad-generator-dynamic-ui-custom-styles';
+                    styleEl.textContent = customStyles;
+                    document.head.appendChild(styleEl);
+                }
+                _stylesInjected = true;
+            }
+
+            function build(config, handlers = {}) {
+                _config = config;
+                _handlers = handlers;
+                _inputElements = {};
+
+                injectStyles(config.styles?.custom || '');
+
+                if (config.containerId) {
+                    _containerEl = document.getElementById(config.containerId);
+                    if (_containerEl) {
+                        _containerEl.classList.add('cad-controls');
+                        _containerEl.innerHTML = '';
+
+                        if (config.inputs && Array.isArray(config.inputs)) {
+                            for (const inputDef of config.inputs) {
+                                const inputGroup = buildSliderInput(inputDef);
+                                _containerEl.appendChild(inputGroup);
+                            }
+                        }
+
+                        if (config.buttons && Array.isArray(config.buttons)) {
+                            for (const btnDef of config.buttons) {
+                                const btnGroup = buildButton(btnDef);
+                                _containerEl.appendChild(btnGroup);
+                            }
+                        }
+                    }
+                }
+
+                if (config.statusBarId) {
+                    _statusBarEl = document.getElementById(config.statusBarId);
+                    if (_statusBarEl) {
+                        _statusBarEl.classList.add('cad-status-bar');
+                    }
+                }
+
+                if (config.canvasWrapperId) {
+                    _canvasWrapperEl = document.getElementById(config.canvasWrapperId);
+                    if (_canvasWrapperEl) {
+                        _canvasWrapperEl.classList.add('cad-canvas-wrapper');
+                        if (config.loadingText) {
+                            _canvasWrapperEl.innerHTML = `<span class="cad-loading-text">${config.loadingText}</span>`;
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            function buildSliderInput(def) {
+                const group = document.createElement('div');
+                group.classList.add('cad-input-group');
+                
+                if (def.width) {
+                    group.style.minWidth = def.width;
+                }
+
+                const label = document.createElement('label');
+                label.htmlFor = def.id;
+                label.textContent = def.label || def.id;
+                group.appendChild(label);
+
+                const sliderContainer = document.createElement('div');
+                sliderContainer.classList.add('cad-slider-container');
+
+                const sliderRow = document.createElement('div');
+                sliderRow.classList.add('cad-slider-row');
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.id = def.id;
+                slider.min = def.min !== undefined ? def.min : 0;
+                slider.max = def.max !== undefined ? def.max : 100;
+                slider.step = def.step !== undefined ? def.step : 1;
+                slider.value = def.default !== undefined ? def.default : 50;
+
+                const valueDisplay = document.createElement('div');
+                valueDisplay.classList.add('cad-value-display');
+                valueDisplay.dataset.inputId = def.id;
+                updateValueDisplay(valueDisplay, slider.value, def.unit);
+
+                _inputElements[def.id] = {
+                    slider: slider,
+                    valueDisplay: valueDisplay,
+                    def: def
+                };
+
+                slider.addEventListener('input', () => {
+                    updateValueDisplay(valueDisplay, slider.value, def.unit);
+                    if (def.onChange && _handlers[def.onChange]) {
+                        _handlers[def.onChange](def.id, parseFloat(slider.value));
+                    }
+                });
+
+                valueDisplay.addEventListener('dblclick', () => {
+                    showTextInput(def, slider, valueDisplay);
+                });
+
+                sliderRow.appendChild(slider);
+                sliderRow.appendChild(valueDisplay);
+                sliderContainer.appendChild(sliderRow);
+
+                if (def.hint) {
+                    const hint = document.createElement('span');
+                    hint.classList.add('cad-hint');
+                    hint.textContent = def.hint;
+                    sliderContainer.appendChild(hint);
+                }
+
+                group.appendChild(sliderContainer);
+                return group;
+            }
+
+            function updateValueDisplay(displayEl, value, unit) {
+                const numValue = parseFloat(value);
+                const formatted = Number.isInteger(numValue) ? numValue : numValue.toFixed(1);
+                
+                if (unit) {
+                    displayEl.innerHTML = `${formatted}<span class="cad-unit">${unit}</span>`;
+                } else {
+                    displayEl.textContent = formatted;
+                }
+            }
+
+            function showTextInput(def, slider, valueDisplay) {
+                const textInput = document.createElement('input');
+                textInput.type = 'number';
+                textInput.classList.add('cad-value-input');
+                textInput.min = def.min !== undefined ? def.min : '';
+                textInput.max = def.max !== undefined ? def.max : '';
+                textInput.step = def.step !== undefined ? def.step : 'any';
+                textInput.value = slider.value;
+
+                valueDisplay.style.display = 'none';
+                valueDisplay.parentNode.insertBefore(textInput, valueDisplay.nextSibling);
+                textInput.focus();
+                textInput.select();
+
+                const commitValue = () => {
+                    let newValue = parseFloat(textInput.value);
+                    
+                    if (def.min !== undefined && newValue < def.min) newValue = def.min;
+                    if (def.max !== undefined && newValue > def.max) newValue = def.max;
+                    
+                    if (isNaN(newValue)) {
+                        newValue = def.default !== undefined ? def.default : def.min || 0;
+                    }
+
+                    slider.value = newValue;
+                    updateValueDisplay(valueDisplay, newValue, def.unit);
+
+                    textInput.remove();
+                    valueDisplay.style.display = '';
+
+                    if (def.onChange && _handlers[def.onChange]) {
+                        _handlers[def.onChange](def.id, newValue);
+                    }
+                };
+
+                textInput.addEventListener('blur', commitValue);
+                textInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        textInput.blur();
+                    }
+                    if (e.key === 'Escape') {
+                        textInput.value = slider.value;
+                        textInput.blur();
+                    }
+                });
+            }
+
+            function buildButton(def) {
+                const group = document.createElement('div');
+                group.classList.add('cad-input-group');
+
+                const btn = document.createElement('button');
+                btn.id = def.id;
+                btn.textContent = def.label || 'Button';
+                btn.classList.add('cad-btn');
+
+                const styleClass = `cad-btn--${def.style || 'primary'}`;
+                btn.classList.add(styleClass);
+
+                if (def.action && _handlers[def.action]) {
+                    btn.addEventListener('click', _handlers[def.action]);
+                } else if (def.action) {
+                    btn.addEventListener('click', () => {
+                        console.warn(`[DynamicUI] Handler "${def.action}" not found.`);
+                    });
+                }
+
+                group.appendChild(btn);
+                return group;
+            }
+
+            function getValue(inputId) {
+                if (_inputElements[inputId]) {
+                    return parseFloat(_inputElements[inputId].slider.value);
+                }
+
+                const el = document.getElementById(inputId);
+                if (!el) return null;
+
+                if (el.type === 'number' || el.type === 'range') {
+                    return parseFloat(el.value);
+                }
+                if (el.type === 'checkbox') {
+                    return el.checked;
+                }
+                return el.value;
+            }
+
+            function setValue(inputId, value) {
+                if (_inputElements[inputId]) {
+                    const { slider, valueDisplay, def } = _inputElements[inputId];
+                    slider.value = value;
+                    updateValueDisplay(valueDisplay, value, def.unit);
+                    return true;
+                }
+
+                const el = document.getElementById(inputId);
+                if (!el) return false;
+
+                if (el.type === 'checkbox') {
+                    el.checked = !!value;
+                } else {
+                    el.value = value;
+                }
+                return true;
+            }
+
+            function getAllValues() {
+                if (!_config || !_config.inputs) return {};
+                const values = {};
+                for (const inputDef of _config.inputs) {
+                    values[inputDef.id] = getValue(inputDef.id);
+                }
+                return values;
+            }
+
+            function setStatus(message) {
+                if (_statusBarEl) {
+                    _statusBarEl.textContent = message;
+                }
+            }
+
+            function showLoading(show, message = 'Loading...') {
+                if (!_canvasWrapperEl) return;
+
+                if (show) {
+                    let loadingEl = _canvasWrapperEl.querySelector('.cad-loading-text');
+                    if (!loadingEl) {
+                        loadingEl = document.createElement('span');
+                        loadingEl.classList.add('cad-loading-text');
+                        _canvasWrapperEl.appendChild(loadingEl);
+                    }
+                    loadingEl.textContent = message;
+                    loadingEl.style.display = 'block';
+                } else {
+                    const loadingEl = _canvasWrapperEl.querySelector('.cad-loading-text');
+                    if (loadingEl) {
+                        loadingEl.style.display = 'none';
+                    }
+                }
+            }
+
+            function getConfig() {
+                return _config;
+            }
+
+            function getContainer() {
+                return _containerEl;
+            }
+
+            function getCanvasWrapper() {
+                return _canvasWrapperEl;
+            }
+
+            function registerHandler(name, fn) {
+                _handlers[name] = fn;
+            }
+
+            window.CadGenerator = window.CadGenerator || {};
+            window.CadGenerator.DynamicUI = {
+                build,
+                getValue,
+                setValue,
+                getAllValues,
+                setStatus,
+                showLoading,
+                getConfig,
+                getContainer,
+                getCanvasWrapper,
+                registerHandler
+            };
+        })();
+        // endregion ===============================================================
+    </script>
+
+    <script>
+        // =====================================================================
+        // REGION | CadGenerator - Viewport Module (INLINED - Unified UCS)
+        // =====================================================================
+        (function() {
+            'use strict';
+
+            const DEFAULT_CONFIG = {
+                zoomIntensity: 0.001,
+                minScale: 0.01,
+                maxScale: 50,
+                fitPadding: 0.8,
+                strokeColor: '#2c3e50',
+                strokeWidth: 2,
+                fillColor: '#e8f5e9',
+                groundLineColor: '#ff4444',
+                axisLineColor: '#00cc00',
+                showGroundLine: true,
+                showAxisLine: true
+            };
+
+            let _wrapperId = null;
+            let _wrapperEl = null;
+            let _svgEl = null;
+            let _currentModel = null;
+            let _config = { ...DEFAULT_CONFIG };
+            let _camState = { x: 0, y: 0, scale: 1 };
+            let _isDragging = false;
+            let _lastMouse = { x: 0, y: 0 };
+            let _modelBounds = null;
+            let _onRenderCallback = null;
+            let _isInitialized = false;
+
+            function getMakerJS() {
+                if (window.makerjs) return window.makerjs;
+                if (window.require) {
+                    try { return window.require('makerjs'); } catch(e) {}
+                }
+                return null;
+            }
+
+            function init(wrapperId, options = {}) {
+                _wrapperId = wrapperId;
+                _wrapperEl = document.getElementById(wrapperId);
+                
+                if (!_wrapperEl) {
+                    console.error(`[Viewport] Element with id "${wrapperId}" not found.`);
+                    return false;
+                }
+
+                _config = { ...DEFAULT_CONFIG, ...options };
+
+                _wrapperEl.style.overflow = 'hidden';
+                _wrapperEl.style.position = 'relative';
+                _wrapperEl.style.cursor = 'grab';
+                _wrapperEl.style.userSelect = 'none';
+
+                _camState = { x: 0, y: 0, scale: 1 };
+                _isDragging = false;
+                _isInitialized = false;
+
+                return true;
+            }
+
+            function render(makerModel, guides = {}, options = {}) {
+                const M = getMakerJS();
+                if (!M) {
+                    console.error('[Viewport] MakerJS library not loaded.');
+                    return false;
+                }
+
+                if (!_wrapperEl) {
+                    console.error('[Viewport] Viewport not initialized. Call init() first.');
+                    return false;
+                }
+
+                const preserveCamera = options.preserveCamera === true;
+                const savedCamState = preserveCamera ? { ..._camState } : null;
+
+                _currentModel = makerModel;
+
+                const measure = M.measure.modelExtents(makerModel);
+                _modelBounds = measure;
+
+                const modelSVG = M.exporter.toSVG(makerModel, { useSvgPathOnly: true });
+
+                let guidesHTML = '';
+                
+                if (_config.showGroundLine && guides.showGround !== false) {
+                    guidesHTML += `<line x1="-20000" y1="0" x2="20000" y2="0" 
+                        stroke="${_config.groundLineColor}" stroke-width="2" 
+                        vector-effect="non-scaling-stroke" />`;
+                }
+
+                if (_config.showAxisLine && guides.showAxis !== false) {
+                    const axisExtent = guides.axisHeight || 20000;
+                    guidesHTML += `<line x1="0" y1="-${axisExtent}" x2="0" y2="${axisExtent}" 
+                        stroke="${_config.axisLineColor}" stroke-width="2" 
+                        stroke-dasharray="10,5" vector-effect="non-scaling-stroke" />`;
+                }
+
+                if (guides.custom && Array.isArray(guides.custom)) {
+                    for (const g of guides.custom) {
+                        guidesHTML += g;
+                    }
+                }
+
+                const stroke = guides.strokeColor || _config.strokeColor;
+                const strokeW = guides.strokeWidth || _config.strokeWidth;
+                const fill = guides.fillColor || _config.fillColor;
+
+                // SVG structure with Y-flip for CAD to screen coordinate conversion
+                // flip-group inverts Y-axis (Maker.js Y+ UP -> SVG Y+ DOWN)
+                // dim-caption-group is OUTSIDE flip-group so text stays readable
+                const svgHTML = `
+                <svg id="cad-viewport-svg" width="100%" height="100%" style="display:block;">
+                    <g id="camera-group">
+                        <g id="flip-group" transform="scale(1, -1)">
+                            <g id="guides-group">
+                                ${guidesHTML}
+                            </g>
+                            <g id="geometry-group" stroke="${stroke}" stroke-width="${strokeW}" fill="${fill}">
+                                ${modelSVG}
+                            </g>
+                        </g>
+                        <g id="dim-caption-group"></g>
+                    </g>
+                </svg>`;
+
+                _wrapperEl.innerHTML = svgHTML;
+                
+                _svgEl = document.getElementById('cad-viewport-svg');
+                setupInteraction(_svgEl);
+
+                if (preserveCamera && savedCamState) {
+                    _camState = savedCamState;
+                } else if (!_isInitialized) {
+                    _camState = { x: 0, y: 0, scale: 1 };
+                }
+
+                updateCameraTransform();
+                _isInitialized = true;
+
+                if (_onRenderCallback) {
+                    _onRenderCallback(_currentModel, _modelBounds);
+                }
+
+                return true;
+            }
+
+            function renderSimple(makerModel, options = {}) {
+                const M = getMakerJS();
+                if (!M || !_wrapperEl) return false;
+
+                _currentModel = makerModel;
+                _modelBounds = M.measure.modelExtents(makerModel);
+
+                const renderOptions = {
+                    svgAttrs: options.svgAttrs || {},
+                    stroke: options.stroke || _config.strokeColor,
+                    strokeWidth: options.strokeWidth || `${_config.strokeWidth}px`,
+                    fill: options.fill || _config.fillColor
+                };
+
+                const svg = M.exporter.toSVG(makerModel, renderOptions);
+                _wrapperEl.innerHTML = svg;
+
+                return true;
+            }
+
+            function setupInteraction(svgEl) {
+                if (!svgEl) return;
+
+                svgEl.addEventListener('wheel', handleWheel, { passive: false });
+                svgEl.addEventListener('mousedown', handleMouseDown);
+                window.addEventListener('mousemove', handleMouseMove);
+                window.addEventListener('mouseup', handleMouseUp);
+            }
+
+            function handleWheel(e) {
+                e.preventDefault();
+                
+                const delta = e.deltaY;
+                const scaleFactor = 1 - delta * _config.zoomIntensity;
+
+                const rect = _wrapperEl.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const worldX = (mouseX - _camState.x) / _camState.scale;
+                const worldY = (mouseY - _camState.y) / _camState.scale;
+
+                _camState.scale *= scaleFactor;
+                _camState.scale = Math.max(_config.minScale, Math.min(_config.maxScale, _camState.scale));
+
+                _camState.x = mouseX - worldX * _camState.scale;
+                _camState.y = mouseY - worldY * _camState.scale;
+
+                updateCameraTransform();
+            }
+
+            function handleMouseDown(e) {
+                // Don't pan if clicking on a mullion handle
+                if (e.target.classList.contains('mullion-handle')) {
+                    return;
+                }
+                
+                if (e.button === 0 || e.button === 1) {
+                    _isDragging = true;
+                    _lastMouse = { x: e.clientX, y: e.clientY };
+                    document.body.style.cursor = 'grabbing';
+                }
+            }
+
+            function handleMouseMove(e) {
+                if (!_isDragging) return;
+
+                const dx = e.clientX - _lastMouse.x;
+                const dy = e.clientY - _lastMouse.y;
+                _lastMouse = { x: e.clientX, y: e.clientY };
+
+                _camState.x += dx;
+                _camState.y += dy;
+                updateCameraTransform();
+            }
+
+            function handleMouseUp() {
+                _isDragging = false;
+                document.body.style.cursor = '';
+            }
+
+            function updateCameraTransform() {
+                const g = document.getElementById('camera-group');
+                if (g) {
+                    // Apply Y-flip to camera view (negative scale on Y-axis)
+                    g.setAttribute('transform', `translate(${_camState.x}, ${_camState.y}) scale(${_camState.scale}, ${-_camState.scale})`);
+                }
+            }
+
+            function getState() {
+                return { ..._camState };
+            }
+
+            function setState(newState) {
+                _camState = { ..._camState, ...newState };
+                updateCameraTransform();
+            }
+
+            function getModel() {
+                return _currentModel;
+            }
+
+            function getBounds() {
+                return _modelBounds;
+            }
+
+            function onRender(callback) {
+                _onRenderCallback = callback;
+            }
+
+            function getConfig() {
+                return { ..._config };
+            }
+
+            function setConfig(newConfig) {
+                _config = { ..._config, ...newConfig };
+            }
+
+            function isInitialized() {
+                return _isInitialized;
+            }
+
+            window.CadGenerator = window.CadGenerator || {};
+            window.CadGenerator.Viewport = {
+                init,
+                render,
+                renderSimple,
+                getState,
+                setState,
+                getModel,
+                getBounds,
+                getConfig,
+                setConfig,
+                onRender,
+                getMakerJS,
+                isInitialized
+            };
+        })();
+        // endregion ===============================================================
+    </script>
+
+</head>
+<body>
+
+    <h1>Window Configurator</h1>
+    <p class="subtitle">Drag sliders for real-time preview. Double-click values for precise input. Drag mullions to resize casements.</p>
+
+    <!-- Control Panel (Built by DynamicUI) -->
+    <div id="controls"></div>
+
+    <!-- Secondary Controls Row -->
+    <div id="controls-secondary" class="controls-row"></div>
+
+    <!-- Canvas Wrapper (Managed by Viewport) -->
+    <div id="canvas-wrapper"></div>
+    
+    <!-- Status Bar -->
+    <div id="status-bar">Initializing...</div>
+
+    <!-- Drag Feedback Tooltip -->
+    <div id="drag-feedback" class="drag-feedback"></div>
+
+    <script>
+        // ---------------------------------------------------------------------
+        // REGION | UI Configuration (JSON Config Header)
+        // ---------------------------------------------------------------------
+        // INDEX: This config defines which UI elements are built
+        // ┌────────────────────────────────────────────────────────────────────┐
+        // │ INPUTS - Primary Row:                                              │
+        // │   - windowWidth   : Window width in mm (600-4000)                  │
+        // │   - windowHeight  : Window height in mm (400-3000)                 │
+        // │   - casements     : Number of casement divisions (1-6)             │
+        // │   - hGlazeBars    : Horizontal glaze bars per casement (0-5)       │
+        // │   - vGlazeBars    : Vertical glaze bars per casement (0-5)         │
+        // │                                                                    │
+        // │ INPUTS - Secondary Row:                                            │
+        // │   - frameThickness : Main frame thickness (0-100mm)                │
+        // │   - casementWidth  : Casement frame width (20-175mm)               │
+        // │   - glazeBarWidth  : Glaze bar width (10-50mm)                     │
+        // │   - showCill       : Toggle for window cill                        │
+        // │                                                                    │
+        // │ BUTTONS:                                                           │
+        // │   - reset-btn     : Resets view and casement widths to even        │
+        // │   - dxf-btn       : Downloads DXF file                             │
+        // └────────────────────────────────────────────────────────────────────┘
+        const UI_CONFIG = {
+            containerId:      'controls',
+            statusBarId:      'status-bar',
+            canvasWrapperId:  'canvas-wrapper',
+            loadingText:      'Loading CAD Libraries...',
+            
+            inputs: [
+                { id: 'windowWidth',  label: 'Width',     default: 1800, min: 600,  max: 4000, step: 50, unit: 'mm', onChange: 'onParamChange', width: '140px' },
+                { id: 'windowHeight', label: 'Height',    default: 1200, min: 400,  max: 3000, step: 50, unit: 'mm', onChange: 'onParamChange', width: '140px' },
+                { id: 'casements',    label: 'Casements', default: 2,    min: 1,    max: 6,    step: 1,  unit: '',   onChange: 'onCasementChange', width: '100px' },
+                { id: 'hGlazeBars',   label: 'H Bars',    default: 0,    min: 0,    max: 5,    step: 1,  unit: '',   onChange: 'onParamChange', width: '90px' },
+                { id: 'vGlazeBars',   label: 'V Bars',    default: 0,    min: 0,    max: 5,    step: 1,  unit: '',   onChange: 'onParamChange', width: '90px' }
+            ],
+            
+            buttons: [
+                { id: 'reset-btn', label: 'Reset View',    action: 'onReset',       style: 'primary' },
+                { id: 'dxf-btn',   label: 'Download DXF',  action: 'onDownloadDXF', style: 'success' }
+            ]
+        };
+
+        // Secondary controls config (built manually for toggle support)
+        const SECONDARY_CONFIG = {
+            containerId: 'controls-secondary',
+            inputs: [
+                { id: 'frameThickness', label: 'Frame',      default: 50,  min: 0,   max: 100, step: 5,  unit: 'mm' },
+                { id: 'casementWidth',  label: 'Casement',   default: 65,  min: 20,  max: 175, step: 5,  unit: 'mm' },
+                { id: 'glazeBarWidth',  label: 'Glaze Bar',  default: 25,  min: 10,  max: 50,  step: 1,  unit: 'mm' }
+            ],
+            toggles: [
+                { id: 'showCill', label: 'Window Cill', default: true },
+                { id: 'showDimensions', label: 'Dimensions', default: true }
+            ]
+        };
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Window Configuration Defaults
+        // ---------------------------------------------------------------------
+        const CILL_HEIGHT        = 50;                                           // <-- Cill height (mm)
+        const CILL_HORN_OVERHANG = 50;                                           // <-- Cill horn overhang each side (mm)
+        const DIM_OFFSET         = 100;                                          // <-- Dimension line offset (mm)
+        const DIM_ARROW_SIZE     = 12;                                           // <-- Dimension arrow size (mm)
+        const DIM_TEXT_SIZE      = 30;                                           // <-- Dimension text size in mm (CAD units)
+        const MIN_CASEMENT_WIDTH = 150;                                          // <-- Minimum casement width (mm)
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Global State
+        // ---------------------------------------------------------------------
+        let currentModel     = null;                                             // <-- Current Maker.js model
+        let casementWidths   = [];                                               // <-- Individual casement widths
+        let dragState        = {                                                 // <-- Drag interaction state
+            active:       false,
+            mullionIndex: -1,
+            startX:       0,
+            startWidths:  []
+        };
+
+        let mullionDragListeners = {                                             // <-- Track event listeners for cleanup
+            move: null,
+            up:   null
+        };
+
+        const guidesConfig = {                                                   // <-- Viewport guides config
+            showGround:  false,
+            showAxis:    false,
+            strokeColor: '#2c3e50',
+            strokeWidth: 2,
+            fillColor:   'none',
+            layerOptions: {                                                      // <-- Layer-specific styling
+                '00__Dimensions': { 
+                    stroke: '#e74c3c',                                           // <-- Red dimension lines
+                    fill: '#e74c3c'                                              // <-- Red dimension text
+                }
+            }
+        };
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Parameter Getters
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Get current frame thickness from slider
+        // ------------------------------------------------------------
+        function getFrameThickness() {
+            const el = document.getElementById('frameThickness');
+            return el ? parseInt(el.value) : 50;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Get current casement width from slider
+        // ------------------------------------------------------------
+        function getCasementFrameWidth() {
+            const el = document.getElementById('casementWidth');
+            return el ? parseInt(el.value) : 65;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Get current glaze bar width from slider
+        // ------------------------------------------------------------
+        function getGlazeBarWidth() {
+            const el = document.getElementById('glazeBarWidth');
+            return el ? parseInt(el.value) : 25;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Get cill toggle state
+        // ------------------------------------------------------------
+        function getShowCill() {
+            const el = document.getElementById('showCill');
+            return el ? el.checked : true;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Get dimensions toggle state
+        // ------------------------------------------------------------
+        function getShowDimensions() {
+            const el = document.getElementById('showDimensions');
+            return el ? el.checked : true;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Get mullion width (same as casement frame width)
+        // ------------------------------------------------------------
+        function getMullionWidth() {
+            return getCasementFrameWidth();
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Coordinate System - CAD to Screen with Y-Flip
+        // ---------------------------------------------------------------------
+        // Maker.js uses CAD/Cartesian coords (Y+ UP, origin bottom-left)
+        // SVG uses screen coords (Y+ DOWN, origin top-left)
+        // flip-group applies scale(1,-1) to invert geometry
+        // Text is rendered OUTSIDE flip-group with manual Y-flip
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Convert model coords to screen coords (with Y-flip and scale)
+        // ------------------------------------------------------------
+        function cadToScreen(x, y, camState) {
+            const screenX = x * camState.scale + camState.x;
+            const screenY = -y * camState.scale + camState.y;  // <-- Y-flip
+            return { x: screenX, y: screenY };
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Convert screen coordinates back to model coordinates
+        // ------------------------------------------------------------
+        function screenToCad(screenX, screenY, camState) {
+            const x = (screenX - camState.x) / camState.scale;
+            const y = -(screenY - camState.y) / camState.scale;  // <-- Y-flip inverse
+            return { x: x, y: y };
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Calculate rotation angle for text
+        // ------------------------------------------------------------
+        function getTextRotation(dx, dy) {
+            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            return angle;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Debug coordinate transformation (optional)
+        // ------------------------------------------------------------
+        function debugCoordinates(x, y, label) {
+            const camState = window.CadGenerator.Viewport.getState();
+            const screen = cadToScreen(x, y, camState);
+            console.log(`${label}: Model(${x}, ${y}) -> Screen(${screen.x.toFixed(2)}, ${screen.y.toFixed(2)})`);
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | UI Event Handlers
+        // ---------------------------------------------------------------------
+        const UI_HANDLERS = {
+            // Real-time update on any slider change (preserves camera)
+            onParamChange: (paramId, value) => {
+                regenerateModel(true);
+            },
+            
+            // Casement count changed - reset to even widths
+            onCasementChange: (paramId, value) => {
+                initCasementWidths();
+                regenerateModel(true);
+            },
+            
+            // Full reset with view reset and even casement widths
+            onReset: () => {
+                initCasementWidths();
+                // Reset camera to origin at 1:1 scale
+                const Viewport = window.CadGenerator.Viewport;
+                Viewport.setState({ x: 0, y: 0, scale: 1 });
+                regenerateModel(true);  // Preserve camera (now at origin)
+            },
+            
+            // DXF export
+            onDownloadDXF: () => downloadDXF()
+        };
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Secondary UI Builder
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Build secondary controls with toggles
+        // ------------------------------------------------------------
+        function buildSecondaryControls() {
+            const container = document.getElementById(SECONDARY_CONFIG.containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            // Build slider inputs section
+            const slidersSection = document.createElement('div');
+            slidersSection.className = 'controls-section';
+            
+            const slidersTitle = document.createElement('div');
+            slidersTitle.className = 'controls-section-title';
+            slidersTitle.textContent = 'Frame Dimensions';
+            slidersSection.appendChild(slidersTitle);
+
+            const slidersRow = document.createElement('div');
+            slidersRow.style.display = 'flex';
+            slidersRow.style.gap = '15px';
+
+            for (const input of SECONDARY_CONFIG.inputs) {
+                const group = createSliderGroup(input);
+                slidersRow.appendChild(group);
+            }
+            slidersSection.appendChild(slidersRow);
+            container.appendChild(slidersSection);
+
+            // Build toggles section
+            const togglesSection = document.createElement('div');
+            togglesSection.className = 'controls-section';
+            
+            const togglesTitle = document.createElement('div');
+            togglesTitle.className = 'controls-section-title';
+            togglesTitle.textContent = 'Options';
+            togglesSection.appendChild(togglesTitle);
+
+            for (const toggle of SECONDARY_CONFIG.toggles) {
+                const toggleGroup = createToggleGroup(toggle);
+                togglesSection.appendChild(toggleGroup);
+            }
+            container.appendChild(togglesSection);
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Create slider input group
+        // ------------------------------------------------------------
+        function createSliderGroup(def) {
+            const group = document.createElement('div');
+            group.className = 'cad-input-group';
+            group.style.minWidth = '100px';
+
+            // Label
+            const label = document.createElement('label');
+            label.htmlFor = def.id;
+            label.textContent = def.label;
+            label.style.fontSize = '0.75rem';
+            label.style.fontWeight = '700';
+            label.style.color = '#666';
+            label.style.textTransform = 'uppercase';
+            label.style.letterSpacing = '0.5px';
+            label.style.marginBottom = '5px';
+            group.appendChild(label);
+
+            // Slider container
+            const sliderContainer = document.createElement('div');
+            sliderContainer.className = 'cad-slider-container';
+
+            const sliderRow = document.createElement('div');
+            sliderRow.className = 'cad-slider-row';
+            sliderRow.style.display = 'flex';
+            sliderRow.style.alignItems = 'center';
+            sliderRow.style.gap = '8px';
+
+            // Slider
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = def.id;
+            slider.min = def.min;
+            slider.max = def.max;
+            slider.step = def.step;
+            slider.value = def.default;
+            slider.style.flex = '1';
+
+            // Value display
+            const valueDisplay = document.createElement('div');
+            valueDisplay.className = 'cad-value-display';
+            valueDisplay.innerHTML = `${def.default}<span class="cad-unit">${def.unit}</span>`;
+            valueDisplay.style.minWidth = '50px';
+            valueDisplay.style.padding = '4px 6px';
+            valueDisplay.style.background = '#f5f5f5';
+            valueDisplay.style.border = '1px solid #ddd';
+            valueDisplay.style.borderRadius = '4px';
+            valueDisplay.style.fontSize = '0.8rem';
+            valueDisplay.style.fontWeight = '600';
+            valueDisplay.style.textAlign = 'center';
+
+            // Events
+            slider.addEventListener('input', () => {
+                valueDisplay.innerHTML = `${slider.value}<span class="cad-unit">${def.unit}</span>`;
+                initCasementWidths();
+                regenerateModel(true);
+            });
+
+            // Double-click to edit
+            valueDisplay.addEventListener('dblclick', () => {
+                const newVal = prompt(`Enter ${def.label} (${def.min}-${def.max}):`, slider.value);
+                if (newVal !== null && !isNaN(newVal)) {
+                    slider.value = Math.max(def.min, Math.min(def.max, parseInt(newVal)));
+                    valueDisplay.innerHTML = `${slider.value}<span class="cad-unit">${def.unit}</span>`;
+                    initCasementWidths();
+                    regenerateModel(true);
+                }
+            });
+            valueDisplay.style.cursor = 'pointer';
+
+            sliderRow.appendChild(slider);
+            sliderRow.appendChild(valueDisplay);
+            sliderContainer.appendChild(sliderRow);
+            group.appendChild(sliderContainer);
+
+            return group;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Create toggle group
+        // ------------------------------------------------------------
+        function createToggleGroup(def) {
+            const group = document.createElement('div');
+            group.className = 'toggle-group';
+
+            const toggleSwitch = document.createElement('label');
+            toggleSwitch.className = 'toggle-switch';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = def.id;
+            checkbox.checked = def.default;
+
+            const slider = document.createElement('span');
+            slider.className = 'toggle-slider';
+
+            toggleSwitch.appendChild(checkbox);
+            toggleSwitch.appendChild(slider);
+
+            const label = document.createElement('span');
+            label.className = 'toggle-label';
+            label.textContent = def.label;
+
+            checkbox.addEventListener('change', () => {
+                regenerateModel(true);
+            });
+
+            group.appendChild(toggleSwitch);
+            group.appendChild(label);
+
+            return group;
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Casement Width Management
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Initialize casement widths to even distribution
+        // ------------------------------------------------------------
+        function initCasementWidths() {
+            const UI           = window.CadGenerator.DynamicUI;
+            const windowWidth  = parseInt(UI.getValue('windowWidth'));
+            const numCasements = parseInt(UI.getValue('casements'));
+            const frameThick   = getFrameThickness();
+            const mullionW     = getMullionWidth();
+            
+            const innerWidth        = windowWidth - (frameThick * 2);
+            const totalMullionWidth = (numCasements - 1) * mullionW;
+            const availableWidth    = innerWidth - totalMullionWidth;
+            const evenWidth         = availableWidth / numCasements;
+            
+            casementWidths = Array(numCasements).fill(evenWidth);
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Validate and normalize casement widths
+        // ------------------------------------------------------------
+        function normalizeCasementWidths() {
+            const UI           = window.CadGenerator.DynamicUI;
+            const windowWidth  = parseInt(UI.getValue('windowWidth'));
+            const numCasements = parseInt(UI.getValue('casements'));
+            const frameThick   = getFrameThickness();
+            const mullionW     = getMullionWidth();
+            
+            const innerWidth        = windowWidth - (frameThick * 2);
+            const totalMullionWidth = (numCasements - 1) * mullionW;
+            const availableWidth    = innerWidth - totalMullionWidth;
+            
+            // Ensure array length matches casement count
+            if (casementWidths.length !== numCasements) {
+                initCasementWidths();
+                return;
+            }
+            
+            // Enforce minimum widths
+            for (let i = 0; i < casementWidths.length; i++) {
+                if (casementWidths[i] < MIN_CASEMENT_WIDTH) {
+                    casementWidths[i] = MIN_CASEMENT_WIDTH;
+                }
+            }
+            
+            // Normalize to fit available width
+            const currentTotal = casementWidths.reduce((a, b) => a + b, 0);
+            if (Math.abs(currentTotal - availableWidth) > 0.1) {
+                const scale = availableWidth / currentTotal;
+                casementWidths = casementWidths.map(w => w * scale);
+            }
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Main Generation Logic
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Regenerate model (optionally preserving camera)
+        // ------------------------------------------------------------
+        function regenerateModel(preserveCamera = false) {
+            const UI       = window.CadGenerator.DynamicUI;
+            const Viewport = window.CadGenerator.Viewport;
+            const M        = Viewport.getMakerJS();
+
+            if (!M) {
+                UI.setStatus('Error: Maker.js library not loaded.');
+                return;
+            }
+
+            try {
+                // Normalize casement widths before generation
+                normalizeCasementWidths();
+                
+                // Generate model
+                currentModel = generateWindow(M);
+                
+                // Render with camera preservation option
+                Viewport.render(currentModel, guidesConfig, { 
+                    preserveCamera: preserveCamera 
+                });
+                
+                // Apply layer-specific styling (dimension lines red)
+                applyLayerStyles();
+                
+                // Render dimension captions after short delay
+                setTimeout(() => {
+                    renderDimensionCaptions();
+                    // Verify all elements are in camera-group after render completes
+                    setTimeout(() => verifyCameraGroupMembership(), 5);
+                }, 10);
+
+                // Setup drag handles after render
+                setupDragHandles();
+
+                // Update status
+                const numCasements = parseInt(UI.getValue('casements'));
+                const hBars        = parseInt(UI.getValue('hGlazeBars'));
+                const vBars        = parseInt(UI.getValue('vGlazeBars'));
+                const cillText     = getShowCill() ? ' + Cill' : '';
+                const dimText      = getShowDimensions() ? ' + Dims' : '';
+                UI.setStatus(`${numCasements} casement${numCasements > 1 ? 's' : ''}, ${hBars}×${vBars} glaze bars${cillText}${dimText}. Drag mullions to resize.`);
+            } catch (e) {
+                console.error(e);
+                UI.setStatus('Error: ' + e.message);
+            }
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Generate complete window model
+        // ------------------------------------------------------------
+        function generateWindow(M) {
+            const UI = window.CadGenerator.DynamicUI;
+
+            // Get parameters
+            const windowWidth  = parseInt(UI.getValue('windowWidth'));
+            const windowHeight = parseInt(UI.getValue('windowHeight'));
+            const numCasements = parseInt(UI.getValue('casements'));
+            const hGlazeBars   = parseInt(UI.getValue('hGlazeBars'));
+            const vGlazeBars   = parseInt(UI.getValue('vGlazeBars'));
+            const frameThick   = getFrameThickness();
+            const showCill     = getShowCill();
+
+            // Model container
+            const windowModel = { 
+                models: {},
+                paths: {},
+                units: M.unitType.Millimeter 
+            };
+
+            // 1. Create outer frame (if thickness > 0)
+            if (frameThick > 0) {
+                windowModel.models.outerFrame = createOuterFrame(M, windowWidth, windowHeight, frameThick);
+            } else {
+                // Just outer rectangle when no frame
+                windowModel.models.outerRect = {
+                    models: { rect: new M.models.Rectangle(windowWidth, windowHeight) }
+                };
+            }
+
+            // 2. Create casements with mullions
+            const casementModels = createCasements(M, windowWidth, windowHeight, numCasements, frameThick);
+            Object.assign(windowModel.models, casementModels);
+
+            // 3. Add glaze bars to each casement
+            addGlazeBarsToModel(M, windowModel, windowHeight, hGlazeBars, vGlazeBars, frameThick);
+
+            // 4. Add window cill if enabled
+            if (showCill) {
+                windowModel.models.cill = createWindowCill(M, windowWidth, windowHeight);
+            }
+
+            // 5. Create dimension annotations (if enabled)
+            if (getShowDimensions()) {
+                createDimensions(M, windowModel, windowWidth, windowHeight, numCasements, frameThick, showCill);
+            }
+
+            return windowModel;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Download DXF file
+        // ------------------------------------------------------------
+        function downloadDXF() {
+            const DxfExport = window.CadGenerator.DxfExport;
+            DxfExport.download(currentModel, 'Window', {
+                layerOptions: {
+                    '00__Dimensions': { color: 1 }                               // <-- Red (AutoCAD color code 1)
+                }
+            });
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Frame Generation
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Create outer frame (double rectangle)
+        // ------------------------------------------------------------
+        function createOuterFrame(M, width, height, frameThick) {
+            return {
+                models: {
+                    outer: new M.models.Rectangle(width, height),
+                    inner: {
+                        models: {
+                            rect: new M.models.Rectangle(
+                                width - (frameThick * 2),
+                                height - (frameThick * 2)
+                            )
+                        },
+                        origin: [frameThick, frameThick]
+                    }
+                }
+            };
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Create window cill (at bottom of window in CAD space)
+        // CAD space: Y=0 is window bottom, negative Y is below window
+        // After Y-flip: negative Y appears at bottom of screen
+        // ------------------------------------------------------------
+        function createWindowCill(M, windowWidth, windowHeight) {
+            const cillWidth = windowWidth + (CILL_HORN_OVERHANG * 2);
+            const cillX     = -CILL_HORN_OVERHANG;
+            const cillY     = -CILL_HEIGHT;  // <-- Below window (negative Y in CAD)
+
+            return {
+                models: {
+                    rect: new M.models.Rectangle(cillWidth, CILL_HEIGHT)
+                },
+                origin: [cillX, cillY]
+            };
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Casement Generation
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Create casement divisions and mullions
+        // ------------------------------------------------------------
+        function createCasements(M, width, height, numCasements, frameThick) {
+            const casements   = {};
+            const innerHeight = height - (frameThick * 2);
+            const mullionW    = getMullionWidth();
+            
+            let xOffset = frameThick;
+
+            for (let i = 0; i < numCasements; i++) {
+                const casementWidth = casementWidths[i];
+                
+                // Create casement frame
+                casements[`casement_${i}`] = {
+                    models: {
+                        frame: new M.models.Rectangle(casementWidth, innerHeight)
+                    },
+                    origin: [xOffset, frameThick]
+                };
+
+                // Store casement data for drag handles
+                casements[`casement_${i}`]._data = {
+                    index: i,
+                    x: xOffset,
+                    width: casementWidth
+                };
+
+                xOffset += casementWidth;
+
+                // Add mullion (except after last casement)
+                if (i < numCasements - 1) {
+                    casements[`mullion_${i}`] = {
+                        models: {
+                            rect: new M.models.Rectangle(mullionW, innerHeight)
+                        },
+                        origin: [xOffset, frameThick],
+                        _data: {
+                            index: i,
+                            x: xOffset
+                        }
+                    };
+                    xOffset += mullionW;
+                }
+            }
+
+            return casements;
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Glaze Bar Generation
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Add glaze bars to all casements
+        // ------------------------------------------------------------
+        function addGlazeBarsToModel(M, windowModel, windowHeight, hBars, vBars, frameThick) {
+            const innerHeight   = windowHeight - (frameThick * 2);
+            const glazeBarWidth = getGlazeBarWidth();
+
+            for (let i = 0; i < casementWidths.length; i++) {
+                const casementKey = `casement_${i}`;
+                const casement    = windowModel.models[casementKey];
+                
+                if (!casement) continue;
+
+                const casementWidth = casementWidths[i];
+
+                // Add horizontal glaze bars
+                if (hBars > 0) {
+                    const hSpacing = innerHeight / (hBars + 1);
+                    for (let h = 0; h < hBars; h++) {
+                        const yPos = hSpacing * (h + 1);
+                        casement.models[`hBar_${h}`] = {
+                            models: {
+                                rect: new M.models.Rectangle(casementWidth, glazeBarWidth)
+                            },
+                            origin: [0, yPos - (glazeBarWidth / 2)]
+                        };
+                    }
+                }
+
+                // Add vertical glaze bars
+                if (vBars > 0) {
+                    const vSpacing = casementWidth / (vBars + 1);
+                    for (let v = 0; v < vBars; v++) {
+                        const xPos = vSpacing * (v + 1);
+                        casement.models[`vBar_${v}`] = {
+                            models: {
+                                rect: new M.models.Rectangle(glazeBarWidth, innerHeight)
+                            },
+                            origin: [xPos - (glazeBarWidth / 2), 0]
+                        };
+                    }
+                }
+            }
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Dimension Annotations (Layer: 00__Dimensions)
+        // ---------------------------------------------------------------------
+        const DIM_LAYER = '00__Dimensions';                                      // <-- Dimension layer name
+
+        // FUNCTION | Create all dimension annotations (CAD space with Y-flip)
+        // ------------------------------------------------------------
+        // In CAD space: Y=0 is window bottom, Y=height is window top
+        // Cill is at negative Y (below window)
+        // After Y-flip: high CAD Y appears at top of screen, low CAD Y at bottom
+        // ------------------------------------------------------------
+        function createDimensions(M, windowModel, width, height, numCasements, frameThick, showCill) {
+            const cillOffset = showCill ? CILL_HEIGHT + 20 : 0;
+
+            // Overall width dimension (above window - high Y in CAD = top of screen after flip)
+            windowModel.models.dimOverallWidth = createHorizontalDimension(M, 
+                [0, height + DIM_OFFSET], 
+                [width, height + DIM_OFFSET],
+                `${width}`
+            );
+
+            // Overall height dimension (right side)
+            windowModel.models.dimOverallHeight = createVerticalDimension(M, 
+                [width + DIM_OFFSET, 0], 
+                [width + DIM_OFFSET, height],
+                `${height}`
+            );
+
+            // Casement width dimensions (below window/cill - negative Y in CAD = bottom of screen)
+            const dimY = -(cillOffset + DIM_OFFSET);
+            let xOffset = frameThick;
+            const mullionW = getMullionWidth();
+
+            for (let i = 0; i < numCasements; i++) {
+                const casementWidth = Math.round(casementWidths[i]);
+                
+                windowModel.models[`dimCasement_${i}`] = createHorizontalDimension(M,
+                    [xOffset, dimY],
+                    [xOffset + casementWidths[i], dimY],
+                    `${casementWidth}`
+                );
+
+                xOffset += casementWidths[i];
+                if (i < numCasements - 1) {
+                    xOffset += mullionW;
+                }
+            }
+
+            // Cill dimensions if shown (below cill - more negative Y)
+            if (showCill) {
+                const cillWidth = width + (CILL_HORN_OVERHANG * 2);
+                const cillDimY = -(CILL_HEIGHT + 40);
+                windowModel.models.dimCillWidth = createHorizontalDimension(M,
+                    [-CILL_HORN_OVERHANG, cillDimY],
+                    [width + CILL_HORN_OVERHANG, cillDimY],
+                    `${cillWidth}`
+                );
+            }
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Create horizontal dimension line with caption
+        // ------------------------------------------------------------
+        function createHorizontalDimension(M, start, end, text) {
+            const y = start[1];
+            const midX = (start[0] + end[0]) / 2;
+            const witnessLength = DIM_OFFSET / 2.5;
+
+            const dimModel = {
+                paths: {
+                    line: new M.paths.Line(start, end),
+                    witnessStart: new M.paths.Line(
+                        [start[0], y - witnessLength],
+                        [start[0], y + witnessLength]
+                    ),
+                    witnessEnd: new M.paths.Line(
+                        [end[0], y - witnessLength],
+                        [end[0], y + witnessLength]
+                    ),
+                    arrowL1: new M.paths.Line(start, [start[0] + DIM_ARROW_SIZE, y + DIM_ARROW_SIZE / 2.5]),
+                    arrowL2: new M.paths.Line(start, [start[0] + DIM_ARROW_SIZE, y - DIM_ARROW_SIZE / 2.5]),
+                    arrowR1: new M.paths.Line(end, [end[0] - DIM_ARROW_SIZE, y + DIM_ARROW_SIZE / 2.5]),
+                    arrowR2: new M.paths.Line(end, [end[0] - DIM_ARROW_SIZE, y - DIM_ARROW_SIZE / 2.5])
+                },
+                layer: DIM_LAYER
+            };
+
+            // Add caption using direct property assignment (degenerate anchor = horizontal text)
+            dimModel.caption = {
+                text: text,
+                anchor: new M.paths.Line([midX, y], [midX, y])
+            };
+
+            return dimModel;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Create vertical dimension line with caption
+        // ------------------------------------------------------------
+        function createVerticalDimension(M, start, end, text) {
+            const x = start[0];
+            const midY = (start[1] + end[1]) / 2;
+            const witnessLength = DIM_OFFSET / 2.5;
+
+            const dimModel = {
+                paths: {
+                    line: new M.paths.Line(start, end),
+                    witnessStart: new M.paths.Line(
+                        [x - witnessLength, start[1]],
+                        [x + witnessLength, start[1]]
+                    ),
+                    witnessEnd: new M.paths.Line(
+                        [x - witnessLength, end[1]],
+                        [x + witnessLength, end[1]]
+                    ),
+                    arrowB1: new M.paths.Line(start, [x + DIM_ARROW_SIZE / 2.5, start[1] + DIM_ARROW_SIZE]),
+                    arrowB2: new M.paths.Line(start, [x - DIM_ARROW_SIZE / 2.5, start[1] + DIM_ARROW_SIZE]),
+                    arrowT1: new M.paths.Line(end, [x + DIM_ARROW_SIZE / 2.5, end[1] - DIM_ARROW_SIZE]),
+                    arrowT2: new M.paths.Line(end, [x - DIM_ARROW_SIZE / 2.5, end[1] - DIM_ARROW_SIZE])
+                },
+                layer: DIM_LAYER
+            };
+
+            // Add caption using direct property assignment (vertical anchor for rotated text)
+            dimModel.caption = {
+                text: text,
+                anchor: new M.paths.Line([x, start[1]], [x, end[1]])
+            };
+
+            return dimModel;
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Render dimension text labels at dimension line midpoints
+        // ------------------------------------------------------------
+        // Text is rendered OUTSIDE flip-group so it stays readable (not inverted)
+        // Coordinates are converted from model space (Y+ up) to screen space (Y+ down)
+        // Font size is fixed screen pixels for consistent readability
+        // ------------------------------------------------------------
+        function renderDimensionCaptions() {
+            if (!getShowDimensions()) return;
+
+            const Viewport = window.CadGenerator.Viewport;
+            const svg      = document.getElementById('cad-viewport-svg');
+            const cameraGroup = document.getElementById('camera-group');
+            
+            if (!svg || !cameraGroup || !currentModel) return;
+
+            const camState = Viewport.getState();
+
+            // Get or create text group (already exists in SVG template, outside flip-group)
+            let textGroup = cameraGroup.querySelector('#dim-caption-group');
+            if (!textGroup) {
+                textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                textGroup.id = 'dim-caption-group';
+                cameraGroup.appendChild(textGroup);
+            }
+            textGroup.innerHTML = '';
+
+            // Fixed screen-space font size (12px readable at any zoom)
+            const fontSize = 12;
+
+            // Render text for a dimension model at its midpoint
+            function renderDimensionText(dimKey, model) {
+                if (!model || !model.caption || !model.caption.anchor) return;
+                
+                const anchor = model.caption.anchor;
+                const origin = model.origin || [0, 0];
+                
+                // Get midpoint in model coordinates (CAD space, Y+ up)
+                const midX = (anchor.origin[0] + anchor.end[0]) / 2 + origin[0];
+                const midY = (anchor.origin[1] + anchor.end[1]) / 2 + origin[1];
+                
+                // Convert to screen coordinates:
+                // - Apply scale from camState
+                // - Negate Y for flip (Y+ up -> Y+ down)
+                // Text group is inside camera-group which has translate applied
+                // So we just need to scale and flip Y
+                const screenX = midX * camState.scale;
+                const screenY = -midY * camState.scale;  // <-- Y-flip
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'dim-caption');
+                text.setAttribute('x', screenX);
+                text.setAttribute('y', screenY);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-family', 'Segoe UI, sans-serif');
+                text.setAttribute('font-size', `${fontSize}px`);
+                text.setAttribute('font-weight', '600');
+                text.setAttribute('fill', '#e74c3c');
+                text.textContent = model.caption.text;
+                
+                // Rotate vertical dimensions for readability
+                const dx = anchor.end[0] - anchor.origin[0];
+                const dy = anchor.end[1] - anchor.origin[1];
+                const isVertical = Math.abs(dx) < 0.01 && Math.abs(dy) > 0.01;
+                
+                if (isVertical) {
+                    text.setAttribute('transform', `rotate(-90, ${screenX}, ${screenY})`);
+                }
+                
+                textGroup.appendChild(text);
+            }
+
+            // Process all dimension models (keys starting with 'dim')
+            if (currentModel.models) {
+                for (const key in currentModel.models) {
+                    if (key.startsWith('dim')) {
+                        renderDimensionText(key, currentModel.models[key]);
+                    }
+                }
+            }
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Apply layer-specific styling to SVG paths (FIXED)
+        // ------------------------------------------------------------
+        // Dimension lines need to be red but Viewport applies uniform stroke.
+        // This post-processes the SVG to apply layer-specific colors.
+        // ------------------------------------------------------------
+        function applyLayerStyles() {
+            const svg = document.getElementById('cad-viewport-svg');
+            if (!svg) return;
+            
+            const geometryGroup = svg.querySelector('#geometry-group');
+            if (!geometryGroup) return;
+            
+            // MakerJS exports paths with layer info in path IDs or parent group IDs
+            // Find all paths and apply red stroke to dimension layer elements
+            const allPaths = geometryGroup.querySelectorAll('path');
+            allPaths.forEach(path => {
+                const pathId = path.getAttribute('id') || '';
+                const parentId = path.parentElement?.getAttribute('id') || '';
+                
+                // Check if path belongs to dimension layer (00__Dimensions)
+                // or has dimension-related naming in the path/parent ID
+                if (pathId.includes('00__Dimensions') || 
+                    parentId.includes('00__Dimensions') ||
+                    pathId.includes('dimOverall') || 
+                    pathId.includes('dimCasement') || 
+                    pathId.includes('dimCill')) {
+                    path.setAttribute('stroke', '#e74c3c');  // <-- Red dimension lines
+                }
+            });
+            
+            // Also check for groups that may contain dimension paths
+            const allGroups = geometryGroup.querySelectorAll('g');
+            allGroups.forEach(group => {
+                const groupId = group.getAttribute('id') || '';
+                if (groupId.includes('00__Dimensions') || 
+                    groupId.includes('dimOverall') || 
+                    groupId.includes('dimCasement') || 
+                    groupId.includes('dimCill')) {
+                    // Apply red stroke to all paths within this dimension group
+                    const childPaths = group.querySelectorAll('path');
+                    childPaths.forEach(path => {
+                        path.setAttribute('stroke', '#e74c3c');  // <-- Red dimension lines
+                    });
+                }
+            });
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Interactive Drag Handles
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Setup drag handles on mullions (FIXED for SVG space)
+        // ------------------------------------------------------------
+        function setupDragHandles() {
+            const UI       = window.CadGenerator.DynamicUI;
+            const Viewport = window.CadGenerator.Viewport;
+            const svg      = document.getElementById('cad-viewport-svg');
+            const flipGroup = document.getElementById('flip-group');
+            
+            if (!svg || !flipGroup) return;
+
+            const numCasements = parseInt(UI.getValue('casements'));
+            const windowHeight = parseInt(UI.getValue('windowHeight'));
+            const frameThick   = getFrameThickness();
+            const innerHeight  = windowHeight - (frameThick * 2);
+            const mullionW     = getMullionWidth();
+            
+            // Remove existing handles
+            const existingHandles = svg.querySelectorAll('.mullion-handle');
+            existingHandles.forEach(h => h.remove());
+
+            // Create invisible drag handles over each mullion
+            // Handles are in model coordinates, inside flip-group for Y-flip
+            let xOffset = frameThick;
+            for (let i = 0; i < numCasements - 1; i++) {
+                xOffset += casementWidths[i];
+                
+                // Define handle area in model coordinates
+                const handleX = xOffset - 10;  // <-- Extra padding for easier dragging
+                const handleY = frameThick;
+                const handleW = mullionW + 20;
+                const handleH = innerHeight;
+
+                const handle = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                handle.setAttribute('class', 'mullion-handle');
+                handle.setAttribute('x', handleX);
+                handle.setAttribute('y', handleY);
+                handle.setAttribute('width', handleW);
+                handle.setAttribute('height', handleH);
+                handle.setAttribute('fill', '#007bff');
+                handle.setAttribute('data-mullion-index', i);
+                
+                // Add drag events
+                handle.addEventListener('mousedown', onMullionDragStart);
+                
+                flipGroup.appendChild(handle);  // <-- Inside flip-group for Y-flip
+
+                xOffset += mullionW;
+            }
+
+            // Setup document-level mouse events (with cleanup to prevent memory leak)
+            // Remove old listeners if they exist
+            if (mullionDragListeners.move) {
+                document.removeEventListener('mousemove', mullionDragListeners.move);
+            }
+            if (mullionDragListeners.up) {
+                document.removeEventListener('mouseup', mullionDragListeners.up);
+            }
+
+            // Add new listeners and store references
+            mullionDragListeners.move = onMullionDragMove;
+            mullionDragListeners.up   = onMullionDragEnd;
+            document.addEventListener('mousemove', mullionDragListeners.move);
+            document.addEventListener('mouseup', mullionDragListeners.up);
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Handle mullion drag start
+        // ------------------------------------------------------------
+        function onMullionDragStart(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const mullionIndex = parseInt(e.target.dataset.mullionIndex);
+            
+            dragState = {
+                active:       true,
+                mullionIndex: mullionIndex,
+                startX:       e.clientX,
+                startWidths:  [...casementWidths]
+            };
+
+            e.target.classList.add('dragging');
+            document.body.style.cursor = 'ew-resize';
+            const canvasWrapper = document.getElementById('canvas-wrapper');
+            if (canvasWrapper) canvasWrapper.style.cursor = 'ew-resize';
+
+            // Show feedback tooltip
+            const feedback = document.getElementById('drag-feedback');
+            feedback.style.display = 'block';
+            updateDragFeedback(e.clientX, e.clientY);
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Handle mullion drag move (FIXED - simplified)
+        // ------------------------------------------------------------
+        function onMullionDragMove(e) {
+            if (!dragState.active) return;
+
+            const Viewport = window.CadGenerator.Viewport;
+            const camState = Viewport.getState();
+            
+            // Calculate delta in screen space, then convert to model space
+            const deltaScreen = e.clientX - dragState.startX;
+            const deltaModel = deltaScreen / camState.scale;  // <-- Simple scale conversion
+
+            // Get adjacent casement indices
+            const leftIdx  = dragState.mullionIndex;
+            const rightIdx = dragState.mullionIndex + 1;
+
+            // Calculate new widths
+            let newLeftWidth  = dragState.startWidths[leftIdx] + deltaModel;
+            let newRightWidth = dragState.startWidths[rightIdx] - deltaModel;
+
+            // Enforce minimum widths
+            if (newLeftWidth < MIN_CASEMENT_WIDTH) {
+                newLeftWidth = MIN_CASEMENT_WIDTH;
+                newRightWidth = dragState.startWidths[leftIdx] + dragState.startWidths[rightIdx] - MIN_CASEMENT_WIDTH;
+            }
+            if (newRightWidth < MIN_CASEMENT_WIDTH) {
+                newRightWidth = MIN_CASEMENT_WIDTH;
+                newLeftWidth = dragState.startWidths[leftIdx] + dragState.startWidths[rightIdx] - MIN_CASEMENT_WIDTH;
+            }
+
+            // Update widths
+            casementWidths[leftIdx]  = newLeftWidth;
+            casementWidths[rightIdx] = newRightWidth;
+
+            // Update feedback
+            updateDragFeedback(e.clientX, e.clientY);
+
+            // Regenerate with preserved camera
+            regenerateModel(true);
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Handle mullion drag end
+        // ------------------------------------------------------------
+        function onMullionDragEnd(e) {
+            if (!dragState.active) return;
+
+            dragState.active = false;
+            document.body.style.cursor = '';
+            const canvasWrapper = document.getElementById('canvas-wrapper');
+            if (canvasWrapper) canvasWrapper.style.cursor = 'grab';
+
+            // Hide feedback
+            const feedback = document.getElementById('drag-feedback');
+            feedback.style.display = 'none';
+
+            // Remove dragging class from handles
+            const handles = document.querySelectorAll('.mullion-handle.dragging');
+            handles.forEach(h => h.classList.remove('dragging'));
+
+            // Final regenerate
+            regenerateModel(true);
+        }
+        // ---------------------------------------------------------------
+
+        // FUNCTION | Update drag feedback tooltip
+        // ------------------------------------------------------------
+        function updateDragFeedback(mouseX, mouseY) {
+            const feedback = document.getElementById('drag-feedback');
+            const leftIdx  = dragState.mullionIndex;
+            const rightIdx = dragState.mullionIndex + 1;
+            
+            const leftWidth  = Math.round(casementWidths[leftIdx]);
+            const rightWidth = Math.round(casementWidths[rightIdx]);
+
+            feedback.textContent = `${leftWidth}mm | ${rightWidth}mm`;
+            feedback.style.left = (mouseX + 15) + 'px';
+            feedback.style.top  = (mouseY - 30) + 'px';
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Verification Helpers
+        // ---------------------------------------------------------------------
+
+        // FUNCTION | Verify camera-group membership for interactive elements
+        // ------------------------------------------------------------
+        function verifyCameraGroupMembership() {
+            const cameraGroup = document.getElementById('camera-group');
+            if (!cameraGroup) {
+                console.warn('[Verify] camera-group not found');
+                return;
+            }
+
+            const dimensions = document.querySelectorAll('.dim-caption');
+            const handles = document.querySelectorAll('.mullion-handle');
+            
+            let allInGroup = true;
+            
+            dimensions.forEach(dim => {
+                if (!cameraGroup.contains(dim)) {
+                    console.error('[Verify] Dimension not in camera-group:', dim);
+                    allInGroup = false;
+                }
+            });
+            
+            handles.forEach(handle => {
+                if (!cameraGroup.contains(handle)) {
+                    console.error('[Verify] Handle not in camera-group:', handle);
+                    allInGroup = false;
+                }
+            });
+            
+            if (allInGroup && (dimensions.length > 0 || handles.length > 0)) {
+                console.log(`[Verify] ✓ All elements in camera-group (${dimensions.length} dimensions, ${handles.length} handles)`);
+            }
+        }
+        // ---------------------------------------------------------------
+        // endregion -----------------------------------------------------------
+
+        // ---------------------------------------------------------------------
+        // REGION | Initialization
+        // ---------------------------------------------------------------------
+        window.onload = function() {
+            const UI       = window.CadGenerator.DynamicUI;
+            const Viewport = window.CadGenerator.Viewport;
+
+            // Build primary UI from config
+            UI.build(UI_CONFIG, UI_HANDLERS);
+
+            // Build secondary controls
+            buildSecondaryControls();
+
+            // Initialize viewport (no guides for window configurator)
+            Viewport.init('canvas-wrapper', {
+                strokeColor:    '#2c3e50',
+                strokeWidth:    2,
+                fillColor:      'none',
+                showGroundLine: false,
+                showAxisLine:   false,
+                fitPadding:     0.7                                              // <-- Tighter fit with margin
+            });
+
+            // Initialize casement widths
+            initCasementWidths();
+
+            // Wait for MakerJS to load
+            let attempts = 0;
+            const checkInt = setInterval(() => {
+                const M = Viewport.getMakerJS();
+                if (M) {
+                    clearInterval(checkInt);
+                    UI.showLoading(false);
+                    
+                    // Initial render at origin (1:1 scale)
+                    regenerateModel(false);
+                } else if (attempts > 10) {
+                    clearInterval(checkInt);
+                    UI.setStatus('Failed to load libraries. Check connection.');
+                }
+                attempts++;
+            }, 200);
+        };
+        // endregion -----------------------------------------------------------
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+    "projectName": "Cross",
+    "projectCode": "62451",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "The existing host dwelling was a bit more complex than a typical job, The Vale Orangery itself was very easy though, A really clean and easy to work with CAD file was provided by Anna making my life as easy as could be. The landscape took a little longer than usual to model due to drastically differing levels."
+    },
+    "scheduleData": {
+        "dateReceived": "18-Dec-2025",
+        "dateFulfilled": "18-Dec-2025",
+        "timeAllocated": 4,
+        "timeTaken": 3.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__18-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02__Closer__WhitecardImage__18-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03__Further__WhitecardImage__18-Dec-2025.png",
+        "IMG04__3dView__ViewOption-04__Further-02__WhitecardImage__18-Dec-2025.png",
+        "IMG05__3dView__Straight-On__WhitecardImage__18-Dec-2025.png",
+        "IMG06__3dView__RightSide-01__WhitecardImage__18-Dec-2025.png",
+        "IMG07__3dView__RightSide-02__WhitecardImage__18-Dec-2025.png",
+        "IMG08__3dView__Front__ViewingDoors__Close__WhitecardImage__18-Dec-2025.png",
+        "IMG09__3dView__Front__ViewingDoors__Far__WhitecardImage__18-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__18-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__18-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__18-Dec-2025.png"
+    ],
+    "folderId": "62451__Cross",
+    "basePath": "Projects/2025/62451__Cross",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__18-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02__Closer__WhitecardImage__18-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03__Further__WhitecardImage__18-Dec-2025.png",
+        "IMG04__3dView__ViewOption-04__Further-02__WhitecardImage__18-Dec-2025.png",
+        "IMG05__3dView__Straight-On__WhitecardImage__18-Dec-2025.png",
+        "IMG06__3dView__RightSide-01__WhitecardImage__18-Dec-2025.png",
+        "IMG07__3dView__RightSide-02__WhitecardImage__18-Dec-2025.png",
+        "IMG08__3dView__Front__ViewingDoors__Close__WhitecardImage__18-Dec-2025.png",
+        "IMG09__3dView__Front__ViewingDoors__Far__WhitecardImage__18-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__18-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__18-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__18-Dec-2025.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__18-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02__Closer__WhitecardImage__18-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03__Further__WhitecardImage__18-Dec-2025.png",
+        "IMG04__3dView__ViewOption-04__Further-02__WhitecardImage__18-Dec-2025.png",
+        "IMG05__3dView__Straight-On__WhitecardImage__18-Dec-2025.png",
+        "IMG06__3dView__RightSide-01__WhitecardImage__18-Dec-2025.png",
+        "IMG07__3dView__RightSide-02__WhitecardImage__18-Dec-2025.png",
+        "IMG08__3dView__Front__ViewingDoors__Close__WhitecardImage__18-Dec-2025.png",
+        "IMG09__3dView__Front__ViewingDoors__Far__WhitecardImage__18-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__18-Dec-2025.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__18-Dec-2025.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__18-Dec-2025.png"
+    ]
+}

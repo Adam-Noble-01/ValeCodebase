@@ -250,6 +250,10 @@
         {
             "folderId": "62258__Gray",
             "enabled": true
+        },
+        {
+            "folderId": "62451__Cross",
+            "enabled": true
         }
     ]
 }

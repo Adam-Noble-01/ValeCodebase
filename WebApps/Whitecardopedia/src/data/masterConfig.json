@@ -254,6 +254,10 @@
         {
             "folderId": "62451__Cross",
             "enabled": true
+        },
+        {
+            "folderId": "62444__Curtis",
+            "enabled": true
         }
     ]
 }

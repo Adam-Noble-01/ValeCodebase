@@ -1,0 +1,34 @@
+{
+    "projectName": "Curtis",
+    "projectCode": "62444",
+    "productionData": {
+        "input": "Default Input Type",
+        "conceptArtist": "Default Concept Artist",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "10-Oct-2025",
+        "dateFulfilled": "19-Dec-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Dec-2025.png",
+        "IMG02__3dView__ViewOption-02____WhitecardImage__19-Dec-2025.png",
+        "IMG03__3dView__ViewOption-03____WhitecardImage__19-Dec-2025.png",
+        "IMG04__3dView__ViewOption-04____WhitecardImage__19-Dec-2025.png",
+        "IMG05__3dView__ViewOption-05____WhitecardImage__19-Dec-2025.png",
+        "IMG06__3dView__ViewOption-06____WhitecardImage__19-Dec-2025.png",
+        "IMG07__3dView__Rear__ViewingDoors__WhitecardImage__19-Dec-2025.png",
+        "IMG08__3dView__Front__ViewingDoors__WhitecardImage__19-Dec-2025.png",
+        "IMG08__3dView__TopDownView-01____WhitecardImage__19-Dec-2025.png",
+        "IMG09__3dView__FrontView-02____WhitecardImage__19-Dec-2025.png",
+        "IMG09__3dView__TopDownView-02____WhitecardImage__19-Dec-2025.png",
+        "IMG10__3dView__TopDownView-03____WhitecardImage__19-Dec-2025.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__19-Dec-2025.png"
+    ]
+}

@@ -59,7 +59,7 @@ from flask_cors import CORS
 # ------------------------------------------------------------
 SERVER_PORT             = 8000                                           # <-- Development server port
 SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
-PROJECTS_BASE_PATH      = 'Projects/2025'                                # <-- Projects directory path
+PROJECTS_BASE_FOLDER    = 'Projects'                                     # <-- Projects base folder (contains year subfolders)
 MASTER_CONFIG_PATH      = 'src/data/masterConfig.json'                   # <-- Master config file path
 REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
 # ------------------------------------------------------------
@@ -77,13 +77,51 @@ CORS(app)                                                                # <-- E
 # REGION | Helper Functions
 # -----------------------------------------------------------------------------
 
+# HELPER FUNCTION | Discover All Year Folders in Projects Directory
+# ------------------------------------------------------------
+def discover_year_folders():
+    """Discover all year subfolders (2025, 2026, etc.) in Projects directory"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))               # <-- Get server directory
+    projects_dir = os.path.join(base_dir, PROJECTS_BASE_FOLDER)         # <-- Build projects path
+    
+    year_folders = []                                                    # <-- Initialize year folders list
+    
+    if not os.path.exists(projects_dir):
+        return year_folders                                              # <-- Return empty if doesn't exist
+    
+    for item in os.listdir(projects_dir):
+        item_path = os.path.join(projects_dir, item)                     # <-- Build full path
+        if os.path.isdir(item_path) and item.isdigit() and len(item) == 4:  # <-- Check if 4-digit year folder
+            year_folders.append(item)                                    # <-- Add year to list
+    
+    return sorted(year_folders, reverse=True)                            # <-- Return sorted (newest first)
+# ------------------------------------------------------------
+
+
 # HELPER FUNCTION | Get Absolute Path for Project File
 # ------------------------------------------------------------
 def get_project_path(folder_id):
-    """Construct absolute path to project folder"""
+    """Construct absolute path to project folder, searching across all year folders"""
     base_dir = os.path.dirname(os.path.abspath(__file__))               # <-- Get server directory
-    project_path = os.path.join(base_dir, PROJECTS_BASE_PATH, folder_id) # <-- Build project path
-    return project_path                                                  # <-- Return absolute path
+    
+    # CHECK IF FOLDER_ID ALREADY INCLUDES YEAR (e.g., "2025/ProjectName")
+    if '/' in folder_id or '\\' in folder_id:
+        # Year-aware path provided
+        project_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, folder_id.replace('/', os.sep))  # <-- Build path with year
+        return project_path                                              # <-- Return year-aware path
+    
+    # LEGACY SUPPORT: Search across all year folders for backward compatibility
+    year_folders = discover_year_folders()                               # <-- Get all year folders
+    
+    for year in year_folders:
+        project_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, year, folder_id)  # <-- Build path with year
+        if os.path.exists(project_path):                                 # <-- Check if project exists in this year
+            return project_path                                          # <-- Return first match found
+    
+    # FALLBACK: Return path in latest year even if doesn't exist (for error messages)
+    latest_year = year_folders[0] if year_folders else '2025'            # <-- Get latest year or default
+    project_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, latest_year, folder_id)  # <-- Build fallback path
+    return project_path                                                  # <-- Return fallback path
 # ------------------------------------------------------------
 
 
@@ -158,29 +196,34 @@ def get_assets_path():
 # HELPER FUNCTION | Discover All Project Folders Recursively
 # ------------------------------------------------------------
 def discover_project_folders():
-    """Recursively scan Projects/2025 directory for all project.json files"""
+    """Recursively scan all year folders for project.json files"""
     try:
         base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Get server directory
-        projects_path = os.path.join(base_dir, PROJECTS_BASE_PATH)       # <-- Build projects path
+        projects_dir = os.path.join(base_dir, PROJECTS_BASE_FOLDER)      # <-- Build projects base path
         
-        if not os.path.exists(projects_path):                            # <-- Check if projects directory exists
+        if not os.path.exists(projects_dir):                             # <-- Check if projects directory exists
             return []                                                     # <-- Return empty list if not found
         
         blacklist = get_project_blacklist()                              # <-- Get blacklist from config
         discovered_folders = []                                           # <-- Initialize folder list
+        year_folders = discover_year_folders()                           # <-- Get all year folders
         
-        # Recursively find all project.json files
-        for root, dirs, files in os.walk(projects_path):                 # <-- Walk directory tree
-            if 'project.json' in files:                                  # <-- Check if project.json exists
-                # Get relative path from Projects/2025
-                rel_path = os.path.relpath(root, projects_path)           # <-- Get relative folder path
-                
-                # Extract folder name (handle nested paths)
-                folder_name = rel_path.replace(os.sep, '/')              # <-- Normalize path separators
-                
-                # Check if folder is blacklisted
-                if folder_name not in blacklist:                         # <-- Skip blacklisted folders
-                    discovered_folders.append(folder_name)               # <-- Add to discovered list
+        # SCAN EACH YEAR FOLDER
+        for year in year_folders:
+            year_path = os.path.join(projects_dir, year)                 # <-- Build year folder path
+            
+            # Recursively find all project.json files in this year
+            for root, dirs, files in os.walk(year_path):                 # <-- Walk directory tree
+                if 'project.json' in files:                              # <-- Check if project.json exists
+                    # Get relative path from year folder
+                    rel_path = os.path.relpath(root, year_path)          # <-- Get relative folder path
+                    folder_name = rel_path.replace(os.sep, '/')         # <-- Normalize path separators
+                    
+                    # Check if folder is blacklisted
+                    if folder_name not in blacklist:                     # <-- Skip blacklisted folders
+                        # Include year in the folder path for identification
+                        full_folder_path = f"{year}/{folder_name}"       # <-- Include year prefix
+                        discovered_folders.append(full_folder_path)      # <-- Add to discovered list
         
         return sorted(discovered_folders)                                 # <-- Return sorted folder list
         
@@ -277,7 +320,7 @@ def list_projects():
 
 # API ENDPOINT | Get Specific Project Data
 # ------------------------------------------------------------
-@app.route('/api/projects/<folder_id>', methods=['GET'])
+@app.route('/api/projects/<path:folder_id>', methods=['GET'])
 def get_project(folder_id):
     """Get specific project.json data by folder ID"""
     try:
@@ -308,7 +351,7 @@ def get_project(folder_id):
 
 # API ENDPOINT | Save Updated Project Data
 # ------------------------------------------------------------
-@app.route('/api/projects/<folder_id>', methods=['POST'])
+@app.route('/api/projects/<path:folder_id>', methods=['POST'])
 def save_project(folder_id):
     """Save updated project.json data"""
     try:

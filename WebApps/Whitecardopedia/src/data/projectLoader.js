@@ -25,7 +25,7 @@
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
         masterConfigPath    : 'src/data/masterConfig.json',              // <-- Master configuration file path
-        projectBasePath     : 'Projects/2025',                           // <-- Base path for projects
+        projectBasePath     : 'Projects',                                // <-- Base path for projects (year comes from folderId)
     };
     // ------------------------------------------------------------
 

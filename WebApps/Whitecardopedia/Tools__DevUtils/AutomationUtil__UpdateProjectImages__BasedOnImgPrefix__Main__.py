@@ -39,7 +39,7 @@ from typing import List, Dict, Tuple
 
 # MODULE CONSTANTS | File Patterns and Paths
 # ------------------------------------------------------------
-PROJECTS_BASE_PATH      = "../Projects/2025"                          # <-- Base path for all projects (relative to DevUtils folder)
+PROJECTS_BASE_FOLDER    = "../Projects"                               # <-- Base folder containing year subfolders
 MASTER_CONFIG_PATH      = "../src/data/masterConfig.json"             # <-- Master configuration file path (relative to DevUtils folder)
 IMAGE_PREFIX_PATTERN    = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern (includes ART variants)
 PROJECT_JSON_FILENAME   = "project.json"                              # <-- Project metadata filename
@@ -72,7 +72,7 @@ This utility performs TWO automated tasks:
 2. Discovers images in each project folder and updates project.json files
 
 FOLDER DISCOVERY:
-- Scans Projects/2025 directory for all subfolders
+- Scans all year folders (2025, 2026, etc.) in Projects directory for all subfolders
 - Generates projects array in masterConfig.json automatically
 - Uses blacklist exclusion (folders in projectFoldersBlacklist are disabled)
 - Eliminates manual project folder management
@@ -189,22 +189,52 @@ def discover_project_images(project_path: Path) -> List[str]:
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | Year Folder Discovery Functions
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Discover All Year Folders in Projects Directory
+# ---------------------------------------------------------------
+def discover_year_folders(base_path: Path) -> List[str]:
+    """Discover all year subfolders (2025, 2026, etc.) in Projects directory"""
+    year_folders = []                                                     # <-- Initialize year folders list
+    
+    if not base_path.exists():
+        return year_folders                                               # <-- Return empty if doesn't exist
+    
+    for item in base_path.iterdir():
+        if item.is_dir() and item.name.isdigit() and len(item.name) == 4:  # <-- Check if 4-digit year folder
+            year_folders.append(item.name)                                # <-- Add year to list
+    
+    return sorted(year_folders, reverse=True)                             # <-- Return sorted (newest first)
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | Folder Discovery and Master Config Management
 # -----------------------------------------------------------------------------
 
-# FUNCTION | Discover All Project Folders in Base Path
+# FUNCTION | Discover All Project Folders Across All Years
 # ------------------------------------------------------------
 def discover_all_project_folders(base_path: Path) -> List[str]:
+    """Discover all project folders across all year subfolders"""
     folders = []                                                      # <-- Initialize folders list
     
     if not base_path.exists() or not base_path.is_dir():
         return folders                                                # <-- Return empty if path invalid
     
-    for item in sorted(base_path.iterdir()):
-        if item.is_dir() and not item.name.startswith('.'):           # <-- Check if directory and not hidden
-            folders.append(item.name)                                 # <-- Add folder name to list
+    year_folders = discover_year_folders(base_path)                   # <-- Get all year folders
     
-    return folders                                                    # <-- Return sorted folder names
+    # SCAN EACH YEAR FOLDER
+    for year in year_folders:
+        year_path = base_path / year                                  # <-- Build year folder path
+        
+        for item in sorted(year_path.iterdir()):
+            if item.is_dir() and not item.name.startswith('.'):       # <-- Check if directory and not hidden
+                folder_id = f"{year}/{item.name}"                     # <-- Include year prefix in folder ID
+                folders.append(folder_id)                             # <-- Add year-aware folder name to list
+    
+    return folders                                                    # <-- Return year-aware folder names
 # ---------------------------------------------------------------
 
 
@@ -525,7 +555,7 @@ def main():
     args = parser.parse_args()                                        # <-- Parse command line arguments
     
     script_dir = Path(__file__).parent                                # <-- Get script directory
-    base_path = script_dir / PROJECTS_BASE_PATH                       # <-- Construct base projects path
+    base_path = script_dir / PROJECTS_BASE_FOLDER                     # <-- Construct base projects folder path
     config_path = script_dir / MASTER_CONFIG_PATH                     # <-- Construct master config path
     
     print(f"\n{COLOR_CYAN}Whitecardopedia - Project Auto-Discovery & Image Update Utility{COLOR_RESET}")  # <-- Print title

@@ -32,7 +32,7 @@
 
             // MODULE CONSTANTS | Application Configuration Values
             // ------------------------------------------------------------
-            const BASE_PATH         = 'Projects/2025/';                              // <-- Relative path to projects
+            const BASE_PATH         = 'Projects/';                                   // <-- Relative path to projects (year included in folderId)
             const EXCLUDED_FOLDERS  = ['__BACKUP__', '01__TemplateProject', '00__ExampleProject']; // <-- Folders to skip (client-side fallback)
             const DISCOVER_API_URL  = '/api/projects/discover';                     // <-- API endpoint for project discovery
             

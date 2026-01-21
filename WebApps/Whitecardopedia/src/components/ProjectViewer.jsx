@@ -52,8 +52,8 @@
         setIsDownloading(true);                                          // <-- Enable loading state
         
         try {
-            // FIX PATH CONSTRUCTION | Ensure trailing slash
-            const basePath = project.basePath || `Projects/2025/${project.folderId}`;  // <-- Use existing basePath or construct from folderId
+            // FIX PATH CONSTRUCTION | Ensure trailing slash (folderId includes year)
+            const basePath = project.basePath || `Projects/${project.folderId}`;  // <-- Use existing basePath or construct from year-aware folderId
             const basePathWithSlash = basePath.endsWith('/') ? basePath : `${basePath}/`;  // <-- Ensure trailing slash
             
             // FETCH ALL IMAGES FROM JSON | Both base and ART are already in the array

@@ -41,10 +41,10 @@ from botocore.exceptions import ClientError, NoCredentialsError
 
 # MODULE CONSTANTS | File Patterns and Paths
 # ------------------------------------------------------------
-LOCAL_PROJECTS_BASE_PATH           = r"C:\01__ValeProjects\ValeProjects__2025"   # <-- Source path for local Vale projects
+LOCAL_PROJECTS_BASE_FOLDER         = r"C:\01__ValeProjects"                      # <-- Base folder containing year subfolders
 CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"               # <-- Content delivery subfolder name
 GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"                   # <-- GLB files subfolder name
-R2_BASE_PREFIX                     = "VaApps/Projects/2025"                      # <-- Base prefix in R2 bucket
+R2_BASE_PREFIX                     = "VaApps/Projects"                           # <-- Base prefix in R2 bucket (year added dynamically)
 ENV_FILE_PATH                      = "API__Cloudflare/Token__CloudflareAPI.env"  # <-- Environment file path (relative)
 # ------------------------------------------------------------
 
@@ -200,6 +200,31 @@ def load_environment_variables() -> Tuple[bool, Optional[Dict[str, str]]]:
         return False, None                                            # <-- Return failure
     
     return True, credentials                                          # <-- Return success and credentials
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Year Folder Discovery Functions
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Discover All ValeProjects Year Folders
+# ---------------------------------------------------------------
+def discover_vale_year_folders() -> List[Tuple[str, Path]]:
+    """Discover all ValeProjects__YYYY folders in base directory"""
+    base_path = Path(LOCAL_PROJECTS_BASE_FOLDER)                         # <-- Get base path
+    year_folders = []                                                     # <-- Initialize list
+    
+    if not base_path.exists():
+        return year_folders                                               # <-- Return empty if doesn't exist
+    
+    for item in base_path.iterdir():
+        if item.is_dir() and item.name.startswith('ValeProjects__'):     # <-- Check for ValeProjects prefix
+            year_part = item.name.replace('ValeProjects__', '')           # <-- Extract year
+            if year_part.isdigit() and len(year_part) == 4:              # <-- Validate 4-digit year
+                year_folders.append((year_part, item))                    # <-- Add (year, path) tuple
+    
+    return sorted(year_folders, key=lambda x: x[0], reverse=True)        # <-- Sort by year (newest first)
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -420,9 +445,9 @@ def determine_upload_action(s3_client: boto3.client, bucket_name: str, local_pat
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Process Single GLB File Upload
+# FUNCTION | Process Single GLB File Upload with Year
 # ------------------------------------------------------------
-def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Dict, filename: str, dry_run: bool) -> Dict:
+def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Dict, filename: str, dry_run: bool, year: str) -> Dict:
     """Process single GLB file upload to R2"""
     result = {
         'filename': filename,
@@ -434,7 +459,7 @@ def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Di
     }
     
     local_path = project_info['glb_sync_path'] / filename             # <-- Construct local file path
-    r2_key = f"{R2_BASE_PREFIX}/{project_info['dest_folder_name']}/{filename}"  # <-- Construct R2 key
+    r2_key = f"{R2_BASE_PREFIX}/{year}/{project_info['dest_folder_name']}/{filename}"  # <-- Construct R2 key with year
     
     if not local_path.exists():
         result['error'] = "Local file not found"                      # <-- Set error message
@@ -466,9 +491,9 @@ def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Di
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Process Single Project
+# FUNCTION | Process Single Project with Year
 # ------------------------------------------------------------
-def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dict, dry_run: bool) -> Dict:
+def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dict, dry_run: bool, year: str) -> Dict:
     """Process all GLB files for a single project"""
     result = {
         'project_name': project_info['source_folder_name'],
@@ -495,7 +520,7 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
     
     # PROCESS EACH GLB FILE
     for filename in glb_files:
-        file_result = process_glb_file(s3_client, bucket_name, project_info, filename, dry_run)  # <-- Process file
+        file_result = process_glb_file(s3_client, bucket_name, project_info, filename, dry_run, year)  # <-- Process file with year
         result['file_results'].append(file_result)                    # <-- Add file result
         result['total_size'] += file_result['size']                   # <-- Add to total size
         
@@ -514,17 +539,17 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Process All Projects
+# FUNCTION | Process All Projects for a Year
 # ------------------------------------------------------------
-def process_all_projects(s3_client: boto3.client, bucket_name: str, projects: List[Dict], target_project: Optional[str], dry_run: bool) -> List[Dict]:
-    """Process all discovered projects"""
+def process_all_projects(s3_client: boto3.client, bucket_name: str, projects: List[Dict], target_project: Optional[str], dry_run: bool, year: str) -> List[Dict]:
+    """Process all discovered projects for a specific year"""
     results = []                                                      # <-- Initialize results list
     
     for project_info in projects:
         if target_project and project_info['source_folder_name'] != target_project:
             continue                                                  # <-- Skip if not target project
         
-        result = process_project(s3_client, bucket_name, project_info, dry_run)  # <-- Process project
+        result = process_project(s3_client, bucket_name, project_info, dry_run, year)  # <-- Process project with year
         results.append(result)                                        # <-- Add result to list
     
     return results                                                    # <-- Return all results
@@ -574,7 +599,7 @@ def print_results(results: List[Dict], dry_run: bool):
             continue
         
         print(f"{COLOR_GREEN}[PROJECT] {project_name}{COLOR_RESET}")  # <-- Print project indicator
-        print(f"    Destination: {R2_BASE_PREFIX}/{result['dest_name']}")  # <-- Print destination
+        # Note: Destination will include year from the calling context
         print(f"    Files found: {result['files_found']}")            # <-- Print files count
         print(f"    Total size: {format_file_size(result['total_size'])}")  # <-- Print total size
         
@@ -695,24 +720,41 @@ def main():
     
     print(f"{COLOR_GREEN}[OK] Connected to Cloudflare R2{COLOR_RESET}\n")  # <-- Log success
     
-    # STEP 3: Discover Whitecard projects
-    source_base = Path(LOCAL_PROJECTS_BASE_PATH)                      # <-- Construct source path
-    projects = discover_whitecard_projects(source_base)               # <-- Discover projects
+    # STEP 3: Discover all year folders
+    year_folders = discover_vale_year_folders()                       # <-- Discover all year folders
     
-    if not projects:
-        print(f"{COLOR_RED}No Whitecard projects with GLB sync folders found. Exiting.{COLOR_RESET}\n")  # <-- Log failure
-        return                                                        # <-- Exit if none found
+    if not year_folders:
+        print(f"{COLOR_RED}No ValeProjects year folders found in {LOCAL_PROJECTS_BASE_FOLDER}. Exiting.{COLOR_RESET}\n")
+        return                                                        # <-- Exit if no year folders
     
-    print_discovery_summary(source_base, projects)                    # <-- Print discovery summary
+    print(f"{COLOR_BLUE}Scanning {len(year_folders)} year folder(s): {', '.join([y[0] for y in year_folders])}{COLOR_RESET}\n")
     
-    # STEP 4: Always run dry-run first to preview
-    print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")  # <-- Print dry-run mode
+    all_results = []                                                  # <-- Collect results from all years
     
-    results = process_all_projects(s3_client, bucket_name, projects, args.project, dry_run=True)  # <-- Run dry-run
-    print_results(results, dry_run=True)                              # <-- Print preview results
+    # STEP 4: Process each year folder
+    for year, source_base in year_folders:
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}Processing Year: {year}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+        print(f"{COLOR_BLUE}Source Path: {source_base}{COLOR_RESET}")
+        
+        projects = discover_whitecard_projects(source_base)           # <-- Discover projects for this year
+        
+        if not projects:
+            print(f"{COLOR_YELLOW}No Whitecard projects with GLB sync folders found in {year}. Skipping.{COLOR_RESET}\n")
+            continue                                                  # <-- Skip this year
+        
+        print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} Whitecard project(s) with GLB sync folders in {year}{COLOR_RESET}\n")
+        
+        # STEP 5: Run dry-run for this year
+        print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")
+        
+        results = process_all_projects(s3_client, bucket_name, projects, args.project, dry_run=True, year=year)
+        all_results.extend(results)                                   # <-- Add to all results
+        print_results(results, dry_run=True)                          # <-- Print preview results for this year
     
-    # Check if any files need uploading
-    needs_upload = any(r['files_new'] > 0 or r['files_updated'] > 0 for r in results)  # <-- Check if upload needed
+    # Check if any files need uploading across all years
+    needs_upload = any(r['files_new'] > 0 or r['files_updated'] > 0 for r in all_results)  # <-- Check if upload needed
     
     # If dry-run-only flag is set, exit after preview
     if args.dry_run_only:
@@ -723,18 +765,31 @@ def main():
         print(f"{COLOR_GREEN}All files are up to date. No uploads needed.{COLOR_RESET}\n")  # <-- No changes message
         return                                                        # <-- Exit if nothing to upload
     
-    # STEP 5: Ask for confirmation before proceeding
+    # STEP 6: Ask for confirmation before proceeding
     if not prompt_for_confirmation():
         return                                                        # <-- Exit if user cancels
     
-    # STEP 6: Run actual upload
+    # STEP 7: Run actual upload for all years
     print(f"{COLOR_GREEN}Mode: UPLOADING FILES TO R2{COLOR_RESET}\n")  # <-- Print upload mode
     
-    results = process_all_projects(s3_client, bucket_name, projects, args.project, dry_run=False)  # <-- Run actual upload
-    print_results(results, dry_run=False)                             # <-- Print final results
+    all_final_results = []                                            # <-- Collect final results
     
-    successful_count = sum(r['files_new'] + r['files_updated'] for r in results)  # <-- Count successful
-    print(f"{COLOR_GREEN}Upload complete! {successful_count} file(s) uploaded to Cloudflare R2.{COLOR_RESET}\n")  # <-- Print completion
+    for year, source_base in year_folders:
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}Uploading GLB Files for Year: {year}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+        
+        projects = discover_whitecard_projects(source_base)           # <-- Discover projects for this year
+        
+        if not projects:
+            continue                                                  # <-- Skip if no projects
+        
+        results = process_all_projects(s3_client, bucket_name, projects, args.project, dry_run=False, year=year)
+        all_final_results.extend(results)                             # <-- Add to all results
+        print_results(results, dry_run=False)                         # <-- Print final results for this year
+    
+    successful_count = sum(r['files_new'] + r['files_updated'] for r in all_final_results)  # <-- Count successful
+    print(f"{COLOR_GREEN}Upload complete! {successful_count} file(s) uploaded to Cloudflare R2 across all years.{COLOR_RESET}\n")  # <-- Print completion
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

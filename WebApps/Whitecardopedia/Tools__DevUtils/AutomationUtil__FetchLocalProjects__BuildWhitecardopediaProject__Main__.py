@@ -41,14 +41,13 @@ from typing import List, Dict, Tuple, Optional
 
 # MODULE CONSTANTS | File Patterns and Paths
 # ------------------------------------------------------------
-LOCAL_PROJECTS_BASE_PATH           = r"C:\01__ValeProjects\ValeProjects__2025"  # <-- Source path for local Vale projects
-WHITECARDOPEDIA_PROJECTS_PATH      = "../Projects/2025"                     # <-- Destination path for Whitecardopedia projects
-WHITECARDOPEDIA_TEMPLATE_PATH      = "../Projects/2025/01__TemplateProject" # <-- Template project path
+LOCAL_PROJECTS_BASE_FOLDER         = r"C:\01__ValeProjects"                  # <-- Base folder containing year subfolders
+WHITECARDOPEDIA_PROJECTS_BASE      = "../Projects"                           # <-- Destination base path for Whitecardopedia projects
+WHITECARDOPEDIA_TEMPLATE_PATH      = "../Projects/2025/01__TemplateProject"  # <-- Template project path (keep in 2025)
 MASTER_CONFIG_PATH                 = "../src/data/masterConfig.json"         # <-- Master configuration file path
 CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"          # <-- Content delivery subfolder name
 GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"              # <-- GLB files subfolder name
 PROJECT_JSON_FILENAME              = "project.json"                          # <-- Project metadata filename
-DEFAULT_PROJECT_YEAR               = "2025"                                  # <-- Default project year
 # ------------------------------------------------------------
 
 
@@ -219,6 +218,31 @@ For more information, visit:
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | Year Folder Discovery Functions
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Discover All ValeProjects Year Folders
+# ---------------------------------------------------------------
+def discover_vale_year_folders() -> List[Tuple[str, Path]]:
+    """Discover all ValeProjects__YYYY folders in base directory"""
+    base_path = Path(LOCAL_PROJECTS_BASE_FOLDER)                         # <-- Get base path
+    year_folders = []                                                     # <-- Initialize list
+    
+    if not base_path.exists():
+        return year_folders                                               # <-- Return empty if doesn't exist
+    
+    for item in base_path.iterdir():
+        if item.is_dir() and item.name.startswith('ValeProjects__'):     # <-- Check for ValeProjects prefix
+            year_part = item.name.replace('ValeProjects__', '')           # <-- Extract year
+            if year_part.isdigit() and len(year_part) == 4:              # <-- Validate 4-digit year
+                year_folders.append((year_part, item))                    # <-- Add (year, path) tuple
+    
+    return sorted(year_folders, key=lambda x: x[0], reverse=True)        # <-- Sort by year (newest first)
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | Metadata Extraction Functions
 # -----------------------------------------------------------------------------
 
@@ -343,8 +367,8 @@ def find_latest_content_folder(project_path: Path) -> Optional[Path]:
 # FUNCTION | Build ValeVision Model CDN URL
 # ------------------------------------------------------------
 def build_valevision_model_url(year: str, dest_folder_name: str, glb_filename: str) -> str:
-    """Build CDN URL for ValeVision 3D model"""
-    return f"{CDN_BASE_URL}/{year}/{dest_folder_name}/{glb_filename}"  # <-- Construct full CDN URL
+    """Build CDN URL for ValeVision 3D model with year in path"""
+    return f"{CDN_BASE_URL}/{year}/{dest_folder_name}/{glb_filename}"  # <-- Construct full CDN URL with year
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -520,10 +544,10 @@ def write_master_config_file(config_path: Path, config: Dict) -> bool:
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Add Project to Master Config
+# FUNCTION | Add Project to Master Config with Year-Aware folderId
 # ------------------------------------------------------------
 def add_project_to_master_config(config_path: Path, folder_id: str) -> bool:
-    """Add newly cloned project to masterConfig.json"""
+    """Add newly cloned project to masterConfig.json with year-aware folderId"""
     config, success = load_master_config_file(config_path)            # <-- Load existing config
     
     if not success or config is None:
@@ -538,12 +562,15 @@ def add_project_to_master_config(config_path: Path, folder_id: str) -> bool:
     if existing:
         return True                                                   # <-- Already exists, no action needed
     
+    # EXTRACT FOLDER NAME WITHOUT YEAR FOR BLACKLIST CHECK
+    folder_name_only = folder_id.split('/')[-1] if '/' in folder_id else folder_id  # <-- Get folder name without year
+    
     # ADD NEW PROJECT
-    is_blacklisted = folder_id in blacklist                           # <-- Check if blacklisted
+    is_blacklisted = folder_name_only in blacklist                    # <-- Check if blacklisted
     enabled = not is_blacklisted                                      # <-- Set enabled flag
     
     projects.append({
-        "folderId": folder_id,
+        "folderId": folder_id,                                        # <-- Year-aware folderId (e.g., "2025/ProjectName")
         "enabled": enabled
     })
     
@@ -608,7 +635,7 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Create Project JSON File
+# FUNCTION | Create Project JSON File with Year-Aware basePath
 # ------------------------------------------------------------
 def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, glb_files: List[str], dest_folder_name: str, year: str) -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
@@ -618,14 +645,17 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     project_data['projectCode'] = project_code                        # <-- Set project code
     project_data['images'] = images                                   # <-- Set images array
     
+    # SET YEAR-AWARE BASE PATH
+    project_data['basePath'] = f"Projects/{year}/{dest_folder_name}" # <-- Set basePath with year included
+    
     # SET DATE FULFILLED IN SCHEDULE DATA INSTEAD OF PROJECT DATE
     if 'scheduleData' not in project_data:
         project_data['scheduleData'] = {}                             # <-- Create scheduleData if missing
     project_data['scheduleData']['dateFulfilled'] = project_date      # <-- Set extracted date as dateFulfilled
     
-    # BUILD VALEVISION MODEL URLS
+    # BUILD VALEVISION MODEL URLS WITH YEAR
     if glb_files:
-        model_urls = [build_valevision_model_url(year, dest_folder_name, glb) for glb in glb_files]  # <-- Generate CDN URLs
+        model_urls = [build_valevision_model_url(year, dest_folder_name, glb) for glb in glb_files]  # <-- Generate CDN URLs with year
         
         if len(model_urls) == 1:
             project_data['valeVision_ModelUrl'] = model_urls[0]       # <-- Single model as string
@@ -656,9 +686,9 @@ def check_project_exists(dest_base_path: Path, dest_folder_name: str) -> bool:
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Process Single Whitecard Project
+# FUNCTION | Process Single Whitecard Project with Year
 # ------------------------------------------------------------
-def process_single_project(project_info: Dict, dest_base_path: Path, template_path: Path, dry_run: bool) -> Dict:
+def process_single_project(project_info: Dict, dest_base_path: Path, template_path: Path, dry_run: bool, year: str) -> Dict:
     result = {
         'source_name': project_info['source_folder_name'],
         'dest_name': project_info['dest_folder_name'],
@@ -701,7 +731,7 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
     # BUILD GLB MODEL URLS FOR PREVIEW
     if glb_files:
         result['glb_model_urls'] = [
-            build_valevision_model_url(DEFAULT_PROJECT_YEAR, project_info['dest_folder_name'], glb)
+            build_valevision_model_url(year, project_info['dest_folder_name'], glb)
             for glb in glb_files
         ]
     
@@ -743,17 +773,18 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         project_date,
         glb_files,
         project_info['dest_folder_name'],
-        DEFAULT_PROJECT_YEAR
+        year
     )
     
     if not json_success:
         result['error'] = "Failed to create project.json"             # <-- Set error message
         return result                                                 # <-- Return error result
     
-    # ADD PROJECT TO MASTER CONFIG
+    # ADD PROJECT TO MASTER CONFIG WITH YEAR-AWARE FOLDERID
     script_dir = Path(__file__).parent                                # <-- Get script directory
     config_path = script_dir / MASTER_CONFIG_PATH                     # <-- Construct config path
-    config_success = add_project_to_master_config(config_path, project_info['dest_folder_name'])  # <-- Add to config
+    year_aware_folder_id = f"{year}/{project_info['dest_folder_name']}"  # <-- Build year-aware folderId
+    config_success = add_project_to_master_config(config_path, year_aware_folder_id)  # <-- Add to config with year
     
     if not config_success:
         print(f"    {COLOR_YELLOW}[!] Warning: Failed to add to masterConfig.json{COLOR_RESET}")  # <-- Log warning
@@ -763,9 +794,9 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Process All Whitecard Projects
+# FUNCTION | Process All Whitecard Projects for a Year
 # ------------------------------------------------------------
-def process_all_whitecard_projects(source_base: Path, dest_base: Path, template_path: Path, target_project: Optional[str], dry_run: bool) -> List[Dict]:
+def process_all_whitecard_projects(source_base: Path, dest_base: Path, template_path: Path, target_project: Optional[str], dry_run: bool, year: str) -> List[Dict]:
     results = []                                                      # <-- Initialize results list
     
     projects = discover_whitecard_projects(source_base)               # <-- Discover all Whitecard projects
@@ -778,7 +809,7 @@ def process_all_whitecard_projects(source_base: Path, dest_base: Path, template_
         if target_project and project_info['source_folder_name'] != target_project:
             continue                                                  # <-- Skip if not target project
         
-        result = process_single_project(project_info, dest_base, template_path, dry_run)  # <-- Process project
+        result = process_single_project(project_info, dest_base, template_path, dry_run, year)  # <-- Process project with year
         results.append(result)                                        # <-- Add result to list
     
     return results                                                    # <-- Return all results
@@ -925,31 +956,49 @@ def main():
     args = parser.parse_args()                                        # <-- Parse command line arguments
     
     script_dir = Path(__file__).parent                                # <-- Get script directory
-    source_base = Path(LOCAL_PROJECTS_BASE_PATH)                      # <-- Construct source path
-    dest_base = script_dir / WHITECARDOPEDIA_PROJECTS_PATH            # <-- Construct destination path
+    dest_base = script_dir / WHITECARDOPEDIA_PROJECTS_BASE            # <-- Construct destination base path
     template_path = script_dir / WHITECARDOPEDIA_TEMPLATE_PATH        # <-- Construct template path
     
     print(f"\n{COLOR_CYAN}Whitecardopedia - Project Auto-Cloner Utility{COLOR_RESET}")  # <-- Print title
-    print(f"{COLOR_BLUE}Source Path: {source_base}{COLOR_RESET}")    # <-- Print source path
-    print(f"{COLOR_BLUE}Destination Path: {dest_base}{COLOR_RESET}\n")  # <-- Print destination path
     
-    # STEP 1: Discover Whitecard projects
-    projects = discover_whitecard_projects(source_base)               # <-- Discover projects
+    # STEP 1: Discover all year folders
+    year_folders = discover_vale_year_folders()                       # <-- Discover all year folders
     
-    if not projects:
-        print(f"{COLOR_RED}No Whitecard projects found. Exiting.{COLOR_RESET}\n")  # <-- Log failure
-        return                                                        # <-- Exit if none found
+    if not year_folders:
+        print(f"{COLOR_RED}No ValeProjects year folders found in {LOCAL_PROJECTS_BASE_FOLDER}. Exiting.{COLOR_RESET}\n")
+        return                                                        # <-- Exit if no year folders
     
-    print_discovery_summary(source_base, projects)                    # <-- Print discovery summary
+    print(f"{COLOR_BLUE}Scanning {len(year_folders)} year folder(s): {', '.join([y[0] for y in year_folders])}{COLOR_RESET}\n")
     
-    # STEP 2: Always run dry-run first to preview
-    print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")  # <-- Print dry-run mode
+    all_results = []                                                  # <-- Collect results from all years
     
-    results = process_all_whitecard_projects(source_base, dest_base, template_path, args.project, dry_run=True)  # <-- Run dry-run
-    print_results(results, dry_run=True)                              # <-- Print preview results
+    # STEP 2: Process each year folder
+    for year, source_base in year_folders:
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}Processing Year: {year}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+        print(f"{COLOR_BLUE}Source Path: {source_base}{COLOR_RESET}")
+        
+        # Construct year-specific destination
+        dest_year_path = dest_base / year                             # <-- Year subfolder in destination
+        
+        projects = discover_whitecard_projects(source_base)           # <-- Discover projects for this year
+        
+        if not projects:
+            print(f"{COLOR_YELLOW}No Whitecard projects found in {year}. Skipping.{COLOR_RESET}\n")
+            continue                                                  # <-- Skip this year
+        
+        print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} Whitecard project(s) in {year}{COLOR_RESET}\n")
+        
+        # STEP 3: Run dry-run for this year
+        print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")
+        
+        results = process_all_whitecard_projects(source_base, dest_year_path, template_path, args.project, dry_run=True, year=year)
+        all_results.extend(results)                                   # <-- Add to all results
+        print_results(results, dry_run=True)                          # <-- Print preview results for this year
     
-    # Check if any projects need cloning
-    needs_cloning = any(r['success'] and not r['skipped'] and r['images_found'] > 0 for r in results)  # <-- Check if any need cloning
+    # Check if any projects need cloning across all years
+    needs_cloning = any(r['success'] and not r['skipped'] and r['images_found'] > 0 for r in all_results)  # <-- Check if any need cloning
     
     # If dry-run-only flag is set, exit after preview
     if args.dry_run_only:
@@ -960,18 +1009,28 @@ def main():
         print(f"{COLOR_GREEN}No new projects to clone. All projects either exist or have no images.{COLOR_RESET}\n")  # <-- No changes message
         return                                                        # <-- Exit if nothing to clone
     
-    # STEP 3: Ask for confirmation before proceeding
+    # STEP 4: Ask for confirmation before proceeding
     if not prompt_for_confirmation():
         return                                                        # <-- Exit if user cancels
     
-    # STEP 4: Run actual cloning
+    # STEP 5: Run actual cloning for all years
     print(f"{COLOR_GREEN}Mode: CLONING PROJECTS{COLOR_RESET}\n")     # <-- Print cloning mode
     
-    results = process_all_whitecard_projects(source_base, dest_base, template_path, args.project, dry_run=False)  # <-- Run actual cloning
-    print_results(results, dry_run=False)                             # <-- Print final results
+    all_final_results = []                                            # <-- Collect final results
     
-    successful_count = sum(1 for r in results if r['success'] and not r['skipped'])  # <-- Count successful
-    print(f"{COLOR_GREEN}Cloning complete! {successful_count} project(s) successfully cloned.{COLOR_RESET}\n")  # <-- Print completion
+    for year, source_base in year_folders:
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}Cloning Projects for Year: {year}{COLOR_RESET}")
+        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+        
+        dest_year_path = dest_base / year                             # <-- Year subfolder in destination
+        
+        results = process_all_whitecard_projects(source_base, dest_year_path, template_path, args.project, dry_run=False, year=year)
+        all_final_results.extend(results)                             # <-- Add to all results
+        print_results(results, dry_run=False)                         # <-- Print final results for this year
+    
+    successful_count = sum(1 for r in all_final_results if r['success'] and not r['skipped'])  # <-- Count successful
+    print(f"{COLOR_GREEN}Cloning complete! {successful_count} project(s) successfully cloned across all years.{COLOR_RESET}\n")  # <-- Print completion
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

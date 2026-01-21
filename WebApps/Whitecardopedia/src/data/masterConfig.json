@@ -3,7 +3,7 @@
     "version": "0.2.7",
     "deploymentModeNotes": "Live deployment for Pushed Branches, Dev deployment for Local Development",
     "deploymentMode": "Live",
-    "projectsBasePath": "Projects/2025",
+    "projectsBasePath": "Projects",
     "projectFoldersBlacklist": [
         "01__TemplateProject",
         "00__ExampleProject",
@@ -32,235 +32,239 @@
     ],
     "projects": [
         {
-            "folderId": "00__ExampleProject",
+            "folderId": "2025/00__ExampleProject",
             "enabled": false
         },
         {
-            "folderId": "01__TemplateProject",
+            "folderId": "2025/01__TemplateProject",
             "enabled": false
         },
         {
-            "folderId": "61557__Shillabeer",
+            "folderId": "2025/61557__Shillabeer",
             "enabled": true
         },
         {
-            "folderId": "AN-61960__Acton",
+            "folderId": "2025/AN-61960__Acton",
             "enabled": true
         },
         {
-            "folderId": "BL-61732__Ball",
+            "folderId": "2025/BL-61732__Ball",
             "enabled": true
         },
         {
-            "folderId": "BX-61511__Baxter",
+            "folderId": "2025/BX-61511__Baxter",
             "enabled": true
         },
         {
-            "folderId": "CF-61898__Chadfield",
+            "folderId": "2025/CF-61898__Chadfield",
             "enabled": true
         },
         {
-            "folderId": "CS-61737__Conyers",
+            "folderId": "2025/CS-61737__Conyers",
             "enabled": true
         },
         {
-            "folderId": "FM-56662__Foreman",
+            "folderId": "2025/FM-56662__Foreman",
             "enabled": true
         },
         {
-            "folderId": "FN-62104__Fenner Scheme-01",
+            "folderId": "2025/FN-62104__Fenner Scheme-01",
             "enabled": true
         },
         {
-            "folderId": "FN-62104__Fenner Scheme-02",
+            "folderId": "2025/FN-62104__Fenner Scheme-02",
             "enabled": true
         },
         {
-            "folderId": "FN-62104__Fenner Scheme-03",
+            "folderId": "2025/FN-62104__Fenner Scheme-03",
             "enabled": true
         },
         {
-            "folderId": "GS-61695__Gibbs",
+            "folderId": "2025/GS-61695__Gibbs",
             "enabled": true
         },
         {
-            "folderId": "GY-60937__Gray",
+            "folderId": "2025/GY-60937__Gray",
             "enabled": true
         },
         {
-            "folderId": "HD-61716__Holland",
+            "folderId": "2025/HD-61716__Holland",
             "enabled": true
         },
         {
-            "folderId": "HN-61484__Hannan",
+            "folderId": "2025/HN-61484__Hannan",
             "enabled": true
         },
         {
-            "folderId": "HS-61747__Harris",
+            "folderId": "2025/HS-61747__Harris",
             "enabled": true
         },
         {
-            "folderId": "HT-59908__Hewitt",
+            "folderId": "2025/HT-59908__Hewitt",
             "enabled": true
         },
         {
-            "folderId": "HT-60180__Hurst",
+            "folderId": "2025/HT-60180__Hurst",
             "enabled": true
         },
         {
-            "folderId": "HY-55239__Hendry",
+            "folderId": "2025/HY-55239__Hendry",
             "enabled": true
         },
         {
-            "folderId": "JF-61131__Jolliffe",
+            "folderId": "2025/JF-61131__Jolliffe",
             "enabled": true
         },
         {
-            "folderId": "JN-2906__Johnstone",
+            "folderId": "2025/JN-2906__Johnstone",
             "enabled": true
         },
         {
-            "folderId": "LW-60678__Lawrence",
+            "folderId": "2025/LW-60678__Lawrence",
             "enabled": true
         },
         {
-            "folderId": "LX-61040__Loxton",
+            "folderId": "2025/LX-61040__Loxton",
             "enabled": true
         },
         {
-            "folderId": "MH-61603__Mottershead",
+            "folderId": "2025/MH-61603__Mottershead",
             "enabled": true
         },
         {
-            "folderId": "MJ-59473__Mukherjee",
+            "folderId": "2025/MJ-59473__Mukherjee",
             "enabled": true
         },
         {
-            "folderId": "MS-62254__Meister",
+            "folderId": "2025/MS-62254__Meister",
             "enabled": true
         },
         {
-            "folderId": "MU-61478__Mashru",
+            "folderId": "2025/MU-61478__Mashru",
             "enabled": true
         },
         {
-            "folderId": "NY-29951__McNerney",
+            "folderId": "2025/NY-29951__McNerney",
             "enabled": true
         },
         {
-            "folderId": "PC-61922__PlumblyClegg__Scheme-01",
+            "folderId": "2025/PC-61922__PlumblyClegg__Scheme-01",
             "enabled": true
         },
         {
-            "folderId": "PC-61922__PlumblyClegg__Scheme-02",
+            "folderId": "2025/PC-61922__PlumblyClegg__Scheme-02",
             "enabled": true
         },
         {
-            "folderId": "PH-59512__Phillips",
+            "folderId": "2025/PH-59512__Phillips",
             "enabled": true
         },
         {
-            "folderId": "PY-61616__Pilley",
+            "folderId": "2025/PY-61616__Pilley",
             "enabled": true
         },
         {
-            "folderId": "RC-62302__Richards",
+            "folderId": "2025/RC-62302__Richards",
             "enabled": true
         },
         {
-            "folderId": "RD-61662__Rodger",
+            "folderId": "2025/RD-61662__Rodger",
             "enabled": true
         },
         {
-            "folderId": "RS-59923__Richards",
+            "folderId": "2025/RS-59923__Richards",
             "enabled": true
         },
         {
-            "folderId": "SD-61866__Sheppard",
+            "folderId": "2025/SD-61866__Sheppard",
             "enabled": true
         },
         {
-            "folderId": "VB-60009__VanDenBorn",
+            "folderId": "2025/VB-60009__VanDenBorn",
             "enabled": true
         },
         {
-            "folderId": "VE-61058__Staley",
+            "folderId": "2025/VE-61058__Staley",
             "enabled": true
         },
         {
-            "folderId": "VN-61445__Vaughan",
+            "folderId": "2025/VN-61445__Vaughan",
             "enabled": true
         },
         {
-            "folderId": "WK-3007__Weeks",
+            "folderId": "2025/WK-3007__Weeks",
             "enabled": true
         },
         {
-            "folderId": "WR-60556__Winter",
+            "folderId": "2025/WR-60556__Winter",
             "enabled": true
         },
         {
-            "folderId": "WS-61782__Wiltshire",
+            "folderId": "2025/WS-61782__Wiltshire",
             "enabled": true
         },
         {
-            "folderId": "BX-61511__Baxter__Scheme-02",
+            "folderId": "2025/BX-61511__Baxter__Scheme-02",
             "enabled": true
         },
         {
-            "folderId": "PN-62106__Pennington",
+            "folderId": "2025/PN-62106__Pennington",
             "enabled": true
         },
         {
-            "folderId": "ED-62117__Edmiston",
+            "folderId": "2025/ED-62117__Edmiston",
             "enabled": true
         },
         {
-            "folderId": "NW-61997__Newby",
+            "folderId": "2025/NW-61997__Newby",
             "enabled": true
         },
         {
-            "folderId": "FM-56662__Foreman__Scheme-02",
+            "folderId": "2025/FM-56662__Foreman__Scheme-02",
             "enabled": true
         },
         {
-            "folderId": "CC-62383__CapeConstruction__EgyptHouse",
+            "folderId": "2025/CC-62383__CapeConstruction__EgyptHouse",
             "enabled": true
         },
         {
-            "folderId": "NW-62108__Newington",
+            "folderId": "2025/NW-62108__Newington",
             "enabled": true
         },
         {
-            "folderId": "55876__Swain",
+            "folderId": "2025/55876__Swain",
             "enabled": true
         },
         {
-            "folderId": "62361__Gordon",
+            "folderId": "2025/62361__Gordon",
             "enabled": true
         },
         {
-            "folderId": "43822__Napthine",
+            "folderId": "2025/43822__Napthine",
             "enabled": true
         },
         {
-            "folderId": "59908__Hewitt__Scheme-03",
+            "folderId": "2025/59908__Hewitt__Scheme-03",
             "enabled": true
         },
         {
-            "folderId": "62258__Gray",
+            "folderId": "2025/62258__Gray",
             "enabled": true
         },
         {
-            "folderId": "62451__Cross",
+            "folderId": "2025/62451__Cross",
             "enabled": true
         },
         {
-            "folderId": "62444__Curtis",
+            "folderId": "2025/62444__Curtis",
             "enabled": true
         },
         {
-            "folderId": "62361__Gordon__Scheme-03",
+            "folderId": "2025/62361__Gordon__Scheme-03",
+            "enabled": true
+        },
+        {
+            "folderId": "2026/53948__Hurst-Cox",
             "enabled": true
         }
     ]

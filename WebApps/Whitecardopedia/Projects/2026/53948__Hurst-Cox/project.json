@@ -1,0 +1,64 @@
+{
+    "projectName": "Hurst-Cox",
+    "projectCode": "53948",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "A nice quick project, great CAD File from Anna as always, I used this project to record footage to  show the directors in the meeting on 21-Jan-2026."
+    },
+    "scheduleData": {
+        "dateReceived": "20-Jan-2026",
+        "dateFulfilled": "21-Jan-2026",
+        "timeAllocated": 2,
+        "timeTaken": 1.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__21-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__21-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__21-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__WhitecardImage__21-Jan-2026.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__21-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG31__Topdown__View-01__WhitecardImage__21-Jan-2026.png",
+        "IMG32__Topdown__View-02__WhitecardImage__21-Jan-2026.png",
+        "IMG41__RoofPlan__WhitecardImage__21-Jan-2026.png"
+    ],
+    "basePath": "Projects/2026/53948__Hurst-Cox",
+    "folderId": "2026/53948__Hurst-Cox",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__21-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__21-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__21-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__WhitecardImage__21-Jan-2026.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__21-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG31__Topdown__View-01__WhitecardImage__21-Jan-2026.png",
+        "IMG32__Topdown__View-02__WhitecardImage__21-Jan-2026.png",
+        "IMG41__RoofPlan__WhitecardImage__21-Jan-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__21-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__21-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__21-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__WhitecardImage__21-Jan-2026.png",
+        "IMG06__3dView__Front__ViewingDoors__WhitecardImage__21-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__21-Jan-2026.png",
+        "IMG31__Topdown__View-01__WhitecardImage__21-Jan-2026.png",
+        "IMG32__Topdown__View-02__WhitecardImage__21-Jan-2026.png",
+        "IMG41__RoofPlan__WhitecardImage__21-Jan-2026.png"
+    ]
+}

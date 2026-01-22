@@ -57,6 +57,40 @@
         }, []);                                                          // <-- Run only on mount
         // ---------------------------------------------------------------
         
+        // EFFECT | Check for Valid Authentication Token on Mount
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            if (hasValidAuthToken()) {
+                setIsAuthenticated(true);                                // <-- Auto-authenticate from valid token
+                
+                if (pendingUrlProjectId) {
+                    // User has valid token and URL project link - load project
+                    setIsLoadingUrlProject(true);                        // <-- Set loading state
+                    
+                    loadAllProjects().then(projects => {
+                        const matchingProject = projects.find(
+                            p => p.projectCode === pendingUrlProjectId   // <-- Find by project code
+                        );
+                        
+                        if (matchingProject) {
+                            setSelectedProject(matchingProject);         // <-- Set selected project
+                            setCurrentView(APP_VIEWS.VIEWER);            // <-- Navigate to viewer
+                        } else {
+                            console.error(`Project not found: ${pendingUrlProjectId}`);  // <-- Log error
+                            setCurrentView(APP_VIEWS.GALLERY);           // <-- Navigate to gallery
+                        }
+                        
+                        setPendingUrlProjectId(null);                    // <-- Clear pending project ID
+                        setIsLoadingUrlProject(false);                   // <-- Clear loading state
+                    });
+                } else {
+                    // User has valid token, no URL project - go to gallery
+                    setCurrentView(APP_VIEWS.GALLERY);                   // <-- Navigate to gallery directly
+                }
+            }
+        }, [pendingUrlProjectId]);                                       // <-- Re-run if pendingUrlProjectId changes
+        // ---------------------------------------------------------------
+        
         // SUB FUNCTION | Handle Enter from Home Page
         // ---------------------------------------------------------------
         const handleEnterApp = () => {

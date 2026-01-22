@@ -25,6 +25,15 @@
     function HomePage({ onEnter }) {
         const [showPinEntry, setShowPinEntry] = React.useState(false);   // <-- PIN modal visibility state
         
+        // EFFECT | Check for Valid Authentication Token on Mount
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            if (hasValidAuthToken()) {
+                onEnter();                                               // <-- Skip home page, go directly to gallery
+            }
+        }, []);                                                          // <-- Run only on mount
+        // ---------------------------------------------------------------
+        
         // SUB FUNCTION | Handle Enter Button Click
         // ---------------------------------------------------------------
         const handleEnterClick = () => {

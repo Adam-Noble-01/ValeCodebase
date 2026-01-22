@@ -22,6 +22,80 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// REGION | Authentication Token Management
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Authentication Token Configuration
+    // ------------------------------------------------------------
+    const AUTH_TOKEN_KEY = 'whitecardopedia_auth_token';                 // <-- LocalStorage key for authentication token
+    const TOKEN_EXPIRY_KEY = 'whitecardopedia_auth_expiry';              // <-- LocalStorage key for token expiry timestamp
+    const TOKEN_VALIDITY_DAYS = 30;                                      // <-- Token validity period (1 month)
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Generate Unique Authentication Token
+    // ---------------------------------------------------------------
+    function generateAuthToken() {
+        const timestamp = new Date().getTime();                          // <-- Current timestamp for uniqueness
+        const randomValue = Math.random().toString(36).substring(2, 15); // <-- Random alphanumeric string
+        const randomValue2 = Math.random().toString(36).substring(2, 15); // <-- Additional random string
+        return `${timestamp}-${randomValue}-${randomValue2}`;            // <-- Combined unique token
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Save Authentication Token with Expiry
+    // ---------------------------------------------------------------
+    function saveAuthToken() {
+        const expiryDate = new Date();                                   // <-- Create new date object
+        expiryDate.setDate(expiryDate.getDate() + TOKEN_VALIDITY_DAYS); // <-- Set expiry 30 days from now
+        
+        const token = generateAuthToken();                               // <-- Generate unique token
+        localStorage.setItem(AUTH_TOKEN_KEY, token);                     // <-- Save token to localStorage
+        localStorage.setItem(TOKEN_EXPIRY_KEY, expiryDate.getTime().toString()); // <-- Save expiry timestamp
+        
+        console.log('Authentication token saved, valid for 30 days');    // <-- Log success
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Check if Valid Authentication Token Exists
+    // ---------------------------------------------------------------
+    function hasValidAuthToken() {
+        const token = localStorage.getItem(AUTH_TOKEN_KEY);              // <-- Get stored token
+        const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);           // <-- Get stored expiry timestamp
+        
+        if (!token || !expiry) {
+            return false;                                                // <-- No token exists
+        }
+        
+        const expiryDate = new Date(parseInt(expiry));                   // <-- Convert timestamp to date
+        const now = new Date();                                          // <-- Current date and time
+        
+        if (now > expiryDate) {
+            clearAuthToken();                                            // <-- Token expired, clear it
+            console.log('Authentication token expired');                 // <-- Log expiration
+            return false;
+        }
+        
+        return true;                                                     // <-- Token is valid
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Clear Authentication Token
+    // ---------------------------------------------------------------
+    function clearAuthToken() {
+        localStorage.removeItem(AUTH_TOKEN_KEY);                         // <-- Remove token from localStorage
+        localStorage.removeItem(TOKEN_EXPIRY_KEY);                       // <-- Remove expiry from localStorage
+        console.log('Authentication token cleared');                     // <-- Log clearance
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | PinEntry Component
 // -----------------------------------------------------------------------------
 
@@ -111,6 +185,7 @@
             }
             
             if (validPasswords.includes(pin)) {
+                saveAuthToken();                                         // <-- Save authentication token for 30-day persistence
                 onSuccess();                                             // <-- Call success callback
             } else {
                 setError('Incorrect PIN. Please try again.');            // <-- Show error for wrong PIN

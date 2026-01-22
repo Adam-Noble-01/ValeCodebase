@@ -2,15 +2,15 @@
     "projectName": "Leuenberger",
     "projectCode": "62388",
     "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Rachael provided a great CAD file as always, was a breeze to work through, I allocated more time than usual due to figuring out the fairly complex landscape situation, and for the face the project has two separate Vale structures each end of the building. It modelled up a breeze though. Credit to Martin the designer, he did a fab job given the project is elevated from the ground, his design solution here is very good."
     },
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "21-Jan-2026",
         "dateFulfilled": "22-Jan-2026",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "timeAllocated": 4,
+        "timeTaken": 3.5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -27,5 +27,29 @@
         "IMG21__Elevation__FrontElevation__WhitecardImage__22-Jan-2026.png",
         "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Jan-2026.png"
     ],
-    "basePath": "Projects/2026/62388__Leuenberger"
+    "basePath": "Projects/2026/62388__Leuenberger",
+    "folderId": "2026/62388__Leuenberger",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__22-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__22-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__22-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__22-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__WhitecardImage__22-Jan-2026.png",
+        "IMG06__3dView__ViewOption-03__WhitecardImage__22-Jan-2026.png",
+        "IMG07__3dView__Top-Down__WhitecardImage__22-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Jan-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__22-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__22-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__22-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__22-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__WhitecardImage__22-Jan-2026.png",
+        "IMG06__3dView__ViewOption-03__WhitecardImage__22-Jan-2026.png",
+        "IMG07__3dView__Top-Down__WhitecardImage__22-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Jan-2026.png"
+    ]
 }

@@ -137,8 +137,8 @@
         return (
             <div className="pin-entry-overlay">
                 <div className="pin-entry-modal">
-                    <h2 className="pin-entry__title">Enter PIN</h2>
-                    <p className="pin-entry__subtitle">Please enter your PIN to access Whitecardopedia</p>
+                    <h2 className="pin-entry__title">Enter Password</h2>
+                    <p className="pin-entry__subtitle">Please Enter Your Password To <br /> Access Whitecardopedia</p>
                     
                     <form onSubmit={handleSubmit} className="pin-entry__form">
                         <div className="pin-entry__input-wrapper">

@@ -1,0 +1,31 @@
+{
+    "projectName": "Leuenberger",
+    "projectCode": "62388",
+    "productionData": {
+        "input": "Default Input Type",
+        "conceptArtist": "Default Concept Artist",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "10-Oct-2025",
+        "dateFulfilled": "22-Jan-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__22-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__22-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__22-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__22-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__WhitecardImage__22-Jan-2026.png",
+        "IMG06__3dView__ViewOption-03__WhitecardImage__22-Jan-2026.png",
+        "IMG07__3dView__Top-Down__WhitecardImage__22-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__22-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__22-Jan-2026.png"
+    ],
+    "basePath": "Projects/2026/62388__Leuenberger"
+}

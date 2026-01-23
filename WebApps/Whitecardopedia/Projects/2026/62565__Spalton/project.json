@@ -2,15 +2,15 @@
     "projectName": "Spalton",
     "projectCode": "62565",
     "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "input": "CAD File",
+        "conceptArtist": "Amy",
+        "additionalNotes": "I went a little over my time allowance for this one because I added some additional views I thought could be better, but this meant modelling more context, Note: to speak to James to confirm I did the right thing spending the extra 30 mins."
     },
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "22-Jan-2026",
         "dateFulfilled": "23-Jan-2026",
         "timeAllocated": 2,
-        "timeTaken": 2
+        "timeTaken": 2.5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -27,5 +27,29 @@
         "IMG21__Elevation__FrontElevation__WhitecardImage__23-Jan-2026.png",
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__23-Jan-2026.png"
     ],
-    "basePath": "Projects/2026/62565__Spalton"
+    "basePath": "Projects/2026/62565__Spalton",
+    "folderId": "2026/62565__Spalton",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__23-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__23-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__23-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__Requested____WhitecardImage__23-Jan-2026.png",
+        "IMG05__3dView__Front__ViewingDoors-01__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__FromAbove__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__Front__ViewingDoors-02__WhitecardImage__23-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__23-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__23-Jan-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__23-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__23-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__23-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__Requested____WhitecardImage__23-Jan-2026.png",
+        "IMG05__3dView__Front__ViewingDoors-01__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__FromAbove__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__Front__ViewingDoors-02__WhitecardImage__23-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__23-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__23-Jan-2026.png"
+    ]
 }

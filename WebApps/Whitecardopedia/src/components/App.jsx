@@ -43,6 +43,7 @@
         const [isAuthenticated, setIsAuthenticated] = React.useState(false);    // <-- PIN authentication status
         const [pendingUrlProjectId, setPendingUrlProjectId] = React.useState(null);  // <-- Store project ID from URL until authenticated
         const [showPinEntry, setShowPinEntry] = React.useState(false);        // <-- Control PIN modal visibility
+        const [urlProjectHandled, setUrlProjectHandled] = React.useState(false);  // <-- Track if URL project has been processed
         
         // EFFECT | Check for URL Project ID on Mount
         // ---------------------------------------------------------------
@@ -62,10 +63,12 @@
         React.useEffect(() => {
             if (hasValidAuthToken()) {
                 setIsAuthenticated(true);                                // <-- Auto-authenticate from valid token
+                setShowPinEntry(false);                                  // <-- Hide PIN modal for auto-authenticated users
                 
-                if (pendingUrlProjectId) {
+                if (pendingUrlProjectId && !urlProjectHandled) {
                     // User has valid token and URL project link - load project
                     setIsLoadingUrlProject(true);                        // <-- Set loading state
+                    setUrlProjectHandled(true);                          // <-- Mark URL project as handled early to prevent race condition
                     
                     loadAllProjects().then(projects => {
                         const matchingProject = projects.find(
@@ -83,12 +86,12 @@
                         setPendingUrlProjectId(null);                    // <-- Clear pending project ID
                         setIsLoadingUrlProject(false);                   // <-- Clear loading state
                     });
-                } else {
-                    // User has valid token, no URL project - go to gallery
+                } else if (!urlProjectHandled) {
+                    // User has valid token, no URL project - go to gallery (only if not already handled)
                     setCurrentView(APP_VIEWS.GALLERY);                   // <-- Navigate to gallery directly
                 }
             }
-        }, [pendingUrlProjectId]);                                       // <-- Re-run if pendingUrlProjectId changes
+        }, [pendingUrlProjectId, urlProjectHandled]);                    // <-- Re-run if pendingUrlProjectId or urlProjectHandled changes
         // ---------------------------------------------------------------
         
         // SUB FUNCTION | Handle Enter from Home Page
@@ -125,6 +128,7 @@
             if (pendingUrlProjectId) {
                 // Load project from shared link after authentication
                 setIsLoadingUrlProject(true);                            // <-- Set loading state
+                setUrlProjectHandled(true);                              // <-- Mark URL project as handled to prevent race condition
                 
                 loadAllProjects().then(projects => {
                     const matchingProject = projects.find(

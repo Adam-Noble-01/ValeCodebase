@@ -1,0 +1,49 @@
+{
+    "projectName": "Catchpole",
+    "projectCode": "62460",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "A typical Job, only slight delays was clarifying the breakfront detail with James & Tom, other than than it went smoothly, CAD File was easy to work with."
+    },
+    "scheduleData": {
+        "dateReceived": "23-Jan-2026",
+        "dateFulfilled": "23-Jan-2026",
+        "timeAllocated": 2.5,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__23-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__23-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__23-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__23-Jan-2026.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__TopDownView__WhitecardImage__23-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__23-Jan-2026.png"
+    ],
+    "basePath": "Projects/2026/62460__Catchpole",
+    "folderId": "2026/62460__Catchpole",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__23-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__23-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__23-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__23-Jan-2026.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__TopDownView__WhitecardImage__23-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__23-Jan-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__23-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__23-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__23-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__WhitecardImage__23-Jan-2026.png",
+        "IMG05__3dView__Front__ViewingDoors__WhitecardImage__23-Jan-2026.png",
+        "IMG06__3dView__TopDownView__WhitecardImage__23-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__23-Jan-2026.png"
+    ]
+}

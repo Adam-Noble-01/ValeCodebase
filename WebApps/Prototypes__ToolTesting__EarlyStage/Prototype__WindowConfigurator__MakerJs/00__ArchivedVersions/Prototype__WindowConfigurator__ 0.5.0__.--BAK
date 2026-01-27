@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta description="Parametric Window Configurator (Utilising Maker.js)">
-    <meta version="0.5.1">
+    <meta version="0.5.0">
     <title>Parametric Window Configurator (Maker.js)</title>
     
     <!-- ================================================================= -->
@@ -67,19 +67,11 @@
         const MIN_OPENING_WIDTH = 150;                                           // <-- Minimum opening width between mullions (mm)
 
         // -----------------------------------------------------------------------------
-        // CAD Layer Name Constants
-        // -----------------------------------------------------------------------------
-        const LAYER_DEFAULT      = '95_01__WindowGen__Default__Layer0';          // <-- Default geometry layer
-        const LAYER_CASEMENTS    = '95_02__WindowGen__CasementLines';            // <-- Casement lines layer
-        const LAYER_GLAZEBARS    = '95_03__WindowGen__GlazeBars';                // <-- Glaze bars layer
-        const LAYER_LEADLINES    = '95_04__WindowGen__LeadLines';                // <-- Lead lines layer
-        const LAYER_DIMENSIONS   = '95_05__WindowGen__Dimensions';               // <-- Dimension annotations layer
-
-        // -----------------------------------------------------------------------------
         // Dimension Line Constants
         // -----------------------------------------------------------------------------
         const DIM_OFFSET         = 100;                                          // <-- Dimension line offset from geometry (mm)
         const DIM_ARROW_SIZE     = 12;                                           // <-- Dimension arrow size (mm)
+        const DIM_LAYER          = '00__Dimensions';                             // <-- Dimension layer name
 
         // -----------------------------------------------------------------------------
         // Viewport / Camera Constants
@@ -229,7 +221,7 @@
             strokeWidth: STROKE_WIDTH,
             fillColor:   COLOR_FILL,
             layerOptions: {                                                      // <-- Layer-specific styling
-                [LAYER_DIMENSIONS]: { 
+                [DIM_LAYER]: { 
                     stroke: COLOR_DIMENSION,                                     // <-- Red dimension lines
                     fill:   COLOR_DIMENSION                                      // <-- Red dimension text
                 }
@@ -1450,32 +1442,6 @@
         }
         // ---------------------------------------------------------------
 
-        // HELPER FUNCTION | Assign Default Layer to Unlayered Geometry
-        // ------------------------------------------------------------
-        // Recursively assigns LAYER_DEFAULT to models without explicit layers
-        // Respects parent layer inheritance - children inherit parent's layer
-        // ------------------------------------------------------------
-        function assignDefaultLayerToModel(model, parentLayer = null) {
-            // Determine this model's effective layer
-            // If model has its own layer, use it; otherwise inherit from parent
-            const effectiveLayer = model.layer || parentLayer;
-            
-            // Only assign default layer if no layer is set AND no parent layer to inherit
-            if (!model.layer && !parentLayer) {
-                model.layer = LAYER_DEFAULT;
-            }
-            
-            // Recursively process nested models, passing down the effective layer
-            if (model.models) {
-                for (const key in model.models) {
-                    if (model.models.hasOwnProperty(key)) {
-                        assignDefaultLayerToModel(model.models[key], effectiveLayer);
-                    }
-                }
-            }
-        }
-        // ---------------------------------------------------------------
-
         // FUNCTION | Download DXF file
         // ------------------------------------------------------------
         function downloadDXF() {
@@ -1491,17 +1457,11 @@
             normalizeMullionOpeningWidths();
             const exportModel = generateWindow(M);
             
-            // Assign default layer to any geometry without explicit layer assignment
-            assignDefaultLayerToModel(exportModel);
-            
             const DxfExport = window.CadGenerator.DxfExport;
             DxfExport.download(exportModel, 'Window', {
                 layerOptions: {
-                    [LAYER_DEFAULT]:    { color: 7 },                            // <-- White (AutoCAD color code 7)
-                    [LAYER_CASEMENTS]:  { color: 3 },                            // <-- Green (AutoCAD color code 3)
-                    [LAYER_LEADLINES]:  { color: 8 },                            // <-- Gray (AutoCAD color code 8)
-                    [LAYER_GLAZEBARS]:  { color: 4 },                            // <-- Cyan (AutoCAD color code 4)
-                    [LAYER_DIMENSIONS]: { color: 1 }                             // <-- Red (AutoCAD color code 1)
+                    '00__Dimensions': { color: 1 },                              // <-- Red (AutoCAD color code 1)
+                    'leadLines':      { color: 8 }                               // <-- Gray (AutoCAD color code 8)
                 }
             });
         }
@@ -1643,7 +1603,7 @@
                     rect: new M.models.Rectangle(casementWidth, casementHeight)
                 },
                 origin: [casementInset, casementInset],                          // <-- Position at inset offset
-                layer: LAYER_CASEMENTS                                            // <-- Layer for thinner stroke
+                layer: 'casements'                                                // <-- Layer for thinner stroke
             };
         }
         // ---------------------------------------------------------------
@@ -1682,8 +1642,7 @@
                             models: {
                                 rect: new M.models.Rectangle(adjustedOpeningWidth, glazeBarWidth)
                             },
-                            origin: [casementInset, yPos - (glazeBarWidth / 2)],    // <-- Offset by casement
-                            layer: LAYER_GLAZEBARS                                   // <-- Glaze bars layer
+                            origin: [casementInset, yPos - (glazeBarWidth / 2)]     // <-- Offset by casement
                         };
                     }
                 }
@@ -1697,8 +1656,7 @@
                             models: {
                                 rect: new M.models.Rectangle(glazeBarWidth, adjustedInnerHeight)
                             },
-                            origin: [xPos - (glazeBarWidth / 2), casementInset],   // <-- Offset by casement
-                            layer: LAYER_GLAZEBARS                                   // <-- Glaze bars layer
+                            origin: [xPos - (glazeBarWidth / 2), casementInset]     // <-- Offset by casement
                         };
                     }
                 }
@@ -1745,7 +1703,7 @@
                 // Create lead lines model container for this opening
                 opening.models.leadLines = {
                     paths: {},
-                    layer: LAYER_LEADLINES                                        // <-- Layer for thin stroke
+                    layer: 'leadLines'                                            // <-- Layer for thin stroke
                 };
 
                 // Generate lead lines for each glass pane
@@ -1900,7 +1858,7 @@
         // ---------------------------------------------------------------
 
         // -----------------------------------------------------------------------------
-        // Dimension Annotations (Layer: 95_05__WindowGen__Dimensions)
+        // Dimension Annotations (Layer: 00__Dimensions)
         // -----------------------------------------------------------------------------
 
         // FUNCTION | Create all dimension annotations (CAD space with Y-flip)
@@ -1985,7 +1943,7 @@
                     arrowR2: new M.paths.Line(end, [end[0] - arrowSize, y - arrowSize / 2.5])
                 },
                 models: {},
-                layer: LAYER_DIMENSIONS
+                layer: DIM_LAYER
             };
 
             // Add text geometry if font is loaded and text is provided
@@ -2053,7 +2011,7 @@
                     arrowT2: new M.paths.Line(end, [x - arrowSize / 2.5, end[1] - arrowSize])
                 },
                 models: {},
-                layer: LAYER_DIMENSIONS
+                layer: DIM_LAYER
             };
 
             // Add text geometry if font is loaded and text is provided
@@ -2127,8 +2085,8 @@
                 const parentId = path.parentElement?.getAttribute('id') || '';
                 
                 // Check if path belongs to dimension layer or has dimension-related naming
-                if (pathId.includes(LAYER_DIMENSIONS) || 
-                    parentId.includes(LAYER_DIMENSIONS) ||
+                if (pathId.includes(DIM_LAYER) || 
+                    parentId.includes(DIM_LAYER) ||
                     pathId.includes('dimOverall') || 
                     pathId.includes('dimOpening') || 
                     pathId.includes('dimCill')) {
@@ -2136,15 +2094,15 @@
                 }
                 
                 // Check if path belongs to casements layer (thinner stroke)
-                if (pathId.includes(LAYER_CASEMENTS) || 
-                    parentId.includes(LAYER_CASEMENTS) ||
+                if (pathId.includes('casements') || 
+                    parentId.includes('casements') ||
                     pathId.includes('casement')) {
                     path.setAttribute('stroke-width', STROKE_WIDTH_CASEMENT);   // <-- Thinner stroke
                 }
                 
                 // Check if path belongs to leadLines layer (thinnest stroke)
-                if (pathId.includes(LAYER_LEADLINES) || 
-                    parentId.includes(LAYER_LEADLINES) ||
+                if (pathId.includes('leadLines') || 
+                    parentId.includes('leadLines') ||
                     pathId.includes('Lead')) {
                     path.setAttribute('stroke-width', STROKE_WIDTH_LEADLINES);  // <-- Thinnest stroke
                 }
@@ -2156,7 +2114,7 @@
                 const groupId = group.getAttribute('id') || '';
                 
                 // Apply dimension color to dimension groups
-                if (groupId.includes(LAYER_DIMENSIONS) || 
+                if (groupId.includes(DIM_LAYER) || 
                     groupId.includes('dimOverall') || 
                     groupId.includes('dimOpening') || 
                     groupId.includes('dimCill')) {
@@ -2167,7 +2125,7 @@
                 }
                 
                 // Apply thinner stroke to casement groups
-                if (groupId.includes(LAYER_CASEMENTS) || groupId.includes('casement')) {
+                if (groupId.includes('casements') || groupId.includes('casement')) {
                     const childPaths = group.querySelectorAll('path');
                     childPaths.forEach(path => {
                         path.setAttribute('stroke-width', STROKE_WIDTH_CASEMENT); // <-- Thinner stroke
@@ -2175,7 +2133,7 @@
                 }
                 
                 // Apply thinnest stroke to lead line groups
-                if (groupId.includes(LAYER_LEADLINES) || groupId.includes('Lead')) {
+                if (groupId.includes('leadLines') || groupId.includes('Lead')) {
                     const childPaths = group.querySelectorAll('path');
                     childPaths.forEach(path => {
                         path.setAttribute('stroke-width', STROKE_WIDTH_LEADLINES); // <-- Thinnest stroke

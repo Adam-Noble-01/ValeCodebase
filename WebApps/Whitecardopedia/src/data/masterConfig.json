@@ -278,6 +278,10 @@
         {
             "folderId": "2026/62460__Catchpole",
             "enabled": true
+        },
+        {
+            "folderId": "2026/62538__Gunton",
+            "enabled": true
         }
     ]
 }

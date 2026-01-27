@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta description="Parametric Window Configurator (Utilising Maker.js)">
-    <meta version="0.5.1">
     <title>Parametric Window Configurator (Maker.js)</title>
-    
-    <!-- ================================================================= -->
-    <!-- REGION | External Dependencies - Script Loading -->
-    <!-- ================================================================= -->
     
     <!-- Master Stylesheet -->
     <link rel="stylesheet" href="WindowConfigurator__MasterStylesSheet.css">
@@ -47,9 +41,6 @@
 
     <!-- CAD Generator - DXF Export Module -->
     <script src="WindowConfigurator__Feature__CadGeneration__DxfExportFunction.js"></script>
-    
-    <!-- endregion ======================================================== -->
-
 
     <script>
         // =============================================================================
@@ -67,19 +58,11 @@
         const MIN_OPENING_WIDTH = 150;                                           // <-- Minimum opening width between mullions (mm)
 
         // -----------------------------------------------------------------------------
-        // CAD Layer Name Constants
-        // -----------------------------------------------------------------------------
-        const LAYER_DEFAULT      = '95_01__WindowGen__Default__Layer0';          // <-- Default geometry layer
-        const LAYER_CASEMENTS    = '95_02__WindowGen__CasementLines';            // <-- Casement lines layer
-        const LAYER_GLAZEBARS    = '95_03__WindowGen__GlazeBars';                // <-- Glaze bars layer
-        const LAYER_LEADLINES    = '95_04__WindowGen__LeadLines';                // <-- Lead lines layer
-        const LAYER_DIMENSIONS   = '95_05__WindowGen__Dimensions';               // <-- Dimension annotations layer
-
-        // -----------------------------------------------------------------------------
         // Dimension Line Constants
         // -----------------------------------------------------------------------------
         const DIM_OFFSET         = 100;                                          // <-- Dimension line offset from geometry (mm)
         const DIM_ARROW_SIZE     = 12;                                           // <-- Dimension arrow size (mm)
+        const DIM_LAYER          = '00__Dimensions';                             // <-- Dimension layer name
 
         // -----------------------------------------------------------------------------
         // Viewport / Camera Constants
@@ -99,10 +82,9 @@
         const COLOR_AXIS_LINE    = '#00cc00';                                    // <-- Axis reference line color
         const COLOR_DIMENSION    = '#e74c3c';                                    // <-- Dimension lines and text color
 
-        const STROKE_WIDTH           = 2;                                         // <-- Default stroke width
-        const STROKE_WIDTH_CASEMENT  = STROKE_WIDTH / 2;                         // <-- Casement stroke width (thinner)
-        const STROKE_WIDTH_LEADLINES = STROKE_WIDTH / 3;                         // <-- Lead lines stroke width (thinnest)
-        const DIM_TEXT_SIZE_MM       = 40;                                       // <-- Dimension text height in CAD units (mm)
+        const STROKE_WIDTH          = 2;                                         // <-- Default stroke width
+        const STROKE_WIDTH_CASEMENT = STROKE_WIDTH / 2;                          // <-- Casement stroke width (thinner)
+        const DIM_TEXT_SIZE_MM      = 40;                                        // <-- Dimension text height in CAD units (mm)
 
         // -----------------------------------------------------------------------------
         // Font Loading for CAD Text Geometry
@@ -204,12 +186,6 @@
             casements: [
                 { id: 'showCasements', label: 'Casements', default: false },
                 { id: 'casementInset', label: 'Casement Inset', default: 65, min: 20, max: 150, step: 5, unit: 'mm', enabledBy: 'showCasements' }
-            ],
-            leadLines: [
-                { id: 'showLeadLines', label: 'Lead Lines', default: false },
-                { id: 'leadLinesVDivisions', label: 'V Panel Divisions', default: 0, min: 0, max: 10, step: 1, unit: '', enabledBy: 'showLeadLines' },
-                { id: 'leadLinesHDivisions', label: 'H Panel Divisions', default: 0, min: 0, max: 10, step: 1, unit: '', enabledBy: 'showLeadLines' },
-                { id: 'leadLinesThickness', label: 'Thickness', default: 0, min: 0, max: 20, step: 1, unit: 'mm', enabledBy: 'showLeadLines' }
             ]
         };
 
@@ -229,7 +205,7 @@
             strokeWidth: STROKE_WIDTH,
             fillColor:   COLOR_FILL,
             layerOptions: {                                                      // <-- Layer-specific styling
-                [LAYER_DIMENSIONS]: { 
+                [DIM_LAYER]: { 
                     stroke: COLOR_DIMENSION,                                     // <-- Red dimension lines
                     fill:   COLOR_DIMENSION                                      // <-- Red dimension text
                 }
@@ -1133,6 +1109,8 @@
 </head>
 <body>
 
+    <h1>Window Configurator</h1>
+
     <!-- Control Panel (Built by DynamicUI) -->
     <div id="controls"></div>
 
@@ -1209,38 +1187,6 @@
         function getCasementInset() {
             const el = document.getElementById('casementInset');
             return el ? parseInt(el.value) : 65;
-        }
-        // ---------------------------------------------------------------
-
-        // FUNCTION | Get lead lines toggle state
-        // ------------------------------------------------------------
-        function getShowLeadLines() {
-            const el = document.getElementById('showLeadLines');
-            return el ? el.checked : false;
-        }
-        // ---------------------------------------------------------------
-
-        // FUNCTION | Get lead lines vertical divisions count
-        // ------------------------------------------------------------
-        function getLeadLinesVDivisions() {
-            const el = document.getElementById('leadLinesVDivisions');
-            return el ? parseInt(el.value) : 0;
-        }
-        // ---------------------------------------------------------------
-
-        // FUNCTION | Get lead lines horizontal divisions count
-        // ------------------------------------------------------------
-        function getLeadLinesHDivisions() {
-            const el = document.getElementById('leadLinesHDivisions');
-            return el ? parseInt(el.value) : 0;
-        }
-        // ---------------------------------------------------------------
-
-        // FUNCTION | Get lead lines thickness value
-        // ------------------------------------------------------------
-        function getLeadLinesThickness() {
-            const el = document.getElementById('leadLinesThickness');
-            return el ? parseInt(el.value) : 0;
         }
         // ---------------------------------------------------------------
 
@@ -1431,11 +1377,6 @@
             // 3. Add glaze bars to each opening
             createFrameworkGlazeBars__WithinOpenings(M, windowModel, windowHeight, hGlazeBars, vGlazeBars, frameThick);
 
-            // 3.5. Add lead lines to glass panes if enabled
-            if (getShowLeadLines()) {
-                createLeadLines__WithinAllOpenings(M, windowModel, windowHeight, frameThick, hGlazeBars, vGlazeBars);
-            }
-
             // 4. Add window cill if enabled
             if (showCill) {
                 windowModel.models.cill = createWindowCill(M, windowWidth, windowHeight);
@@ -1447,32 +1388,6 @@
             }
 
             return windowModel;
-        }
-        // ---------------------------------------------------------------
-
-        // HELPER FUNCTION | Assign Default Layer to Unlayered Geometry
-        // ------------------------------------------------------------
-        // Recursively assigns LAYER_DEFAULT to models without explicit layers
-        // Respects parent layer inheritance - children inherit parent's layer
-        // ------------------------------------------------------------
-        function assignDefaultLayerToModel(model, parentLayer = null) {
-            // Determine this model's effective layer
-            // If model has its own layer, use it; otherwise inherit from parent
-            const effectiveLayer = model.layer || parentLayer;
-            
-            // Only assign default layer if no layer is set AND no parent layer to inherit
-            if (!model.layer && !parentLayer) {
-                model.layer = LAYER_DEFAULT;
-            }
-            
-            // Recursively process nested models, passing down the effective layer
-            if (model.models) {
-                for (const key in model.models) {
-                    if (model.models.hasOwnProperty(key)) {
-                        assignDefaultLayerToModel(model.models[key], effectiveLayer);
-                    }
-                }
-            }
         }
         // ---------------------------------------------------------------
 
@@ -1491,17 +1406,10 @@
             normalizeMullionOpeningWidths();
             const exportModel = generateWindow(M);
             
-            // Assign default layer to any geometry without explicit layer assignment
-            assignDefaultLayerToModel(exportModel);
-            
             const DxfExport = window.CadGenerator.DxfExport;
             DxfExport.download(exportModel, 'Window', {
                 layerOptions: {
-                    [LAYER_DEFAULT]:    { color: 7 },                            // <-- White (AutoCAD color code 7)
-                    [LAYER_CASEMENTS]:  { color: 3 },                            // <-- Green (AutoCAD color code 3)
-                    [LAYER_LEADLINES]:  { color: 8 },                            // <-- Gray (AutoCAD color code 8)
-                    [LAYER_GLAZEBARS]:  { color: 4 },                            // <-- Cyan (AutoCAD color code 4)
-                    [LAYER_DIMENSIONS]: { color: 1 }                             // <-- Red (AutoCAD color code 1)
+                    '00__Dimensions': { color: 1 }                               // <-- Red (AutoCAD color code 1)
                 }
             });
         }
@@ -1643,7 +1551,7 @@
                     rect: new M.models.Rectangle(casementWidth, casementHeight)
                 },
                 origin: [casementInset, casementInset],                          // <-- Position at inset offset
-                layer: LAYER_CASEMENTS                                            // <-- Layer for thinner stroke
+                layer: 'casements'                                                // <-- Layer for thinner stroke
             };
         }
         // ---------------------------------------------------------------
@@ -1682,8 +1590,7 @@
                             models: {
                                 rect: new M.models.Rectangle(adjustedOpeningWidth, glazeBarWidth)
                             },
-                            origin: [casementInset, yPos - (glazeBarWidth / 2)],    // <-- Offset by casement
-                            layer: LAYER_GLAZEBARS                                   // <-- Glaze bars layer
+                            origin: [casementInset, yPos - (glazeBarWidth / 2)]     // <-- Offset by casement
                         };
                     }
                 }
@@ -1697,8 +1604,7 @@
                             models: {
                                 rect: new M.models.Rectangle(glazeBarWidth, adjustedInnerHeight)
                             },
-                            origin: [xPos - (glazeBarWidth / 2), casementInset],   // <-- Offset by casement
-                            layer: LAYER_GLAZEBARS                                   // <-- Glaze bars layer
+                            origin: [xPos - (glazeBarWidth / 2), casementInset]     // <-- Offset by casement
                         };
                     }
                 }
@@ -1707,200 +1613,7 @@
         // ---------------------------------------------------------------
 
         // -----------------------------------------------------------------------------
-        // Lead Lines Generation
-        // -----------------------------------------------------------------------------
-
-        // FUNCTION | Create lead lines within all openings
-        // ------------------------------------------------------------
-        // Adds decorative lead line patterns over glass panes
-        // Accounts for casement insets and glaze bar positions
-        // ------------------------------------------------------------
-        function createLeadLines__WithinAllOpenings(M, windowModel, windowHeight, frameThick, hGlazeBars, vGlazeBars) {
-            const innerHeight      = windowHeight - (frameThick * 2);             // <-- Opening height
-            const casementInset    = getShowCasements() ? getCasementInset() : 0; // <-- Casement adjustment
-            const glazeBarWidth    = getGlazeBarWidth();                          // <-- Glaze bar thickness
-            const leadVDivisions   = getLeadLinesVDivisions();                    // <-- Vertical lead divisions
-            const leadHDivisions   = getLeadLinesHDivisions();                    // <-- Horizontal lead divisions
-            const leadThickness    = getLeadLinesThickness();                     // <-- Lead line thickness
-
-            // Skip if no divisions requested
-            if (leadVDivisions === 0 && leadHDivisions === 0) return;
-
-            for (let i = 0; i < frameworkOpeningWidths__BetweenMullions.length; i++) {
-                const openingKey = `opening_${i}`;
-                const opening    = windowModel.models[openingKey];
-                
-                if (!opening) continue;
-
-                const openingWidth = frameworkOpeningWidths__BetweenMullions[i];
-                
-                // Calculate adjusted dimensions (shorter by casement insets on both ends)
-                const adjustedOpeningWidth = openingWidth - (casementInset * 2);  // <-- Shorter width
-                const adjustedInnerHeight  = innerHeight - (casementInset * 2);   // <-- Shorter height
-
-                // Calculate glass pane grid (number of panes = glaze bars + 1)
-                const numPaneCols = vGlazeBars + 1;                               // <-- Columns of glass
-                const numPaneRows = hGlazeBars + 1;                               // <-- Rows of glass
-
-                // Create lead lines model container for this opening
-                opening.models.leadLines = {
-                    paths: {},
-                    layer: LAYER_LEADLINES                                        // <-- Layer for thin stroke
-                };
-
-                // Generate lead lines for each glass pane
-                for (let row = 0; row < numPaneRows; row++) {
-                    for (let col = 0; col < numPaneCols; col++) {
-                        // Calculate pane boundaries
-                        const paneInfo = calculatePaneBoundaries(
-                            adjustedOpeningWidth, 
-                            adjustedInnerHeight, 
-                            numPaneCols, 
-                            numPaneRows, 
-                            col, 
-                            row, 
-                            glazeBarWidth, 
-                            casementInset
-                        );
-
-                        // Draw lead lines based on thickness mode
-                        if (leadThickness === 0) {
-                            // Centerline mode - draw single lines
-                            createLeadLinesCenterlines__SinglePane(
-                                M, 
-                                opening.models.leadLines, 
-                                paneInfo, 
-                                leadVDivisions, 
-                                leadHDivisions, 
-                                row, 
-                                col
-                            );
-                        } else {
-                            // Offset mode - draw paired lines
-                            createLeadLinesOffset__SinglePane(
-                                M, 
-                                opening.models.leadLines, 
-                                paneInfo, 
-                                leadVDivisions, 
-                                leadHDivisions, 
-                                leadThickness, 
-                                row, 
-                                col
-                            );
-                        }
-                    }
-                }
-            }
-        }
-        // ---------------------------------------------------------------
-
-        // HELPER FUNCTION | Calculate pane boundaries within opening
-        // ------------------------------------------------------------
-        function calculatePaneBoundaries(openingWidth, openingHeight, numCols, numRows, col, row, glazeBarWidth, casementInset) {
-            // Calculate pane dimensions (excluding glaze bars)
-            const totalHBarSpace = (numRows - 1) * glazeBarWidth;                 // <-- Total space taken by h-bars
-            const totalVBarSpace = (numCols - 1) * glazeBarWidth;                 // <-- Total space taken by v-bars
-            const paneWidth      = (openingWidth - totalVBarSpace) / numCols;     // <-- Width of each pane
-            const paneHeight     = (openingHeight - totalHBarSpace) / numRows;    // <-- Height of each pane
-
-            // Calculate pane position (origin at bottom-left of pane)
-            const paneX = casementInset + (col * (paneWidth + glazeBarWidth));    // <-- X position of pane
-            const paneY = casementInset + (row * (paneHeight + glazeBarWidth));   // <-- Y position of pane
-
-            return {
-                x:      paneX,
-                y:      paneY,
-                width:  paneWidth,
-                height: paneHeight
-            };
-        }
-        // ---------------------------------------------------------------
-
-        // FUNCTION | Create lead lines as centerlines (thickness = 0)
-        // ------------------------------------------------------------
-        function createLeadLinesCenterlines__SinglePane(M, leadLinesModel, paneInfo, vDivisions, hDivisions, row, col) {
-            const { x, y, width, height } = paneInfo;
-
-            // Draw vertical lead lines (divisions within pane)
-            if (vDivisions > 0) {
-                const vSpacing = width / (vDivisions + 1);                        // <-- Spacing between vertical lines
-                for (let v = 0; v < vDivisions; v++) {
-                    const lineX = x + (vSpacing * (v + 1));                        // <-- X position of line
-                    const lineKey = `vLead_r${row}_c${col}_${v}`;                  // <-- Unique key
-                    leadLinesModel.paths[lineKey] = new M.paths.Line(
-                        [lineX, y],                                               // <-- Start point (bottom)
-                        [lineX, y + height]                                       // <-- End point (top)
-                    );
-                }
-            }
-
-            // Draw horizontal lead lines (divisions within pane)
-            if (hDivisions > 0) {
-                const hSpacing = height / (hDivisions + 1);                        // <-- Spacing between horizontal lines
-                for (let h = 0; h < hDivisions; h++) {
-                    const lineY = y + (hSpacing * (h + 1));                        // <-- Y position of line
-                    const lineKey = `hLead_r${row}_c${col}_${h}`;                  // <-- Unique key
-                    leadLinesModel.paths[lineKey] = new M.paths.Line(
-                        [x, lineY],                                               // <-- Start point (left)
-                        [x + width, lineY]                                        // <-- End point (right)
-                    );
-                }
-            }
-        }
-        // ---------------------------------------------------------------
-
-        // FUNCTION | Create lead lines as offset pairs (thickness > 0)
-        // ------------------------------------------------------------
-        function createLeadLinesOffset__SinglePane(M, leadLinesModel, paneInfo, vDivisions, hDivisions, thickness, row, col) {
-            const { x, y, width, height } = paneInfo;
-            const halfThick = thickness / 2;                                      // <-- Half thickness for offset
-
-            // Draw vertical lead line pairs (offset from centerline)
-            if (vDivisions > 0) {
-                const vSpacing = width / (vDivisions + 1);                        // <-- Spacing between vertical lines
-                for (let v = 0; v < vDivisions; v++) {
-                    const centerX = x + (vSpacing * (v + 1));                     // <-- Center X position
-                    const leftX   = centerX - halfThick;                          // <-- Left line X
-                    const rightX  = centerX + halfThick;                          // <-- Right line X
-                    
-                    // Left line of pair
-                    leadLinesModel.paths[`vLeadL_r${row}_c${col}_${v}`] = new M.paths.Line(
-                        [leftX, y],
-                        [leftX, y + height]
-                    );
-                    // Right line of pair
-                    leadLinesModel.paths[`vLeadR_r${row}_c${col}_${v}`] = new M.paths.Line(
-                        [rightX, y],
-                        [rightX, y + height]
-                    );
-                }
-            }
-
-            // Draw horizontal lead line pairs (offset from centerline)
-            if (hDivisions > 0) {
-                const hSpacing = height / (hDivisions + 1);                        // <-- Spacing between horizontal lines
-                for (let h = 0; h < hDivisions; h++) {
-                    const centerY = y + (hSpacing * (h + 1));                     // <-- Center Y position
-                    const bottomY = centerY - halfThick;                          // <-- Bottom line Y
-                    const topY    = centerY + halfThick;                          // <-- Top line Y
-                    
-                    // Bottom line of pair
-                    leadLinesModel.paths[`hLeadB_r${row}_c${col}_${h}`] = new M.paths.Line(
-                        [x, bottomY],
-                        [x + width, bottomY]
-                    );
-                    // Top line of pair
-                    leadLinesModel.paths[`hLeadT_r${row}_c${col}_${h}`] = new M.paths.Line(
-                        [x, topY],
-                        [x + width, topY]
-                    );
-                }
-            }
-        }
-        // ---------------------------------------------------------------
-
-        // -----------------------------------------------------------------------------
-        // Dimension Annotations (Layer: 95_05__WindowGen__Dimensions)
+        // Dimension Annotations (Layer: 00__Dimensions)
         // -----------------------------------------------------------------------------
 
         // FUNCTION | Create all dimension annotations (CAD space with Y-flip)
@@ -1985,7 +1698,7 @@
                     arrowR2: new M.paths.Line(end, [end[0] - arrowSize, y - arrowSize / 2.5])
                 },
                 models: {},
-                layer: LAYER_DIMENSIONS
+                layer: DIM_LAYER
             };
 
             // Add text geometry if font is loaded and text is provided
@@ -2053,7 +1766,7 @@
                     arrowT2: new M.paths.Line(end, [x - arrowSize / 2.5, end[1] - arrowSize])
                 },
                 models: {},
-                layer: LAYER_DIMENSIONS
+                layer: DIM_LAYER
             };
 
             // Add text geometry if font is loaded and text is provided
@@ -2127,8 +1840,8 @@
                 const parentId = path.parentElement?.getAttribute('id') || '';
                 
                 // Check if path belongs to dimension layer or has dimension-related naming
-                if (pathId.includes(LAYER_DIMENSIONS) || 
-                    parentId.includes(LAYER_DIMENSIONS) ||
+                if (pathId.includes(DIM_LAYER) || 
+                    parentId.includes(DIM_LAYER) ||
                     pathId.includes('dimOverall') || 
                     pathId.includes('dimOpening') || 
                     pathId.includes('dimCill')) {
@@ -2136,27 +1849,20 @@
                 }
                 
                 // Check if path belongs to casements layer (thinner stroke)
-                if (pathId.includes(LAYER_CASEMENTS) || 
-                    parentId.includes(LAYER_CASEMENTS) ||
+                if (pathId.includes('casements') || 
+                    parentId.includes('casements') ||
                     pathId.includes('casement')) {
                     path.setAttribute('stroke-width', STROKE_WIDTH_CASEMENT);   // <-- Thinner stroke
                 }
-                
-                // Check if path belongs to leadLines layer (thinnest stroke)
-                if (pathId.includes(LAYER_LEADLINES) || 
-                    parentId.includes(LAYER_LEADLINES) ||
-                    pathId.includes('Lead')) {
-                    path.setAttribute('stroke-width', STROKE_WIDTH_LEADLINES);  // <-- Thinnest stroke
-                }
             });
             
-            // Also check for groups that may contain dimension, casement, or lead line paths
+            // Also check for groups that may contain dimension or casement paths
             const allGroups = geometryGroup.querySelectorAll('g');
             allGroups.forEach(group => {
                 const groupId = group.getAttribute('id') || '';
                 
                 // Apply dimension color to dimension groups
-                if (groupId.includes(LAYER_DIMENSIONS) || 
+                if (groupId.includes(DIM_LAYER) || 
                     groupId.includes('dimOverall') || 
                     groupId.includes('dimOpening') || 
                     groupId.includes('dimCill')) {
@@ -2167,18 +1873,10 @@
                 }
                 
                 // Apply thinner stroke to casement groups
-                if (groupId.includes(LAYER_CASEMENTS) || groupId.includes('casement')) {
+                if (groupId.includes('casements') || groupId.includes('casement')) {
                     const childPaths = group.querySelectorAll('path');
                     childPaths.forEach(path => {
                         path.setAttribute('stroke-width', STROKE_WIDTH_CASEMENT); // <-- Thinner stroke
-                    });
-                }
-                
-                // Apply thinnest stroke to lead line groups
-                if (groupId.includes(LAYER_LEADLINES) || groupId.includes('Lead')) {
-                    const childPaths = group.querySelectorAll('path');
-                    childPaths.forEach(path => {
-                        path.setAttribute('stroke-width', STROKE_WIDTH_LEADLINES); // <-- Thinnest stroke
                     });
                 }
             });
@@ -2315,110 +2013,6 @@
                 }
                 container.appendChild(casementsSection);
             }
-
-            // Build lead lines section (two-column compact layout)
-            if (SECONDARY_CONFIG.leadLines) {
-                const leadLinesSection = document.createElement('div');
-                leadLinesSection.className = 'controls-section';
-                
-                const leadLinesTitle = document.createElement('div');
-                leadLinesTitle.className = 'controls-section-title';
-                leadLinesTitle.textContent = 'Lead Lines';
-                leadLinesSection.appendChild(leadLinesTitle);
-
-                // Create two-column layout container
-                const columnsContainer = document.createElement('div');
-                columnsContainer.style.display = 'flex';
-                columnsContainer.style.gap = '15px';
-
-                // Left column: Toggle + Thickness
-                const leftColumn = document.createElement('div');
-                leftColumn.style.display = 'flex';
-                leftColumn.style.flexDirection = 'column';
-                leftColumn.style.gap = '8px';
-
-                // Right column: V Divisions + H Divisions
-                const rightColumn = document.createElement('div');
-                rightColumn.style.display = 'flex';
-                rightColumn.style.flexDirection = 'column';
-                rightColumn.style.gap = '8px';
-
-                const sliderUpdateFunctions = [];                                 // <-- Store update functions
-
-                for (const item of SECONDARY_CONFIG.leadLines) {
-                    if (item.id === 'showLeadLines') {
-                        // Toggle goes in left column
-                        const toggleGroup = createToggleGroup(item);
-                        leftColumn.appendChild(toggleGroup);
-                    } else if (item.id === 'leadLinesThickness') {
-                        // Thickness slider goes in left column
-                        const sliderGroup = createSliderGroup(item);
-                        sliderGroup.style.minWidth = '80px';
-                        setupLeadLineSliderState(sliderGroup, item, sliderUpdateFunctions);
-                        leftColumn.appendChild(sliderGroup);
-                    } else {
-                        // V/H Divisions go in right column
-                        const sliderGroup = createSliderGroup(item);
-                        sliderGroup.style.minWidth = '80px';
-                        setupLeadLineSliderState(sliderGroup, item, sliderUpdateFunctions);
-                        rightColumn.appendChild(sliderGroup);
-                    }
-                }
-
-                columnsContainer.appendChild(leftColumn);
-                columnsContainer.appendChild(rightColumn);
-                leadLinesSection.appendChild(columnsContainer);
-                container.appendChild(leadLinesSection);
-
-                // Wire up toggle change events AFTER section is in DOM
-                const leadLinesToggleCheckbox = document.getElementById('showLeadLines');
-                if (leadLinesToggleCheckbox) {
-                    leadLinesToggleCheckbox.addEventListener('change', () => {
-                        sliderUpdateFunctions.forEach(fn => fn());
-                    });
-                }
-
-                // Initialize slider states after DOM is ready
-                requestAnimationFrame(() => {
-                    sliderUpdateFunctions.forEach(fn => fn());
-                });
-            }
-        }
-
-        // HELPER FUNCTION | Setup lead line slider disabled state
-        // ------------------------------------------------------------
-        function setupLeadLineSliderState(sliderGroup, item, updateFunctions) {
-            if (!item.enabledBy) return;
-            
-            const slider = sliderGroup.querySelector('input[type="range"]');
-            const valueDisplay = sliderGroup.querySelector('.cad-value-display');
-            
-            // Set initial disabled state
-            if (slider && valueDisplay) {
-                slider.disabled = true;
-                sliderGroup.style.opacity = '0.4';
-                sliderGroup.style.pointerEvents = 'none';
-                valueDisplay.style.cursor = 'not-allowed';
-            }
-            
-            const updateState = () => {
-                const enablerCheckbox = document.getElementById(item.enabledBy);
-                if (slider && valueDisplay) {
-                    if (enablerCheckbox && enablerCheckbox.checked) {
-                        slider.disabled = false;
-                        sliderGroup.style.opacity = '1';
-                        sliderGroup.style.pointerEvents = 'auto';
-                        valueDisplay.style.cursor = 'pointer';
-                    } else {
-                        slider.disabled = true;
-                        sliderGroup.style.opacity = '0.4';
-                        sliderGroup.style.pointerEvents = 'none';
-                        valueDisplay.style.cursor = 'not-allowed';
-                    }
-                }
-            };
-            
-            updateFunctions.push(updateState);
         }
         // ---------------------------------------------------------------
 
@@ -2651,8 +2245,6 @@
         // ---------------------------------------------------------------
         // endregion ===================================================================
 
-
-        
         // ---------------------------------------------------------------------
         // REGION | Initialization
         // ---------------------------------------------------------------------

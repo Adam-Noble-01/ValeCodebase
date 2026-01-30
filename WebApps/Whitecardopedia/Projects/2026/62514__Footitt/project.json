@@ -1,0 +1,79 @@
+{
+    "projectName": "Footitt",
+    "projectCode": "62514",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Took longer than expected due to landscape modelling and needing to align multiple photo matches to ensure accuracy with the rather complex patio situation."
+    },
+    "scheduleData": {
+        "dateReceived": "28-Jan-2026",
+        "dateFulfilled": "30-Jan-2026",
+        "timeAllocated": 4,
+        "timeTaken": 6
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__30-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__LawnLevel__WhitecardImage__30-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__30-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__LeftCorner__View-01__WhitecardImage__30-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__LeftCorner__View-02__WhitecardImage__30-Jan-2026.png",
+        "IMG06__3dView__ViewOption-06__LeftCorner__Further__WhitecardImage__30-Jan-2026.png",
+        "IMG07__3dView__LawnView__Closer__WhitecardImage__30-Jan-2026.png",
+        "IMG08__3dView__LeftSide__WhitecardImage__30-Jan-2026.png",
+        "IMG09__3dView__3dView__Front__ViewingDoors__WhitecardImage__30-Jan-2026.png",
+        "IMG10__3dView__3dView__Front__ViewingDoors__Furtther__WhitecardImage__30-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG31__TopDown__View-01__WhitecardImage__30-Jan-2026.png",
+        "IMG32__TopDown__View-02__WhitecardImage__30-Jan-2026.png",
+        "IMG41__3dView__3dView__PatioView-01__WhitecardImage__30-Jan-2026.png",
+        "IMG42__3dView__3dView__PatioView-02__WhitecardImage__30-Jan-2026.png"
+    ],
+    "basePath": "Projects/2026/62514__Footitt",
+    "folderId": "2026/62514__Footitt",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__30-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__LawnLevel__WhitecardImage__30-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__30-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__LeftCorner__View-01__WhitecardImage__30-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__LeftCorner__View-02__WhitecardImage__30-Jan-2026.png",
+        "IMG06__3dView__ViewOption-06__LeftCorner__Further__WhitecardImage__30-Jan-2026.png",
+        "IMG07__3dView__LawnView__Closer__WhitecardImage__30-Jan-2026.png",
+        "IMG08__3dView__LeftSide__WhitecardImage__30-Jan-2026.png",
+        "IMG09__3dView__3dView__Front__ViewingDoors__WhitecardImage__30-Jan-2026.png",
+        "IMG10__3dView__3dView__Front__ViewingDoors__Furtther__WhitecardImage__30-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG31__TopDown__View-01__WhitecardImage__30-Jan-2026.png",
+        "IMG32__TopDown__View-02__WhitecardImage__30-Jan-2026.png",
+        "IMG41__3dView__3dView__PatioView-01__WhitecardImage__30-Jan-2026.png",
+        "IMG42__3dView__3dView__PatioView-02__WhitecardImage__30-Jan-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__30-Jan-2026.png",
+        "IMG02__3dView__ViewOption-02__LawnLevel__WhitecardImage__30-Jan-2026.png",
+        "IMG03__3dView__ViewOption-03__WhitecardImage__30-Jan-2026.png",
+        "IMG04__3dView__ViewOption-04__LeftCorner__View-01__WhitecardImage__30-Jan-2026.png",
+        "IMG05__3dView__ViewOption-05__LeftCorner__View-02__WhitecardImage__30-Jan-2026.png",
+        "IMG06__3dView__ViewOption-06__LeftCorner__Further__WhitecardImage__30-Jan-2026.png",
+        "IMG07__3dView__LawnView__Closer__WhitecardImage__30-Jan-2026.png",
+        "IMG08__3dView__LeftSide__WhitecardImage__30-Jan-2026.png",
+        "IMG09__3dView__3dView__Front__ViewingDoors__WhitecardImage__30-Jan-2026.png",
+        "IMG10__3dView__3dView__Front__ViewingDoors__Furtther__WhitecardImage__30-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__30-Jan-2026.png",
+        "IMG31__TopDown__View-01__WhitecardImage__30-Jan-2026.png",
+        "IMG32__TopDown__View-02__WhitecardImage__30-Jan-2026.png",
+        "IMG41__3dView__3dView__PatioView-01__WhitecardImage__30-Jan-2026.png",
+        "IMG42__3dView__3dView__PatioView-02__WhitecardImage__30-Jan-2026.png"
+    ]
+}

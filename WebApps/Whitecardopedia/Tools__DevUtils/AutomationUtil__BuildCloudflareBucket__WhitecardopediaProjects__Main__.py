@@ -54,6 +54,8 @@ ENV_FILE_PATH                      = "API__Cloudflare/Token__CloudflareAPI.env" 
 WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
+GLB_LAYER_BASE_PATTERN             = "__Layer-01__BaseMeshModel__"           # <-- Base mesh model filename marker
+GLB_LAYER_LINE_PATTERN             = "__Layer-02__LineworkModel__"           # <-- Linework model filename marker
 # ------------------------------------------------------------
 
 
@@ -409,6 +411,16 @@ def discover_glb_files(glb_sync_path: Path) -> List[str]:
 # ---------------------------------------------------------------
 
 
+# HELPER FUNCTION | Check Base Mesh and Linework Presence
+# ---------------------------------------------------------------
+def check_glb_layer_presence(glb_files: List[str]) -> Tuple[bool, bool]:
+    """Check if base mesh and linework GLB files exist"""
+    has_base = any(GLB_LAYER_BASE_PATTERN in name for name in glb_files)   # <-- Check base mesh marker
+    has_linework = any(GLB_LAYER_LINE_PATTERN in name for name in glb_files)  # <-- Check linework marker
+    return has_base, has_linework                                       # <-- Return presence flags
+# ---------------------------------------------------------------
+
+
 # HELPER FUNCTION | Format File Size for Display
 # ---------------------------------------------------------------
 def format_file_size(size_bytes: int) -> str:
@@ -506,6 +518,7 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
         'files_errors': 0,
         'total_size': 0,
         'file_results': [],
+        'layer_warnings': [],
         'error': None
     }
     
@@ -517,6 +530,14 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
         result['error'] = "No .glb files found in sync folder"        # <-- Set warning message
         result['success'] = True                                      # <-- Not an error condition
         return result                                                 # <-- Return warning result
+    
+    # CHECK FOR REQUIRED LAYER FILES
+    has_base, has_linework = check_glb_layer_presence(glb_files)       # <-- Check layer presence
+    
+    if not has_base:
+        result['layer_warnings'].append("Missing Base Mesh GLB (Layer-01)")  # <-- Record missing base mesh
+    if not has_linework:
+        result['layer_warnings'].append("Missing Linework GLB (Layer-02)")   # <-- Record missing linework
     
     # PROCESS EACH GLB FILE
     for filename in glb_files:
@@ -602,6 +623,11 @@ def print_results(results: List[Dict], dry_run: bool):
         # Note: Destination will include year from the calling context
         print(f"    Files found: {result['files_found']}")            # <-- Print files count
         print(f"    Total size: {format_file_size(result['total_size'])}")  # <-- Print total size
+        
+        # PRINT LAYER WARNINGS
+        if result.get('layer_warnings'):
+            for warning in result['layer_warnings']:
+                print(f"    {COLOR_YELLOW}[!] {warning}{COLOR_RESET}")  # <-- Print layer warning
         
         # PRINT FILE DETAILS
         for file_result in result['file_results']:

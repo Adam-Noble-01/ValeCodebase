@@ -1,0 +1,2475 @@
+require 'json'                                                                    # <-- JSON parsing for dialog parameters
+require 'fileutils'                                                               # <-- File operations for texture caching
+
+module GLBBuilderUtility
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Module Constants and Configuration
+    # -----------------------------------------------------------------------------
+    
+        # MODULE CONSTANTS | Export Configuration and Thresholds
+        # ------------------------------------------------------------
+        MAX_TEXTURE_SIZE        =   1024                                          # <-- Maximum texture dimension before downscaling
+        TEXTURE_SCALE_FACTOR    =   0.25                                          # <-- Scale factor for texture downscaling (50%)
+        DEFAULT_EXPORT_NAME     =   "SketchUpExport"                             # <-- Default filename for exports
+        GLB_FILE_EXTENSION      =   ".glb"                                        # <-- GLB file extension
+        # ------------------------------------------------------------
+    
+        # MODULE CONSTANTS | GLB Format Constants
+        # ------------------------------------------------------------
+        GLB_MAGIC               =   0x46546C67                                    # <-- "glTF" in ASCII
+        GLB_VERSION             =   2                                             # <-- glTF 2.0 version
+        GLB_CHUNK_TYPE_JSON     =   0x4E4F534A                                    # <-- "JSON" chunk type
+        GLB_CHUNK_TYPE_BIN      =   0x004E4942                                    # <-- "BIN\0" chunk type
+        # ------------------------------------------------------------
+    
+        # MODULE VARIABLES | State Management
+        # ------------------------------------------------------------
+        @export_dialog          =   nil                                           # <-- HTML dialog for export options
+        @downscale_textures     =   true                                          # <-- Flag for texture downscaling
+        @material_map           =   {}                                            # <-- Material to index mapping
+        @texture_map            =   {}                                            # <-- Texture to index mapping
+        @image_map              =   {}                                            # <-- Image data mapping
+        @texture_cache_folder   =   File.join(Sketchup.temp_dir, "glb_texture_cache")  # <-- Temp cache folder for textures
+        @texture_cache          =   {}                                            # <-- Hash to track cached texture paths
+        # ------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Core Export Functionality
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Reset All Module State Variables
+        # ---------------------------------------------------------------
+        def self.reset_export_state
+            puts "    Resetting module state for new export..."
+            
+            # Clear all mapping variables
+            @material_map           = {}                                          # <-- Material to index mapping
+            @texture_map            = {}                                          # <-- Texture to index mapping
+            @image_map              = {}                                          # <-- Image data mapping
+            @texture_cache          = {}                                          # <-- Texture cache
+            
+            puts "    Module state reset complete"
+        end
+        # ---------------------------------------------------------------
+    
+        # FUNCTION | Initialize GLB Export Process
+        # ------------------------------------------------------------
+        def self.start_export
+            model = Sketchup.active_model                                         # Get active model
+            
+            # Check if there's a selection
+            if model.selection.empty?
+                UI.messagebox("Please select entities to export.")                 # Alert user
+                return false
+            end
+            
+            # Reset state at the very beginning
+            reset_export_state                                                    # Comprehensive state reset
+            
+            puts "\n=== Starting GLB Export ==="                                   # Console header
+            puts "Using explosion/regrouping for accurate global coordinates"
+            
+            # Create texture cache folder if it doesn't exist
+            Dir.mkdir(@texture_cache_folder) unless Dir.exist?(@texture_cache_folder)
+            
+            show_export_dialog                                                     # Show export options dialog
+        end
+        # ---------------------------------------------------------------
+    
+        # FUNCTION | Perform GLB Export with Configuration
+        # ---------------------------------------------------------------
+        def self.perform_export(export_path)
+            model = Sketchup.active_model                                         # Get active model
+            
+            # Reset ALL state variables before export
+            reset_export_state                                                    # Comprehensive state reset
+            
+            # Get current selection
+            selection = model.selection.to_a
+            if selection.empty?
+                UI.messagebox("No entities selected for export.")                 # Alert user
+                return false
+            end
+            
+            # Ensure filepath has GLB extension
+            export_path += GLB_FILE_EXTENSION unless export_path.end_with?(GLB_FILE_EXTENSION)
+            
+            puts "\n=== Export Plan ==="
+            puts "  Exporting #{selection.length} selected entities to: #{File.basename(export_path)}"
+            puts "=== End Export Plan ===\n"
+            
+            model.start_operation("GLB Export", true)                            # Start operation for undo
+            
+            begin
+                # Use the simplified export method
+                if export_entities_to_glb_simplified(selection, export_path)
+                    model.commit_operation                                         # Commit the operation
+                    
+                    # Clean up texture cache
+                    cleanup_texture_cache                                          # Remove temporary files
+                    
+                    UI.messagebox("GLB export completed!\n\nFile saved to:\n#{export_path}")
+                    return true
+                else
+                    model.abort_operation                                          # Abort on error
+                    UI.messagebox("Export failed. Please check the console for errors.")
+                    return false
+                end
+                
+            rescue => e
+                model.abort_operation                                              # Abort on error
+                UI.messagebox("Export error: #{e.message}")                       # Show error message
+                puts "GLB Export Error: #{e.message}\n#{e.backtrace.join("\n")}"  # Log full error
+                false
+            end
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | GLB Binary Format Implementation
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Export Entities to GLB Format
+        # ------------------------------------------------------------
+        def self.export_entities_to_glb(entities, filepath)
+            # Ensure filepath has GLB extension
+            filepath += GLB_FILE_EXTENSION unless filepath.end_with?(GLB_FILE_EXTENSION)
+            
+            puts "  Initializing GLTF structure..."
+            
+            # Initialize GLTF data structure
+            gltf = {
+                "asset" => {
+                    "version" => "2.0",                                            # <-- GLTF version
+                    "generator" => "GLB Builder v1.0.6"                            # <-- Generator info
+                },
+                "scene" => 0,                                                      # <-- Default scene
+                "scenes" => [{ "nodes" => [] }],                                   # <-- Scene array
+                "nodes" => [],                                                     # <-- Node hierarchy
+                "meshes" => [],                                                    # <-- Mesh data
+                "accessors" => [],                                                 # <-- Data accessors
+                "bufferViews" => [],                                               # <-- Buffer views
+                "buffers" => [],                                                   # <-- Binary buffers
+                "materials" => [],                                                 # <-- Materials
+                "textures" => [],                                                  # <-- Textures
+                "images" => [],                                                    # <-- Images
+                "samplers" => []                                                   # <-- Texture samplers
+            }
+            
+            # Binary buffer for vertex and image data
+            binary_buffer = []                                                     # Binary data array
+            
+            # Collect all materials first
+            collect_materials_from_entities(entities)                              # Find all materials
+            
+            # Create GLTF materials (including textures)
+            create_gltf_materials(gltf, binary_buffer)                            # Convert materials
+            
+            puts "  Processing #{entities.length} entities..."
+            
+            # Process entities into GLTF structure
+            process_entities_to_gltf(entities, gltf, binary_buffer)               # Convert to GLTF
+            
+            puts "  Generated: #{gltf['meshes'].length} meshes, #{gltf['materials'].length} materials, #{gltf['textures'].length} textures"
+            puts "  Writing GLB file..."
+            
+            # Write GLB file
+            write_glb_file(filepath, gltf, binary_buffer)                        # Save to file
+            
+            puts "  ✓ Export complete: #{File.basename(filepath)}"
+            true
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Process Entities into GLTF Structure
+        # ---------------------------------------------------------------
+        def self.process_entities_to_gltf(entities, gltf, binary_buffer)
+            total_entities = entities.length
+            processed_count = 0
+            
+            # Create a root node for coordinate system conversion
+            # This rotates -90 degrees around X axis to convert Z-up to Y-up
+            root_node_index = gltf["nodes"].length
+            gltf["nodes"] << {
+                "name" => "Root_CoordSystemConversion",
+                "rotation" => [-0.7071068, 0, 0, 0.7071068],  # -90° rotation around X axis (as quaternion)
+                "children" => []
+            }
+            
+            # Add root node to scene
+            gltf["scenes"][0]["nodes"] = [root_node_index]
+            
+            entities.each_with_index do |entity, index|
+                # Report progress
+                processed_count += 1
+                entity_name = entity.respond_to?(:name) && !entity.name.empty? ? entity.name : entity.class.name
+                puts "    Processing entity #{processed_count}/#{total_entities}: #{entity_name}"
+                
+                case entity
+                when Sketchup::Group, Sketchup::ComponentInstance
+                    node_index = process_group_or_component(entity, gltf, binary_buffer)
+                    gltf["nodes"][root_node_index]["children"] << node_index if node_index  # Add to root node
+                    
+                when Sketchup::Face, Sketchup::Edge
+                    # Create a mesh for loose geometry
+                    mesh_data = extract_geometry_data([entity], nil)              # No instance material for loose geometry
+                    if mesh_data && !mesh_data[:positions].empty?
+                        mesh_index = add_mesh_to_gltf(mesh_data, gltf, binary_buffer)
+                        
+                        # Create node for mesh
+                        node_index = gltf["nodes"].length                          # Get node index
+                        gltf["nodes"] << {
+                            "mesh" => mesh_index,                                  # <-- Mesh reference
+                            "name" => "Geometry_#{node_index}"                    # <-- Node name
+                        }
+                        gltf["nodes"][root_node_index]["children"] << node_index  # Add to root node
+                    end
+                end
+            end
+            
+            puts "    Processed #{processed_count} entities total"
+        end
+        # ---------------------------------------------------------------
+    
+        # FUNCTION | Export Entities to GLB Format (Simplified with Explosion)
+        # ---------------------------------------------------------------
+        def self.export_entities_to_glb_simplified(entities, filepath)
+            # Ensure filepath has GLB extension
+            filepath += GLB_FILE_EXTENSION unless filepath.end_with?(GLB_FILE_EXTENSION)
+            
+            puts "  Using explosion/regrouping strategy for accurate global coordinates..."
+            
+            model = Sketchup.active_model
+            
+            # Start a single operation that can be undone
+            model.start_operation("GLB Export - Temporary Explosion", true)
+            
+            begin
+                # Store original selection state
+                original_selection = model.selection.to_a
+                model.selection.clear
+                
+                # Step 1: Collect entities to process and their metadata
+                entities_metadata = collect_entity_metadata(entities)
+                
+                # Step 2: Collect edges BEFORE explosion (entities will be deleted after)
+                puts "    Collecting edges before explosion..."
+                edge_groups = collect_edges_from_entities(entities)
+                
+                # Step 3: Explode all nested hierarchies to get global coordinates
+                exploded_faces = explode_all_to_global(entities)
+                
+                # Step 4: Group faces by material and layer
+                face_groups = group_faces_by_properties(exploded_faces)
+                
+                # Step 5: Create glTF structure from grouped faces
+                gltf, binary_buffer = create_gltf_from_face_groups(face_groups)
+                
+                # Step 6: Export edges as line primitives (already collected in Step 2)
+                puts "    Processing edges for line export..."
+                
+                # Create edge nodes and add to scene
+                if edge_groups && !edge_groups.empty?
+                    edge_groups.each do |group_key, edge_data|
+                        next if edge_data[:positions].empty?
+                        
+                        # Create line mesh for this edge group
+                        mesh_name = "Edges_#{edge_data[:layer_name]}"
+                        mesh_index = add_line_mesh_to_gltf(edge_data, gltf, binary_buffer, mesh_name)
+                        
+                        # Create node for this edge mesh
+                        node_index = gltf["nodes"].length
+                        gltf["nodes"] << {
+                            "name" => "EdgeLayer_#{edge_data[:layer_name]}",
+                            "mesh" => mesh_index
+                        }
+                        
+                        # Add to scene
+                        gltf["scenes"][0]["nodes"] << node_index
+                        
+                        puts "      Added edge layer: #{edge_data[:layer_name]} with #{edge_data[:indices].length / 2} edges"
+                    end
+                else
+                    puts "      No edges found to export"
+                end
+                
+                # Step 7: Write GLB file
+                write_glb_file(filepath, gltf, binary_buffer)
+                
+                # Step 8: Restore original model state (undo all explosions)
+                model.abort_operation
+                
+                # Restore selection (filter out invalid entities)
+                begin
+                    valid_entities = original_selection.select { |entity| entity.valid? }
+                    model.selection.clear
+                    model.selection.add(valid_entities) unless valid_entities.empty?
+                rescue => selection_error
+                    puts "  Warning: Could not restore original selection: #{selection_error.message}"
+                    model.selection.clear  # Just clear selection if restoration fails
+                end
+                
+                puts "  ✓ Export complete with accurate global coordinates"
+                return true
+                
+            rescue => e
+                # Ensure we always restore the model on error
+                model.abort_operation
+                puts "  ERROR: Export failed - #{e.message}"
+                puts "  #{e.backtrace.first(5).join("\n  ")}"
+                puts "  Model restored to original state"
+                return false
+            end
+        end
+        # ---------------------------------------------------------------
+        
+        # SUB FUNCTION | Collect Entity Metadata Before Explosion
+        # ---------------------------------------------------------------
+        def self.collect_entity_metadata(entities)
+            metadata = []
+            
+            entities.each do |entity|
+                if entity.is_a?(Sketchup::Group) || entity.is_a?(Sketchup::ComponentInstance)
+                    metadata << {
+                        :name => entity.respond_to?(:name) ? entity.name : "",
+                        :layer => entity.layer.name,
+                        :material => entity.material,
+                        :transformation => entity.transformation
+                    }
+                end
+            end
+            
+            metadata
+        end
+        # ---------------------------------------------------------------
+        
+        # SUB FUNCTION | Explode All Nested Hierarchies to Global Space
+        # ---------------------------------------------------------------
+        def self.explode_all_to_global(entities)
+            all_faces = []
+            entities_to_process = entities.to_a
+            max_iterations = 20  # Prevent infinite loops
+            
+            max_iterations.times do |iteration|
+                puts "    Explosion pass #{iteration + 1}..."
+                
+                # Collect all groups and components to explode
+                groups_to_explode = []
+                
+                Sketchup.active_model.active_entities.each do |entity|
+                    if (entity.is_a?(Sketchup::Group) || entity.is_a?(Sketchup::ComponentInstance))
+                        groups_to_explode << entity
+                    end
+                end
+                
+                break if groups_to_explode.empty?  # Nothing left to explode
+                
+                puts "      Found #{groups_to_explode.length} containers to explode"
+                
+                # Explode each group/component
+                groups_to_explode.each do |entity|
+                    if entity.valid?
+                        begin
+                            exploded = entity.explode
+                            if exploded
+                                # Collect any faces from the explosion
+                                exploded.each do |e|
+                                    if e.is_a?(Sketchup::Face)
+                                        all_faces << e
+                                    end
+                                end
+                            end
+                        rescue => e
+                            puts "      Warning: Failed to explode entity: #{e.message}"
+                        end
+                    end
+                end
+            end
+            
+            # Also collect any faces that were already at the root level
+            Sketchup.active_model.active_entities.each do |entity|
+                if entity.is_a?(Sketchup::Face)
+                    all_faces << entity unless all_faces.include?(entity)
+                end
+            end
+            
+            puts "    Collected #{all_faces.length} faces in global coordinates"
+            all_faces
+        end
+        # ---------------------------------------------------------------
+        
+        # SUB FUNCTION | Group Faces by Material and Layer Properties
+        # ---------------------------------------------------------------
+        def self.group_faces_by_properties(faces)
+            face_groups = {}
+            
+            faces.each do |face|
+                next unless face.valid?
+                
+                # Get material (front or back)
+                material = face.material || face.back_material
+                material_name = material ? material.display_name : "Default"
+                
+                # Get layer name
+                layer_name = face.layer.name
+                
+                # Create group key
+                group_key = "#{layer_name}::#{material_name}"
+                
+                # Initialize group if needed
+                face_groups[group_key] ||= {
+                    :faces => [],
+                    :material => material,
+                    :layer_name => layer_name,
+                    :positions => [],
+                    :normals => [],
+                    :uvs => [],
+                    :indices => [],
+                    :vertex_count => 0
+                }
+                
+                # Add face to group
+                face_groups[group_key][:faces] << face
+            end
+            
+            puts "    Grouped faces into #{face_groups.length} material/layer combinations"
+            face_groups
+        end
+        # ---------------------------------------------------------------
+        
+        # SUB FUNCTION | Collect Edges from Entities (for Line Export)
+        # ---------------------------------------------------------------
+        def self.collect_edges_from_entities(entities)
+            edge_groups = {}
+            total_edges = 0
+            
+            # Helper to recursively extract edges from groups/components
+            extract_edges_recursive = lambda do |ents, parent_transform, parent_layer|
+                return unless ents                                                      # Safety check
+                
+                ents.each do |entity|
+                    next unless entity                                                  # Skip nil entities
+                    next unless entity.valid?                                          # Skip deleted entities
+                    
+                    begin
+                        case entity
+                        when Sketchup::Group, Sketchup::ComponentInstance
+                            # Verify entity is still valid before accessing properties
+                            next unless entity.valid?
+                            
+                            # Get transformation and layer with error handling
+                            begin
+                                entity_transform = entity.transformation
+                                next unless entity_transform                              # Skip if no transform
+                                
+                                transform = parent_transform * entity_transform
+                                
+                                layer_name = "Default"
+                                begin
+                                    layer = entity.layer
+                                    layer_name = layer.name if layer && layer.respond_to?(:name)
+                                rescue => layer_error
+                                    puts "        Warning: Could not get layer for #{entity.class}: #{layer_error.message}"
+                                end
+                                
+                                # Recursively process children
+                                definition = nil
+                                begin
+                                    definition = entity.respond_to?(:definition) ? entity.definition : entity
+                                    next unless definition
+                                    
+                                    definition_entities = definition.entities
+                                    next unless definition_entities
+                                    
+                                    extract_edges_recursive.call(definition_entities, transform, layer_name)
+                                rescue => def_error
+                                    puts "        Warning: Could not process definition for #{entity.class}: #{def_error.message}"
+                                end
+                                
+                            rescue => transform_error
+                                puts "        Warning: Could not get transformation for #{entity.class}: #{transform_error.message}"
+                            end
+                            
+                        when Sketchup::Edge
+                            # Verify edge is still valid
+                            next unless entity.valid?
+                            
+                            begin
+                                # Get edge endpoints with validation
+                                start_vertex = entity.start
+                                end_vertex = entity.end
+                                next unless start_vertex && end_vertex
+                                next unless start_vertex.respond_to?(:position) && end_vertex.respond_to?(:position)
+                                
+                                # Apply transformation to get global coordinates
+                                start_pos = parent_transform * start_vertex.position
+                                end_pos = parent_transform * end_vertex.position
+                                
+                                # Get edge color with fallback chain
+                                edge_color = nil
+                                begin
+                                    edge_color = entity.color if entity.respond_to?(:color)
+                                rescue => color_error
+                                    # Ignore color errors
+                                end
+                                
+                                if edge_color.nil?
+                                    begin
+                                        layer = entity.layer
+                                        edge_color = layer.color if layer && layer.respond_to?(:color)
+                                    rescue => layer_error
+                                        # Ignore layer color errors
+                                    end
+                                end
+                                
+                                # Default to black if no color found
+                                if edge_color.nil?
+                                    edge_color = Sketchup::Color.new(0, 0, 0)            # Black default
+                                end
+                                
+                                # Create group key by layer
+                                group_key = parent_layer || "Default"
+                                
+                                # Initialize group if needed
+                                edge_groups[group_key] ||= {
+                                    :layer_name => group_key,
+                                    :positions => [],
+                                    :colors => [],
+                                    :indices => [],
+                                    :vertex_count => 0
+                                }
+                                
+                                group_data = edge_groups[group_key]
+                                
+                                # Convert color to normalized RGB
+                                color_rgb = [
+                                    edge_color.red / 255.0,
+                                    edge_color.green / 255.0,
+                                    edge_color.blue / 255.0
+                                ]
+                                
+                                # Convert to glTF coordinate system
+                                start_gltf = [
+                                    start_pos.x * 0.0254,                                 # X stays, to meters
+                                    start_pos.z * 0.0254,                                 # Z becomes Y (up)
+                                    -start_pos.y * 0.0254                                 # -Y becomes Z (forward)
+                                ]
+                                
+                                end_gltf = [
+                                    end_pos.x * 0.0254,
+                                    end_pos.z * 0.0254,
+                                    -end_pos.y * 0.0254
+                                ]
+                                
+                                # Add to group
+                                group_data[:positions].concat(start_gltf)
+                                group_data[:colors].concat(color_rgb)
+                                group_data[:positions].concat(end_gltf)
+                                group_data[:colors].concat(color_rgb)
+                                
+                                # Add indices
+                                group_data[:indices] << group_data[:vertex_count]
+                                group_data[:indices] << group_data[:vertex_count] + 1
+                                group_data[:vertex_count] += 2
+                                
+                                total_edges += 1
+                                
+                            rescue => edge_error
+                                puts "        Warning: Error processing edge: #{edge_error.message}"
+                            end
+                        end
+                    rescue => general_error
+                        puts "        Warning: Unexpected error processing entity: #{general_error.message}"
+                    end
+                end
+            end
+            
+            # Start extraction with identity transform
+            begin
+                identity_transform = Geom::Transformation.new
+                extract_edges_recursive.call(entities, identity_transform, "Default")
+            rescue => extraction_error
+                puts "    ERROR: Failed to extract edges: #{extraction_error.message}"
+                puts "    #{extraction_error.backtrace.first(3).join("\n    ")}"
+            end
+            
+            puts "    Collected #{total_edges} edges into #{edge_groups.length} layer groups"
+            edge_groups
+        end
+        # ---------------------------------------------------------------
+        
+        # SUB FUNCTION | Create glTF Structure from Face Groups
+        # ---------------------------------------------------------------
+        def self.create_gltf_from_face_groups(face_groups)
+            # Initialize GLTF structure
+            gltf = {
+                "asset" => {
+                    "version" => "2.0",
+                    "generator" => "GLB Builder v1.0.6 (Simplified)"
+                },
+                "scene" => 0,
+                "scenes" => [{ "nodes" => [] }],
+                "nodes" => [],
+                "meshes" => [],
+                "accessors" => [],
+                "bufferViews" => [],
+                "buffers" => [],
+                "materials" => [],
+                "textures" => [],
+                "images" => [],
+                "samplers" => []
+            }
+            
+            binary_buffer = []
+            
+            # Collect all unique materials
+            face_groups.each do |group_key, group_data|
+                material = group_data[:material]
+                if material && !@material_map.has_key?(material)
+                    @material_map[material] = @material_map.length
+                end
+            end
+            
+            # Create GLTF materials
+            create_gltf_materials(gltf, binary_buffer)
+            
+            # Process each face group
+            face_groups.each do |group_key, group_data|
+                puts "    Processing group: #{group_key}"
+                
+                # Extract vertex data from faces
+                extract_global_face_data(group_data, gltf, binary_buffer)
+                
+                # Skip if no geometry
+                next if group_data[:positions].empty?
+                
+                # Create mesh for this group
+                mesh_index = add_mesh_to_gltf_simplified(group_data, gltf, binary_buffer)
+                
+                # Create node for this mesh
+                node_index = gltf["nodes"].length
+                gltf["nodes"] << {
+                    "name" => group_key,
+                    "mesh" => mesh_index
+                }
+                
+                # Add to scene
+                gltf["scenes"][0]["nodes"] << node_index
+            end
+            
+            [gltf, binary_buffer]
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Add Mesh to GLTF (Simplified for Single Material)
+        # ---------------------------------------------------------------
+        def self.add_mesh_to_gltf_simplified(group_data, gltf, binary_buffer)
+            mesh_index = gltf["meshes"].length
+            
+            # Get material index
+            material_index = 0  # Default material
+            if group_data[:material] && @material_map.has_key?(group_data[:material])
+                material_index = @material_map[group_data[:material]]
+            end
+            
+            # Check if material has texture but mesh doesn't have UVs - use default material instead
+            has_uvs = !group_data[:uvs].empty?
+            if material_index > 0 && !has_uvs
+                material = @material_map.keys[material_index]
+                if material && material.texture && material.texture.valid?
+                    puts "        Warning: Material has texture but mesh has no UVs - using default material"
+                    material_index = 0  # Use default material
+                end
+            end
+            
+            # Create primitive
+            primitive = {
+                "attributes" => {},
+                "material" => material_index,
+                "mode" => 4  # TRIANGLES
+            }
+            
+            # Add position accessor
+            position_accessor = add_accessor(
+                group_data[:positions], gltf, binary_buffer,
+                5126, "VEC3", true, 34962  # FLOAT, VEC3, calc bounds, ARRAY_BUFFER
+            )
+            primitive["attributes"]["POSITION"] = position_accessor
+            
+            # Add normal accessor
+            normal_accessor = add_accessor(
+                group_data[:normals], gltf, binary_buffer,
+                5126, "VEC3", false, 34962  # FLOAT, VEC3, no bounds, ARRAY_BUFFER
+            )
+            primitive["attributes"]["NORMAL"] = normal_accessor
+            
+            # Add UV accessor if we have UVs
+            if has_uvs
+                uv_accessor = add_accessor(
+                    group_data[:uvs], gltf, binary_buffer,
+                    5126, "VEC2", false, 34962  # FLOAT, VEC2, no bounds, ARRAY_BUFFER
+                )
+                primitive["attributes"]["TEXCOORD_0"] = uv_accessor
+            end
+            
+            # Add indices accessor
+            if group_data[:indices].max < 65536
+                indices_accessor = add_accessor(
+                    group_data[:indices], gltf, binary_buffer,
+                    5123, "SCALAR", false, 34963  # UNSIGNED_SHORT, SCALAR, ELEMENT_ARRAY_BUFFER
+                )
+            else
+                indices_accessor = add_accessor(
+                    group_data[:indices], gltf, binary_buffer,
+                    5125, "SCALAR", false, 34963  # UNSIGNED_INT, SCALAR, ELEMENT_ARRAY_BUFFER
+                )
+            end
+            primitive["indices"] = indices_accessor
+            
+            # Create mesh
+            mesh = {
+                "name" => "Mesh_#{mesh_index}",
+                "primitives" => [primitive]
+            }
+            
+            gltf["meshes"] << mesh
+            mesh_index
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Extract Global Face Data (Already in World Coordinates)
+        # ---------------------------------------------------------------
+        def self.extract_global_face_data(group_data, gltf, binary_buffer)
+            vertex_count = group_data[:vertex_count]
+            
+            group_data[:faces].each_with_index do |face, face_index|
+                next unless face.valid?
+                
+                # Report progress
+                if face_index % 100 == 0
+                    puts "      Processing face #{face_index + 1}/#{group_data[:faces].length}"
+                end
+                
+                # Get material
+                material = group_data[:material]
+                
+                # Get UVHelper if material has texture
+                uv_helper = nil
+                if material && material.texture && material.texture.valid?
+                    if face.material && face.material == material
+                        uv_helper = face.get_UVHelper(true, true)
+                    elsif face.back_material && face.back_material == material
+                        uv_helper = face.get_UVHelper(false, false)
+                    end
+                end
+                
+                # Get face mesh
+                mesh = face.mesh(7)  # Full mesh with normals
+                
+                # Process each polygon
+                (1..mesh.count_polygons).each do |poly_index|
+                    polygon_points = mesh.polygon_at(poly_index)
+                    next unless polygon_points.length == 3  # Only triangles
+                    
+                    face_indices = []
+                    
+                    polygon_points.each do |point_index|
+                        # Get vertex position - already in global coordinates
+                        position = mesh.point_at(point_index)
+                        normal = mesh.normal_at(point_index)
+                        
+                        # Convert to glTF coordinate system
+                        # SketchUp: X=right, Y=forward, Z=up
+                        # glTF: X=right, Y=up, Z=forward
+                        gltf_pos = [
+                            position.x * 0.0254,      # X stays, convert to meters
+                            position.z * 0.0254,      # Z becomes Y (up)
+                            -position.y * 0.0254      # -Y becomes Z (forward)
+                        ]
+                        
+                        gltf_normal = [
+                            normal.x,                 # X stays
+                            normal.z,                 # Z becomes Y
+                            -normal.y                 # -Y becomes Z
+                        ]
+                        
+                                        # Get UV coordinates using appropriate method
+                uv = [0.0, 0.0]
+                
+                # Check if this face has positioned texture
+                has_positioned_texture = has_positioned_texture?(face, material)
+                
+                if has_positioned_texture && material
+                    # NEW METHOD: Use positioned texture extraction
+                    uv = extract_positioned_texture_uv(face, position, material)
+                elsif uv_helper
+                    # ORIGINAL METHOD: Use standard UVHelper
+                    begin
+                        uvq = uv_helper.get_front_UVQ(position)
+                        if uvq
+                            uv = [uvq.x.to_f, uvq.y.to_f]
+                            uv[1] = 1.0 - uv[1]  # Flip V for glTF
+                        end
+                    rescue => e
+                        # Use default UV on error
+                    end
+                end
+                        
+                        # Add vertex data
+                        group_data[:positions].concat(gltf_pos)
+                        group_data[:normals].concat(gltf_normal)
+                        group_data[:uvs].concat(uv)
+                        
+                        face_indices << vertex_count
+                        vertex_count += 1
+                    end
+                    
+                    # Add face indices
+                    group_data[:indices].concat(face_indices)
+                end
+            end
+            
+            # Update vertex count
+            group_data[:vertex_count] = vertex_count
+        end
+        # ---------------------------------------------------------------
+    
+        # HELPER FUNCTION | Check if Transform Can Decompose to TRS
+        # ---------------------------------------------------------------
+        def self.can_decompose_to_trs?(transform)
+            # Extract scale factors
+            x_axis = transform.xaxis
+            y_axis = transform.yaxis
+            z_axis = transform.zaxis
+            
+            scale_x = x_axis.length
+            scale_y = y_axis.length
+            scale_z = z_axis.length
+            
+            # Check for shear by verifying axes are perpendicular
+            dot_xy = x_axis.normalize.dot(y_axis.normalize).abs
+            dot_xz = x_axis.normalize.dot(z_axis.normalize).abs
+            dot_yz = y_axis.normalize.dot(z_axis.normalize).abs
+            
+            # If any dot product is not near zero, we have shear
+            tolerance = 0.001
+            return false if dot_xy > tolerance || dot_xz > tolerance || dot_yz > tolerance
+            
+            # Check determinant sign (negative means reflection)
+            det = transform.to_a[0] * transform.to_a[5] * transform.to_a[10] +
+                  transform.to_a[1] * transform.to_a[6] * transform.to_a[8] +
+                  transform.to_a[2] * transform.to_a[4] * transform.to_a[9] -
+                  transform.to_a[2] * transform.to_a[5] * transform.to_a[8] -
+                  transform.to_a[1] * transform.to_a[4] * transform.to_a[10] -
+                  transform.to_a[0] * transform.to_a[6] * transform.to_a[9]
+            return false if det < 0
+            
+            true
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Convert Rotation Matrix to Quaternion
+        # ---------------------------------------------------------------
+        def self.matrix_to_quaternion(m)
+            # Convert rotation matrix to quaternion
+            # Root node handles coordinate system conversion
+            trace = m[0][0] + m[1][1] + m[2][2]
+            
+            if trace > 0
+                s = 0.5 / Math.sqrt(trace + 1.0)
+                w = 0.25 / s
+                x = (m[2][1] - m[1][2]) * s
+                y = (m[0][2] - m[2][0]) * s
+                z = (m[1][0] - m[0][1]) * s
+            elsif m[0][0] > m[1][1] && m[0][0] > m[2][2]
+                s = 2.0 * Math.sqrt(1.0 + m[0][0] - m[1][1] - m[2][2])
+                w = (m[2][1] - m[1][2]) / s
+                x = 0.25 * s
+                y = (m[0][1] + m[1][0]) / s
+                z = (m[0][2] + m[2][0]) / s
+            elsif m[1][1] > m[2][2]
+                s = 2.0 * Math.sqrt(1.0 + m[1][1] - m[0][0] - m[2][2])
+                w = (m[0][2] - m[2][0]) / s
+                x = (m[0][1] + m[1][0]) / s
+                y = 0.25 * s
+                z = (m[1][2] + m[2][1]) / s
+            else
+                s = 2.0 * Math.sqrt(1.0 + m[2][2] - m[0][0] - m[1][1])
+                w = (m[1][0] - m[0][1]) / s
+                x = (m[0][2] + m[2][0]) / s
+                y = (m[1][2] + m[2][1]) / s
+                z = 0.25 * s
+            end
+            
+            [x, y, z, w]
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Add TRS to Node
+        # ---------------------------------------------------------------
+        def self.add_trs_to_node(node, transform)
+            # Translation - convert units from inches to meters
+            origin = transform.origin
+            gltf_trans = convert_inches_to_meters(origin.x, origin.y, origin.z)
+            node["translation"] = gltf_trans
+            
+            # Scale
+            x_axis = transform.xaxis
+            y_axis = transform.yaxis
+            z_axis = transform.zaxis
+            
+            scale_x = x_axis.length
+            scale_y = y_axis.length
+            scale_z = z_axis.length
+            
+            if (scale_x - 1.0).abs > 0.001 || (scale_y - 1.0).abs > 0.001 || (scale_z - 1.0).abs > 0.001
+                node["scale"] = [scale_x, scale_y, scale_z]
+            end
+            
+            # Rotation (as quaternion)
+            rotation_matrix = [
+                [x_axis.normalize.x, x_axis.normalize.y, x_axis.normalize.z],
+                [y_axis.normalize.x, y_axis.normalize.y, y_axis.normalize.z],
+                [z_axis.normalize.x, z_axis.normalize.y, z_axis.normalize.z]
+            ]
+            
+            quat = matrix_to_quaternion(rotation_matrix)
+            # Only add rotation if not identity
+            if quat[0].abs > 0.001 || quat[1].abs > 0.001 || quat[2].abs > 0.001
+                node["rotation"] = quat
+            end
+        end
+        # ---------------------------------------------------------------
+
+        # SUB HELPER FUNCTION | Process Group or Component Instance
+        # ---------------------------------------------------------------
+        def self.process_group_or_component(entity, gltf, binary_buffer)
+            node_index = gltf["nodes"].length                                     # Current node index
+            node = {
+                "name" => entity.respond_to?(:name) ? entity.name : "Node_#{node_index}"
+            }
+            
+            # Add transformation - try to decompose to TRS first
+            if entity.respond_to?(:transformation)
+                transform = entity.transformation                                  # Get transformation
+                unless transform.identity?
+                    # Try to decompose to TRS
+                    if can_decompose_to_trs?(transform)
+                        add_trs_to_node(node, transform)                          # Use TRS decomposition
+                    else
+                        # Fall back to matrix for non-decomposable transforms
+                        puts "    Warning: Using matrix for node #{node_index} (non-TRS transform)"
+                        matrix = convert_sketchup_matrix_to_gltf(transform)       # Convert to glTF
+                        node["matrix"] = matrix                                    # Set matrix
+                    end
+                end
+            end
+            
+            # Get entity definition
+            definition = entity.respond_to?(:definition) ? entity.definition : entity
+            
+            # Get the instance material (Per Object material)
+            instance_material = entity.material if entity.respond_to?(:material)
+            
+            # Extract mesh data from all faces
+            mesh_data = extract_geometry_data(definition.entities, instance_material)  # Pass instance material
+            
+            if mesh_data && !mesh_data[:positions].empty?
+                mesh_index = add_mesh_to_gltf(mesh_data, gltf, binary_buffer)     # Add mesh
+                node["mesh"] = mesh_index                                          # Reference mesh
+            end
+            
+            # Process child entities
+            child_indices = []
+            child_count = definition.entities.count { |e| e.is_a?(Sketchup::Group) || e.is_a?(Sketchup::ComponentInstance) }
+            
+            if child_count > 0
+                puts "      Processing #{child_count} child entities in #{node['name']}"
+            end
+            
+            definition.entities.each do |child|
+                if child.is_a?(Sketchup::Group) || child.is_a?(Sketchup::ComponentInstance)
+                    child_index = process_group_or_component(child, gltf, binary_buffer)
+                    child_indices << child_index if child_index                   # Add child
+                end
+            end
+            
+            node["children"] = child_indices unless child_indices.empty?          # Set children
+            
+            gltf["nodes"] << node                                                  # Add node
+            node_index                                                             # Return index
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Geometry Data Extraction
+    # -----------------------------------------------------------------------------
+    
+        # HELPER FUNCTION | Check if Face Has Positioned Texture
+        # ---------------------------------------------------------------
+        def self.has_positioned_texture?(face, material)
+            return false unless face && material && material.texture
+            
+            begin
+                # Try to get UVHelper - if this succeeds, texture might be positioned
+                uv_helper = face.get_UVHelper(true) if face.material == material
+                uv_helper = face.get_UVHelper(false) if face.back_material == material
+                
+                return false unless uv_helper
+                
+                # Test a corner of the face to see if UV coordinates are non-standard
+                bounds = face.bounds
+                test_point = bounds.corner(0)  # Get a corner point
+                
+                uvq = uv_helper.get_front_UVQ(test_point)
+                return false unless uvq
+                
+                # Check if UV coordinates suggest positioning has been applied
+                # Standard textures typically have UVs in predictable ranges
+                u, v = uvq.x.to_f, uvq.y.to_f
+                
+                # If UVs are significantly outside 0-1 range or have unusual values,
+                # it's likely a positioned texture
+                return true if u.abs > 2.0 || v.abs > 2.0
+                
+                # Check for rotation by testing multiple points
+                if face.vertices.length >= 3
+                    test_point2 = face.vertices[1].position
+                    uvq2 = uv_helper.get_front_UVQ(test_point2)
+                    if uvq2
+                        u2, v2 = uvq2.x.to_f, uvq2.y.to_f
+                        # If UV direction doesn't align with geometry direction, it's positioned
+                        return true if (u2 - u).abs > 0.1 && (v2 - v).abs > 0.1
+                    end
+                end
+                
+                false
+            rescue => e
+                puts "        Error checking positioned texture: #{e.message}"
+                false
+            end
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Extract UV Coordinates for Positioned Textures
+        # ---------------------------------------------------------------
+        def self.extract_positioned_texture_uv(face, position, material)
+            return [0.0, 0.0] unless face && material && material.texture
+            
+            begin
+                # Get the correct UVHelper based on which side has the material
+                uv_helper = nil
+                if face.material == material
+                    uv_helper = face.get_UVHelper(true)                               # Front face
+                elsif face.back_material == material
+                    uv_helper = face.get_UVHelper(false)                              # Back face
+                end
+                
+                return [0.0, 0.0] unless uv_helper
+                
+                # Get UV coordinates for this position
+                uvq = uv_helper.get_front_UVQ(position)
+                return [0.0, 0.0] unless uvq
+                
+                # Extract UV coordinates with perspective correction
+                u = uvq.x.to_f
+                v = uvq.y.to_f
+                q = uvq.z.to_f
+                
+                # Apply perspective correction if Q is not 1.0
+                if q != 0.0 && q != 1.0
+                    u = u / q
+                    v = v / q
+                end
+                
+                # UVHelper returns coordinates in texture space
+                # These are already normalized for positioned textures
+                uv = [u, v]
+                
+                # Flip V coordinate for glTF (glTF uses top-left origin)
+                uv[1] = 1.0 - uv[1]
+                
+                # Clamp to reasonable range (positioned textures can go outside 0-1)
+                uv[0] = [[uv[0], -10.0].max, 10.0].min
+                uv[1] = [[uv[1], -10.0].max, 10.0].min
+                
+                return uv
+                
+            rescue => e
+                puts "        Error extracting positioned UV: #{e.message}"
+                return [0.0, 0.0]
+            end
+        end
+        # ---------------------------------------------------------------
+
+        # FUNCTION | Extract Geometry Data from Entities
+        # ------------------------------------------------------------
+        def self.extract_geometry_data(entities, instance_material = nil)
+            positions = []                                                         # Vertex positions
+            normals = []                                                           # Vertex normals
+            uvs = []                                                               # Texture coordinates
+            indices = []                                                           # Face indices
+            material_indices = []                                                  # Material per primitive
+            
+            vertex_count = 0                                                       # Track vertices
+            face_count = 0                                                         # Track faces processed
+            
+            # Count total faces for progress
+            total_faces = entities.count { |e| e.is_a?(Sketchup::Face) }
+            uv_debug_count = 0                                                     # Track faces with UVs
+            positioned_texture_count = 0                                           # Track positioned textures
+            
+            entities.each do |entity|
+                next unless entity.is_a?(Sketchup::Face)                          # Only process faces
+                
+                # Report face processing progress
+                face_count += 1
+                if face_count % 100 == 0 || face_count == total_faces
+                    puts "      Processing faces: #{face_count}/#{total_faces}"
+                end
+                
+                # Determine which material to use:
+                # 1. Instance material (Per Object) overrides face materials
+                # 2. Otherwise use face material
+                effective_material = instance_material || entity.material || entity.back_material
+                material_index = get_or_create_material_index(effective_material)  # Material index
+                
+                # Check if this face has a positioned texture
+                has_positioned = has_positioned_texture?(entity, effective_material)
+                if has_positioned
+                    positioned_texture_count += 1
+                    puts "        Face #{face_count} has positioned texture: #{effective_material.display_name}"
+                end
+                
+                # Get UVHelper for proper UV coordinate extraction (ORIGINAL METHOD)
+                uv_helper = nil
+                if effective_material && effective_material.texture && !has_positioned
+                    # Use the face's material for UV mapping (not instance material)
+                    if entity.material && entity.material.texture
+                        uv_helper = entity.get_UVHelper(true, true)              # Original method with texture parameter
+                    elsif entity.back_material && entity.back_material.texture
+                        uv_helper = entity.get_UVHelper(false, false)            # Original method with texture parameter
+                    end
+                end
+                
+                # Get face mesh with normals
+                mesh = entity.mesh(7)                                              # Full mesh data
+                
+                # Process each polygon in the mesh
+                (1..mesh.count_polygons).each do |poly_index|
+                    polygon_points = mesh.polygon_at(poly_index)                  # Get polygon
+                    
+                    # Only process triangles
+                    next unless polygon_points.length == 3                        # Skip non-triangles
+                    
+                    # Create face indices
+                    face_indices = []
+                    
+                    polygon_points.each do |point_index|
+                        # Get vertex data
+                        position = mesh.point_at(point_index)                     # Position in inches
+                        normal = mesh.normal_at(point_index)                      # Normal vector
+                        
+                        # Get UV coordinates using appropriate method
+                        uv = [0.0, 0.0]
+                        
+                        if has_positioned && effective_material && effective_material.texture
+                            # NEW METHOD: Use positioned texture extraction
+                            uv = extract_positioned_texture_uv(entity, position, effective_material)
+                            
+                            # Debug positioned texture UVs
+                            if point_index == polygon_points.first
+                                uv_debug_count += 1
+                                if uv_debug_count <= 5  # Only log first 5 for brevity
+                                    puts "          Positioned UV coords: [#{uv[0].round(3)}, #{uv[1].round(3)}]"
+                                end
+                            end
+                            
+                        elsif uv_helper
+                            # ORIGINAL METHOD: Use standard UVHelper
+                            begin
+                                # Get UV for this vertex position
+                                uvq = uv_helper.get_front_UVQ(position)
+                                if uvq
+                                    # Extract UV from UVQ (ignore Q component)
+                                    uv = [uvq.x.to_f, uvq.y.to_f]
+                                    # UVHelper returns normalized coordinates, no need to divide by texture size
+                                    # Flip V coordinate for glTF
+                                    uv[1] = 1.0 - uv[1]
+                                    
+                                    # Debug first UV of each face
+                                    if point_index == polygon_points.first
+                                        uv_debug_count += 1
+                                        if uv_debug_count <= 5  # Only log first 5 for brevity
+                                            puts "          Standard UV coords: [#{uv[0].round(3)}, #{uv[1].round(3)}]"
+                                        end
+                                    end
+                                else
+                                    puts "          WARNING: get_front_UVQ returned nil for position"
+                                end
+                            rescue => e
+                                puts "        UV extraction error: #{e.message}"
+                                puts "        Error class: #{e.class}"
+                            end
+                            
+                        elsif effective_material && effective_material.texture
+                            puts "          WARNING: Have texture but no UV helper!"
+                        end
+                        
+                        # Convert units from inches to meters (root node handles coord system)
+                        gltf_pos = convert_inches_to_meters(position.x, position.y, position.z)
+                        
+                        # Add vertex data (normals don't need unit conversion)
+                        positions.concat(gltf_pos)                                # Converted position
+                        normals.concat([normal.x.to_f, normal.y.to_f, normal.z.to_f])  # Normal as-is
+                        uvs.concat(uv)                                            # UV coordinates
+                        
+                        face_indices << vertex_count                               # Add index
+                        vertex_count += 1                                          # Increment
+                    end
+                    
+                    # Add indices for this triangle
+                    indices.concat(face_indices)                                   # Add face
+                    material_indices << material_index                             # Material for primitive
+                end
+            end
+            
+            return nil if positions.empty?                                        # No geometry
+            
+            # Debug UV extraction
+            if uv_debug_count > 0
+                puts "        Faces with texture UVs: #{uv_debug_count}/#{face_count}"
+            end
+            if positioned_texture_count > 0
+                puts "        Faces with positioned textures: #{positioned_texture_count}/#{face_count}"
+            end
+            
+            {
+                :positions => positions,                                           # <-- Vertex positions
+                :normals => normals,                                               # <-- Vertex normals
+                :uvs => uvs,                                                       # <-- Texture coordinates
+                :indices => indices,                                               # <-- Face indices
+                :materials => material_indices                                     # <-- Material index per triangle
+            }
+        end
+        # ---------------------------------------------------------------
+    
+        # HELPER FUNCTION | Fix SketchUp UV Coordinates
+        # ---------------------------------------------------------------
+        def self.fix_sketchup_uv(uv_point, texture)
+            return [0.0, 0.0] unless uv_point && texture
+            
+            # Handle SketchUp's UV representation
+            if uv_point.respond_to?(:x) && uv_point.respond_to?(:y)
+                # Point3d with UV coordinates
+                u = uv_point.x.to_f
+                v = uv_point.y.to_f
+            elsif uv_point.is_a?(Array) && uv_point.length >= 2
+                # Array format [u, v]
+                u = uv_point[0].to_f
+                v = uv_point[1].to_f
+            else
+                puts "        WARNING: Unknown UV format: #{uv_point.class}"
+                return [0.0, 0.0]
+            end
+            
+            # SketchUp returns UVs in different formats depending on texture size
+            # If values are > 1.0, they're likely in pixel coordinates
+            if u.abs > 1.0 || v.abs > 1.0
+                # Convert from pixel coordinates to normalized 0-1 range
+                u = u / texture.width.to_f
+                v = v / texture.height.to_f
+            end
+            
+            # SketchUp uses bottom-left origin, glTF uses top-left
+            # Flip V coordinate
+            v = 1.0 - v
+            
+            # Clamp to valid range
+            u = [[u, 0.0].max, 1.0].min
+            v = [[v, 0.0].max, 1.0].min
+            
+            [u, v]
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Generate UV Coordinates for Untextured Face
+        # ---------------------------------------------------------------
+        def self.generate_uv_for_face(face, point)
+            # Get face normal to determine projection plane
+            normal = face.normal
+            
+            # Choose projection plane based on dominant normal axis
+            abs_x = normal.x.abs
+            abs_y = normal.y.abs  
+            abs_z = normal.z.abs
+            
+            # Get bounding box of the face
+            bounds = face.bounds
+            min_pt = bounds.min
+            max_pt = bounds.max
+            
+            # Calculate UV based on dominant axis
+            if abs_z >= abs_x && abs_z >= abs_y
+                # Z is dominant - project to XY plane
+                u = (point.x - min_pt.x) / (max_pt.x - min_pt.x)
+                v = (point.y - min_pt.y) / (max_pt.y - min_pt.y)
+            elsif abs_y >= abs_x && abs_y >= abs_z
+                # Y is dominant - project to XZ plane
+                u = (point.x - min_pt.x) / (max_pt.x - min_pt.x)
+                v = (point.z - min_pt.z) / (max_pt.z - min_pt.z)
+            else
+                # X is dominant - project to YZ plane
+                u = (point.y - min_pt.y) / (max_pt.y - min_pt.y)
+                v = (point.z - min_pt.z) / (max_pt.z - min_pt.z)
+            end
+            
+            # Ensure values are in 0-1 range
+            u = [[u, 0.0].max, 1.0].min
+            v = [[v, 0.0].max, 1.0].min
+            
+            # Flip V for glTF compatibility
+            v = 1.0 - v
+            
+            [u, v]
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Convert SketchUp Units to glTF
+        # ---------------------------------------------------------------
+        def self.convert_inches_to_meters(x, y, z)
+            # Convert from inches to meters (glTF standard)
+            # We're using a root rotation for coordinate system conversion
+            # so we only need unit conversion here
+            inches_to_meters = 0.0254
+            
+            [
+                x * inches_to_meters,
+                y * inches_to_meters,
+                z * inches_to_meters
+            ]
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Convert SketchUp Transformation Matrix to glTF
+        # ---------------------------------------------------------------
+        def self.convert_sketchup_matrix_to_gltf(transform)
+            # SketchUp uses 4x4 matrix in row-major order
+            # glTF expects column-major order
+            # Root node handles coordinate system conversion
+            
+            # Convert units for translation
+            origin = transform.origin
+            gltf_origin = convert_inches_to_meters(origin.x, origin.y, origin.z)
+            
+            # Build column-major matrix for glTF
+            matrix = []
+            4.times do |col|
+                4.times do |row|
+                    if row < 3 && col == 3
+                        # Translation column - use converted values
+                        matrix << gltf_origin[row]
+                    else
+                        # Other values stay as-is
+                        matrix << transform.to_a[row * 4 + col]
+                    end
+                end
+            end
+            
+            matrix
+        end
+        # ---------------------------------------------------------------
+        
+        # FUNCTION | Extract Edge Data from Entities (for Line Primitives)
+        # ---------------------------------------------------------------
+        def self.extract_edge_data(entities)
+            positions = []                                                         # Vertex positions for line endpoints
+            colors = []                                                            # Vertex colors (per endpoint)
+            indices = []                                                           # Line segment indices
+            
+            vertex_count = 0                                                       # Track vertices
+            edge_count = 0                                                         # Track edges processed
+            
+            entities.each do |entity|
+                next unless entity.is_a?(Sketchup::Edge)                          # Only process edges
+                
+                edge_count += 1
+                
+                # Get edge endpoints
+                start_pos = entity.start.position                                 # Start vertex
+                end_pos = entity.end.position                                     # End vertex
+                
+                # Get edge color (fallback to black if none)
+                edge_color = entity.color
+                if edge_color.nil?
+                    # Try to get layer color
+                    edge_color = entity.layer.color rescue nil
+                end
+                
+                # Default to black if no color found
+                if edge_color.nil?
+                    edge_color = Sketchup::Color.new(0, 0, 0)                     # Black default
+                end
+                
+                # Convert color to normalized RGB (0.0-1.0)
+                color_rgb = [
+                    edge_color.red / 255.0,                                       # Red channel
+                    edge_color.green / 255.0,                                     # Green channel
+                    edge_color.blue / 255.0                                       # Blue channel
+                ]
+                
+                # Convert positions to glTF coordinate system and units
+                # SketchUp: X=right, Y=forward, Z=up (inches)
+                # glTF: X=right, Y=up, Z=forward (meters)
+                start_gltf = [
+                    start_pos.x * 0.0254,                                         # X stays, to meters
+                    start_pos.z * 0.0254,                                         # Z becomes Y (up)
+                    -start_pos.y * 0.0254                                         # -Y becomes Z (forward)
+                ]
+                
+                end_gltf = [
+                    end_pos.x * 0.0254,                                           # X stays, to meters
+                    end_pos.z * 0.0254,                                           # Z becomes Y (up)
+                    -end_pos.y * 0.0254                                           # -Y becomes Z (forward)
+                ]
+                
+                # Add start vertex
+                positions.concat(start_gltf)                                      # Start position
+                colors.concat(color_rgb)                                          # Start color
+                
+                # Add end vertex
+                positions.concat(end_gltf)                                        # End position
+                colors.concat(color_rgb)                                          # End color (same as start)
+                
+                # Add line segment indices (each edge = 2 vertices)
+                indices << vertex_count                                            # Start index
+                indices << vertex_count + 1                                        # End index
+                
+                vertex_count += 2                                                  # Increment by 2 per edge
+            end
+            
+            return nil if positions.empty?                                        # No edges found
+            
+            puts "        Extracted #{edge_count} edges with #{vertex_count} vertices"
+            
+            {
+                :positions => positions,                                           # <-- Line endpoint positions
+                :colors => colors,                                                 # <-- Vertex colors
+                :indices => indices                                                # <-- Line segment indices
+            }
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Material and Texture Processing
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Collect All Materials from Entities
+        # ------------------------------------------------------------
+        def self.collect_materials_from_entities(entities)
+            puts "    Collecting materials from entities..."
+            material_count = 0
+            
+            entities.each do |entity|
+                case entity
+                when Sketchup::Group, Sketchup::ComponentInstance
+                    # Check if the group/component itself has a material (Per Object)
+                    if entity.material && !@material_map.has_key?(entity.material)
+                        @material_map[entity.material] = material_count
+                        material_count += 1
+                        puts "      Found material on #{entity.class}: #{entity.material.display_name}"
+                    end
+                    
+                    # Get entity definition
+                    definition = entity.respond_to?(:definition) ? entity.definition : entity
+                    
+                    # Recursively collect from nested entities
+                    definition.entities.each do |sub_entity|
+                        if sub_entity.is_a?(Sketchup::Face)
+                            if sub_entity.material && !@material_map.has_key?(sub_entity.material)
+                                @material_map[sub_entity.material] = material_count
+                                material_count += 1
+                                puts "      Found material: #{sub_entity.material.display_name}"
+                            end
+                            if sub_entity.back_material && !@material_map.has_key?(sub_entity.back_material)
+                                @material_map[sub_entity.back_material] = material_count
+                                material_count += 1
+                                puts "      Found back material: #{sub_entity.back_material.display_name}"
+                            end
+                        elsif sub_entity.is_a?(Sketchup::Group) || sub_entity.is_a?(Sketchup::ComponentInstance)
+                            # Recursively collect materials from nested groups/components
+                            collect_materials_from_entities([sub_entity])
+                        end
+                    end
+                    
+                when Sketchup::Face
+                    if entity.material && !@material_map.has_key?(entity.material)
+                        @material_map[entity.material] = material_count
+                        material_count += 1
+                        puts "      Found material: #{entity.material.display_name}"
+                    end
+                    if entity.back_material && !@material_map.has_key?(entity.back_material)
+                        @material_map[entity.back_material] = material_count
+                        material_count += 1
+                        puts "      Found back material: #{entity.back_material.display_name}"
+                    end
+                end
+            end
+            
+            puts "    Found #{@material_map.length} unique materials"
+        end
+        # ---------------------------------------------------------------
+    
+        # FUNCTION | Get or Create Material Index
+        # ---------------------------------------------------------------
+        def self.get_or_create_material_index(material)
+            return 0 unless material                                               # Default material
+            
+            # Check if material already processed
+            return @material_map[material] if @material_map.has_key?(material)    # Return existing
+            
+            # Create new material index
+            material_index = @material_map.length                                  # New index
+            @material_map[material] = material_index                               # Store mapping
+            
+            material_index                                                         # Return index
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Create GLTF Materials from Material Map
+        # ---------------------------------------------------------------
+        def self.create_gltf_materials(gltf, binary_buffer)
+            puts "    Creating materials: #{@material_map.length} materials found"
+            
+            # Ensure sampler exists BEFORE any textures are created
+            if gltf["samplers"].empty?
+                gltf["samplers"] << {
+                    "magFilter" => 9729,                                          # <-- LINEAR
+                    "minFilter" => 9987,                                          # <-- LINEAR_MIPMAP_LINEAR
+                    "wrapS" => 10497,                                             # <-- REPEAT
+                    "wrapT" => 10497                                              # <-- REPEAT
+                }
+                puts "      Created default sampler"
+            end
+            
+            @material_map.each do |material, index|
+                puts "      Material #{index}: #{material.display_name}"
+                
+                gltf_material = {
+                    "name" => material.display_name || "Material_#{index}"        # <-- Material name
+                }
+                
+                # Set base color
+                color = material.color
+                base_color = [
+                    color.red / 255.0,                                            # <-- Red channel
+                    color.green / 255.0,                                          # <-- Green channel
+                    color.blue / 255.0,                                           # <-- Blue channel
+                    material.alpha                                                 # <-- Alpha channel
+                ]
+                
+                puts "        Color: RGB(#{color.red}, #{color.green}, #{color.blue}), Alpha: #{material.alpha}"
+                
+                pbr = {
+                    "baseColorFactor" => base_color,                              # <-- Base color
+                    "metallicFactor" => 0.0,                                      # <-- Non-metallic
+                    "roughnessFactor" => 0.5                                      # <-- Medium roughness
+                }
+                
+                # Add texture if present (check and cache)
+                if material.texture && material.texture.valid?
+                    puts "        Has texture: #{material.texture.filename}"
+                    texture_index = get_or_create_texture(material.texture, gltf, binary_buffer)
+                    if texture_index
+                        pbr["baseColorTexture"] = {
+                            "index" => texture_index,                              # <-- Texture index
+                            "texCoord" => 0                                        # <-- UV set
+                        }
+                        puts "        Assigned texture index: #{texture_index}"
+                    else
+                        puts "        ERROR: Failed to create texture!"
+                    end
+                else
+                    puts "        No texture - using baseColorFactor only"
+                end
+                
+                gltf_material["pbrMetallicRoughness"] = pbr                       # Set PBR
+                
+                # Handle transparency
+                if material.alpha < 1.0
+                    gltf_material["alphaMode"] = "BLEND"                          # <-- Blended transparency
+                    puts "        Transparency enabled: #{material.alpha}"
+                end
+                
+                gltf["materials"] << gltf_material                                # Add material
+            end
+            
+            # Always ensure at least one material exists for glTF compliance
+            if gltf["materials"].empty?
+                puts "      Adding default material"
+                gltf["materials"] << {
+                    "name" => "Default",                                          # <-- Default name
+                    "pbrMetallicRoughness" => {
+                        "baseColorFactor" => [0.8, 0.8, 0.8, 1.0],               # <-- Light gray
+                        "metallicFactor" => 0.0,                                  # <-- Non-metallic
+                        "roughnessFactor" => 0.5                                  # <-- Medium roughness
+                    }
+                }
+            end
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Get or Create Texture (with caching)
+        # ---------------------------------------------------------------
+        def self.get_or_create_texture(texture, gltf, binary_buffer)
+            # Create consistent cache key (same as in get_or_create_image)
+            cache_key = texture.filename.gsub(/[^a-zA-Z0-9._-]/, '_')
+            cache_key = "texture_#{cache_key}" if cache_key.empty?
+            
+            # Check if already processed
+            if @texture_cache.has_key?(cache_key)
+                puts "        Using cached texture index: #{@texture_cache[cache_key]} for #{cache_key}"
+                return @texture_cache[cache_key]  # Return cached index
+            end
+            
+            # Create sampler if first texture
+            if gltf["samplers"].empty?
+                gltf["samplers"] << {
+                    "magFilter" => 9729,                                          # <-- LINEAR
+                    "minFilter" => 9987,                                          # <-- LINEAR_MIPMAP_LINEAR
+                    "wrapS" => 10497,                                             # <-- REPEAT
+                    "wrapT" => 10497                                              # <-- REPEAT
+                }
+            end
+            
+            # Get/create image and cache
+            image_index = get_or_create_image(texture, gltf, binary_buffer)      # Create image
+            return nil unless image_index                                         # Failed to create
+            
+            # Create texture
+            texture_index = gltf["textures"].length                               # New index
+            gltf["textures"] << {
+                "sampler" => 0,                                                   # <-- Default sampler
+                "source" => image_index                                           # <-- Image source
+            }
+            
+            @texture_map[texture] = texture_index                                 # Store mapping
+            @texture_cache[cache_key] = texture_index                             # Cache the index
+            puts "        Created texture index: #{texture_index} for #{cache_key}"
+            texture_index                                                          # Return index
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB HELPER FUNCTION | Get or Create Image (with temp file caching)
+        # ---------------------------------------------------------------
+        def self.get_or_create_image(texture, gltf, binary_buffer)
+            return @image_map[texture] if @image_map.has_key?(texture)            # Return existing
+            
+            begin
+                puts "      Processing texture: #{texture.filename}"
+                
+                # Create a safe cache filename by replacing invalid characters
+                cache_key = texture.filename.gsub(/[^a-zA-Z0-9._-]/, '_')         # Replace invalid chars with underscore
+                cache_key = "texture_#{cache_key}" if cache_key.empty?            # Ensure non-empty name
+                cached_path = File.join(@texture_cache_folder, "#{cache_key}.png")
+                
+                # Check if already cached
+                if File.exist?(cached_path)
+                    puts "        Using cached image file: #{cached_path}"
+                    image_data = File.binread(cached_path)
+                    width = texture.image_width
+                    height = texture.image_height
+                else
+                    # Try multiple methods to extract texture
+                    success = false
+                    
+                    # Method 1: Try ImageRep for 2025+
+                    begin
+                        image_rep = texture.image_rep(true)  # true = include colorization
+                        
+                        if image_rep && image_rep.width > 0 && image_rep.height > 0
+                            puts "        ImageRep dimensions: #{image_rep.width}x#{image_rep.height}"
+                            success = image_rep.save_file(cached_path)
+                            width = image_rep.width
+                            height = image_rep.height
+                            puts "        ImageRep save result: #{success}"
+                            if success
+                                puts "        Successfully cached using ImageRep: #{cached_path}"
+                            end
+                        else
+                            puts "        ImageRep invalid or zero dimensions"
+                        end
+                    rescue => e
+                        puts "        ImageRep method failed: #{e.message}"
+                        puts "        Error class: #{e.class}"
+                    end
+                    
+                    # Method 2: Try texture.write if ImageRep failed
+                    if !success || !File.exist?(cached_path)
+                        begin
+                            puts "        Trying legacy texture.write method..."
+                            # Ensure directory exists
+                            FileUtils.makedirs(File.dirname(cached_path)) rescue nil
+                            
+                            success = texture.write(cached_path, true)  # true for colorized
+                            width = texture.image_width
+                            height = texture.image_height
+                            puts "        texture.write result: #{success}"
+                            if success && File.exist?(cached_path)
+                                puts "        Successfully cached using texture.write"
+                            end
+                        rescue => e
+                            puts "        texture.write failed: #{e.message}"
+                        end
+                    end
+                    
+                    # Method 3: Try using texture writer as last resort
+                    if !success || !File.exist?(cached_path)
+                        begin
+                            puts "        Trying TextureWriter method..."
+                            tw = Sketchup.create_texture_writer
+                            # Load the texture into the writer
+                            tw.load(texture)
+                            # Write all textures
+                            result = tw.write_all(@texture_cache_folder, false)
+                            if result == 0  # Success
+                                # Find the written file
+                                possible_names = [
+                                    File.join(@texture_cache_folder, File.basename(texture.filename)),
+                                    File.join(@texture_cache_folder, File.basename(texture.filename, '.*') + '.png')
+                                ]
+                                possible_names.each do |possible_path|
+                                    if File.exist?(possible_path)
+                                        FileUtils.mv(possible_path, cached_path) rescue nil
+                                        success = File.exist?(cached_path)
+                                        puts "        Found and moved texture from TextureWriter"
+                                        break
+                                    end
+                                end
+                            end
+                        rescue => e
+                            puts "        TextureWriter method failed: #{e.message}"
+                        end
+                    end
+                    
+                    unless success && File.exist?(cached_path)
+                        puts "        ERROR: All texture extraction methods failed"
+                        puts "        Texture filename: #{texture.filename}"
+                        puts "        Texture valid?: #{texture.valid?}"
+                        puts "        Texture dimensions: #{texture.image_width}x#{texture.image_height}"
+                        return nil
+                    end
+                    
+                    image_data = File.binread(cached_path)
+                    width = texture.image_width
+                    height = texture.image_height
+                end
+                
+                puts "        Texture data size: #{image_data.bytesize} bytes"
+                
+                # Add padding for 4-byte alignment
+                buffer_offset = binary_buffer.length
+                padding = (4 - (buffer_offset % 4)) % 4
+                padding.times { binary_buffer << 0 }
+                buffer_offset = binary_buffer.length
+                
+                # Add to buffer
+                binary_buffer.concat(image_data.bytes)
+                
+                # Create buffer view
+                buffer_view_index = gltf["bufferViews"].length
+                gltf["bufferViews"] << {
+                    "buffer" => 0,
+                    "byteOffset" => buffer_offset,
+                    "byteLength" => image_data.bytesize
+                }
+                
+                # Create image
+                image_index = gltf["images"].length
+                gltf["images"] << {
+                    "bufferView" => buffer_view_index,
+                    "mimeType" => "image/png"
+                }
+                
+                puts "        Added as image index: #{image_index}"
+                @image_map[texture] = image_index
+                image_index
+                
+            rescue => e
+                puts "        ERROR processing texture: #{e.message}"
+                puts "        #{e.backtrace.first(3).join("\n        ")}"
+                nil
+            end
+        end
+        # ---------------------------------------------------------------
+    
+        # HELPER FUNCTION | Create 1x1 RGB Fallback Texture (for no-texture materials)
+        # ---------------------------------------------------------------
+        def self.create_rgb_fallback_texture(color, gltf, binary_buffer)
+            begin
+                # Create 1x1 pixel ImageRep from color
+                image_rep = Sketchup::ImageRep.new
+                r, g, b = color.red, color.green, color.blue
+                
+                # Try to use set_data if available
+                if image_rep.respond_to?(:set_data)
+                    pixel_data = [r, g, b, 255].pack("C*")  # RGBA byte string
+                    image_rep.set_data(1, 1, 32, 0, pixel_data)  # 32bpp for RGBA
+                else
+                    # Fallback: Create a tiny colored square in the model, capture it, then delete
+                    puts "        Creating RGB fallback using alternative method"
+                    return nil  # For now, skip RGB fallback if set_data not available
+                end
+                
+                # Cache to temp file
+                cache_key = "rgb_#{color.to_i.abs}"  # Use abs to avoid negative numbers
+                cached_path = File.join(@texture_cache_folder, "#{cache_key}.png")
+            
+            unless File.exist?(cached_path)
+                success = image_rep.save_file(cached_path)
+                unless success
+                    puts "        ERROR: Failed to create RGB fallback"
+                    return nil
+                end
+            end
+            
+            # Read and add to buffer (same as regular image)
+            image_data = File.binread(cached_path)
+            
+            buffer_offset = binary_buffer.length
+            padding = (4 - (buffer_offset % 4)) % 4
+            padding.times { binary_buffer << 0 }
+            buffer_offset = binary_buffer.length
+            
+            binary_buffer.concat(image_data.bytes)
+            
+            buffer_view_index = gltf["bufferViews"].length
+            gltf["bufferViews"] << {
+                "buffer" => 0,
+                "byteOffset" => buffer_offset,
+                "byteLength" => image_data.bytesize
+            }
+            
+            image_index = gltf["images"].length
+            gltf["images"] << {
+                "bufferView" => buffer_view_index,
+                "mimeType" => "image/png"
+            }
+            
+            texture_index = gltf["textures"].length
+            gltf["textures"] << {
+                "sampler" => 0,
+                "source" => image_index
+            }
+            
+            texture_index  # Return the texture index
+            
+            rescue => e
+                puts "        ERROR creating RGB fallback: #{e.message}"
+                nil
+            end
+        end
+        # ---------------------------------------------------------------
+
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Mesh and Buffer Management
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Add Mesh to GLTF Structure
+        # ------------------------------------------------------------
+        def self.add_mesh_to_gltf(mesh_data, gltf, binary_buffer)
+            mesh_index = gltf["meshes"].length                                    # Current mesh index
+            
+            # Create mesh
+            mesh = {
+                "name" => "Mesh_#{mesh_index}",                                  # <-- Mesh name
+                "primitives" => []                                                # <-- Mesh primitives
+            }
+            
+            # Group indices by material
+            material_groups = {}
+            mesh_data[:indices].each_slice(3).with_index do |triangle, idx|
+                material = mesh_data[:materials][idx] || 0                        # Get material
+                material_groups[material] ||= []                                  # Initialize group
+                material_groups[material].concat(triangle)                        # Add triangle
+            end
+            
+            # Create primitive for each material
+            material_groups.each do |material_index, indices|
+                # Check if this specific material has a texture
+                material_has_texture = false
+                if material_index < @material_map.length && material_index >= 0
+                    material = @material_map.keys[material_index]
+                    material_has_texture = material && material.texture && material.texture.valid?
+                end
+                
+                # Check if we have UVs
+                has_uvs = !mesh_data[:uvs].empty?
+                
+                # If material has texture but no UVs, use default material instead
+                if material_has_texture && !has_uvs
+                    puts "        Warning: Material #{material_index} has texture but mesh has no UVs - using default material"
+                    material_index = 0  # Use default material
+                    material_has_texture = false
+                end
+                
+                primitive = {
+                    "attributes" => {},                                           # <-- Vertex attributes
+                    "material" => material_index,                                 # <-- Material index
+                    "mode" => 4                                                   # <-- TRIANGLES
+                }
+                
+                # Add position accessor
+                position_accessor = add_accessor(
+                    mesh_data[:positions], gltf, binary_buffer,
+                    5126, "VEC3", true, 34962                                     # FLOAT, VEC3, calc bounds, ARRAY_BUFFER
+                )
+                primitive["attributes"]["POSITION"] = position_accessor           # Set attribute
+                
+                # Add normal accessor
+                normal_accessor = add_accessor(
+                    mesh_data[:normals], gltf, binary_buffer,
+                    5126, "VEC3", false, 34962                                    # FLOAT, VEC3, no bounds, ARRAY_BUFFER
+                )
+                primitive["attributes"]["NORMAL"] = normal_accessor               # Set attribute
+                
+                # Add UV accessor if we have UVs
+                if has_uvs
+                    uv_accessor = add_accessor(
+                        mesh_data[:uvs], gltf, binary_buffer,
+                        5126, "VEC2", false, 34962                                # FLOAT, VEC2, no bounds, ARRAY_BUFFER
+                    )
+                    primitive["attributes"]["TEXCOORD_0"] = uv_accessor           # Set attribute
+                    puts "        Added TEXCOORD_0 accessor: #{uv_accessor}"
+                elsif material_has_texture
+                    puts "        WARNING: Material has texture but no UV data - using default material"
+                end
+                
+                # Add indices accessor
+                if indices.max < 65536
+                    # Use unsigned short for indices
+                    indices_accessor = add_accessor(
+                        indices, gltf, binary_buffer,
+                        5123, "SCALAR", false, 34963                              # UNSIGNED_SHORT, SCALAR, ELEMENT_ARRAY_BUFFER
+                    )
+                else
+                    # Use unsigned int for large meshes
+                    indices_accessor = add_accessor(
+                        indices, gltf, binary_buffer,
+                        5125, "SCALAR", false, 34963                              # UNSIGNED_INT, SCALAR, ELEMENT_ARRAY_BUFFER
+                    )
+                end
+                primitive["indices"] = indices_accessor                           # Set indices
+                
+                mesh["primitives"] << primitive                                   # Add primitive
+            end
+            
+            gltf["meshes"] << mesh                                                # Add mesh
+            mesh_index                                                             # Return index
+        end
+        # ---------------------------------------------------------------
+        
+        # FUNCTION | Add Line Mesh to GLTF Structure (for Edge Export)
+        # ---------------------------------------------------------------
+        def self.add_line_mesh_to_gltf(edge_data, gltf, binary_buffer, mesh_name = "EdgeMesh")
+            mesh_index = gltf["meshes"].length                                    # Current mesh index
+            
+            # Create line primitive
+            primitive = {
+                "attributes" => {},                                               # <-- Vertex attributes
+                "mode" => 1                                                       # <-- LINES mode (instead of TRIANGLES=4)
+            }
+            
+            # Add position accessor
+            position_accessor = add_accessor(
+                edge_data[:positions], gltf, binary_buffer,
+                5126, "VEC3", true, 34962                                         # FLOAT, VEC3, calc bounds, ARRAY_BUFFER
+            )
+            primitive["attributes"]["POSITION"] = position_accessor               # Set attribute
+            
+            # Add color accessor (COLOR_0)
+            if !edge_data[:colors].empty?
+                color_accessor = add_accessor(
+                    edge_data[:colors], gltf, binary_buffer,
+                    5126, "VEC3", false, 34962                                    # FLOAT, VEC3, no bounds, ARRAY_BUFFER
+                )
+                primitive["attributes"]["COLOR_0"] = color_accessor               # Set color attribute
+                puts "        Added COLOR_0 accessor for edge colors"
+            end
+            
+            # Add indices accessor for line segments
+            if edge_data[:indices].max < 65536
+                # Use unsigned short for indices
+                indices_accessor = add_accessor(
+                    edge_data[:indices], gltf, binary_buffer,
+                    5123, "SCALAR", false, 34963                                  # UNSIGNED_SHORT, SCALAR, ELEMENT_ARRAY_BUFFER
+                )
+            else
+                # Use unsigned int for large edge counts
+                indices_accessor = add_accessor(
+                    edge_data[:indices], gltf, binary_buffer,
+                    5125, "SCALAR", false, 34963                                  # UNSIGNED_INT, SCALAR, ELEMENT_ARRAY_BUFFER
+                )
+            end
+            primitive["indices"] = indices_accessor                               # Set indices
+            
+            # Create mesh with single line primitive
+            mesh = {
+                "name" => mesh_name,                                              # <-- Mesh name
+                "primitives" => [primitive]                                       # <-- Single line primitive
+            }
+            
+            gltf["meshes"] << mesh                                                # Add mesh
+            puts "        Created line mesh #{mesh_index}: #{mesh_name}"
+            mesh_index                                                             # Return index
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Add Accessor to GLTF
+        # ---------------------------------------------------------------
+        def self.add_accessor(data, gltf, binary_buffer, component_type, type, calc_bounds, target_hint = nil)
+            # Calculate element count
+            element_size = case type
+                           when "SCALAR" then 1
+                           when "VEC2" then 2
+                           when "VEC3" then 3
+                           when "VEC4" then 4
+                           else 1
+                           end
+            
+            count = data.length / element_size                                    # Element count
+            
+            # Add padding for 4-byte alignment
+            buffer_offset = binary_buffer.length                                  # Current offset
+            padding = (4 - (buffer_offset % 4)) % 4                              # Calculate padding
+            padding.times { binary_buffer << 0 }                                  # Add padding
+            buffer_offset = binary_buffer.length                                  # Update offset
+            
+            # Add data to buffer based on component type
+            case component_type
+            when 5120  # BYTE
+                data.each { |v| binary_buffer << [v.to_i].pack('c').unpack('C')[0] }
+            when 5121  # UNSIGNED_BYTE
+                data.each { |v| binary_buffer << [v.to_i].pack('C')[0] }
+            when 5122  # SHORT
+                data.each { |v| binary_buffer.concat([v.to_i].pack('s<').unpack('C*')) }
+            when 5123  # UNSIGNED_SHORT
+                data.each { |v| binary_buffer.concat([v.to_i].pack('S<').unpack('C*')) }
+            when 5125  # UNSIGNED_INT
+                data.each { |v| binary_buffer.concat([v.to_i].pack('L<').unpack('C*')) }
+            when 5126  # FLOAT
+                data.each { |v| binary_buffer.concat([v.to_f].pack('f').unpack('C*')) }  # <-- Changed from 'e' to 'f' for proper float packing
+            end
+            
+            byte_length = binary_buffer.length - buffer_offset                    # Data length
+            
+            # Create buffer view
+            buffer_view_index = gltf["bufferViews"].length                       # New index
+            buffer_view = {
+                "buffer" => 0,                                                    # <-- Main buffer
+                "byteOffset" => buffer_offset,                                    # <-- Start offset
+                "byteLength" => byte_length                                       # <-- Data length
+            }
+            
+            # Add target hint for vertex/index data
+            if target_hint
+                buffer_view["target"] = target_hint                               # <-- Buffer target (ARRAY_BUFFER or ELEMENT_ARRAY_BUFFER)
+            end
+            
+            gltf["bufferViews"] << buffer_view
+            
+            # Create accessor
+            accessor_index = gltf["accessors"].length                             # New index
+            accessor = {
+                "bufferView" => buffer_view_index,                                # <-- Buffer view
+                "componentType" => component_type,                                # <-- Data type
+                "count" => count,                                                 # <-- Element count
+                "type" => type                                                    # <-- Element type
+            }
+            
+            # Calculate bounds if requested
+            if calc_bounds && type == "VEC3"
+                min = [Float::INFINITY, Float::INFINITY, Float::INFINITY]         # Initialize min
+                max = [-Float::INFINITY, -Float::INFINITY, -Float::INFINITY]      # Initialize max
+                
+                data.each_slice(3) do |x, y, z|
+                    min[0] = x if x < min[0]                                      # Update X min
+                    min[1] = y if y < min[1]                                      # Update Y min
+                    min[2] = z if z < min[2]                                      # Update Z min
+                    max[0] = x if x > max[0]                                      # Update X max
+                    max[1] = y if y > max[1]                                      # Update Y max
+                    max[2] = z if z > max[2]                                      # Update Z max
+                end
+                
+                accessor["min"] = min                                             # Set bounds min
+                accessor["max"] = max                                             # Set bounds max
+            end
+            
+            gltf["accessors"] << accessor                                         # Add accessor
+            accessor_index                                                         # Return index
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | GLB File Writing
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Write GLB File to Disk
+        # ------------------------------------------------------------
+        def self.write_glb_file(filepath, gltf, binary_buffer)
+            # Clean up empty arrays before writing
+            gltf.delete("images") if gltf["images"].empty?                        # Remove if empty
+            gltf.delete("textures") if gltf["textures"].empty?                    # Remove if empty
+            gltf.delete("samplers") if gltf["samplers"].empty?                    # Remove if empty
+            # Convert binary buffer array to binary string
+            binary_data = binary_buffer.pack('C*')                                # Pack as bytes
+            
+            # Pad binary data to 4-byte boundary
+            padding = (4 - (binary_data.bytesize % 4)) % 4                       # Calculate padding
+            binary_data += "\0" * padding if padding > 0                         # Add padding
+            
+            # Update buffer byte length in GLTF
+            gltf["buffers"] = [{
+                "byteLength" => binary_data.bytesize                             # <-- Total size
+            }]
+            
+            # Convert GLTF to JSON
+            json_string = JSON.generate(gltf)                                     # Generate JSON
+            
+            # Pad JSON to 4-byte boundary with spaces
+            json_padding = (4 - (json_string.bytesize % 4)) % 4                  # Calculate padding
+            json_string += " " * json_padding if json_padding > 0                # Add padding
+            
+            # Calculate total file size
+            total_size = 12 +                                                     # GLB header
+                         8 + json_string.bytesize +                               # JSON chunk
+                         8 + binary_data.bytesize                                 # BIN chunk
+            
+            # Write GLB file
+            File.open(filepath, 'wb') do |file|
+                # Write GLB header (12 bytes)
+                file.write([GLB_MAGIC].pack('V'))                                 # Magic: "glTF"
+                file.write([GLB_VERSION].pack('V'))                               # Version: 2
+                file.write([total_size].pack('V'))                                # Total file size
+                
+                # Write JSON chunk
+                file.write([json_string.bytesize].pack('V'))                      # Chunk length
+                file.write([GLB_CHUNK_TYPE_JSON].pack('V'))                       # Chunk type: "JSON"
+                file.write(json_string)                                           # JSON data
+                
+                # Write binary chunk
+                file.write([binary_data.bytesize].pack('V'))                      # Chunk length
+                file.write([GLB_CHUNK_TYPE_BIN].pack('V'))                        # Chunk type: "BIN\0"
+                file.write(binary_data)                                           # Binary data
+            end
+            
+            puts "GLB file written: #{filepath} (#{total_size} bytes)"           # Log success
+            
+            # Validate the file structure
+            validate_glb_structure(filepath)
+        end
+        # ---------------------------------------------------------------
+        
+        # HELPER FUNCTION | Validate GLB Structure
+        # ---------------------------------------------------------------
+        def self.validate_glb_structure(filepath)
+            puts "\n  Validating GLB structure..."
+            
+            File.open(filepath, 'rb') do |file|
+                # Read header
+                magic = file.read(4)
+                version = file.read(4).unpack('V')[0]
+                length = file.read(4).unpack('V')[0]
+                
+                puts "    Magic: #{magic} (should be 'glTF')"
+                puts "    Version: #{version} (should be 2)"
+                puts "    File size: #{length} bytes"
+                
+                valid = true
+                valid = false unless magic == 'glTF'
+                valid = false unless version == 2
+                
+                # Read chunks
+                chunk_count = 0
+                while file.pos < length
+                    chunk_length = file.read(4).unpack('V')[0]
+                    chunk_type = file.read(4)
+                    
+                    chunk_count += 1
+                    puts "    Chunk #{chunk_count}: #{chunk_type.inspect}, Length: #{chunk_length} bytes"
+                    
+                    file.seek(chunk_length, IO::SEEK_CUR)
+                end
+                
+                puts "  ✓ GLB validation #{valid ? 'passed' : 'FAILED'}"
+                valid
+            end
+        rescue => e
+            puts "  ✗ GLB Validation Error: #{e.message}"
+            false
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | User Interface and Dialog Management
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Show Export Options Dialog
+        # ------------------------------------------------------------
+        def self.show_export_dialog
+            # Close existing dialog if open
+            @export_dialog.close if @export_dialog && @export_dialog.visible?      # Close if already open
+            
+            # Create new dialog
+            @export_dialog = UI::HtmlDialog.new(
+                :dialog_title => "GLB Export",                                       # <-- Dialog title
+                :preferences_key => "GLBExport",                                     # <-- Preferences key
+                :scrollable => false,                                              # <-- No scrolling
+                :resizable => false,                                               # <-- Fixed size
+                :width => 400,                                                     # <-- Dialog width
+                :height => 600,                                                    # <-- Dialog height
+                :left => 200,                                                      # <-- X position
+                :top => 200                                                        # <-- Y position
+            )
+            
+            # Set dialog HTML
+            @export_dialog.set_html(generate_dialog_html)                         # Set HTML content
+            
+            # Add callbacks
+            add_dialog_callbacks(@export_dialog)                                   # Setup callbacks
+            
+            # Show dialog
+            @export_dialog.show                                                    # Display dialog
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Generate HTML for Export Dialog
+        # ---------------------------------------------------------------
+        def self.generate_dialog_html
+            model = Sketchup.active_model
+            selection_count = model.selection.length
+            
+            html = <<-HTML
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    /* CSS Variables - Vale Design Suite Standards */
+                    :root {
+                        --FontCol_ValeStandardTextColour   : #1e1e1e;
+                        --ValeBackgroundColor              : #f5f5f5;
+                        --ValeBorderColor                  : #172b3a;
+                        --ValeButtonBackground             : #172b3a;
+                        --ValeButtonHover                  : #2a4558;
+                        font-size                          : 14px;
+                    }
+    
+                    /* Base Layout Styles */
+                    html, body {
+                        margin                             : 0;
+                        padding                            : 20px;
+                        font-family                        : Arial, sans-serif;
+                        font-size                          : 14px;
+                        color                              : var(--FontCol_ValeStandardTextColour);
+                        background-color                   : var(--ValeBackgroundColor);
+                    }
+    
+                    /* Form Styles */
+                    h1 {
+                        font-size                          : 18px;
+                        margin-bottom                      : 20px;
+                        color                              : var(--ValeBorderColor);
+                    }
+    
+                    .info-text {
+                        font-size                          : 12px;
+                        color                              : #666;
+                        margin-top                         : 5px;
+                        background                         : #e8f4f8;
+                        padding                            : 10px;
+                        border-radius                      : 4px;
+                        margin                             : 15px 0;
+                    }
+    
+                    /* Button Styles */
+                    .button-group {
+                        margin-top                         : 20px;
+                        text-align                         : center;
+                    }
+    
+                    button {
+                        padding                            : 10px 24px;
+                        margin                             : 0 5px;
+                        background                         : var(--ValeButtonBackground);
+                        color                              : white;
+                        border                             : none;
+                        border-radius                      : 4px;
+                        cursor                             : pointer;
+                        font-size                          : 14px;
+                        font-weight                        : bold;
+                        min-width                          : 100px;
+                    }
+    
+                    button:hover {
+                        background                         : var(--ValeButtonHover);
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>GLB Export</h1>
+                
+                <div class="info-text">
+                    <strong>Selection:</strong> #{selection_count} entity/entities selected
+                </div>
+                
+                <div class="info-text">
+                    <strong>Export Method:</strong> Using simplified explosion approach for accurate global coordinates.
+                    All transformations will be applied during export.
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="performExport()">Export GLB</button>
+                    <button onclick="window.location = 'skp:cancel'">Cancel</button>
+                </div>
+                
+                <script>
+                    function performExport() {
+                        window.location = 'skp:export';
+                    }
+                </script>
+            </body>
+            </html>
+            HTML
+            
+            html
+        end
+        # ---------------------------------------------------------------
+    
+        # SUB FUNCTION | Add Dialog Callbacks
+        # ---------------------------------------------------------------
+        def self.add_dialog_callbacks(dialog)
+            # Export callback
+            dialog.add_action_callback("export") do |action_context|
+                puts "Export button clicked..."                                     # Debug log
+                
+                dialog.close                                                       # Close dialog
+                
+                # Get save location from user
+                export_path = UI.savepanel("Save GLB File", "", "#{DEFAULT_EXPORT_NAME}.glb")
+                
+                if export_path
+                    puts "Starting export to: #{export_path}"                      # Debug log
+                    perform_export(export_path)                                     # Perform the export
+                else
+                    puts "Export cancelled - no file selected"                     # Debug log
+                end
+            end
+            
+            # Cancel callback
+            dialog.add_action_callback("cancel") do |action_context|
+                puts "Export cancelled by user"                                   # Debug log
+                dialog.close                                                       # Close dialog
+            end
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Menu Integration
+    # -----------------------------------------------------------------------------
+    
+        # FUNCTION | Add Export Option to Extensions Menu
+        # ------------------------------------------------------------
+        def self.add_to_menu
+            extensions_menu = UI.menu("Extensions")
+            
+            # Remove old menu item if it exists (in case it was previously nested)
+            begin
+                # Try to remove from submenu if it exists
+                begin
+                    vale_submenu_index = extensions_menu.find_item("Vale Design Suite")
+                    if vale_submenu_index
+                        vale_submenu = extensions_menu[vale_submenu_index]
+                        if vale_submenu && vale_submenu.is_a?(UI::Menu)
+                            old_item_index = vale_submenu.find_item("TrueVisionApp | .GLB Builder Utility")
+                            vale_submenu.remove_item(old_item_index) if old_item_index
+                        end
+                    end
+                rescue => e
+                    # Ignore if submenu doesn't exist or can't be removed
+                    puts "Could not remove from submenu: #{e.message}" if $DEBUG
+                end
+                
+                # Try to remove direct item if it exists
+                begin
+                    old_item_index = extensions_menu.find_item("ValeVision__DevTool__ExportGlbFile")
+                    extensions_menu.remove_item(old_item_index) if old_item_index
+                rescue => e
+                    # Ignore if item doesn't exist
+                    puts "Could not remove direct item: #{e.message}" if $DEBUG
+                end
+            rescue => e
+                puts "Note: Could not remove old menu items: #{e.message}"
+            end
+            
+            # Add menu item directly to Extensions menu (not in any submenu)
+            extensions_menu.add_item("ValeVision__DevTool__ExportGlbFile") {
+                start_export                                                       # Trigger export
+            }
+            
+            puts "GLB Export Utility added directly to Extensions menu"
+        end
+        # ---------------------------------------------------------------
+    
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Cleanup (Add at end of export)
+    # -----------------------------------------------------------------------------
+
+        # HELPER FUNCTION | Cleanup Texture Cache
+        # ---------------------------------------------------------------
+        def self.cleanup_texture_cache
+            return unless Dir.exist?(@texture_cache_folder)
+            
+            Dir.glob(File.join(@texture_cache_folder, "*")).each do |file|
+                File.delete(file) if File.file?(file)
+            end
+            
+            Dir.rmdir(@texture_cache_folder) if Dir.empty?(@texture_cache_folder)
+            puts "      Cleaned up texture cache folder"
+        end
+        # ---------------------------------------------------------------
+
+    # endregion -------------------------------------------------------------------
+    
+    # -----------------------------------------------------------------------------
+    # REGION | Plugin Initialization
+    # -----------------------------------------------------------------------------
+    
+        # Initialize the GLB Builder Utility when loaded
+        unless file_loaded?(__FILE__)
+            GLBBuilderUtility.add_to_menu                                          # Add menu items
+            file_loaded(__FILE__)                                                  # Mark as loaded
+        end
+    
+    # endregion -------------------------------------------------------------------
+
+    end  # module GLBBuilderUtility

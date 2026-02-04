@@ -1,0 +1,74 @@
+{
+    "modelDefaults": {
+        "baseModelUrl": "ProtoType__WhitecardViewer__New3dEngine/10__Default3dModels/Hickie__GlbModel__MainMesh__1.0.0__.glb",
+        "lineworkModelUrl": "ProtoType__WhitecardViewer__New3dEngine/10__Default3dModels/Hickie__GlbModel__Edges__1.0.0__.glb"
+    },
+    "scene": {
+        "bgColor": 16777215,
+        "ambientIntensity": 2.5,
+        "dirLightIntensity": 1.0,
+        "shadowOpacity": 0.1,
+        "cameraFov": 45,
+        "cameraNear": 0.1,
+        "cameraFar": 1000,
+        "fogDensity": 0.0003,
+        "groundSize": 500,
+        "groundYOffset": -0.05,
+        "movementSpeed": 0.5,
+        "elevationSpeed": 0.5,
+        "enableWASD": true,
+        "statusHideDelay": 3000,
+        "enableDamping": false
+    },
+    "models": {
+        "baseMesh": {
+            "material": {
+                "whiteColor": 16777215,
+                "roughness": 1.0,
+                "metalness": 0.0,
+                "polygonOffsetFactor": 2,
+                "polygonOffsetUnits": 2,
+                "emissiveBoost": 3355443,
+                "textureEmissive": 4473924
+            }
+        },
+        "linework": {
+            "edgeColor": 0,
+            "lineWidth": 1.6,
+            "polygonOffsetFactor": -4,
+            "polygonOffsetUnits": -4,
+            "renderOrder": 999
+        }
+    },
+    "cameraLens": {
+        "minFocalLengthMM": 24,
+        "maxFocalLengthMM": 75,
+        "defaultFocalLengthMM": 45,
+        "sensorHeightMM": 24
+    },
+    "imageExport": {
+        "customEnabled": false,
+        "aspectRatios": ["3:2", "4:3", "16:9"],
+        "defaultAspectIndex": 0,
+        "resolutions": [1024, 2048, 4096, 8192],
+        "defaultResolutionIndex": 1
+    },
+    "cameraInitialPositionDefault": {
+        "position": {
+            "x": -5.2389,
+            "y": 2.836,
+            "z": 3.2537
+        },
+        "rotation": {
+            "x": -0.073,
+            "y": -0.8346,
+            "z": -0.0541
+        },
+        "target": {
+            "x": -1.2507,
+            "y": 2.5724,
+            "z": -0.3503
+        },
+        "fov": 29.8628
+    }
+}

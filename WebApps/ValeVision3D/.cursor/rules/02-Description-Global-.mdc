@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+**Naming System**
+- Prefix all custom identifiers with `Na__`, `Na_`, or `na_` as appropriate to the language.
+- Align constant and config names with source data keys where possible.
+- Avoid legacy `VV_` prefixes in new or updated code.
+

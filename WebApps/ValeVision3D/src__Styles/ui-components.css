@@ -33,6 +33,202 @@
 }
 
 
+/* Dropdown Menu - Tools Panel (Top Right) */
+/* ----------------------------------------------------------------- */
+.na-dropdown-menu {
+    position                           : fixed;
+    top                                : calc(var(--Vale_HeaderHeight) + 10px);
+    right                              : 20px;
+    z-index                            : 1001;
+    font-family                        : 'Open Sans', sans-serif;
+    transform                          : scale(1.2);
+    transform-origin                   : top right;
+}
+
+.na-dropdown-menu__details {
+    background                          : rgba(255, 255, 255, 0.95);
+    border                              : 1px solid rgba(0, 0, 0, 0.12);
+    border-radius                       : 6px;
+    box-shadow                          : 0 6px 18px rgba(0, 0, 0, 0.15);
+    min-width                           : 220px;
+}
+
+.na-dropdown-menu__summary {
+    list-style                          : none;
+    cursor                              : pointer;
+    padding                             : 10px 14px;
+    font-weight                         : 600;
+    color                               : #172b3a;
+    display                             : flex;
+    align-items                         : center;
+    justify-content                     : space-between;
+    gap                                 : 10px;
+}
+
+.na-dropdown-menu__summary::-webkit-details-marker {
+    display                             : none;
+}
+
+.na-dropdown-menu__arrow {
+    font-size                           : 0.85rem;
+    color                               : #172b3a;
+}
+
+.na-dropdown-menu__list {
+    margin                              : 0;
+    padding                             : 6px 0 10px 0;
+    list-style                          : none;
+    border-top                          : 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.na-dropdown-menu__item {
+    padding                             : 8px 14px;
+    font-size                           : 0.85rem;
+    color                               : #172b3a;
+}
+
+.na-dropdown-menu__item:hover {
+    background                          : rgba(23, 43, 58, 0.06);
+}
+
+.na-dropdown-menu__button {
+    width                               : 100%;
+    border                              : none;
+    background                          : transparent;
+    padding                             : 0;
+    margin                              : 0;
+    text-align                          : left;
+    font-size                           : 0.85rem;
+    color                               : #172b3a;
+    font-family                         : 'Open Sans', sans-serif;
+    cursor                              : pointer;
+}
+
+.na-dropdown-menu__button--has-submenu {
+    display                             : flex;
+    align-items                         : center;
+    justify-content                     : space-between;
+    gap                                 : 10px;
+}
+
+.na-dropdown-menu__subarrow {
+    font-size                           : 0.75rem;
+    color                               : #172b3a;
+}
+
+.na-dropdown-menu__panel {
+    margin-top                          : 8px;
+    padding                             : 10px 12px;
+    background                          : rgba(23, 43, 58, 0.05);
+    border-radius                       : 6px;
+    display                             : none;
+}
+
+.na-dropdown-menu__panel.is-open {
+    display                             : block;
+}
+
+.na-dropdown-menu__panel-title {
+    font-size                           : 0.8rem;
+    font-weight                         : 600;
+    color                               : #172b3a;
+    margin-bottom                       : 8px;
+}
+
+.na-dropdown-menu__panel-row {
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 10px;
+}
+
+.na-dropdown-menu__panel-row--toggle {
+    justify-content                     : space-between;
+}
+
+.na-dropdown-menu__slider {
+    flex                                : 1;
+    height                              : 6px;
+    border-radius                       : 3px;
+    background                          : rgba(23, 43, 58, 0.2);
+    outline                             : none;
+    -webkit-appearance                  : none;
+    appearance                          : none;
+}
+
+.na-dropdown-menu__slider::-webkit-slider-thumb {
+    -webkit-appearance                  : none;
+    appearance                          : none;
+    width                               : 16px;
+    height                              : 16px;
+    border-radius                       : 50%;
+    background                          : #172b3a;
+    cursor                              : pointer;
+}
+
+.na-dropdown-menu__slider::-moz-range-thumb {
+    width                               : 16px;
+    height                              : 16px;
+    border-radius                       : 50%;
+    background                          : #172b3a;
+    cursor                              : pointer;
+    border                              : none;
+}
+
+.na-dropdown-menu__value {
+    min-width                           : 52px;
+    text-align                          : right;
+    font-weight                         : 600;
+    font-family                         : 'Courier New', monospace;
+    font-size                           : 0.85rem;
+    color                               : #172b3a;
+}
+
+.na-dropdown-menu__textarea {
+    width                               : 100%;
+    min-height                          : 120px;
+    padding                             : 8px;
+    border-radius                       : 6px;
+    border                              : 1px solid rgba(0, 0, 0, 0.15);
+    font-family                         : 'Courier New', monospace;
+    font-size                           : 0.75rem;
+    resize                              : none;
+    background                          : #ffffff;
+    color                               : #172b3a;
+}
+
+.na-dropdown-menu__checkbox {
+    width                               : 18px;
+    height                              : 18px;
+    accent-color                        : #172b3a;
+}
+
+.na-dropdown-menu__action {
+    margin-top                          : 10px;
+    width                               : 100%;
+    border                              : none;
+    border-radius                       : 6px;
+    padding                             : 8px 12px;
+    background                          : #172b3a;
+    color                               : #ffffff;
+    font-weight                         : 600;
+    font-size                           : 0.85rem;
+    cursor                              : pointer;
+}
+
+.na-dropdown-menu__action--secondary {
+    background                          : rgba(23, 43, 58, 0.12);
+    color                               : #172b3a;
+}
+
+.na-dropdown-menu__action--secondary:hover {
+    background                          : rgba(23, 43, 58, 0.2);
+}
+
+.na-dropdown-menu__action:hover {
+    background                          : #1e3a4f;
+}
+
+
 /* Debug Info Overlay - Top Left Panel (Below Header) */
 /* ----------------------------------------------------------------- */
 .debug-info {
@@ -285,23 +481,8 @@
 
 /* Camera Lens Adjustment Overlay - Top Right Panel (Below Download Button) */
 /* ----------------------------------------------------------------- */
-.camera-lens-adjustment-overlay {
-    position                           : absolute;
-    top                                : calc(var(--Vale_HeaderHeight) + 760px);  /* <-- Position below download button */
-    right                              : 20px;
-    background-color                   : rgba(0, 0, 0, 0.7);
-    color                              : #ffffff;
-    padding                            : 12px 16px;
-    font-size                          : 0.85rem;
-    font-weight                        : 400;
-    border-radius                      : 4px;
-    z-index                            : 1003;
-    pointer-events                     : auto;
-    box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.3);
-    backdrop-filter                    : blur(4px);
-    min-width                          : 220px;
-    transition                         : top 0.3s ease;                 /* <-- Smooth repositioning with navigation controls */
-}
+/* Camera Lens Panel - Deprecated (moved into dropdown) */
+/* ----------------------------------------------------------------- */
 
 
 /* Camera Lens Adjustment - Content Container */

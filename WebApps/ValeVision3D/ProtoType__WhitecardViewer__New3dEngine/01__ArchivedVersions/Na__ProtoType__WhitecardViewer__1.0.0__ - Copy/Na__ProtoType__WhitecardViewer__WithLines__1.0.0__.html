@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitecard Viewer V3.0 (Dual Layer)</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 300px;
+            backdrop-filter: blur(5px);
+        }
+        h3 { margin: 0 0 15px 0; font-weight: 700; color: #111; letter-spacing: -0.5px; }
+        
+        .upload-group { margin-bottom: 15px; }
+        .upload-label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        input[type="file"] { width: 100%; font-size: 12px; }
+        
+        .instructions { font-size: 12px; color: #666; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
+        .key { display: inline-block; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-weight: 600; color: #333; border: 1px solid #ddd; }
+        
+        /* Status Display */
+        #status-container { margin-bottom: 15px; display: none; background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #007bff; }
+        #loading-text { font-size: 13px; font-weight: 600; color: #007bff; margin-bottom: 4px; }
+        #error-log { font-size: 11px; color: #d32f2f; font-family: monospace; white-space: pre-wrap; display: none; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="ui-container">
+    <h3>Whitecard Architect</h3>
+    
+    <div id="status-container">
+        <div id="loading-text">Ready</div>
+        <div id="error-log"></div>
+    </div>
+
+    <div class="upload-group">
+        <span class="upload-label">1. Base Mesh (Faces)</span>
+        <input type="file" id="file-input-base" accept=".glb, .gltf">
+    </div>
+
+    <div class="upload-group">
+        <span class="upload-label">2. Linework (Edges)</span>
+        <input type="file" id="file-input-lines" accept=".glb, .gltf">
+    </div>
+    
+    <div class="instructions">
+        <div><span class="key">L-Click</span> Rotate &nbsp; <span class="key">R-Click</span> Pan</div>
+        <div><span class="key">Scroll</span> Zoom &nbsp; <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> Fly</div>
+    </div>
+</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://esm.sh/three@0.160.0",
+      "three/addons/": "https://esm.sh/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    
+    // Post Processing
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
+    import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+    import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+    import { GammaCorrectionShader } from 'three/addons/shaders/GammaCorrectionShader.js';
+
+    // --- Configuration ---
+    const CONFIG = {
+        bgColor: 0xffffff,
+        edgeColor: 0x1a1a1a, 
+        ambientIntensity: 1.2, 
+        shadowOpacity: 0.15,
+    };
+
+    // --- UI Helpers ---
+    const statusBox = document.getElementById('status-container');
+    const loadingText = document.getElementById('loading-text');
+    const errorLog = document.getElementById('error-log');
+
+    function updateStatus(msg, isError = false) {
+        statusBox.style.display = 'block';
+        loadingText.textContent = msg;
+        loadingText.style.color = isError ? '#d32f2f' : '#007bff';
+        statusBox.style.borderLeftColor = isError ? '#d32f2f' : '#007bff';
+        if (!isError) errorLog.style.display = 'none';
+        
+        if(!isError) {
+             setTimeout(() => { 
+                 if(loadingText.textContent === msg) statusBox.style.display = 'none'; 
+             }, 3000);
+        }
+    }
+
+    // --- Scene Setup ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(CONFIG.bgColor);
+    scene.fog = new THREE.FogExp2(CONFIG.bgColor, 0.003); 
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(30, 20, 30);
+
+    const renderer = new THREE.WebGLRenderer({ 
+        antialias: false, 
+        alpha: true, 
+        powerPreference: "high-performance",
+        stencil: true,
+        depth: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace; 
+    renderer.toneMapping = THREE.NoToneMapping;
+    document.body.appendChild(renderer.domElement);
+
+    // --- Lighting ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, CONFIG.ambientIntensity);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dirLight.position.set(50, 100, 40);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.bias = -0.0001;
+    scene.add(dirLight);
+
+    // Ground
+    const planeGeo = new THREE.PlaneGeometry(500, 500);
+    const planeMat = new THREE.ShadowMaterial({ opacity: CONFIG.shadowOpacity, color: 0x000000 });
+    const plane = new THREE.Mesh(planeGeo, planeMat);
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -0.05;
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    // --- Post Processing ---
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+    ssaoPass.kernelRadius = 4;
+    ssaoPass.minDistance = 0.001;
+    ssaoPass.maxDistance = 0.08;
+    composer.addPass(ssaoPass);
+
+    const fxaaPass = new ShaderPass(FXAAShader);
+    const pixelRatio = renderer.getPixelRatio();
+    fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
+    fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
+    composer.addPass(fxaaPass);
+
+    composer.addPass(new ShaderPass(GammaCorrectionShader));
+
+    // --- Load Logic ---
+    const loader = new GLTFLoader();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    // ROOT GROUP: Holds both Base and Edges to keep them aligned
+    const modelGroup = new THREE.Group();
+    scene.add(modelGroup);
+
+    let baseMeshObj = null;
+    let linesMeshObj = null;
+
+    function recenterCamera() {
+        const box = new THREE.Box3().setFromObject(modelGroup);
+        if (box.isEmpty()) return;
+
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        // Center the group in the world
+        modelGroup.position.sub(center);
+        modelGroup.position.y += size.y / 2; // Sit on floor
+
+        // Move camera to view it
+        const maxDim = Math.max(size.x, size.y, size.z);
+        if (maxDim > 0) {
+            camera.position.set(maxDim * 1.5, maxDim * 0.8, maxDim * 1.5);
+            controls.target.set(0, size.y/2, 0);
+        }
+    }
+
+    // LOAD BASE (FACES)
+    document.getElementById('file-input-base').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        updateStatus("Loading Base Mesh...");
+        const url = URL.createObjectURL(file);
+
+        loader.load(url, (gltf) => {
+            // Remove old base if exists
+            if (baseMeshObj) modelGroup.remove(baseMeshObj);
+            
+            baseMeshObj = gltf.scene;
+            
+            // Apply White Material
+            const whiteMat = new THREE.MeshLambertMaterial({ 
+                color: 0xffffff,
+                emissive: 0xffffff,
+                emissiveIntensity: 0.1,
+                side: THREE.DoubleSide
+            });
+
+            baseMeshObj.traverse((node) => {
+                if (node.isMesh) {
+                    node.material = whiteMat;
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                }
+            });
+
+            modelGroup.add(baseMeshObj);
+            recenterCamera();
+            updateStatus("Base Mesh Loaded");
+            URL.revokeObjectURL(url);
+        }, undefined, (err) => {
+            updateStatus("Base Mesh Error: " + err.message, true);
+        });
+    });
+
+    // LOAD LINES (EDGES)
+    document.getElementById('file-input-lines').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        updateStatus("Loading Linework...");
+        const url = URL.createObjectURL(file);
+
+        loader.load(url, (gltf) => {
+            // Remove old lines if exists
+            if (linesMeshObj) modelGroup.remove(linesMeshObj);
+
+            linesMeshObj = gltf.scene;
+
+            // Apply Edge Logic
+            // Priority: Render over the base mesh without z-fighting
+            const edgeMat = new THREE.MeshBasicMaterial({ 
+                color: CONFIG.edgeColor,
+                side: THREE.DoubleSide,
+                // These 3 lines are the key to "Z Buffer Priority"
+                depthTest: true,
+                depthWrite: true,
+                polygonOffset: true,
+                polygonOffsetFactor: -4, // Pushes geometry "forward" in depth buffer
+                polygonOffsetUnits: -4
+            });
+
+            const lineBasicMat = new THREE.LineBasicMaterial({
+                color: CONFIG.edgeColor,
+                depthTest: true,
+                depthWrite: true,
+                polygonOffset: true,
+                polygonOffsetFactor: -4,
+                polygonOffsetUnits: -4
+            });
+
+            linesMeshObj.traverse((node) => {
+                if (node.isMesh) {
+                    node.material = edgeMat;
+                    node.castShadow = false;
+                    node.receiveShadow = false;
+                }
+                if (node.isLine || node.isLineSegments) {
+                    node.material = lineBasicMat;
+                }
+            });
+
+            modelGroup.add(linesMeshObj);
+            
+            // We don't necessarily re-center camera here to avoid jumping if user is already looking
+            // But we do ensure the group is centered if this is the first file loaded
+            if (!baseMeshObj) recenterCamera();
+            
+            updateStatus("Linework Loaded");
+            URL.revokeObjectURL(url);
+        }, undefined, (err) => {
+            updateStatus("Linework Error: " + err.message, true);
+        });
+    });
+
+    // --- Resize ---
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+        const pixelRatio = renderer.getPixelRatio();
+        fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
+        fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
+    });
+
+    // --- Animation ---
+    const keys = { w: false, a: false, s: false, d: false };
+    window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+    window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+    function updateMovement() {
+        if (!keys.w && !keys.a && !keys.s && !keys.d) return;
+        const speed = 0.5;
+        const forward = new THREE.Vector3();
+        camera.getWorldDirection(forward);
+        forward.y = 0; forward.normalize();
+        const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
+
+        if (keys.w) camera.position.add(forward.multiplyScalar(speed));
+        if (keys.s) camera.position.sub(forward.multiplyScalar(speed));
+        if (keys.d) camera.position.add(right.multiplyScalar(speed));
+        if (keys.a) camera.position.sub(right.multiplyScalar(speed));
+        
+        controls.target.add(forward.multiplyScalar(0));
+        controls.update();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        updateMovement();
+        controls.update();
+        composer.render();
+    }
+
+    animate();
+</script>
+</body>
+</html>

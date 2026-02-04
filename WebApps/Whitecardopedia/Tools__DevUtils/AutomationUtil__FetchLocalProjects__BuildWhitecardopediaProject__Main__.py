@@ -63,6 +63,8 @@ WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
+GLB_LAYER_BASE_PATTERN             = "__Layer-01__BaseMeshModel__"           # <-- Base mesh model filename marker
+GLB_LAYER_LINE_PATTERN             = "__Layer-02__LineworkModel__"           # <-- Linework model filename marker
 DATE_SUFFIX_PATTERN                = r'__(\d{2}-[A-Za-z]{3}-\d{4})$'         # <-- Date suffix pattern (DD-MMM-YYYY)
 DATE_FORMAT                        = '%d-%b-%Y'                              # <-- Date format for parsing
 # ------------------------------------------------------------
@@ -100,7 +102,7 @@ WHAT IT DOES:
 5. Generates CDN URLs for ValeVision 3D models (sorted by semantic version)
 6. Copies images to Whitecardopedia project structure
 7. Generates project.json with extracted metadata (name, code, dateFulfilled)
-8. Adds valeVision_ModelUrl field with Cloudflare CDN URLs
+8. Adds valeVision_ModelUrl_BaseMesh and valeVision_ModelUrl_Linework fields
 9. Automatically adds project to masterConfig.json as enabled
 10. Extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
 11. Strips __Whitecard suffix from destination folder names
@@ -174,9 +176,8 @@ Project JSON Generation:
   - scheduleData.dateFulfilled: Extracted from content folder date stamp (e.g., "17-Oct-2025")
                                 Falls back to "TBD" if no date found in folder name
   - images:      List of discovered IMG files
-  - valeVision_ModelUrl: CDN URL(s) for .glb model files
-                         Single model: stored as string
-                         Multiple models: stored as array
+  - valeVision_ModelUrl_BaseMesh: CDN URL for base mesh .glb (Layer-01)
+  - valeVision_ModelUrl_Linework: CDN URL for linework .glb (Layer-02)
   - Other fields: Copied from template as placeholders
 
 ValeVision Model URL Generation:
@@ -185,9 +186,10 @@ ValeVision Model URL Generation:
   - Generates Cloudflare CDN URLs automatically
   - Sorts models by semantic version (1.0.0, 1.1.0, 1.2.0, etc.)
   - Format: https://cdn.noble-architecture.com/VaApps/Projects/2025/[ProjectFolder]/[ModelFile].glb
-  - Example: https://cdn.noble-architecture.com/VaApps/Projects/2025/VE-61058__Staley/Stayley__ValeVisionModel__1.2.0__.glb
+  - Base Mesh: files include "__Layer-01__BaseMeshModel__"
+  - Linework:  files include "__Layer-02__LineworkModel__"
   - URLs enable direct model loading in ValeVision3D viewer
-  - ValeVision3D automatically selects latest version when multiple models exist
+  - Latest version is selected per layer when multiple models exist
 
 Master Config Auto-Update:
   
@@ -422,6 +424,23 @@ def parse_glb_version(filename: str) -> Tuple[int, int, int]:
 # ---------------------------------------------------------------
 
 
+# HELPER FUNCTION | Select Latest GLB by Layer Marker
+# ---------------------------------------------------------------
+def select_latest_glb_by_layer(glb_files: List[str], layer_marker: str) -> Optional[str]:
+    """Select the latest GLB filename for a given layer marker"""
+    if not glb_files:
+        return None                                                   # <-- Return None if no files
+    
+    filtered = [name for name in glb_files if layer_marker in name]   # <-- Filter by layer marker
+    
+    if not filtered:
+        return None                                                   # <-- Return None if no matches
+    
+    filtered.sort(key=parse_glb_version)                              # <-- Sort by semantic version
+    return filtered[-1]                                               # <-- Return latest version
+# ---------------------------------------------------------------
+
+
 # FUNCTION | Discover GLB Files in ValeVision Sync Folder
 # ------------------------------------------------------------
 def discover_glb_files(project_path: Path) -> List[str]:
@@ -637,7 +656,7 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 
 # FUNCTION | Create Project JSON File with Year-Aware basePath
 # ------------------------------------------------------------
-def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, glb_files: List[str], dest_folder_name: str, year: str) -> bool:
+def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, base_glb_file: Optional[str], linework_glb_file: Optional[str], dest_folder_name: str, year: str) -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
     
     project_data = template.copy()                                    # <-- Copy template data
@@ -654,13 +673,11 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     project_data['scheduleData']['dateFulfilled'] = project_date      # <-- Set extracted date as dateFulfilled
     
     # BUILD VALEVISION MODEL URLS WITH YEAR
-    if glb_files:
-        model_urls = [build_valevision_model_url(year, dest_folder_name, glb) for glb in glb_files]  # <-- Generate CDN URLs with year
-        
-        if len(model_urls) == 1:
-            project_data['valeVision_ModelUrl'] = model_urls[0]       # <-- Single model as string
-        else:
-            project_data['valeVision_ModelUrl'] = model_urls          # <-- Multiple models as array
+    if base_glb_file:
+        project_data['valeVision_ModelUrl_BaseMesh'] = build_valevision_model_url(year, dest_folder_name, base_glb_file)  # <-- Base mesh URL
+    
+    if linework_glb_file:
+        project_data['valeVision_ModelUrl_Linework'] = build_valevision_model_url(year, dest_folder_name, linework_glb_file)  # <-- Linework URL
     
     try:
         with open(project_json_path, 'w', encoding='utf-8') as file:  # <-- Open file for writing
@@ -728,12 +745,15 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
     glb_files = discover_glb_files(project_info['source_path'])       # <-- Discover GLB files
     result['glb_files_found'] = len(glb_files)                        # <-- Store GLB count
     
+    # SELECT LATEST LAYER FILES
+    base_glb_file = select_latest_glb_by_layer(glb_files, GLB_LAYER_BASE_PATTERN)    # <-- Latest base mesh GLB
+    linework_glb_file = select_latest_glb_by_layer(glb_files, GLB_LAYER_LINE_PATTERN)  # <-- Latest linework GLB
+    
     # BUILD GLB MODEL URLS FOR PREVIEW
-    if glb_files:
-        result['glb_model_urls'] = [
-            build_valevision_model_url(year, project_info['dest_folder_name'], glb)
-            for glb in glb_files
-        ]
+    if base_glb_file:
+        result['glb_model_urls'].append(build_valevision_model_url(year, project_info['dest_folder_name'], base_glb_file))
+    if linework_glb_file:
+        result['glb_model_urls'].append(build_valevision_model_url(year, project_info['dest_folder_name'], linework_glb_file))
     
     if not images:
         result['error'] = "No IMG## files found in content folder"    # <-- Set warning message
@@ -771,7 +791,8 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         project_info['project_name'],
         images,
         project_date,
-        glb_files,
+        base_glb_file,
+        linework_glb_file,
         project_info['dest_folder_name'],
         year
     )

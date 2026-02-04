@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitecard Viewer V2.2 (Stability Fix)</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 300px;
+            backdrop-filter: blur(5px);
+        }
+        h3 { margin: 0 0 15px 0; font-weight: 700; color: #111; letter-spacing: -0.5px; }
+        input[type="file"] { margin-bottom: 15px; width: 100%; font-size: 13px; }
+        .instructions { font-size: 12px; color: #666; line-height: 1.6; border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
+        .key { display: inline-block; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-weight: 600; color: #333; border: 1px solid #ddd; }
+        
+        /* Status Display */
+        #status-container { margin-bottom: 15px; display: none; background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #007bff; }
+        #loading-text { font-size: 13px; font-weight: 600; color: #007bff; margin-bottom: 4px; }
+        #error-log { font-size: 11px; color: #d32f2f; font-family: monospace; white-space: pre-wrap; display: none; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="ui-container">
+    <h3>Whitecard Architect</h3>
+    
+    <div id="status-container">
+        <div id="loading-text">Ready</div>
+        <div id="error-log"></div>
+    </div>
+
+    <input type="file" id="file-input" accept=".glb, .gltf">
+    
+    <div class="instructions">
+        <div><span class="key">L-Click</span> Rotate &nbsp; <span class="key">R-Click</span> Pan</div>
+        <div><span class="key">Scroll</span> Zoom &nbsp; <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> Fly</div>
+    </div>
+</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://esm.sh/three@0.160.0",
+      "three/addons/": "https://esm.sh/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    
+    // Post Processing
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
+    import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+    import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+    import { GammaCorrectionShader } from 'three/addons/shaders/GammaCorrectionShader.js';
+
+    // Fat Lines
+    import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
+    import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+    import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+
+    // --- Configuration ---
+    const CONFIG = {
+        bgColor: 0xffffff,
+        edgeColor: 0x1a1a1a, 
+        edgeThreshold: 22.5,
+        lineWidth: 2.5,
+        ambientIntensity: 1.2, 
+        shadowOpacity: 0.15,
+    };
+
+    // --- UI Helpers ---
+    const statusBox = document.getElementById('status-container');
+    const loadingText = document.getElementById('loading-text');
+    const errorLog = document.getElementById('error-log');
+
+    function updateStatus(msg, isError = false) {
+        statusBox.style.display = 'block';
+        loadingText.textContent = msg;
+        loadingText.style.color = isError ? '#d32f2f' : '#007bff';
+        statusBox.style.borderLeftColor = isError ? '#d32f2f' : '#007bff';
+        if (!isError) errorLog.style.display = 'none';
+    }
+
+    // --- Scene Setup ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(CONFIG.bgColor);
+    scene.fog = new THREE.FogExp2(CONFIG.bgColor, 0.003); 
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(30, 20, 30);
+
+    const renderer = new THREE.WebGLRenderer({ 
+        antialias: false, 
+        alpha: true, 
+        powerPreference: "high-performance",
+        stencil: true,
+        depth: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace; 
+    renderer.toneMapping = THREE.NoToneMapping;
+    document.body.appendChild(renderer.domElement);
+
+    // --- Lighting ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, CONFIG.ambientIntensity);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    dirLight.position.set(50, 100, 40);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.bias = -0.0001;
+    scene.add(dirLight);
+
+    // Ground
+    const planeGeo = new THREE.PlaneGeometry(500, 500);
+    const planeMat = new THREE.ShadowMaterial({ opacity: CONFIG.shadowOpacity, color: 0x000000 });
+    const plane = new THREE.Mesh(planeGeo, planeMat);
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -0.05;
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    // --- Post Processing ---
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+    ssaoPass.kernelRadius = 4;
+    ssaoPass.minDistance = 0.001;
+    ssaoPass.maxDistance = 0.08;
+    composer.addPass(ssaoPass);
+
+    const fxaaPass = new ShaderPass(FXAAShader);
+    const pixelRatio = renderer.getPixelRatio();
+    fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
+    fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
+    composer.addPass(fxaaPass);
+
+    composer.addPass(new ShaderPass(GammaCorrectionShader));
+
+    // --- Load Logic ---
+    const loader = new GLTFLoader();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    const fatLineMat = new LineMaterial({
+        color: CONFIG.edgeColor,
+        linewidth: CONFIG.lineWidth,
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        dashed: false,
+        alphaToCoverage: true,
+    });
+
+    document.getElementById('file-input').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        updateStatus("Parsing File...");
+        const url = URL.createObjectURL(file);
+
+        // Cleanup
+        for (let i = scene.children.length - 1; i >= 0; i--) {
+            if (scene.children[i].userData.isModel) scene.remove(scene.children[i]);
+        }
+
+        loader.load(url, (gltf) => {
+            updateStatus("Processing Geometry...");
+            
+            setTimeout(() => {
+                try {
+                    const model = gltf.scene;
+                    model.userData.isModel = true;
+
+                    const whiteMat = new THREE.MeshLambertMaterial({ 
+                        color: 0xffffff,
+                        emissive: 0xffffff,
+                        emissiveIntensity: 0.1,
+                        side: THREE.DoubleSide
+                    });
+
+                    // --- PHASE 1: COLLECT TARGETS (Prevent Infinite Loop) ---
+                    // We collect valid meshes FIRST, before adding any lines.
+                    const targets = [];
+                    model.traverse((node) => {
+                        // Crucial check: Ensure it's a mesh, BUT NOT a line we created
+                        if (node.isMesh && !node.isLine && !node.isLineSegments2) {
+                            targets.push(node);
+                        }
+                    });
+
+                    // --- PHASE 2: APPLY MATERIALS & LINES ---
+                    targets.forEach((node) => {
+                        node.material = whiteMat;
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+
+                        try {
+                            const edges = new THREE.EdgesGeometry(node.geometry, CONFIG.edgeThreshold);
+                            
+                            // Try Fat Lines
+                            const lineGeo = new LineGeometry();
+                            lineGeo.fromEdgesGeometry(edges);
+                            const line = new LineSegments2(lineGeo, fatLineMat);
+                            line.computeLineDistances();
+                            line.scale.set(1,1,1);
+                            
+                            // Mark this as a line so we don't process it if we ever re-traverse
+                            line.isLineSegments2 = true; 
+                            
+                            node.add(line);
+
+                        } catch (err) {
+                            console.warn("Fallback to thin lines", err);
+                            const edges = new THREE.EdgesGeometry(node.geometry, CONFIG.edgeThreshold);
+                            const thinLine = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: CONFIG.edgeColor }));
+                            node.add(thinLine);
+                        }
+                    });
+
+                    // Center Model
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    
+                    model.position.sub(center);
+                    model.position.y += size.y / 2;
+
+                    scene.add(model);
+                    
+                    // Reset Camera
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    camera.position.set(maxDim * 1.5, maxDim * 0.8, maxDim * 1.5);
+                    controls.target.set(0, size.y/2, 0);
+
+                    updateStatus("Rendering Active");
+                    setTimeout(() => { statusBox.style.display = 'none'; }, 2000);
+                    URL.revokeObjectURL(url);
+
+                } catch (criticalErr) {
+                    updateStatus("Error: " + criticalErr.message, true);
+                    console.error(criticalErr);
+                }
+            }, 50);
+
+        }, undefined, (error) => {
+            updateStatus("Failed to Load File", true);
+            console.error(error);
+        });
+    });
+
+    // --- Resize ---
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+        const pixelRatio = renderer.getPixelRatio();
+        fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
+        fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
+        fatLineMat.resolution.set(window.innerWidth, window.innerHeight);
+    });
+
+    // --- Animation ---
+    const keys = { w: false, a: false, s: false, d: false };
+    window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+    window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+    function updateMovement() {
+        if (!keys.w && !keys.a && !keys.s && !keys.d) return;
+        const speed = 0.5;
+        const forward = new THREE.Vector3();
+        camera.getWorldDirection(forward);
+        forward.y = 0; forward.normalize();
+        const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
+
+        if (keys.w) camera.position.add(forward.multiplyScalar(speed));
+        if (keys.s) camera.position.sub(forward.multiplyScalar(speed));
+        if (keys.d) camera.position.add(right.multiplyScalar(speed));
+        if (keys.a) camera.position.sub(right.multiplyScalar(speed));
+        
+        controls.target.add(forward.multiplyScalar(0));
+        controls.update();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        updateMovement();
+        controls.update();
+        if (fatLineMat.resolution.x === 0) fatLineMat.resolution.set(window.innerWidth, window.innerHeight);
+        composer.render();
+    }
+
+    animate();
+</script>
+</body>
+</html>

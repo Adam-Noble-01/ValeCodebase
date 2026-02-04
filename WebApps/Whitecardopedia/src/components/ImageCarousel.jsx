@@ -40,10 +40,11 @@
     // ---------------------------------------------------------------
     const hasValeVisionModel = (projectData) => {
         if (!projectData) return false;                                  // <-- Check if project data exists
-        const url = projectData.valeVision_ModelUrl;                     // <-- Get model URL
-        if (!url) return false;                                          // <-- Return false if no URL
-        if (Array.isArray(url)) return url.length > 0;                   // <-- Check array has items
-        return typeof url === 'string' && url.length > 0;                // <-- Check string is not empty
+        const baseUrl = projectData.valeVision_ModelUrl_BaseMesh;        // <-- Get base mesh URL
+        const lineworkUrl = projectData.valeVision_ModelUrl_Linework;    // <-- Get linework URL
+        const hasBase = typeof baseUrl === 'string' && baseUrl.length > 0;  // <-- Check base mesh URL
+        const hasLinework = typeof lineworkUrl === 'string' && lineworkUrl.length > 0;  // <-- Check linework URL
+        return hasBase || hasLinework;                                   // <-- Return true if any layer exists
     };
     // ---------------------------------------------------------------
 

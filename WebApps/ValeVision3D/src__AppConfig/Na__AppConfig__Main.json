@@ -1,7 +1,7 @@
 {
     "modelDefaults": {
-        "baseModelUrl": "ProtoType__WhitecardViewer__New3dEngine/10__Default3dModels/Hickie__GlbModel__MainMesh__1.0.0__.glb",
-        "lineworkModelUrl": "ProtoType__WhitecardViewer__New3dEngine/10__Default3dModels/Hickie__GlbModel__Edges__1.0.0__.glb"
+        "baseModelUrl": "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-01__BaseMeshModel__1.2.0__.glb",
+        "lineworkModelUrl": "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-02__LineworkModel__1.2.0__.glb"
     },
     "scene": {
         "bgColor": 16777215,

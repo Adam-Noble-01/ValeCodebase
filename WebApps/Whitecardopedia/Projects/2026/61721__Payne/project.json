@@ -1,0 +1,72 @@
+{
+    "projectName": "Payne",
+    "projectCode": "61721",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Steph",
+        "additionalNotes": "PLACEHOLDER, FILL THIS OUT WHEN YOUR BACK TUESDAY ADAM!"
+    },
+    "scheduleData": {
+        "dateReceived": "04-Feb-2026",
+        "dateFulfilled": "05-Feb-2026",
+        "timeAllocated": 3,
+        "timeTaken": 3
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrl": null,
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Feb-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__05-Feb-2026.png",
+        "IMG07__3dView__Topdown-01__WhitecardImage__05-Feb-2026.png",
+        "IMG08__3dView__Topdown-02__WhitecardImage__05-Feb-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__05-Feb-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__05-Feb-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Feb-2026.png"
+    ],
+    "basePath": "Projects/2026/61721__Payne",
+    "valeVision_ModelUrl_BaseMesh": "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__Whitecard__Layer-01__BaseMeshModel__1.1.0__.glb",
+    "valeVision_ModelUrl_Linework": "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__Whitecard__Layer-02__LineworkModel__1.1.0__.glb",
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -10000,
+            "Camera__DefaultTarget__TargetZ": -13000,
+            "Camera__DefaultTarget__TargetY": 2000
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "folderId": "2026/61721__Payne",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Feb-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__05-Feb-2026.png",
+        "IMG07__3dView__Topdown-01__WhitecardImage__05-Feb-2026.png",
+        "IMG08__3dView__Topdown-02__WhitecardImage__05-Feb-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__05-Feb-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__05-Feb-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Feb-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Feb-2026.png",
+        "IMG02__3dView__ViewOption-02__Further__WhitecardImage__05-Feb-2026.png",
+        "IMG07__3dView__Topdown-01__WhitecardImage__05-Feb-2026.png",
+        "IMG08__3dView__Topdown-02__WhitecardImage__05-Feb-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__05-Feb-2026.png",
+        "IMG22__Elevation__LeftSideElevation__WhitecardImage__05-Feb-2026.png",
+        "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Feb-2026.png"
+    ]
+}

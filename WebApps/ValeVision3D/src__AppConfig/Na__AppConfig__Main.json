@@ -81,9 +81,9 @@
             "Camera__DefaultPos__PosZ"       :  3250
         },
         "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX" : -1250,
-            "Camera__DefaultTarget__TargetY" :  2570,
-            "Camera__DefaultTarget__TargetZ" :  -350
+            "Camera__DefaultTarget__TargetX" : -10000,
+            "Camera__DefaultTarget__TargetZ" :  -13000,
+            "Camera__DefaultTarget__TargetY" :  2000
         },
         "Camera__DefaultRotation": {
             "Camera__DefaultRotation__RotX"  : -0.073,
@@ -100,8 +100,8 @@
             "Dev__DefaultCube__Visible"  : false,
             "Dev__DefaultCube__SizeInMm" : 1000,
             "Dev__DefaultCube__Colour"   : "#1e3a4f",
-            "Dev__DefaultCube__PozX"     : 12500,
-            "Dev__DefaultCube__PozZ"     : -10000,
+            "Dev__DefaultCube__PozX"     : 10000,
+            "Dev__DefaultCube__PozZ"     : -13000,
             "Dev__DefaultCube__PozY"     : 2000
 
         }

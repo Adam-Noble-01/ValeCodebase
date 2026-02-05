@@ -7,7 +7,8 @@ flowchart TD
     indexHtml[index.html] --> appConfigLoader[src__AppConfig/Na__AppConfig__Loader.js]
     appConfigLoader --> appConfigJson[src__AppConfig/Na__AppConfig__Main.json]
 
-    indexHtml --> navControls[src__NavigationAndCameras/Na__Navmode__OrbitControls__Setup.js]
+    indexHtml --> mouseControls[src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js]
+    indexHtml --> ipadControls[src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js]
     indexHtml --> renderPipeline[src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js]
     indexHtml --> cameraLens[src__CameraUtils/Na__UiFeature__CameraLens__Controls.js]
     indexHtml --> cameraPosition[src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js]
@@ -22,7 +23,8 @@ flowchart TD
     stylesIndex --> stylesControls[src__Styles/controls-instructions-panel.css]
     stylesIndex --> stylesLoading[src__Styles/loading-overlay.css]
 
-    navControls --> threeLib[three.js]
+    mouseControls --> threeLib[three.js]
+    ipadControls --> threeLib[three.js]
     renderPipeline --> threeLib
     cameraLens --> threeLib
     imageExport --> threeLib

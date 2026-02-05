@@ -249,7 +249,8 @@
     import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
     import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
     import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
-    import { Na__Navmode__InitializeControls } from './src__NavigationAndCameras/Na__Navmode__OrbitControls__Setup.js';
+    import { Na__DefaultNavmode__InitializeMouseControls } from './src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
+    import { Na__DefaultNavmode__InitializeIpadControls } from './src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
     import { Na__AppConfig__LoadConfig } from './src__AppConfig/Na__AppConfig__Loader.js';
     import { Na__RenderPipeline__SetupComposer } from './src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
     import { Na__UiFeature__InitializeCameraLensControls } from './src__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
@@ -280,6 +281,7 @@
     const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;              // <-- Camera lens settings
     const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;            // <-- Image export settings
     const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition; // <-- Camera defaults (MM)
+    const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;    // <-- Navmode config (MM)
     
     const Na__ModelDefaults__BaseModelUrl = Na__Config__ModelDefaults.baseModelUrl;       // <-- Default base mesh
     const Na__ModelDefaults__LineworkModelUrl = Na__Config__ModelDefaults.lineworkModelUrl; // <-- Default linework
@@ -317,15 +319,21 @@
         Na__Math__ConvertMmToUnits(Na__Dev__DefaultCube__PozZ)
     );
     
-    const Na__Navmode__MovementSpeedMm = Na__Dev__DefaultCube__SizeInMm * 0.05;   // <-- MM per tick
-    const Na__Navmode__ElevationSpeedMm = Na__Dev__DefaultCube__SizeInMm * 0.05;  // <-- MM per tick
-    const Na__Navmode__OrbitMinDistanceMm = Na__Dev__DefaultCube__SizeInMm * 0.25; // <-- MM
-    const Na__Navmode__OrbitMaxDistanceMm = Na__Dev__DefaultCube__SizeInMm * 100;  // <-- MM
+    const Na__Navmode__ConfigMouse = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__MouseControls)
+        ? Na__Config__NavmodeSettings.Navmode__MouseControls
+        : {};
+    const Na__Navmode__ConfigIpad = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__IpadControls)
+        ? Na__Config__NavmodeSettings.Navmode__IpadControls
+        : {};
+    // ------------------------------------------------------------
     
-    const Na__Navmode__MovementSpeed = Na__Math__ConvertMmToUnits(Na__Navmode__MovementSpeedMm);
-    const Na__Navmode__ElevationSpeed = Na__Math__ConvertMmToUnits(Na__Navmode__ElevationSpeedMm);
-    const Na__Navmode__OrbitMinDistance = Na__Math__ConvertMmToUnits(Na__Navmode__OrbitMinDistanceMm);
-    const Na__Navmode__OrbitMaxDistance = Na__Math__ConvertMmToUnits(Na__Navmode__OrbitMaxDistanceMm);
+    
+    // MODULE VARIABLES | Device Detection (Mouse vs Touch)
+    // ------------------------------------------------------------
+    const Na__Device__HasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const Na__Device__IsIpadOS = navigator.userAgent.includes('Macintosh') && navigator.maxTouchPoints > 1;
+    const Na__Device__IsMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || Na__Device__IsIpadOS;
+    const Na__Device__UseTouchControls = Na__Device__IsMobile || Na__Device__HasTouch;
     // ------------------------------------------------------------
 
 
@@ -375,13 +383,32 @@
     const Na__LineResolution__Screen = new THREE.Vector2(window.innerWidth, window.innerHeight);
     const Na__Loader__Glb = new GLTFLoader();
     let Na__RenderComposer__Main = null;
+    const Na__Navmode__InitializeControls = Na__Device__UseTouchControls
+        ? Na__DefaultNavmode__InitializeIpadControls
+        : Na__DefaultNavmode__InitializeMouseControls;
+    
+    const Na__Navmode__ActiveConfig = Na__Device__UseTouchControls ? Na__Navmode__ConfigIpad : Na__Navmode__ConfigMouse;
+    const Na__Navmode__ConfigPayload = Na__Device__UseTouchControls
+        ? {
+            enableDamping: Na__Navmode__ActiveConfig.Navmode__IpadControls__EnableDamping,        // <-- Orbit control damping
+            enableWASD: Na__Navmode__ActiveConfig.Navmode__IpadControls__EnableWASD,              // <-- Optional WASD fly mode
+            movementSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__MovementSpeedMm,    // <-- Navigation speed (mm)
+            elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__ElevationSpeedMm,  // <-- Vertical navigation speed (mm)
+            minDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMinDistanceMm,   // <-- Orbit zoom in (mm)
+            maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMaxDistanceMm    // <-- Orbit zoom out (mm)
+        }
+        : {
+            enableDamping: Na__Navmode__ActiveConfig.Navmode__MouseControls__EnableDamping,       // <-- Orbit control damping
+            enableWASD: Na__Navmode__ActiveConfig.Navmode__MouseControls__EnableWASD,             // <-- Optional WASD fly mode
+            movementSpeedMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__MovementSpeedMm,   // <-- Navigation speed (mm)
+            elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__ElevationSpeedMm, // <-- Vertical navigation speed (mm)
+            minDistanceMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__OrbitMinDistanceMm,  // <-- Orbit zoom in (mm)
+            maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__OrbitMaxDistanceMm,  // <-- Orbit zoom out (mm)
+            zoomStepMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__ZoomStepMm              // <-- Fixed wheel zoom step (mm)
+        };
+    
     const Na__NavBundle__Main = Na__Navmode__InitializeControls(Na__Camera__Main, Na__Renderer__Main.domElement, {
-        enableDamping: Na__Config__Scene.enableDamping,                 // <-- Orbit control damping
-        enableWASD: Na__Config__Scene.enableWASD,                       // <-- Optional WASD fly mode
-        movementSpeed: Na__Navmode__MovementSpeed,                      // <-- Navigation speed (units)
-        elevationSpeed: Na__Navmode__ElevationSpeed,                    // <-- Vertical navigation speed (units)
-        minDistance: Na__Navmode__OrbitMinDistance,                     // <-- Orbit zoom in (units)
-        maxDistance: Na__Navmode__OrbitMaxDistance                      // <-- Orbit zoom out (units)
+        ...Na__Navmode__ConfigPayload
     });
     const Na__Controls__Orbit = Na__NavBundle__Main.controls;
     const Na__Navmode__UpdateNavigation = Na__NavBundle__Main.updateNavigation;

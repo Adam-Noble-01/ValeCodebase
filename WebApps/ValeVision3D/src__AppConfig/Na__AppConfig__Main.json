@@ -53,6 +53,26 @@
         "resolutions": [1024, 2048, 4096],
         "defaultResolutionIndex": 2
     },
+    "Navmode__Settings": {
+        "Navmode__Settings__Description": "All navmode values are integer millimeters where noted; convert to 3D units in code.",
+        "Navmode__MouseControls": {
+            "Navmode__MouseControls__EnableDamping"      : false,
+            "Navmode__MouseControls__EnableWASD"         : true,
+            "Navmode__MouseControls__MovementSpeedMm"    : 50,
+            "Navmode__MouseControls__ElevationSpeedMm"   : 50,
+            "Navmode__MouseControls__OrbitMinDistanceMm" : 250,
+            "Navmode__MouseControls__OrbitMaxDistanceMm" : 100000,
+            "Navmode__MouseControls__ZoomStepMm"         : 200
+        },
+        "Navmode__IpadControls": {
+            "Navmode__IpadControls__EnableDamping"       : true,
+            "Navmode__IpadControls__EnableWASD"          : false,
+            "Navmode__IpadControls__MovementSpeedMm"     : 50,
+            "Navmode__IpadControls__ElevationSpeedMm"    : 50,
+            "Navmode__IpadControls__OrbitMinDistanceMm"  : 250,
+            "Navmode__IpadControls__OrbitMaxDistanceMm"  : 100000
+        }
+    },
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
@@ -77,7 +97,7 @@
     "Dev__DeveloperMode": {
         "Dev__DeveloperMode__Description": "All Dev__DefaultCube values are integer millimeters; convert to 3D units in code.",
         "Dev__DefaultCube": {
-            "Dev__DefaultCube__Visible"  : true,
+            "Dev__DefaultCube__Visible"  : false,
             "Dev__DefaultCube__SizeInMm" : 1000,
             "Dev__DefaultCube__Colour"   : "#1e3a4f",
             "Dev__DefaultCube__PozX"     : 12500,

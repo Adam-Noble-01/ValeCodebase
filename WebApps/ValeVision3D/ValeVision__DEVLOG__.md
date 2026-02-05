@@ -11,6 +11,15 @@
 
 
 # ---------------------------------------------------------
+## 05-Feb-2026 - ValeVision3D v0.0.3 
+### Normalized Navigation Controls
+- Added normalized mouse wheel zoom with fixed step per tick.
+- Added touch-first navigation module for iPad/mobile detection.
+- Routed nav initialization through device-aware control selection.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
 ## 05-Feb-2026 - ValeVision3D v0.0.2 
 ### Navigation, Units, and Camera Tools Updates
 - Added Dev__DeveloperMode default cube for fixed scale + pivot reference.

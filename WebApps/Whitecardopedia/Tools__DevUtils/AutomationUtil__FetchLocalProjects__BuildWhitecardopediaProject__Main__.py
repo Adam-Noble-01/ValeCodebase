@@ -57,6 +57,32 @@ CDN_BASE_URL                       = "https://cdn.noble-architecture.com/VaApps/
 # ------------------------------------------------------------
 
 
+# MODULE CONSTANTS | ValeVision Camera Defaults (MM)
+# ------------------------------------------------------------
+VALEVISION_CAMERA_DEFAULTS         = {
+    "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+    "Camera__DefaultPos": {
+        "Camera__DefaultPos__PosX"       : -5000,
+        "Camera__DefaultPos__PosY"       :  2800,
+        "Camera__DefaultPos__PosZ"       :  3250
+    },
+    "Camera__DefaultTarget": {
+        "Camera__DefaultTarget__TargetX" : -1250,
+        "Camera__DefaultTarget__TargetY" :  2570,
+        "Camera__DefaultTarget__TargetZ" :  -350
+    },
+    "Camera__DefaultRotation": {
+        "Camera__DefaultRotation__RotX"  : -0.073,
+        "Camera__DefaultRotation__RotY"  : -0.8346,
+        "Camera__DefaultRotation__RotZ"  : -0.0541
+    },
+    "Camera__DefaultMisc": {
+        "Camera__DefaultMisc__Fov"       : 29.8628
+    }
+}
+# ------------------------------------------------------------
+
+
 # MODULE CONSTANTS | Regex Patterns
 # ------------------------------------------------------------
 WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
@@ -678,6 +704,8 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     
     if linework_glb_file:
         project_data['valeVision_ModelUrl_Linework'] = build_valevision_model_url(year, dest_folder_name, linework_glb_file)  # <-- Linework URL
+    
+    project_data['valeVision_Camera__DefaultPosition'] = VALEVISION_CAMERA_DEFAULTS  # <-- ValeVision camera defaults
     
     try:
         with open(project_json_path, 'w', encoding='utf-8') as file:  # <-- Open file for writing

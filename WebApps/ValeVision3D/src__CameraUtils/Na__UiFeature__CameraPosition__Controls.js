@@ -243,6 +243,7 @@
     // MODULE EXPORTS | Camera Position API
     // ------------------------------------------------------------
     export {
+        Na__UiFeature__ApplyCameraConfig,
         Na__UiFeature__InitializeCameraPositionControls
     };
     // ------------------------------------------------------------

@@ -255,7 +255,7 @@
     import { Na__RenderPipeline__SetupComposer } from './src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
     import { Na__UiFeature__InitializeCameraLensControls } from './src__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './src__ImageExport/Na__UiFeature__ImageExport__Controls.js';
-    import { Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
+    import { Na__UiFeature__ApplyCameraConfig, Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
@@ -523,6 +523,30 @@
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Web Project Data Paths
+    // ------------------------------------------------------------
+    const Na__AppUtils__WebProjectsBaseUrl = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages base
+    const Na__AppUtils__DefaultProjectYear = '2026';                                                                     // <-- Legacy fallback
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Normalize Project Folder ID
+    // ------------------------------------------------------------
+    function Na__AppUtils__NormalizeProjectFolderId(projectCode) {
+        if (!projectCode) return null;
+        
+        const trimmed = projectCode.replace(/^\/+|\/+$/g, '');
+        const hasYearPrefix = /^\d{4}\//.test(trimmed);
+        
+        if (hasYearPrefix) {
+            return trimmed;
+        }
+        
+        return `${Na__AppUtils__DefaultProjectYear}/${trimmed}`;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Fetch Whitecardopedia project.json
     // ------------------------------------------------------------
     async function Na__AppUtils__FetchProjectJson(projectCode) {
@@ -531,7 +555,8 @@
         if (Na__AppUtils__IsRunningOnLocalhost()) {
             projectJsonUrl = `http://localhost:8000/api/projects/${projectCode}`;  // <-- Flask API endpoint
         } else {
-            projectJsonUrl = `../Whitecardopedia/Projects/2025/${projectCode}/project.json`;  // <-- Static path
+            const projectFolderId = Na__AppUtils__NormalizeProjectFolderId(projectCode);
+            projectJsonUrl = `${Na__AppUtils__WebProjectsBaseUrl}/${projectFolderId}/project.json`;  // <-- GH Pages path
         }
         
         const response = await fetch(projectJsonUrl);
@@ -747,6 +772,14 @@
                 Na__UiFeature__UpdateStatus('Loading project data...');
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode);
                 const urls = Na__AppUtils__ExtractModelUrls(projectData);
+                
+                if (projectData && projectData.valeVision_Camera__DefaultPosition) {
+                    Na__UiFeature__ApplyCameraConfig(
+                        Na__Camera__Main,
+                        Na__Controls__Orbit,
+                        projectData.valeVision_Camera__DefaultPosition
+                    );
+                }
                 
                 if (urls.baseUrl || urls.lineworkUrl) {
                     baseUrl = urls.baseUrl || null;

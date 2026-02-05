@@ -11,6 +11,15 @@
 
 
 # ---------------------------------------------------------
+## 05-Feb-2026 - ValeVision3D v0.4.0 
+### Web Project Path Fixes
+- Added absolute GitHub Pages base URL for project.json fetching.
+- Added year-aware and legacy project ID normalization for web loading.
+- Removed hard-coded 2025 web path to prevent 404 on new year projects.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
 ## 05-Feb-2026 - ValeVision3D v0.0.3 
 ### Normalized Navigation Controls
 - Added normalized mouse wheel zoom with fixed step per tick.

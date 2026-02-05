@@ -14,8 +14,10 @@
     const Na__Navmode__DefaultConfig = {
         enableDamping: false,                                          // <-- Orbit control damping
         enableWASD: false,                                             // <-- Optional WASD fly mode
-        movementSpeed: 0.5,                                            // <-- Movement speed (meters per tick)
-        elevationSpeed: 0.5                                            // <-- Vertical speed (meters per tick)
+        movementSpeed: 0.5,                                            // <-- Movement speed (units per tick)
+        elevationSpeed: 0.5,                                           // <-- Vertical speed (units per tick)
+        minDistance: null,                                             // <-- Orbit min distance (units)
+        maxDistance: null                                              // <-- Orbit max distance (units)
     };
     // ------------------------------------------------------------
 
@@ -69,6 +71,14 @@
         
         const controls = new OrbitControls(camera, domElement);
         controls.enableDamping = config.enableDamping;
+        
+        if (Number.isFinite(config.minDistance)) {
+            controls.minDistance = config.minDistance;               // <-- Clamp orbit zoom in
+        }
+        
+        if (Number.isFinite(config.maxDistance)) {
+            controls.maxDistance = config.maxDistance;               // <-- Clamp orbit zoom out
+        }
         
         let removeListeners = () => {};
         let updateMovement = () => {};

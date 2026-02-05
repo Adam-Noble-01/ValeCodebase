@@ -218,8 +218,11 @@
                         <div class="na-dropdown-menu__panel-title">Camera JSON</div>
                         <textarea class="na-dropdown-menu__textarea" id="naCameraPositionOutput" rows="6" readonly></textarea>
                         <div class="na-dropdown-menu__panel-row">
-                            <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naCameraPositionRefresh">Refresh</button>
-                            <button class="na-dropdown-menu__action" id="naCameraPositionCopy">Copy JSON</button>
+                            <input type="file" id="naCameraPositionImportFile" class="na-dropdown-menu__file-input" accept=".json,application/json" />
+                            <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naCameraPositionImport">Import JSON</button>
+                        </div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <button class="na-dropdown-menu__action" id="naCameraPositionDownload">Download JSON</button>
                         </div>
                     </div>
                 </li>
@@ -252,6 +255,7 @@
     import { Na__UiFeature__InitializeCameraLensControls } from './src__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './src__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
+    import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
 
@@ -275,12 +279,53 @@
     const Na__Config__Linework = Na__Config__Models.linework;                   // <-- Linework settings
     const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;              // <-- Camera lens settings
     const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;            // <-- Image export settings
-    const Na__Config__CameraInitial = Na__AppConfig__Data.cameraInitialPositionDefault; // <-- Initial camera settings
+    const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition; // <-- Camera defaults (MM)
     
     const Na__ModelDefaults__BaseModelUrl = Na__Config__ModelDefaults.baseModelUrl;       // <-- Default base mesh
     const Na__ModelDefaults__LineworkModelUrl = Na__Config__ModelDefaults.lineworkModelUrl; // <-- Default linework
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Dev Mode - Default Cube (MM Scale Anchor)
+    // ------------------------------------------------------------
+    const Na__Dev__DefaultCube__Config = (Na__AppConfig__Data.Dev__DeveloperMode && Na__AppConfig__Data.Dev__DeveloperMode.Dev__DefaultCube)
+        ? Na__AppConfig__Data.Dev__DeveloperMode.Dev__DefaultCube
+        : {};
     
-    const Na__Scene__UseInitialCamera = Boolean(Na__Config__CameraInitial && Na__Config__CameraInitial.position); // <-- Skip auto-recenter if set
+    const Na__Dev__DefaultCube__Visible = (Na__Dev__DefaultCube__Config.Dev__DefaultCube__Visible !== undefined)
+        ? Boolean(Na__Dev__DefaultCube__Config.Dev__DefaultCube__Visible)
+        : true;
+    const Na__Dev__DefaultCube__SizeInMm = Number.isFinite(Na__Dev__DefaultCube__Config.Dev__DefaultCube__SizeInMm)
+        ? Na__Dev__DefaultCube__Config.Dev__DefaultCube__SizeInMm
+        : 1000;
+    const Na__Dev__DefaultCube__Colour = Na__Dev__DefaultCube__Config.Dev__DefaultCube__Colour || '#1e3a4f';
+    
+    const Na__Dev__DefaultCube__PozX = Number.isFinite(Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozX)
+        ? Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozX
+        : 0;
+    const Na__Dev__DefaultCube__PozY = Number.isFinite(Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozY)
+        ? Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozY
+        : 0;
+    const Na__Dev__DefaultCube__PozZ = Number.isFinite(Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozZ)
+        ? Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozZ
+        : 0;
+    
+    const Na__Dev__DefaultCube__SizeUnits = Na__Math__ConvertMmToUnits(Na__Dev__DefaultCube__SizeInMm);
+    const Na__Dev__DefaultCube__PositionUnits = new THREE.Vector3(
+        Na__Math__ConvertMmToUnits(Na__Dev__DefaultCube__PozX),
+        Na__Math__ConvertMmToUnits(Na__Dev__DefaultCube__PozY),
+        Na__Math__ConvertMmToUnits(Na__Dev__DefaultCube__PozZ)
+    );
+    
+    const Na__Navmode__MovementSpeedMm = Na__Dev__DefaultCube__SizeInMm * 0.05;   // <-- MM per tick
+    const Na__Navmode__ElevationSpeedMm = Na__Dev__DefaultCube__SizeInMm * 0.05;  // <-- MM per tick
+    const Na__Navmode__OrbitMinDistanceMm = Na__Dev__DefaultCube__SizeInMm * 0.25; // <-- MM
+    const Na__Navmode__OrbitMaxDistanceMm = Na__Dev__DefaultCube__SizeInMm * 100;  // <-- MM
+    
+    const Na__Navmode__MovementSpeed = Na__Math__ConvertMmToUnits(Na__Navmode__MovementSpeedMm);
+    const Na__Navmode__ElevationSpeed = Na__Math__ConvertMmToUnits(Na__Navmode__ElevationSpeedMm);
+    const Na__Navmode__OrbitMinDistance = Na__Math__ConvertMmToUnits(Na__Navmode__OrbitMinDistanceMm);
+    const Na__Navmode__OrbitMaxDistance = Na__Math__ConvertMmToUnits(Na__Navmode__OrbitMaxDistanceMm);
     // ------------------------------------------------------------
 
 
@@ -296,14 +341,18 @@
         Na__Config__Scene.cameraNear,
         Na__Config__Scene.cameraFar
     );
-    if (Na__Config__CameraInitial && Na__Config__CameraInitial.position) {
+    if (Na__Config__CameraDefault && Na__Config__CameraDefault.Camera__DefaultPos) {
         Na__Camera__Main.position.set(
-            Na__Config__CameraInitial.position.x,
-            Na__Config__CameraInitial.position.y,
-            Na__Config__CameraInitial.position.z
+            Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultPos.Camera__DefaultPos__PosX),
+            Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultPos.Camera__DefaultPos__PosY),
+            Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultPos.Camera__DefaultPos__PosZ)
         );
     } else {
-        Na__Camera__Main.position.set(30, 20, 30);
+        Na__Camera__Main.position.set(
+            Na__Dev__DefaultCube__PositionUnits.x + (Na__Dev__DefaultCube__SizeUnits * 3),
+            Na__Dev__DefaultCube__PositionUnits.y + (Na__Dev__DefaultCube__SizeUnits * 2),
+            Na__Dev__DefaultCube__PositionUnits.z + (Na__Dev__DefaultCube__SizeUnits * 3)
+        );
     }
     
     const Na__Renderer__Main = new THREE.WebGLRenderer({
@@ -329,31 +378,33 @@
     const Na__NavBundle__Main = Na__Navmode__InitializeControls(Na__Camera__Main, Na__Renderer__Main.domElement, {
         enableDamping: Na__Config__Scene.enableDamping,                 // <-- Orbit control damping
         enableWASD: Na__Config__Scene.enableWASD,                       // <-- Optional WASD fly mode
-        movementSpeed: Na__Config__Scene.movementSpeed,                 // <-- Navigation speed
-        elevationSpeed: Na__Config__Scene.elevationSpeed                // <-- Vertical navigation speed
+        movementSpeed: Na__Navmode__MovementSpeed,                      // <-- Navigation speed (units)
+        elevationSpeed: Na__Navmode__ElevationSpeed,                    // <-- Vertical navigation speed (units)
+        minDistance: Na__Navmode__OrbitMinDistance,                     // <-- Orbit zoom in (units)
+        maxDistance: Na__Navmode__OrbitMaxDistance                      // <-- Orbit zoom out (units)
     });
     const Na__Controls__Orbit = Na__NavBundle__Main.controls;
     const Na__Navmode__UpdateNavigation = Na__NavBundle__Main.updateNavigation;
     
-    if (Na__Config__CameraInitial) {
-        if (Na__Config__CameraInitial.rotation) {
+    if (Na__Config__CameraDefault) {
+        if (Na__Config__CameraDefault.Camera__DefaultRotation) {
             Na__Camera__Main.rotation.set(
-                Na__Config__CameraInitial.rotation.x,
-                Na__Config__CameraInitial.rotation.y,
-                Na__Config__CameraInitial.rotation.z
+                Na__Config__CameraDefault.Camera__DefaultRotation.Camera__DefaultRotation__RotX,
+                Na__Config__CameraDefault.Camera__DefaultRotation.Camera__DefaultRotation__RotY,
+                Na__Config__CameraDefault.Camera__DefaultRotation.Camera__DefaultRotation__RotZ
             );
         }
         
-        if (Na__Config__CameraInitial.fov) {
-            Na__Camera__Main.fov = Na__Config__CameraInitial.fov;
+        if (Na__Config__CameraDefault.Camera__DefaultMisc && Number.isFinite(Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultFov)) {
+            Na__Camera__Main.fov = Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultFov;
             Na__Camera__Main.updateProjectionMatrix();
         }
         
-        if (Na__Config__CameraInitial.target) {
+        if (Na__Config__CameraDefault.Camera__DefaultTarget) {
             Na__Controls__Orbit.target.set(
-                Na__Config__CameraInitial.target.x,
-                Na__Config__CameraInitial.target.y,
-                Na__Config__CameraInitial.target.z
+                Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultTarget.Camera__DefaultTarget__TargetX),
+                Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultTarget.Camera__DefaultTarget__TargetY),
+                Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultTarget.Camera__DefaultTarget__TargetZ)
             );
             Na__Controls__Orbit.update();
         }
@@ -367,11 +418,36 @@
     // ------------------------------------------------------------
 
 
+    // MODULE INITIALIZATION | Default Dev Cube (Scale + Pivot)
+    // ------------------------------------------------------------
+    function Na__DevUtils__CreateDefaultCube() {
+        const geometry = new THREE.BoxGeometry(
+            Na__Dev__DefaultCube__SizeUnits,
+            Na__Dev__DefaultCube__SizeUnits,
+            Na__Dev__DefaultCube__SizeUnits
+        );
+        const material = new THREE.MeshStandardMaterial({ color: Na__Dev__DefaultCube__Colour });
+        const cube = new THREE.Mesh(geometry, material);
+        
+        cube.name = 'Dev__DefaultCube';
+        cube.position.copy(Na__Dev__DefaultCube__PositionUnits);
+        cube.visible = Na__Dev__DefaultCube__Visible;
+        
+        Na__Scene__Main.add(cube);
+        return cube;
+    }
+    
+    const Na__Dev__DefaultCube__Mesh = Na__DevUtils__CreateDefaultCube();
+    Na__Controls__Orbit.target.copy(Na__Dev__DefaultCube__PositionUnits);       // <-- Fixed pivot based on cube
+    Na__Controls__Orbit.update();
+    // ------------------------------------------------------------
+
+
     // MODULE INITIALIZATION | Camera Lens Controls
     // ------------------------------------------------------------
     const Na__CameraLens__Config = { ...Na__Config__CameraLens };
     
-    if (Na__Config__CameraInitial && Na__Config__CameraInitial.fov) {
+    if (Na__Config__CameraDefault && Na__Config__CameraDefault.Camera__DefaultMisc && Number.isFinite(Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultFov)) {
         Na__CameraLens__Config.defaultFocalLengthMM = null;                   // <-- Preserve initial FOV
     }
     
@@ -458,31 +534,6 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Recenter Camera on Model
-    // ------------------------------------------------------------
-    function Na__Scene__RecenterCamera() {
-        if (Na__Scene__UseInitialCamera) {
-            return;
-        }
-        
-        const box = new THREE.Box3().setFromObject(Na__ModelGroup__Root);
-        if (box.isEmpty()) return;
-        
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        
-        Na__ModelGroup__Root.position.sub(center);
-        Na__ModelGroup__Root.position.y += size.y / 2;
-        
-        const maxDim = Math.max(size.x, size.y, size.z);
-        if (maxDim > 0) {
-            Na__Camera__Main.position.set(maxDim * 1.5, maxDim * 0.8, maxDim * 1.5);
-            Na__Controls__Orbit.target.set(0, size.y / 2, 0);
-        }
-    }
-    // ------------------------------------------------------------
-
-
     // FUNCTION | Load Base Mesh (Faces)
     // ------------------------------------------------------------
     async function Na__ModelLoader__LoadBaseMesh(modelUrl) {
@@ -532,7 +583,6 @@
         });
         
         Na__ModelGroup__Root.add(Na__BaseMesh__Root);
-        Na__Scene__RecenterCamera();
         Na__UiFeature__UpdateStatus('Base Mesh Loaded');
     }
     // ------------------------------------------------------------
@@ -597,11 +647,6 @@
         
         Na__Linework__Root.renderOrder = 100;
         Na__ModelGroup__Root.add(Na__Linework__Root);
-        
-        if (!Na__BaseMesh__Root) {
-            Na__Scene__RecenterCamera();
-        }
-        
         Na__UiFeature__UpdateStatus('Linework Loaded');
     }
     // ------------------------------------------------------------

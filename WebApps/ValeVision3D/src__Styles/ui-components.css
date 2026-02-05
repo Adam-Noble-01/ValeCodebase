@@ -53,6 +53,10 @@
     min-width                           : 220px;
 }
 
+.na-dropdown-menu__details--camera-open {
+    min-width                           : 440px;
+}
+
 .na-dropdown-menu__summary {
     list-style                          : none;
     cursor                              : pointer;
@@ -128,6 +132,14 @@
     display                             : block;
 }
 
+.na-dropdown-menu__panel.is-open .na-dropdown-menu__textarea {
+    font-size                           : 0.60rem;
+}
+
+.na-dropdown-menu__panel.is-open#naCameraPositionPanel {
+    padding                             : 20px 12px;
+}
+
 .na-dropdown-menu__panel-title {
     font-size                           : 0.8rem;
     font-weight                         : 600;
@@ -185,15 +197,19 @@
 
 .na-dropdown-menu__textarea {
     width                               : 100%;
-    min-height                          : 120px;
+    min-height                          : 300px;
     padding                             : 8px;
     border-radius                       : 6px;
     border                              : 1px solid rgba(0, 0, 0, 0.15);
     font-family                         : 'Courier New', monospace;
-    font-size                           : 0.75rem;
+    font-size                           : 0.65rem;
     resize                              : none;
     background                          : #ffffff;
     color                               : #172b3a;
+}
+
+.na-dropdown-menu__file-input {
+    display                             : none;
 }
 
 .na-dropdown-menu__checkbox {
@@ -207,11 +223,11 @@
     width                               : 100%;
     border                              : none;
     border-radius                       : 6px;
-    padding                             : 8px 12px;
+    padding                             : 6px 10px;
     background                          : #172b3a;
     color                               : #ffffff;
-    font-weight                         : 600;
-    font-size                           : 0.85rem;
+    font-weight                         : 400;
+    font-size                           : 0.78rem;
     cursor                              : pointer;
 }
 

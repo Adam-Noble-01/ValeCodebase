@@ -47,28 +47,43 @@
         "sensorHeightMM": 24
     },
     "imageExport": {
-        "customEnabled": false,
+        "customEnabled": true,
         "aspectRatios": ["3:2", "4:3", "16:9"],
         "defaultAspectIndex": 0,
-        "resolutions": [1024, 2048, 4096, 8192],
-        "defaultResolutionIndex": 1
+        "resolutions": [1024, 2048, 4096],
+        "defaultResolutionIndex": 2
     },
-    "cameraInitialPositionDefault": {
-        "position": {
-            "x": -5.2389,
-            "y": 2.836,
-            "z": 3.2537
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX"       : -5000,
+            "Camera__DefaultPos__PosY"       :  2800,
+            "Camera__DefaultPos__PosZ"       :  3250
         },
-        "rotation": {
-            "x": -0.073,
-            "y": -0.8346,
-            "z": -0.0541
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX" : -1250,
+            "Camera__DefaultTarget__TargetY" :  2570,
+            "Camera__DefaultTarget__TargetZ" :  -350
         },
-        "target": {
-            "x": -1.2507,
-            "y": 2.5724,
-            "z": -0.3503
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX"  : -0.073,
+            "Camera__DefaultRotation__RotY"  : -0.8346,
+            "Camera__DefaultRotation__RotZ"  : -0.0541
         },
-        "fov": 29.8628
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov"       : 29.8628
+        }
+    },
+    "Dev__DeveloperMode": {
+        "Dev__DeveloperMode__Description": "All Dev__DefaultCube values are integer millimeters; convert to 3D units in code.",
+        "Dev__DefaultCube": {
+            "Dev__DefaultCube__Visible"  : true,
+            "Dev__DefaultCube__SizeInMm" : 1000,
+            "Dev__DefaultCube__Colour"   : "#1e3a4f",
+            "Dev__DefaultCube__PozX"     : 12500,
+            "Dev__DefaultCube__PozZ"     : -10000,
+            "Dev__DefaultCube__PozY"     : 2000
+
+        }
     }
 }

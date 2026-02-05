@@ -12,14 +12,14 @@
     // REGION | Export Configuration and Defaults
     // -------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Export Defaults
+    // MODULE CONSTANTS | Export Config Keys
     // ------------------------------------------------------------
-    const Na__UiFeature__ExportDefaults = {
-        aspectRatios: ['3:2', '4:3', '16:9'],
-        defaultAspectIndex: 0,
-        resolutions: [1024, 2048, 4096, 8192],
-        defaultResolutionIndex: 1,
-        customEnabled: false
+    const Na__UiFeature__ExportConfigKeys = {
+        aspectRatios: 'aspectRatios',
+        defaultAspectIndex: 'defaultAspectIndex',
+        resolutions: 'resolutions',
+        defaultResolutionIndex: 'defaultResolutionIndex',
+        customEnabled: 'customEnabled'
     };
     // ------------------------------------------------------------
 
@@ -50,6 +50,22 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Validate Export Config
+    // ------------------------------------------------------------
+    function Na__UiFeature__ValidateExportConfig(config) {
+        if (!config || typeof config !== 'object') return false;
+        if (!Array.isArray(config[Na__UiFeature__ExportConfigKeys.aspectRatios])) return false;
+        if (!Array.isArray(config[Na__UiFeature__ExportConfigKeys.resolutions])) return false;
+        if (typeof config[Na__UiFeature__ExportConfigKeys.defaultAspectIndex] !== 'number') return false;
+        if (typeof config[Na__UiFeature__ExportConfigKeys.defaultResolutionIndex] !== 'number') return false;
+        if (typeof config[Na__UiFeature__ExportConfigKeys.customEnabled] !== 'boolean') return false;
+        if (config[Na__UiFeature__ExportConfigKeys.aspectRatios].length === 0) return false;
+        if (config[Na__UiFeature__ExportConfigKeys.resolutions].length === 0) return false;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Download Image
     // ------------------------------------------------------------
     function Na__UiFeature__DownloadImage(dataUrl, filename) {
@@ -74,7 +90,8 @@
     function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getComposer, config = {}) {
         if (!renderer || !scene || !camera) return;
         
-        const exportConfig = { ...Na__UiFeature__ExportDefaults, ...(config || {}) };
+        if (!Na__UiFeature__ValidateExportConfig(config)) return;
+        const exportConfig = config;
         const toggleButton = document.getElementById('naImageExportToggle');
         const panel = document.getElementById('naImageExportPanel');
         const customToggle = document.getElementById('naImageExportCustomToggle');

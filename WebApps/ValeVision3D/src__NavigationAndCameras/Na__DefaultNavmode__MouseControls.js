@@ -116,17 +116,24 @@
     // FUNCTION | Initialize Default Mouse Controls
     // ------------------------------------------------------------
     function Na__DefaultNavmode__InitializeMouseControls(camera, domElement, customConfig) {
+        // SUB SECTION | Base Config & Orbit Controls Setup
+        // ------------------------------------------------------------
         const config = Na__DefaultNavmode__MergeConfig(customConfig);
         
         const controls = new OrbitControls(camera, domElement);
         controls.enableDamping = config.enableDamping;
         controls.enableZoom = false;                                  // <-- Disable native wheel zoom
+        // ------------------------------------------------------------
         
+        // SUB SECTION | Speed, Zoom, and Distance Settings
+        // ------------------------------------------------------------
         const movementSpeedUnits = Na__Math__ConvertMmToUnits(config.movementSpeedMm);
         const elevationSpeedUnits = Na__Math__ConvertMmToUnits(config.elevationSpeedMm);
         const minDistanceUnits = Number.isFinite(config.minDistanceMm) ? Na__Math__ConvertMmToUnits(config.minDistanceMm) : null;
         const maxDistanceUnits = Number.isFinite(config.maxDistanceMm) ? Na__Math__ConvertMmToUnits(config.maxDistanceMm) : null;
         const zoomStepUnits = Na__Math__ConvertMmToUnits(config.zoomStepMm);
+        let wheelTickCount = 0;                                       // <-- Consecutive wheel ticks
+        let lastWheelTimestamp = 0;                                   // <-- Last wheel time (ms)
         
         if (Number.isFinite(minDistanceUnits)) {
             controls.minDistance = minDistanceUnits;                 // <-- Clamp orbit zoom in
@@ -135,13 +142,31 @@
         if (Number.isFinite(maxDistanceUnits)) {
             controls.maxDistance = maxDistanceUnits;                 // <-- Clamp orbit zoom out
         }
+        // ------------------------------------------------------------
         
+        // SUB SECTION | Wheel Zoom Handler (Accelerated)
+        // ------------------------------------------------------------
         const Na__DefaultNavmode__OnWheel = (event) => {
             event.preventDefault();
             const zoomDirection = Na__DefaultNavmode__NormalizeWheelDeltaDirection(event);
-            Na__DefaultNavmode__ApplyZoomStep(camera, controls, zoomDirection, zoomStepUnits, minDistanceUnits, maxDistanceUnits);
+            
+            const now = performance.now();
+            if ((now - lastWheelTimestamp) > 250) {
+                wheelTickCount = 0;                                   // <-- Reset streak after idle
+            }
+            lastWheelTimestamp = now;
+            wheelTickCount += 1;
+            
+            const extraTicks = Math.max(0, wheelTickCount - 3);
+            const accelerationFactor = extraTicks > 0 ? Math.pow(1.05, extraTicks) : 1;
+            const acceleratedZoomStep = zoomStepUnits * accelerationFactor;
+            
+            Na__DefaultNavmode__ApplyZoomStep(camera, controls, zoomDirection, acceleratedZoomStep, minDistanceUnits, maxDistanceUnits);
         };
+        // ------------------------------------------------------------
         
+        // SUB SECTION | Event Binding & Movement Wiring
+        // ------------------------------------------------------------
         domElement.addEventListener('wheel', Na__DefaultNavmode__OnWheel, { passive: false });
         
         let removeListeners = () => {};
@@ -182,7 +207,10 @@
                 }
             };
         }
+        // ------------------------------------------------------------
         
+        // SUB SECTION | Update Loop & Cleanup
+        // ------------------------------------------------------------
         const updateNavigation = () => {
             updateMovement();
             controls.update();
@@ -199,6 +227,7 @@
             updateNavigation,
             dispose
         };
+        // ------------------------------------------------------------
     }
     // ------------------------------------------------------------
 

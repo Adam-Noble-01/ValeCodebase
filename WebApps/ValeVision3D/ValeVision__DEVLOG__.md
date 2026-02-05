@@ -16,6 +16,10 @@
 - Added normalized mouse wheel zoom with fixed step per tick.
 - Added touch-first navigation module for iPad/mobile detection.
 - Routed nav initialization through device-aware control selection.
+- Added AppConfig-based navmode settings for mouse and iPad controls.
+- Inverted mouse wheel zoom direction for expected scroll behavior.
+- Added arrow key movement alongside WASD navigation.
+- Added mouse wheel acceleration after 3 consecutive ticks for faster long-range zoom.
 # ---------------------------------------------------------
 
 

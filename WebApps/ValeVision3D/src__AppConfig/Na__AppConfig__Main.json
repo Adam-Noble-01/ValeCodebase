@@ -61,8 +61,8 @@
             "Navmode__MouseControls__MovementSpeedMm"    : 50,
             "Navmode__MouseControls__ElevationSpeedMm"   : 50,
             "Navmode__MouseControls__OrbitMinDistanceMm" : 250,
-            "Navmode__MouseControls__OrbitMaxDistanceMm" : 100000,
-            "Navmode__MouseControls__ZoomStepMm"         : 200
+            "Navmode__MouseControls__OrbitMaxDistanceMm" : 50000,
+            "Navmode__MouseControls__ZoomStepMm"         : 250
         },
         "Navmode__IpadControls": {
             "Navmode__IpadControls__EnableDamping"       : true,
@@ -70,7 +70,7 @@
             "Navmode__IpadControls__MovementSpeedMm"     : 50,
             "Navmode__IpadControls__ElevationSpeedMm"    : 50,
             "Navmode__IpadControls__OrbitMinDistanceMm"  : 250,
-            "Navmode__IpadControls__OrbitMaxDistanceMm"  : 100000
+            "Navmode__IpadControls__OrbitMaxDistanceMm"  : 50000
         }
     },
     "Camera__DefaultPosition": {

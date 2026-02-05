@@ -28,27 +28,27 @@
     "basePath": "Projects/2026/61721__Payne",
     "valeVision_ModelUrl_BaseMesh": "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__Whitecard__Layer-01__BaseMeshModel__1.1.0__.glb",
     "valeVision_ModelUrl_Linework": "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__Whitecard__Layer-02__LineworkModel__1.1.0__.glb",
-        "Camera__DefaultPosition": {
-            "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
-            "Camera__DefaultPos": {
-                "Camera__DefaultPos__PosX"       : -7972,
-                "Camera__DefaultPos__PosY"       : 2082,
-                "Camera__DefaultPos__PosZ"       : -2372
-            },
-            "Camera__DefaultTarget": {
-                "Camera__DefaultTarget__TargetX" : 9306,
-                "Camera__DefaultTarget__TargetY" : 2179,
-                "Camera__DefaultTarget__TargetZ" : -14026
-            },
-            "Camera__DefaultRotation": {
-                "Camera__DefaultRotation__RotX"  : 0.0083,
-                "Camera__DefaultRotation__RotY"  : -0.9774,
-                "Camera__DefaultRotation__RotZ"  : 0.0069
-            },
-            "Camera__DefaultMisc": {
-                "Camera__DefaultMisc__Fov"       : 29.8628
-            }
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
         },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -10000,
+            "Camera__DefaultTarget__TargetZ": -13000,
+            "Camera__DefaultTarget__TargetY": 2000
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
     "folderId": "2026/61721__Payne",
     "displayImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__05-Feb-2026.png",

@@ -227,6 +227,20 @@
                     </div>
                 </li>
             </ul>
+            
+            <!-- --------------------------------------------------------- -->
+            <!-- UI MENU | Model Category Toggle Controls                  -->
+            <!-- --------------------------------------------------------- -->
+            
+            <div class="na-model-toggle__panel" id="naModelTogglePanel" style="display: none;">
+                <div class="na-model-toggle__title">Toggle Parts</div>
+                <div class="na-model-toggle__list" id="naModelToggleList">
+                    <!-- Buttons generated dynamically by Na__UiFeature__ModelToggle__Controls.js -->
+                </div>
+            </div>
+            
+            <!-- --------------------------------------------------------- -->
+            
         </details>
     </div>
     
@@ -254,6 +268,7 @@
     import { Na__UiFeature__ApplyCameraConfig, Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
     import { Na__ModelLoader__LoadAllModels } from './src__ModelLoader/Na__ModelLoader__MultiModel.js';
+    import { Na__UiFeature__InitializeModelToggleControls } from './src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js';
     // ------------------------------------------------------------
 
 
@@ -706,6 +721,9 @@
             }
             
             Na__UiFeature__ShowScene();                                   // <-- Reveal scene after all models loaded
+            
+            // INITIALIZE MODEL TOGGLE CONTROLS (dynamic per-category buttons)
+            Na__UiFeature__InitializeModelToggleControls(Na__LoadedModelGroups);  // <-- Build toggle buttons from loaded groups
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);
             Na__UiFeature__UpdateStatus('Model load error - check console', true);

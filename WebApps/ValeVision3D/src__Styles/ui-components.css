@@ -613,5 +613,78 @@
     text-align                         : right;
 }
 
+/* Model Toggle Panel - Category Visibility Controls */
+/* ----------------------------------------------------------------- */
+.na-model-toggle__panel {
+    border-top                          : 1px solid rgba(0, 0, 0, 0.08);
+    padding                             : 8px 14px 10px 14px;
+}
+
+.na-model-toggle__title {
+    font-size                           : 0.75rem;
+    font-weight                         : 600;
+    color                               : rgba(23, 43, 58, 0.5);
+    text-transform                      : uppercase;
+    letter-spacing                      : 0.04em;
+    margin-bottom                       : 6px;
+}
+
+.na-model-toggle__list {
+    display                             : flex;
+    flex-direction                      : column;
+    gap                                 : 4px;
+}
+
+.na-model-toggle__button {
+    width                               : 100%;
+    border                              : 1px solid rgba(23, 43, 58, 0.15);
+    border-radius                       : 4px;
+    padding                             : 6px 10px;
+    background                          : rgba(23, 43, 58, 0.04);
+    text-align                          : left;
+    font-size                           : 0.8rem;
+    font-weight                         : 400;
+    font-family                         : 'Open Sans', sans-serif;
+    color                               : rgba(23, 43, 58, 0.4);
+    cursor                              : pointer;
+    transition                          : all 0.15s ease;
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 8px;
+    text-decoration                     : line-through;
+}
+
+.na-model-toggle__button::before {
+    content                             : '';
+    display                             : inline-block;
+    width                               : 8px;
+    height                              : 8px;
+    border-radius                       : 50%;
+    background                          : rgba(23, 43, 58, 0.2);
+    flex-shrink                         : 0;
+    transition                          : background 0.15s ease;
+}
+
+.na-model-toggle__button:hover {
+    background                          : rgba(23, 43, 58, 0.08);
+}
+
+.na-model-toggle__button--active {
+    color                               : #172b3a;
+    font-weight                         : 500;
+    background                          : rgba(23, 43, 58, 0.06);
+    border-color                        : rgba(23, 43, 58, 0.25);
+    text-decoration                     : none;
+}
+
+.na-model-toggle__button--active::before {
+    background                          : #2a7d4f;
+}
+
+.na-model-toggle__button--active:hover {
+    background                          : rgba(23, 43, 58, 0.1);
+}
+
+
 /* endregion -------------------------------------------------------- */
 

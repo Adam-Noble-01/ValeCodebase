@@ -38,13 +38,44 @@
 
     // HELPER FUNCTION | Check if Project has ValeVision Model URL
     // ---------------------------------------------------------------
+    // Checks multiple project.json formats in priority order:
+    // v4: valeVision_ModelUrls (array) - preferred new format
+    // v3: valeVision_ModelUrl_BaseMesh / _Linework (separate fields)
+    // v2: valeVision_ModelUrl (array) - legacy array format
+    // v1: valeVision_ModelUrl (string) - legacy single URL format
+    // ---------------------------------------------------------------
     const hasValeVisionModel = (projectData) => {
         if (!projectData) return false;                                  // <-- Check if project data exists
+        
+        // V4 FORMAT | New multi-model array (preferred)
+        // ---------------------------------------------------------------
+        if (Array.isArray(projectData.valeVision_ModelUrls) && projectData.valeVision_ModelUrls.length > 0) {
+            return true;                                                // <-- Return true if v4 array has items
+        }
+        // ---------------------------------------------------------------
+        
+        // V3 FORMAT | Layered BaseMesh + Linework pair
+        // ---------------------------------------------------------------
         const baseUrl = projectData.valeVision_ModelUrl_BaseMesh;        // <-- Get base mesh URL
         const lineworkUrl = projectData.valeVision_ModelUrl_Linework;    // <-- Get linework URL
         const hasBase = typeof baseUrl === 'string' && baseUrl.length > 0;  // <-- Check base mesh URL
         const hasLinework = typeof lineworkUrl === 'string' && lineworkUrl.length > 0;  // <-- Check linework URL
-        return hasBase || hasLinework;                                   // <-- Return true if any layer exists
+        if (hasBase || hasLinework) {
+            return true;                                                // <-- Return true if any v3 URL exists
+        }
+        // ---------------------------------------------------------------
+        
+        // V2/V1 FORMAT | Legacy single URL (array or string)
+        // ---------------------------------------------------------------
+        const url = projectData.valeVision_ModelUrl;                     // <-- Get legacy ValeVision model URL
+        if (!url) return false;                                          // <-- Return false if no URL
+        
+        if (Array.isArray(url)) {
+            return url.length > 0;                                       // <-- Check v2 array has items
+        }
+        
+        return typeof url === 'string' && url.length > 0;                // <-- Check v1 string is not empty
+        // ---------------------------------------------------------------
     };
     // ---------------------------------------------------------------
 

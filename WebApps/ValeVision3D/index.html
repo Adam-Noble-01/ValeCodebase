@@ -559,7 +559,7 @@
         let projectJsonUrl;
         
         if (Na__AppUtils__IsRunningOnLocalhost()) {
-            projectJsonUrl = `http://localhost:8000/api/projects/${projectCode}`;  // <-- Flask API endpoint
+            projectJsonUrl = `${window.location.origin}/api/projects/${projectCode}`;  // <-- Flask API endpoint
         } else {
             const projectFolderId = Na__AppUtils__NormalizeProjectFolderId(projectCode);
             projectJsonUrl = `${Na__AppUtils__WebProjectsBaseUrl}/${projectFolderId}/project.json`;  // <-- GH Pages path

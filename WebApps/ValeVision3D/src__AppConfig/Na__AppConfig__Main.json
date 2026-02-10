@@ -78,19 +78,19 @@
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX"       : -5000,
-            "Camera__DefaultPos__PosY"       :  2800,
-            "Camera__DefaultPos__PosZ"       :  3250
+            "Camera__DefaultPos__PosX"       : 36025,
+            "Camera__DefaultPos__PosY"       : 2898,
+            "Camera__DefaultPos__PosZ"       : 7246
         },
         "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX" : -10000,
-            "Camera__DefaultTarget__TargetZ" :  -13000,
-            "Camera__DefaultTarget__TargetY" :  2000
+            "Camera__DefaultTarget__TargetX" : 20000,
+            "Camera__DefaultTarget__TargetY" : 2000,
+            "Camera__DefaultTarget__TargetZ" : -10000
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX"  : -0.073,
-            "Camera__DefaultRotation__RotY"  : -0.8346,
-            "Camera__DefaultRotation__RotZ"  : -0.0541
+            "Camera__DefaultRotation__RotX"  : -0.0387,
+            "Camera__DefaultRotation__RotY"  : 0.5919,
+            "Camera__DefaultRotation__RotZ"  : 0.0216
         },
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov"       : 29.8628
@@ -102,8 +102,8 @@
             "Dev__DefaultCube__Visible"  : false,
             "Dev__DefaultCube__SizeInMm" : 1000,
             "Dev__DefaultCube__Colour"   : "#1e3a4f",
-            "Dev__DefaultCube__PozX"     : 10000,
-            "Dev__DefaultCube__PozZ"     : -13000,
+            "Dev__DefaultCube__PozX"     : 20000,
+            "Dev__DefaultCube__PozZ"     : -10000,
             "Dev__DefaultCube__PozY"     : 2000
 
         }

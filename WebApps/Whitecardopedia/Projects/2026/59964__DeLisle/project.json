@@ -27,25 +27,25 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "valeVision_Camera__DefaultPosition": {
+    "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -5000,
-            "Camera__DefaultPos__PosY": 2800,
-            "Camera__DefaultPos__PosZ": 3250
+            "Camera__DefaultPos__PosX"       : 30756,
+            "Camera__DefaultPos__PosY"       : 2898,
+            "Camera__DefaultPos__PosZ"       : 12432
         },
         "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX": -1250,
-            "Camera__DefaultTarget__TargetY": 2570,
-            "Camera__DefaultTarget__TargetZ": -350
+            "Camera__DefaultTarget__TargetX" : 20812,
+            "Camera__DefaultTarget__TargetY" : 1722,
+            "Camera__DefaultTarget__TargetZ" : -10347
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.073,
-            "Camera__DefaultRotation__RotY": -0.8346,
-            "Camera__DefaultRotation__RotZ": -0.0541
+            "Camera__DefaultRotation__RotX"  : -0.0516,
+            "Camera__DefaultRotation__RotY"  : 0.4111,
+            "Camera__DefaultRotation__RotZ"  : 0.0206
         },
         "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
+            "Camera__DefaultMisc__Fov"       : 29.8628
         }
     },
     "folderId": "2026/59964__DeLisle",

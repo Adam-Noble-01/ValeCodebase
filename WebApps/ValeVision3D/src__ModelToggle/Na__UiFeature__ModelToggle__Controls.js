@@ -163,12 +163,6 @@
 
             listContainer.appendChild(button);                           // <-- Add button to container
         });
-
-        // SHOW THE TOGGLE PANEL (it may have been hidden if no models)
-        const panel = document.getElementById(Na__ModelToggle__PanelId); // <-- Get panel container
-        if (panel) {
-            panel.style.display = '';                                     // <-- Ensure panel is visible
-        }
     }
     // ---------------------------------------------------------------
 
@@ -191,6 +185,18 @@
         }
 
         Na__ModelToggle__BuildButtons(loadedGroups);                     // <-- Build dynamic toggle buttons
+        
+        // INITIALIZE TOGGLE BUTTON
+        const toggleButton = document.getElementById('naModelToggleButton');  // <-- Get toggle button element
+        const panel = document.getElementById(Na__ModelToggle__PanelId);     // <-- Get panel container
+        
+        if (toggleButton && panel) {
+            toggleButton.addEventListener('click', () => {
+                const isOpen = panel.classList.contains('is-open');      // <-- Check current panel state
+                panel.classList.toggle('is-open', !isOpen);            // <-- Toggle panel visibility
+            });
+        }
+        
         console.log(`[ValeVision3D] Model toggle controls initialized for ${loadedGroups.size} categories`);
     }
     // ---------------------------------------------------------------

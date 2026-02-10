@@ -210,6 +210,18 @@
                 <!-- <li class="na-dropdown-menu__item">Document Layout</li> -->
                 <!-- <li class="na-dropdown-menu__item">Return To Project</li> -->
                 <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naModelToggleButton">
+                        Toggle Model Layers
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naModelTogglePanel">
+                        <div class="na-dropdown-menu__panel-title">Model Parts List</div>
+                        <div class="na-model-toggle__list" id="naModelToggleList">
+                            <!-- Buttons generated dynamically by Na__UiFeature__ModelToggle__Controls.js -->
+                        </div>
+                    </div>
+                </li>
+                <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCameraPositionToggle">
                         Download Position Data
                         <span class="na-dropdown-menu__subarrow">▾</span>
@@ -227,19 +239,6 @@
                     </div>
                 </li>
             </ul>
-            
-            <!-- --------------------------------------------------------- -->
-            <!-- UI MENU | Model Category Toggle Controls                  -->
-            <!-- --------------------------------------------------------- -->
-            
-            <div class="na-model-toggle__panel" id="naModelTogglePanel" style="display: none;">
-                <div class="na-model-toggle__title">Toggle Parts</div>
-                <div class="na-model-toggle__list" id="naModelToggleList">
-                    <!-- Buttons generated dynamically by Na__UiFeature__ModelToggle__Controls.js -->
-                </div>
-            </div>
-            
-            <!-- --------------------------------------------------------- -->
             
         </details>
     </div>

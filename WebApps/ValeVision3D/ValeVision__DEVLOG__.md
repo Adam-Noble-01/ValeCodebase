@@ -11,7 +11,49 @@
 
 
 # ---------------------------------------------------------
-## 10-Feb-2026 - ValeVision3D v0.5.0 
+## 10-Feb-2026 - ValeVision3D v0.0.6
+### Dynamic Model Toggle System & Build Pipeline Integration
+
+**Model Toggle Controls**
+- Created `src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js` module for per-category visibility toggling.
+- Dynamic button generation from loaded model groups Map (category -> THREE.Group).
+- User-friendly display names: "Existing Building", "Design Proposal", "Landscape".
+- Pairs Mesh + Linework models per category into single toggle button.
+- Active/inactive visual states with green dot indicator and line-through styling.
+- Future-proof: automatically generates buttons for new categories (furniture, vegetation, context).
+- Integrated as expandable dropdown menu item "Toggle Model Layers" positioned between "Export Image" and "Download Position Data".
+- Panel title: "Model Parts List" displays category toggle buttons.
+- Uses standard dropdown panel pattern with toggle button for consistent UI behavior.
+- Panel expands/collapses dynamically matching other menu items (Adjust Camera Lens, Export Image, Download Position Data).
+
+**Project.json Format v4**
+- Introduced `valeVision_ModelUrls` array format to support multiple model URLs per project.
+- Deprecated `valeVision_ModelUrl_BaseMesh` / `_Linework` (v3) format.
+- Maintains backward compatibility in `Na__AppUtils__ExtractModelUrls` for all legacy formats (v1-v4).
+- Cleans legacy keys when writing/updating project.json files.
+
+**Build Automation Pipeline Updates**
+- Updated `AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py`:
+  - Removed version-based GLB selection (parse_glb_version, select_latest_glb_by_layer).
+  - Added `__NaModel__` to `__ValeVision__` namespace rebranding in CDN URL generation.
+  - Now discovers all root-level GLBs (skips `01__Archive/` subfolder).
+  - **Critical fix**: Always updates model URLs in existing projects instead of skipping entirely.
+  - Writes v4 `valeVision_ModelUrls` array format for all new and refreshed projects.
+  - Added "Model URLs refreshed" counter and status messages to console output.
+  - Fixed Unicode encoding errors in Windows console (replaced arrow and em-dash characters).
+- Verified `AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py` consistency with new naming.
+
+**Validation & Testing**
+- Successfully tested full pipeline on `2026/61721__Payne` project.
+- Confirmed 6 GLB models discovered (Landscape, Existing Building, Proposed Building × 2 types each).
+- Verified project.json updated with v4 format and `__ValeVision__` rebranded CDN URLs.
+- Confirmed models load and render correctly in ValeVision3D viewer with new toggle controls.
+
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 10-Feb-2026 - ValeVision3D v0.0.5 
 ### Multi-Model Category Loading System
 - New `Na__ModelLoader__MultiModel.js` module for loading multiple GLB model pairs.
 - Models are now classified by ValeVision category (e.g. MainBuildingModel__Existing, LandscapeEnvironment).

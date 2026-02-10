@@ -615,19 +615,9 @@
 
 /* Model Toggle Panel - Category Visibility Controls */
 /* ----------------------------------------------------------------- */
-.na-model-toggle__panel {
-    border-top                          : 1px solid rgba(0, 0, 0, 0.08);
-    padding                             : 8px 14px 10px 14px;
-}
-
-.na-model-toggle__title {
-    font-size                           : 0.75rem;
-    font-weight                         : 600;
-    color                               : rgba(23, 43, 58, 0.5);
-    text-transform                      : uppercase;
-    letter-spacing                      : 0.04em;
-    margin-bottom                       : 6px;
-}
+/* NOTE: Panel and title styles removed - now using standard dropdown panel styles */
+/* .na-model-toggle__panel styles removed - inherits from .na-dropdown-menu__panel */
+/* .na-model-toggle__title styles removed - inherits from .na-dropdown-menu__panel-title */
 
 .na-model-toggle__list {
     display                             : flex;

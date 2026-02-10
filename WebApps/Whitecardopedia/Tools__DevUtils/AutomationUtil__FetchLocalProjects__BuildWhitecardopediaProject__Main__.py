@@ -89,8 +89,9 @@ WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
-GLB_LAYER_BASE_PATTERN             = "__Layer-01__BaseMeshModel__"           # <-- Base mesh model filename marker
-GLB_LAYER_LINE_PATTERN             = "__Layer-02__LineworkModel__"           # <-- Linework model filename marker
+GLB_ARCHIVE_SUBFOLDER              = "01__Archive"                           # <-- Archive subfolder to skip
+GLB_NAMODEL_NAMESPACE              = "__NaModel__"                           # <-- SketchUp export namespace marker
+GLB_VALEVISION_NAMESPACE           = "__ValeVision__"                        # <-- CDN rebranded namespace marker
 DATE_SUFFIX_PATTERN                = r'__(\d{2}-[A-Za-z]{3}-\d{4})$'         # <-- Date suffix pattern (DD-MMM-YYYY)
 DATE_FORMAT                        = '%d-%b-%Y'                              # <-- Date format for parsing
 # ------------------------------------------------------------
@@ -392,11 +393,34 @@ def find_latest_content_folder(project_path: Path) -> Optional[Path]:
 # REGION | ValeVision CDN URL Builder
 # -----------------------------------------------------------------------------
 
-# FUNCTION | Build ValeVision Model CDN URL
+# HELPER FUNCTION | Rebrand NaModel to ValeVision in Filename
+# ---------------------------------------------------------------
+def rebrand_glb_filename(filename: str) -> str:
+    """Rename __NaModel__ to __ValeVision__ in filename for CDN branding"""
+    if GLB_NAMODEL_NAMESPACE in filename:
+        return filename.replace(GLB_NAMODEL_NAMESPACE, GLB_VALEVISION_NAMESPACE)  # <-- Rebrand namespace
+    return filename                                                   # <-- Return unchanged if no NaModel marker
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Build ValeVision Model CDN URL (With NaModel -> ValeVision Rebrand)
 # ------------------------------------------------------------
 def build_valevision_model_url(year: str, dest_folder_name: str, glb_filename: str) -> str:
-    """Build CDN URL for ValeVision 3D model with year in path"""
-    return f"{CDN_BASE_URL}/{year}/{dest_folder_name}/{glb_filename}"  # <-- Construct full CDN URL with year
+    """Build CDN URL for ValeVision 3D model, rebranding NaModel to ValeVision"""
+    cdn_filename = rebrand_glb_filename(glb_filename)                 # <-- Rebrand NaModel -> ValeVision
+    return f"{CDN_BASE_URL}/{year}/{dest_folder_name}/{cdn_filename}" # <-- Construct full CDN URL with year
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Build ValeVision Model URLs Array for All GLBs
+# ------------------------------------------------------------
+def build_valevision_model_urls_array(year: str, dest_folder_name: str, glb_files: List[str]) -> List[str]:
+    """Build CDN URL array for all GLB files, rebranding NaModel to ValeVision"""
+    urls = []                                                         # <-- Initialize URLs list
+    for filename in glb_files:
+        url = build_valevision_model_url(year, dest_folder_name, filename)  # <-- Build URL with rebrand
+        urls.append(url)                                              # <-- Add to URLs list
+    return urls                                                       # <-- Return all CDN URLs
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -436,41 +460,10 @@ def discover_image_files(content_folder: Path) -> List[str]:
 # ---------------------------------------------------------------
 
 
-# HELPER FUNCTION | Parse Semantic Version from GLB Filename
-# ---------------------------------------------------------------
-def parse_glb_version(filename: str) -> Tuple[int, int, int]:
-    """Extract semantic version from GLB filename for sorting"""
-    version_match = re.search(r'__(\d+)\.(\d+)\.(\d+)__\.glb$', filename, re.IGNORECASE)  # <-- Match version pattern
-    if version_match:
-        major = int(version_match.group(1))                           # <-- Extract major version
-        minor = int(version_match.group(2))                           # <-- Extract minor version
-        patch = int(version_match.group(3))                           # <-- Extract patch version
-        return (major, minor, patch)                                  # <-- Return version tuple
-    return (0, 0, 0)                                                  # <-- Default version for non-versioned files
-# ---------------------------------------------------------------
-
-
-# HELPER FUNCTION | Select Latest GLB by Layer Marker
-# ---------------------------------------------------------------
-def select_latest_glb_by_layer(glb_files: List[str], layer_marker: str) -> Optional[str]:
-    """Select the latest GLB filename for a given layer marker"""
-    if not glb_files:
-        return None                                                   # <-- Return None if no files
-    
-    filtered = [name for name in glb_files if layer_marker in name]   # <-- Filter by layer marker
-    
-    if not filtered:
-        return None                                                   # <-- Return None if no matches
-    
-    filtered.sort(key=parse_glb_version)                              # <-- Sort by semantic version
-    return filtered[-1]                                               # <-- Return latest version
-# ---------------------------------------------------------------
-
-
-# FUNCTION | Discover GLB Files in ValeVision Sync Folder
+# FUNCTION | Discover GLB Files in ValeVision Sync Folder (Root Level Only)
 # ------------------------------------------------------------
 def discover_glb_files(project_path: Path) -> List[str]:
-    """Discover .glb files in ValeVision sync folder"""
+    """Discover .glb files at root level of ValeVision sync folder, skipping archive subdirectories"""
     glb_files = []                                                    # <-- Initialize GLB files list
     
     # CONSTRUCT PATH TO GLB SYNC FOLDER
@@ -480,13 +473,15 @@ def discover_glb_files(project_path: Path) -> List[str]:
         return glb_files                                              # <-- Return empty if path invalid
     
     for item in glb_sync_path.iterdir():
+        if item.is_dir():
+            continue                                                  # <-- Skip subdirectories (01__Archive, etc.)
         if item.is_file():                                            # <-- Check if item is file
             filename = item.name                                      # <-- Get filename
             if re.match(GLB_FILE_PATTERN, filename, re.IGNORECASE):   # <-- Check pattern match
                 glb_files.append(filename)                            # <-- Add to GLB files list
     
-    glb_files.sort(key=parse_glb_version)                             # <-- Sort by semantic version
-    return glb_files                                                  # <-- Return version-sorted GLB files list
+    glb_files.sort()                                                  # <-- Sort alphabetically
+    return glb_files                                                  # <-- Return sorted GLB files list
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -682,7 +677,7 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 
 # FUNCTION | Create Project JSON File with Year-Aware basePath
 # ------------------------------------------------------------
-def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, base_glb_file: Optional[str], linework_glb_file: Optional[str], dest_folder_name: str, year: str) -> bool:
+def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, model_urls: List[str], dest_folder_name: str, year: str) -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
     
     project_data = template.copy()                                    # <-- Copy template data
@@ -698,12 +693,13 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
         project_data['scheduleData'] = {}                             # <-- Create scheduleData if missing
     project_data['scheduleData']['dateFulfilled'] = project_date      # <-- Set extracted date as dateFulfilled
     
-    # BUILD VALEVISION MODEL URLS WITH YEAR
-    if base_glb_file:
-        project_data['valeVision_ModelUrl_BaseMesh'] = build_valevision_model_url(year, dest_folder_name, base_glb_file)  # <-- Base mesh URL
+    # CLEAN LEGACY MODEL URL FIELDS (remove old v3 format keys if present)
+    project_data.pop('valeVision_ModelUrl_BaseMesh', None)            # <-- Remove legacy base mesh key
+    project_data.pop('valeVision_ModelUrl_Linework', None)            # <-- Remove legacy linework key
+    project_data.pop('valeVision_ModelUrl', None)                     # <-- Remove legacy single/array key
     
-    if linework_glb_file:
-        project_data['valeVision_ModelUrl_Linework'] = build_valevision_model_url(year, dest_folder_name, linework_glb_file)  # <-- Linework URL
+    # BUILD VALEVISION MODEL URLS ARRAY (V4 FORMAT)
+    project_data['valeVision_ModelUrls'] = model_urls                 # <-- Set multi-model URLs array
     
     project_data['valeVision_Camera__DefaultPosition'] = VALEVISION_CAMERA_DEFAULTS  # <-- ValeVision camera defaults
     
@@ -731,6 +727,41 @@ def check_project_exists(dest_base_path: Path, dest_folder_name: str) -> bool:
 # ---------------------------------------------------------------
 
 
+# HELPER FUNCTION | Update Model URLs in Existing Project JSON
+# ---------------------------------------------------------------
+def update_project_json_model_urls(dest_folder: Path, model_urls: List[str]) -> bool:
+    """Read existing project.json and update only the model URL fields"""
+    project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
+    
+    if not project_json_path.exists():
+        return False                                                  # <-- Return failure if file missing
+    
+    try:
+        with open(project_json_path, 'r', encoding='utf-8') as file: # <-- Open for reading
+            project_data = json.load(file)                            # <-- Parse existing JSON
+    except Exception as error:
+        print(f"{COLOR_RED}Error reading {project_json_path}: {error}{COLOR_RESET}")  # <-- Log read error
+        return False                                                  # <-- Return failure
+    
+    # CLEAN LEGACY MODEL URL FIELDS (remove old v3 format keys if present)
+    project_data.pop('valeVision_ModelUrl_BaseMesh', None)            # <-- Remove legacy base mesh key
+    project_data.pop('valeVision_ModelUrl_Linework', None)            # <-- Remove legacy linework key
+    project_data.pop('valeVision_ModelUrl', None)                     # <-- Remove legacy single/array key
+    
+    # SET V4 MULTI-MODEL URLS ARRAY
+    project_data['valeVision_ModelUrls'] = model_urls                 # <-- Set new multi-model URLs array
+    
+    try:
+        with open(project_json_path, 'w', encoding='utf-8') as file: # <-- Open for writing
+            json.dump(project_data, file, indent=4, ensure_ascii=False)  # <-- Write formatted JSON
+            file.write('\n')                                          # <-- Add trailing newline
+        return True                                                   # <-- Return success
+    except Exception as error:
+        print(f"{COLOR_RED}Error writing {project_json_path}: {error}{COLOR_RESET}")  # <-- Log write error
+        return False                                                  # <-- Return failure
+# ---------------------------------------------------------------
+
+
 # FUNCTION | Process Single Whitecard Project with Year
 # ------------------------------------------------------------
 def process_single_project(project_info: Dict, dest_base_path: Path, template_path: Path, dry_run: bool, year: str) -> Dict:
@@ -741,6 +772,7 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         'project_code': project_info['project_code'],
         'success': False,
         'skipped': False,
+        'model_urls_updated': False,
         'images_found': 0,
         'images_copied': 0,
         'glb_files_found': 0,
@@ -749,12 +781,26 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         'error': None
     }
     
-    # CHECK IF PROJECT ALREADY EXISTS
+    # DISCOVER GLB FILES IN PROJECT (always, even if project exists)
+    glb_files = discover_glb_files(project_info['source_path'])       # <-- Discover root-level GLB files
+    result['glb_files_found'] = len(glb_files)                        # <-- Store GLB count
+    
+    # BUILD ALL GLB MODEL URLS (NaModel rebranded to ValeVision)
+    model_urls = build_valevision_model_urls_array(year, project_info['dest_folder_name'], glb_files)  # <-- Build all URLs
+    result['glb_model_urls'] = model_urls                             # <-- Store URLs for preview
+    
+    # CHECK IF PROJECT ALREADY EXISTS -- UPDATE MODEL URLS ONLY
     if check_project_exists(dest_base_path, project_info['dest_folder_name']):  # <-- Check if exists
-        result['skipped'] = True                                      # <-- Mark as skipped
+        dest_folder = dest_base_path / project_info['dest_folder_name']  # <-- Construct destination path
+        
+        if not dry_run and model_urls:
+            update_success = update_project_json_model_urls(dest_folder, model_urls)  # <-- Update URLs in existing JSON
+            result['model_urls_updated'] = update_success             # <-- Track update result
+        
+        result['skipped'] = True                                      # <-- Mark images as skipped (already exist)
         result['success'] = True                                      # <-- Not an error condition
-        result['error'] = "Already exists in destination"             # <-- Set skip reason
-        return result                                                 # <-- Return skip result
+        result['error'] = "Already exists - model URLs refreshed"      # <-- Set info message
+        return result                                                 # <-- Return updated result
     
     # FIND LATEST CONTENT FOLDER
     latest_folder = find_latest_content_folder(project_info['source_path'])  # <-- Find latest folder
@@ -768,20 +814,6 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
     # DISCOVER IMAGES IN LATEST FOLDER
     images = discover_image_files(latest_folder)                      # <-- Discover images
     result['images_found'] = len(images)                              # <-- Store images count
-    
-    # DISCOVER GLB FILES IN PROJECT
-    glb_files = discover_glb_files(project_info['source_path'])       # <-- Discover GLB files
-    result['glb_files_found'] = len(glb_files)                        # <-- Store GLB count
-    
-    # SELECT LATEST LAYER FILES
-    base_glb_file = select_latest_glb_by_layer(glb_files, GLB_LAYER_BASE_PATTERN)    # <-- Latest base mesh GLB
-    linework_glb_file = select_latest_glb_by_layer(glb_files, GLB_LAYER_LINE_PATTERN)  # <-- Latest linework GLB
-    
-    # BUILD GLB MODEL URLS FOR PREVIEW
-    if base_glb_file:
-        result['glb_model_urls'].append(build_valevision_model_url(year, project_info['dest_folder_name'], base_glb_file))
-    if linework_glb_file:
-        result['glb_model_urls'].append(build_valevision_model_url(year, project_info['dest_folder_name'], linework_glb_file))
     
     if not images:
         result['error'] = "No IMG## files found in content folder"    # <-- Set warning message
@@ -819,8 +851,7 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         project_info['project_name'],
         images,
         project_date,
-        base_glb_file,
-        linework_glb_file,
+        model_urls,
         project_info['dest_folder_name'],
         year
     )
@@ -892,6 +923,7 @@ def print_results(results: List[Dict], dry_run: bool):
     total_projects = len(results)                                     # <-- Count total projects
     successful = sum(1 for r in results if r['success'] and not r['skipped'])  # <-- Count successful
     skipped = sum(1 for r in results if r['skipped'])                 # <-- Count skipped
+    urls_refreshed = sum(1 for r in results if r.get('model_urls_updated'))  # <-- Count URL refreshes
     errors = sum(1 for r in results if not r['success'] and not r['skipped'])  # <-- Count errors
     total_images = sum(r['images_found'] for r in results)            # <-- Count total images
     total_glb_files = sum(r['glb_files_found'] for r in results)      # <-- Count total GLB files
@@ -901,7 +933,14 @@ def print_results(results: List[Dict], dry_run: bool):
         
         if result['skipped']:
             print(f"{COLOR_BLUE}[=] {dest_name}{COLOR_RESET}")       # <-- Print skip indicator
-            print(f"    Status: {result['error']}\n")                 # <-- Print skip reason
+            print(f"    Status: {result['error']}")                   # <-- Print skip reason
+            print(f"    GLB Models: {result['glb_files_found']} found")  # <-- Print GLB count
+            if result['glb_model_urls']:
+                for url in result['glb_model_urls']:
+                    print(f"      {COLOR_CYAN}-> {url}{COLOR_RESET}") # <-- Print each CDN URL
+            if result.get('model_urls_updated'):
+                print(f"    {COLOR_GREEN}Model URLs updated in project.json{COLOR_RESET}")  # <-- Confirm URL update
+            print()
             continue
         
         if not result['success']:
@@ -927,7 +966,7 @@ def print_results(results: List[Dict], dry_run: bool):
         # PRINT GLB MODEL URLS
         if result['glb_model_urls']:
             for url in result['glb_model_urls']:
-                print(f"      {COLOR_CYAN}→ {url}{COLOR_RESET}")     # <-- Print each CDN URL
+                print(f"      {COLOR_CYAN}-> {url}{COLOR_RESET}")     # <-- Print each CDN URL
         
         print(f"    Latest Folder: {result['latest_folder']}")        # <-- Print folder name
         print(f"    Status: {'Would clone' if dry_run else 'Cloned successfully'}\n")  # <-- Print status
@@ -938,6 +977,7 @@ def print_results(results: List[Dict], dry_run: bool):
     print(f"Projects discovered   : {total_projects}")                # <-- Print total projects
     print(f"Successfully cloned   : {successful}")                    # <-- Print successful count
     print(f"Skipped (exists)      : {skipped}")                       # <-- Print skipped count
+    print(f"Model URLs refreshed  : {urls_refreshed}")                # <-- Print URL refresh count
     print(f"Errors/Warnings       : {errors}")                        # <-- Print error count
     print(f"Total images found    : {total_images}")                  # <-- Print total images
     print(f"Total GLB models      : {total_glb_files}")               # <-- Print total GLB files
@@ -1046,17 +1086,18 @@ def main():
         all_results.extend(results)                                   # <-- Add to all results
         print_results(results, dry_run=True)                          # <-- Print preview results for this year
     
-    # Check if any projects need cloning across all years
+    # Check if any projects need cloning or URL refresh across all years
     needs_cloning = any(r['success'] and not r['skipped'] and r['images_found'] > 0 for r in all_results)  # <-- Check if any need cloning
+    needs_url_refresh = any(r['skipped'] and r['glb_files_found'] > 0 for r in all_results)  # <-- Check if existing projects need URL refresh
     
     # If dry-run-only flag is set, exit after preview
     if args.dry_run_only:
         return                                                        # <-- Exit after dry-run
     
-    # If no projects need cloning, exit
-    if not needs_cloning:
-        print(f"{COLOR_GREEN}No new projects to clone. All projects either exist or have no images.{COLOR_RESET}\n")  # <-- No changes message
-        return                                                        # <-- Exit if nothing to clone
+    # If no projects need cloning or URL refresh, exit
+    if not needs_cloning and not needs_url_refresh:
+        print(f"{COLOR_GREEN}No new projects to clone and no model URLs to refresh.{COLOR_RESET}\n")  # <-- No changes message
+        return                                                        # <-- Exit if nothing to do
     
     # STEP 4: Ask for confirmation before proceeding
     if not prompt_for_confirmation():
@@ -1079,7 +1120,8 @@ def main():
         print_results(results, dry_run=False)                         # <-- Print final results for this year
     
     successful_count = sum(1 for r in all_final_results if r['success'] and not r['skipped'])  # <-- Count successful
-    print(f"{COLOR_GREEN}Cloning complete! {successful_count} project(s) successfully cloned across all years.{COLOR_RESET}\n")  # <-- Print completion
+    refreshed_count = sum(1 for r in all_final_results if r.get('model_urls_updated'))  # <-- Count URL refreshes
+    print(f"{COLOR_GREEN}Complete! {successful_count} project(s) cloned, {refreshed_count} project(s) model URLs refreshed.{COLOR_RESET}\n")  # <-- Print completion
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

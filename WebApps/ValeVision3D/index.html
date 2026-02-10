@@ -245,10 +245,6 @@
     // MODULE VARIABLES | Three.js Imports
     // ------------------------------------------------------------
     import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-    import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
-    import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     import { Na__DefaultNavmode__InitializeMouseControls } from './src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
     import { Na__DefaultNavmode__InitializeIpadControls } from './src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
     import { Na__AppConfig__LoadConfig } from './src__AppConfig/Na__AppConfig__Loader.js';
@@ -257,6 +253,7 @@
     import { Na__UiFeature__InitializeImageExportControls } from './src__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__ApplyCameraConfig, Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
+    import { Na__ModelLoader__LoadAllModels } from './src__ModelLoader/Na__ModelLoader__MultiModel.js';
     // ------------------------------------------------------------
 
 
@@ -273,18 +270,15 @@
     // ------------------------------------------------------------
     const Na__AppConfig__Data = await Na__AppConfig__LoadConfig();
     
-    const Na__Config__ModelDefaults = Na__AppConfig__Data.modelDefaults;        // <-- Model defaults
-    const Na__Config__Scene = Na__AppConfig__Data.scene;                        // <-- Scene settings
-    const Na__Config__Models = Na__AppConfig__Data.models;                      // <-- Model-specific settings
-    const Na__Config__BaseMesh = Na__Config__Models.baseMesh;                   // <-- Base mesh settings
-    const Na__Config__Linework = Na__Config__Models.linework;                   // <-- Linework settings
-    const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;              // <-- Camera lens settings
-    const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;            // <-- Image export settings
-    const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition; // <-- Camera defaults (MM)
-    const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;    // <-- Navmode config (MM)
+    const Na__Config__ModelDefaults = Na__AppConfig__Data.modelDefaults;            // <-- Model defaults
+    const Na__Config__Scene = Na__AppConfig__Data.scene;                            // <-- Scene settings
+    const Na__Config__Models = Na__AppConfig__Data.models;                          // <-- Model-specific settings
+    const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;                  // <-- Camera lens settings
+    const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;                // <-- Image export settings
+    const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition;  // <-- Camera defaults (MM)
+    const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;      // <-- Navmode config (MM)
     
-    const Na__ModelDefaults__BaseModelUrl = Na__Config__ModelDefaults.baseModelUrl;       // <-- Default base mesh
-    const Na__ModelDefaults__LineworkModelUrl = Na__Config__ModelDefaults.lineworkModelUrl; // <-- Default linework
+    const Na__ModelDefaults__ModelUrls = Na__Config__ModelDefaults.modelUrls || [];  // <-- Default model URLs array
     // ------------------------------------------------------------
 
 
@@ -381,7 +375,6 @@
     Na__Renderer__Main.toneMappingExposure = 1.0;
     
     const Na__LineResolution__Screen = new THREE.Vector2(window.innerWidth, window.innerHeight);
-    const Na__Loader__Glb = new GLTFLoader();
     let Na__RenderComposer__Main = null;
     const Na__Navmode__InitializeControls = Na__Device__UseTouchControls
         ? Na__DefaultNavmode__InitializeIpadControls
@@ -440,8 +433,7 @@
     const Na__ModelGroup__Root = new THREE.Group();
     Na__Scene__Main.add(Na__ModelGroup__Root);
     
-    let Na__BaseMesh__Root = null;
-    let Na__Linework__Root = null;
+    let Na__LoadedModelGroups = null;                                     // <-- Map of category -> THREE.Group
     // ------------------------------------------------------------
 
 
@@ -569,137 +561,44 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Model URLs from project.json
+    // HELPER FUNCTION | Extract Model URLs from project.json (Multi-Format)
+    // ------------------------------------------------------------
+    // Supports four project.json formats and normalizes to a flat URL array:
+    //   v4: valeVision_ModelUrls (array)            -> pass through directly
+    //   v3: valeVision_ModelUrl_BaseMesh + _Linework -> wrap into 2-element array
+    //   v2: valeVision_ModelUrl (array of versions)  -> take last entry only
+    //   v1: valeVision_ModelUrl (string)             -> wrap into 1-element array
     // ------------------------------------------------------------
     function Na__AppUtils__ExtractModelUrls(projectData) {
-        if (!projectData) return { baseUrl: null, lineworkUrl: null };
-        
-        const baseUrl = projectData.valeVision_ModelUrl_BaseMesh || null;      // <-- Base mesh URL
-        const lineworkUrl = projectData.valeVision_ModelUrl_Linework || null;  // <-- Linework URL
-        
-        if (!baseUrl && projectData.valeVision_ModelUrl) {
-            return { baseUrl: projectData.valeVision_ModelUrl, lineworkUrl: null };  // <-- Legacy fallback
+        if (!projectData) return [];                                     // <-- Guard against null
+
+        // V4 FORMAT | New multi-model array (preferred)
+        if (Array.isArray(projectData.valeVision_ModelUrls) && projectData.valeVision_ModelUrls.length > 0) {
+            return projectData.valeVision_ModelUrls;                     // <-- Pass through directly
         }
-        
-        return { baseUrl, lineworkUrl };
-    }
-    // ------------------------------------------------------------
 
-
-    // FUNCTION | Load Base Mesh (Faces)
-    // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadBaseMesh(modelUrl) {
-        Na__UiFeature__UpdateStatus('Loading Base Mesh...');
-        const gltf = await Na__Loader__Glb.loadAsync(modelUrl);
-        
-        if (Na__BaseMesh__Root) {
-            Na__ModelGroup__Root.remove(Na__BaseMesh__Root);
+        // V3 FORMAT | Layered BaseMesh + Linework pair
+        const baseMeshUrl  = projectData.valeVision_ModelUrl_BaseMesh || null;
+        const lineworkUrl  = projectData.valeVision_ModelUrl_Linework || null;
+        if (baseMeshUrl || lineworkUrl) {
+            const urls = [];
+            if (baseMeshUrl) urls.push(baseMeshUrl);                     // <-- Add base mesh URL
+            if (lineworkUrl) urls.push(lineworkUrl);                     // <-- Add linework URL
+            return urls;
         }
-        
-        Na__BaseMesh__Root = gltf.scene;
-        
-    const Na__Material__WhiteMat = new THREE.MeshStandardMaterial({
-        color: Na__Config__BaseMesh.material.whiteColor,
-        roughness: Na__Config__BaseMesh.material.roughness,
-        metalness: Na__Config__BaseMesh.material.metalness,
-            side: THREE.DoubleSide,
-            polygonOffset: true,
-        polygonOffsetFactor: Na__Config__BaseMesh.material.polygonOffsetFactor,
-        polygonOffsetUnits: Na__Config__BaseMesh.material.polygonOffsetUnits
-        });
-        
-        Na__BaseMesh__Root.traverse((node) => {
-            if (!node.isMesh) return;
-            
-            node.castShadow = true;
-            node.receiveShadow = true;
-            
-            if (node.material && (node.material.map || node.material.emissiveMap)) {
-                node.material = node.material.clone();
-                node.material.side = THREE.DoubleSide;
-                node.material.polygonOffset = true;
-                node.material.polygonOffsetFactor = Na__Config__BaseMesh.material.polygonOffsetFactor;
-                node.material.polygonOffsetUnits = Na__Config__BaseMesh.material.polygonOffsetUnits;
-                node.material.emissive = new THREE.Color(Na__Config__BaseMesh.material.textureEmissive);
-                node.material.emissiveIntensity = 0.0;
-                
-                if (node.material.map && !node.material.emissiveMap) {
-                    node.material.emissiveMap = node.material.map;
-                }
-                
-                node.material.roughness = 1.0;
-                node.material.metalness = 0.0;
-            } else {
-                node.material = Na__Material__WhiteMat;
-            }
-        });
-        
-        Na__ModelGroup__Root.add(Na__BaseMesh__Root);
-        Na__UiFeature__UpdateStatus('Base Mesh Loaded');
-    }
-    // ------------------------------------------------------------
 
-
-    // FUNCTION | Load Linework (Fat Lines)
-    // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadLinework(modelUrl) {
-        Na__UiFeature__UpdateStatus('Loading Linework...');
-        const gltf = await Na__Loader__Glb.loadAsync(modelUrl);
-        
-        if (Na__Linework__Root) {
-            Na__ModelGroup__Root.remove(Na__Linework__Root);
+        // V2 FORMAT | Array of versioned URLs (take latest)
+        if (Array.isArray(projectData.valeVision_ModelUrl) && projectData.valeVision_ModelUrl.length > 0) {
+            const latestUrl = projectData.valeVision_ModelUrl[projectData.valeVision_ModelUrl.length - 1];
+            return [latestUrl];                                          // <-- Use last (latest) version
         }
-        
-        Na__Linework__Root = gltf.scene;
-        const Na__Linework__NodesToReplace = [];
-        
-        Na__Linework__Root.traverse((node) => {
-            if (node.isLineSegments || node.isLine) {
-                Na__Linework__NodesToReplace.push(node);
-            }
-        });
-        
-        Na__Linework__NodesToReplace.forEach((node) => {
-            const positions = node.geometry.attributes.position.array;
-            const Na__Linework__Geometry = new LineSegmentsGeometry();
-            Na__Linework__Geometry.setPositions(positions);
-            
-            const Na__Linework__Material = new LineMaterial({
-                color: Na__Config__Linework.edgeColor,
-                linewidth: Na__Config__Linework.lineWidth,
-                resolution: Na__LineResolution__Screen,
-                worldUnits: false,
-                depthTest: true,
-                depthWrite: true,
-                polygonOffset: true,
-                polygonOffsetFactor: Na__Config__Linework.polygonOffsetFactor,
-                polygonOffsetUnits: Na__Config__Linework.polygonOffsetUnits
-            });
-            
-            const Na__Linework__Segment = new LineSegments2(Na__Linework__Geometry, Na__Linework__Material);
-            Na__Linework__Segment.computeLineDistances();
-            Na__Linework__Segment.frustumCulled = false;
-            Na__Linework__Segment.renderOrder = Na__Config__Linework.renderOrder;
-            
-            Na__Linework__Segment.position.copy(node.position);
-            Na__Linework__Segment.rotation.copy(node.rotation);
-            Na__Linework__Segment.scale.copy(node.scale);
-            Na__Linework__Segment.matrix.copy(node.matrix);
-            Na__Linework__Segment.matrixAutoUpdate = node.matrixAutoUpdate;
-            
-            if (node.parent) {
-                node.parent.add(Na__Linework__Segment);
-                node.parent.remove(node);
-            } else {
-                Na__Linework__Root.add(Na__Linework__Segment);
-            }
-            
-            node.geometry.dispose();
-        });
-        
-        Na__Linework__Root.renderOrder = 100;
-        Na__ModelGroup__Root.add(Na__Linework__Root);
-        Na__UiFeature__UpdateStatus('Linework Loaded');
+
+        // V1 FORMAT | Single string URL (legacy)
+        if (typeof projectData.valeVision_ModelUrl === 'string' && projectData.valeVision_ModelUrl) {
+            return [projectData.valeVision_ModelUrl];                    // <-- Wrap single URL in array
+        }
+
+        return [];                                                       // <-- No model URLs found
     }
     // ------------------------------------------------------------
 
@@ -763,51 +662,56 @@
         Na__Scene__SetupLighting();
         Na__RenderComposer__Main = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main);
         
-        let baseUrl = Na__ModelDefaults__BaseModelUrl;
-        let lineworkUrl = Na__ModelDefaults__LineworkModelUrl;
+        let modelUrls = [...Na__ModelDefaults__ModelUrls];               // <-- Start with config defaults
         
+        // RESOLVE PROJECT-SPECIFIC MODEL URLS
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
         if (projectCode) {
             try {
                 Na__UiFeature__UpdateStatus('Loading project data...');
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode);
-                const urls = Na__AppUtils__ExtractModelUrls(projectData);
                 
-                if (projectData && projectData.valeVision_Camera__DefaultPosition) {
+                // APPLY CAMERA CONFIG FROM PROJECT (supports both key formats)
+                const cameraConfig = projectData.Camera__DefaultPosition
+                    || projectData.valeVision_Camera__DefaultPosition
+                    || null;
+                if (cameraConfig) {
                     Na__UiFeature__ApplyCameraConfig(
                         Na__Camera__Main,
                         Na__Controls__Orbit,
-                        projectData.valeVision_Camera__DefaultPosition
+                        cameraConfig
                     );
                 }
                 
-                if (urls.baseUrl || urls.lineworkUrl) {
-                    baseUrl = urls.baseUrl || null;
-                    lineworkUrl = urls.lineworkUrl || null;
-                } else {
-                    baseUrl = Na__ModelDefaults__BaseModelUrl;
-                    lineworkUrl = Na__ModelDefaults__LineworkModelUrl;
+                // EXTRACT MODEL URLS FROM PROJECT DATA
+                const projectUrls = Na__AppUtils__ExtractModelUrls(projectData);
+                if (projectUrls.length > 0) {
+                    modelUrls = projectUrls;                             // <-- Override defaults with project URLs
                 }
             } catch (error) {
                 console.warn('[ValeVision3D] Project data load failed, using defaults', error);
             }
         }
         
+        // LOAD ALL MODELS VIA MULTI-MODEL LOADER
         try {
-            if (baseUrl) {
-                await Na__ModelLoader__LoadBaseMesh(baseUrl);
+            if (modelUrls.length > 0) {
+                Na__LoadedModelGroups = await Na__ModelLoader__LoadAllModels(
+                    modelUrls,                                           // <-- Array of CDN URLs
+                    Na__ModelGroup__Root,                                 // <-- Scene root group
+                    Na__Config__Models,                                   // <-- Material configs (baseMesh + linework)
+                    Na__LineResolution__Screen,                           // <-- Screen resolution for line width
+                    Na__UiFeature__UpdateStatus                          // <-- Status callback for loading overlay
+                );
             }
             
-            if (lineworkUrl) {
-                await Na__ModelLoader__LoadLinework(lineworkUrl);
-            }
-            
-            Na__UiFeature__ShowScene();
+            Na__UiFeature__ShowScene();                                   // <-- Reveal scene after all models loaded
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);
             Na__UiFeature__UpdateStatus('Model load error - check console', true);
         }
         
+        // RENDER LOOP
         function Na__RenderLoop__Animate() {
             requestAnimationFrame(Na__RenderLoop__Animate);
             Na__Navmode__UpdateNavigation();
@@ -818,10 +722,10 @@
         
         Na__RenderLoop__Animate();
         
+        // RESIZE HANDLER
         window.addEventListener('resize', () => {
-            const width = window.innerWidth;
+            const width  = window.innerWidth;
             const height = window.innerHeight;
-            const pixelRatio = Na__Renderer__Main.getPixelRatio();
             
             Na__Camera__Main.aspect = width / height;
             Na__Camera__Main.updateProjectionMatrix();

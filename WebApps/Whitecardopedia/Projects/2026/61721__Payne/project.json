@@ -15,7 +15,6 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "valeVision_ModelUrl": null,
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__05-Feb-2026.png",
         "IMG02__3dView__ViewOption-02__Further__WhitecardImage__05-Feb-2026.png",
@@ -26,8 +25,6 @@
         "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Feb-2026.png"
     ],
     "basePath": "Projects/2026/61721__Payne",
-    "valeVision_ModelUrl_BaseMesh": "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__Whitecard__Layer-01__BaseMeshModel__1.1.0__.glb",
-    "valeVision_ModelUrl_Linework": "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__Whitecard__Layer-02__LineworkModel__1.1.0__.glb",
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
@@ -68,5 +65,13 @@
         "IMG21__Elevation__FrontElevation__WhitecardImage__05-Feb-2026.png",
         "IMG22__Elevation__LeftSideElevation__WhitecardImage__05-Feb-2026.png",
         "IMG23__Elevation__RightSideElevation__WhitecardImage__05-Feb-2026.png"
+    ],
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ]
 }

@@ -52,10 +52,11 @@ ENV_FILE_PATH                      = "API__Cloudflare/Token__CloudflareAPI.env" 
 # MODULE CONSTANTS | Regex Patterns
 # ------------------------------------------------------------
 WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
-WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
+WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'           # <-- New pattern: 12345__Example__Whitecard
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
-GLB_LAYER_BASE_PATTERN             = "__Layer-01__BaseMeshModel__"           # <-- Base mesh model filename marker
-GLB_LAYER_LINE_PATTERN             = "__Layer-02__LineworkModel__"           # <-- Linework model filename marker
+GLB_ARCHIVE_SUBFOLDER              = "01__Archive"                           # <-- Archive subfolder to skip
+GLB_NAMODEL_NAMESPACE              = "__NaModel__"                           # <-- SketchUp export namespace marker
+GLB_VALEVISION_NAMESPACE           = "__ValeVision__"                        # <-- CDN rebranded namespace marker
 # ------------------------------------------------------------
 
 
@@ -391,16 +392,18 @@ def discover_whitecard_projects(source_base: Path) -> List[Dict]:
 # REGION | GLB File Discovery Functions
 # -----------------------------------------------------------------------------
 
-# FUNCTION | Discover GLB Files in Sync Folder
+# FUNCTION | Discover GLB Files in Sync Folder (Root Level Only)
 # ------------------------------------------------------------
 def discover_glb_files(glb_sync_path: Path) -> List[str]:
-    """Discover all .glb files in sync folder"""
+    """Discover all .glb files at root level of sync folder, skipping archive subdirectories"""
     glb_files = []                                                    # <-- Initialize GLB files list
     
     if not glb_sync_path.exists() or not glb_sync_path.is_dir():
         return glb_files                                              # <-- Return empty if path invalid
     
     for item in glb_sync_path.iterdir():
+        if item.is_dir():
+            continue                                                  # <-- Skip subdirectories (01__Archive, etc.)
         if item.is_file():                                            # <-- Check if item is file
             filename = item.name                                      # <-- Get filename
             if re.match(GLB_FILE_PATTERN, filename, re.IGNORECASE):   # <-- Check pattern match
@@ -411,13 +414,13 @@ def discover_glb_files(glb_sync_path: Path) -> List[str]:
 # ---------------------------------------------------------------
 
 
-# HELPER FUNCTION | Check Base Mesh and Linework Presence
+# HELPER FUNCTION | Generate Rebranded Destination Filename
 # ---------------------------------------------------------------
-def check_glb_layer_presence(glb_files: List[str]) -> Tuple[bool, bool]:
-    """Check if base mesh and linework GLB files exist"""
-    has_base = any(GLB_LAYER_BASE_PATTERN in name for name in glb_files)   # <-- Check base mesh marker
-    has_linework = any(GLB_LAYER_LINE_PATTERN in name for name in glb_files)  # <-- Check linework marker
-    return has_base, has_linework                                       # <-- Return presence flags
+def generate_destination_filename(filename: str) -> str:
+    """Rename __NaModel__ to __ValeVision__ in filename for CDN branding"""
+    if GLB_NAMODEL_NAMESPACE in filename:
+        return filename.replace(GLB_NAMODEL_NAMESPACE, GLB_VALEVISION_NAMESPACE)  # <-- Rebrand namespace
+    return filename                                                   # <-- Return unchanged if no NaModel marker
 # ---------------------------------------------------------------
 
 
@@ -460,9 +463,11 @@ def determine_upload_action(s3_client: boto3.client, bucket_name: str, local_pat
 # FUNCTION | Process Single GLB File Upload with Year
 # ------------------------------------------------------------
 def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Dict, filename: str, dry_run: bool, year: str) -> Dict:
-    """Process single GLB file upload to R2"""
+    """Process single GLB file upload to R2 with NaModel -> ValeVision rename"""
+    dest_filename = generate_destination_filename(filename)            # <-- Rebrand NaModel -> ValeVision
     result = {
         'filename': filename,
+        'dest_filename': dest_filename,
         'success': False,
         'action': None,
         'action_detail': None,
@@ -471,7 +476,7 @@ def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Di
     }
     
     local_path = project_info['glb_sync_path'] / filename             # <-- Construct local file path
-    r2_key = f"{R2_BASE_PREFIX}/{year}/{project_info['dest_folder_name']}/{filename}"  # <-- Construct R2 key with year
+    r2_key = f"{R2_BASE_PREFIX}/{year}/{project_info['dest_folder_name']}/{dest_filename}"  # <-- R2 key with rebranded name
     
     if not local_path.exists():
         result['error'] = "Local file not found"                      # <-- Set error message
@@ -518,11 +523,10 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
         'files_errors': 0,
         'total_size': 0,
         'file_results': [],
-        'layer_warnings': [],
         'error': None
     }
     
-    # DISCOVER GLB FILES
+    # DISCOVER GLB FILES (ROOT LEVEL ONLY, SKIPS 01__ARCHIVE)
     glb_files = discover_glb_files(project_info['glb_sync_path'])    # <-- Discover GLB files
     result['files_found'] = len(glb_files)                            # <-- Store files count
     
@@ -530,14 +534,6 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
         result['error'] = "No .glb files found in sync folder"        # <-- Set warning message
         result['success'] = True                                      # <-- Not an error condition
         return result                                                 # <-- Return warning result
-    
-    # CHECK FOR REQUIRED LAYER FILES
-    has_base, has_linework = check_glb_layer_presence(glb_files)       # <-- Check layer presence
-    
-    if not has_base:
-        result['layer_warnings'].append("Missing Base Mesh GLB (Layer-01)")  # <-- Record missing base mesh
-    if not has_linework:
-        result['layer_warnings'].append("Missing Linework GLB (Layer-02)")   # <-- Record missing linework
     
     # PROCESS EACH GLB FILE
     for filename in glb_files:
@@ -624,23 +620,24 @@ def print_results(results: List[Dict], dry_run: bool):
         print(f"    Files found: {result['files_found']}")            # <-- Print files count
         print(f"    Total size: {format_file_size(result['total_size'])}")  # <-- Print total size
         
-        # PRINT LAYER WARNINGS
-        if result.get('layer_warnings'):
-            for warning in result['layer_warnings']:
-                print(f"    {COLOR_YELLOW}[!] {warning}{COLOR_RESET}")  # <-- Print layer warning
-        
         # PRINT FILE DETAILS
         for file_result in result['file_results']:
-            filename = file_result['filename']                        # <-- Get filename
-            action = file_result['action']                            # <-- Get action
+            filename      = file_result['filename']                   # <-- Get source filename
+            dest_filename = file_result.get('dest_filename', filename)  # <-- Get destination filename
+            action        = file_result['action']                     # <-- Get action
             action_detail = file_result['action_detail']              # <-- Get action detail
             
+            # SHOW RENAME IF DIFFERENT
+            rename_info = ""
+            if dest_filename != filename:
+                rename_info = f" -> {dest_filename}"                  # <-- Show rebranded name
+            
             if action == 'new':
-                print(f"      {COLOR_GREEN}[+] {filename}{COLOR_RESET} - {action_detail}")  # <-- New file
+                print(f"      {COLOR_GREEN}[+] {filename}{rename_info}{COLOR_RESET} - {action_detail}")  # <-- New file
             elif action == 'update':
-                print(f"      {COLOR_YELLOW}[^] {filename}{COLOR_RESET} - {action_detail}")  # <-- Updated file
+                print(f"      {COLOR_YELLOW}[^] {filename}{rename_info}{COLOR_RESET} - {action_detail}")  # <-- Updated file
             elif action == 'skip':
-                print(f"      {COLOR_BLUE}[=] {filename}{COLOR_RESET} - {action_detail}")  # <-- Skipped file
+                print(f"      {COLOR_BLUE}[=] {filename}{rename_info}{COLOR_RESET} - {action_detail}")  # <-- Skipped file
             
             if file_result['error']:
                 print(f"      {COLOR_RED}[X] Error: {file_result['error']}{COLOR_RESET}")  # <-- Error

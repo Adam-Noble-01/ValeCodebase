@@ -2,7 +2,7 @@
 # =========================================================
 
 # ---------------------------------------------------------
-## DD-MMM-YYYY - ValeVision3D v0.?.0 
+## DD-MMM-YYYY - ValeVision3D v0.?.? 
 ### Template
 -
 -
@@ -11,7 +11,23 @@
 
 
 # ---------------------------------------------------------
-## 05-Feb-2026 - ValeVision3D v0.4.0 
+## 10-Feb-2026 - ValeVision3D v0.5.0 
+### Multi-Model Category Loading System
+- New `Na__ModelLoader__MultiModel.js` module for loading multiple GLB model pairs.
+- Models are now classified by ValeVision category (e.g. MainBuildingModel__Existing, LandscapeEnvironment).
+- Priority-based sequential loading order matches GLB Builder tag range definitions.
+- Each category gets its own THREE.Group enabling future per-category visibility toggling.
+- URL parser accepts both `__ValeVision__` (preferred CDN) and `__NaModel__` (backstop) namespaces.
+- Mesh and linework loading logic extracted from index.html into dedicated module.
+- AppConfig modelDefaults now uses `modelUrls` array instead of separate base/linework URLs.
+- Backwards-compatible project.json extraction supporting all four legacy URL formats (v1-v4).
+- Cloudflare R2 sync script updated to rename `__NaModel__` to `__ValeVision__` in CDN filenames.
+- R2 sync script now skips `01__Archive/` subfolder and pushes all root-level GLBs without version logic.
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+## 05-Feb-2026 - ValeVision3D v0.0.4 
 ### Web Project Path Fixes
 - Added absolute GitHub Pages base URL for project.json fetching.
 - Added year-aware and legacy project ID normalization for web loading.

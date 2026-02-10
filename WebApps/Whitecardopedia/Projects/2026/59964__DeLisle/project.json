@@ -1,0 +1,59 @@
+{
+    "projectName": "De Lisle",
+    "projectCode": "59964",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "A really nice CAD File from Rachael on this one, would have finished in 2 hours if I didn't have to model the new cresting, I have saved it to my 3D Standards library now though so its quicker next time."
+    },
+    "scheduleData": {
+        "dateReceived": "09-Feb-2026",
+        "dateFulfilled": "10-Feb-2026",
+        "timeAllocated": 2.5,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__10-Feb-2026.png"
+    ],
+    "basePath": "Projects/2026/59964__DeLisle",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/59964__DeLisle/DeLisle__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "folderId": "2026/59964__DeLisle",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__10-Feb-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__10-Feb-2026.png"
+    ]
+}

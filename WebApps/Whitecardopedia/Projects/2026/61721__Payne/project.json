@@ -22,22 +22,22 @@
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX"       : -15671,
-            "Camera__DefaultPos__PosY"       : 2373,
-            "Camera__DefaultPos__PosZ"       : -2655
+            "Camera__DefaultPos__PosX": -15671,
+            "Camera__DefaultPos__PosY": 2373,
+            "Camera__DefaultPos__PosZ": -2655
         },
         "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX" : 1770,
-            "Camera__DefaultTarget__TargetY" : 1809,
-            "Camera__DefaultTarget__TargetZ" : -13440
+            "Camera__DefaultTarget__TargetX": 1770,
+            "Camera__DefaultTarget__TargetY": 1809,
+            "Camera__DefaultTarget__TargetZ": -13440
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX"  : -0.0522,
-            "Camera__DefaultRotation__RotY"  : -1.0163,
-            "Camera__DefaultRotation__RotZ"  : -0.0444
+            "Camera__DefaultRotation__RotX": -0.0522,
+            "Camera__DefaultRotation__RotY": -1.0163,
+            "Camera__DefaultRotation__RotZ": -0.0444
         },
         "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov"       : 29.8628
+            "Camera__DefaultMisc__Fov": 29.8628
         }
     },
     "folderId": "2026/61721__Payne",

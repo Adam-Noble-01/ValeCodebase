@@ -15,34 +15,31 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "valeVision_ModelUrl": null,
     "valeVision_Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX"       : -5000,
-            "Camera__DefaultPos__PosY"       :  2800,
-            "Camera__DefaultPos__PosZ"       :  3250
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
         },
         "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX" : -1250,
-            "Camera__DefaultTarget__TargetY" :  2570,
-            "Camera__DefaultTarget__TargetZ" :  -350
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX"  : -0.073,
-            "Camera__DefaultRotation__RotY"  : -0.8346,
-            "Camera__DefaultRotation__RotZ"  : -0.0541
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
         },
         "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov"       : 29.8628
+            "Camera__DefaultMisc__Fov": 29.8628
         }
     },
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__04-Feb-2026.png"
     ],
     "basePath": "Projects/2026/60834__Clough",
-    "valeVision_ModelUrl_BaseMesh": "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-01__BaseMeshModel__1.2.0__.glb",
-    "valeVision_ModelUrl_Linework": "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-02__LineworkModel__1.2.0__.glb",
     "folderId": "2026/60834__Clough",
     "displayImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__04-Feb-2026.png"
@@ -50,5 +47,11 @@
     "artPairsMap": {},
     "allImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__04-Feb-2026.png"
+    ],
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-01__BaseMeshModel__1.0.0__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-01__BaseMeshModel__1.2.0__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-02__LineworkModel__1.0.0__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-02__LineworkModel__1.2.0__.glb"
     ]
 }

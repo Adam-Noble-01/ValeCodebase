@@ -52,11 +52,12 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // MODULE CONSTANTS | URL Parsing Regex
     // ------------------------------------------------------------
     // Primary: Accepts __ValeVision__ (CDN rebranded) and __NaModel__ (raw SketchUp export).
+    // Supports optional project prefix (e.g., DeLisle__ValeVision__).
     // Captures: [1] namespace (ValeVision|NaModel), [2] category, [3] model type.
     // Legacy:  Matches older __Layer-XX__BaseMeshModel__ / __LineworkModel__ patterns.
     // Captures: [1] model type indicator (BaseMeshModel|LineworkModel).
     // ------------------------------------------------------------
-    const Na__ModelUrl__ParseRegex        = /__(ValeVision|NaModel)__(.+?)__(MeshModel|LineworkModel)__\.glb/i;
+    const Na__ModelUrl__ParseRegex        = /(?:.*?__)?(ValeVision|NaModel)__(.+?)__(MeshModel|LineworkModel)__\.glb/i;
     const Na__ModelUrl__LegacyParseRegex  = /__(BaseMeshModel|LineworkModel|MeshModel)__/i;
     const Na__ModelUrl__LegacyCategoryKey = "ValeVision__LegacyModel";   // <-- Fallback category for legacy URLs
     // ------------------------------------------------------------

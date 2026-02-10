@@ -15,7 +15,6 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "valeVision_ModelUrl": "https://cdn.noble-architecture.com/VaApps/Projects/2025/RD-61662__Rodger/Rodger__ValeVisionModel__1.0.0__.glb",
     "images": [
         "IMG01__3dView__MainShot____WhitecardImage__20-Nov-2025.png"
     ],
@@ -27,5 +26,8 @@
     "artPairsMap": {},
     "allImages": [
         "IMG01__3dView__MainShot____WhitecardImage__20-Nov-2025.png"
+    ],
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/RD-61662__Rodger/Rodger__ValeVisionModel__1.0.0__.glb"
     ]
 }

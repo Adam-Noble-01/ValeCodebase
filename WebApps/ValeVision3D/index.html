@@ -125,6 +125,18 @@
         
         <canvas id="renderCanvas" class="canvas-hidden"></canvas>
         
+        <!-- Image Export Safe Frame & Rule of Thirds Overlay -->
+        <div class="na-export-overlay" id="naExportOverlay">
+            <div class="na-export-overlay__safe-frame-bar na-export-overlay__safe-frame-bar--top" id="naExportSafeTop"></div>
+            <div class="na-export-overlay__safe-frame-bar na-export-overlay__safe-frame-bar--bottom" id="naExportSafeBottom"></div>
+            <div class="na-export-overlay__safe-frame-bar na-export-overlay__safe-frame-bar--left" id="naExportSafeLeft"></div>
+            <div class="na-export-overlay__safe-frame-bar na-export-overlay__safe-frame-bar--right" id="naExportSafeRight"></div>
+            <div class="na-export-overlay__thirds-line na-export-overlay__thirds-line--horizontal" id="naExportThirdsH1"></div>
+            <div class="na-export-overlay__thirds-line na-export-overlay__thirds-line--horizontal" id="naExportThirdsH2"></div>
+            <div class="na-export-overlay__thirds-line na-export-overlay__thirds-line--vertical" id="naExportThirdsV1"></div>
+            <div class="na-export-overlay__thirds-line na-export-overlay__thirds-line--vertical" id="naExportThirdsV2"></div>
+        </div>
+        
         <!-- Loading Indicator -->
         <div class="loading-indicator" id="loadingIndicator">
             Loading Scene...

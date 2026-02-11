@@ -45,5 +45,10 @@
 /* ----------------------------------------------------------------- */
 @import url('loading-overlay.css');
 
+
+/* Image Export Overlays - Safe Frame & Rule of Thirds Grid */
+/* ----------------------------------------------------------------- */
+@import url('image-export-overlays.css');
+
 /* endregion -------------------------------------------------------- */
 

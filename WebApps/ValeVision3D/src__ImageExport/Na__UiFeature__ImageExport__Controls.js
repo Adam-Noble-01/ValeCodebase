@@ -12,6 +12,11 @@
     import { Na__PostProcess__RunPipeline } from './Na__ImageExport__PostProcessEffects__Pipeline.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Viewport Overlays
+    // ------------------------------------------------------------
+    import { Na__UiFeature__CreateViewportOverlays, Na__UiFeature__UpdateViewportOverlays } from './Na__UiFeature__ImageExport__ViewportOverlays.js';
+    // ------------------------------------------------------------
+
 
     // -------------------------------------------------------------------------
     // REGION | Export Configuration and Defaults
@@ -149,14 +154,40 @@
         updateLabels();
         updateControlsState();
         
+        // Initialize viewport overlays
+        // ------------------------------------------------------------
+        Na__UiFeature__CreateViewportOverlays(); // <-- Create overlay DOM elements
+        // ------------------------------------------------------------
+        
         toggleButton.addEventListener('click', () => {
             const isOpen = panel.classList.contains('is-open');
             panel.classList.toggle('is-open', !isOpen);
+            
+            // Update overlay visibility based on panel state
+            // ------------------------------------------------------------
+            const panelIsNowOpen = panel.classList.contains('is-open'); // <-- Check new panel state
+            if (panelIsNowOpen) { // <-- Panel is now open
+                Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], true); // <-- Show overlay with current aspect ratio
+            } else { // <-- Panel is now closed
+                Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], false); // <-- Hide overlay
+            }
+            // ------------------------------------------------------------
         });
         
         customToggle.addEventListener('change', (event) => {
             isCustomEnabled = event.target.checked;
             updateControlsState();
+            
+            // Update overlay visibility based on custom export state
+            // ------------------------------------------------------------
+            if (panel.classList.contains('is-open')) { // <-- Check if panel is open
+                if (isCustomEnabled) { // <-- Custom export enabled
+                    Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], true); // <-- Show overlay
+                } else { // <-- Custom export disabled
+                    Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], false); // <-- Hide overlay
+                }
+            }
+            // ------------------------------------------------------------
         });
         
         if (enhanceToggle) {
@@ -168,6 +199,13 @@
         ratioSlider.addEventListener('input', (event) => {
             ratioIndex = parseInt(event.target.value, 10);
             updateLabels();
+            
+            // Update overlay with new aspect ratio if panel is open
+            // ------------------------------------------------------------
+            if (panel.classList.contains('is-open')) { // <-- Check if panel is open
+                Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], true); // <-- Update overlay with new ratio
+            }
+            // ------------------------------------------------------------
         });
         
         resSlider.addEventListener('input', (event) => {

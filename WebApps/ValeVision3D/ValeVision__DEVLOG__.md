@@ -11,6 +11,37 @@
 
 
 # ---------------------------------------------------------
+## 11-Feb-2026 - ValeVision3D v0.0.8
+### Image Export Safe Frame & Rule of Thirds Grid Overlay
+
+**Safe Frame Overlay**
+- Transparent grey overlay bars (top, bottom, left, right) showing export crop area.
+- Dynamically updates based on selected aspect ratio (3:2, 4:3, 16:9).
+- Appears when Image Export panel is opened; hides when panel is closed.
+- Automatically recalculates on window resize with debounced updates.
+- Uses aspect ratio fitting algorithm for pillarbox (wider viewport) or letterbox (taller viewport) display.
+
+**Rule of Thirds Grid Overlay**
+- Composition guide lines dividing safe frame into 9 equal parts (3x3 grid).
+- Vale blue (#182c3b) at 50% opacity for brand consistency.
+- Line thickness 1.5px for improved visibility.
+- Updates dynamically with aspect ratio changes.
+- Positioned within safe frame area for accurate composition guidance.
+
+**Implementation**
+- New module `Na__UiFeature__ImageExport__ViewportOverlays.js` handles overlay creation, positioning, and updates.
+- CSS module `image-export-overlays.css` provides styling with z-index 500 (between viewport and menu).
+- Overlays use `pointer-events: none` to allow continued 3D interaction through overlay.
+- Integrated into export controls with show/hide on panel toggle and aspect ratio slider changes.
+- Overlay automatically hides when custom export is disabled.
+
+**Key Files**
+- `src__ImageExport/Na__UiFeature__ImageExport__ViewportOverlays.js` — overlay logic and positioning calculations.
+- `src__Styles/image-export-overlays.css` — overlay styles and animations.
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js` — integration with export panel controls.
+- `index.html` — overlay DOM elements added to root container.
+
+# ---------------------------------------------------------
 ## 11-Feb-2026 - ValeVision3D v0.0.7
 ### Enhance Whitecard Post-Process Pipeline
 

@@ -105,7 +105,39 @@
             "Dev__DefaultCube__PozX"     : 20000,
             "Dev__DefaultCube__PozZ"     : -10000,
             "Dev__DefaultCube__PozY"     : 2000
-
         }
+    },
+    "ImageExport__PostProcessEffects": {
+        "ImageExport__PostProcessEffects__Description"  : "All post process effects applied to the image export before download are configured here.",
+        "ImageExport__PostProcessEffects__Enabled"      : true,
+        "ImageExport__PostProcessEffects__Config": [
+            {
+                "ImageExport__PostProcessEffects__Levels": {
+                    "ImageExport__PostProcessEffects__Levels__Enabled"     : true,
+                    "ImageExport__PostProcessEffects__Levels__Order"       : 1,
+                    "ImageExport__PostProcessEffects__Levels__Parameters"  : [
+                        {
+                            "ImageExport__PostProcessEffects__Levels__Parameter__Black"         : 0,
+                            "ImageExport__PostProcessEffects__Levels__Parameter__White"         : 230,
+                            "ImageExport__PostProcessEffects__Levels__Parameter__Gamma"         : 1.0
+                        }
+                    ]
+                }
+            },
+            {
+                "ImageExport__PostProcessEffects__HighPassSharpen": {
+                    "ImageExport__PostProcessEffects__HighPassSharpen__Enabled"   : true,
+                    "ImageExport__PostProcessEffects__HighPassSharpen__Order"     : 2,
+                    "ImageExport__PostProcessEffects__HighPassSharpen__Parameters": [
+                        {
+                            "ImageExport__PostProcessEffects__HighPassSharpen__Parameter__Radius"   : 2.0,
+                            "ImageExport__PostProcessEffects__HighPassSharpen__Parameter__BlendMode": "Overlay",
+                            "ImageExport__PostProcessEffects__HighPassSharpen__Parameter__Opacity"  : 1.0
+                        }
+                    ]
+                }
+            }
+        ]
     }
 }
+

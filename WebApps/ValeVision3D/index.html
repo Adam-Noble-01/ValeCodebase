@@ -204,6 +204,10 @@
                             />
                             <span class="na-dropdown-menu__value" id="naImageExportResolutionValue">2k</span>
                         </div>
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Enhance Whitecard</span>
+                            <input type="checkbox" id="naImageExportEnhanceToggle" class="na-dropdown-menu__checkbox" checked />
+                        </div>
                         <button class="na-dropdown-menu__action" id="naImageExportAction">Export Now</button>
                     </div>
                 </li>
@@ -289,6 +293,7 @@
     const Na__Config__Models = Na__AppConfig__Data.models;                          // <-- Model-specific settings
     const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;                  // <-- Camera lens settings
     const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;                // <-- Image export settings
+    const Na__Config__PostProcessEffects = Na__AppConfig__Data.ImageExport__PostProcessEffects; // <-- Post-process effects config
     const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition;  // <-- Camera defaults (MM)
     const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;      // <-- Navmode config (MM)
     
@@ -490,7 +495,8 @@
         Na__Scene__Main,
         Na__Camera__Main,
         () => Na__RenderComposer__Main,
-        Na__Config__ImageExport
+        Na__Config__ImageExport,
+        Na__Config__PostProcessEffects
     );
     Na__UiFeature__InitializeCameraPositionControls(Na__Camera__Main, Na__Controls__Orbit);
     // ------------------------------------------------------------

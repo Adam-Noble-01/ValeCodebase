@@ -11,6 +11,35 @@
 
 
 # ---------------------------------------------------------
+## 11-Feb-2026 - ValeVision3D v0.0.7
+### Enhance Whitecard Post-Process Pipeline
+
+**Image Export Post-Processing**
+- Added "Enhance Whitecard" toggle to Export Image panel (default: on).
+- Post-processing runs at export time only; viewport render pipeline unchanged.
+- Canvas 2D pixel manipulation pipeline applied after Three.js render, before download.
+- Config-driven effect order and parameters via `Na__AppConfig__Main.json` → `ImageExport__PostProcessEffects`.
+
+**Levels Effect** (`Na__ImageExport__PostProcessEffects__Levels.js`)
+- Pixel-level black/white/gamma remapping via ImageData.
+- White point set to 230 clips light grays to pure white; dark lines preserved.
+- Removes subtle face shading from render for clean whitecard line art.
+
+**High Pass Sharpen Effect** (`Na__ImageExport__PostProcessEffects__HighPassSharpen.js`)
+- CSS `blur()` filter for GPU-accelerated blur; high-pass layer = (original - blurred) / 2 + 128.
+- Overlay blend mode sharpens black lines against white background.
+- Configurable radius, blend mode, opacity.
+
+**Pipeline Orchestrator** (`Na__ImageExport__PostProcessEffects__Pipeline.js`)
+- Sorts effects by `Order` field; applies enabled effects sequentially.
+- Each effect is a standalone module; pipeline reads config and invokes them.
+
+**Key Files**
+- `src__AppConfig/Na__AppConfig__Main.json` — `ImageExport__PostProcessEffects` config block.
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js` — enhance toggle, pipeline integration.
+- `src__ImageExport/Na__ImageExport__PostProcessEffects__*.js` — Levels, HighPassSharpen, Pipeline.
+
+# ---------------------------------------------------------
 ## 10-Feb-2026 - ValeVision3D v0.0.6
 ### Dynamic Model Toggle System & Build Pipeline Integration
 

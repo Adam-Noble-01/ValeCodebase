@@ -7,6 +7,11 @@
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Post Process Pipeline
+    // ------------------------------------------------------------
+    import { Na__PostProcess__RunPipeline } from './Na__ImageExport__PostProcessEffects__Pipeline.js';
+    // ------------------------------------------------------------
+
 
     // -------------------------------------------------------------------------
     // REGION | Export Configuration and Defaults
@@ -87,7 +92,7 @@
 
     // FUNCTION | Initialize Image Export Controls
     // ------------------------------------------------------------
-    function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getComposer, config = {}) {
+    function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getComposer, config = {}, postProcessConfig = null) {
         if (!renderer || !scene || !camera) return;
         
         if (!Na__UiFeature__ValidateExportConfig(config)) return;
@@ -100,12 +105,23 @@
         const resSlider = document.getElementById('naImageExportResolutionSlider');
         const resValue = document.getElementById('naImageExportResolutionValue');
         const exportButton = document.getElementById('naImageExportAction');
+        const enhanceToggle = document.getElementById('naImageExportEnhanceToggle'); // <-- Enhance Whitecard toggle
         
         if (!toggleButton || !panel || !customToggle || !ratioSlider || !ratioValue || !resSlider || !resValue || !exportButton) {
             return;
         }
         
+        // Initialize enhance toggle state from config
+        // ------------------------------------------------------------
+        const enhanceEnabledDefault = postProcessConfig && postProcessConfig.ImageExport__PostProcessEffects__Enabled !== undefined
+            ? postProcessConfig.ImageExport__PostProcessEffects__Enabled
+            : true; // <-- Default to enabled if config missing
+        if (enhanceToggle) {
+            enhanceToggle.checked = enhanceEnabledDefault; // <-- Set initial state
+        }
+        
         let isCustomEnabled = exportConfig.customEnabled;
+        let isEnhanceEnabled = enhanceEnabledDefault; // <-- Track enhance toggle state
         let ratioIndex = Na__UiFeature__ClampIndex(exportConfig.defaultAspectIndex, 0, exportConfig.aspectRatios.length - 1);
         let resIndex = Na__UiFeature__ClampIndex(exportConfig.defaultResolutionIndex, 0, exportConfig.resolutions.length - 1);
         
@@ -143,6 +159,12 @@
             updateControlsState();
         });
         
+        if (enhanceToggle) {
+            enhanceToggle.addEventListener('change', (event) => {
+                isEnhanceEnabled = event.target.checked; // <-- Update enhance state
+            });
+        }
+        
         ratioSlider.addEventListener('input', (event) => {
             ratioIndex = parseInt(event.target.value, 10);
             updateLabels();
@@ -166,7 +188,19 @@
                     renderer.render(scene, camera);
                 }
                 
-                const dataUrl = renderer.domElement.toDataURL('image/png');
+                // Apply post-processing if enhance is enabled
+                // ------------------------------------------------------------
+                let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
+                if (isEnhanceEnabled && postProcessConfig) {
+                    const offscreenCanvas = document.createElement('canvas'); // <-- Create offscreen canvas
+                    offscreenCanvas.width = renderer.domElement.width; // <-- Set width
+                    offscreenCanvas.height = renderer.domElement.height; // <-- Set height
+                    const offscreenCtx = offscreenCanvas.getContext('2d'); // <-- Get context
+                    offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
+                    finalCanvas = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
+                }
+                
+                const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
                 Na__UiFeature__DownloadImage(dataUrl, 'ValeVision3D__Viewport.png');
                 return;
             }
@@ -193,7 +227,19 @@
                 renderer.render(scene, camera);
             }
             
-            const dataUrl = renderer.domElement.toDataURL('image/png');
+            // Apply post-processing if enhance is enabled
+            // ------------------------------------------------------------
+            let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
+            if (isEnhanceEnabled && postProcessConfig) {
+                const offscreenCanvas = document.createElement('canvas'); // <-- Create offscreen canvas
+                offscreenCanvas.width = targetWidth; // <-- Set width
+                offscreenCanvas.height = targetHeight; // <-- Set height
+                const offscreenCtx = offscreenCanvas.getContext('2d'); // <-- Get context
+                offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
+                finalCanvas = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
+            }
+            
+            const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
             Na__UiFeature__DownloadImage(dataUrl, `ValeVision3D__${targetWidth}x${targetHeight}.png`);
             
             camera.aspect = originalAspect;

@@ -80,11 +80,119 @@
     // ------------------------------------------------------------
     function Na__UiFeature__DownloadImage(dataUrl, filename) {
         const link = document.createElement('a');
-        link.href = dataUrl;
+        link.href     = dataUrl;
         link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+    // ------------------------------------------------------------
+
+    // endregion --------------------------------------------------------------
+
+
+    // -------------------------------------------------------------------------
+    // REGION | Shared Render-to-DataURL Helper
+    // -------------------------------------------------------------------------
+
+    // FUNCTION | Render Scene to DataURL with Current Export Settings
+    // ------------------------------------------------------------
+    // Shared by both "Export Now" and "Layout View" handlers.
+    // Renders the scene at the configured resolution and aspect ratio,
+    // applies post-processing if enhance is enabled, and returns an
+    // object with the dataUrl and image metadata.
+    //
+    // Returns: { dataUrl, width, height, aspectRatio }
+    // ------------------------------------------------------------
+    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getComposer, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
+
+        // NON-CUSTOM MODE | Render at current viewport size
+        // ------------------------------------------------------------
+        if (!isCustomEnabled) {
+            const composer = typeof getComposer === 'function' ? getComposer() : null; // <-- Get composer if available
+
+            if (composer) {
+                composer.render(); // <-- Render via post-processing composer
+            } else {
+                renderer.render(scene, camera); // <-- Direct render fallback
+            }
+
+            // Apply post-processing if enhance is enabled
+            // ------------------------------------------------------------
+            let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
+            if (isEnhanceEnabled && postProcessConfig) {
+                const offscreenCanvas    = document.createElement('canvas'); // <-- Create offscreen canvas
+                offscreenCanvas.width    = renderer.domElement.width; // <-- Set width
+                offscreenCanvas.height   = renderer.domElement.height; // <-- Set height
+                const offscreenCtx       = offscreenCanvas.getContext('2d'); // <-- Get context
+                offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
+                finalCanvas              = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
+            }
+
+            const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
+            return {
+                dataUrl     : dataUrl,                           // <-- PNG data URL
+                width       : renderer.domElement.width,         // <-- Rendered width in pixels
+                height      : renderer.domElement.height,        // <-- Rendered height in pixels
+                aspectRatio : null                               // <-- No custom aspect ratio (viewport native)
+            };
+        }
+
+        // CUSTOM MODE | Render at configured aspect ratio and resolution
+        // ------------------------------------------------------------
+        const ratio         = Na__UiFeature__ParseAspectRatio(exportConfig.aspectRatios[ratioIndex]); // <-- Parse selected aspect ratio
+        const targetHeight  = exportConfig.resolutions[resIndex]; // <-- Target height from resolution slider
+        const targetWidth   = Math.round(targetHeight * (ratio.width / ratio.height)); // <-- Calculate width from ratio
+
+        const size          = renderer.getSize(new THREE.Vector2()); // <-- Store current renderer size
+        const pixelRatio    = renderer.getPixelRatio(); // <-- Store current pixel ratio
+        const composer      = typeof getComposer === 'function' ? getComposer() : null; // <-- Get composer
+        const originalAspect = camera.aspect; // <-- Store original camera aspect
+
+        renderer.setPixelRatio(1); // <-- Set pixel ratio to 1 for exact resolution
+        renderer.setSize(targetWidth, targetHeight); // <-- Resize renderer to target dimensions
+
+        camera.aspect = targetWidth / targetHeight; // <-- Update camera aspect ratio
+        camera.updateProjectionMatrix(); // <-- Apply camera changes
+
+        if (composer) {
+            composer.setSize(targetWidth, targetHeight); // <-- Resize composer
+            composer.render(); // <-- Render via composer
+        } else {
+            renderer.render(scene, camera); // <-- Direct render fallback
+        }
+
+        // Apply post-processing if enhance is enabled
+        // ------------------------------------------------------------
+        let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
+        if (isEnhanceEnabled && postProcessConfig) {
+            const offscreenCanvas    = document.createElement('canvas'); // <-- Create offscreen canvas
+            offscreenCanvas.width    = targetWidth; // <-- Set width
+            offscreenCanvas.height   = targetHeight; // <-- Set height
+            const offscreenCtx       = offscreenCanvas.getContext('2d'); // <-- Get context
+            offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
+            finalCanvas              = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
+        }
+
+        const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
+
+        // Restore renderer, camera, and composer to original state
+        // ------------------------------------------------------------
+        camera.aspect = originalAspect; // <-- Restore camera aspect
+        camera.updateProjectionMatrix(); // <-- Apply camera restore
+
+        renderer.setPixelRatio(pixelRatio); // <-- Restore pixel ratio
+        renderer.setSize(size.x, size.y); // <-- Restore renderer size
+        if (composer) {
+            composer.setSize(size.x, size.y); // <-- Restore composer size
+        }
+
+        return {
+            dataUrl     : dataUrl,                               // <-- PNG data URL
+            width       : targetWidth,                           // <-- Rendered width in pixels
+            height      : targetHeight,                          // <-- Rendered height in pixels
+            aspectRatio : exportConfig.aspectRatios[ratioIndex]  // <-- Selected aspect ratio string
+        };
     }
     // ------------------------------------------------------------
 
@@ -101,16 +209,17 @@
         if (!renderer || !scene || !camera) return;
         
         if (!Na__UiFeature__ValidateExportConfig(config)) return;
-        const exportConfig = config;
-        const toggleButton = document.getElementById('naImageExportToggle');
-        const panel = document.getElementById('naImageExportPanel');
-        const customToggle = document.getElementById('naImageExportCustomToggle');
-        const ratioSlider = document.getElementById('naImageExportRatioSlider');
-        const ratioValue = document.getElementById('naImageExportRatioValue');
-        const resSlider = document.getElementById('naImageExportResolutionSlider');
-        const resValue = document.getElementById('naImageExportResolutionValue');
-        const exportButton = document.getElementById('naImageExportAction');
-        const enhanceToggle = document.getElementById('naImageExportEnhanceToggle'); // <-- Enhance Whitecard toggle
+        const exportConfig     = config;
+        const toggleButton     = document.getElementById('naImageExportToggle');
+        const panel            = document.getElementById('naImageExportPanel');
+        const customToggle     = document.getElementById('naImageExportCustomToggle');
+        const ratioSlider      = document.getElementById('naImageExportRatioSlider');
+        const ratioValue       = document.getElementById('naImageExportRatioValue');
+        const resSlider        = document.getElementById('naImageExportResolutionSlider');
+        const resValue         = document.getElementById('naImageExportResolutionValue');
+        const exportButton     = document.getElementById('naImageExportAction');
+        const layoutViewButton = document.getElementById('naLayoutViewAction'); // <-- Layout View button
+        const enhanceToggle    = document.getElementById('naImageExportEnhanceToggle'); // <-- Enhance Whitecard toggle
         
         if (!toggleButton || !panel || !customToggle || !ratioSlider || !ratioValue || !resSlider || !resValue || !exportButton) {
             return;
@@ -125,30 +234,30 @@
             enhanceToggle.checked = enhanceEnabledDefault; // <-- Set initial state
         }
         
-        let isCustomEnabled = exportConfig.customEnabled;
+        let isCustomEnabled  = exportConfig.customEnabled;
         let isEnhanceEnabled = enhanceEnabledDefault; // <-- Track enhance toggle state
-        let ratioIndex = Na__UiFeature__ClampIndex(exportConfig.defaultAspectIndex, 0, exportConfig.aspectRatios.length - 1);
-        let resIndex = Na__UiFeature__ClampIndex(exportConfig.defaultResolutionIndex, 0, exportConfig.resolutions.length - 1);
+        let ratioIndex       = Na__UiFeature__ClampIndex(exportConfig.defaultAspectIndex, 0, exportConfig.aspectRatios.length - 1);
+        let resIndex         = Na__UiFeature__ClampIndex(exportConfig.defaultResolutionIndex, 0, exportConfig.resolutions.length - 1);
         
         const updateControlsState = () => {
             ratioSlider.disabled = !isCustomEnabled;
-            resSlider.disabled = !isCustomEnabled;
+            resSlider.disabled   = !isCustomEnabled;
             customToggle.checked = isCustomEnabled;
         };
         
         const updateLabels = () => {
             ratioValue.textContent = exportConfig.aspectRatios[ratioIndex];
-            resValue.textContent = `${exportConfig.resolutions[resIndex] / 1024}k`;
+            resValue.textContent   = `${exportConfig.resolutions[resIndex] / 1024}k`;
         };
         
-        ratioSlider.min = 0;
-        ratioSlider.max = exportConfig.aspectRatios.length - 1;
-        ratioSlider.step = 1;
+        ratioSlider.min   = 0;
+        ratioSlider.max   = exportConfig.aspectRatios.length - 1;
+        ratioSlider.step  = 1;
         ratioSlider.value = ratioIndex;
         
-        resSlider.min = 0;
-        resSlider.max = exportConfig.resolutions.length - 1;
-        resSlider.step = 1;
+        resSlider.min   = 0;
+        resSlider.max   = exportConfig.resolutions.length - 1;
+        resSlider.step  = 1;
         resSlider.value = resIndex;
         
         updateLabels();
@@ -213,82 +322,51 @@
             updateLabels();
         });
         
+
         // ------------------------------------------------------------
-        // SUB FUNCTION | Handle Export Action
+        // SUB FUNCTION | Handle Export Now Action
         // ------------------------------------------------------------
         exportButton.addEventListener('click', () => {
-            if (!isCustomEnabled) {
-                const composer = typeof getComposer === 'function' ? getComposer() : null;
-                
-                if (composer) {
-                    composer.render();
-                } else {
-                    renderer.render(scene, camera);
-                }
-                
-                // Apply post-processing if enhance is enabled
-                // ------------------------------------------------------------
-                let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
-                if (isEnhanceEnabled && postProcessConfig) {
-                    const offscreenCanvas = document.createElement('canvas'); // <-- Create offscreen canvas
-                    offscreenCanvas.width = renderer.domElement.width; // <-- Set width
-                    offscreenCanvas.height = renderer.domElement.height; // <-- Set height
-                    const offscreenCtx = offscreenCanvas.getContext('2d'); // <-- Get context
-                    offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
-                    finalCanvas = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
-                }
-                
-                const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
-                Na__UiFeature__DownloadImage(dataUrl, 'ValeVision3D__Viewport.png');
-                return;
-            }
-            
-            const ratio = Na__UiFeature__ParseAspectRatio(exportConfig.aspectRatios[ratioIndex]);
-            const targetHeight = exportConfig.resolutions[resIndex];
-            const targetWidth = Math.round(targetHeight * (ratio.width / ratio.height));
-            
-            const size = renderer.getSize(new THREE.Vector2());
-            const pixelRatio = renderer.getPixelRatio();
-            const composer = typeof getComposer === 'function' ? getComposer() : null;
-            const originalAspect = camera.aspect;
-            
-            renderer.setPixelRatio(1);
-            renderer.setSize(targetWidth, targetHeight);
-            
-            camera.aspect = targetWidth / targetHeight;
-            camera.updateProjectionMatrix();
-            
-            if (composer) {
-                composer.setSize(targetWidth, targetHeight);
-                composer.render();
-            } else {
-                renderer.render(scene, camera);
-            }
-            
-            // Apply post-processing if enhance is enabled
-            // ------------------------------------------------------------
-            let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
-            if (isEnhanceEnabled && postProcessConfig) {
-                const offscreenCanvas = document.createElement('canvas'); // <-- Create offscreen canvas
-                offscreenCanvas.width = targetWidth; // <-- Set width
-                offscreenCanvas.height = targetHeight; // <-- Set height
-                const offscreenCtx = offscreenCanvas.getContext('2d'); // <-- Get context
-                offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
-                finalCanvas = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
-            }
-            
-            const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
-            Na__UiFeature__DownloadImage(dataUrl, `ValeVision3D__${targetWidth}x${targetHeight}.png`);
-            
-            camera.aspect = originalAspect;
-            camera.updateProjectionMatrix();
-            
-            renderer.setPixelRatio(pixelRatio);
-            renderer.setSize(size.x, size.y);
-            if (composer) {
-                composer.setSize(size.x, size.y);
-            }
+            const result = Na__UiFeature__RenderToDataUrl( // <-- Render using shared helper
+                renderer, scene, camera, getComposer,
+                postProcessConfig, isEnhanceEnabled,
+                isCustomEnabled, exportConfig, ratioIndex, resIndex
+            );
+
+            const filename = isCustomEnabled // <-- Generate filename based on mode
+                ? `ValeVision3D__${result.width}x${result.height}.png`
+                : 'ValeVision3D__Viewport.png';
+
+            Na__UiFeature__DownloadImage(result.dataUrl, filename); // <-- Download the rendered image
         });
+        // ------------------------------------------------------------
+
+
+        // ------------------------------------------------------------
+        // SUB FUNCTION | Handle Layout View Action
+        // ------------------------------------------------------------
+        if (layoutViewButton) {
+            layoutViewButton.addEventListener('click', () => {
+                const result = Na__UiFeature__RenderToDataUrl( // <-- Render using shared helper
+                    renderer, scene, camera, getComposer,
+                    postProcessConfig, isEnhanceEnabled,
+                    isCustomEnabled, exportConfig, ratioIndex, resIndex
+                );
+
+                // Store rendered image data on window global for new tab to read
+                // ------------------------------------------------------------
+                window.__Na__PageLayout__PendingImage = { // <-- Set global property
+                    dataUrl     : result.dataUrl,          // <-- PNG data URL
+                    width       : result.width,            // <-- Image width in pixels
+                    height      : result.height,           // <-- Image height in pixels
+                    aspectRatio : result.aspectRatio        // <-- Aspect ratio string or null
+                };
+
+                // Open the Page Layout System in a new browser tab
+                // ------------------------------------------------------------
+                window.open('./src__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html', '_blank'); // <-- Open layout page
+            });
+        }
         // ------------------------------------------------------------
     }
     // ------------------------------------------------------------

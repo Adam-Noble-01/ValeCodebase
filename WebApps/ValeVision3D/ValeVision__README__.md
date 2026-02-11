@@ -67,46 +67,74 @@ Effect order and parameters are defined in `Na__AppConfig__Main.json` under `Ima
   - Allows for proper composition of the image by placing the subject of interest on the rule of thirds grid lines.
 
 # -----------------------------------------------------------------------------
-## Page Layout View System
-`src__PageLayoutSystem` This directory contains the code for the layout view system.
+## Page Layout View System (LayoutVision 2D)
 
-- This system is used to display the layout of the 3D model in a 2D view.
-- It creates a viewport similar to the viewport system used in SketchUp/Layout.
-- It loads `src__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png` as the title block for the layout view. 
-  - This is a PNG of a A3 Drawing which should be position at the very back under the Image Export viewport.
+The **Page Layout View System** is a standalone 2D document composition tool that opens in a new browser tab. It allows users to position rendered 3D viewport images onto an A3 title block template and export the final layout as an exact-scale PDF.
 
-### "Viewport" 
-- The viewport is actually a rendered image of the 3D model in the Image Export viewport.
-- The image should be rendered as per the render settings in the Image Export viewport menu options.
-- A new button should be added under Export Now called "Layout View" which will open the layout view system.
+### Overview
 
-### User Interface & Experience
-- User configures the image settings in the Image Export menu that already exists.
-- The user clicks the "Layout View" button to open the layout view system.
-- The Layout system should open a new tab in the browser with the layout view.
-- The layout is scaled to an A3 Document and has 2D Zoom and panning controlls.
-- The 2D Canvas loads `src__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png` as a locked background layer.
-- The image created by the image export feature is loaded as a foreground layer above the fixed background title block layer.
-- The user can then position the image within the A3 Document by dragging it around.
-- The user can resize and rescale the image to fit the A3 Document by dragging the edges of the image.
-- Final after the user is happy with the layout they can click the "Export Full Layout" button to export the layout as a PDF file.
-  - The PDF is saved to exact A3 Scale.
-  -The Export Full feature exports the whole layout (Title Block and Image) as a single flattened PDF file.
-- Alternatively the user can click the "Export Image Only" button to export only the image without the title block.
-  - It still exports the image at the exact A3 Scale.
-  - It exports in the same position as the image in the layout view onto the A3 Document.
-  - It does not export the title block.
-- The user can click the "Close" button to close the layout view system.
+When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D renders the current 3D scene at the configured resolution and aspect ratio, then opens a new tab with the **LayoutVision 2D** page layout system. The rendered image appears on an A3 landscape canvas (420×297mm) over a Vale title block template.
 
-### Files
-`src__PageLayoutSystem/Na__PageLayoutSystem__Stylesheet__.css`
-`src__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html`
-`src__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
-`src__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js` 
-`src__PageLayoutSystem/Na__PageLayoutSystem__2dNavigationControls__.js` 
-`src__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js` 
-`src__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js`
-`src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
+### Features
 
+**Interactive 2D Canvas**
+- Drag the viewport image to reposition it anywhere on the A3 document
+- Resize using corner handles (proportional) or edge handles (free resize)
+- Mouse wheel zoom toward cursor; middle/right-click pan
+- Touch support: single-finger drag/resize, two-finger pinch zoom + pan
+- Selection handles appear when image is selected (8 handles: 4 corners + 4 edges)
+
+**Exact A3-Scale PDF Export**
+- **Export Full Layout** — saves title block + viewport image as a single flattened A3 PDF
+- **Export Image Only** — saves viewport image at its current position/size (no title block)
+- All exports use millimeter-unit positioning matching the canvas layout exactly
+- PDF files maintain exact 1:1 scale with the A3 document (no distortion)
+
+**Vale-Branded UI**
+- Header matches main ValeVision3D app styling (white background, Vale logo, blue border)
+- Secondary actions bar below header with primary/secondary/close button styles
+- Canvas background uses Vale grey branding (#b0b5ba)
+
+### Technical Architecture
+
+**Data Transfer**
+- Rendered image passed from main app to layout page via `window.opener` global property
+- Avoids localStorage 5-10 MB size limit (supports high-res 4096px exports up to 30+ MB)
+- Layout page reads image on load, then clears the reference to free memory
+
+**Coordinate System**
+- All image positioning stored in mm relative to A3 document origin (top-left)
+- Canvas renderer converts mm to screen pixels using current zoom level
+- PDF export maps mm coordinates directly to jsPDF units (zero conversion)
+
+**Rendering Pipeline**
+- DPR-aware canvas for sharp display on retina screens (internal resolution = display size × DPR)
+- Multi-layer drawing: grey background → white A3 paper with shadow → title block PNG → viewport image
+- Selection handles drawn at screen-pixel size (8px squares) over zoomed image
+- Dashed border around selected image for visual clarity
+
+**Interaction**
+- Hit-test system determines mouse position relative to image body or resize handles
+- PC controls: left-click drag on body (move), handles (resize), empty space (deselect)
+- Touch controls: single-touch on image (move/resize), two-touch (canvas zoom/pan)
+- All coordinates transformed through canvas pan/zoom for accurate interaction at any zoom level
+
+### Key Modules
+
+| Module | Purpose |
+| :----- | :------ |
+| `Na__PageLayoutSystem__Layout__.html` | Standalone HTML page with header, canvas, action buttons |
+| `Na__PageLayoutSystem__Stylesheet__.css` | Layout page styles; imports main app's header.css |
+| `Na__PageLayoutSystem__SystemLogic__Main__.js` | State management, image loading, canvas sizing, resize handling |
+| `Na__PageLayoutSystem__CanvasRenderPipeline__.js` | 2D rendering of A3 paper, title block, image, handles |
+| `Na__PageLayoutSystem__2dNavigationControls__.js` | Zoom toward cursor, middle/right-click pan |
+| `Na__PageLayoutSystem__Controls__Pc__.js` | Mouse interaction: hit-test, drag, resize, cursor feedback |
+| `Na__PageLayoutSystem__Controls__TouchScreen__.js` | Touch interaction: drag, resize, pinch zoom, pan |
+| `Na__PageLayoutSystem__PdfExport__A3__.js` | jsPDF integration for A3-scale PDF export |
+| `01__Dependencies__VersionLocked/jspdf.umd.js` | jsPDF v4.1.0 vendored (1.2 MB self-contained UMD build) |
+
+### Integration with Export Controls
+
+The layout system shares the same render pipeline as the "Export Now" feature via a refactored helper function `Na__UiFeature__RenderToDataUrl()` in the Image Export Controls module. This helper handles both custom export mode (resized renderer + camera aspect adjustment) and viewport-native mode (current size), applies post-processing if "Enhance Whitecard" is enabled, and returns the rendered dataURL with metadata. Both "Export Now" and "Layout View" call this shared function, eliminating ~70 lines of duplicated render logic.
 
 # -----------------------------------------------------------------------------

@@ -11,6 +11,46 @@
 
 
 # ---------------------------------------------------------
+## 11-Feb-2026 - ValeVision3D v0.0.9
+### Page Layout View System (LayoutVision 2D)
+
+**2D Page Layout System for A3 Document Composition**
+- Standalone browser tab opens when user clicks "Layout View" button in Export Image panel.
+- Rendered 3D viewport image positioned on A3 title block template (landscape 420x297mm).
+- Full 2D canvas interaction: drag to reposition, corner/edge handles to resize image.
+- Mouse wheel zoom toward cursor, middle/right-click pan, two-finger pinch/pan on touch.
+- Exports exact A3-scale PDFs: "Export Full Layout" (title block + image) or "Export Image Only".
+- Uses jsPDF v4.1.0 (version-locked, CDN independent, self-contained UMD build).
+
+**Architecture**
+- Data transfer via `window.opener` global property (avoids localStorage 5-10 MB size limit).
+- All positioning stored in mm coordinates relative to A3 origin; maps directly to jsPDF units.
+- DPR-aware canvas rendering for sharp display on retina screens.
+- Image initially centered at 80% of A3 printable area with source aspect ratio preserved.
+- PC controls: proportional corner resize, free edge resize, body drag.
+- Touch controls: single-finger drag/resize, two-finger pinch zoom + pan.
+
+**Key Modules**
+- `Na__PageLayoutSystem__Layout__.html` — standalone page with Vale-branded header matching main app.
+- `Na__PageLayoutSystem__SystemLogic__Main__.js` — orchestrator; loads image from opener, manages state.
+- `Na__PageLayoutSystem__CanvasRenderPipeline__.js` — 2D rendering: A3 paper, title block, image, handles.
+- `Na__PageLayoutSystem__2dNavigationControls__.js` — zoom toward cursor, pan on middle/right-click.
+- `Na__PageLayoutSystem__Controls__Pc__.js` — left-click hit-test, drag/resize with cursor feedback.
+- `Na__PageLayoutSystem__Controls__TouchScreen__.js` — touch drag/resize/pinch with gesture disambiguation.
+- `Na__PageLayoutSystem__PdfExport__A3__.js` — jsPDF integration for exact A3-scale PDF export.
+- `01__Dependencies__VersionLocked/jspdf.umd.js` — jsPDF v4.1.0 vendored dependency (1.2 MB).
+
+**Integration**
+- Shared render helper `Na__UiFeature__RenderToDataUrl()` in Export Controls module.
+- Both "Export Now" and "Layout View" use same render pipeline (custom or viewport mode).
+- Layout View button added to Export Image panel below "Export Now" button.
+- Export controls refactored to eliminate code duplication between export paths.
+
+**UI**
+- Header matches main ValeVision app (white background, Vale logo, blue border); title "LayoutVision 2D".
+- Secondary actions bar below header with Export Full Layout, Export Image Only, Close buttons.
+
+# ---------------------------------------------------------
 ## 11-Feb-2026 - ValeVision3D v0.0.8
 ### Image Export Safe Frame & Rule of Thirds Grid Overlay
 

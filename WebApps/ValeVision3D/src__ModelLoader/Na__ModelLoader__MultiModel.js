@@ -293,21 +293,37 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
             fatLineGeometry.setPositions(positions);                     // <-- Set line segment positions
 
             const fatLineMaterial = new LineMaterial({
-                color               : lineworkConfig.edgeColor,          // <-- Line color from config
-                linewidth           : lineworkConfig.lineWidth,          // <-- Line width from config
-                resolution          : lineResolution,                    // <-- Screen resolution for line width
-                worldUnits          : false,                             // <-- Screen-space line width
-                depthTest           : true,                              // <-- Enable depth testing
-                depthWrite          : true,                              // <-- Enable depth writing
-                polygonOffset       : true,                              // <-- Enable polygon offset
-                polygonOffsetFactor : lineworkConfig.polygonOffsetFactor,
-                polygonOffsetUnits  : lineworkConfig.polygonOffsetUnits
+                color               : lineworkConfig.RenderConfig__Linework__EdgeColor,          // <-- Line color from config
+                linewidth           : lineworkConfig.RenderConfig__Linework__LineWidth,          // <-- Line width from config
+                resolution          : lineResolution,                                            // <-- Screen resolution for line width
+                worldUnits          : false,                                                     // <-- Screen-space line width
+                depthTest           : true,                                                      // <-- Enable depth testing
+                depthWrite          : true,                                                      // <-- Enable depth writing
+                polygonOffset       : true,                                                      // <-- Enable polygon offset
+                polygonOffsetFactor : lineworkConfig.RenderConfig__Linework__PolygonOffsetFactor,
+                polygonOffsetUnits  : lineworkConfig.RenderConfig__Linework__PolygonOffsetUnits
             });
 
+            // DEPTH BIAS | Pull line fragments forward when logarithmic depth buffer is used
+            // ------------------------------------------------------------
+            const depthBias = (lineworkConfig.RenderConfig__Linework__DepthBias != null) 
+                ? lineworkConfig.RenderConfig__Linework__DepthBias 
+                : 0.00015;
+            fatLineMaterial.onBeforeCompile = (shader) => {
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    '#include <logdepthbuf_fragment>',
+                    `#include <logdepthbuf_fragment>
+                    if (gl_FragDepth > 0.0) {
+                        gl_FragDepth -= ${depthBias};
+                    }`
+                );
+            };
+            // ------------------------------------------------------------
+
             const fatLineSegment = new LineSegments2(fatLineGeometry, fatLineMaterial);
-            fatLineSegment.computeLineDistances();                       // <-- Compute for proper rendering
-            fatLineSegment.frustumCulled = false;                        // <-- Always render (no culling)
-            fatLineSegment.renderOrder   = lineworkConfig.renderOrder;   // <-- Render order from config
+            fatLineSegment.computeLineDistances();                                       // <-- Compute for proper rendering
+            fatLineSegment.frustumCulled = false;                                        // <-- Always render (no culling)
+            fatLineSegment.renderOrder   = lineworkConfig.RenderConfig__Linework__RenderOrder;   // <-- Render order from config
 
             fatLineSegment.position.copy(node.position);                 // <-- Copy transform from original
             fatLineSegment.rotation.copy(node.rotation);
@@ -388,7 +404,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 try {
                     const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(
                         entry.lineworkUrl,
-                        config.linework,                                 // <-- Linework rendering config
+                        config.RenderConfig__Linework,                   // <-- Linework rendering config
                         loader,
                         lineResolution
                     );
@@ -425,7 +441,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
             if (entry.lineworkUrl) {
                 if (statusCallback) statusCallback(`Loading ${shortName} Linework...`);
                 try {
-                    const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(entry.lineworkUrl, config.linework, loader, lineResolution);
+                    const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(entry.lineworkUrl, config.RenderConfig__Linework, loader, lineResolution);
                     categoryGroup.add(lineworkRoot);
                     console.log(`[ValeVision3D] Loaded Linework (unordered): ${shortName}`);
                 } catch (error) {

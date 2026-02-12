@@ -2,7 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
-## 12-Feb-2026 - ValeVision3D v0.1.1
+## ValeVision3D v0.1.2  -  12-Feb-2026
+### 3D Render Pipeline — Ground Line Visibility & RenderConfig__Linework Naming
+
+**Ground Line Visibility Fix**
+- Ground line (building base meeting ground plane) was invisible in viewport due to depth fighting with mesh surfaces.
+- Root cause: renderer uses `logarithmicDepthBuffer: true`; depth is written in fragment shader via `gl_FragDepth`, so WebGL polygon offset has no effect (hardware offset does not modify `gl_FragDepth`).
+- Solution: fragment shader depth bias via `LineMaterial.onBeforeCompile` — after `#include <logdepthbuf_fragment>`, subtract a small configurable value from `gl_FragDepth` so line fragments win the depth test against coplanar mesh.
+- Depth bias value configurable in AppConfig; default `0.00015` balances visibility of ground line without causing distant lines to pop in front of surfaces.
+
+**RenderConfig__Linework Config & 3-Stage Naming**
+- Linework config block renamed from `"linework"` to `"RenderConfig__Linework"` for consistency with 3-stage naming.
+- All linework properties use `RenderConfig__Linework__*` keys: `EdgeColor`, `LineWidth`, `PolygonOffsetFactor`, `PolygonOffsetUnits`, `RenderOrder`, `DepthBias`.
+- Downstream code in `Na__ModelLoader__MultiModel.js` updated to read `config.RenderConfig__Linework` and `lineworkConfig.RenderConfig__Linework__*` properties.
+- Single source of truth for line appearance and depth behaviour; no other files reference these keys.
+
+**Key Files Modified**
+- `src__AppConfig/Na__AppConfig__Main.json` — `RenderConfig__Linework` block and property names.
+- `src__ModelLoader/Na__ModelLoader__MultiModel.js` — depth bias hook on LineMaterial, config key references.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.1  -  12-Feb-2026
 ### Page Layout System — Image Clipping with Edge Handles
 
 **Edge Handle Clipping Feature**
@@ -40,7 +60,7 @@
 - `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js` — updated description (no edge handles on touch).
 
 # ---------------------------------------------------------
-## 12-Feb-2026 - ValeVision3D v0.1.0
+## ValeVision3D v0.1.0  -  12-Feb-2026
 ### OrbitHelperCube GLB Integration — Automatic Orbit Target Positioning
 
 **Automatic Orbit Target from SketchUp Exported Cube**
@@ -77,7 +97,7 @@
 - `src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js` — split JSON output format.
 
 # ---------------------------------------------------------
-## 11-Feb-2026 - ValeVision3D v0.0.9
+## ValeVision3D v0.0.9  -  11-Feb-2026
 ### Page Layout View System (LayoutVision 2D)
 
 **2D Page Layout System for A3 Document Composition**
@@ -117,7 +137,7 @@
 - Secondary actions bar below header with Export Full Layout, Export Image Only, Close buttons.
 
 # ---------------------------------------------------------
-## 11-Feb-2026 - ValeVision3D v0.0.8
+## ValeVision3D v0.0.8  -  11-Feb-2026
 ### Image Export Safe Frame & Rule of Thirds Grid Overlay
 
 **Safe Frame Overlay**

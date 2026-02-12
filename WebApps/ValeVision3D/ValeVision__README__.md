@@ -11,6 +11,43 @@ FILL THIS OUT LATER
 FILL THIS OUT LATER
 
 # -----------------------------------------------------------------------------
+## 3D Render Pipeline — Mesh, Linework & Ground Line Visibility
+
+The live 3D viewport uses a **mesh + linework** rendering model: each category loads a pair of GLBs (base mesh for surfaces, linework for edges). Surfaces and lines are rendered in one pass with depth testing; linework is drawn on top via render order and depth bias so edges (including the ground line) stay visible.
+
+### Pipeline Overview
+
+1. **Scene** — Three.js scene with ambient + directional light, optional fog, ground plane (shadow-only at `groundYOffset`).
+2. **Models** — Per category: mesh root (white or textured materials) and linework root (fat lines from `LineSegments2` + `LineMaterial`). Both receive the same transforms; linework is a separate GLB so SketchUp can export edges explicitly.
+3. **Renderer** — WebGLRenderer with `logarithmicDepthBuffer: true` for better depth precision at distance. Shadow map: PCF soft shadows.
+4. **Composer** — EffectComposer: RenderPass (scene + camera) then FXAA pass. Output is the final viewport image.
+
+Mesh materials use polygon offset (factor/units from config) to push surfaces back; linework uses polygon offset to pull lines forward. **With a logarithmic depth buffer, the hardware polygon offset is ignored** because depth is written in the fragment shader via `gl_FragDepth`. So linework also uses a **fragment shader depth bias**: after the logarithmic depth include, a small value is subtracted from `gl_FragDepth` so line fragments (including the ground line where the building meets the ground plane) win the depth test against coplanar mesh and no longer disappear.
+
+### RenderConfig__Linework Config
+
+Linework behaviour is fully config-driven under **`models.RenderConfig__Linework`** in `Na__AppConfig__Main.json`, using 3-stage naming:
+
+| Key | Purpose |
+| :-- | :------ |
+| `RenderConfig__Linework__EdgeColor` | Line color (e.g. 0 for black). |
+| `RenderConfig__Linework__LineWidth` | Screen-space line width in pixels. |
+| `RenderConfig__Linework__PolygonOffsetFactor` / `Units` | Polygon offset (only effective when logarithmic depth buffer is off). |
+| `RenderConfig__Linework__RenderOrder` | Render order so linework draws after mesh (e.g. 999). |
+| `RenderConfig__Linework__DepthBias` | Value subtracted from `gl_FragDepth` in line fragment shader so lines stay in front of coplanar mesh (e.g. 0.00015). |
+
+The depth bias is applied in `Na__ModelLoader__LoadSingleLinework` via `LineMaterial.onBeforeCompile`, which patches the fragment shader after the logarithmic depth block. Increasing `RenderConfig__Linework__DepthBias` makes lines more reliably visible (e.g. ground line) but too large a value can make distant lines float in front of surfaces; the default is tuned for typical architectural scale.
+
+### Key Modules
+
+| Module | Purpose |
+| :----- | :------ |
+| `index.html` | Scene, camera, renderer, ground plane, composer, render loop. |
+| `Na__ModelLoader__MultiModel.js` | Loads mesh + linework GLBs per category; applies materials and depth-bias hook to LineMaterial; reads `config.RenderConfig__Linework`. |
+| `Na__RenderPipeline__PostProcessing__Setup.js` | EffectComposer with RenderPass + FXAA. |
+| `Na__AppConfig__Main.json` | `models.baseMesh`, `models.RenderConfig__Linework`, `scene` (ground, fog, etc.). |
+
+# -----------------------------------------------------------------------------
 
 ## Image Export — Enhance Whitecard Post-Process Effects
 

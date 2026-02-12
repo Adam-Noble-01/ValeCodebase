@@ -34,12 +34,13 @@
                 "textureEmissive": 4473924
             }
         },
-        "linework": {
-            "edgeColor": 0,
-            "lineWidth": 1.6,
-            "polygonOffsetFactor": -4,
-            "polygonOffsetUnits": -4,
-            "renderOrder": 999
+        "RenderConfig__Linework": {
+            "RenderConfig__Linework__EdgeColor"           : 20,
+            "RenderConfig__Linework__LineWidth"           : 1.0,
+            "RenderConfig__Linework__PolygonOffsetFactor" : -4,
+            "RenderConfig__Linework__PolygonOffsetUnits"  : -4,
+            "RenderConfig__Linework__RenderOrder"         : 999,
+            "RenderConfig__Linework__DepthBias"           : 0.00015
         }
     },
     "cameraLens": {

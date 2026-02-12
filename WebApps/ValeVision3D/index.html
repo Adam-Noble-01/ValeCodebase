@@ -283,7 +283,12 @@
     import { Na__UiFeature__InitializeImageExportControls } from './src__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__ApplyCameraConfig, Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
-    import { Na__ModelLoader__LoadAllModels } from './src__ModelLoader/Na__ModelLoader__MultiModel.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { 
+        Na__ModelLoader__LoadAllModels,
+        Na__ModelLoader__SeparateOrbitCubeUrl,
+        Na__ModelLoader__LoadOrbitHelperCube
+    } from './src__ModelLoader/Na__ModelLoader__MultiModel.js';
     import { Na__UiFeature__InitializeModelToggleControls } from './src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js';
     // ------------------------------------------------------------
 
@@ -337,6 +342,10 @@
     const Na__Dev__DefaultCube__PozZ = Number.isFinite(Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozZ)
         ? Na__Dev__DefaultCube__Config.Dev__DefaultCube__PozZ
         : 0;
+    
+    const Na__OrbitHelperCube__Debug__Visible = (Na__AppConfig__Data.Dev__DeveloperMode && Na__AppConfig__Data.Dev__DeveloperMode.OrbitHelperCube__Debug__Visible !== undefined)
+        ? Boolean(Na__AppConfig__Data.Dev__DeveloperMode.OrbitHelperCube__Debug__Visible)
+        : false;
     
     const Na__Dev__DefaultCube__SizeUnits = Na__Math__ConvertMmToUnits(Na__Dev__DefaultCube__SizeInMm);
     const Na__Dev__DefaultCube__PositionUnits = new THREE.Vector3(
@@ -452,14 +461,7 @@
             Na__Camera__Main.updateProjectionMatrix();
         }
         
-        if (Na__Config__CameraDefault.Camera__DefaultTarget) {
-            Na__Controls__Orbit.target.set(
-                Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultTarget.Camera__DefaultTarget__TargetX),
-                Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultTarget.Camera__DefaultTarget__TargetY),
-                Na__Math__ConvertMmToUnits(Na__Config__CameraDefault.Camera__DefaultTarget.Camera__DefaultTarget__TargetZ)
-            );
-            Na__Controls__Orbit.update();
-        }
+        // NOTE: Camera__DefaultTarget removed - orbit target now set by OrbitHelperCube GLB or Dev__DefaultCube fallback
     }
     
     const Na__ModelGroup__Root = new THREE.Group();
@@ -705,6 +707,7 @@
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode);
                 
                 // APPLY CAMERA CONFIG FROM PROJECT (supports both key formats)
+                // NOTE: Camera__DefaultTarget is ignored - orbit target set by OrbitHelperCube GLB below
                 const cameraConfig = projectData.Camera__DefaultPosition
                     || projectData.valeVision_Camera__DefaultPosition
                     || null;
@@ -726,11 +729,42 @@
             }
         }
         
+        // SEPARATE ORBIT HELPER CUBE URL FROM MODEL URLS
+        const { orbitCubeUrl, filteredUrls } = Na__ModelLoader__SeparateOrbitCubeUrl(modelUrls);
+        modelUrls = filteredUrls;                                        // <-- Use filtered URLs (without orbit cube) for model loading
+        
+        // LOAD ORBIT HELPER CUBE IF PRESENT
+        let Na__OrbitHelperCube__Mesh = null;                            // <-- Store orbit cube mesh reference
+        if (orbitCubeUrl) {
+            try {
+                Na__UiFeature__UpdateStatus('Loading orbit helper cube...');
+                const loader = new GLTFLoader();
+                const orbitCubeResult = await Na__ModelLoader__LoadOrbitHelperCube(orbitCubeUrl, loader);
+                
+                if (orbitCubeResult && orbitCubeResult.mesh && orbitCubeResult.centerPosition) {
+                    Na__OrbitHelperCube__Mesh = orbitCubeResult.mesh;     // <-- Store mesh reference
+                    Na__OrbitHelperCube__Mesh.name = 'OrbitHelperCube';   // <-- Name for debugging
+                    Na__OrbitHelperCube__Mesh.visible = Na__OrbitHelperCube__Debug__Visible;  // <-- Hide unless debug enabled
+                    
+                    Na__Scene__Main.add(Na__OrbitHelperCube__Mesh);      // <-- Add to scene
+                    
+                    // SET ORBIT TARGET TO CUBE CENTER
+                    Na__Controls__Orbit.target.copy(orbitCubeResult.centerPosition);  // <-- Set orbit target to cube center
+                    Na__Controls__Orbit.update();                         // <-- Update controls
+                    
+                    console.log('[ValeVision3D] OrbitHelperCube loaded. Orbit target set to:', orbitCubeResult.centerPosition);
+                }
+            } catch (error) {
+                console.error('[ValeVision3D] Failed to load OrbitHelperCube:', error);
+                // Fall through to use Dev__DefaultCube fallback (already set at line 492)
+            }
+        }
+        
         // LOAD ALL MODELS VIA MULTI-MODEL LOADER
         try {
             if (modelUrls.length > 0) {
                 Na__LoadedModelGroups = await Na__ModelLoader__LoadAllModels(
-                    modelUrls,                                           // <-- Array of CDN URLs
+                    modelUrls,                                           // <-- Array of CDN URLs (orbit cube already filtered out)
                     Na__ModelGroup__Root,                                 // <-- Scene root group
                     Na__Config__Models,                                   // <-- Material configs (baseMesh + linework)
                     Na__LineResolution__Screen,                           // <-- Screen resolution for line width

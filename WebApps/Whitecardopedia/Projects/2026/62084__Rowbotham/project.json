@@ -1,0 +1,55 @@
+{
+    "projectName": "Rowbotham",
+    "projectCode": "62084",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Only a small job, over-ran a little due to having to model additional context such as the bay etc to complete the elevation, Site photos were poor so I had to get creative with creating a photomatch using Google Earth 3D, The architects drawings were truncated too, so Rachael must have really struggled, her CAD File was good though in spite of this."
+    },
+    "scheduleData": {
+        "dateReceived": "11-Feb-2026",
+        "dateFulfilled": "12-Feb-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__12-Feb-2026.png"
+    ],
+    "basePath": "Projects/2026/62084__Rowbotham",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__ValeVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__ValeVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62084__Rowbotham/Rowbotham__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX"       : 3421,
+            "Camera__DefaultPos__PosY"       : 3548,
+            "Camera__DefaultPos__PosZ"       : 18788
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX"  : -0.0203,
+            "Camera__DefaultRotation__RotY"  : -0.417,
+            "Camera__DefaultRotation__RotZ"  : -0.0082
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov"       : 29.8628
+        }
+    },
+    "folderId": "2026/62084__Rowbotham",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__12-Feb-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__12-Feb-2026.png"
+    ]
+}

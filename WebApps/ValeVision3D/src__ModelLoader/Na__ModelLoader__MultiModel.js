@@ -56,10 +56,12 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // Captures: [1] namespace (ValeVision|NaModel), [2] category, [3] model type.
     // Legacy:  Matches older __Layer-XX__BaseMeshModel__ / __LineworkModel__ patterns.
     // Captures: [1] model type indicator (BaseMeshModel|LineworkModel).
+    // OrbitHelperCube: Matches OrbitHelperCube GLB files exported from SketchUp for orbit target positioning.
     // ------------------------------------------------------------
     const Na__ModelUrl__ParseRegex        = /(?:.*?__)?(ValeVision|NaModel)__(.+?)__(MeshModel|LineworkModel)__\.glb/i;
     const Na__ModelUrl__LegacyParseRegex  = /__(BaseMeshModel|LineworkModel|MeshModel)__/i;
     const Na__ModelUrl__LegacyCategoryKey = "ValeVision__LegacyModel";   // <-- Fallback category for legacy URLs
+    const Na__ModelUrl__OrbitCubeRegex    = /OrbitHelperCube__MeshModel__\.glb$/i;  // <-- Orbit helper cube detection
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -142,6 +144,78 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
         }
 
         return categoryMap;                                              // <-- Return classified map
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Orbit Helper Cube Functions
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Separate OrbitHelperCube URL from Model URLs
+    // ------------------------------------------------------------
+    // Filters out the OrbitHelperCube URL from the model URLs array.
+    // Returns both the orbit cube URL (if found) and the filtered URLs array.
+    // ------------------------------------------------------------
+    function Na__ModelLoader__SeparateOrbitCubeUrl(modelUrls) {
+        if (!Array.isArray(modelUrls) || modelUrls.length === 0) {
+            return { orbitCubeUrl: null, filteredUrls: [] };  // <-- Return empty result for invalid input
+        }
+
+        const filteredUrls = [];                              // <-- Filtered URLs without orbit cube
+        let orbitCubeUrl = null;                              // <-- Extracted orbit cube URL
+
+        for (const url of modelUrls) {
+            if (typeof url !== 'string') continue;            // <-- Skip invalid URLs
+
+            const filename = url.split('/').pop();            // <-- Extract filename from URL
+            if (Na__ModelUrl__OrbitCubeRegex.test(filename)) {
+                orbitCubeUrl = url;                           // <-- Found orbit cube URL
+                console.log('[ValeVision3D] Found OrbitHelperCube:', url);
+            } else {
+                filteredUrls.push(url);                       // <-- Keep non-cube URLs
+            }
+        }
+
+        return { orbitCubeUrl, filteredUrls };                // <-- Return separated URLs
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Load OrbitHelperCube GLB and Extract Center Position
+    // ------------------------------------------------------------
+    // Loads the OrbitHelperCube GLB file and calculates its bounding box center.
+    // Returns the loaded mesh root and the center position as a THREE.Vector3.
+    // The center position is in 3D units (not millimeters).
+    // ------------------------------------------------------------
+    async function Na__ModelLoader__LoadOrbitHelperCube(orbitCubeUrl, loader) {
+        if (!orbitCubeUrl || typeof orbitCubeUrl !== 'string') {
+            return null;                                      // <-- Guard against invalid input
+        }
+
+        try {
+            const gltf = await loader.loadAsync(orbitCubeUrl);  // <-- Load GLB file
+            const meshRoot = gltf.scene;                      // <-- Extract scene graph
+
+            // CALCULATE BOUNDING BOX CENTER
+            const box = new THREE.Box3();                     // <-- Create bounding box
+            box.setFromObject(meshRoot);                      // <-- Compute bounding box from scene
+
+            const centerPosition = new THREE.Vector3();       // <-- Create center vector
+            box.getCenter(centerPosition);                    // <-- Extract center point
+
+            console.log('[ValeVision3D] OrbitHelperCube loaded. Center:', centerPosition);
+
+            return {
+                mesh: meshRoot,                               // <-- THREE.Group containing the cube mesh
+                centerPosition: centerPosition                // <-- THREE.Vector3 center position
+            };
+        } catch (error) {
+            console.error('[ValeVision3D] Failed to load OrbitHelperCube:', error);
+            return null;                                      // <-- Return null on error
+        }
     }
     // ------------------------------------------------------------
 
@@ -381,6 +455,8 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
         Na__ModelLoader__LoadAllModels,
         Na__ModelLoader__ClassifyUrls,
         Na__ModelLoader__ParseModelUrl,
+        Na__ModelLoader__SeparateOrbitCubeUrl,
+        Na__ModelLoader__LoadOrbitHelperCube,
         Na__ModelCategories__LoadOrder
     };
     // ------------------------------------------------------------

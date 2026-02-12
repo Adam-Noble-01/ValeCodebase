@@ -117,7 +117,8 @@
         const rotZ = Na__UiFeature__FormatValue(rotation.z, precision);
         const fov = Na__UiFeature__FormatValue(camera.fov, precision);
         
-        const lines = [
+        // BUILD CAMERA SECTION (without Target - now handled by OrbitHelperCube)
+        const cameraLines = [
             '{',
             '    "Camera__DefaultPosition": {',
             '        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",',
@@ -125,11 +126,6 @@
             `            "Camera__DefaultPos__PosX"       : ${posX},`,
             `            "Camera__DefaultPos__PosY"       : ${posY},`,
             `            "Camera__DefaultPos__PosZ"       : ${posZ}`,
-            '        },',
-            '        "Camera__DefaultTarget": {',
-            `            "Camera__DefaultTarget__TargetX" : ${targetX},`,
-            `            "Camera__DefaultTarget__TargetY" : ${targetY},`,
-            `            "Camera__DefaultTarget__TargetZ" : ${targetZ}`,
             '        },',
             '        "Camera__DefaultRotation": {',
             `            "Camera__DefaultRotation__RotX"  : ${rotX},`,
@@ -139,11 +135,23 @@
             '        "Camera__DefaultMisc": {',
             `            "Camera__DefaultMisc__Fov"       : ${fov}`,
             '        }',
+            '    },'
+        ];
+        
+        // BUILD ORBIT HELPER CUBE SECTION (separate for easy copy/paste)
+        const orbitCubeLines = [
+            '    "OrbitHelperCube__Position": {',
+            '        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",',
+            `        "OrbitHelperCube__Position__PosX" : ${targetX},`,
+            `        "OrbitHelperCube__Position__PosY" : ${targetY},`,
+            `        "OrbitHelperCube__Position__PosZ" : ${targetZ}`,
             '    }',
             '}'
         ];
         
-        return lines.join('\n');
+        // COMBINE SECTIONS
+        const allLines = [...cameraLines, ...orbitCubeLines];
+        return allLines.join('\n');
     }
     // ------------------------------------------------------------
 

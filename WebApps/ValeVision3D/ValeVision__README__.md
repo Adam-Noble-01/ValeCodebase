@@ -67,6 +67,86 @@ Effect order and parameters are defined in `Na__AppConfig__Main.json` under `Ima
   - Allows for proper composition of the image by placing the subject of interest on the rule of thirds grid lines.
 
 # -----------------------------------------------------------------------------
+## OrbitHelperCube GLB Integration — Automatic Orbit Target Positioning
+
+The **OrbitHelperCube** system automatically sets the camera orbit focus point from a cube GLB exported from SketchUp, eliminating the need to manually configure orbit target positions in project JSON files.
+
+### Overview
+
+When a project includes an OrbitHelperCube GLB file (named `{ProjectName}__NN__OrbitHelperCube__MeshModel__.glb`), ValeVision3D automatically:
+1. Detects the cube URL in the project's model array
+2. Loads the cube GLB and calculates its bounding box center
+3. Sets the camera orbit target to the cube's center position
+4. Hides the cube by default (visible only when debug flag is enabled)
+
+This allows you to position the orbit focus point directly in SketchUp by placing and exporting a cube, rather than manually calculating and entering millimeter coordinates in JSON.
+
+### How It Works
+
+**Detection & Separation**
+- The system scans model URLs for files matching the OrbitHelperCube naming pattern
+- The cube URL is separated from regular model URLs before loading
+- Regular models load normally; the cube is handled separately
+
+**Orbit Target Calculation**
+- Cube GLB is loaded via GLTFLoader
+- Bounding box is computed from the loaded mesh geometry
+- Center point (in 3D units) becomes the orbit target
+- OrbitControls target is updated automatically
+
+**Visibility Control**
+- Cube is added to the scene but hidden by default (`visible = false`)
+- Set `OrbitHelperCube__Debug__Visible: true` in `Na__AppConfig__Main.json` → `Dev__DeveloperMode` to show the cube for debugging
+- Cube never appears in model toggle buttons (filtered out before category classification)
+
+### Fallback Behavior
+
+When no OrbitHelperCube GLB is found in a project:
+- System falls back to `Dev__DefaultCube` position from AppConfig
+- Projects without OrbitHelperCube continue to work as before
+- Backward compatible with existing projects that use `Camera__DefaultTarget` in JSON
+
+### Project JSON Format
+
+Projects with OrbitHelperCube GLB should **remove** `Camera__DefaultTarget` from their camera configuration:
+
+```json
+{
+  "valeVision_Camera__DefaultPosition": {
+    "Camera__DefaultPos": { ... },
+    "Camera__DefaultRotation": { ... },
+    "Camera__DefaultMisc": { ... }
+    // Camera__DefaultTarget removed — now comes from OrbitHelperCube GLB
+  }
+}
+```
+
+The orbit target position is still reported in the Camera JSON export panel, but in a separate `OrbitHelperCube__Position` section for easy reference.
+
+### Configuration
+
+**Debug Visibility Flag**
+- Location: `Na__AppConfig__Main.json` → `Dev__DeveloperMode` → `OrbitHelperCube__Debug__Visible`
+- Default: `false` (cube hidden)
+- Set to `true` to show the cube mesh in the scene for debugging orbit positioning
+
+### Key Modules
+
+| Module | Purpose |
+| :----- | :------ |
+| `Na__ModelLoader__MultiModel.js` | Cube detection regex, URL separation, GLB loading, center extraction |
+| `index.html` | Loading sequence integration, orbit target application, debug flag handling |
+| `Na__AppConfig__Main.json` | Debug visibility flag configuration |
+| `Na__UiFeature__CameraPosition__Controls.js` | Split JSON output format (Camera + OrbitHelperCube sections) |
+
+### Benefits
+
+- **No Manual Configuration** — Set orbit position visually in SketchUp instead of calculating coordinates
+- **Consistent Positioning** — Orbit focus matches exported cube geometry exactly
+- **Debug Support** — Toggle cube visibility to verify orbit positioning
+- **Backward Compatible** — Existing projects continue to work with Dev__DefaultCube fallback
+
+# -----------------------------------------------------------------------------
 ## Page Layout View System (LayoutVision 2D)
 
 The **Page Layout View System** is a standalone 2D document composition tool that opens in a new browser tab. It allows users to position rendered 3D viewport images onto an A3 title block template and export the final layout as an exact-scale PDF.

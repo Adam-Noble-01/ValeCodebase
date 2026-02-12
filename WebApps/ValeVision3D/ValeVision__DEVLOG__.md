@@ -2,13 +2,41 @@
 # =========================================================
 
 # ---------------------------------------------------------
-## DD-MMM-YYYY - ValeVision3D v0.?.? 
-### Template
--
--
--
-# ---------------------------------------------------------
+## 12-Feb-2026 - ValeVision3D v0.1.0
+### OrbitHelperCube GLB Integration — Automatic Orbit Target Positioning
 
+**Automatic Orbit Target from SketchUp Exported Cube**
+- OrbitHelperCube GLB files exported from SketchUp now automatically define the camera orbit focus point.
+- Cube GLB files follow naming pattern: `{ProjectName}__NN__OrbitHelperCube__MeshModel__.glb`.
+- System detects OrbitHelperCube URLs in project model arrays and separates them from regular models.
+- Cube center position (bounding box) becomes the orbit target, eliminating manual JSON configuration per project.
+- Cube is hidden by default; visible only when `OrbitHelperCube__Debug__Visible` flag is enabled in AppConfig.
+
+**Implementation**
+- New functions in `Na__ModelLoader__MultiModel.js`:
+  - `Na__ModelLoader__SeparateOrbitCubeUrl()` — filters OrbitHelperCube URL from model array.
+  - `Na__ModelLoader__LoadOrbitHelperCube()` — loads cube GLB and extracts center position.
+- OrbitHelperCube URL filtered before model loading, ensuring it never appears as a category or toggle button.
+- Loading sequence: separate cube URL → load cube → set orbit target → load remaining models.
+- Falls back to `Dev__DefaultCube` position when no OrbitHelperCube found (backward compatible).
+
+**Configuration Changes**
+- Removed `Camera__DefaultTarget` from `Camera__DefaultPosition` in AppConfig (orbit target now from cube or Dev__DefaultCube).
+- Added `OrbitHelperCube__Debug__Visible: false` flag in `Dev__DeveloperMode` config.
+- Project JSON files can remove `Camera__DefaultTarget` when OrbitHelperCube GLB is present.
+- Camera UI JSON output split into two sections: `Camera__DefaultPosition` (Pos/Rotation/FOV) and `OrbitHelperCube__Position` (target) for easier copy/paste.
+
+**Benefits**
+- No manual orbit target configuration required per project — set in SketchUp instead.
+- Consistent orbit positioning across projects using exported cube geometry.
+- Debug visibility toggle allows inspection of orbit cube position when needed.
+- Backward compatible: projects without OrbitHelperCube use Dev__DefaultCube fallback.
+
+**Key Files**
+- `src__ModelLoader/Na__ModelLoader__MultiModel.js` — cube detection, separation, and loading functions.
+- `index.html` — loading sequence integration, orbit target application, debug flag parsing.
+- `src__AppConfig/Na__AppConfig__Main.json` — removed Camera__DefaultTarget, added debug flag.
+- `src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js` — split JSON output format.
 
 # ---------------------------------------------------------
 ## 11-Feb-2026 - ValeVision3D v0.0.9

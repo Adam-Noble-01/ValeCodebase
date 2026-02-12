@@ -31,17 +31,17 @@
     "valeVision_Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX"       : 3421,
-            "Camera__DefaultPos__PosY"       : 3548,
-            "Camera__DefaultPos__PosZ"       : 18788
+            "Camera__DefaultPos__PosX": 3421,
+            "Camera__DefaultPos__PosY": 3548,
+            "Camera__DefaultPos__PosZ": 18788
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX"  : -0.0203,
-            "Camera__DefaultRotation__RotY"  : -0.417,
-            "Camera__DefaultRotation__RotZ"  : -0.0082
+            "Camera__DefaultRotation__RotX": -0.0203,
+            "Camera__DefaultRotation__RotY": -0.417,
+            "Camera__DefaultRotation__RotZ": -0.0082
         },
         "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov"       : 29.8628
+            "Camera__DefaultMisc__Fov": 29.8628
         }
     },
     "folderId": "2026/62084__Rowbotham",

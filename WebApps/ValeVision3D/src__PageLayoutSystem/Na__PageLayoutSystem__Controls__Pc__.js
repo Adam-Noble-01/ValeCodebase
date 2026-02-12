@@ -13,7 +13,7 @@
 // - Hit-test system determines if mouse is over image body or resize handle.
 // - Left-click drag on image body: move the image on the A3 document.
 // - Left-click drag on corner handle: proportional resize (maintain aspect).
-// - Left-click drag on edge handle: free resize in that axis.
+// - Left-click drag on edge handle: clip/trim the image in that axis.
 // - Cursor feedback changes based on hover state.
 // - All coordinates transformed through canvasTransform for accurate interaction.
 //
@@ -188,10 +188,14 @@
             dragStartMm  = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
 
             dragStartTransform = { // <-- Store initial image transform
-                x      : state.imageTransform.x,
-                y      : state.imageTransform.y,
-                width  : state.imageTransform.width,
-                height : state.imageTransform.height
+                x          : state.imageTransform.x,
+                y          : state.imageTransform.y,
+                width      : state.imageTransform.width,
+                height     : state.imageTransform.height,
+                clipTop    : state.imageTransform.clipTop || 0,
+                clipRight  : state.imageTransform.clipRight || 0,
+                clipBottom : state.imageTransform.clipBottom || 0,
+                clipLeft   : state.imageTransform.clipLeft || 0
             };
 
             imageAspect = dragStartTransform.width / dragStartTransform.height; // <-- Calculate aspect ratio
@@ -276,28 +280,32 @@
                 it.x      = dragStartTransform.x + dragStartTransform.width - newWidth; // <-- Anchor top-right
             }
             else if (activeHandle === HANDLE_RC) {
-                // Right-center edge: free horizontal resize
+                // Right-center edge: clip image from right
                 // ------------------------------------------------------------
-                it.width = Math.max(10, dragStartTransform.width + dx); // <-- Resize width only
+                const minVisible = 10; // <-- Minimum visible width in mm
+                const maxClip    = dragStartTransform.width - minVisible - (dragStartTransform.clipLeft || 0); // <-- Maximum right clip
+                it.clipRight     = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx)); // <-- Update right clip
             }
             else if (activeHandle === HANDLE_LC) {
-                // Left-center edge: free horizontal resize from right anchor
+                // Left-center edge: clip image from left
                 // ------------------------------------------------------------
-                const newWidth = Math.max(10, dragStartTransform.width - dx); // <-- Calculate new width
-                it.width = newWidth; // <-- Update width
-                it.x     = dragStartTransform.x + dragStartTransform.width - newWidth; // <-- Anchor right edge
+                const minVisible = 10; // <-- Minimum visible width in mm
+                const maxClip    = dragStartTransform.width - minVisible - (dragStartTransform.clipRight || 0); // <-- Maximum left clip
+                it.clipLeft      = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx)); // <-- Update left clip
             }
             else if (activeHandle === HANDLE_BC) {
-                // Bottom-center edge: free vertical resize
+                // Bottom-center edge: clip image from bottom
                 // ------------------------------------------------------------
-                it.height = Math.max(10, dragStartTransform.height + dy); // <-- Resize height only
+                const minVisible = 10; // <-- Minimum visible height in mm
+                const maxClip    = dragStartTransform.height - minVisible - (dragStartTransform.clipTop || 0); // <-- Maximum bottom clip
+                it.clipBottom    = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy)); // <-- Update bottom clip
             }
             else if (activeHandle === HANDLE_TC) {
-                // Top-center edge: free vertical resize from bottom anchor
+                // Top-center edge: clip image from top
                 // ------------------------------------------------------------
-                const newHeight = Math.max(10, dragStartTransform.height - dy); // <-- Calculate new height
-                it.height = newHeight; // <-- Update height
-                it.y      = dragStartTransform.y + dragStartTransform.height - newHeight; // <-- Anchor bottom edge
+                const minVisible = 10; // <-- Minimum visible height in mm
+                const maxClip    = dragStartTransform.height - minVisible - (dragStartTransform.clipBottom || 0); // <-- Maximum top clip
+                it.clipTop       = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy)); // <-- Update top clip
             }
 
             requestRedraw(); // <-- Trigger canvas redraw

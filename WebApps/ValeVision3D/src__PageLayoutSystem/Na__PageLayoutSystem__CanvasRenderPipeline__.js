@@ -52,8 +52,14 @@
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // HELPER FUNCTION | Draw Selection Handle at Position
+
+// -----------------------------------------------------------------------------
+// REGION | Selection Handle Rendering System
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Draw Single Selection Handle at Position
     // ------------------------------------------------------------
     function Na__PageLayout__DrawHandle(ctx, x, y, halfSize) {
         ctx.fillStyle   = Na__PageLayout__HANDLE_FILL; // <-- Handle fill
@@ -61,6 +67,40 @@
         ctx.lineWidth   = Na__PageLayout__HANDLE_LINE_WIDTH; // <-- Handle stroke width
         ctx.fillRect(x - halfSize, y - halfSize, halfSize * 2, halfSize * 2); // <-- Draw filled square
         ctx.strokeRect(x - halfSize, y - halfSize, halfSize * 2, halfSize * 2); // <-- Draw stroke
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw All 8 Selection Handles Around Image
+    // ------------------------------------------------------------
+    function Na__PageLayout__DrawSelectionHandles(ctx, imgX, imgY, imgW, imgH) {
+        const hs = Na__PageLayout__HANDLE_SIZE_PX / 2; // <-- Half handle size in CSS pixels
+
+        // Corner handles (for proportional scaling)
+        // ------------------------------------------------------------
+        Na__PageLayout__DrawHandle(ctx, imgX, imgY, hs); // <-- Top-left
+        Na__PageLayout__DrawHandle(ctx, imgX + imgW, imgY, hs); // <-- Top-right
+        Na__PageLayout__DrawHandle(ctx, imgX, imgY + imgH, hs); // <-- Bottom-left
+        Na__PageLayout__DrawHandle(ctx, imgX + imgW, imgY + imgH, hs); // <-- Bottom-right
+
+        // Edge midpoint handles (for image clipping/trimming)
+        // ------------------------------------------------------------
+        Na__PageLayout__DrawHandle(ctx, imgX + imgW / 2, imgY, hs); // <-- Top-center
+        Na__PageLayout__DrawHandle(ctx, imgX + imgW / 2, imgY + imgH, hs); // <-- Bottom-center
+        Na__PageLayout__DrawHandle(ctx, imgX, imgY + imgH / 2, hs); // <-- Left-center
+        Na__PageLayout__DrawHandle(ctx, imgX + imgW, imgY + imgH / 2, hs); // <-- Right-center
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw Selection Border Around Image
+    // ------------------------------------------------------------
+    function Na__PageLayout__DrawSelectionBorder(ctx, imgX, imgY, imgW, imgH) {
+        ctx.strokeStyle = Na__PageLayout__IMAGE_BORDER_COLOR; // <-- Border color
+        ctx.lineWidth   = Na__PageLayout__IMAGE_BORDER_WIDTH; // <-- Border width
+        ctx.setLineDash([4, 4]); // <-- Dashed border pattern
+        ctx.strokeRect(imgX, imgY, imgW, imgH); // <-- Draw dashed border
+        ctx.setLineDash([]); // <-- Reset dash pattern
     }
     // ------------------------------------------------------------
 
@@ -116,7 +156,7 @@
             ctx.drawImage(titleBlockImage, 0, 0, paperWidth, paperHeight); // <-- Draw title block stretched to A3
         }
 
-        // DRAW VIEWPORT IMAGE | User-positionable foreground layer
+        // DRAW VIEWPORT IMAGE | User-positionable foreground layer with clipping
         // ------------------------------------------------------------
         if (viewportImage) {
             const imgX = imageTransform.x * zoom; // <-- Image X in CSS pixels
@@ -124,34 +164,43 @@
             const imgW = imageTransform.width * zoom; // <-- Image width in CSS pixels
             const imgH = imageTransform.height * zoom; // <-- Image height in CSS pixels
 
-            ctx.drawImage(viewportImage, imgX, imgY, imgW, imgH); // <-- Draw viewport image
+            // Extract clipping values in mm
+            // ------------------------------------------------------------
+            const clipT = imageTransform.clipTop || 0; // <-- Clip from top in mm
+            const clipR = imageTransform.clipRight || 0; // <-- Clip from right in mm
+            const clipB = imageTransform.clipBottom || 0; // <-- Clip from bottom in mm
+            const clipL = imageTransform.clipLeft || 0; // <-- Clip from left in mm
+
+            // Calculate clipped region dimensions
+            // ------------------------------------------------------------
+            const clipTpx = clipT * zoom; // <-- Clip top in CSS pixels
+            const clipRpx = clipR * zoom; // <-- Clip right in CSS pixels
+            const clipBpx = clipB * zoom; // <-- Clip bottom in CSS pixels
+            const clipLpx = clipL * zoom; // <-- Clip left in CSS pixels
+
+            const visibleX = imgX + clipLpx; // <-- Visible region X start
+            const visibleY = imgY + clipTpx; // <-- Visible region Y start
+            const visibleW = imgW - clipLpx - clipRpx; // <-- Visible region width
+            const visibleH = imgH - clipTpx - clipBpx; // <-- Visible region height
+
+            // Draw image with clipping mask applied (image stays at full size)
+            // ------------------------------------------------------------
+            if (visibleW > 0 && visibleH > 0) {
+                ctx.save(); // <-- Save context state
+                ctx.beginPath(); // <-- Start clipping path
+                ctx.rect(visibleX, visibleY, visibleW, visibleH); // <-- Define visible region
+                ctx.clip(); // <-- Apply clipping mask
+
+                ctx.drawImage(viewportImage, imgX, imgY, imgW, imgH); // <-- Draw full image (clip hides trimmed edges)
+
+                ctx.restore(); // <-- Restore context state (removes clip)
+            }
 
             // DRAW SELECTION BORDER AND HANDLES | When image is selected
             // ------------------------------------------------------------
             if (isImageSelected) {
-                // Draw border around image
-                // ------------------------------------------------------------
-                ctx.strokeStyle = Na__PageLayout__IMAGE_BORDER_COLOR; // <-- Border color
-                ctx.lineWidth   = Na__PageLayout__IMAGE_BORDER_WIDTH; // <-- Border width
-                ctx.setLineDash([4, 4]); // <-- Dashed border pattern
-                ctx.strokeRect(imgX, imgY, imgW, imgH); // <-- Draw dashed border
-                ctx.setLineDash([]); // <-- Reset dash pattern
-
-                // Draw 8 selection handles
-                // ------------------------------------------------------------
-                const hs = Na__PageLayout__HANDLE_SIZE_PX / 2; // <-- Half handle size in CSS pixels
-
-                // Corner handles
-                Na__PageLayout__DrawHandle(ctx, imgX, imgY, hs); // <-- Top-left
-                Na__PageLayout__DrawHandle(ctx, imgX + imgW, imgY, hs); // <-- Top-right
-                Na__PageLayout__DrawHandle(ctx, imgX, imgY + imgH, hs); // <-- Bottom-left
-                Na__PageLayout__DrawHandle(ctx, imgX + imgW, imgY + imgH, hs); // <-- Bottom-right
-
-                // Edge midpoint handles
-                Na__PageLayout__DrawHandle(ctx, imgX + imgW / 2, imgY, hs); // <-- Top-center
-                Na__PageLayout__DrawHandle(ctx, imgX + imgW / 2, imgY + imgH, hs); // <-- Bottom-center
-                Na__PageLayout__DrawHandle(ctx, imgX, imgY + imgH / 2, hs); // <-- Left-center
-                Na__PageLayout__DrawHandle(ctx, imgX + imgW, imgY + imgH / 2, hs); // <-- Right-center
+                Na__PageLayout__DrawSelectionBorder(ctx, imgX, imgY, imgW, imgH); // <-- Draw border
+                Na__PageLayout__DrawSelectionHandles(ctx, imgX, imgY, imgW, imgH); // <-- Draw all 8 handles
             }
         }
 

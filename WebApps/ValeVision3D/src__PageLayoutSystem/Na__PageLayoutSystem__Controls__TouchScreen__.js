@@ -11,7 +11,7 @@
 //
 // DESCRIPTION:
 // - Single-finger drag on image body: move the image on the A3 document.
-// - Single-finger drag on resize handle: resize the image.
+// - Single-finger drag on corner handle: proportional resize (edge handles not used on touch).
 // - Two-finger pinch: zoom the canvas view.
 // - Two-finger drag: pan the canvas view.
 // - Distinguishes image interaction (single touch on image) from navigation

@@ -2,6 +2,44 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## 12-Feb-2026 - ValeVision3D v0.1.1
+### Page Layout System — Image Clipping with Edge Handles
+
+**Edge Handle Clipping Feature**
+- Edge handles (top, bottom, left, right) now clip/trim images instead of free resizing.
+- Dragging edge handles inward crops the image from that edge while maintaining container size.
+- Corner handles continue to scale the image proportionally (behavior unchanged).
+- Clipping is non-destructive: image container maintains full dimensions; only visible portion changes.
+- Minimum 10mm visible content enforced to prevent complete clipping.
+
+**Technical Implementation**
+- Added clip properties to `imageTransform` state: `clipTop`, `clipRight`, `clipBottom`, `clipLeft` (all in mm).
+- Canvas rendering applies clipping via `ctx.clip()` with calculated visible region rectangle.
+- Source image draw uses 9-parameter `drawImage()` to map clipped source region to full container bounds.
+- PC controls updated: edge handle drag calculates clip values based on drag delta and enforces maximum clip constraints.
+- Touch controls description clarified: only corner handles used on touch devices (edge handles PC-only).
+
+**Code Organization**
+- Created new "Selection Handle Rendering System" region in `Na__PageLayoutSystem__CanvasRenderPipeline__.js`.
+- Extracted handle drawing logic into specialized functions:
+  - `Na__PageLayout__DrawHandle()` — draws single handle square
+  - `Na__PageLayout__DrawSelectionHandles()` — draws all 8 handles
+  - `Na__PageLayout__DrawSelectionBorder()` — draws dashed selection border
+- Improved code maintainability by grouping all handle rendering logic in dedicated region block.
+
+**User Experience**
+- Intuitive trimming workflow: drag edge handles inward to crop unwanted portions of image.
+- Visual feedback: handles always show full container bounds for clear reference.
+- Selection border indicates full container area; clipped image visible within that boundary.
+- Allows precise image composition without affecting layout positioning.
+
+**Key Files Modified**
+- `src__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js` — added clip properties to state initialization.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js` — clipping render logic, reorganized handle system.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js` — edge handle clipping behavior, clip value constraints.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js` — updated description (no edge handles on touch).
+
+# ---------------------------------------------------------
 ## 12-Feb-2026 - ValeVision3D v0.1.0
 ### OrbitHelperCube GLB Integration — Automatic Orbit Target Positioning
 

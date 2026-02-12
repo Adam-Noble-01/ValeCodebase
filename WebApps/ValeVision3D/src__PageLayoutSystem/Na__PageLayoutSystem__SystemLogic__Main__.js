@@ -215,7 +215,11 @@
                 x      : initialTransform.x,                          // <-- X position in mm
                 y      : initialTransform.y,                          // <-- Y position in mm
                 width  : initialTransform.width,                      // <-- Width in mm
-                height : initialTransform.height                      // <-- Height in mm
+                height : initialTransform.height,                     // <-- Height in mm
+                clipTop    : 0,                                       // <-- Clipping from top edge in mm
+                clipRight  : 0,                                       // <-- Clipping from right edge in mm
+                clipBottom : 0,                                       // <-- Clipping from bottom edge in mm
+                clipLeft   : 0                                        // <-- Clipping from left edge in mm
             },
 
             // Canvas Transform (2D pan/zoom of the entire canvas view)

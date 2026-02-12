@@ -2,6 +2,26 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.3  -  12-Feb-2026
+### Render Effect — Profile Lines (SketchUp-Style Silhouette Edges)
+
+**Profile Lines Feature**
+- SketchUp-style "Profile Lines" effect: extra visible edges around rounded/cylindrical geometry (finials, chimney pots, turned details) so they read clearly in the whitecard view.
+- Implemented as a post-processing pass: scene normals rendered to a separate buffer; Sobel edge detection on the normal buffer; dark profile lines composited over the scene before FXAA.
+- Line geometry (LineSegments2) is hidden during the normal pass to avoid artifacts.
+- Enable/disable and parameters (edge color, normal threshold, edge width) driven by AppConfig `RenderEffect__ProfileLines`.
+
+**Config & Integration**
+- New AppConfig block `RenderEffect__ProfileLines`: `Enabled`, `EdgeColor`, `EdgeThresholdNormal`, `EdgeThresholdDepth`, `EdgeWidth`.
+- Composer setup returns `{ composer, renderProfileNormals, setProfileLinesSize }`; render loop calls `renderProfileNormals()` each frame before `composer.render()`; resize handler calls `setProfileLinesSize(width, height)`.
+
+**Key Files**
+- `src__RenderPipeline/Na__RenderEffect__ProfileLines__.js` — normal buffer render, Sobel shader, pass creation.
+- `src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` — optional ProfileLines pass insertion, config wiring.
+- `src__AppConfig/Na__AppConfig__Main.json` — `RenderEffect__ProfileLines` block.
+- `index.html` — config destructuring, composer result handling, loop and resize wiring.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.2  -  12-Feb-2026
 ### 3D Render Pipeline — Ground Line Visibility & RenderConfig__Linework Naming
 

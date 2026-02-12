@@ -314,6 +314,7 @@
     const Na__Config__PostProcessEffects = Na__AppConfig__Data.ImageExport__PostProcessEffects; // <-- Post-process effects config
     const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition;  // <-- Camera defaults (MM)
     const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;      // <-- Navmode config (MM)
+    const Na__Config__ProfileLines = Na__AppConfig__Data.RenderEffect__ProfileLines || null;  // <-- Profile lines effect (enable/disable + params)
     
     const Na__ModelDefaults__ModelUrls = Na__Config__ModelDefaults.modelUrls || [];  // <-- Default model URLs array
     // ------------------------------------------------------------
@@ -695,7 +696,8 @@
     async function Na__AppFlow__StartLoadingSequence() {
         Na__UiFeature__UpdateStatus('Creating scene...');
         Na__Scene__SetupLighting();
-        Na__RenderComposer__Main = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main);
+        const Na__RenderPipeline__Result = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines);
+        Na__RenderComposer__Main = Na__RenderPipeline__Result.composer;
         
         let modelUrls = [...Na__ModelDefaults__ModelUrls];               // <-- Start with config defaults
         
@@ -786,6 +788,7 @@
             requestAnimationFrame(Na__RenderLoop__Animate);
             Na__Navmode__UpdateNavigation();
             if (Na__RenderComposer__Main) {
+                Na__RenderPipeline__Result.renderProfileNormals();
                 Na__RenderComposer__Main.render();
             }
         }
@@ -802,6 +805,7 @@
             Na__Renderer__Main.setSize(width, height);
             if (Na__RenderComposer__Main) {
                 Na__RenderComposer__Main.setSize(width, height);
+                Na__RenderPipeline__Result.setProfileLinesSize(width, height);
             }
             
             Na__LineResolution__Screen.set(width, height);

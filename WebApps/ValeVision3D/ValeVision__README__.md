@@ -225,7 +225,7 @@ When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D r
 - Resize using corner handles (proportional scaling maintaining aspect ratio)
 - Clip/trim image using edge handles (intuitive inward drag to crop image from that edge)
 - Mouse wheel zoom toward cursor; middle/right-click pan
-- Touch support: single-finger drag/resize, two-finger pinch zoom + pan
+- Touch support: single-finger drag/resize/edge-clipping, two-finger pinch zoom + pan
 - Selection handles appear when image is selected (8 handles: 4 corners + 4 edges)
 
 **Exact A3-Scale PDF Export**
@@ -260,7 +260,7 @@ When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D r
 **Interaction**
 - Hit-test system determines mouse position relative to image body or resize handles
 - PC controls: left-click drag on body (move), corner handles (proportional scale), edge handles (clip/trim), empty space (deselect)
-- Touch controls: single-touch on image (move), corner handles (proportional scale), two-touch (canvas zoom/pan)
+- Touch controls: single-touch on image (move), corner handles (proportional scale), edge handles (clip/trim), two-touch (canvas zoom/pan)
 - Edge handle clipping: drag top/bottom/left/right handles inward to crop image from that edge
 - Clipping maintains image container size; only visible portion changes (allows non-destructive trimming)
 - All coordinates transformed through canvas pan/zoom for accurate interaction at any zoom level

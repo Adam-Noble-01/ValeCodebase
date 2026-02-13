@@ -11,7 +11,8 @@
 //
 // DESCRIPTION:
 // - Single-finger drag on image body: move the image on the A3 document.
-// - Single-finger drag on corner handle: proportional resize (edge handles not used on touch).
+// - Single-finger drag on corner handle: proportional resize.
+// - Single-finger drag on edge handle: clip/trim image from that edge.
 // - Two-finger pinch: zoom the canvas view.
 // - Two-finger drag: pan the canvas view.
 // - Distinguishes image interaction (single touch on image) from navigation
@@ -29,6 +30,7 @@
     // ------------------------------------------------------------
     const Na__PageLayout__TOUCH_HIT_RADIUS_PX = 20; // <-- Larger hit radius for fingers (CSS pixels)
     const Na__PageLayout__MIN_IMAGE_SIZE_MM   = 10; // <-- Minimum image dimension in mm
+    const Na__PageLayout__MIN_VISIBLE_MM      = 10; // <-- Minimum visible content when clipping
     const Na__PageLayout__ZOOM_MIN            = 0.1; // <-- Minimum zoom level
     const Na__PageLayout__ZOOM_MAX            = 5.0; // <-- Maximum zoom level
     // ------------------------------------------------------------
@@ -84,6 +86,8 @@
         const imgTop    = ct.offsetY + (it.y * ct.zoom); // <-- Top edge screen Y
         const imgRight  = ct.offsetX + ((it.x + it.width) * ct.zoom); // <-- Right edge screen X
         const imgBottom = ct.offsetY + ((it.y + it.height) * ct.zoom); // <-- Bottom edge screen Y
+        const imgMidX   = (imgLeft + imgRight) / 2; // <-- Horizontal midpoint
+        const imgMidY   = (imgTop + imgBottom) / 2; // <-- Vertical midpoint
 
         // Check corners (proportional resize)
         // ------------------------------------------------------------
@@ -91,6 +95,13 @@
         if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgTop) < hit)      return 'tr';
         if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgBottom) < hit)    return 'bl';
         if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgBottom) < hit)   return 'br';
+
+        // Check edge midpoint handles (clip/trim)
+        // ------------------------------------------------------------
+        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgTop) < hit)       return 'tc';
+        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgBottom) < hit)    return 'bc';
+        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgMidY) < hit)      return 'lc';
+        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgMidY) < hit)     return 'rc';
 
         // Check image body (move)
         // ------------------------------------------------------------
@@ -117,7 +128,7 @@
         let touchMode       = 'none'; // <-- Current touch mode: 'none', 'image-move', 'image-resize', 'nav-pinch'
         let activeHandle    = 'none'; // <-- Active handle during resize
         let dragStartMm     = { x: 0, y: 0 }; // <-- Touch start position in mm
-        let dragStartTransform = { x: 0, y: 0, width: 0, height: 0 }; // <-- Image transform at start
+        let dragStartTransform = { x: 0, y: 0, width: 0, height: 0, clipTop: 0, clipRight: 0, clipBottom: 0, clipLeft: 0 }; // <-- Image transform at start
         let imageAspect     = 1; // <-- Image aspect ratio
 
         // Two-finger navigation state
@@ -169,7 +180,13 @@
 
                     const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
                     dragStartMm   = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
-                    dragStartTransform = { ...state.imageTransform }; // <-- Store initial transform
+                    dragStartTransform = { // <-- Store initial transform
+                        ...state.imageTransform,
+                        clipTop    : state.imageTransform.clipTop || 0,
+                        clipRight  : state.imageTransform.clipRight || 0,
+                        clipBottom : state.imageTransform.clipBottom || 0,
+                        clipLeft   : state.imageTransform.clipLeft || 0
+                    };
                     requestRedraw(); // <-- Show handles
                 }
                 else if (hitResult !== 'none') {
@@ -180,7 +197,13 @@
 
                     const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
                     dragStartMm   = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
-                    dragStartTransform = { ...state.imageTransform }; // <-- Store initial transform
+                    dragStartTransform = { // <-- Store initial transform
+                        ...state.imageTransform,
+                        clipTop    : state.imageTransform.clipTop || 0,
+                        clipRight  : state.imageTransform.clipRight || 0,
+                        clipBottom : state.imageTransform.clipBottom || 0,
+                        clipLeft   : state.imageTransform.clipLeft || 0
+                    };
                     imageAspect   = dragStartTransform.width / dragStartTransform.height; // <-- Aspect ratio
                     requestRedraw(); // <-- Show handles
                 }
@@ -252,7 +275,7 @@
                 it.y = dragStartTransform.y + dy; // <-- Update Y
             }
             else if (touchMode === 'image-resize') {
-                // Resize image (corner handles only for touch - proportional)
+                // Resize or clip image via active handle
                 // ------------------------------------------------------------
                 if (activeHandle === 'br') {
                     const newWidth = Math.max(Na__PageLayout__MIN_IMAGE_SIZE_MM, dragStartTransform.width + dx);
@@ -277,6 +300,22 @@
                     it.width  = newWidth;
                     it.height = newWidth / imageAspect;
                     it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
+                }
+                else if (activeHandle === 'rc') {
+                    const maxClip = dragStartTransform.width - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipLeft || 0); // <-- Maximum right clip
+                    it.clipRight  = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx)); // <-- Update right clip
+                }
+                else if (activeHandle === 'lc') {
+                    const maxClip = dragStartTransform.width - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipRight || 0); // <-- Maximum left clip
+                    it.clipLeft   = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx)); // <-- Update left clip
+                }
+                else if (activeHandle === 'bc') {
+                    const maxClip = dragStartTransform.height - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipTop || 0); // <-- Maximum bottom clip
+                    it.clipBottom = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy)); // <-- Update bottom clip
+                }
+                else if (activeHandle === 'tc') {
+                    const maxClip = dragStartTransform.height - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipBottom || 0); // <-- Maximum top clip
+                    it.clipTop    = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy)); // <-- Update top clip
                 }
             }
 

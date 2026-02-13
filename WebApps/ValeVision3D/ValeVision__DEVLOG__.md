@@ -2,6 +2,39 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.3c  -  13-Feb-2026
+### Page Layout Touch Controls — Edge Handle Clipping Parity (iOS / Touchscreen)
+
+**Issue Fixed**
+- On touch devices (including iOS), image clipping via edge handles was not available in Layout View.
+- Mouse controls supported edge clipping (`tc`, `bc`, `lc`, `rc`), but touch controls only supported body move + corner proportional resize.
+
+**Touch Control Update**
+- Added edge midpoint hit-testing in touch controls:
+  - top-center (`tc`)
+  - bottom-center (`bc`)
+  - left-center (`lc`)
+  - right-center (`rc`)
+- Added one-finger edge-drag clipping logic matching PC behavior:
+  - `rc` -> updates `clipRight`
+  - `lc` -> updates `clipLeft`
+  - `bc` -> updates `clipBottom`
+  - `tc` -> updates `clipTop`
+- Clip limits now enforce minimum visible content and max-clip bounds equivalent to PC constraints.
+
+**Behavior Preserved**
+- One-finger body drag still moves image.
+- One-finger corner drag still performs proportional resize.
+- Two-finger pinch/pan navigation path remains unchanged and still takes precedence for canvas navigation.
+
+**Key File Modified**
+- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
+  - Added edge hit-test branches.
+  - Added clip state persistence in drag start transform.
+  - Added edge clipping branches in touch move handler.
+  - Updated module header comments to reflect clipping support.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.3b  -  13-Feb-2026
 ### Layout View Export Fix — Profile Lines / Camera Projection Synchronization
 

@@ -88,6 +88,33 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Resolve Render Pipeline State from Getter
+    // ------------------------------------------------------------
+    function Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState) {
+        if (typeof getRenderPipelineState !== 'function') {
+            return { composer: null, renderProfileNormals: () => {}, setProfileLinesSize: () => {} };
+        }
+
+        const pipelineState = getRenderPipelineState();
+        if (!pipelineState) {
+            return { composer: null, renderProfileNormals: () => {}, setProfileLinesSize: () => {} };
+        }
+
+        // BACKWARD COMPAT | Legacy getter may return composer directly
+        // ------------------------------------------------------------
+        if (typeof pipelineState.render === 'function' && !pipelineState.composer) {
+            return { composer: pipelineState, renderProfileNormals: () => {}, setProfileLinesSize: () => {} };
+        }
+
+        return {
+            composer            : pipelineState.composer || null,
+            renderProfileNormals: (typeof pipelineState.renderProfileNormals === 'function') ? pipelineState.renderProfileNormals : () => {},
+            setProfileLinesSize : (typeof pipelineState.setProfileLinesSize === 'function') ? pipelineState.setProfileLinesSize : () => {}
+        };
+    }
+    // ------------------------------------------------------------
+
     // endregion --------------------------------------------------------------
 
 
@@ -104,14 +131,16 @@
     //
     // Returns: { dataUrl, width, height, aspectRatio }
     // ------------------------------------------------------------
-    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getComposer, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
+    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
 
         // NON-CUSTOM MODE | Render at current viewport size
         // ------------------------------------------------------------
         if (!isCustomEnabled) {
-            const composer = typeof getComposer === 'function' ? getComposer() : null; // <-- Get composer if available
+            const pipelineState = Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState); // <-- Resolve render pipeline state
+            const composer = pipelineState.composer; // <-- Composer reference
 
             if (composer) {
+                pipelineState.renderProfileNormals(); // <-- Refresh profile normals before compose render
                 composer.render(); // <-- Render via post-processing composer
             } else {
                 renderer.render(scene, camera); // <-- Direct render fallback
@@ -144,9 +173,10 @@
         const targetHeight  = exportConfig.resolutions[resIndex]; // <-- Target height from resolution slider
         const targetWidth   = Math.round(targetHeight * (ratio.width / ratio.height)); // <-- Calculate width from ratio
 
-        const size          = renderer.getSize(new THREE.Vector2()); // <-- Store current renderer size
-        const pixelRatio    = renderer.getPixelRatio(); // <-- Store current pixel ratio
-        const composer      = typeof getComposer === 'function' ? getComposer() : null; // <-- Get composer
+        const size           = renderer.getSize(new THREE.Vector2()); // <-- Store current renderer size
+        const pixelRatio     = renderer.getPixelRatio(); // <-- Store current pixel ratio
+        const pipelineState  = Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState); // <-- Resolve render pipeline state
+        const composer       = pipelineState.composer; // <-- Composer reference
         const originalAspect = camera.aspect; // <-- Store original camera aspect
 
         renderer.setPixelRatio(1); // <-- Set pixel ratio to 1 for exact resolution
@@ -157,6 +187,8 @@
 
         if (composer) {
             composer.setSize(targetWidth, targetHeight); // <-- Resize composer
+            pipelineState.setProfileLinesSize(targetWidth, targetHeight); // <-- Resize profile lines render target
+            pipelineState.renderProfileNormals(); // <-- Refresh profile normals at export dimensions
             composer.render(); // <-- Render via composer
         } else {
             renderer.render(scene, camera); // <-- Direct render fallback
@@ -185,6 +217,8 @@
         renderer.setSize(size.x, size.y); // <-- Restore renderer size
         if (composer) {
             composer.setSize(size.x, size.y); // <-- Restore composer size
+            pipelineState.setProfileLinesSize(size.x, size.y); // <-- Restore profile lines render target size
+            pipelineState.renderProfileNormals(); // <-- Refresh profile normals for live viewport after restore
         }
 
         return {
@@ -205,7 +239,7 @@
 
     // FUNCTION | Initialize Image Export Controls
     // ------------------------------------------------------------
-    function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getComposer, config = {}, postProcessConfig = null) {
+    function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getRenderPipelineState, config = {}, postProcessConfig = null) {
         if (!renderer || !scene || !camera) return;
         
         if (!Na__UiFeature__ValidateExportConfig(config)) return;
@@ -328,7 +362,7 @@
         // ------------------------------------------------------------
         exportButton.addEventListener('click', () => {
             const result = Na__UiFeature__RenderToDataUrl( // <-- Render using shared helper
-                renderer, scene, camera, getComposer,
+                renderer, scene, camera, getRenderPipelineState,
                 postProcessConfig, isEnhanceEnabled,
                 isCustomEnabled, exportConfig, ratioIndex, resIndex
             );
@@ -348,7 +382,7 @@
         if (layoutViewButton) {
             layoutViewButton.addEventListener('click', () => {
                 const result = Na__UiFeature__RenderToDataUrl( // <-- Render using shared helper
-                    renderer, scene, camera, getComposer,
+                    renderer, scene, camera, getRenderPipelineState,
                     postProcessConfig, isEnhanceEnabled,
                     isCustomEnabled, exportConfig, ratioIndex, resIndex
                 );

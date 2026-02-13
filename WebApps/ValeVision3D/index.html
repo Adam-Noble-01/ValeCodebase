@@ -418,6 +418,7 @@
     
     const Na__LineResolution__Screen = new THREE.Vector2(window.innerWidth, window.innerHeight);
     let Na__RenderComposer__Main = null;
+    let Na__RenderPipeline__State = null;                                  // <-- Composer + profile-lines helpers bundle
     const Na__Navmode__InitializeControls = Na__Device__UseTouchControls
         ? Na__DefaultNavmode__InitializeIpadControls
         : Na__DefaultNavmode__InitializeMouseControls;
@@ -510,7 +511,7 @@
         Na__Renderer__Main,
         Na__Scene__Main,
         Na__Camera__Main,
-        () => Na__RenderComposer__Main,
+        () => Na__RenderPipeline__State,
         Na__Config__ImageExport,
         Na__Config__PostProcessEffects
     );
@@ -696,8 +697,8 @@
     async function Na__AppFlow__StartLoadingSequence() {
         Na__UiFeature__UpdateStatus('Creating scene...');
         Na__Scene__SetupLighting();
-        const Na__RenderPipeline__Result = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines);
-        Na__RenderComposer__Main = Na__RenderPipeline__Result.composer;
+        Na__RenderPipeline__State = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines);
+        Na__RenderComposer__Main = Na__RenderPipeline__State.composer;
         
         let modelUrls = [...Na__ModelDefaults__ModelUrls];               // <-- Start with config defaults
         
@@ -787,8 +788,8 @@
         function Na__RenderLoop__Animate() {
             requestAnimationFrame(Na__RenderLoop__Animate);
             Na__Navmode__UpdateNavigation();
-            if (Na__RenderComposer__Main) {
-                Na__RenderPipeline__Result.renderProfileNormals();
+            if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
+                Na__RenderPipeline__State.renderProfileNormals();
                 Na__RenderComposer__Main.render();
             }
         }
@@ -803,9 +804,9 @@
             Na__Camera__Main.aspect = width / height;
             Na__Camera__Main.updateProjectionMatrix();
             Na__Renderer__Main.setSize(width, height);
-            if (Na__RenderComposer__Main) {
+            if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
                 Na__RenderComposer__Main.setSize(width, height);
-                Na__RenderPipeline__Result.setProfileLinesSize(width, height);
+                Na__RenderPipeline__State.setProfileLinesSize(width, height);
             }
             
             Na__LineResolution__Screen.set(width, height);

@@ -2,6 +2,38 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.3b  -  13-Feb-2026
+### Layout View Export Fix — Profile Lines / Camera Projection Synchronization
+
+**Issue Fixed**
+- Layout View images could show profile lines at a slightly different perspective/FOV than the base render, creating a "layered perspective" look.
+- Root cause was capture-time desynchronization between color pass (`composer.render()`) and profile-line normal pass (`renderProfileNormals()`), especially during custom export resize/aspect changes.
+
+**Pipeline Synchronization Update**
+- Export pipeline now resolves a full render pipeline state bundle instead of composer-only access.
+- Capture order now enforces synchronized projection and buffer state:
+  - camera aspect/projection update
+  - composer resize
+  - profile lines normal render target resize
+  - profile normals re-render
+  - composer render
+- Restore order now also re-syncs profile lines after returning renderer/composer to live viewport size.
+
+**3-Stage Naming / API Wiring**
+- Naming convention preserved with `Na__...__...__...` style throughout new helper and state plumbing.
+- Added `Na__UiFeature__ResolveRenderPipelineState(...)` helper in export controls.
+- `Na__UiFeature__InitializeImageExportControls(...)` now accepts render-pipeline-state getter (composer + helpers), backward compatible with legacy composer getter shape.
+
+**Key Files Modified**
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+  - Added render-pipeline-state resolver helper.
+  - Updated export render path to call `setProfileLinesSize(...)` and `renderProfileNormals()` at capture and restore boundaries.
+- `index.html`
+  - Added shared `Na__RenderPipeline__State` module variable.
+  - Updated image export initializer wiring to pass render-pipeline-state getter.
+  - Updated render loop and resize code paths to use shared pipeline state consistently.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.3  -  12-Feb-2026
 ### Render Effect — Profile Lines (SketchUp-Style Silhouette Edges)
 

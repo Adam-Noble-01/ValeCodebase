@@ -11,6 +11,32 @@ FILL THIS OUT LATER
 FILL THIS OUT LATER
 
 # -----------------------------------------------------------------------------
+## Layout View Export — Profile Lines Synchronization (v0.1.4)
+
+Layout View receives a pre-rendered PNG from the main viewer export pipeline. It does **not** run Three.js post-processing in the layout tab.  
+This means profile-line correctness in Layout View is fully determined at capture time in the main app.
+
+### What Was Fixed
+
+- Export capture now uses a shared render pipeline state bundle:
+  - `composer`
+  - `renderProfileNormals()`
+  - `setProfileLinesSize(...)`
+- During export capture (custom and viewport-native), profile normals are explicitly refreshed before `composer.render()`.
+- During restore after custom export render, profile-line render target size and normal buffer are refreshed again for live viewport consistency.
+
+### Why This Matters
+
+Without synchronized normal-pass refresh at the same camera/aspect/size as the color pass, Sobel/profile lines can appear offset in the baked export image (visual "double perspective" effect).  
+The updated pipeline ensures camera projection and profile-line buffers are captured in lockstep.
+
+### Integration Notes
+
+- `Na__UiFeature__InitializeImageExportControls(...)` now consumes a render-pipeline-state getter.
+- Existing/legacy composer-only getter shape remains backward compatible in the export module helper.
+- Naming follows existing 3-stage convention (`Na__...__...__...`) for all new helper/state plumbing.
+
+# -----------------------------------------------------------------------------
 ## 3D Render Pipeline — Mesh, Linework & Ground Line Visibility
 
 The live 3D viewport uses a **mesh + linework** rendering model: each category loads a pair of GLBs (base mesh for surfaces, linework for edges). Surfaces and lines are rendered in one pass with depth testing; linework is drawn on top via render order and depth bias so edges (including the ground line) stay visible.
@@ -44,7 +70,7 @@ The depth bias is applied in `Na__ModelLoader__LoadSingleLinework` via `LineMate
 | :----- | :------ |
 | `index.html` | Scene, camera, renderer, ground plane, composer, render loop. |
 | `Na__ModelLoader__MultiModel.js` | Loads mesh + linework GLBs per category; applies materials and depth-bias hook to LineMaterial; reads `config.RenderConfig__Linework`. |
-| `Na__RenderPipeline__PostProcessing__Setup.js` | EffectComposer with RenderPass + FXAA. |
+| `Na__RenderPipeline__PostProcessing__Setup.js` | EffectComposer with RenderPass + ProfileLines pass (optional) + FXAA; returns composer + profile-lines helpers. |
 | `Na__AppConfig__Main.json` | `models.baseMesh`, `models.RenderConfig__Linework`, `scene` (ground, fog, etc.). |
 
 # -----------------------------------------------------------------------------
@@ -255,6 +281,8 @@ When the user clicks **"Layout View"** in the Export Image panel, ValeVision3D r
 
 ### Integration with Export Controls
 
-The layout system shares the same render pipeline as the "Export Now" feature via a refactored helper function `Na__UiFeature__RenderToDataUrl()` in the Image Export Controls module. This helper handles both custom export mode (resized renderer + camera aspect adjustment) and viewport-native mode (current size), applies post-processing if "Enhance Whitecard" is enabled, and returns the rendered dataURL with metadata. Both "Export Now" and "Layout View" call this shared function, eliminating ~70 lines of duplicated render logic.
+The layout system shares the same render pipeline as the "Export Now" feature via a refactored helper function `Na__UiFeature__RenderToDataUrl()` in the Image Export Controls module. This helper handles both custom export mode (resized renderer + camera aspect adjustment) and viewport-native mode (current size), applies post-processing if "Enhance Whitecard" is enabled, and returns the rendered dataURL with metadata. Both "Export Now" and "Layout View" call this shared function, eliminating duplicated render logic.
+
+As of v0.1.4, this shared helper also synchronizes profile-lines normal-buffer render and size state during capture/restore, preventing perspective mismatches in layout exports.
 
 # -----------------------------------------------------------------------------

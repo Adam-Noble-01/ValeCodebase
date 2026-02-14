@@ -2,6 +2,55 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.4  -  14-Feb-2026
+### Testing Environment — Prototype Sandbox & Click-to-Open Doors Feature
+
+**Test Environment Infrastructure**
+- Created self-contained prototype testing sandbox (`80__Testing__PrototypeEnvironment/`) for rapid feature development before main integration.
+- Standalone Flask server (`TestEnv__FlaskLocalServer.py`) on port 5500 serving test environment + parent ValeVision3D engine modules.
+- Separate HTML/JS/CSS bootstrap reusing core engine (navigation, render pipeline, math utils) from parent project.
+- Local GLB file loading from `TestEnv__GlbFiles/` folder with automatic discovery via Flask API endpoint.
+- Live statistics overlay (FPS, mesh count, vertex count, GLB file count) for performance monitoring.
+- Full node graph explorer panel (resizable, collapsible) with per-node visibility toggles for scene inspection.
+- Tree view export to clipboard with visual hierarchy (emoji icons, indentation, visibility status).
+- Testing mode banner and header modifications to clearly distinguish sandbox from production environment.
+
+**Door Animation System (First Feature Test)**
+- Click-to-open/close door animation system using scene graph naming conventions.
+- Scans loaded GLB models for door assemblies (`ADR` prefix), modifier objects (`MOD__ROT__XX-Deg`), and rotation points (`ROT` prefix).
+- Parses rotation angle from modifier name (e.g., `MOD001__ROT__90-Deg__DoorPanel` extracts 90 degrees).
+- Raycasting with pointer movement threshold (4px) to distinguish clicks from orbit camera drags.
+- Smooth animation with easeInOutCubic easing, configurable duration (600ms default).
+- Pivot rotation around hinge point (Y-axis) using quaternion math for proper door swing.
+- Toggle behavior: click closed door to open, click open door to close, click during animation to reverse from current position.
+- Mid-animation reversal scales duration proportionally to remaining travel distance.
+- Config-driven feature flag (`DoorAnimation__Enabled`) and parameters (duration, default rotation, click threshold).
+
+**Architecture & Integration**
+- Feature module pattern: standalone ES6 module (`Test__ModelInteraction__Animation__ClickToOpenDoors__.js`) with exported init and update functions.
+- Config-driven feature system: test environment config JSON (`TestEnv__SubAppData__Config.json`) controls feature flags and parameters.
+- Clean integration points: import in module region, initialize after GLB loading, update in render loop with delta time.
+- Delta time tracking added to render loop for frame-rate-independent animation.
+- Module structure follows ValeDesignSuite conventions: regions, 4-space indentation, inline comments, `Na__` namespace prefix.
+
+**Development Workflow Benefits**
+- Isolated feature prototyping without affecting production ValeVision3D environment.
+- Live reloading and debugging with dedicated dev server and file structure.
+- Node explorer provides immediate scene graph inspection for understanding model hierarchies.
+- Performance overlay monitors frame rate impact of new features during development.
+- Clean migration path: stable features copy from test scripts to main engine with minimal refactoring.
+
+**Key Files Created**
+- `80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py` — Flask dev server with GLB file API.
+- `80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.bat` — Server launch script.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — Test environment bootstrap and render loop.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html` — Test environment HTML layout.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Stylesheet.css` — Test environment UI styles.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — Test environment configuration.
+- `80__Testing__PrototypeEnvironment/TestEnv__README__.md` — Test environment documentation.
+- `80__Testing__PrototypeEnvironment/TestEnv__CurrentFeatureTestScripts/Test__ModelInteraction__Animation__ClickToOpenDoors__.js` — Door animation feature module.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.3c  -  13-Feb-2026
 ### Page Layout Touch Controls — Edge Handle Clipping Parity (iOS / Touchscreen)
 

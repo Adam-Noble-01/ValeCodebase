@@ -54,6 +54,13 @@ ValeVision3D/  # Main project folder (1 LEVEL UP FROM THIS FOLDER)
 - Toggle visibility of any node/mesh for model isolation and debugging.
 - Shows the entire node hierarchy of the loaded .glb clearly to help diagnose problematic model hierarchies or meshes.
 
+### Refresh Models Button:
+- Located in the Node Graph Explorer panel header (orange button with circular arrow icon).
+- Click to reload all GLB models from the `TestEnv__GlbFiles` folder without resetting the camera position.
+- Useful during development when updating model files - no need to refresh the entire browser.
+- Preserves your current camera position and orbit target for seamless iteration.
+- Automatically cleans up old model data and rebuilds the node tree.
+
 ### Single source of engine code:
 - All modules related to the base render engine PC controls are passed through from the established ValeVision3D engine scripts.
 

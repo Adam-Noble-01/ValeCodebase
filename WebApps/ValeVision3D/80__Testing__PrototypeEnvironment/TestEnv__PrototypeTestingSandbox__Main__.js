@@ -109,6 +109,7 @@
     const showAllBtn            = document.getElementById('testEnvShowAll');                 // <-- Show all button
     const hideAllBtn            = document.getElementById('testEnvHideAll');                 // <-- Hide all button
     const copyTreeBtn           = document.getElementById('testEnvCopyTree');                // <-- Copy tree button
+    const refreshModelsBtn      = document.getElementById('testEnvRefreshModels');           // <-- Refresh models button
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -834,6 +835,94 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Refresh Models (Reload GLB Files Without Resetting Camera)
+    // ------------------------------------------------------------
+    async function TestEnv__NodeExplorer__RefreshModels() {
+        if (!refreshModelsBtn) return;
+
+        // Disable button during refresh
+        refreshModelsBtn.disabled = true;
+        const originalText = refreshModelsBtn.innerHTML;
+        refreshModelsBtn.innerHTML = '&#8635; Loading...';
+
+        try {
+            // SAVE CAMERA STATE
+            const savedCameraPosition = TestEnv__Camera.position.clone();        // <-- Save camera position
+            const savedCameraTarget   = TestEnv__Controls.target.clone();        // <-- Save orbit target
+
+            // CLEAR EXISTING MODELS
+            console.log('[TestEnv] Clearing existing models...');
+            while (TestEnv__ModelGroup__Root.children.length > 0) {
+                const child = TestEnv__ModelGroup__Root.children[0];
+                TestEnv__ModelGroup__Root.remove(child);                         // <-- Remove from scene
+                
+                // Dispose of geometry and materials
+                child.traverse((node) => {
+                    if (node.isMesh) {
+                        if (node.geometry) node.geometry.dispose();              // <-- Free geometry memory
+                        if (node.material) {
+                            if (Array.isArray(node.material)) {
+                                node.material.forEach(mat => mat.dispose());     // <-- Dispose material array
+                            } else {
+                                node.material.dispose();                         // <-- Dispose single material
+                            }
+                        }
+                    }
+                });
+            }
+
+            TestEnv__LoadedGlbCount = 0;                                         // <-- Reset model count
+
+            // RELOAD ALL GLB FILES
+            console.log('[TestEnv] Reloading GLB files...');
+            const glbResults = await TestEnv__LoadAllGlbFiles();                 // <-- Load models
+
+            // RESTORE CAMERA STATE
+            TestEnv__Camera.position.copy(savedCameraPosition);                  // <-- Restore camera position
+            TestEnv__Controls.target.copy(savedCameraTarget);                    // <-- Restore orbit target
+            TestEnv__Controls.update();                                          // <-- Update controls
+
+            // REBUILD NODE TREE
+            TestEnv__NodeExplorer__BuildTree();                                  // <-- Rebuild tree UI
+
+            // REINITIALIZE DOOR ANIMATION (if enabled)
+            const TestEnv__Config__DoorAnimation = TestEnv__Config.DoorAnimation || {};
+            if (TestEnv__Config__DoorAnimation.DoorAnimation__Enabled !== false) {
+                Na__DoorAnimation__Initialize(
+                    TestEnv__Scene,
+                    TestEnv__Camera,
+                    TestEnv__Renderer.domElement,
+                    TestEnv__ModelGroup__Root,
+                    TestEnv__Config__DoorAnimation
+                );
+            }
+
+            console.log(`[TestEnv] Refresh complete. Loaded ${glbResults.length} GLB file(s).`);
+
+            // Success feedback
+            refreshModelsBtn.innerHTML = '&#10004; Refreshed!';
+            refreshModelsBtn.classList.add('testenv-node-explorer__action-btn--success');
+            refreshModelsBtn.classList.remove('testenv-node-explorer__action-btn--refresh');
+
+            setTimeout(() => {
+                refreshModelsBtn.innerHTML = originalText;
+                refreshModelsBtn.classList.remove('testenv-node-explorer__action-btn--success');
+                refreshModelsBtn.classList.add('testenv-node-explorer__action-btn--refresh');
+                refreshModelsBtn.disabled = false;
+            }, 2000);
+
+        } catch (error) {
+            console.error('[TestEnv] Model refresh failed:', error);
+            refreshModelsBtn.innerHTML = '&#10060; Failed';
+            setTimeout(() => {
+                refreshModelsBtn.innerHTML = originalText;
+                refreshModelsBtn.disabled = false;
+            }, 3000);
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Copy Tree to Clipboard
     // ------------------------------------------------------------
     async function TestEnv__NodeExplorer__CopyTree() {
@@ -889,11 +978,12 @@
     if (nodeExplorerToggleEl) {
         nodeExplorerToggleEl.addEventListener('click', TestEnv__NodeExplorer__TogglePanel);
     }
-    if (expandAllBtn)   expandAllBtn.addEventListener('click', TestEnv__NodeExplorer__ExpandAll);
-    if (collapseAllBtn) collapseAllBtn.addEventListener('click', TestEnv__NodeExplorer__CollapseAll);
-    if (showAllBtn)     showAllBtn.addEventListener('click', TestEnv__NodeExplorer__ShowAll);
-    if (hideAllBtn)     hideAllBtn.addEventListener('click', TestEnv__NodeExplorer__HideAll);
-    if (copyTreeBtn)    copyTreeBtn.addEventListener('click', TestEnv__NodeExplorer__CopyTree);
+    if (refreshModelsBtn) refreshModelsBtn.addEventListener('click', TestEnv__NodeExplorer__RefreshModels);
+    if (expandAllBtn)     expandAllBtn.addEventListener('click', TestEnv__NodeExplorer__ExpandAll);
+    if (collapseAllBtn)   collapseAllBtn.addEventListener('click', TestEnv__NodeExplorer__CollapseAll);
+    if (showAllBtn)       showAllBtn.addEventListener('click', TestEnv__NodeExplorer__ShowAll);
+    if (hideAllBtn)       hideAllBtn.addEventListener('click', TestEnv__NodeExplorer__HideAll);
+    if (copyTreeBtn)      copyTreeBtn.addEventListener('click', TestEnv__NodeExplorer__CopyTree);
 
     // DRAG RESIZE HANDLERS
     const resizeHandle = document.getElementById('testEnvResizeHandle');
@@ -959,13 +1049,23 @@
             // INITIALIZE DOOR ANIMATION (if enabled in config)
             const TestEnv__Config__DoorAnimation = TestEnv__Config.DoorAnimation || {};
             if (TestEnv__Config__DoorAnimation.DoorAnimation__Enabled !== false) {
-                Na__DoorAnimation__Initialize(
-                    TestEnv__Scene,                                              // <-- Scene reference
-                    TestEnv__Camera,                                             // <-- Camera reference
-                    TestEnv__Renderer.domElement,                                // <-- Canvas DOM element
-                    TestEnv__ModelGroup__Root,                                   // <-- Model root group
-                    TestEnv__Config__DoorAnimation                              // <-- Door animation config
-                );
+                // Find the mesh and linework model groups for doors
+                const doorMeshGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__MeshModel__');
+                const doorLineworkGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__LineworkModel__');
+
+                if (doorMeshGroup || doorLineworkGroup) {
+                    Na__DoorAnimation__Initialize(
+                        TestEnv__Scene,                                          // <-- Scene reference
+                        TestEnv__Camera,                                         // <-- Camera reference
+                        TestEnv__Renderer.domElement,                            // <-- Canvas DOM element
+                        doorMeshGroup,                                           // <-- Mesh model group (doors)
+                        doorLineworkGroup,                                       // <-- Linework model group (doors)
+                        TestEnv__Config__DoorAnimation                          // <-- Door animation config
+                    );
+                    console.log('[TestEnv] Door animation initialized (mesh + linework)');
+                } else {
+                    console.warn('[TestEnv] Door animation enabled but no door model groups found');
+                }
             }
 
         } catch (error) {

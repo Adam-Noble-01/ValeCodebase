@@ -48,7 +48,7 @@
     const Na__DoorAnim__PREFIX_ROT             = 'ROT';                          // <-- Rotation point prefix
     const Na__DoorAnim__MOD_ROT_TAG            = '__ROT__';                      // <-- Rotation modifier tag in MOD name
     const Na__DoorAnim__DEG_REGEX              = /(\d+)-Deg/i;                   // <-- Regex to extract degrees from MOD name
-    const Na__DoorAnim__Y_AXIS                 = new THREE.Vector3(0, 0, 1);     // <-- Vertical rotation axis
+    const Na__DoorAnim__Y_AXIS                 = new THREE.Vector3(0, 1, 0);     // <-- Vertical rotation axis (Y-up from GLB Builder export)
     // ------------------------------------------------------------
 
 
@@ -77,11 +77,12 @@
 
     // MODULE VARIABLES | Core References
     // ------------------------------------------------------------
-    let Na__DoorAnim__Scene              = null;                                 // <-- Three.js scene reference
-    let Na__DoorAnim__Camera             = null;                                 // <-- Three.js camera reference
+    let Na__DoorAnim__Scene               = null;                                // <-- Three.js scene reference
+    let Na__DoorAnim__Camera              = null;                                // <-- Three.js camera reference
     let Na__DoorAnim__RendererDomElement  = null;                                // <-- Renderer canvas DOM element
-    let Na__DoorAnim__ModelGroup          = null;                                // <-- Root group containing loaded GLBs
-    let Na__DoorAnim__Initialized        = false;                                // <-- Module initialization flag
+    let Na__DoorAnim__ModelGroupMesh      = null;                                // <-- Mesh model group (solid geometry)
+    let Na__DoorAnim__ModelGroupLinework  = null;                                // <-- Linework model group (edges)
+    let Na__DoorAnim__Initialized         = false;                               // <-- Module initialization flag
     // ------------------------------------------------------------
 
 
@@ -165,65 +166,104 @@
     function Na__DoorAnimation__ScanForDoors() {
         Na__DoorAnim__DoorRegistry.clear();                                      // <-- Clear previous registry
 
-        if (!Na__DoorAnim__ModelGroup) {
-            console.warn('[DoorAnimation] No model group set, cannot scan for doors');
+        if (!Na__DoorAnim__ModelGroupMesh && !Na__DoorAnim__ModelGroupLinework) {
+            console.warn('[DoorAnimation] No model groups set, cannot scan for doors');
             return;
         }
 
-        // Traverse entire model group looking for ADR assemblies
-        Na__DoorAnim__ModelGroup.traverse((object) => {
-            if (!Na__DoorAnim__NameStartsWith(object, Na__DoorAnim__PREFIX_ADR)) {
-                return;                                                          // <-- Skip non-ADR objects
-            }
+        // Scan mesh model group for ADR assemblies
+        if (Na__DoorAnim__ModelGroupMesh) {
+            Na__DoorAnim__ModelGroupMesh.traverse((object) => {
+                if (!Na__DoorAnim__NameStartsWith(object, Na__DoorAnim__PREFIX_ADR)) {
+                    return;                                                      // <-- Skip non-ADR objects
+                }
 
-            const adrName = object.name;                                         // <-- Door assembly identifier
+                const adrName = object.name;                                     // <-- Door assembly identifier
 
-            // Find the MOD child (rotation modifier with door panel meshes)
-            const modObject = Na__DoorAnim__FindModRotChild(object);
-            if (!modObject) {
-                console.warn(`[DoorAnimation] ADR "${adrName}" has no MOD__ROT__ child, skipping`);
-                return;
-            }
+                // Find the MOD child (rotation modifier with door panel meshes)
+                const modObject = Na__DoorAnim__FindModRotChild(object);
+                if (!modObject) {
+                    console.warn(`[DoorAnimation] ADR "${adrName}" (mesh) has no MOD__ROT__ child, skipping`);
+                    return;
+                }
 
-            // Find the ROT child (hinge pivot point)
-            const rotObject = Na__DoorAnim__FindChildByPrefix(object, Na__DoorAnim__PREFIX_ROT);
-            if (!rotObject) {
-                console.warn(`[DoorAnimation] ADR "${adrName}" has no ROT child, skipping`);
-                return;
-            }
+                // Find the ROT child (hinge pivot point)
+                const rotObject = Na__DoorAnim__FindChildByPrefix(object, Na__DoorAnim__PREFIX_ROT);
+                if (!rotObject) {
+                    console.warn(`[DoorAnimation] ADR "${adrName}" (mesh) has no ROT child, skipping`);
+                    return;
+                }
 
-            // Parse target rotation degrees from MOD name
-            const targetAngleDeg = Na__DoorAnim__ParseDegreesFromName(modObject.name);
-            const targetAngleRad = THREE.MathUtils.degToRad(targetAngleDeg);     // <-- Convert to radians
+                // Parse target rotation degrees from MOD name
+                const targetAngleDeg = Na__DoorAnim__ParseDegreesFromName(modObject.name);
+                const targetAngleRad = THREE.MathUtils.degToRad(targetAngleDeg); // <-- Convert to radians
 
-            // Capture the MOD initial local transform (position + quaternion)
-            const initialPosition  = modObject.position.clone();                 // <-- Store initial position
-            const initialQuaternion = modObject.quaternion.clone();              // <-- Store initial quaternion
+                // Capture the MOD initial local transform (position + quaternion)
+                const initialPosition   = modObject.position.clone();            // <-- Store initial position
+                const initialQuaternion = modObject.quaternion.clone();          // <-- Store initial quaternion
 
-            // Get the hinge pivot position in ADR-local space (ROT local position)
-            const pivotLocalPosition = rotObject.position.clone();               // <-- Hinge point in parent space
+                // Get the hinge pivot position in ADR-local space (ROT local position)
+                const pivotLocalPosition = rotObject.position.clone();           // <-- Hinge point in parent space
 
-            // Build door record
-            const doorRecord = {
-                adrObject          : object,                                     // <-- Door assembly Object3D
-                adrName            : adrName,                                    // <-- Door assembly name
-                modObject          : modObject,                                  // <-- Modifier (door panel group)
-                rotObject          : rotObject,                                  // <-- Rotation point (hinge)
-                targetAngleRad     : targetAngleRad,                             // <-- Target open angle (radians)
-                initialPosition    : initialPosition,                            // <-- MOD initial local position
-                initialQuaternion  : initialQuaternion,                          // <-- MOD initial local quaternion
-                pivotLocalPosition : pivotLocalPosition,                         // <-- Hinge point in ADR-local space
-                state              : Na__DoorAnim__STATE_CLOSED,                 // <-- Current door state
-                currentAngleRad    : 0,                                          // <-- Current rotation angle (radians)
-                animStartAngleRad  : 0,                                          // <-- Angle at animation start
-                animEndAngleRad    : 0,                                          // <-- Target angle for current anim
-                animElapsedMs      : 0,                                          // <-- Elapsed animation time
-                animDurationMs     : Na__DoorAnim__Config__AnimationDurationMs   // <-- Animation duration
-            };
+                // Build door record
+                const doorRecord = {
+                    adrObjectMesh      : object,                                 // <-- Door assembly Object3D (mesh)
+                    adrObjectLinework  : null,                                   // <-- Door assembly Object3D (linework) - found later
+                    adrName            : adrName,                                // <-- Door assembly name
+                    modObjectMesh      : modObject,                              // <-- Modifier (door panel group - mesh)
+                    modObjectLinework  : null,                                   // <-- Modifier (door panel group - linework) - found later
+                    rotObjectMesh      : rotObject,                              // <-- Rotation point (hinge - mesh)
+                    rotObjectLinework  : null,                                   // <-- Rotation point (hinge - linework) - found later
+                    targetAngleRad     : targetAngleRad,                         // <-- Target open angle (radians)
+                    initialPosition    : initialPosition,                        // <-- MOD initial local position
+                    initialQuaternion  : initialQuaternion,                      // <-- MOD initial local quaternion
+                    pivotLocalPosition : pivotLocalPosition,                     // <-- Hinge point in ADR-local space
+                    state              : Na__DoorAnim__STATE_CLOSED,             // <-- Current door state
+                    currentAngleRad    : 0,                                      // <-- Current rotation angle (radians)
+                    animStartAngleRad  : 0,                                      // <-- Angle at animation start
+                    animEndAngleRad    : 0,                                      // <-- Target angle for current anim
+                    animElapsedMs      : 0,                                      // <-- Elapsed animation time
+                    animDurationMs     : Na__DoorAnim__Config__AnimationDurationMs // <-- Animation duration
+                };
 
-            Na__DoorAnim__DoorRegistry.set(adrName, doorRecord);                 // <-- Register door
-            console.log(`[DoorAnimation] Registered door: "${adrName}" (${targetAngleDeg} deg)`);
-        });
+                Na__DoorAnim__DoorRegistry.set(adrName, doorRecord);             // <-- Register door
+                console.log(`[DoorAnimation] Registered door (mesh): "${adrName}" (${targetAngleDeg} deg)`);
+            });
+        }
+
+        // Scan linework model group and link to existing door records
+        if (Na__DoorAnim__ModelGroupLinework) {
+            Na__DoorAnim__ModelGroupLinework.traverse((object) => {
+                if (!Na__DoorAnim__NameStartsWith(object, Na__DoorAnim__PREFIX_ADR)) {
+                    return;                                                      // <-- Skip non-ADR objects
+                }
+
+                const adrName = object.name;                                     // <-- Door assembly identifier
+                const doorRecord = Na__DoorAnim__DoorRegistry.get(adrName);      // <-- Look up existing record
+
+                if (!doorRecord) {
+                    console.warn(`[DoorAnimation] Linework door "${adrName}" has no mesh counterpart, skipping`);
+                    return;
+                }
+
+                // Find the MOD child (linework version)
+                const modObjectLinework = Na__DoorAnim__FindModRotChild(object);
+                if (!modObjectLinework) {
+                    console.warn(`[DoorAnimation] ADR "${adrName}" (linework) has no MOD__ROT__ child`);
+                    return;
+                }
+
+                // Find the ROT child (linework version)
+                const rotObjectLinework = Na__DoorAnim__FindChildByPrefix(object, Na__DoorAnim__PREFIX_ROT);
+
+                // Link linework objects to existing door record
+                doorRecord.adrObjectLinework = object;                           // <-- Linework ADR
+                doorRecord.modObjectLinework = modObjectLinework;                // <-- Linework MOD
+                doorRecord.rotObjectLinework = rotObjectLinework;                // <-- Linework ROT (may be null)
+
+                console.log(`[DoorAnimation] Linked linework for door: "${adrName}"`);
+            });
+        }
 
         console.log(`[DoorAnimation] Scan complete. ${Na__DoorAnim__DoorRegistry.size} door(s) found.`);
     }
@@ -253,17 +293,29 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Collect All Meshes from Model Group
+    // HELPER FUNCTION | Collect All Meshes from Both Mesh and Linework Door Models
     // ------------------------------------------------------------
     function Na__DoorAnim__CollectDoorMeshes() {
         const meshes = [];                                                       // <-- Array of intersectable meshes
 
         Na__DoorAnim__DoorRegistry.forEach((doorRecord) => {
-            doorRecord.modObject.traverse((child) => {
-                if (child.isMesh) {
-                    meshes.push(child);                                          // <-- Add mesh to list
-                }
-            });
+            // Collect meshes from mesh version (solid geometry)
+            if (doorRecord.modObjectMesh) {
+                doorRecord.modObjectMesh.traverse((child) => {
+                    if (child.isMesh) {
+                        meshes.push(child);                                      // <-- Add mesh to list
+                    }
+                });
+            }
+
+            // Collect meshes from linework version (edge LINES primitives)
+            if (doorRecord.modObjectLinework) {
+                doorRecord.modObjectLinework.traverse((child) => {
+                    if (child.isMesh) {
+                        meshes.push(child);                                      // <-- Add linework mesh to list
+                    }
+                });
+            }
         });
 
         return meshes;                                                           // <-- Return all door meshes
@@ -397,28 +449,49 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Apply Rotation Around Pivot to MOD Object
+    // HELPER FUNCTION | Apply Rotation Around Pivot to MOD Objects (Mesh + Linework)
     // ------------------------------------------------------------
     function Na__DoorAnim__ApplyPivotRotation(doorRecord, angleRad) {
-        const mod   = doorRecord.modObject;                                      // <-- Door panel group
         const pivot = doorRecord.pivotLocalPosition;                             // <-- Hinge point (local)
 
-        // Reset to initial transform
-        mod.position.copy(doorRecord.initialPosition);                           // <-- Restore initial position
-        mod.quaternion.copy(doorRecord.initialQuaternion);                       // <-- Restore initial quaternion
-
-        // Build rotation quaternion around Y axis
+        // Build rotation quaternion around Y axis (shared by mesh and linework)
         const rotQuat = new THREE.Quaternion().setFromAxisAngle(
             Na__DoorAnim__Y_AXIS, angleRad                                       // <-- Rotation amount
         );
 
-        // Translate so pivot is at origin, rotate, translate back
-        mod.position.sub(pivot);                                                 // <-- Move pivot to origin
-        mod.position.applyQuaternion(rotQuat);                                   // <-- Rotate position vector
-        mod.position.add(pivot);                                                 // <-- Move back
+        // Apply to MESH version (if exists)
+        if (doorRecord.modObjectMesh) {
+            const modMesh = doorRecord.modObjectMesh;                            // <-- Mesh door panel group
 
-        // Apply rotation to orientation
-        mod.quaternion.premultiply(rotQuat);                                     // <-- Combine rotations
+            // Reset to initial transform
+            modMesh.position.copy(doorRecord.initialPosition);                   // <-- Restore initial position
+            modMesh.quaternion.copy(doorRecord.initialQuaternion);               // <-- Restore initial quaternion
+
+            // Translate so pivot is at origin, rotate, translate back
+            modMesh.position.sub(pivot);                                         // <-- Move pivot to origin
+            modMesh.position.applyQuaternion(rotQuat);                           // <-- Rotate position vector
+            modMesh.position.add(pivot);                                         // <-- Move back
+
+            // Apply rotation to orientation
+            modMesh.quaternion.premultiply(rotQuat);                             // <-- Combine rotations
+        }
+
+        // Apply to LINEWORK version (if exists)
+        if (doorRecord.modObjectLinework) {
+            const modLinework = doorRecord.modObjectLinework;                    // <-- Linework door panel group
+
+            // Linework uses same initial transform as mesh
+            modLinework.position.copy(doorRecord.initialPosition);               // <-- Restore initial position
+            modLinework.quaternion.copy(doorRecord.initialQuaternion);           // <-- Restore initial quaternion
+
+            // Translate so pivot is at origin, rotate, translate back
+            modLinework.position.sub(pivot);                                     // <-- Move pivot to origin
+            modLinework.position.applyQuaternion(rotQuat);                       // <-- Rotate position vector
+            modLinework.position.add(pivot);                                     // <-- Move back
+
+            // Apply rotation to orientation
+            modLinework.quaternion.premultiply(rotQuat);                         // <-- Combine rotations
+        }
 
         // Store current angle
         doorRecord.currentAngleRad = angleRad;                                   // <-- Track current angle
@@ -480,17 +553,18 @@
 
     // FUNCTION | Initialize Door Animation System
     // ------------------------------------------------------------
-    function Na__DoorAnimation__Initialize(scene, camera, rendererDomElement, modelGroup, config) {
+    function Na__DoorAnimation__Initialize(scene, camera, rendererDomElement, modelGroupMesh, modelGroupLinework, config) {
         if (Na__DoorAnim__Initialized) {
             console.warn('[DoorAnimation] Already initialized, skipping');
             return;
         }
 
         // Store references
-        Na__DoorAnim__Scene             = scene;                                 // <-- Scene reference
-        Na__DoorAnim__Camera            = camera;                                // <-- Camera reference
-        Na__DoorAnim__RendererDomElement = rendererDomElement;                    // <-- Canvas DOM element
-        Na__DoorAnim__ModelGroup         = modelGroup;                           // <-- Model root group
+        Na__DoorAnim__Scene               = scene;                               // <-- Scene reference
+        Na__DoorAnim__Camera              = camera;                              // <-- Camera reference
+        Na__DoorAnim__RendererDomElement  = rendererDomElement;                  // <-- Canvas DOM element
+        Na__DoorAnim__ModelGroupMesh      = modelGroupMesh;                      // <-- Mesh model group
+        Na__DoorAnim__ModelGroupLinework  = modelGroupLinework;                  // <-- Linework model group
 
         // Apply config overrides
         if (config) {
@@ -505,7 +579,7 @@
             }
         }
 
-        // Scan scene graph for door assemblies
+        // Scan scene graph for door assemblies (both mesh and linework)
         Na__DoorAnimation__ScanForDoors();                                       // <-- Build door registry
 
         // Register pointer event handlers for click detection

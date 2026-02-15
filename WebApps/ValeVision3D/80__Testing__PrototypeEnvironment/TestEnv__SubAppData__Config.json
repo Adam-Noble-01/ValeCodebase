@@ -70,12 +70,14 @@
             "Navmode__IpadControls__OrbitMaxDistanceMm"     : 50000
         }
     },
-    "DoorAnimation": {
-        "DoorAnimation__Description"                       : "Settings for click-to-open door animation feature.",
-        "DoorAnimation__Enabled"                           : true,
-        "DoorAnimation__AnimationDurationMs"               : 600,
-        "DoorAnimation__DefaultRotationDeg"                : 90,
-        "DoorAnimation__ClickThresholdPx"                  : 4
+    "3dObject__InteractionsSystem": {
+        "3dObject__Interaction__DoorAnimation": {
+            "3dObject__Interaction__DoorAnimation__Description"         : "Interactive door animation settings for click-to-open doors. Inherits from main app, test environment enabled by default.",
+            "3dObject__Interaction__DoorAnimation__Enabled"             : true,
+            "3dObject__Interaction__DoorAnimation__AnimationDurationMs" : 600,
+            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"  : 90,
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4
+        }
     },
     "Dev__DeveloperMode": {
         "Dev__DeveloperMode__Description"                  : "Dev cube visible by default in test environment for orientation reference.",

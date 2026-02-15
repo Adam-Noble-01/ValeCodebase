@@ -37,7 +37,8 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // ------------------------------------------------------------
     const Na__ModelCategories__LoadOrder = [
         "ValeVision__MainBuildingModel__Existing",   // <-- Tag 10-19: Existing building
-        "ValeVision__MainBuildingModel__Proposed",   // <-- Tag 20-29: Proposed building
+        "ValeVision__MainBuildingModel__Proposed",   // <-- Tag 20-24: Proposed building (non-door)
+        "ValeVision__MainBuildingModel__ProposedDoors",  // <-- Tag 25: Proposed building doors (ADR assemblies)
         "ValeVision__LandscapeEnvironment",          // <-- Tag 07-09: Landscape & environment
         "ValeVision__GroundFloorFurniture",          // <-- Tag 30-38: Ground floor furniture
         "ValeVision__GroundFloorDecor",              // <-- Tag 39:    Ground floor high detail

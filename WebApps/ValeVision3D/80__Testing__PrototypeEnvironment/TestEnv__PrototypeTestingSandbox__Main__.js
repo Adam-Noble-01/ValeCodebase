@@ -40,12 +40,12 @@
     // ------------------------------------------------------------
 
 
-    // MODULE VARIABLES | Feature Test Script Imports
+    // MODULE VARIABLES | Feature Imports from Main ValeVision3D App
     // ------------------------------------------------------------
     import {
         Na__DoorAnimation__Initialize,
         Na__DoorAnimation__Update
-    } from './feature-scripts/Test__ModelInteraction__Animation__ClickToOpenDoors__.js';
+    } from '../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -886,15 +886,27 @@
             TestEnv__NodeExplorer__BuildTree();                                  // <-- Rebuild tree UI
 
             // REINITIALIZE DOOR ANIMATION (if enabled)
-            const TestEnv__Config__DoorAnimation = TestEnv__Config.DoorAnimation || {};
-            if (TestEnv__Config__DoorAnimation.DoorAnimation__Enabled !== false) {
-                Na__DoorAnimation__Initialize(
-                    TestEnv__Scene,
-                    TestEnv__Camera,
-                    TestEnv__Renderer.domElement,
-                    TestEnv__ModelGroup__Root,
-                    TestEnv__Config__DoorAnimation
-                );
+            const TestEnv__Config__3dObjectInteractions = TestEnv__Config['3dObject__InteractionsSystem'];
+            
+            if (TestEnv__Config__3dObjectInteractions) {
+                const TestEnv__Config__DoorAnimation = TestEnv__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'];
+                
+                if (TestEnv__Config__DoorAnimation && TestEnv__Config__DoorAnimation['3dObject__Interaction__DoorAnimation__Enabled'] !== false) {
+                    const doorMeshGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__MeshModel__');
+                    const doorLineworkGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__LineworkModel__');
+
+                    if (doorMeshGroup || doorLineworkGroup) {
+                        Na__DoorAnimation__Initialize(
+                            TestEnv__Scene,
+                            TestEnv__Camera,
+                            TestEnv__Renderer.domElement,
+                            doorMeshGroup,
+                            doorLineworkGroup,
+                            TestEnv__Config__DoorAnimation
+                        );
+                        console.log('[TestEnv] Door animation reinitialized after refresh');
+                    }
+                }
             }
 
             console.log(`[TestEnv] Refresh complete. Loaded ${glbResults.length} GLB file(s).`);
@@ -1046,25 +1058,34 @@
             TestEnv__ShowScene();                                            // <-- Reveal scene
             TestEnv__NodeExplorer__BuildTree();                              // <-- Build node graph tree
 
-            // INITIALIZE DOOR ANIMATION (if enabled in config)
-            const TestEnv__Config__DoorAnimation = TestEnv__Config.DoorAnimation || {};
-            if (TestEnv__Config__DoorAnimation.DoorAnimation__Enabled !== false) {
-                // Find the mesh and linework model groups for doors
-                const doorMeshGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__MeshModel__');
-                const doorLineworkGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__LineworkModel__');
+            // INITIALIZE DOOR ANIMATION (requires main app config structure)
+            const TestEnv__Config__3dObjectInteractions = TestEnv__Config['3dObject__InteractionsSystem'];
+            
+            if (!TestEnv__Config__3dObjectInteractions) {
+                console.error('[TestEnv] Door animation config missing: 3dObject__InteractionsSystem not found in test config');
+            } else {
+                const TestEnv__Config__DoorAnimation = TestEnv__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'];
+                
+                if (!TestEnv__Config__DoorAnimation) {
+                    console.error('[TestEnv] Door animation config missing: 3dObject__Interaction__DoorAnimation not found');
+                } else if (TestEnv__Config__DoorAnimation['3dObject__Interaction__DoorAnimation__Enabled'] !== false) {
+                    // Find the mesh and linework model groups for doors
+                    const doorMeshGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__MeshModel__');
+                    const doorLineworkGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__LineworkModel__');
 
-                if (doorMeshGroup || doorLineworkGroup) {
-                    Na__DoorAnimation__Initialize(
-                        TestEnv__Scene,                                          // <-- Scene reference
-                        TestEnv__Camera,                                         // <-- Camera reference
-                        TestEnv__Renderer.domElement,                            // <-- Canvas DOM element
-                        doorMeshGroup,                                           // <-- Mesh model group (doors)
-                        doorLineworkGroup,                                       // <-- Linework model group (doors)
-                        TestEnv__Config__DoorAnimation                          // <-- Door animation config
-                    );
-                    console.log('[TestEnv] Door animation initialized (mesh + linework)');
-                } else {
-                    console.warn('[TestEnv] Door animation enabled but no door model groups found');
+                    if (doorMeshGroup || doorLineworkGroup) {
+                        Na__DoorAnimation__Initialize(
+                            TestEnv__Scene,                                      // <-- Scene reference
+                            TestEnv__Camera,                                     // <-- Camera reference
+                            TestEnv__Renderer.domElement,                        // <-- Canvas DOM element
+                            doorMeshGroup,                                       // <-- Mesh model group (doors)
+                            doorLineworkGroup,                                   // <-- Linework model group (doors)
+                            TestEnv__Config__DoorAnimation                      // <-- Door animation config
+                        );
+                        console.log('[TestEnv] Door animation initialized (imports from main app module)');
+                    } else {
+                        console.warn('[TestEnv] Door animation enabled but no door model groups found in scene');
+                    }
                 }
             }
 

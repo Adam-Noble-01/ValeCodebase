@@ -290,6 +290,10 @@
         Na__ModelLoader__LoadOrbitHelperCube
     } from './src__ModelLoader/Na__ModelLoader__MultiModel.js';
     import { Na__UiFeature__InitializeModelToggleControls } from './src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js';
+    import {
+        Na__DoorAnimation__Initialize,
+        Na__DoorAnimation__Update
+    } from './src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     // ------------------------------------------------------------
 
 
@@ -315,6 +319,8 @@
     const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition;  // <-- Camera defaults (MM)
     const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;      // <-- Navmode config (MM)
     const Na__Config__ProfileLines = Na__AppConfig__Data.RenderEffect__ProfileLines || null;  // <-- Profile lines effect (enable/disable + params)
+    const Na__Config__3dObjectInteractions = Na__AppConfig__Data['3dObject__InteractionsSystem'] || {};                 // <-- 3D object interactions configuration
+    const Na__Config__DoorAnimation = Na__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'] || {};  // <-- Door animation configuration
     
     const Na__ModelDefaults__ModelUrls = Na__Config__ModelDefaults.modelUrls || [];  // <-- Default model URLs array
     // ------------------------------------------------------------
@@ -779,18 +785,57 @@
             
             // INITIALIZE MODEL TOGGLE CONTROLS (dynamic per-category buttons)
             Na__UiFeature__InitializeModelToggleControls(Na__LoadedModelGroups);  // <-- Build toggle buttons from loaded groups
+
+            // INITIALIZE DOOR ANIMATION (if enabled in config)
+            if (Na__Config__DoorAnimation['3dObject__Interaction__DoorAnimation__Enabled'] !== false) {
+                // Find door model groups by searching loaded categories
+                let doorMeshGroup      = null;                                   // <-- Mesh version of door models
+                let doorLineworkGroup  = null;                                   // <-- Linework version of door models
+
+                Na__LoadedModelGroups.forEach((group, categoryKey) => {
+                    if (categoryKey.includes('ProposedDoors') && categoryKey.includes('MeshModel')) {
+                        doorMeshGroup = group;                                   // <-- Found mesh door group
+                    }
+                    if (categoryKey.includes('ProposedDoors') && categoryKey.includes('LineworkModel')) {
+                        doorLineworkGroup = group;                               // <-- Found linework door group
+                    }
+                });
+
+                if (doorMeshGroup || doorLineworkGroup) {
+                    Na__DoorAnimation__Initialize(
+                        Na__Scene__Main,                                         // <-- Scene reference
+                        Na__Camera__Main,                                        // <-- Camera reference
+                        Na__Renderer__Main.domElement,                           // <-- Canvas DOM element
+                        doorMeshGroup,                                           // <-- Mesh model group
+                        doorLineworkGroup,                                       // <-- Linework model group
+                        Na__Config__DoorAnimation                                // <-- Door animation config
+                    );
+                    console.log('[ValeVision3D] Door animation initialized');
+                } else {
+                    console.log('[ValeVision3D] Door animation enabled but no door model groups found');
+                }
+            }
+
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);
             Na__UiFeature__UpdateStatus('Model load error - check console', true);
         }
         
-        // RENDER LOOP
+        // RENDER LOOP (with delta time tracking for animations)
+        let Na__RenderLoop__PrevTimestamp = performance.now();                   // <-- Previous frame timestamp for delta
         function Na__RenderLoop__Animate() {
             requestAnimationFrame(Na__RenderLoop__Animate);
-            Na__Navmode__UpdateNavigation();
+
+            const now     = performance.now();                                   // <-- Current timestamp
+            const deltaMs = now - Na__RenderLoop__PrevTimestamp;                 // <-- Time since last frame
+            Na__RenderLoop__PrevTimestamp = now;                                 // <-- Update previous timestamp
+
+            Na__Navmode__UpdateNavigation();                                     // <-- Update orbit controls
+            Na__DoorAnimation__Update(deltaMs);                                  // <-- Update door animations
+
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
-                Na__RenderPipeline__State.renderProfileNormals();
-                Na__RenderComposer__Main.render();
+                Na__RenderPipeline__State.renderProfileNormals();                // <-- Update profile lines
+                Na__RenderComposer__Main.render();                               // <-- Render with post-processing
             }
         }
         

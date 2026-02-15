@@ -143,6 +143,15 @@
                 }
             }
         ]
+    },
+    "3dObject__InteractionsSystem": {
+        "3dObject__Interaction__DoorAnimation": {
+            "3dObject__Interaction__DoorAnimation__Description"         : "Interactive door animation settings for click-to-open doors. Doors must be exported from SketchUp with ADR/MOD/ROT naming convention via GLB Builder v1.5.0+",
+            "3dObject__Interaction__DoorAnimation__Enabled"             : true,
+            "3dObject__Interaction__DoorAnimation__AnimationDurationMs" : 600,
+            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"  : 90,
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4
+        }
     }
 }
 

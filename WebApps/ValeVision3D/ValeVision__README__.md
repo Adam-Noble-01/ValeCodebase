@@ -10,6 +10,58 @@ FILL THIS OUT LATER
 
 FILL THIS OUT LATER
 
+---
+
+## 3D Object Interactions System
+
+ValeVision3D supports **interactive 3D objects** that respond to user input. The 3D Object Interactions System enables click-based and proximity-based behaviors for specific model elements exported with special naming conventions from SketchUp.
+
+### Click-to-Open Door Animation
+
+**Overview:**  
+Doors modeled in SketchUp with the ADR/MOD/ROT naming convention automatically become interactive. Click any door to smoothly animate it open or closed around its hinge pivot point.
+
+**Key Features:**
+- Click detection with orbit drag filtering (distinguishes clicks from camera movement)
+- Smooth eased animation (easeInOutCubic interpolation)
+- Mid-animation reversal support (click again to reverse direction)
+- Configurable rotation angles per door (encoded in entity naming)
+- Dual model synchronization (mesh and linework animate together)
+- No model modification required (works via scene graph node transforms)
+
+**SketchUp Setup:**
+- Name door assembly groups with `ADR` prefix (e.g., `ADR002__InternalDoor__GroundFloor__PorchToLounge`)
+- Create `MOD001__ROT__90-Deg__DoorPanel` child group containing all rotating geometry
+- Create `ROT001__RotationPoint__DoorHingeCentre` child group positioned at door hinge
+- Place all doors on SketchUp tag `25__ProposedBuilding__Doors`
+
+**GLB Export:**
+- Requires GLB Builder Utility v1.5.0+ with door handler module
+- Exports preserve ADR > MOD/ROT hierarchy (not flattened)
+- Transform conjugation ensures Y-up coordinate spaces for proper rotation
+
+**Configuration:**
+```json
+{
+    "3dObject__InteractionsSystem": {
+        "3dObject__Interaction__DoorAnimation": {
+            "3dObject__Interaction__DoorAnimation__Enabled": true,
+            "3dObject__Interaction__DoorAnimation__AnimationDurationMs": 600,
+            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg": 90,
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx": 4
+        }
+    }
+}
+```
+
+**Module Location:**  
+`src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+
+**Full Documentation:**  
+See `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md` for technical details, coordinate system transformations, and integration guide.
+
+---
+
 # -----------------------------------------------------------------------------
 ## Layout View Export — Profile Lines Synchronization (v0.1.4)
 

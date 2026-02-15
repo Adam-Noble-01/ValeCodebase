@@ -31,16 +31,17 @@
     // Any category NOT in this map gets an auto-generated label from its key.
     // ------------------------------------------------------------
     const Na__ModelToggle__DisplayNames = {
-        "ValeVision__MainBuildingModel__Existing"  : "Existing Building",  // <-- Tag 10-19
-        "ValeVision__MainBuildingModel__Proposed"   : "Design Proposal",   // <-- Tag 20-29
-        "ValeVision__LandscapeEnvironment"          : "Landscape",         // <-- Tag 07-09
-        "ValeVision__GroundFloorFurniture"           : "Ground Floor Furniture",  // <-- Tag 30-38
-        "ValeVision__GroundFloorDecor"               : "Ground Floor Decor",      // <-- Tag 39
-        "ValeVision__FirstFloorFurniture"            : "First Floor Furniture",   // <-- Tag 40-48
-        "ValeVision__FirstFloorDecor"                : "First Floor Decor",       // <-- Tag 49
-        "ValeVision__Vegetation"                     : "Vegetation",              // <-- Tag 50-59
-        "ValeVision__SceneContextual"                : "Scene Context",           // <-- Tag 60-70
-        "ValeVision__LegacyModel"                    : "Model"                    // <-- Legacy fallback
+        "ValeVision__MainBuildingModel__Existing"      : "Existing Building",      // <-- Tag 10-19
+        "ValeVision__MainBuildingModel__Proposed"      : "Design Proposal",        // <-- Tag 20-24
+        "ValeVision__MainBuildingModel__ProposedDoors" : "Doors",                  // <-- Tag 25 (interactive ADR assemblies)
+        "ValeVision__LandscapeEnvironment"             : "Landscape",              // <-- Tag 07-09
+        "ValeVision__GroundFloorFurniture"             : "Ground Floor Furniture", // <-- Tag 30-38
+        "ValeVision__GroundFloorDecor"                 : "Ground Floor Decor",     // <-- Tag 39
+        "ValeVision__FirstFloorFurniture"              : "First Floor Furniture",  // <-- Tag 40-48
+        "ValeVision__FirstFloorDecor"                  : "First Floor Decor",      // <-- Tag 49
+        "ValeVision__Vegetation"                       : "Vegetation",             // <-- Tag 50-59
+        "ValeVision__SceneContextual"                  : "Scene Context",          // <-- Tag 60-70
+        "ValeVision__LegacyModel"                      : "Model"                   // <-- Legacy fallback
     };
     // ------------------------------------------------------------
 

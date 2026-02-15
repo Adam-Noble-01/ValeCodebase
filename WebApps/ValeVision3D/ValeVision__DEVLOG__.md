@@ -2,8 +2,65 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.5  -  15-Feb-2026
+### 3D Object Interactions System — Click-to-Open Door Animation 
+*Note: Migrated From Test Environment*
+
+**Feature Migration to Main Application**
+- Door animation feature promoted from test environment to production ValeVision3D application.
+- New module system: `src__3dObject__InteractionsSystem/` for interactive 3D object behaviors.
+- Dual model animation: synchronized rotation of mesh (solid geometry) and linework (edges) door models.
+- Y-up coordinate space integration: proper vertical rotation axis `(0, 1, 0)` via transform conjugation in GLB export.
+- Config-driven architecture: nested configuration under `3dObject__InteractionsSystem` → `3dObject__Interaction__DoorAnimation`.
+- Fully qualified property names: `3dObject__Interaction__DoorAnimation__Enabled`, `AnimationDurationMs`, `DefaultRotationDeg`, `ClickThresholdPx`.
+
+**SketchUp GLB Builder v1.5.0 Integration**
+- Hierarchy-preserving GLB export for door assemblies (ADR-prefixed entities).
+- Door Handler module (`Na__TrueVision__GlbBuilder__SpecialObject__DoorObjectHandling__.rb`) exports ADR > MOD/ROT/OuterShell node structures.
+- Transform conjugation: `Z_UP * M_su * inv(Z_UP)` converts SketchUp Z-up local spaces to glTF Y-up.
+- Inline detection during scene graph traversal: zero overhead when no doors present.
+- Tag 25 mapping: `25__ProposedBuilding__Doors` exports as `*__ProposedDoors__MeshModel/LineworkModel__.glb`.
+- Both mesh and linework exporters preserve identical hierarchy with matching node names.
+
+**Main Application Integration**
+- Module location: `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`.
+- Auto-initialization after model loading if config enabled and door model groups found.
+- Delta time tracking added to render loop for frame-rate-independent animation.
+- Model loader category support: `ValeVision__MainBuildingModel__ProposedDoors` added to load order.
+- Model toggle controls: "Doors" display name for visibility toggles.
+- Configuration: `src__AppConfig/Na__AppConfig__Main.json` under `3dObject__InteractionsSystem`.
+
+**Animation System Features**
+- Click detection with orbit drag filtering (4px threshold).
+- Raycasting against door meshes (both mesh and linework) with ADR ancestor lookup.
+- Smooth easeInOutCubic animation (600ms default duration).
+- Mid-animation reversal: click during animation to reverse direction with proportional duration scaling.
+- Toggle behavior: CLOSED → OPENING → OPEN → CLOSING → CLOSED state machine.
+- Pivot rotation around ROT hinge point using quaternion transforms.
+- Per-door configuration: rotation angle parsed from MOD name (e.g., `MOD001__ROT__90-Deg__DoorPanel`).
+
+**Test Environment Cleanup**
+- Test scripts migrated to main app; test environment now imports from production module.
+- Removed duplicate code: test feature scripts deleted, replaced with migration notes.
+- Test config inherits door animation settings with proper nested structure.
+- Clean separation: test environment validates production code, ready for next feature prototype.
+
+**Naming Convention (SketchUp → glTF)**
+- **ADR** = Door Assembly (e.g., `ADR002__InternalDoor__GroundFloor__PorchToLounge`)
+- **MOD** = Modifier Object (e.g., `MOD001__ROT__90-Deg__DoorPanel`) — contains rotating geometry
+- **ROT** = Rotation Point (e.g., `ROT001__RotationPoint__DoorHingeCentre`) — hinge pivot position
+
+**Key Files**
+- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` — Production door animation module.
+- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md` — Technical documentation.
+- `src__AppConfig/Na__AppConfig__Main.json` — Door animation configuration.
+- `index.html` — Import, initialization, delta time tracking, render loop integration.
+- `src__ModelLoader/Na__ModelLoader__MultiModel.js` — ProposedDoors category support.
+- `src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js` — Doors visibility toggle.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.4  -  14-Feb-2026
-### Testing Environment — Prototype Sandbox & Click-to-Open Doors Feature
+### Testing Environment — Prototype Sandbox & Click-to-Open Doors Feature (Initial Prototype)
 
 **Test Environment Infrastructure**
 - Created self-contained prototype testing sandbox (`80__Testing__PrototypeEnvironment/`) for rapid feature development before main integration.

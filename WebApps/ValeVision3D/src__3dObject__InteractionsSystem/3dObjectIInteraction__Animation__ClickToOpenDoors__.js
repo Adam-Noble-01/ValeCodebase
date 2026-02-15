@@ -2,9 +2,9 @@
 // VALEVISION3D - CLICK TO OPEN DOORS ANIMATION
 // =============================================================================
 //
-// FILE       : Test__ModelInteraction__Animation__ClickToOpenDoors__.js
+// FILE       : 3dObjectIInteraction__Animation__ClickToOpenDoors__.js
 // NAMESPACE  : ValeVision3D
-// MODULE     : Door Animation - Click to Open/Close
+// MODULE     : 3D Object Interactions - Door Animation (Click to Open/Close)
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Animate doors open/closed on click via scene graph naming convention
 // CREATED    : 14-Feb-2026
@@ -16,11 +16,19 @@
 // - Registers pointer event handlers for click detection (with orbit drag filtering).
 // - Smoothly animates door panels open/closed around the hinge pivot on Y axis.
 // - Supports mid-animation reversal and independent per-door state management.
+// - Dual model support: animates both mesh and linework models simultaneously.
 //
 // NAMING CONVENTION (Scene Graph):
 // - ADR = Door Assembly (e.g. ADR002__InternalDoor__GroundFloor__PorchToLounge)
 // - MOD = Modifier with __ROT__ tag (e.g. MOD001__ROT__90-Deg__DoorPanel)
 // - ROT = Rotation/Hinge Point (e.g. ROT001__RotationPoint__DoorHingeCentre)
+//
+// INTEGRATION:
+// - Requires door models exported with hierarchy preservation from SketchUp
+//   GLB Builder Utility (v1.5.0+) with door handler module.
+// - Expects glTF nodes in Y-up coordinate space with conjugated transforms.
+// - Call Na__DoorAnimation__Initialize() after GLB models are loaded.
+// - Call Na__DoorAnimation__Update(deltaMs) every frame in render loop.
 //
 // =============================================================================
 
@@ -568,14 +576,14 @@
 
         // Apply config overrides
         if (config) {
-            if (Number.isFinite(config.DoorAnimation__AnimationDurationMs)) {
-                Na__DoorAnim__Config__AnimationDurationMs = config.DoorAnimation__AnimationDurationMs;
+            if (Number.isFinite(config['3dObject__Interaction__DoorAnimation__AnimationDurationMs'])) {
+                Na__DoorAnim__Config__AnimationDurationMs = config['3dObject__Interaction__DoorAnimation__AnimationDurationMs'];
             }
-            if (Number.isFinite(config.DoorAnimation__DefaultRotationDeg)) {
-                Na__DoorAnim__Config__DefaultRotationDeg = config.DoorAnimation__DefaultRotationDeg;
+            if (Number.isFinite(config['3dObject__Interaction__DoorAnimation__DefaultRotationDeg'])) {
+                Na__DoorAnim__Config__DefaultRotationDeg = config['3dObject__Interaction__DoorAnimation__DefaultRotationDeg'];
             }
-            if (Number.isFinite(config.DoorAnimation__ClickThresholdPx)) {
-                Na__DoorAnim__Config__ClickThresholdPx = config.DoorAnimation__ClickThresholdPx;
+            if (Number.isFinite(config['3dObject__Interaction__DoorAnimation__ClickThresholdPx'])) {
+                Na__DoorAnim__Config__ClickThresholdPx = config['3dObject__Interaction__DoorAnimation__ClickThresholdPx'];
             }
         }
 

@@ -2,6 +2,87 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.6  -  15-Feb-2026
+### Building Storey Visibility System — Dolls House View & Per-Storey Toggle
+*Note: Developed in Test Environment, Migrated to Production Module*
+
+**Feature Overview**
+- Per-storey visibility control for multi-storey building models enabling interior exploration.
+- "Dolls house view" cut-away mode: hides topmost visible storey's roof to reveal interior spaces.
+- Intelligent roof management: lower storey roofs remain visible as ceilings for spatial context.
+- Individual storey toggle: show/hide specific floors independently.
+- Roof mode toggle: switch between solid building (all roofs) and dolls house (topmost roof hidden).
+- Automatic detection from GLB filenames: no manual configuration required.
+
+**SketchUp GLB Builder v1.6.0 Integration**
+- Storey-based export system: detects top-level storey containers tagged 90-93 at model root.
+- Per-storey per-element export: children organized by element tags (walls 21, floors 22, roofs 23, etc.).
+- World-space transform baking: storey container's transformation pre-multiplied into export root.
+- Filename pattern: `{Prefix}Storey__{StoreyName}__{ElementType}__{Suffix}.glb` (e.g., "Storey__GroundFloor__ProposedWalls__MeshModel__.glb").
+- Element tag granularity: split tag 10 (Existing) and tag 20 (Proposed) into individual element ranges for finer control.
+- Parent transform parameter: `Na__GlbEngine__ExportEntitiesToGlb` and `Na__LineworkEngine__ExportLineworkToGlb` accept optional parent transform.
+- Transform chain: `Z_UP_TO_Y_UP * storey.transformation * child.transformation` ensures correct vertical positioning.
+- MAX_NESTING_DEPTH increased from 3 to 4 to support storey container nesting level.
+- Backward compatible: non-storey models export identically using flat TAG_RANGES system.
+
+**Module Architecture**
+- Permanent module: `src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js`.
+- Stateful design: maintains internal storey map, visibility state, roof map, and roof visibility flag.
+- Clean separation: pure logic in module, DOM manipulation in caller.
+- Public API: Initialize, DetectStoreys, SetStoreyVisibility, ShowOnlyBelow, ShowAll, ToggleStorey, ToggleRoof, GetState, GetStoreyDisplayName.
+- Configuration support: accepts storey order and default roof visibility mode.
+- Zero DOM dependencies: no HTML/CSS coupling, works with any UI framework.
+
+**Storey Detection System**
+- Pattern matching: scans loaded GLB model names for `Storey__{StoreyName}__` pattern.
+- Supported storey names: GroundFloor, FirstFloor, SecondFloor, ThirdFloor (configurable order).
+- Automatic grouping: models with matching storey names grouped together for batch visibility control.
+- Roof detection: filters models with "Roof" substring (ProposedRoofs, ExistingRoofs) per storey.
+- Custom storey support: detected storeys not in predefined order automatically appended.
+
+**Intelligent Roof Visibility Logic**
+- **Solid building mode** (default): All roofs visible for complete exterior view.
+- **Dolls house mode**: Topmost visible storey's roof hidden (reveals interior), lower roofs shown as ceilings.
+- Dynamic adaptation: roof logic recalculates when storey visibility changes.
+- Example flow: GF + FF visible → GF roof shown (ceiling), FF roof hidden (see inside FF).
+- Manual override: Roof toggle button switches between modes independent of storey state.
+
+**User Interaction Modes**
+- **Individual toggle**: Click storey button to show/hide that floor.
+- **Dolls house cut**: Right-click storey button to show only that storey and below (architectural section).
+- **Entire building**: "Show Entire Building" button restores all storeys with current roof mode.
+- **Roof control**: Dedicated roof button toggles between solid building and dolls house view.
+
+**Test Environment Integration**
+- Storey panel UI: bottom-left panel with roof button (top) and storey buttons (ordered top to bottom).
+- Visual feedback: green tint for visible storeys, red tint for hidden, blue tint for roof button.
+- Icon system: eye (visible), no-entry (hidden), house (solid building), no-entry (dolls house).
+- Separator line between roof and storey buttons for clear visual hierarchy.
+- State synchronization: UI buttons reflect module state via `GetState()` API.
+
+**Benefits**
+- **Interior exploration**: Remove upper floors to see room layouts and spatial relationships.
+- **Loft conversions**: Hide final roof to expose top floor interior design.
+- **Construction phasing**: Show building progress by revealing storeys sequentially.
+- **Client presentations**: Dynamic cut-away views without pre-rendered sections.
+- **Accessibility**: Understand multi-storey layouts for wheelchair access planning.
+
+**Technical Details**
+- Module state: `{ map, order, hasStoreys, visibleState, roofMap, roofVisible }`.
+- Detection complexity: O(n) where n = loaded models (single scan on load/refresh).
+- Visibility updates: O(k) where k = models per storey (small filtered sets).
+- Roof logic: O(m) where m = roof models per storey (typically 1-2).
+- Three.js integration: sets `.visible` property on Object3D nodes (no geometry modification).
+
+**Key Files**
+- `src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js` — Core storey visibility module.
+- `src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__README__.md` — Integration documentation.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — Test environment integration (wrapper functions).
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html` — Storey panel HTML structure.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Stylesheet.css` — Storey panel styling (bottom-left positioning).
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — StoreyVisibility configuration section.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.5  -  15-Feb-2026
 ### 3D Object Interactions System — Click-to-Open Door Animation 
 *Note: Migrated From Test Environment*

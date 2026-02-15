@@ -79,6 +79,12 @@
             "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4
         }
     },
+    "StoreyVisibility": {
+        "StoreyVisibility__Description"                    : "Storey-based visibility toggle settings. Panel auto-detects storey models from GLB filenames containing Storey__ prefix.",
+        "StoreyVisibility__Enabled"                        : true,
+        "StoreyVisibility__DefaultMode"                    : "ShowAll",
+        "StoreyVisibility__StoreyOrder"                    : ["GroundFloor", "FirstFloor", "SecondFloor", "ThirdFloor"]
+    },
     "Dev__DeveloperMode": {
         "Dev__DeveloperMode__Description"                  : "Dev cube visible by default in test environment for orientation reference.",
         "Dev__DefaultCube": {

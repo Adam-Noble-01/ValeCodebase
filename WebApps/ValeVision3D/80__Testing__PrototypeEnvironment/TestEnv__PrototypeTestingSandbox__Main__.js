@@ -46,6 +46,8 @@
         Na__DoorAnimation__Initialize,
         Na__DoorAnimation__Update
     } from '../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+    
+    import * as Na__StoreySystem from '../src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -110,6 +112,9 @@
     const hideAllBtn            = document.getElementById('testEnvHideAll');                 // <-- Hide all button
     const copyTreeBtn           = document.getElementById('testEnvCopyTree');                // <-- Copy tree button
     const refreshModelsBtn      = document.getElementById('testEnvRefreshModels');           // <-- Refresh models button
+    const storeyPanelEl         = document.getElementById('testEnvStoreyPanel');             // <-- Storey toggle panel
+    const storeyControlsEl      = document.getElementById('testEnvStoreyControls');          // <-- Storey toggle buttons container
+    const storeyShowAllBtn      = document.getElementById('testEnvStoreyShowAll');           // <-- Show all storeys button
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -885,6 +890,14 @@
             // REBUILD NODE TREE
             TestEnv__NodeExplorer__BuildTree();                                  // <-- Rebuild tree UI
 
+            // REINITIALIZE STOREY VISIBILITY CONTROLS
+            const storeyConfig = TestEnv__Config.StoreyVisibility || {};         // <-- Load storey config
+            Na__StoreySystem.Na__StoreySystem__Initialize(TestEnv__ModelGroup__Root, {
+                storeyOrder: storeyConfig.StoreyVisibility__StoreyOrder,
+                defaultRoofVisible: true                                         // <-- Default: all roofs visible (solid building)
+            });
+            TestEnv__Storey__BuildStoreyPanel();                                 // <-- Rebuild storey toggle UI
+
             // REINITIALIZE DOOR ANIMATION (if enabled)
             const TestEnv__Config__3dObjectInteractions = TestEnv__Config['3dObject__InteractionsSystem'];
             
@@ -1015,6 +1028,200 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Storey Visibility Controls (Module Integration)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Toggle a Single Storey Visibility
+    // ------------------------------------------------------------
+    function TestEnv__Storey__ToggleStorey(storeyKey) {
+        Na__StoreySystem.Na__StoreySystem__ToggleStorey(storeyKey);             // <-- Call module
+        TestEnv__Storey__UpdatePanelUI();                                       // <-- Refresh UI buttons
+        TestEnv__NodeExplorer__BuildTree();                                      // <-- Refresh node explorer
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show Only Below a Specific Storey (Dolls House Mode)
+    // ------------------------------------------------------------
+    function TestEnv__Storey__ShowOnlyBelow(storeyKey) {
+        Na__StoreySystem.Na__StoreySystem__ShowOnlyBelow(storeyKey);            // <-- Call module
+        TestEnv__Storey__UpdatePanelUI();                                       // <-- Refresh UI buttons
+        TestEnv__NodeExplorer__BuildTree();                                      // <-- Refresh node explorer
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show All Storeys (Entire Building)
+    // ------------------------------------------------------------
+    function TestEnv__Storey__ShowAll() {
+        Na__StoreySystem.Na__StoreySystem__ShowAll();                           // <-- Call module
+        TestEnv__Storey__UpdatePanelUI();                                       // <-- Refresh UI buttons
+        TestEnv__NodeExplorer__BuildTree();                                      // <-- Refresh node explorer
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Toggle Roof Visibility Mode
+    // ------------------------------------------------------------
+    function TestEnv__Storey__ToggleRoof() {
+        Na__StoreySystem.Na__StoreySystem__ToggleRoof();                        // <-- Call module
+        TestEnv__Storey__UpdatePanelUI();                                       // <-- Refresh UI buttons
+        TestEnv__NodeExplorer__BuildTree();                                      // <-- Refresh node explorer
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Update Storey Panel Button States (UI Sync)
+    // ------------------------------------------------------------
+    function TestEnv__Storey__UpdatePanelUI() {
+        if (!storeyControlsEl) return;
+
+        const state = Na__StoreySystem.Na__StoreySystem__GetState();            // <-- Get module state
+
+        const buttons = storeyControlsEl.querySelectorAll('.testenv-storey-btn');
+        buttons.forEach((btn) => {
+            const key     = btn.dataset.storeyKey;
+            const visible = state.visibleState[key];
+
+            if (visible) {
+                btn.classList.remove('testenv-storey-btn--hidden');
+                btn.classList.add('testenv-storey-btn--visible');
+            } else {
+                btn.classList.remove('testenv-storey-btn--visible');
+                btn.classList.add('testenv-storey-btn--hidden');
+            }
+
+            // Update eye icon
+            const iconEl = btn.querySelector('.testenv-storey-btn__icon');
+            if (iconEl) {
+                iconEl.textContent = visible ? '\u{1F441}' : '\u{1F6AB}';       // <-- Eye or No-Entry icon
+            }
+        });
+
+        // Update roof toggle button state
+        const roofBtn = document.getElementById('testEnvStoreyRoofToggle');
+        if (roofBtn) {
+            const iconEl = roofBtn.querySelector('.testenv-storey-roof-btn__icon');
+            if (state.roofVisible) {
+                roofBtn.classList.remove('testenv-storey-roof-btn--hidden');
+                roofBtn.classList.add('testenv-storey-roof-btn--visible');
+                if (iconEl) iconEl.textContent = '\u{1F3E0}';                   // <-- House icon
+            } else {
+                roofBtn.classList.remove('testenv-storey-roof-btn--visible');
+                roofBtn.classList.add('testenv-storey-roof-btn--hidden');
+                if (iconEl) iconEl.textContent = '\u{1F6AB}';                   // <-- No-Entry icon
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build Storey Panel UI (Buttons for Each Storey)
+    // ------------------------------------------------------------
+    function TestEnv__Storey__BuildStoreyPanel() {
+        if (!storeyPanelEl || !storeyControlsEl) return;
+
+        const state = Na__StoreySystem.Na__StoreySystem__GetState();            // <-- Get module state
+
+        if (!state.hasStoreys) {
+            storeyPanelEl.style.display = 'none';                               // <-- Hide panel if no storeys
+            return;
+        }
+
+        // Show the panel
+        storeyPanelEl.style.display = 'block';                                  // <-- Make panel visible
+
+        // Clear existing controls
+        storeyControlsEl.innerHTML = '';                                         // <-- Reset controls
+
+        // Build roof toggle button (at top of panel, above storeys)
+        const roofBtn = document.createElement('button');
+        roofBtn.id = 'testEnvStoreyRoofToggle';
+        roofBtn.className = `testenv-storey-roof-btn ${state.roofVisible ? 'testenv-storey-roof-btn--visible' : 'testenv-storey-roof-btn--hidden'}`;
+        roofBtn.title = 'Toggle roof mode (On = solid building, Off = dolls house view)';
+
+        const roofIconEl = document.createElement('span');
+        roofIconEl.className = 'testenv-storey-roof-btn__icon';
+        roofIconEl.textContent = state.roofVisible ? '\u{1F3E0}' : '\u{1F6AB}';  // <-- House or No-Entry icon
+        roofBtn.appendChild(roofIconEl);
+
+        const roofLabelEl = document.createElement('span');
+        roofLabelEl.className = 'testenv-storey-roof-btn__label';
+        roofLabelEl.textContent = 'Roofs';
+        roofBtn.appendChild(roofLabelEl);
+
+        roofBtn.addEventListener('click', () => {
+            TestEnv__Storey__ToggleRoof();                                      // <-- Toggle roof visibility
+        });
+
+        storeyControlsEl.appendChild(roofBtn);
+
+        // Add visual separator between roof and storey buttons
+        const separatorEl = document.createElement('div');
+        separatorEl.className = 'testenv-storey-separator';
+        storeyControlsEl.appendChild(separatorEl);
+
+        // Build a toggle button for each storey (top to bottom for display)
+        const reversedOrder = [...state.order].reverse();                       // <-- Display top storey first
+        for (const storeyKey of reversedOrder) {
+            const displayName  = Na__StoreySystem.Na__StoreySystem__GetStoreyDisplayName(storeyKey);
+            const modelCount   = state.map[storeyKey].length;
+            const isVisible    = state.visibleState[storeyKey];
+
+            // Toggle button row
+            const btnEl = document.createElement('button');
+            btnEl.className = `testenv-storey-btn ${isVisible ? 'testenv-storey-btn--visible' : 'testenv-storey-btn--hidden'}`;
+            btnEl.dataset.storeyKey = storeyKey;
+            btnEl.title = `Toggle ${displayName} visibility`;
+
+            // Eye icon
+            const iconEl = document.createElement('span');
+            iconEl.className = 'testenv-storey-btn__icon';
+            iconEl.textContent = isVisible ? '\u{1F441}' : '\u{1F6AB}';
+            btnEl.appendChild(iconEl);
+
+            // Storey name label
+            const labelEl = document.createElement('span');
+            labelEl.className = 'testenv-storey-btn__label';
+            labelEl.textContent = displayName;
+            btnEl.appendChild(labelEl);
+
+            // Model count badge
+            const countEl = document.createElement('span');
+            countEl.className = 'testenv-storey-btn__count';
+            countEl.textContent = `${modelCount} models`;
+            btnEl.appendChild(countEl);
+
+            // Click handler: toggle this storey
+            btnEl.addEventListener('click', () => {
+                TestEnv__Storey__ToggleStorey(storeyKey);
+            });
+
+            // Right-click handler: dolls house mode (show only this and below)
+            btnEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                TestEnv__Storey__ShowOnlyBelow(storeyKey);
+            });
+
+            storeyControlsEl.appendChild(btnEl);
+        }
+
+        // Wire up "Show All Storeys" button
+        if (storeyShowAllBtn) {
+            // Remove any previous listener by cloning
+            const newBtn = storeyShowAllBtn.cloneNode(true);
+            storeyShowAllBtn.parentNode.replaceChild(newBtn, storeyShowAllBtn);
+            newBtn.addEventListener('click', TestEnv__Storey__ShowAll);
+        }
+
+        console.log(`[TestEnv] Storey panel built: ${state.order.length} storey(s)`);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Main Loading Sequence
 // -----------------------------------------------------------------------------
 
@@ -1057,6 +1264,14 @@
 
             TestEnv__ShowScene();                                            // <-- Reveal scene
             TestEnv__NodeExplorer__BuildTree();                              // <-- Build node graph tree
+
+            // DETECT AND BUILD STOREY VISIBILITY CONTROLS
+            const storeyConfig = TestEnv__Config.StoreyVisibility || {};         // <-- Load storey config
+            Na__StoreySystem.Na__StoreySystem__Initialize(TestEnv__ModelGroup__Root, {
+                storeyOrder: storeyConfig.StoreyVisibility__StoreyOrder,
+                defaultRoofVisible: true                                         // <-- Default: all roofs visible (solid building)
+            });
+            TestEnv__Storey__BuildStoreyPanel();                             // <-- Build storey toggle UI (hidden if no storeys)
 
             // INITIALIZE DOOR ANIMATION (requires main app config structure)
             const TestEnv__Config__3dObjectInteractions = TestEnv__Config['3dObject__InteractionsSystem'];

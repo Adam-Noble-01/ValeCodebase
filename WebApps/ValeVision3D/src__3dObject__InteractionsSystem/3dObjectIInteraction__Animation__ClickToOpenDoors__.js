@@ -88,8 +88,8 @@
     let Na__DoorAnim__Scene               = null;                                // <-- Three.js scene reference
     let Na__DoorAnim__Camera              = null;                                // <-- Three.js camera reference
     let Na__DoorAnim__RendererDomElement  = null;                                // <-- Renderer canvas DOM element
-    let Na__DoorAnim__ModelGroupMesh      = null;                                // <-- Mesh model group (solid geometry)
-    let Na__DoorAnim__ModelGroupLinework  = null;                                // <-- Linework model group (edges)
+    let Na__DoorAnim__ModelGroupsMesh     = [];                                  // <-- Array of mesh model groups (solid geometry)
+    let Na__DoorAnim__ModelGroupsLinework = [];                                  // <-- Array of linework model groups (edges)
     let Na__DoorAnim__Initialized         = false;                               // <-- Module initialization flag
     // ------------------------------------------------------------
 
@@ -174,14 +174,14 @@
     function Na__DoorAnimation__ScanForDoors() {
         Na__DoorAnim__DoorRegistry.clear();                                      // <-- Clear previous registry
 
-        if (!Na__DoorAnim__ModelGroupMesh && !Na__DoorAnim__ModelGroupLinework) {
+        if (Na__DoorAnim__ModelGroupsMesh.length === 0 && Na__DoorAnim__ModelGroupsLinework.length === 0) {
             console.warn('[DoorAnimation] No model groups set, cannot scan for doors');
             return;
         }
 
-        // Scan mesh model group for ADR assemblies
-        if (Na__DoorAnim__ModelGroupMesh) {
-            Na__DoorAnim__ModelGroupMesh.traverse((object) => {
+        // Scan all mesh model groups for ADR assemblies
+        for (const meshGroup of Na__DoorAnim__ModelGroupsMesh) {
+            meshGroup.traverse((object) => {
                 if (!Na__DoorAnim__NameStartsWith(object, Na__DoorAnim__PREFIX_ADR)) {
                     return;                                                      // <-- Skip non-ADR objects
                 }
@@ -239,9 +239,9 @@
             });
         }
 
-        // Scan linework model group and link to existing door records
-        if (Na__DoorAnim__ModelGroupLinework) {
-            Na__DoorAnim__ModelGroupLinework.traverse((object) => {
+        // Scan all linework model groups and link to existing door records
+        for (const lineworkGroup of Na__DoorAnim__ModelGroupsLinework) {
+            lineworkGroup.traverse((object) => {
                 if (!Na__DoorAnim__NameStartsWith(object, Na__DoorAnim__PREFIX_ADR)) {
                     return;                                                      // <-- Skip non-ADR objects
                 }
@@ -561,7 +561,11 @@
 
     // FUNCTION | Initialize Door Animation System
     // ------------------------------------------------------------
-    function Na__DoorAnimation__Initialize(scene, camera, rendererDomElement, modelGroupMesh, modelGroupLinework, config) {
+    // Accepts arrays of model groups for multi-storey support.
+    // Backward-compatible: a single Group passed for meshGroups or lineworkGroups
+    // is automatically wrapped in an array.
+    // ------------------------------------------------------------
+    function Na__DoorAnimation__Initialize(scene, camera, rendererDomElement, meshGroups, lineworkGroups, config) {
         if (Na__DoorAnim__Initialized) {
             console.warn('[DoorAnimation] Already initialized, skipping');
             return;
@@ -571,8 +575,10 @@
         Na__DoorAnim__Scene               = scene;                               // <-- Scene reference
         Na__DoorAnim__Camera              = camera;                              // <-- Camera reference
         Na__DoorAnim__RendererDomElement  = rendererDomElement;                  // <-- Canvas DOM element
-        Na__DoorAnim__ModelGroupMesh      = modelGroupMesh;                      // <-- Mesh model group
-        Na__DoorAnim__ModelGroupLinework  = modelGroupLinework;                  // <-- Linework model group
+
+        // Normalize inputs: wrap single groups in arrays for backward compatibility
+        Na__DoorAnim__ModelGroupsMesh     = Array.isArray(meshGroups)     ? meshGroups     : (meshGroups     ? [meshGroups]     : []);
+        Na__DoorAnim__ModelGroupsLinework = Array.isArray(lineworkGroups) ? lineworkGroups  : (lineworkGroups ? [lineworkGroups] : []);
 
         // Apply config overrides
         if (config) {

@@ -336,6 +336,38 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Find All Door Model Groups (Supports Both Flat and Storey Structures)
+    // ------------------------------------------------------------
+    // Returns arrays of door model groups (no cloning, no reparenting).
+    // Door groups remain as direct children of root so storey visibility controls
+    // continue to work. The door animation module accepts arrays natively.
+    // ------------------------------------------------------------
+    function TestEnv__FindAllDoorModels() {
+        const doorMeshGroups     = [];                                       // <-- Array of mesh door model groups
+        const doorLineworkGroups = [];                                       // <-- Array of linework door model groups
+
+        // Search through direct children of root for door models
+        for (const child of TestEnv__ModelGroup__Root.children) {
+            const name = child.name || '';
+
+            // Match any model containing ProposedDoors and MeshModel
+            if (name.includes('ProposedDoors') && name.includes('MeshModel')) {
+                doorMeshGroups.push(child);                                  // <-- Add original reference
+                console.log(`[TestEnv] Found door mesh model: ${name}`);
+            }
+
+            // Match any model containing ProposedDoors and LineworkModel
+            if (name.includes('ProposedDoors') && name.includes('LineworkModel')) {
+                doorLineworkGroups.push(child);                              // <-- Add original reference
+                console.log(`[TestEnv] Found door linework model: ${name}`);
+            }
+        }
+
+        return { doorMeshGroups, doorLineworkGroups };                       // <-- Return arrays of original groups
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -905,16 +937,16 @@
                 const TestEnv__Config__DoorAnimation = TestEnv__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'];
                 
                 if (TestEnv__Config__DoorAnimation && TestEnv__Config__DoorAnimation['3dObject__Interaction__DoorAnimation__Enabled'] !== false) {
-                    const doorMeshGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__MeshModel__');
-                    const doorLineworkGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__LineworkModel__');
+                    // Find all door models (supports both flat and storey-based structures)
+                    const { doorMeshGroups, doorLineworkGroups } = TestEnv__FindAllDoorModels();
 
-                    if (doorMeshGroup || doorLineworkGroup) {
+                    if (doorMeshGroups.length > 0 || doorLineworkGroups.length > 0) {
                         Na__DoorAnimation__Initialize(
                             TestEnv__Scene,
                             TestEnv__Camera,
                             TestEnv__Renderer.domElement,
-                            doorMeshGroup,
-                            doorLineworkGroup,
+                            doorMeshGroups,                                      // <-- Array of mesh model groups
+                            doorLineworkGroups,                                  // <-- Array of linework model groups
                             TestEnv__Config__DoorAnimation
                         );
                         console.log('[TestEnv] Door animation reinitialized after refresh');
@@ -1284,17 +1316,16 @@
                 if (!TestEnv__Config__DoorAnimation) {
                     console.error('[TestEnv] Door animation config missing: 3dObject__Interaction__DoorAnimation not found');
                 } else if (TestEnv__Config__DoorAnimation['3dObject__Interaction__DoorAnimation__Enabled'] !== false) {
-                    // Find the mesh and linework model groups for doors
-                    const doorMeshGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__MeshModel__');
-                    const doorLineworkGroup = TestEnv__Scene.getObjectByName('Na__NaModel__MainBuildingModel__ProposedDoors__LineworkModel__');
+                    // Find all door models (supports both flat and storey-based structures)
+                    const { doorMeshGroups, doorLineworkGroups } = TestEnv__FindAllDoorModels();
 
-                    if (doorMeshGroup || doorLineworkGroup) {
+                    if (doorMeshGroups.length > 0 || doorLineworkGroups.length > 0) {
                         Na__DoorAnimation__Initialize(
                             TestEnv__Scene,                                      // <-- Scene reference
                             TestEnv__Camera,                                     // <-- Camera reference
                             TestEnv__Renderer.domElement,                        // <-- Canvas DOM element
-                            doorMeshGroup,                                       // <-- Mesh model group (doors)
-                            doorLineworkGroup,                                   // <-- Linework model group (doors)
+                            doorMeshGroups,                                      // <-- Array of mesh model groups (doors)
+                            doorLineworkGroups,                                  // <-- Array of linework model groups (doors)
                             TestEnv__Config__DoorAnimation                      // <-- Door animation config
                         );
                         console.log('[TestEnv] Door animation initialized (imports from main app module)');

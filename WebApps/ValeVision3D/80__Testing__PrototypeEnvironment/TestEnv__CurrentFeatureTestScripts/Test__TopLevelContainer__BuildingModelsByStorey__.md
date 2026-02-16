@@ -38,6 +38,7 @@ So
     `23__ProposedBuilding__Roofs`
     `24__ProposedBuilding__Windows`
     `25__ProposedBuilding__Doors`
+    `26__ProposedBuilding__Staircase`
     `07__Landscape`
 **IF DETECTED THEN**
     - Build the file strings like so for the GLB Giles:
@@ -52,6 +53,8 @@ So
         `Na__NaModel__Storey__GroundFloor__ProposedWindows__LineworkModel__.glb`
         `Na__NaModel__Storey__GroundFloor__ProposedDoors__MeshModel__.glb`
         `Na__NaModel__Storey__GroundFloor__ProposedDoors__LineworkModel__.glb`
+        `Na__NaModel__Storey__GroundFloor__ProposedStairs__MeshModel__.glb`
+        `Na__NaModel__Storey__GroundFloor__ProposedStairs__LineworkModel__.glb`
         `Na__NaModel__Storey__GroundFloor__LandscapeEnvironment__MeshModel__.glb`
         `Na__NaModel__Storey__GroundFloor__LandscapeEnvironment__LineworkModel__.glb`
 **ELSE**
@@ -95,14 +98,16 @@ TAG_RANGES = {
     "NaModel__MainBuildingModel__ExistingRoofs"   => [13],            # <-- Existing Building Roofs (`These are used downstream for view by Storey Logic`)
     "NaModel__MainBuildingModel__ExistingWindows" => [14],            # <-- Existing Building Windows 
     "NaModel__MainBuildingModel__ExistingDoors"   => [15],            # <-- Existing Building Doors (Objects Also Use `ADR` Codes such as `ADR002__InternalDoor`)
-    "NaModel__MainBuildingModel__ExistingOther"   => (16..19),        # <-- Existing Other Elements
+    "NaModel__MainBuildingModel__ExistingStairs"  => [16],            # <-- Existing Building Staircases
+    "NaModel__MainBuildingModel__ExistingOther"   => (17..19),        # <-- Existing Other Elements
     "NaModel__MainBuildingModel__Proposed"        => (20),            # <-- Proposed Main Building Flag (Used for a whole building in simplified Massing Models)
     "NaModel__MainBuildingModel__ProposedWalls"   => [21],            # <-- Proposed Building Walls
     "NaModel__MainBuildingModel__ProposedFloors"  => [22],            # <-- Proposed Building Floors 
     "NaModel__MainBuildingModel__ProposedRoofs"   => [23],            # <-- Proposed Building Roofs (`These are used downstream for view by Storey Logic`)
     "NaModel__MainBuildingModel__ProposedWindows" => [24],            # <-- Proposed Building Windows 
     "NaModel__MainBuildingModel__ProposedDoors"   => [25],            # <-- Proposed Building Doors (Objects Also Use `ADR` Codes such as `ADR002__InternalDoor`)
-    "NaModel__MainBuildingModel__ProposedOther"   => (26..29),        # <-- Proposed Other Elements
+    "NaModel__MainBuildingModel__ProposedStairs"  => [26],            # <-- Proposed Building Staircases
+    "NaModel__MainBuildingModel__ProposedOther"   => (27..29),        # <-- Proposed Other Elements
     "NaModel__GroundFloorFurniture"               => (30..38),        # <-- Ground Floor Furniture
     "NaModel__GroundFloorDecor"                   => [39],            # <-- Ground Floor High Detail
     "NaModel__FirstFloorFurniture"                => (40..48),        # <-- First Floor Furniture

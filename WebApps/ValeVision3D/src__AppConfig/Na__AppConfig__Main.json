@@ -122,9 +122,9 @@
                     "ImageExport__PostProcessEffects__Levels__Order"       : 1,
                     "ImageExport__PostProcessEffects__Levels__Parameters"  : [
                         {
-                            "ImageExport__PostProcessEffects__Levels__Parameter__Black"         : 0,
-                            "ImageExport__PostProcessEffects__Levels__Parameter__White"         : 230,
-                            "ImageExport__PostProcessEffects__Levels__Parameter__Gamma"         : 1.0
+                            "ImageExport__PostProcessEffects__Levels__Parameter__Black"  :  0,
+                            "ImageExport__PostProcessEffects__Levels__Parameter__White"  :  230,
+                            "ImageExport__PostProcessEffects__Levels__Parameter__Gamma"  :  1.0
                         }
                     ]
                 }

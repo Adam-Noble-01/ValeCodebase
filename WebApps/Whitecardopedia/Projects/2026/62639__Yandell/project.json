@@ -1,0 +1,55 @@
+{
+    "projectName": "Yandell",
+    "projectCode": "62639",
+    "productionData": {
+        "input": "CAD File",
+        "conceptArtist": "Rachael",
+        "additionalNotes": "Took a little longer than expected, had to model a new type of column, saved it in the 3D standards now though so have it for in future. Rachael's CAD File was great on this one."
+    },
+    "scheduleData": {
+        "dateReceived": "17-Feb-2026",
+        "dateFulfilled": "17-Feb-2026",
+        "timeAllocated": 2,
+        "timeTaken": 3
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__17-Feb-2026.png"
+    ],
+    "basePath": "Projects/2026/62639__Yandell",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__ValeVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__ValeVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62639__Yandell/Yandell__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 2254,
+            "Camera__DefaultPos__PosY": 2714,
+            "Camera__DefaultPos__PosZ": 8896
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0695,
+            "Camera__DefaultRotation__RotY": -0.1676,
+            "Camera__DefaultRotation__RotZ": -0.0116
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 43.6028
+        }
+    },
+    "folderId": "2026/62639__Yandell",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__17-Feb-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__17-Feb-2026.png"
+    ]
+}

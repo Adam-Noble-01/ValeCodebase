@@ -322,6 +322,10 @@
         {
             "folderId": "2026/59280__Itier",
             "enabled": true
+        },
+        {
+            "folderId": "2026/62639__Yandell",
+            "enabled": true
         }
     ]
 }

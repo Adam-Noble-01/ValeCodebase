@@ -318,6 +318,10 @@
         {
             "folderId": "2026/59443__Moore",
             "enabled": true
+        },
+        {
+            "folderId": "2026/59280__Itier",
+            "enabled": true
         }
     ]
 }

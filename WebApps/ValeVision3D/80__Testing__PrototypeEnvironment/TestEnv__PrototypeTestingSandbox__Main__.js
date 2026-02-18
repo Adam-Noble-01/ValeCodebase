@@ -75,7 +75,8 @@
     // ------------------------------------------------------------
     const TestEnv__Config = await TestEnv__LoadConfig();                      // <-- Load test environment config
 
-    const TestEnv__Config__Scene           = TestEnv__Config.scene;                              // <-- Scene settings
+    const TestEnv__Config__SceneConfig     = TestEnv__Config.sceneConfig;                        // <-- Scene settings
+    const TestEnv__Config__GroundPlane     = TestEnv__Config.Scene__GroundPlane;                 // <-- Ground plane settings
     const TestEnv__Config__Models          = TestEnv__Config.models;                             // <-- Model-specific settings
     const TestEnv__Config__NavmodeSettings = TestEnv__Config.Navmode__Settings;                  // <-- Navmode config (MM)
     const TestEnv__Config__ProfileLines    = TestEnv__Config.RenderEffect__ProfileLines || null; // <-- Profile lines config
@@ -176,14 +177,14 @@
     // MODULE VARIABLES | Three.js Core Objects
     // ------------------------------------------------------------
     const TestEnv__Scene = new THREE.Scene();
-    TestEnv__Scene.background = new THREE.Color(TestEnv__Config__Scene.bgColor);
-    TestEnv__Scene.fog = new THREE.FogExp2(TestEnv__Config__Scene.bgColor, TestEnv__Config__Scene.fogDensity);
+    TestEnv__Scene.background = new THREE.Color(TestEnv__Config__SceneConfig.bgColor);
+    TestEnv__Scene.fog = new THREE.FogExp2(TestEnv__Config__SceneConfig.bgColor, TestEnv__Config__SceneConfig.fogDensity);
 
     const TestEnv__Camera = new THREE.PerspectiveCamera(
-        TestEnv__Config__Scene.cameraFov,                                    // <-- Field of view
+        TestEnv__Config__SceneConfig.cameraFov,                              // <-- Field of view
         window.innerWidth / window.innerHeight,                              // <-- Aspect ratio
-        TestEnv__Config__Scene.cameraNear,                                   // <-- Near clipping plane
-        TestEnv__Config__Scene.cameraFar                                     // <-- Far clipping plane
+        TestEnv__Config__SceneConfig.cameraNear,                             // <-- Near clipping plane
+        TestEnv__Config__SceneConfig.cameraFar                              // <-- Far clipping plane
     );
 
     // Position camera offset from dev cube for initial view
@@ -378,10 +379,10 @@
     // FUNCTION | Setup Scene Lighting and Ground Plane
     // ------------------------------------------------------------
     function TestEnv__SetupLighting() {
-        const ambientLight = new THREE.AmbientLight(0xffffff, TestEnv__Config__Scene.ambientIntensity);
+        const ambientLight = new THREE.AmbientLight(0xffffff, TestEnv__Config__SceneConfig.ambientIntensity);
         TestEnv__Scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, TestEnv__Config__Scene.dirLightIntensity);
+        const dirLight = new THREE.DirectionalLight(0xffffff, TestEnv__Config__SceneConfig.dirLightIntensity);
         dirLight.position.set(50, 100, 40);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width  = 2048;
@@ -389,13 +390,22 @@
         dirLight.shadow.bias = -0.0001;
         TestEnv__Scene.add(dirLight);
 
-        const groundGeo = new THREE.PlaneGeometry(TestEnv__Config__Scene.groundSize, TestEnv__Config__Scene.groundSize);
-        const groundMat = new THREE.ShadowMaterial({ opacity: TestEnv__Config__Scene.shadowOpacity, color: 0x000000 });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = TestEnv__Config__Scene.groundYOffset;
-        ground.receiveShadow = true;
-        TestEnv__Scene.add(ground);
+        // Only create ground plane if enabled in config
+        if (TestEnv__Config__GroundPlane && TestEnv__Config__GroundPlane.Scene__GroundPlane__Enabled) {
+            const groundGeo = new THREE.PlaneGeometry(
+                TestEnv__Config__GroundPlane.Scene__GroundPlane__Size,
+                TestEnv__Config__GroundPlane.Scene__GroundPlane__Size
+            );
+            const groundMat = new THREE.ShadowMaterial({
+                opacity: TestEnv__Config__GroundPlane.Scene__GroundPlane__ShadowOpacity,
+                color: 0x000000
+            });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = TestEnv__Config__GroundPlane.Scene__GroundPlane__yAxisOffset;
+            ground.receiveShadow = true;
+            TestEnv__Scene.add(ground);
+        }
     }
     // ------------------------------------------------------------
 

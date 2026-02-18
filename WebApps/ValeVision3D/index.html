@@ -311,7 +311,8 @@
     const Na__AppConfig__Data = await Na__AppConfig__LoadConfig();
     
     const Na__Config__ModelDefaults = Na__AppConfig__Data.modelDefaults;            // <-- Model defaults
-    const Na__Config__Scene = Na__AppConfig__Data.scene;                            // <-- Scene settings
+    const Na__Config__SceneConfig = Na__AppConfig__Data.sceneConfig;                 // <-- Scene settings
+    const Na__Config__GroundPlane = Na__AppConfig__Data.Scene__GroundPlane;         // <-- Ground plane settings
     const Na__Config__Models = Na__AppConfig__Data.models;                          // <-- Model-specific settings
     const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;                  // <-- Camera lens settings
     const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;                // <-- Image export settings
@@ -382,14 +383,14 @@
     // MODULE VARIABLES | Scene Objects
     // ------------------------------------------------------------
     const Na__Scene__Main = new THREE.Scene();
-    Na__Scene__Main.background = new THREE.Color(Na__Config__Scene.bgColor);
-    Na__Scene__Main.fog = new THREE.FogExp2(Na__Config__Scene.bgColor, Na__Config__Scene.fogDensity);
+    Na__Scene__Main.background = new THREE.Color(Na__Config__SceneConfig.bgColor);
+    Na__Scene__Main.fog = new THREE.FogExp2(Na__Config__SceneConfig.bgColor, Na__Config__SceneConfig.fogDensity);
     
     const Na__Camera__Main = new THREE.PerspectiveCamera(
-        Na__Config__Scene.cameraFov,
+        Na__Config__SceneConfig.cameraFov,
         window.innerWidth / window.innerHeight,
-        Na__Config__Scene.cameraNear,
-        Na__Config__Scene.cameraFar
+        Na__Config__SceneConfig.cameraNear,
+        Na__Config__SceneConfig.cameraFar
     );
     if (Na__Config__CameraDefault && Na__Config__CameraDefault.Camera__DefaultPos) {
         Na__Camera__Main.position.set(
@@ -649,10 +650,10 @@
     // FUNCTION | Setup Lighting and Ground
     // ------------------------------------------------------------
     function Na__Scene__SetupLighting() {
-        const Na__Light__Ambient = new THREE.AmbientLight(0xffffff, Na__Config__Scene.ambientIntensity);
+        const Na__Light__Ambient = new THREE.AmbientLight(0xffffff, Na__Config__SceneConfig.ambientIntensity);
         Na__Scene__Main.add(Na__Light__Ambient);
         
-        const Na__Light__Directional = new THREE.DirectionalLight(0xffffff, Na__Config__Scene.dirLightIntensity);
+        const Na__Light__Directional = new THREE.DirectionalLight(0xffffff, Na__Config__SceneConfig.dirLightIntensity);
         Na__Light__Directional.position.set(50, 100, 40);
         Na__Light__Directional.castShadow = true;
         Na__Light__Directional.shadow.mapSize.width = 2048;
@@ -660,16 +661,22 @@
         Na__Light__Directional.shadow.bias = -0.0001;
         Na__Scene__Main.add(Na__Light__Directional);
         
-        const Na__Ground__Geometry = new THREE.PlaneGeometry(Na__Config__Scene.groundSize, Na__Config__Scene.groundSize);
-        const Na__Ground__Material = new THREE.ShadowMaterial({
-            opacity: Na__Config__Scene.shadowOpacity,
-            color: 0x000000
-        });
-        const Na__Ground__Plane = new THREE.Mesh(Na__Ground__Geometry, Na__Ground__Material);
-        Na__Ground__Plane.rotation.x = -Math.PI / 2;
-        Na__Ground__Plane.position.y = Na__Config__Scene.groundYOffset;
-        Na__Ground__Plane.receiveShadow = true;
-        Na__Scene__Main.add(Na__Ground__Plane);
+        // Only create ground plane if enabled in config
+        if (Na__Config__GroundPlane && Na__Config__GroundPlane.Scene__GroundPlane__Enabled) {
+            const Na__Ground__Geometry = new THREE.PlaneGeometry(
+                Na__Config__GroundPlane.Scene__GroundPlane__Size,
+                Na__Config__GroundPlane.Scene__GroundPlane__Size
+            );
+            const Na__Ground__Material = new THREE.ShadowMaterial({
+                opacity: Na__Config__GroundPlane.Scene__GroundPlane__ShadowOpacity,
+                color: 0x000000
+            });
+            const Na__Ground__Plane = new THREE.Mesh(Na__Ground__Geometry, Na__Ground__Material);
+            Na__Ground__Plane.rotation.x = -Math.PI / 2;
+            Na__Ground__Plane.position.y = Na__Config__GroundPlane.Scene__GroundPlane__yAxisOffset;
+            Na__Ground__Plane.receiveShadow = true;
+            Na__Scene__Main.add(Na__Ground__Plane);
+        }
     }
     // ------------------------------------------------------------
 

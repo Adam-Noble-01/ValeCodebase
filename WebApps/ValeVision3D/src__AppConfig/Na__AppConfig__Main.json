@@ -15,15 +15,18 @@
         "Scene__Default__LightingConfig__DirectionalIntensity": 1.0
     },
     "Scene__Default__FogConfig": {
-        "Scene__Default__FogConfig__Density": 0.0003,
-        "Scene__Default__FogConfig__Color": 16777215
+        "Scene__Default__FogConfig__Description"     : "Default orbit-cube anchored fog envelope. Distances are integer millimeters and must be converted to 3D units in code.",
+        "Scene__Default__FogConfig__Enabled"         : true,
+        "Scene__Default__FogConfig__Color"           : 16777215,
+        "Scene__Default__FogConfig__StartDistanceMm" : 45000,
+        "Scene__Default__FogConfig__EndDistanceMm"   : 60000
     },
     "Scene__Default__ControlsConfig": {
-        "Scene__Default__ControlsConfig__MovementSpeed": 0.5,
-        "Scene__Default__ControlsConfig__ElevationSpeed": 0.5,
-        "Scene__Default__ControlsConfig__EnableWASD": true,
-        "Scene__Default__ControlsConfig__EnableDamping": false,
-        "Scene__Default__ControlsConfig__StatusHideDelay": 3000
+        "Scene__Default__ControlsConfig__MovementSpeed"   : 0.5,
+        "Scene__Default__ControlsConfig__ElevationSpeed"  : 0.5,
+        "Scene__Default__ControlsConfig__EnableWASD"      : true,
+        "Scene__Default__ControlsConfig__EnableDamping"   : false,
+        "Scene__Default__ControlsConfig__StatusHideDelay" : 3000
     },
     "Scene__GroundPlane": {
         "Scene__GroundPlane__Enabled": false,

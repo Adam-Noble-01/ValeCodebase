@@ -238,27 +238,18 @@
                         </div>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__item">
-                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCameraPositionToggle">
-                        Download Position Data
-                        <span class="na-dropdown-menu__subarrow">▾</span>
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naSaveCameraSettingsItem" style="display:none;">
+                    <button class="na-dropdown-menu__button" id="naSaveCameraSettingsButton">
+                        Save Camera Settings
                     </button>
-                    <div class="na-dropdown-menu__panel" id="naCameraPositionPanel">
-                        <div class="na-dropdown-menu__panel-title">Camera JSON</div>
-                        <textarea class="na-dropdown-menu__textarea" id="naCameraPositionOutput" rows="6" readonly></textarea>
-                        <div class="na-dropdown-menu__panel-row">
-                            <input type="file" id="naCameraPositionImportFile" class="na-dropdown-menu__file-input" accept=".json,application/json" />
-                            <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naCameraPositionImport">Import JSON</button>
-                        </div>
-                        <div class="na-dropdown-menu__panel-row">
-                            <button class="na-dropdown-menu__action" id="naCameraPositionDownload">Download JSON</button>
-                        </div>
-                    </div>
                 </li>
             </ul>
             
         </details>
     </div>
+    
+    <!-- Toast Notification (success / error feedback) -->
+    <div class="na-toast" id="naToastNotification"></div>
     
     <!-- endregion -------------------------------------------------------- -->
     
@@ -281,7 +272,7 @@
     import { Na__RenderPipeline__SetupComposer } from './src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
     import { Na__UiFeature__InitializeCameraLensControls } from './src__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './src__ImageExport/Na__UiFeature__ImageExport__Controls.js';
-    import { Na__UiFeature__ApplyCameraConfig, Na__UiFeature__InitializeCameraPositionControls } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
+    import { Na__UiFeature__ApplyCameraConfig, Na__UiFeature__BuildCameraJson } from './src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { 
@@ -290,6 +281,13 @@
         Na__ModelLoader__LoadOrbitHelperCube
     } from './src__ModelLoader/Na__ModelLoader__MultiModel.js';
     import { Na__UiFeature__InitializeModelToggleControls } from './src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js';
+    import { Na__Scene__SetupDefaultSceneLighting } from './src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
+    import {
+        Na__Scene__CreateFogPass,
+        Na__Scene__UpdateFogPassUniforms,
+        Na__Scene__SetFogOrbitReference,
+        Na__Scene__ApplyFogBackground
+    } from './src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
     import {
         Na__DoorAnimation__Initialize,
         Na__DoorAnimation__Update
@@ -386,8 +384,7 @@
     // MODULE VARIABLES | Scene Objects
     // ------------------------------------------------------------
     const Na__Scene__Main = new THREE.Scene();
-    Na__Scene__Main.background = new THREE.Color(Na__Config__FogConfig.Scene__Default__FogConfig__Color);
-    Na__Scene__Main.fog = new THREE.FogExp2(Na__Config__FogConfig.Scene__Default__FogConfig__Color, Na__Config__FogConfig.Scene__Default__FogConfig__Density);
+    // @delegate: ./src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
     
     const Na__Camera__Main = new THREE.PerspectiveCamera(
         Na__Config__CameraConfig.Scene__Default__CameraConfig__Fov,
@@ -505,6 +502,11 @@
     const Na__Dev__DefaultCube__Mesh = Na__DevUtils__CreateDefaultCube();
     Na__Controls__Orbit.target.copy(Na__Dev__DefaultCube__PositionUnits);       // <-- Fixed pivot based on cube
     Na__Controls__Orbit.update();
+    
+    // @delegate: ./src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
+    Na__Scene__ApplyFogBackground(Na__Scene__Main, Na__Config__FogConfig);
+    const Na__SceneEffect__FogPass = Na__Scene__CreateFogPass(Na__Config__FogConfig);
+    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, Na__Dev__DefaultCube__PositionUnits);
     // ------------------------------------------------------------
 
 
@@ -525,7 +527,7 @@
         Na__Config__ImageExport,
         Na__Config__PostProcessEffects
     );
-    Na__UiFeature__InitializeCameraPositionControls(Na__Camera__Main, Na__Controls__Orbit);
+    // @delegate: ./src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js
     // ------------------------------------------------------------
 
 
@@ -650,38 +652,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Setup Lighting and Ground
-    // ------------------------------------------------------------
-    function Na__Scene__SetupLighting() {
-        const Na__Light__Ambient = new THREE.AmbientLight(0xffffff, Na__Config__LightingConfig.Scene__Default__LightingConfig__AmbientIntensity);
-        Na__Scene__Main.add(Na__Light__Ambient);
-        
-        const Na__Light__Directional = new THREE.DirectionalLight(0xffffff, Na__Config__LightingConfig.Scene__Default__LightingConfig__DirectionalIntensity);
-        Na__Light__Directional.position.set(50, 100, 40);
-        Na__Light__Directional.castShadow = true;
-        Na__Light__Directional.shadow.mapSize.width = 2048;
-        Na__Light__Directional.shadow.mapSize.height = 2048;
-        Na__Light__Directional.shadow.bias = -0.0001;
-        Na__Scene__Main.add(Na__Light__Directional);
-        
-        // Only create ground plane if enabled in config
-        if (Na__Config__GroundPlane && Na__Config__GroundPlane.Scene__GroundPlane__Enabled) {
-            const Na__Ground__Geometry = new THREE.PlaneGeometry(
-                Na__Config__GroundPlane.Scene__GroundPlane__Size,
-                Na__Config__GroundPlane.Scene__GroundPlane__Size
-            );
-            const Na__Ground__Material = new THREE.ShadowMaterial({
-                opacity: Na__Config__GroundPlane.Scene__GroundPlane__ShadowOpacity,
-                color: 0x000000
-            });
-            const Na__Ground__Plane = new THREE.Mesh(Na__Ground__Geometry, Na__Ground__Material);
-            Na__Ground__Plane.rotation.x = -Math.PI / 2;
-            Na__Ground__Plane.position.y = Na__Config__GroundPlane.Scene__GroundPlane__yAxisOffset;
-            Na__Ground__Plane.receiveShadow = true;
-            Na__Scene__Main.add(Na__Ground__Plane);
-        }
-    }
-    // ------------------------------------------------------------
+    // @delegate: ./src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js
 
 
     // FUNCTION | Show Scene When Ready
@@ -712,11 +683,13 @@
     // ------------------------------------------------------------
     async function Na__AppFlow__StartLoadingSequence() {
         Na__UiFeature__UpdateStatus('Creating scene...');
-        Na__Scene__SetupLighting();
-        Na__RenderPipeline__State = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines);
+        Na__Scene__SetupDefaultSceneLighting(Na__Scene__Main, Na__Config__LightingConfig, Na__Config__GroundPlane);
+        Na__RenderPipeline__State = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines, Na__SceneEffect__FogPass);
         Na__RenderComposer__Main = Na__RenderPipeline__State.composer;
         
         let modelUrls = [...Na__ModelDefaults__ModelUrls];               // <-- Start with config defaults
+        let Na__Saved__ProjectCameraConfig = null;                       // <-- Hoisted for post-OrbitCube re-apply
+        let Na__Saved__ProjectOrbitTarget  = null;                       // <-- Hoisted for post-OrbitCube re-apply
         
         // RESOLVE PROJECT-SPECIFIC MODEL URLS
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
@@ -725,18 +698,11 @@
                 Na__UiFeature__UpdateStatus('Loading project data...');
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode);
                 
-                // APPLY CAMERA CONFIG FROM PROJECT (supports both key formats)
-                // NOTE: Camera__DefaultTarget is ignored - orbit target set by OrbitHelperCube GLB below
-                const cameraConfig = projectData.Camera__DefaultPosition
+                // STORE CAMERA CONFIG FROM PROJECT (supports both key formats)
+                Na__Saved__ProjectCameraConfig = projectData.Camera__DefaultPosition
                     || projectData.valeVision_Camera__DefaultPosition
                     || null;
-                if (cameraConfig) {
-                    Na__UiFeature__ApplyCameraConfig(
-                        Na__Camera__Main,
-                        Na__Controls__Orbit,
-                        cameraConfig
-                    );
-                }
+                Na__Saved__ProjectOrbitTarget  = projectData.OrbitHelperCube__Position || null;
                 
                 // EXTRACT MODEL URLS FROM PROJECT DATA
                 const projectUrls = Na__AppUtils__ExtractModelUrls(projectData);
@@ -766,6 +732,7 @@
                     Na__OrbitHelperCube__Mesh.visible = Na__OrbitHelperCube__Debug__Visible;  // <-- Hide unless debug enabled
                     
                     Na__Scene__Main.add(Na__OrbitHelperCube__Mesh);      // <-- Add to scene
+                    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, orbitCubeResult); // <-- Fog anchor now follows orbit cube center
                     
                     // SET ORBIT TARGET TO CUBE CENTER
                     Na__Controls__Orbit.target.copy(orbitCubeResult.centerPosition);  // <-- Set orbit target to cube center
@@ -777,6 +744,27 @@
                 console.error('[ValeVision3D] Failed to load OrbitHelperCube:', error);
                 // Fall through to use Dev__DefaultCube fallback (already set at line 492)
             }
+        }
+        
+        // RE-APPLY SAVED CAMERA + ORBIT TARGET FROM PROJECT.JSON
+        // OrbitHelperCube GLB sets a default orbit target above; override with saved values
+        // so camera position, orbit target, and FOV all match the previously saved state.
+        if (Na__Saved__ProjectOrbitTarget) {
+            Na__Controls__Orbit.target.set(
+                Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosX),  // <-- Saved orbit X
+                Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosY),  // <-- Saved orbit Y
+                Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosZ)   // <-- Saved orbit Z
+            );
+        }
+        if (Na__Saved__ProjectCameraConfig) {
+            Na__UiFeature__ApplyCameraConfig(
+                Na__Camera__Main,                                            // <-- Re-apply saved camera position + FOV
+                Na__Controls__Orbit,                                         // <-- Re-apply with correct orbit target
+                Na__Saved__ProjectCameraConfig
+            );
+        }
+        if (Na__Saved__ProjectOrbitTarget || Na__Saved__ProjectCameraConfig) {
+            Na__Controls__Orbit.update();                                    // <-- Finalize controls with restored state
         }
         
         // LOAD ALL MODELS VIA MULTI-MODEL LOADER
@@ -842,6 +830,7 @@
 
             Na__Navmode__UpdateNavigation();                                     // <-- Update orbit controls
             Na__DoorAnimation__Update(deltaMs);                                  // <-- Update door animations
+            Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__Camera__Main); // <-- Update fog camera matrices
 
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
                 Na__RenderPipeline__State.renderProfileNormals();                // <-- Update profile lines
@@ -884,10 +873,98 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Show Toast Notification
+    // ------------------------------------------------------------
+    function Na__UiFeature__ShowToast(message, isError = false) {
+        const toast = document.getElementById('naToastNotification');
+        if (!toast) return;
+        
+        toast.textContent = message;
+        toast.classList.remove('na-toast--visible', 'na-toast--error');
+        
+        if (isError) {
+            toast.classList.add('na-toast--error');
+        }
+        
+        void toast.offsetWidth;                                              // <-- Force reflow for re-trigger
+        toast.classList.add('na-toast--visible');
+        
+        setTimeout(() => {
+            toast.classList.remove('na-toast--visible');
+        }, 3500);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Save Camera Settings to Project JSON (Localhost Only)
+    // ------------------------------------------------------------
+    async function Na__UiFeature__SaveCameraSettings() {
+        const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
+        if (!projectCode) {
+            Na__UiFeature__ShowToast('No project loaded — cannot save camera settings.', true);
+            return;
+        }
+        
+        try {
+            const cameraJsonString = Na__UiFeature__BuildCameraJson(
+                Na__Camera__Main,                                            // <-- Current camera state
+                Na__Controls__Orbit,                                         // <-- Current orbit controls
+                4                                                            // <-- Decimal precision
+            );
+            const cameraData = JSON.parse(cameraJsonString);                 // <-- Parse built camera JSON
+            
+            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
+            const projectResponse = await fetch(fetchUrl);                   // <-- Fetch existing project.json
+            if (!projectResponse.ok) {
+                Na__UiFeature__ShowToast(`Project not found: ${projectCode}`, true);
+                return;
+            }
+            
+            const projectData = await projectResponse.json();                // <-- Parse project data
+            
+            projectData.Camera__DefaultPosition        = cameraData.Camera__DefaultPosition;         // <-- Merge camera position
+            projectData.OrbitHelperCube__Position       = cameraData.OrbitHelperCube__Position;       // <-- Merge orbit target
+            
+            const saveResponse = await fetch(fetchUrl, {
+                method  : 'POST',
+                headers : { 'Content-Type': 'application/json' },
+                body    : JSON.stringify(projectData)                        // <-- Send merged project data
+            });
+            
+            if (saveResponse.ok) {
+                Na__UiFeature__ShowToast(`Camera settings saved to ${projectCode}`);
+            } else {
+                const errorData = await saveResponse.json().catch(() => ({}));
+                Na__UiFeature__ShowToast(`Save failed: ${errorData.error || 'Unknown error'}`, true);
+            }
+        } catch (error) {
+            console.error('[ValeVision3D] Save camera settings error:', error);
+            Na__UiFeature__ShowToast('Save failed — server unreachable.', true);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialize Localhost-Only Save Button
+    // ------------------------------------------------------------
+    function Na__UiFeature__InitializeSaveCameraButton() {
+        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                   // <-- Only on localhost
+        
+        const menuItem = document.getElementById('naSaveCameraSettingsItem');
+        const button   = document.getElementById('naSaveCameraSettingsButton');
+        if (!menuItem || !button) return;
+        
+        menuItem.style.display = '';                                         // <-- Reveal the menu item
+        button.addEventListener('click', Na__UiFeature__SaveCameraSettings); // <-- Wire up save handler
+    }
+    // ------------------------------------------------------------
+
+
     // INITIALIZE LOADING SEQUENCE
     // ------------------------------------------------------------
     Na__AppFlow__StartLoadingSequence();
     Na__UiFeature__PromptToolsMenu();
+    Na__UiFeature__InitializeSaveCameraButton();
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

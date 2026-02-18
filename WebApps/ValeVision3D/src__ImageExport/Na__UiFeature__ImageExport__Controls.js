@@ -311,6 +311,12 @@
             const panelIsNowOpen = panel.classList.contains('is-open'); // <-- Check new panel state
             if (panelIsNowOpen) { // <-- Panel is now open
                 Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], true); // <-- Show overlay with current aspect ratio
+                
+                // Also expand Camera Lens panel so user is aware of lens setting before export
+                const cameraLensPanel = document.getElementById('naCameraLensPanel'); // <-- Get camera lens panel
+                if (cameraLensPanel) {
+                    cameraLensPanel.classList.add('is-open'); // <-- Ensure lens panel is open alongside export panel
+                }
             } else { // <-- Panel is now closed
                 Na__UiFeature__UpdateViewportOverlays(exportConfig.aspectRatios[ratioIndex], false); // <-- Hide overlay
             }

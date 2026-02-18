@@ -15,21 +15,22 @@
 
     // FUNCTION | Setup Post Processing Composer
     // ------------------------------------------------------------
-    function Na__RenderPipeline__SetupComposer(renderer, scene, camera, profileLinesConfig) {
-        const renderTargetParams = {
-            minFilter: THREE.LinearFilter,
-            magFilter: THREE.LinearFilter,
-            format: THREE.RGBAFormat,
-            type: THREE.HalfFloatType,
-            samples: 4
-        };
-        
+    function Na__RenderPipeline__SetupComposer(renderer, scene, camera, profileLinesConfig, fogPass) {
         const pixelRatio = renderer.getPixelRatio();
-        const renderTarget = new THREE.WebGLRenderTarget(
-            window.innerWidth * pixelRatio,
-            window.innerHeight * pixelRatio,
-            renderTargetParams
-        );
+        const width      = window.innerWidth * pixelRatio;
+        const height     = window.innerHeight * pixelRatio;
+
+        const depthTexture = new THREE.DepthTexture(width, height); // <-- Required for fog pass depth reads
+        depthTexture.type  = THREE.FloatType;
+
+        const renderTarget = new THREE.WebGLRenderTarget(width, height, {
+            minFilter    : THREE.LinearFilter,
+            magFilter    : THREE.LinearFilter,
+            format       : THREE.RGBAFormat,
+            type         : THREE.HalfFloatType,
+            samples      : 4,
+            depthTexture : depthTexture
+        });
         
         const composer = new EffectComposer(renderer, renderTarget);
         composer.addPass(new RenderPass(scene, camera));
@@ -40,12 +41,16 @@
         const profileLinesEnabled = profileLinesConfig
             && profileLinesConfig.RenderEffect__ProfileLines__Enabled === true;
         if (profileLinesEnabled) {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, width, height);
+            const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, window.innerWidth, window.innerHeight);
             composer.addPass(profileLines.pass);
             renderProfileNormals = profileLines.renderProfileNormals;
             setProfileLinesSize = profileLines.setSize;
+        }
+
+        // FOG PASS | Inserted after profile lines, before FXAA
+        if (fogPass) {
+            fogPass.uniforms['tDepth'].value = depthTexture; // <-- Wire depth texture into fog shader
+            composer.addPass(fogPass);
         }
         
         const fxaaPass = new ShaderPass(FXAAShader);
@@ -56,7 +61,8 @@
         return {
             composer,
             renderProfileNormals,
-            setProfileLinesSize
+            setProfileLinesSize,
+            depthTexture
         };
     }
     // ------------------------------------------------------------

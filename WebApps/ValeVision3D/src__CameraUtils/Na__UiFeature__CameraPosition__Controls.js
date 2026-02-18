@@ -252,6 +252,7 @@
     // ------------------------------------------------------------
     export {
         Na__UiFeature__ApplyCameraConfig,
+        Na__UiFeature__BuildCameraJson,
         Na__UiFeature__InitializeCameraPositionControls
     };
     // ------------------------------------------------------------

@@ -2,6 +2,71 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.0  -  18-Feb-2026
+### Save Camera Settings — Localhost-Only Button & Full State Restore
+
+**Save Camera Settings Feature**
+- Added "Save Camera Settings" button to Tools menu, visible only when running on localhost (Flask server).
+- Button saves current camera position, rotation, FOV, and orbit target directly to the job-specific `project.json` via existing Whitecardopedia Flask API (`POST /api/projects/<folder_id>`).
+- Replaced old "Download Position Data" panel (textarea, import JSON, download JSON) to simplify UI for end users.
+- Added toast notification for success/error feedback (green success, red error, auto-dismiss ~3.5s).
+- Exported `Na__UiFeature__BuildCameraJson` from `Na__UiFeature__CameraPosition__Controls.js` for use by save handler.
+- New functions: `Na__UiFeature__ShowToast`, `Na__UiFeature__SaveCameraSettings`, `Na__UiFeature__InitializeSaveCameraButton`.
+- Removed `Na__UiFeature__InitializeCameraPositionControls` import and call; left `@delegate` breadcrumb per dependency traversal protocol.
+
+**Loading Fix: Restore Full Camera State**
+- Fixed issue where rotation and FOV were not restored on reload; only position appeared to persist.
+- Root cause: OrbitHelperCube GLB load overwrote orbit target with GLB center, then `controls.update()` recalculated rotation and wiped saved state. Saved `OrbitHelperCube__Position` from `project.json` was never applied during load.
+- Hoisted `Na__Saved__ProjectCameraConfig` and `Na__Saved__ProjectOrbitTarget` so they survive into post-OrbitCube block.
+- After OrbitHelperCube loads, re-apply saved `OrbitHelperCube__Position` to `controls.target` (mm → units via `Na__Math__ConvertMmToUnits`).
+- Re-apply `Na__UiFeature__ApplyCameraConfig` and call `controls.update()` to finalize.
+- Ensures position, orbit target, FOV, and rotation all restore correctly on reload.
+
+**Key Files**
+- `index.html` — save button HTML, toast div, save handler, conditional visibility, loading-sequence re-apply block.
+- `src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js` — export `Na__UiFeature__BuildCameraJson`.
+- `src__Styles/ui-components.css` — `.na-toast`, `.na-toast--visible`, `.na-toast--error` styles.
+
+# ---------------------------------------------------------
+## ValeVision3D v0.1.8  -  18-Feb-2026
+### Scene Effects Delegation & Post-Processing Orbit-Anchored Fog
+
+**Scene Effects Delegation**
+- Moved default lighting and ground plane setup from inline `index.html` into dedicated module `src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js`.
+- Moved fog/environment setup into dedicated module `src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js`.
+- Architecture: AppConfig (JSON) → dedicated default-condition scripts → wider engine (render loop, main app).
+- Added `@delegate:` breadcrumbs at extraction points per dependency traversal protocol.
+
+**Fog Config Schema Migration**
+- Replaced density-based fog fields with orbit-anchored envelope model in `Scene__Default__FogConfig`:
+  - `Scene__Default__FogConfig__Description` — documents mm units and conversion requirement.
+  - `Scene__Default__FogConfig__Enabled` — true/false flag.
+  - `Scene__Default__FogConfig__Color` — integer RGB (e.g. 16777215 for white).
+  - `Scene__Default__FogConfig__StartDistanceMm` — fog begins at this distance from orbit cube (default 30000 mm).
+  - `Scene__Default__FogConfig__EndDistanceMm` — fog fully obscures beyond this distance (default 50000 mm).
+- All distance values are integer millimeters; converted to Three.js scene units via `Na__Math__ConvertMmToUnits` in code.
+
+**Post-Processing Fog Pass (Rewrite)**
+- Replaced broken per-material opacity approach with screen-space post-processing ShaderPass.
+- Fog now runs as final visual effect in the render pipeline: RenderPass → ProfileLines → **Fog Pass** → FXAA.
+- Depth-based implementation: reads depth texture from render target, reconstructs world position from logarithmic depth buffer, computes distance from orbit anchor per pixel, blends fog color via `smoothstep(fogStart, fogEnd, dist)`.
+- Covers all geometry types uniformly: meshes, linework (LineSegments2), and profile lines — no per-node traversal.
+- Orbit cube sets fog zero point; when OrbitHelperCube loads, fog anchor switches from Dev__DefaultCube to orbit cube center.
+- MM-to-units conversion applied in `Na__Scene__CreateFogPass` via `Na__Math__ConvertMmToUnits` for start/end distances.
+
+**Render Pipeline Changes**
+- Added `DepthTexture` to EffectComposer render target for fog pass depth reads.
+- `Na__RenderPipeline__SetupComposer` now accepts optional `fogPass` parameter; inserts fog pass after profile lines, before FXAA.
+- Fog pass receives depth texture uniform and per-frame camera matrices for world position reconstruction.
+
+**Key Files**
+- `src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js` — ambient + directional light, conditional ground plane.
+- `src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js` — fog ShaderPass, CreateFogPass, UpdateFogPassUniforms, SetFogOrbitReference, ApplyFogBackground.
+- `src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` — DepthTexture, fog pass insertion.
+- `src__AppConfig/Na__AppConfig__Main.json` — Scene__Default__FogConfig schema.
+- `index.html` — imports, fog pass creation, composer wiring, render loop uniform updates, orbit cube reference wiring.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.7  -  18-Feb-2026
 ### Configuration Architecture Refactor — Scene Config Separation & Ground Plane Control
 

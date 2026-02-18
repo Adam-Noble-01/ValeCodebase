@@ -2,6 +2,54 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v0.1.7  -  18-Feb-2026
+### Configuration Architecture Refactor — Scene Config Separation & Ground Plane Control
+
+**Scene Configuration Restructure**
+- Refactored monolithic `sceneConfig` object into four dedicated configuration objects following `Scene__GroundPlane` naming convention.
+- New config sections: `Scene__Default__CameraConfig`, `Scene__Default__LightingConfig`, `Scene__Default__FogConfig`, `Scene__Default__ControlsConfig`.
+- All property names follow double-underscore pattern: `Section__Subsection__PropertyName` for consistency and discoverability.
+- Improved organization: camera, lighting, fog, and controls settings now logically separated.
+
+**Ground Plane Configuration**
+- Extracted ground plane settings from `sceneConfig` into dedicated `Scene__GroundPlane` section.
+- Added `Scene__GroundPlane__Enabled` flag (default: `false`) to conditionally create ground plane.
+- Prevents Z-fighting artifacts when landscape meshes are present in GLB models.
+- Ground plane only renders when explicitly enabled, eliminating secondary line rendering issues.
+
+**Property Mapping**
+- **CameraConfig**: `Scene__Default__CameraConfig__Fov`, `Scene__Default__CameraConfig__Near`, `Scene__Default__CameraConfig__Far`.
+- **LightingConfig**: `Scene__Default__LightingConfig__AmbientIntensity`, `Scene__Default__LightingConfig__DirectionalIntensity`.
+- **FogConfig**: `Scene__Default__FogConfig__Density`, `Scene__Default__FogConfig__Color` (used for both background and fog).
+- **ControlsConfig**: `Scene__Default__ControlsConfig__MovementSpeed`, `Scene__Default__ControlsConfig__ElevationSpeed`, `Scene__Default__ControlsConfig__EnableWASD`, `Scene__Default__ControlsConfig__EnableDamping`, `Scene__Default__ControlsConfig__StatusHideDelay`.
+- **GroundPlane**: `Scene__GroundPlane__Enabled`, `Scene__GroundPlane__Size`, `Scene__GroundPlane__yAxisOffset`, `Scene__GroundPlane__ShadowOpacity`.
+
+**Code Updates**
+- Updated `index.html`: replaced `Na__Config__SceneConfig` with four new config constants.
+- Updated scene background/fog initialization to use `Na__Config__FogConfig`.
+- Updated camera constructor to use `Na__Config__CameraConfig`.
+- Updated lighting setup function to use `Na__Config__LightingConfig`.
+- Added conditional ground plane creation based on `Scene__GroundPlane__Enabled` flag.
+
+**Test Environment Synchronization**
+- Applied identical structural changes to `TestEnv__SubAppData__Config.json`.
+- Updated `TestEnv__PrototypeTestingSandbox__Main__.js` with matching config constant refactoring.
+- Test environment now uses same separated config structure as main application.
+
+**Benefits**
+- **Eliminates Z-fighting**: Ground plane can be disabled when landscape meshes are present.
+- **Improved maintainability**: Related settings grouped logically by function.
+- **Consistent naming**: All config properties follow established double-underscore convention.
+- **Better discoverability**: Clear separation makes configuration easier to understand and modify.
+- **Backward compatible**: All existing functionality preserved with improved structure.
+
+**Key Files Modified**
+- `src__AppConfig/Na__AppConfig__Main.json` — refactored config structure.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — matching test config structure.
+- `index.html` — updated config constants and all property references.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — updated test environment config usage.
+
+# ---------------------------------------------------------
 ## ValeVision3D v0.1.6  -  15-Feb-2026
 ### Building Storey Visibility System — Dolls House View & Per-Storey Toggle
 *Note: Developed in Test Environment, Migrated to Production Module*

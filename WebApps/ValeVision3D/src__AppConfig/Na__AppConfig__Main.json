@@ -5,19 +5,25 @@
             "https://cdn.noble-architecture.com/VaApps/Projects/2026/60834__Clough/Clough__Whitecard__Layer-02__LineworkModel__1.2.0__.glb"
         ]
     },
-    "sceneConfig": {
-        "bgColor": 16777215,
-        "ambientIntensity": 2.5,
-        "dirLightIntensity": 1.0,
-        "cameraFov": 45,
-        "cameraNear": 0.1,
-        "cameraFar": 1000,
-        "fogDensity": 0.0003,
-        "movementSpeed": 0.5,
-        "elevationSpeed": 0.5,
-        "enableWASD": true,
-        "statusHideDelay": 3000,
-        "enableDamping": false
+    "Scene__Default__CameraConfig": {
+        "Scene__Default__CameraConfig__Fov": 45,
+        "Scene__Default__CameraConfig__Near": 0.1,
+        "Scene__Default__CameraConfig__Far": 1000
+    },
+    "Scene__Default__LightingConfig": {
+        "Scene__Default__LightingConfig__AmbientIntensity": 2.5,
+        "Scene__Default__LightingConfig__DirectionalIntensity": 1.0
+    },
+    "Scene__Default__FogConfig": {
+        "Scene__Default__FogConfig__Density": 0.0003,
+        "Scene__Default__FogConfig__Color": 16777215
+    },
+    "Scene__Default__ControlsConfig": {
+        "Scene__Default__ControlsConfig__MovementSpeed": 0.5,
+        "Scene__Default__ControlsConfig__ElevationSpeed": 0.5,
+        "Scene__Default__ControlsConfig__EnableWASD": true,
+        "Scene__Default__ControlsConfig__EnableDamping": false,
+        "Scene__Default__ControlsConfig__StatusHideDelay": 3000
     },
     "Scene__GroundPlane": {
         "Scene__GroundPlane__Enabled": false,

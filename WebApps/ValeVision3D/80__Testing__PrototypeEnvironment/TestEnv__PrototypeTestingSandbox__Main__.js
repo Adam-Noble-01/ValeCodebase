@@ -75,9 +75,12 @@
     // ------------------------------------------------------------
     const TestEnv__Config = await TestEnv__LoadConfig();                      // <-- Load test environment config
 
-    const TestEnv__Config__SceneConfig     = TestEnv__Config.sceneConfig;                        // <-- Scene settings
-    const TestEnv__Config__GroundPlane     = TestEnv__Config.Scene__GroundPlane;                 // <-- Ground plane settings
-    const TestEnv__Config__Models          = TestEnv__Config.models;                             // <-- Model-specific settings
+    const TestEnv__Config__CameraConfig     = TestEnv__Config.Scene__Default__CameraConfig;      // <-- Camera settings
+    const TestEnv__Config__LightingConfig   = TestEnv__Config.Scene__Default__LightingConfig;    // <-- Lighting settings
+    const TestEnv__Config__FogConfig        = TestEnv__Config.Scene__Default__FogConfig;          // <-- Fog settings
+    const TestEnv__Config__ControlsConfig   = TestEnv__Config.Scene__Default__ControlsConfig;    // <-- Controls settings
+    const TestEnv__Config__GroundPlane      = TestEnv__Config.Scene__GroundPlane;                // <-- Ground plane settings
+    const TestEnv__Config__Models           = TestEnv__Config.models;                            // <-- Model-specific settings
     const TestEnv__Config__NavmodeSettings = TestEnv__Config.Navmode__Settings;                  // <-- Navmode config (MM)
     const TestEnv__Config__ProfileLines    = TestEnv__Config.RenderEffect__ProfileLines || null; // <-- Profile lines config
     const TestEnv__Config__DevMode         = TestEnv__Config.Dev__DeveloperMode || {};            // <-- Dev mode config
@@ -177,14 +180,14 @@
     // MODULE VARIABLES | Three.js Core Objects
     // ------------------------------------------------------------
     const TestEnv__Scene = new THREE.Scene();
-    TestEnv__Scene.background = new THREE.Color(TestEnv__Config__SceneConfig.bgColor);
-    TestEnv__Scene.fog = new THREE.FogExp2(TestEnv__Config__SceneConfig.bgColor, TestEnv__Config__SceneConfig.fogDensity);
+    TestEnv__Scene.background = new THREE.Color(TestEnv__Config__FogConfig.Scene__Default__FogConfig__Color);
+    TestEnv__Scene.fog = new THREE.FogExp2(TestEnv__Config__FogConfig.Scene__Default__FogConfig__Color, TestEnv__Config__FogConfig.Scene__Default__FogConfig__Density);
 
     const TestEnv__Camera = new THREE.PerspectiveCamera(
-        TestEnv__Config__SceneConfig.cameraFov,                              // <-- Field of view
+        TestEnv__Config__CameraConfig.Scene__Default__CameraConfig__Fov,     // <-- Field of view
         window.innerWidth / window.innerHeight,                              // <-- Aspect ratio
-        TestEnv__Config__SceneConfig.cameraNear,                             // <-- Near clipping plane
-        TestEnv__Config__SceneConfig.cameraFar                              // <-- Far clipping plane
+        TestEnv__Config__CameraConfig.Scene__Default__CameraConfig__Near,    // <-- Near clipping plane
+        TestEnv__Config__CameraConfig.Scene__Default__CameraConfig__Far      // <-- Far clipping plane
     );
 
     // Position camera offset from dev cube for initial view
@@ -379,10 +382,10 @@
     // FUNCTION | Setup Scene Lighting and Ground Plane
     // ------------------------------------------------------------
     function TestEnv__SetupLighting() {
-        const ambientLight = new THREE.AmbientLight(0xffffff, TestEnv__Config__SceneConfig.ambientIntensity);
+        const ambientLight = new THREE.AmbientLight(0xffffff, TestEnv__Config__LightingConfig.Scene__Default__LightingConfig__AmbientIntensity);
         TestEnv__Scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, TestEnv__Config__SceneConfig.dirLightIntensity);
+        const dirLight = new THREE.DirectionalLight(0xffffff, TestEnv__Config__LightingConfig.Scene__Default__LightingConfig__DirectionalIntensity);
         dirLight.position.set(50, 100, 40);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width  = 2048;

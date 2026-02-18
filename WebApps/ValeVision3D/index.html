@@ -311,7 +311,10 @@
     const Na__AppConfig__Data = await Na__AppConfig__LoadConfig();
     
     const Na__Config__ModelDefaults = Na__AppConfig__Data.modelDefaults;            // <-- Model defaults
-    const Na__Config__SceneConfig = Na__AppConfig__Data.sceneConfig;                 // <-- Scene settings
+    const Na__Config__CameraConfig = Na__AppConfig__Data.Scene__Default__CameraConfig;      // <-- Camera settings
+    const Na__Config__LightingConfig = Na__AppConfig__Data.Scene__Default__LightingConfig;  // <-- Lighting settings
+    const Na__Config__FogConfig = Na__AppConfig__Data.Scene__Default__FogConfig;            // <-- Fog settings
+    const Na__Config__ControlsConfig = Na__AppConfig__Data.Scene__Default__ControlsConfig;  // <-- Controls settings
     const Na__Config__GroundPlane = Na__AppConfig__Data.Scene__GroundPlane;         // <-- Ground plane settings
     const Na__Config__Models = Na__AppConfig__Data.models;                          // <-- Model-specific settings
     const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;                  // <-- Camera lens settings
@@ -383,14 +386,14 @@
     // MODULE VARIABLES | Scene Objects
     // ------------------------------------------------------------
     const Na__Scene__Main = new THREE.Scene();
-    Na__Scene__Main.background = new THREE.Color(Na__Config__SceneConfig.bgColor);
-    Na__Scene__Main.fog = new THREE.FogExp2(Na__Config__SceneConfig.bgColor, Na__Config__SceneConfig.fogDensity);
+    Na__Scene__Main.background = new THREE.Color(Na__Config__FogConfig.Scene__Default__FogConfig__Color);
+    Na__Scene__Main.fog = new THREE.FogExp2(Na__Config__FogConfig.Scene__Default__FogConfig__Color, Na__Config__FogConfig.Scene__Default__FogConfig__Density);
     
     const Na__Camera__Main = new THREE.PerspectiveCamera(
-        Na__Config__SceneConfig.cameraFov,
+        Na__Config__CameraConfig.Scene__Default__CameraConfig__Fov,
         window.innerWidth / window.innerHeight,
-        Na__Config__SceneConfig.cameraNear,
-        Na__Config__SceneConfig.cameraFar
+        Na__Config__CameraConfig.Scene__Default__CameraConfig__Near,
+        Na__Config__CameraConfig.Scene__Default__CameraConfig__Far
     );
     if (Na__Config__CameraDefault && Na__Config__CameraDefault.Camera__DefaultPos) {
         Na__Camera__Main.position.set(
@@ -650,10 +653,10 @@
     // FUNCTION | Setup Lighting and Ground
     // ------------------------------------------------------------
     function Na__Scene__SetupLighting() {
-        const Na__Light__Ambient = new THREE.AmbientLight(0xffffff, Na__Config__SceneConfig.ambientIntensity);
+        const Na__Light__Ambient = new THREE.AmbientLight(0xffffff, Na__Config__LightingConfig.Scene__Default__LightingConfig__AmbientIntensity);
         Na__Scene__Main.add(Na__Light__Ambient);
         
-        const Na__Light__Directional = new THREE.DirectionalLight(0xffffff, Na__Config__SceneConfig.dirLightIntensity);
+        const Na__Light__Directional = new THREE.DirectionalLight(0xffffff, Na__Config__LightingConfig.Scene__Default__LightingConfig__DirectionalIntensity);
         Na__Light__Directional.position.set(50, 100, 40);
         Na__Light__Directional.castShadow = true;
         Na__Light__Directional.shadow.mapSize.width = 2048;

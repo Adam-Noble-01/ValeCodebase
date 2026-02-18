@@ -2,14 +2,14 @@
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": 7161,
-            "Camera__DefaultPos__PosY": 36146,
-            "Camera__DefaultPos__PosZ": -20101
+            "Camera__DefaultPos__PosX": -16175,
+            "Camera__DefaultPos__PosY": 2695,
+            "Camera__DefaultPos__PosZ": -3812
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -1.5722,
-            "Camera__DefaultRotation__RotY": -0.09,
-            "Camera__DefaultRotation__RotZ": -1.5859
+            "Camera__DefaultRotation__RotX": -0.0484,
+            "Camera__DefaultRotation__RotY": -1.0461,
+            "Camera__DefaultRotation__RotZ": -0.0419
         },
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -17,9 +17,9 @@
     },
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
-        "OrbitHelperCube__Position__PosX": 10164,
-        "OrbitHelperCube__Position__PosY": 2869,
-        "OrbitHelperCube__Position__PosZ": -20056
+        "OrbitHelperCube__Position__PosX": 10243,
+        "OrbitHelperCube__Position__PosY": 1955,
+        "OrbitHelperCube__Position__PosZ": -19086
     },
     "allImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__05-Feb-2026.png"
@@ -50,6 +50,7 @@
         "url": "Nil"
     },
     "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__LandscapeEnvironment__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne/Payne__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",

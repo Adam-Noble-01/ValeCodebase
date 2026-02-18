@@ -19,7 +19,7 @@
         "Scene__Default__FogConfig__Enabled"         : true,
         "Scene__Default__FogConfig__Color"           : 16777215,
         "Scene__Default__FogConfig__StartDistanceMm" : 45000,
-        "Scene__Default__FogConfig__EndDistanceMm"   : 60000
+        "Scene__Default__FogConfig__EndDistanceMm"   : 65000
     },
     "Scene__Default__ControlsConfig": {
         "Scene__Default__ControlsConfig__MovementSpeed"   : 0.5,

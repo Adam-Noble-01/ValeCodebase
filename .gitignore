@@ -93,6 +93,10 @@ Projects/2025/Morton/MT03__Londonthorpe/TrueVisionApp__AppAssets/TrueVision_-_RJ
 # ValeVision3D 3D Assets folder (contains large GLB models and textures)
 WebApps/ValeVision3D/3dAssets/
 
+D:/10_CoreLib__ValeCodebase/Web3D__AssetsLibrary
+
+Web3D__AssetsLibrary/*
+
 # --------------------------------------------------------------
 
 # Unwanted Subfolders

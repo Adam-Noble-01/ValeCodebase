@@ -309,6 +309,8 @@
         Na__DoorProximity__SetEnabled,
         Na__DoorProximity__Update
     } from './src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from './src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
+    import { Na__MaterialsSystem__ApplyMaterials } from './src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
     // ------------------------------------------------------------
 
 
@@ -346,6 +348,7 @@
         ? Na__Config__NavmodeSettings.Navmode__WalkMode
         : {};                                                                     // <-- Walk mode config (MM)
     const Na__Config__GlobalHotkeys = Na__AppConfig__Data.Global__Hotkeys || {};  // <-- Global hotkeys config
+    const Na__Config__MaterialsSystem = Na__AppConfig__Data.MaterialsSystem__Config || {};  // <-- Materials system config
     // ------------------------------------------------------------
 
 
@@ -844,7 +847,23 @@
                     Na__UiFeature__UpdateStatus                          // <-- Status callback for loading overlay
                 );
             }
-            
+
+            // APPLY PBR MATERIALS FROM LIBRARY (second pass - selective override)
+            if (Na__Config__MaterialsSystem.MaterialsSystem__Config__Enabled && Na__LoadedModelGroups) {
+                const Na__MaterialsLibraryUrl  = Na__Config__MaterialsSystem.MaterialsSystem__Config__LibraryUrl;
+                const Na__MaterialsLibraryData = await Na__MaterialsSystem__LoadLibrary(Na__MaterialsLibraryUrl);
+
+                if (Na__MaterialsLibraryData) {
+                    const Na__MaterialsLookupMap = Na__MaterialsSystem__BuildLookup(Na__MaterialsLibraryData);
+
+                    if (Na__MaterialsLookupMap.size > 0) {
+                        for (const [, group] of Na__LoadedModelGroups) {
+                            await Na__MaterialsSystem__ApplyMaterials(group, Na__MaterialsLookupMap, Na__Config__MaterialsSystem);
+                        }
+                    }
+                }
+            }
+
             Na__UiFeature__ShowScene();                                   // <-- Reveal scene after all models loaded
             
             // INITIALIZE MODEL TOGGLE CONTROLS (dynamic per-category buttons)

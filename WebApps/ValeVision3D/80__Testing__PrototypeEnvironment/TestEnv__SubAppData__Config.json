@@ -101,6 +101,14 @@
             "Navmode__WalkMode__DoorProximityThresholdMm": 2000
         }
     },
+    "MaterialsSystem__Config": {
+        "MaterialsSystem__Config__Description"         : "PBR materials swap system config for test environment. Uses shared library from parent project.",
+        "MaterialsSystem__Config__Enabled"             : true,
+        "MaterialsSystem__Config__LibraryUrl"          : "../src__AppConfig/Na__AppConfig__MaterialsLibrary.json",
+        "MaterialsSystem__Config__FallbackToWhitecard" : true,
+        "MaterialsSystem__Config__PolygonOffsetFactor" : 2,
+        "MaterialsSystem__Config__PolygonOffsetUnits"  : 2
+    },
     "3dObject__InteractionsSystem": {
         "3dObject__Interaction__DoorAnimation": {
             "3dObject__Interaction__DoorAnimation__Description": "Interactive door animation settings for click-to-open doors. Inherits from main app, test environment enabled by default.",

@@ -72,6 +72,13 @@
     } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
+
+    // MODULE VARIABLES | Materials System Imports (from parent project)
+    // ------------------------------------------------------------
+    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from '../src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
+    import { Na__MaterialsSystem__ApplyMaterials } from '../src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -112,6 +119,7 @@
         : {};                                                                                    // <-- Walk mode config (MM)
     const TestEnv__Config__GlobalHotkeys   = TestEnv__Config.Global__Hotkeys || {};              // <-- Global hotkeys config
     const TestEnv__Config__DefaultView     = TestEnv__Config.TestEnv__DefaultView || null;       // <-- Saved default camera view (null if never saved)
+    const TestEnv__Config__MaterialsSystem = TestEnv__Config.MaterialsSystem__Config || {};      // <-- Materials system config
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -1148,6 +1156,21 @@
             console.log('[TestEnv] Reloading GLB files...');
             const glbResults = await TestEnv__LoadAllGlbFiles();                 // <-- Load models
 
+            // REAPPLY PBR MATERIALS AFTER REFRESH
+            if (TestEnv__Config__MaterialsSystem.MaterialsSystem__Config__Enabled && glbResults.length > 0) {
+                const refreshLibraryData = await Na__MaterialsSystem__LoadLibrary(
+                    TestEnv__Config__MaterialsSystem.MaterialsSystem__Config__LibraryUrl
+                );
+                if (refreshLibraryData) {
+                    const refreshLookupMap = Na__MaterialsSystem__BuildLookup(refreshLibraryData);
+                    if (refreshLookupMap.size > 0) {
+                        for (const child of TestEnv__ModelGroup__Root.children) {
+                            await Na__MaterialsSystem__ApplyMaterials(child, refreshLookupMap, TestEnv__Config__MaterialsSystem);
+                        }
+                    }
+                }
+            }
+
             // RESTORE CAMERA STATE
             TestEnv__Camera.position.copy(savedCameraPosition);                  // <-- Restore camera position
             TestEnv__Controls.target.copy(savedCameraTarget);                    // <-- Restore orbit target
@@ -1509,6 +1532,22 @@
         // LOAD ALL GLB FILES FROM LOCAL FOLDER
         try {
             const glbResults = await TestEnv__LoadAllGlbFiles();             // <-- Load all local GLBs
+
+            // APPLY PBR MATERIALS FROM LIBRARY (second pass - selective override)
+            if (TestEnv__Config__MaterialsSystem.MaterialsSystem__Config__Enabled && glbResults.length > 0) {
+                const TestEnv__MaterialsLibraryUrl  = TestEnv__Config__MaterialsSystem.MaterialsSystem__Config__LibraryUrl;
+                const TestEnv__MaterialsLibraryData = await Na__MaterialsSystem__LoadLibrary(TestEnv__MaterialsLibraryUrl);
+
+                if (TestEnv__MaterialsLibraryData) {
+                    const TestEnv__MaterialsLookupMap = Na__MaterialsSystem__BuildLookup(TestEnv__MaterialsLibraryData);
+
+                    if (TestEnv__MaterialsLookupMap.size > 0) {
+                        for (const child of TestEnv__ModelGroup__Root.children) {
+                            await Na__MaterialsSystem__ApplyMaterials(child, TestEnv__MaterialsLookupMap, TestEnv__Config__MaterialsSystem);
+                        }
+                    }
+                }
+            }
 
             // APPLY SAVED DEFAULT VIEW OR AUTO-CENTER ON LOADED MODELS
             if (TestEnv__Config__DefaultView) {

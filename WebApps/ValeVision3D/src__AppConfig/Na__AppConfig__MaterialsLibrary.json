@@ -17,26 +17,32 @@
         "MAT100__BasicSeries__": {
             "MAT101__GenericGlass": {
                 "SketchUpName"  : "MAT101__Glass__ClearDefault",
-                "BaseColor"     : "rgb(255, 255, 255)",
-                "Opacity"       :  0.4,
+                "BaseColor"     : "rgb(135, 206, 235)",
+                "Opacity"       :  0.3,
                 "PbrRoughness"  :  0.0
             },
             "MAT120__GenericWood": {
-                "SketchUpName": "MAT120__Wood__TimberDefault",
-                "BaseColor": "rgb(210, 180, 140)",
-                "PbrRoughness": 1.0
+                "SketchUpName"  :  "MAT120__Wood__TimberDefault",
+                "BaseColor"     :  "rgb(210, 180, 140)",
+                "PbrRoughness"  :  1.0
+            },
+            "MAT140__GenericMirror": {
+                "SketchUpName"  :  "MAT140__Mirror__ClearDefault",
+                "BaseColor"     :  "rgb(240, 240, 240)",
+                "PbrRoughness"  :  0.0,
+                "PbrMetallic"   :  0.0
             }
         },
         "MAT300__PaintSeries__": {
             "MAT301__Paint__FarrowAndBall__Ammonite": {
-                "SketchUpName": "MAT301__Paint__Farrow&Ball__Ammonite",
-                "BaseColor": "rgb(221, 216, 207)",
-                "PbrRoughness": 1.0
+                "SketchUpName"  :  "MAT301__Paint__Farrow&Ball__Ammonite",
+                "BaseColor"     :  "rgb(221, 216, 207)",
+                "PbrRoughness"  :  1.0
             },
             "MAT302__Paint__FarrowAndBall__Wevet": {
-                "SketchUpName": "MAT302__Paint__Farrow&Ball__Wevet",
-                "BaseColor": "rgb(238, 233, 231)",
-                "PbrRoughness": 1.0
+                "SketchUpName"  : "MAT302__Paint__Farrow&Ball__Wevet",
+                "BaseColor"     : "rgb(238, 233, 231)",
+                "PbrRoughness"  : 1.0
             },
             "MAT303__Paint__FarrowAndBall__Mizzle": {
                 "SketchUpName": "MAT303__Paint__Farrow&Ball__Mizzle",

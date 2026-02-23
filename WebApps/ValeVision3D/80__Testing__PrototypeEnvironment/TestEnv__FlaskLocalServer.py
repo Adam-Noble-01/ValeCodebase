@@ -63,7 +63,7 @@ if os.path.exists(BUNDLED_DEPS_PATH):
 # endregion -------------------------------------------------------------------
 
 
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 
 
@@ -90,6 +90,35 @@ CORS(app)                                                                    # <
 # -----------------------------------------------------------------------------
 # REGION | API Endpoints
 # -----------------------------------------------------------------------------
+
+    # API ENDPOINT | Save Default Camera View to Config
+    # ------------------------------------------------------------
+@app.route('/api/save-default-view', methods=['POST'])
+def save_default_view():
+    """Patch TestEnv__DefaultView into the test environment config JSON and save to disk"""
+    config_path = os.path.join(SCRIPT_DIR, 'TestEnv__SubAppData__Config.json')  # <-- Config file path
+
+    try:
+        payload = request.get_json(force=True)                                  # <-- Parse incoming camera data
+        if not payload:
+            return jsonify({ 'error': 'No JSON payload received' }), 400
+
+        with open(config_path, 'r', encoding='utf-8') as f:                     # <-- Read existing config
+            config_data = json.load(f)
+
+        config_data['TestEnv__DefaultView'] = payload                           # <-- Merge new view data
+
+        with open(config_path, 'w', encoding='utf-8') as f:                     # <-- Write updated config
+            json.dump(config_data, f, indent=4)
+
+        return jsonify({ 'success': True })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Error saving default view: {str(e)}'                    # <-- Error response
+        }), 500
+    # ------------------------------------------------------------
+
 
     # API ENDPOINT | List Available GLB Files
     # ------------------------------------------------------------

@@ -50,6 +50,28 @@
     import * as Na__StoreySystem from '../src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
     // ------------------------------------------------------------
 
+
+    // MODULE VARIABLES | Walk Mode Imports from Main ValeVision3D App
+    // ------------------------------------------------------------
+    import {
+        Na__WalkMode__Initialize,
+        Na__WalkMode__SetCollisionMeshes,
+        Na__WalkMode__Activate,
+        Na__WalkMode__Deactivate,
+        Na__WalkMode__Update,
+        Na__WalkMode__IsActive,
+        Na__WalkMode__GetCapsulePosition,
+        Na__WalkMode__GetConfig
+    } from './src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
+    import { Na__WalkModeDesktop__Activate, Na__WalkModeDesktop__Deactivate } from './src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js';
+    import { Na__WalkModeTouch__Activate, Na__WalkModeTouch__Deactivate } from './src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js';
+    import {
+        Na__DoorProximity__Initialize,
+        Na__DoorProximity__SetEnabled,
+        Na__DoorProximity__Update
+    } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -85,6 +107,11 @@
     const TestEnv__Config__ProfileLines    = TestEnv__Config.RenderEffect__ProfileLines || null; // <-- Profile lines config
     const TestEnv__Config__DevMode         = TestEnv__Config.Dev__DeveloperMode || {};            // <-- Dev mode config
     const TestEnv__Config__TestEnv         = TestEnv__Config.testEnvironment || {};               // <-- Test environment flags
+    const TestEnv__Config__WalkMode        = (TestEnv__Config__NavmodeSettings && TestEnv__Config__NavmodeSettings.Navmode__WalkMode)
+        ? TestEnv__Config__NavmodeSettings.Navmode__WalkMode
+        : {};                                                                                    // <-- Walk mode config (MM)
+    const TestEnv__Config__GlobalHotkeys   = TestEnv__Config.Global__Hotkeys || {};              // <-- Global hotkeys config
+    const TestEnv__Config__DefaultView     = TestEnv__Config.TestEnv__DefaultView || null;       // <-- Saved default camera view (null if never saved)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -302,6 +329,92 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Walk Mode System Initialization
+// -----------------------------------------------------------------------------
+
+    // MODULE INITIALIZATION | Walk Mode System
+    // ------------------------------------------------------------
+    Na__WalkMode__Initialize(TestEnv__Scene, TestEnv__Camera, TestEnv__Renderer.domElement, TestEnv__Config__WalkMode);
+    Na__DoorProximity__Initialize(
+        TestEnv__Config__WalkMode.Navmode__WalkMode__DoorProximityThresholdMm || 2000
+    );
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Toggle Walk Mode On/Off
+    // ------------------------------------------------------------
+    function TestEnv__WalkMode__ToggleWalkMode() {
+        const walkModeIndicatorEl = document.getElementById('testEnvWalkModeStatus');
+        const saveViewBtn         = document.getElementById('testEnvSaveViewBtn');
+
+        if (Na__WalkMode__IsActive()) {
+            if (TestEnv__Device__UseTouchControls) {
+                Na__WalkModeTouch__Deactivate();
+            } else {
+                Na__WalkModeDesktop__Deactivate();
+            }
+            Na__DoorProximity__SetEnabled(false);
+            Na__WalkMode__Deactivate(TestEnv__Controls);
+
+            if (walkModeIndicatorEl) walkModeIndicatorEl.textContent = 'Orbit Mode';
+            if (saveViewBtn) {
+                saveViewBtn.disabled = false;                                 // <-- Re-enable save in orbit mode
+                saveViewBtn.title    = 'Save current camera position as default view on refresh';
+            }
+        } else {
+            const activated = Na__WalkMode__Activate(TestEnv__Controls);
+            if (activated) {
+                const walkConfig = Na__WalkMode__GetConfig();
+                if (TestEnv__Device__UseTouchControls) {
+                    Na__WalkModeTouch__Activate(TestEnv__Renderer.domElement, walkConfig);
+                } else {
+                    Na__WalkModeDesktop__Activate(TestEnv__Renderer.domElement, walkConfig);
+                }
+                Na__DoorProximity__SetEnabled(true);
+
+                if (walkModeIndicatorEl) walkModeIndicatorEl.textContent = 'Walk Mode';
+                if (saveViewBtn) {
+                    saveViewBtn.disabled = true;                              // <-- Disable save whilst in walk mode
+                    saveViewBtn.title    = 'Exit walk mode before saving view';
+                }
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE INITIALIZATION | Walk Mode Hotkey Listener (Alt+Shift+W)
+    // ------------------------------------------------------------
+    window.addEventListener('keydown', (event) => {
+        if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'w') {
+            event.preventDefault();
+            TestEnv__WalkMode__ToggleWalkMode();
+        }
+    });
+    // ------------------------------------------------------------
+
+
+    // MODULE INITIALIZATION | Walk Mode UI Toggle Button
+    // ------------------------------------------------------------
+    const TestEnv__WalkModeToggleBtn = document.getElementById('testEnvWalkModeToggle');
+    if (TestEnv__WalkModeToggleBtn) {
+        TestEnv__WalkModeToggleBtn.addEventListener('click', TestEnv__WalkMode__ToggleWalkMode);
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE INITIALIZATION | Save Default View Button
+    // ------------------------------------------------------------
+    const TestEnv__SaveViewBtn = document.getElementById('testEnvSaveViewBtn');
+    if (TestEnv__SaveViewBtn) {
+        TestEnv__SaveViewBtn.addEventListener('click', TestEnv__SaveDefaultView);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Helper Functions
 // -----------------------------------------------------------------------------
 
@@ -336,6 +449,114 @@
 
         if (loadingIndicator) {
             loadingIndicator.style.display = 'none';
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Apply Saved Default View to Camera and Orbit Controls
+    // ------------------------------------------------------------
+    function TestEnv__DefaultView__Apply(savedView) {
+        if (!savedView) return;
+
+        const posX = Na__Math__ConvertMmToUnits(savedView.TestEnv__DefaultView__Camera__PosXMm || 0);
+        const posY = Na__Math__ConvertMmToUnits(savedView.TestEnv__DefaultView__Camera__PosYMm || 0);
+        const posZ = Na__Math__ConvertMmToUnits(savedView.TestEnv__DefaultView__Camera__PosZMm || 0);
+
+        const rotX = savedView.TestEnv__DefaultView__Camera__RotX || 0;
+        const rotY = savedView.TestEnv__DefaultView__Camera__RotY || 0;
+        const rotZ = savedView.TestEnv__DefaultView__Camera__RotZ || 0;
+
+        const fov  = savedView.TestEnv__DefaultView__Camera__Fov;
+
+        const targetX = Na__Math__ConvertMmToUnits(savedView.TestEnv__DefaultView__OrbitTarget__XMm || 0);
+        const targetY = Na__Math__ConvertMmToUnits(savedView.TestEnv__DefaultView__OrbitTarget__YMm || 0);
+        const targetZ = Na__Math__ConvertMmToUnits(savedView.TestEnv__DefaultView__OrbitTarget__ZMm || 0);
+
+        TestEnv__Camera.position.set(posX, posY, posZ);                      // <-- Restore camera position
+        TestEnv__Camera.rotation.set(rotX, rotY, rotZ);                      // <-- Restore camera rotation
+
+        if (Number.isFinite(fov) && fov > 0) {
+            TestEnv__Camera.fov = fov;                                        // <-- Restore camera FOV
+            TestEnv__Camera.updateProjectionMatrix();
+        }
+
+        TestEnv__Controls.target.set(targetX, targetY, targetZ);             // <-- Restore orbit target
+        TestEnv__Controls.update();
+
+        console.log('[TestEnv] Default view restored from saved config');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Save Current Camera View as Default to Config on Disk
+    // ------------------------------------------------------------
+    async function TestEnv__SaveDefaultView() {
+        const saveBtn = document.getElementById('testEnvSaveViewBtn');
+
+        if (Na__WalkMode__IsActive()) {                                       // <-- Block save during walk mode
+            if (saveBtn) {
+                saveBtn.textContent = 'Exit Walk Mode first';
+                setTimeout(() => { saveBtn.textContent = 'Save View'; }, 2000);
+            }
+            console.warn('[TestEnv] Save View blocked: must be in orbit mode');
+            return;
+        }
+
+        const posUnits    = TestEnv__Camera.position;
+        const rotation    = TestEnv__Camera.rotation;
+        const orbitTarget = TestEnv__Controls.target;
+
+        const payload = {
+            TestEnv__DefaultView__Description          : 'Saved default camera view. Populated by Save View button in test environment. All distances are millimeters.',
+            TestEnv__DefaultView__Camera__PosXMm       : Math.round(posUnits.x * 1000),    // <-- Convert units back to mm
+            TestEnv__DefaultView__Camera__PosYMm       : Math.round(posUnits.y * 1000),
+            TestEnv__DefaultView__Camera__PosZMm       : Math.round(posUnits.z * 1000),
+            TestEnv__DefaultView__Camera__RotX         : parseFloat(rotation.x.toFixed(6)),
+            TestEnv__DefaultView__Camera__RotY         : parseFloat(rotation.y.toFixed(6)),
+            TestEnv__DefaultView__Camera__RotZ         : parseFloat(rotation.z.toFixed(6)),
+            TestEnv__DefaultView__Camera__Fov          : parseFloat(TestEnv__Camera.fov.toFixed(4)),
+            TestEnv__DefaultView__OrbitTarget__XMm     : Math.round(orbitTarget.x * 1000),  // <-- Orbit target in mm
+            TestEnv__DefaultView__OrbitTarget__YMm     : Math.round(orbitTarget.y * 1000),
+            TestEnv__DefaultView__OrbitTarget__ZMm     : Math.round(orbitTarget.z * 1000)
+        };
+
+        if (saveBtn) {
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+        }
+
+        try {
+            const response = await fetch('/api/save-default-view', {
+                method  : 'POST',
+                headers : { 'Content-Type': 'application/json' },
+                body    : JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                if (saveBtn) saveBtn.textContent = 'Saved!';
+                console.log('[TestEnv] Default view saved to config');
+                setTimeout(() => {
+                    if (saveBtn) saveBtn.textContent = 'Save View';
+                }, 2000);
+            } else {
+                if (saveBtn) saveBtn.textContent = 'Save Failed';
+                console.error('[TestEnv] Save default view failed:', result.error);
+                setTimeout(() => {
+                    if (saveBtn) saveBtn.textContent = 'Save View';
+                }, 2500);
+            }
+
+        } catch (error) {
+            if (saveBtn) saveBtn.textContent = 'Save Failed';
+            console.error('[TestEnv] Save default view error:', error);
+            setTimeout(() => {
+                if (saveBtn) saveBtn.textContent = 'Save View';
+            }, 2500);
+        } finally {
+            if (saveBtn) saveBtn.disabled = false;
         }
     }
     // ------------------------------------------------------------
@@ -1289,12 +1510,14 @@
         try {
             const glbResults = await TestEnv__LoadAllGlbFiles();             // <-- Load all local GLBs
 
-            // AUTO-CENTER CAMERA ON LOADED MODELS (if models were loaded)
-            if (glbResults.length > 0) {
+            // APPLY SAVED DEFAULT VIEW OR AUTO-CENTER ON LOADED MODELS
+            if (TestEnv__Config__DefaultView) {
+                TestEnv__DefaultView__Apply(TestEnv__Config__DefaultView);   // <-- Restore saved camera view
+            } else if (glbResults.length > 0) {
                 const box = new THREE.Box3().setFromObject(TestEnv__ModelGroup__Root);
                 if (!box.isEmpty()) {
                     const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
+                    const size   = box.getSize(new THREE.Vector3());
                     const maxDim = Math.max(size.x, size.y, size.z);
 
                     TestEnv__Controls.target.copy(center);                   // <-- Set orbit to model center
@@ -1348,6 +1571,9 @@
                 }
             }
 
+            // SET WALK MODE COLLISION MESHES (from loaded model root)
+            Na__WalkMode__SetCollisionMeshes(TestEnv__ModelGroup__Root);
+
         } catch (error) {
             console.error('[TestEnv] Loading error:', error);
             TestEnv__UpdateStatus('Loading error - check console', true);
@@ -1364,7 +1590,12 @@
             const deltaMs = now - TestEnv__Animate__PrevTimestamp;           // <-- Delta since last frame
             TestEnv__Animate__PrevTimestamp = now;                           // <-- Store for next frame
 
-            TestEnv__UpdateNav();                                            // <-- Update orbit controls
+            if (Na__WalkMode__IsActive()) {
+                Na__WalkMode__Update(deltaMs);                               // <-- Update walk mode physics and camera
+                Na__DoorProximity__Update(Na__WalkMode__GetCapsulePosition()); // <-- Proximity door triggers
+            } else {
+                TestEnv__UpdateNav();                                        // <-- Update orbit controls
+            }
             Na__DoorAnimation__Update(deltaMs);                              // <-- Drive door animations
 
             if (TestEnv__RenderComposer && TestEnv__RenderPipelineState) {

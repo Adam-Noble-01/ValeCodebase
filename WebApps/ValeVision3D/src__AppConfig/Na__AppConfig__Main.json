@@ -76,6 +76,10 @@
         "resolutions": [1024, 2048, 4096],
         "defaultResolutionIndex": 2
     },
+    "Global__Hotkeys": {
+        "Global__Hotkeys__Description"                             : "Global keyboard shortcuts. Modifier keys joined with '+'. Evaluated in keydown handlers.",
+        "Global__Hotkeys__ToggleWalkMode"                          : "Alt+Shift+W"
+    },
     "Navmode__Settings": {
         "Navmode__Settings__Description": "All navmode values are integer millimeters where noted; convert to 3D units in code.",
         "Navmode__MouseControls": {
@@ -94,6 +98,19 @@
             "Navmode__IpadControls__ElevationSpeedMm"    : 50,
             "Navmode__IpadControls__OrbitMinDistanceMm"  : 250,
             "Navmode__IpadControls__OrbitMaxDistanceMm"  : 50000
+        },
+        "Navmode__WalkMode": {
+            "Navmode__WalkMode__Description"                       : "First-person walk mode settings. All distance values are integer millimeters; convert to 3D units in code.",
+            "Navmode__WalkMode__EyeHeightMm"                       : 1620,
+            "Navmode__WalkMode__CapsuleHeightMm"                   : 1800,
+            "Navmode__WalkMode__CapsuleRadiusMm"                   : 280,
+            "Navmode__WalkMode__HorizontalFovDeg"                  : 75,
+            "Navmode__WalkMode__MovementSpeedMmPerSec"             : 3500,
+            "Navmode__WalkMode__SprintMultiplier"                  : 1.8,
+            "Navmode__WalkMode__GravityMmPerSecSq"                 : 9810,
+            "Navmode__WalkMode__MaxStepHeightMm"                   : 350,
+            "Navmode__WalkMode__MouseSensitivity"                  : 0.002,
+            "Navmode__WalkMode__DoorProximityThresholdMm"          : 2000
         }
     },
     "Camera__DefaultPosition": {

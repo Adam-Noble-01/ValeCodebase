@@ -292,6 +292,23 @@
         Na__DoorAnimation__Initialize,
         Na__DoorAnimation__Update
     } from './src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+    import {
+        Na__WalkMode__Initialize,
+        Na__WalkMode__SetCollisionMeshes,
+        Na__WalkMode__Activate,
+        Na__WalkMode__Deactivate,
+        Na__WalkMode__Update,
+        Na__WalkMode__IsActive,
+        Na__WalkMode__GetCapsulePosition,
+        Na__WalkMode__GetConfig
+    } from './src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
+    import { Na__WalkModeDesktop__Activate, Na__WalkModeDesktop__Deactivate } from './src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js';
+    import { Na__WalkModeTouch__Activate, Na__WalkModeTouch__Deactivate } from './src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js';
+    import {
+        Na__DoorProximity__Initialize,
+        Na__DoorProximity__SetEnabled,
+        Na__DoorProximity__Update
+    } from './src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
 
@@ -325,6 +342,10 @@
     const Na__Config__DoorAnimation = Na__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'] || {};  // <-- Door animation configuration
     
     const Na__ModelDefaults__ModelUrls = Na__Config__ModelDefaults.modelUrls || [];  // <-- Default model URLs array
+    const Na__Config__WalkMode = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__WalkMode)
+        ? Na__Config__NavmodeSettings.Navmode__WalkMode
+        : {};                                                                     // <-- Walk mode config (MM)
+    const Na__Config__GlobalHotkeys = Na__AppConfig__Data.Global__Hotkeys || {};  // <-- Global hotkeys config
     // ------------------------------------------------------------
 
 
@@ -477,6 +498,51 @@
     Na__Scene__Main.add(Na__ModelGroup__Root);
     
     let Na__LoadedModelGroups = null;                                     // <-- Map of category -> THREE.Group
+    // ------------------------------------------------------------
+
+
+    // MODULE INITIALIZATION | Walk Mode System
+    // ------------------------------------------------------------
+    Na__WalkMode__Initialize(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main.domElement, Na__Config__WalkMode);
+    Na__DoorProximity__Initialize(
+        Na__Config__WalkMode.Navmode__WalkMode__DoorProximityThresholdMm || 2000
+    );
+
+    // HELPER FUNCTION | Toggle Walk Mode On/Off
+    // ------------------------------------------------------------
+    function Na__WalkMode__ToggleWalkMode() {
+        if (Na__WalkMode__IsActive()) {
+            if (Na__Device__UseTouchControls) {
+                Na__WalkModeTouch__Deactivate();
+            } else {
+                Na__WalkModeDesktop__Deactivate();
+            }
+            Na__DoorProximity__SetEnabled(false);
+            Na__WalkMode__Deactivate(Na__Controls__Orbit);
+        } else {
+            const activated = Na__WalkMode__Activate(Na__Controls__Orbit);
+            if (activated) {
+                const walkConfig = Na__WalkMode__GetConfig();
+                if (Na__Device__UseTouchControls) {
+                    Na__WalkModeTouch__Activate(Na__Renderer__Main.domElement, walkConfig);
+                } else {
+                    Na__WalkModeDesktop__Activate(Na__Renderer__Main.domElement, walkConfig);
+                }
+                Na__DoorProximity__SetEnabled(true);
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE INITIALIZATION | Walk Mode Hotkey Listener (Alt+Shift+W)
+    // ------------------------------------------------------------
+    window.addEventListener('keydown', (event) => {
+        if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'w') {
+            event.preventDefault();
+            Na__WalkMode__ToggleWalkMode();
+        }
+    });
     // ------------------------------------------------------------
 
 
@@ -814,6 +880,9 @@
                 }
             }
 
+            // SET WALK MODE COLLISION MESHES (from loaded model root)
+            Na__WalkMode__SetCollisionMeshes(Na__ModelGroup__Root);
+
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);
             Na__UiFeature__UpdateStatus('Model load error - check console', true);
@@ -828,7 +897,12 @@
             const deltaMs = now - Na__RenderLoop__PrevTimestamp;                 // <-- Time since last frame
             Na__RenderLoop__PrevTimestamp = now;                                 // <-- Update previous timestamp
 
-            Na__Navmode__UpdateNavigation();                                     // <-- Update orbit controls
+            if (Na__WalkMode__IsActive()) {
+                Na__WalkMode__Update(deltaMs);                                   // <-- Update walk mode physics and camera
+                Na__DoorProximity__Update(Na__WalkMode__GetCapsulePosition());   // <-- Proximity door triggers
+            } else {
+                Na__Navmode__UpdateNavigation();                                 // <-- Update orbit controls
+            }
             Na__DoorAnimation__Update(deltaMs);                                  // <-- Update door animations
             Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__Camera__Main); // <-- Update fog camera matrices
 

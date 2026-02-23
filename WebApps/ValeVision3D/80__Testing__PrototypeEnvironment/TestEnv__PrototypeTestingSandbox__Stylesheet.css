@@ -862,3 +862,193 @@
     /* ------------------------------------------------------------ */
 
 /* endregion ------------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------------------- */
+/* REGION | Walk Mode Toggle Panel                                               */
+/* ----------------------------------------------------------------------------- */
+
+    /* WALK MODE PANEL | Container */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel {
+        position                           : fixed;
+        bottom                             : 20px;
+        left                               : 300px;
+        z-index                            : 1000;
+        background                         : rgba(255, 255, 255, 0.92);
+        backdrop-filter                    : blur(12px);
+        -webkit-backdrop-filter            : blur(12px);
+        border                             : 1px solid rgba(23, 43, 58, 0.15);
+        border-radius                      : 10px;
+        padding                            : 14px 18px;
+        min-width                          : 200px;
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.08);
+        font-family                        : 'Open Sans', sans-serif;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Header */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__header {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        margin-bottom                      : 10px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Icon */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__icon {
+        font-size                          : 1.3rem;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Title */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__title {
+        font-size                          : 0.85rem;
+        font-weight                        : 600;
+        color                              : #172b3a;
+        letter-spacing                     : 0.02em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Controls */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__controls {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 8px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Toggle Button */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__toggle-btn {
+        display                            : block;
+        width                              : 100%;
+        padding                            : 8px 14px;
+        background                         : #172b3a;
+        color                              : #ffffff;
+        border                             : none;
+        border-radius                      : 6px;
+        font-size                          : 0.82rem;
+        font-weight                        : 600;
+        font-family                        : 'Open Sans', sans-serif;
+        cursor                             : pointer;
+        transition                         : background 0.2s ease;
+        letter-spacing                     : 0.02em;
+    }
+
+    .testenv-walkmode-panel__toggle-btn:hover {
+        background                         : #1e3a4f;
+    }
+
+    .testenv-walkmode-panel__toggle-btn:active {
+        background                         : #0e1f2b;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Status Row */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__status {
+        display                            : flex;
+        justify-content                    : space-between;
+        align-items                        : center;
+        font-size                          : 0.78rem;
+        color                              : #555;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Status Label */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__status-label {
+        font-weight                        : 400;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Status Value */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__status-value {
+        font-weight                        : 600;
+        color                              : #172b3a;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Divider */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__divider {
+        height                             : 1px;
+        background                         : rgba(23, 43, 58, 0.1);
+        margin                             : 10px 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Save View Button */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__save-btn {
+        display                            : block;
+        width                              : 100%;
+        padding                            : 7px 14px;
+        background                         : rgba(23, 43, 58, 0.06);
+        color                              : #172b3a;
+        border                             : 1px solid rgba(23, 43, 58, 0.2);
+        border-radius                      : 6px;
+        font-size                          : 0.80rem;
+        font-weight                        : 600;
+        font-family                        : 'Open Sans', sans-serif;
+        cursor                             : pointer;
+        transition                         : background 0.2s ease, border-color 0.2s ease;
+        letter-spacing                     : 0.02em;
+        margin-bottom                      : 6px;
+    }
+
+    .testenv-walkmode-panel__save-btn:hover {
+        background                         : rgba(23, 43, 58, 0.12);
+        border-color                       : rgba(23, 43, 58, 0.35);
+    }
+
+    .testenv-walkmode-panel__save-btn:active {
+        background                         : rgba(23, 43, 58, 0.18);
+    }
+
+    .testenv-walkmode-panel__save-btn:disabled {
+        opacity                            : 0.5;
+        cursor                             : not-allowed;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WALK MODE PANEL | Hotkey Hint */
+    /* ------------------------------------------------------------ */
+    .testenv-walkmode-panel__hint {
+        margin-top                         : 10px;
+        font-size                          : 0.72rem;
+        color                              : #888;
+        text-align                         : center;
+    }
+
+    .testenv-walkmode-panel__hint kbd {
+        display                            : inline-block;
+        padding                            : 1px 5px;
+        font-size                          : 0.70rem;
+        font-family                        : 'Open Sans', monospace;
+        background                         : #f0f0f0;
+        border                             : 1px solid #ccc;
+        border-radius                      : 3px;
+        box-shadow                         : 0 1px 0 rgba(0, 0, 0, 0.1);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

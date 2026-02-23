@@ -617,7 +617,9 @@
     export {
         Na__DoorAnimation__Initialize,                                           // <-- Initialize system
         Na__DoorAnimation__Update,                                               // <-- Per-frame update
-        Na__DoorAnimation__ScanForDoors                                          // <-- Re-scan scene graph
+        Na__DoorAnimation__ScanForDoors,                                         // <-- Re-scan scene graph
+        Na__DoorAnim__DoorRegistry,                                              // <-- Door registry Map (for proximity system)
+        Na__DoorAnim__ToggleDoor                                                 // <-- Toggle door open/close (for proximity system)
     };
     // ------------------------------------------------------------
 

@@ -2,6 +2,76 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.1  -  23-Feb-2026
+### Walk Mode Navigation System — First-Person Capsule Physics, Proximity Doors, Test Environment UI & Collision Exemptions
+
+**Walk Mode Navigation System (First-Person)**
+- Implemented a complete first-person walk mode navigation system as a fully self-contained module, separate from the existing orbit mode.
+- New file: `src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` — core capsule physics, gravity, stair-stepping, ground detection, camera yaw/pitch, activate/deactivate state management, and saved orbit state restore.
+- Invisible character capsule: eye height 1620mm, capsule height 1800mm, capsule radius 280mm (all config-driven, integer mm in AppConfig, converted to Three.js units at runtime).
+- Gravity (9810 mm/s²), terminal velocity cap, ground snapping via multi-point cross-pattern downward raycasting.
+- Stair-stepping: capsule climbs steps up to 350mm by ankle-level raycast detection and vertical snap.
+- Horizontal wall collision: 8 directional rays at 3 heights (ankle, waist, head); sliding response using hit face normal projection.
+- Camera uses Horizontal FOV of 75 degrees; orbit mode FOV and camera state fully restored on deactivate.
+- All config values stored as integer mm in `Na__AppConfig__Main.json` and `TestEnv__SubAppData__Config.json` under `Navmode__WalkMode` section.
+
+**Desktop Controls Module**
+- New file: `src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js`.
+- WASD + Arrow keys for movement, Shift for sprint (1.8× multiplier), mouse for camera look via Pointer Lock API.
+- On activate: requests pointer lock on the renderer canvas; on deactivate: exits pointer lock and removes all listeners.
+
+**Touch Screen Controls Module**
+- New file: `src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js`.
+- Single finger joystick for directional movement, two-finger drag for head look/rotation, pinch gesture for strafe movement.
+- Acceleration and smoothing applied to all touch inputs.
+
+**Proximity Door Trigger System**
+- New file: `src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js`.
+- Detects capsule proximity to door assemblies (2000mm threshold, config-driven) and triggers existing door animations.
+- Reuses `Na__DoorAnimation__DoorRegistry` and `Na__DoorAnimation__ToggleDoor` exported from the click-to-open doors module.
+- Modified `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` to export internal registry and toggle function.
+
+**Global Hotkey — Toggle Walk Mode**
+- Alt + Shift + W toggles walk mode in both `index.html` (production) and the test environment.
+- Hotkey string defined in new `Global__Hotkeys` section of AppConfig, parsed and evaluated in keydown handlers.
+
+**AppConfig Schema Additions**
+- Added `Global__Hotkeys` section to `Na__AppConfig__Main.json` and `TestEnv__SubAppData__Config.json`.
+- Added `Navmode__WalkMode` section under `Navmode__Settings` with all walk mode parameters as integer mm values.
+
+**Test Environment — Walk Mode UI Panel**
+- Added walk mode toggle panel to `TestEnv__PrototypeTestingSandbox__DomAndLayout.html`: pedestrian icon, toggle button, active mode status indicator, and Alt+Shift+W hotkey hint.
+- Panel positioned at `left: 300px` to avoid overlapping the existing storey visibility panel.
+- Styles added to `TestEnv__PrototypeTestingSandbox__Stylesheet.css`.
+
+**Test Environment — Save Default View Feature**
+- Added "Save View" button to the walk mode panel in the test environment.
+- Captures current orbit camera position (mm), rotation quaternion, FOV, and orbit target (mm) and POSTs to a new Flask endpoint `POST /api/save-default-view`.
+- Flask server (`TestEnv__FlaskLocalServer.py`) reads `TestEnv__SubAppData__Config.json`, updates the `TestEnv__DefaultView` section, and writes it back to disk.
+- On next page load, if `TestEnv__DefaultView` exists in config, the saved camera state is restored automatically — bypassing the default auto-center.
+- Save button is disabled whilst in walk mode (must be in orbit mode); button title and state update dynamically on mode toggle.
+
+**Collision Exemption System**
+- `Na__WalkMode__SetCollisionMeshes` now filters out helper/dev objects that must always be ghostable.
+- Implemented `Na__WalkMode__IsCollisionExempt(object)` which walks the full ancestor chain of each mesh and tests every node name against a keyword list using substring matching.
+- Substring matching (not exact) is required because GLB files exported with a project prefix produce names like `NP03__01__OrbitHelperCube__MeshModel__` — exact matching silently fails for all project-prefixed variants.
+- Exempt keywords: `'Dev__DefaultCube'` (programmatic pivot reference cube) and `'OrbitHelperCube'` (GLB orbit target cube, catches both root group and child mesh names).
+
+**Key Files**
+- `src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` — new: capsule physics, collision, gravity, stair stepping, activate/deactivate.
+- `src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js` — new: WASD + mouse Pointer Lock controls.
+- `src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js` — new: touch joystick, look, pinch controls.
+- `src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js` — new: proximity door trigger.
+- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` — modified: exports `Na__DoorAnimation__DoorRegistry` and `Na__DoorAnimation__ToggleDoor`.
+- `src__AppConfig/Na__AppConfig__Main.json` — added `Global__Hotkeys` and `Navmode__WalkMode` sections.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — mirrored AppConfig additions, stores `TestEnv__DefaultView`.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — walk mode integration, save view logic, toggle UI wiring.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html` — walk mode panel HTML.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Stylesheet.css` — walk mode panel styles.
+- `80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py` — added `/api/save-default-view` POST endpoint.
+- `index.html` — walk mode imports, initialization, collision mesh wiring, render loop integration, hotkey listener.
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.0  -  18-Feb-2026
 ### Save Camera Settings — Localhost-Only Button & Full State Restore
 

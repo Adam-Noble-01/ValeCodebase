@@ -2,6 +2,103 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.2  -  23-Feb-2026
+### PBR Materials Swap System — Indexed Material Library, WebApp Renderer, SketchUp Export Modes
+
+**Overview**
+- Implemented a full programmatic PBR materials swapping pipeline spanning the SketchUp GLB exporter and the ValeVision3D WebApp renderer.
+- Central single source of truth: `src__AppConfig/Na__AppConfig__MaterialsLibrary.json` defines all indexed materials, their PBR settings, and optional texture URL overrides.
+- Materials are identified by a strict naming convention (`MAT{NNN}__Category__Variant`) matched against SketchUp `display_name` at export time and against `material.name` in the Three.js scene graph at load time.
+- Whitecard fallback guaranteed: any mesh whose material name is not found in the library renders exactly as before, preserving full schematic massing functionality.
+- System deployed to both the main production render pipeline (`index.html`) and the test environment (`TestEnv__PrototypeTestingSandbox__Main__.js`), with shared module code and independent config files.
+
+**Materials Library JSON Schema (v2.1.0)**
+- `src__AppConfig/Na__AppConfig__MaterialsLibrary.json` expanded to full PBR template structure.
+- `MAT001__Default` is the complete reference template showing every possible key with default values; all other materials only specify keys that differ from these defaults.
+- Per-material fields: `SketchUpName`, `Description`, `BaseColor` (rgb string), `Opacity`, `Transparent`, `IsDoubleSided`, `PbrRoughness`, `PbrMetallic`, `EmissiveFactor`, `EmissiveIntensity`, `NormalScale`, `OcclusionStrength`, `AlphaTest`, `DepthWrite`, `EnvMapIntensity`, and a `TextureMaps` section with 7 URL slots (`BaseColorUrl`, `NormalUrl`, `RoughnessUrl`, `MetallicUrl`, `EmissiveUrl`, `OcclusionUrl`, `AlphaUrl`).
+- `null` texture URLs mean use scalar PBR values only; a non-null URL hot-swaps that texture channel at runtime.
+- Sparse authoring: paint materials store 3 keys (SketchUpName, BaseColor, PbrRoughness); glass stores 8; only what diverges from defaults is written.
+- `IsDoubleSided` is an explicit opt-in (`true` only for glass and mirror). Omitting it defaults to single-sided rendering, which is more performant for opaque surfaces.
+- Initial series: MAT000 (default), MAT100 (glass, timber, mirror), MAT300 (Farrow & Ball paint range), MAT500 (hardwood timbers).
+
+**WebApp — Library Loader Module (New)**
+- New file: `src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js`.
+- `Na__MaterialsSystem__LoadLibrary(url, forceReload)` — async fetch with module-scope cache; returns null on failure rather than throwing.
+- `Na__MaterialsSystem__BuildLookup(libraryData)` — flattens the nested series structure into a `Map<SketchUpName, MaterialConfig>` for O(1) lookups; cached after first build.
+- `Na__MaterialsSystem__IsIndexedName(name)` — regex test `/^MAT\d{3}__/` to identify indexed material names without requiring a loaded library.
+
+**WebApp — Material Swap Module (New)**
+- New file: `src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js`.
+- `Na__MaterialsSystem__ApplyMaterials(modelGroup, lookupMap, materialsConfig)` — traverses a THREE.Group scene graph, identifies meshes with indexed material names, creates `THREE.MeshStandardMaterial` from library config, and replaces the existing material.
+- Unmatched meshes are not touched; their whitecard material is preserved exactly as-is.
+- Applies `IsDoubleSided` → `THREE.DoubleSide` / `THREE.FrontSide`, `Transparent`, `DepthWrite`, `EnvMapIntensity`, `AlphaTest`, and polygon offset.
+- Material instances are cached by `SketchUpName` within a single traversal pass — multiple meshes sharing a material share the same instance.
+- Texture URL loading is async and parallel via `Promise.all`; `material.needsUpdate = true` called after all textures resolve.
+- Correct colour space set per texture type: sRGB for base colour/emissive, linear for normal/roughness/metallic/AO/alpha maps.
+
+**WebApp — Main App Integration**
+- `index.html`: added imports for both materials modules; added `Na__Config__MaterialsSystem` extraction from AppConfig.
+- After `Na__ModelLoader__LoadAllModels` completes, performs a second pass: fetch library → build lookup → `for...of` with `await` over all loaded model groups, calling `Na__MaterialsSystem__ApplyMaterials` on each.
+- Second pass is gated on `MaterialsSystem__Config__Enabled`; disabled flag bypasses entirely with no overhead.
+
+**WebApp — Test Environment Integration**
+- `TestEnv__PrototypeTestingSandbox__Main__.js`: imports both materials modules from `../src__MaterialsSystem/` (no code duplication).
+- Material swap called after `TestEnv__LoadAllGlbFiles()` on initial load and again inside the model refresh path (after `TestEnv__LoadAllGlbFiles()` in the node explorer refresh sequence).
+
+**AppConfig Schema Additions**
+- New `MaterialsSystem__Config` section added to `src__AppConfig/Na__AppConfig__Main.json`:
+  - `MaterialsSystem__Config__Enabled` — master on/off switch.
+  - `MaterialsSystem__Config__LibraryUrl` — path to the library JSON (`./src__AppConfig/Na__AppConfig__MaterialsLibrary.json`).
+  - `MaterialsSystem__Config__FallbackToWhitecard` — documents intent; whitecard fallback is always active.
+  - `MaterialsSystem__Config__PolygonOffsetFactor` / `PolygonOffsetUnits` — passed to all created PBR materials to avoid Z-fighting with linework.
+- Identical section added to `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` with library URL `../src__AppConfig/Na__AppConfig__MaterialsLibrary.json`.
+
+**SketchUp Plugin — Material Lookup System (New)**
+- New file: `Na__TrueVision__GlbBuilder__EngineCore__MaterialLookupSystem__.rb`.
+- `Na__MaterialLookup__FetchLibrary` — HTTPS GET to the GitHub Pages URL with 10s connect / 15s read timeout; caches result in module state; returns nil on failure.
+- `Na__MaterialLookup__BuildIndex` — parses fetched JSON, flattens all series into `{ SketchUpName => config_hash }` for O(1) lookups; skips `IsDefault` entries.
+- `Na__MaterialLookup__IsIndexedMaterial?(name)` — regex `/^MAT\d{3}__/` check without requiring the library to be loaded.
+- `Na__MaterialLookup__InLibrary?(name)` — exact key check against the built index.
+- `Na__MaterialLookup__GetConfig(name)` — returns full config hash or nil.
+- `Na__MaterialLookup__EnrichGltfMaterial(gltf_material, config)` — patches a glTF material hash in-place using `config.key?()` guards (sparse-safe): sets `metallicFactor`, `roughnessFactor`, `baseColorFactor` (with alpha from `Opacity`), `alphaMode: "BLEND"` when opacity < 1, `doubleSided` from `IsDoubleSided`, and `emissiveFactor`.
+- `Na__MaterialLookup__ParseRgbString` — `"rgb(R, G, B)"` → `[r, g, b]` normalised 0–1.
+- Added `require_relative` for new module in `Na__TrueVision__GlbBuilder__Main__.rb` after `MaterialHandling`.
+
+**SketchUp Plugin — Material Handling (Updated)**
+- `Na__TrueVision__GlbBuilder__EngineCore__MaterialHandling__.rb` rewritten to support three export modes.
+- `Na__MaterialEngine__SetExportMode(mode)` / `GetExportMode` — sets `:no_materials`, `:all_materials`, or `:indexed_only`.
+- `:no_materials` — only the default whitecard material (index 0) is emitted; all mesh primitives reference it. Fastest export, sanitised output.
+- `:all_materials` — all unique SketchUp materials exported with their colours; indexed materials additionally enriched with PBR via `Na__MaterialLookup__EnrichGltfMaterial`.
+- `:indexed_only` — only materials matching `/^MAT\d{3}__/` and found in the library index are exported; non-indexed materials fall back to index 0 (whitecard). Avoids bloated GLB files with custom or unnamed materials.
+- `Na__MaterialEngine__ResolveMaterialIndexForGroup` returns 0 in `:no_materials` mode regardless of material.
+
+**SketchUp Plugin — UI (Updated)**
+- `Na__TrueVision__GlbBuilder__UserInterface__.rb`: two new toggles added before the existing "Optimize Large Textures" option.
+- **Toggle 1 — "Export Materials"**: unchecked by default. When unchecked, export mode is `:no_materials`.
+- **Toggle 2 — "Export Standard Indexed Materials Only"**: greyed out (`opacity: 0.4`, `pointer-events: none`) when Toggle 1 is unchecked; enabled when Toggle 1 is checked; checked by default. Determines `:indexed_only` vs `:all_materials`.
+- `Na__TrueVision__GlbBuilder__ToggleMaterials()` JS function enables/disables Toggle 2 group based on Toggle 1 state.
+- Export callback reads `materialExportMode` string from JSON params, converts to symbol, calls `self.Na__MaterialEngine__SetExportMode(mode_sym)` before export proceeds.
+- Safe fallback in the rescue block sets `:no_materials` on parse error.
+
+**IsDoubleSided — Glass & Transparent Material Correctness**
+- SketchUp glass panes are single-polygon faces; without double-sided rendering the backface is culled and the transparent surface either disappears from one side or a white backface bleeds through the opacity.
+- `IsDoubleSided: true` in the library simultaneously triggers: `"doubleSided": true` in the exported glTF material entry (plugin side), and `side: THREE.DoubleSide` in the created `THREE.MeshStandardMaterial` (WebApp side).
+- Opt-in only — opaque materials (paint, timber) omit `IsDoubleSided` entirely; the renderer defaults to `THREE.FrontSide` for better performance.
+
+**Key Files**
+- `src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js` — new: library fetch, cache, index.
+- `src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js` — new: traverse, match, apply PBR.
+- `src__AppConfig/Na__AppConfig__MaterialsLibrary.json` — v2.1.0: full PBR schema, sparse authoring.
+- `src__AppConfig/Na__AppConfig__Main.json` — added `MaterialsSystem__Config` section.
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json` — added `MaterialsSystem__Config` section.
+- `index.html` — materials module imports, config extraction, second-pass material swap after model load.
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — materials imports, swap on initial load and on refresh.
+- `Na__TrueVision__GlbBuilder__EngineCore__MaterialLookupSystem__.rb` — new: URL fetch, index, enrich.
+- `Na__TrueVision__GlbBuilder__EngineCore__MaterialHandling__.rb` — rewritten: 3 export modes, PBR enrichment.
+- `Na__TrueVision__GlbBuilder__UserInterface__.rb` — 2 new material export toggles, mode resolution in callback.
+- `Na__TrueVision__GlbBuilder__Main__.rb` — added require_relative for MaterialLookupSystem.
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.1  -  23-Feb-2026
 ### Walk Mode Navigation System — First-Person Capsule Physics, Proximity Doors, Test Environment UI & Collision Exemptions
 

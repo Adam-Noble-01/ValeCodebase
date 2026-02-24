@@ -1,0 +1,82 @@
+{
+    "basePath": "Projects/2026/57876__Lane",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Feb-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Anna requested Landscape on this one but James said to first model the basic Whitecard model and take the view whether its needed after presenting the first iteration of the model to Anna, so I will await feedback before adding the Site context. I overran slightly over the estimated 2 Hours, due to needed to model the openings and windows on the elevation the request arrow pointed to, so I had to use texture projection method to get the best site photo and project the window positions and style to the mesh etc, which added some time.",
+        "conceptArtist": "Anna",
+        "input": "CAD File"
+    },
+    "projectCode": "57876",
+    "projectName": "Lane",
+    "scheduleData": {
+        "dateFulfilled": "24-Feb-2026",
+        "dateReceived": "20-Feb-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__ValeVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__ValeVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57876__Lane/Lane__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 22480,
+            "Camera__DefaultPos__PosY": 2204,
+            "Camera__DefaultPos__PosZ": 11246
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0131,
+            "Camera__DefaultRotation__RotY": 0.3351,
+            "Camera__DefaultRotation__RotZ": 0.0043
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 26.9915
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 14322,
+        "OrbitHelperCube__Position__PosY": 1898,
+        "OrbitHelperCube__Position__PosZ": -12179
+    },
+    "folderId": "2026/57876__Lane",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Feb-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Feb-2026.png"
+    ]
+}

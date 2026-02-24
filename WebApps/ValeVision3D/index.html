@@ -489,8 +489,8 @@
             );
         }
         
-        if (Na__Config__CameraDefault.Camera__DefaultMisc && Number.isFinite(Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultFov)) {
-            Na__Camera__Main.fov = Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultFov;
+        if (Na__Config__CameraDefault.Camera__DefaultMisc && Number.isFinite(Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultMisc__Fov)) {
+            Na__Camera__Main.fov = Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultMisc__Fov;
             Na__Camera__Main.updateProjectionMatrix();
         }
         
@@ -583,7 +583,7 @@
     // ------------------------------------------------------------
     const Na__CameraLens__Config = { ...Na__Config__CameraLens };
     
-    if (Na__Config__CameraDefault && Na__Config__CameraDefault.Camera__DefaultMisc && Number.isFinite(Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultFov)) {
+    if (Na__Config__CameraDefault && Na__Config__CameraDefault.Camera__DefaultMisc && Number.isFinite(Na__Config__CameraDefault.Camera__DefaultMisc.Camera__DefaultMisc__Fov)) {
         Na__CameraLens__Config.defaultFocalLengthMM = null;                   // <-- Preserve initial FOV
     }
     

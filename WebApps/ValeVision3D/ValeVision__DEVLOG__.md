@@ -2,6 +2,33 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.3  -  24-Feb-2026
+### AppConfig Key Wiring Fix — `Camera__DefaultMisc__Fov` Key Name Regression
+
+**Bug Fixed — Broken Key Reference in `index.html` (2 locations)**
+- Corrected two occurrences of the wrong key name `Camera__DefaultFov` → `Camera__DefaultMisc__Fov` in `index.html`.
+- Both errors were in the `Camera__DefaultPosition` reading block; every other module in the codebase already used the correct key name.
+
+**Location 1 — Initial FOV Application (line 492)**
+- Block reads `Camera__DefaultMisc__Fov` from `Na__Config__CameraDefault` and applies it to `Na__Camera__Main.fov`.
+- Previously the key was never found (`Camera__DefaultFov` does not exist), so the camera's initial FOV from AppConfig was silently never applied.
+
+**Location 2 — Camera Lens Slider Guard (line 586)**
+- Block sets `Na__CameraLens__Config.defaultFocalLengthMM = null` when a saved FOV is present in AppConfig, preventing the lens slider from overriding the camera's pre-set FOV on initialization.
+- Previously the guard condition always evaluated to `false` (wrong key), meaning `Na__UiFeature__InitializeCameraLensControls` always used the hardcoded `defaultFocalLengthMM: 45` from `cameraLens` config and called `applyLens(45)` immediately, overriding the camera's starting FOV.
+- Guard now fires correctly — `defaultFocalLengthMM` is set to `null`, and the lens slider initialises from the camera's current FOV state rather than the 45mm default.
+
+**Full AppConfig Wiring Audit Performed**
+- All 19 AppConfig sections traced end-to-end against their downstream consumer files.
+- All other sections confirmed correct. Three dead-config items identified (not bugs, no behaviour change):
+  - `Scene__Default__ControlsConfig` — extracted but superseded by `Navmode__Settings`; never consumed.
+  - `Global__Hotkeys__ToggleWalkMode` — extracted but walk mode hotkey handler hardcodes `Alt+Shift+W` directly.
+  - `MaterialsSystem__Config__FallbackToWhitecard` — defined in AppConfig but whitecard fallback is always implicit in the materials swap code.
+
+**Key Files**
+- `index.html` — two key name corrections in camera config reading block.
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.2  -  23-Feb-2026
 ### PBR Materials Swap System — Indexed Material Library, WebApp Renderer, SketchUp Export Modes
 

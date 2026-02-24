@@ -383,28 +383,106 @@
 
 
         // ------------------------------------------------------------
-        // SUB FUNCTION | Handle Layout View Action
+        // SUB FUNCTION | Handle Layout View Action (with Loading Overlay)
         // ------------------------------------------------------------
+        let layoutViewInProgress = false;                                    // <-- Guard against double-click
+
         if (layoutViewButton) {
             layoutViewButton.addEventListener('click', () => {
-                const result = Na__UiFeature__RenderToDataUrl( // <-- Render using shared helper
-                    renderer, scene, camera, getRenderPipelineState,
-                    postProcessConfig, isEnhanceEnabled,
-                    isCustomEnabled, exportConfig, ratioIndex, resIndex
-                );
+                if (layoutViewInProgress) return;                            // <-- Ignore if already running
+                layoutViewInProgress = true;                                 // <-- Lock
 
-                // Store rendered image data on window global for new tab to read
+                // DOM references for layout loading overlay
                 // ------------------------------------------------------------
-                window.__Na__PageLayout__PendingImage = { // <-- Set global property
-                    dataUrl     : result.dataUrl,          // <-- PNG data URL
-                    width       : result.width,            // <-- Image width in pixels
-                    height      : result.height,           // <-- Image height in pixels
-                    aspectRatio : result.aspectRatio        // <-- Aspect ratio string or null
-                };
+                const loadingOverlay = document.getElementById('naLayoutLoadingOverlay'); // <-- Overlay container
+                const loadingStatus  = document.getElementById('naLayoutLoadingStatus');  // <-- Status text element
 
-                // Open the Page Layout System in a new browser tab
+                // SHOW OVERLAY | Phase 1 - "Rendering Your Image..."
                 // ------------------------------------------------------------
-                window.open('./src__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html', '_blank'); // <-- Open layout page
+                layoutViewButton.classList.add('is-loading');                 // <-- Dim the button
+                if (loadingOverlay && loadingStatus) {
+                    loadingStatus.textContent = 'Rendering Your Image...';   // <-- Phase 1 message
+                    loadingStatus.classList.remove('na-layout-loading-overlay__status--success'); // <-- Reset success state
+                    loadingOverlay.classList.remove('na-layout-loading-overlay--fade-out');        // <-- Reset fade-out
+                    loadingOverlay.classList.add('na-layout-loading-overlay--visible');            // <-- Show overlay
+                }
+
+                // DEFER RENDER | Allow overlay to paint before blocking render
+                // ------------------------------------------------------------
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+
+                        const result = Na__UiFeature__RenderToDataUrl(       // <-- Render using shared helper
+                            renderer, scene, camera, getRenderPipelineState,
+                            postProcessConfig, isEnhanceEnabled,
+                            isCustomEnabled, exportConfig, ratioIndex, resIndex
+                        );
+
+                        // UPDATE OVERLAY | Phase 2 - "Sending To Drawing Document..."
+                        // ------------------------------------------------------------
+                        if (loadingStatus) {
+                            loadingStatus.textContent = 'Sending To Drawing Document...'; // <-- Phase 2 message
+                        }
+
+                        // Store rendered image data on window global for new tab to read
+                        // ------------------------------------------------------------
+                        window.__Na__PageLayout__PendingImage = {            // <-- Set global property
+                            dataUrl     : result.dataUrl,                    // <-- PNG data URL
+                            width       : result.width,                      // <-- Image width in pixels
+                            height      : result.height,                     // <-- Image height in pixels
+                            aspectRatio : result.aspectRatio                 // <-- Aspect ratio string or null
+                        };
+
+                        // Open the Page Layout System in a new browser tab
+                        // ------------------------------------------------------------
+                        window.open('./src__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html', '_blank'); // <-- Open layout page
+
+                        // HELPER | Dismiss overlay with success state
+                        // ------------------------------------------------------------
+                        function Na__LayoutView__DismissOverlay() {
+                            if (loadingStatus) {
+                                loadingStatus.textContent = 'Success! See new tab for your Drawing Layout'; // <-- Phase 3 message
+                                loadingStatus.classList.add('na-layout-loading-overlay__status--success');   // <-- Green text
+                            }
+
+                            setTimeout(() => {
+                                if (loadingOverlay) {
+                                    loadingOverlay.classList.add('na-layout-loading-overlay--fade-out');     // <-- Start fade-out
+                                    setTimeout(() => {
+                                        loadingOverlay.classList.remove('na-layout-loading-overlay--visible');  // <-- Hide completely
+                                        loadingOverlay.classList.remove('na-layout-loading-overlay--fade-out'); // <-- Reset fade class
+                                    }, 400);
+                                }
+                                layoutViewButton.classList.remove('is-loading');  // <-- Re-enable button
+                                layoutViewInProgress = false;                    // <-- Unlock
+                            }, 2500);
+                        }
+
+                        // LISTEN FOR POSTMESSAGE | Layout tab confirms it loaded successfully
+                        // ------------------------------------------------------------
+                        let layoutMessageReceived = false;                   // <-- Track if message arrived
+
+                        function Na__LayoutView__OnMessage(event) {
+                            if (event.data && event.data.type === 'Na__PageLayout__Ready') {
+                                layoutMessageReceived = true;                // <-- Mark received
+                                window.removeEventListener('message', Na__LayoutView__OnMessage); // <-- Clean up listener
+                                Na__LayoutView__DismissOverlay();            // <-- Show success and dismiss
+                            }
+                        }
+
+                        window.addEventListener('message', Na__LayoutView__OnMessage); // <-- Register listener
+
+                        // TIMEOUT FALLBACK | Dismiss after 8s if no postMessage received
+                        // ------------------------------------------------------------
+                        setTimeout(() => {
+                            if (!layoutMessageReceived) {
+                                window.removeEventListener('message', Na__LayoutView__OnMessage); // <-- Clean up listener
+                                Na__LayoutView__DismissOverlay();            // <-- Dismiss regardless
+                            }
+                        }, 8000);
+
+                    });
+                });
             });
         }
         // ------------------------------------------------------------

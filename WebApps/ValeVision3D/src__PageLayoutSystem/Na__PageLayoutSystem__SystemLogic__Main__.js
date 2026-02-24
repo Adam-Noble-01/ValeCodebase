@@ -273,6 +273,12 @@
             });
         }
 
+        // Notify opener tab that layout page loaded successfully
+        // ------------------------------------------------------------
+        if (window.opener) {
+            window.opener.postMessage({ type: 'Na__PageLayout__Ready' }, '*'); // <-- Signal parent tab
+        }
+
         return state; // <-- Return initialized state
     }
     // ------------------------------------------------------------

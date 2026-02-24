@@ -2,6 +2,53 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.5  -  24-Feb-2026
+### Layout View Loading Overlay — Spinner Feedback, Button State Fix, postMessage Handshake
+
+**Overview**
+- Added a full-screen loading overlay with 3-phase status messages when the "Layout View" button is clicked, providing clear visual feedback during image rendering, data transfer, and new-tab loading.
+- Fixed the Layout View button remaining visually stuck in its pressed state after click.
+- Added white hover text and `:active` press-in effect to the secondary action button for consistent interactive feel.
+- Established a `postMessage` handshake between the parent tab and the layout tab so the overlay knows when the Drawing Document has finished loading.
+
+**Loading Overlay (3-Phase Status Messages)**
+- Phase 1: "Rendering Your Image..." — shown immediately on button click while the high-resolution render executes.
+- Phase 2: "Sending To Drawing Document..." — shown after render completes and before the new tab confirms receipt.
+- Phase 3: "Success! See new tab for your Drawing Layout" — shown in green when the layout tab sends back its `Na__PageLayout__Ready` postMessage.
+- Overlay auto-dismisses 2.5 seconds after the success message with a smooth fade-out transition.
+- 8-second timeout fallback dismisses the overlay if the postMessage is never received (cross-origin restrictions or popup blockers).
+
+**Button State and Double-Click Guard**
+- `layoutViewInProgress` flag prevents re-entry while the overlay is active.
+- Button receives `.is-loading` class during the process (dimmed, `pointer-events: none`).
+- `.is-loading` class removed on overlay dismiss, restoring the button to its default state.
+- Render deferred via double `requestAnimationFrame` so the overlay paints to screen before the blocking render call.
+
+**Button Hover and Active CSS**
+- `.na-dropdown-menu__action--secondary:hover` now sets `color: #ffffff` for white text on hover.
+- `.na-dropdown-menu__action--secondary:active` added with darker background and `scale(0.97)` press-in effect.
+- `.na-dropdown-menu__action--secondary.is-loading` added for disabled appearance during loading.
+
+**postMessage Handshake (Layout Tab → Parent Tab)**
+- `Na__PageLayoutSystem__SystemLogic__Main__.js` now calls `window.opener.postMessage({ type: 'Na__PageLayout__Ready' }, '*')` at the end of `Na__PageLayout__Initialize()` after the image and title block are loaded and state is built.
+- Parent tab listens for this message to transition from Phase 2 to Phase 3 (success).
+- Listener is cleaned up after receipt; timeout fallback also cleans up the listener.
+
+**Loading Overlay Styles**
+- Reuses the existing `.loading-spinner` and `@keyframes spinner-rotate` from the app initialization overlay.
+- Semi-transparent white background (`rgba(255,255,255,0.92)`) with `backdrop-filter: blur(4px)`.
+- `z-index: 10000` ensures visibility above all other UI elements including the dropdown menu.
+- `.na-layout-loading-overlay--visible` / `--fade-out` classes control display and opacity transitions.
+- `.na-layout-loading-overlay__status--success` turns the status text green (`#2a7d4f`) with bold weight.
+
+**Key Files**
+- `index.html` — added `#naLayoutLoadingOverlay` element with spinner and status text inside `#root`.
+- `src__Styles/loading-overlay.css` — added Layout View Loading Overlay region (container, visible, fade-out, status text, success variant).
+- `src__Styles/ui-components.css` — added `:hover` white text, `:active` press effect, `.is-loading` disabled state for secondary action button.
+- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js` — refactored Layout View click handler with overlay management, double-rAF render deferral, postMessage listener, timeout fallback, dismiss sequence.
+- `src__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js` — added `postMessage` call to opener on successful initialization.
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.4  -  24-Feb-2026
 ### `index.html` Modularisation Pass — 5 New Modules, Walk Mode Controls, Region Structure
 

@@ -115,3 +115,68 @@
 
 /* endregion ------------------------------------------------------------------- */
 
+
+/* -----------------------------------------------------------------------------
+ * REGION | Layout View Loading Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT LOADING OVERLAY | Full-screen container (hidden by default) */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay {
+        position                           : fixed;                        /* <-- Fixed positioning over entire viewport */
+        top                                : 0;                            /* <-- Align to top */
+        left                               : 0;                            /* <-- Align to left */
+        width                              : 100vw;                        /* <-- Full viewport width */
+        height                             : 100vh;                        /* <-- Full viewport height */
+        background-color                   : rgba(255, 255, 255, 0.92);    /* <-- Semi-transparent white */
+        display                            : none;                         /* <-- Hidden by default */
+        flex-direction                     : column;                       /* <-- Stack vertically */
+        justify-content                    : center;                       /* <-- Center vertically */
+        align-items                        : center;                       /* <-- Center horizontally */
+        z-index                            : 10000;                        /* <-- Above all other elements */
+        opacity                            : 0;                            /* <-- Start transparent for fade-in */
+        transition                         : opacity 0.35s ease-out;       /* <-- Smooth fade transition */
+        backdrop-filter                    : blur(4px);                    /* <-- Subtle blur behind overlay */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING OVERLAY VISIBLE STATE | Shown during layout export */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay--visible {
+        display                            : flex;                         /* <-- Enable flexbox layout */
+        opacity                            : 1;                            /* <-- Fully visible */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING OVERLAY FADE-OUT STATE | Dismissing overlay */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay--fade-out {
+        opacity                            : 0;                            /* <-- Fade to transparent */
+        pointer-events                     : none;                         /* <-- Disable interaction during fade */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING STATUS TEXT | Progress message below spinner */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay__status {
+        font-family                        : 'Open Sans', sans-serif;      /* <-- Vale standard font */
+        font-size                          : 16px;                         /* <-- Readable size */
+        font-weight                        : 400;                          /* <-- Regular weight */
+        color                              : #172b3a;                      /* <-- Vale blue text */
+        letter-spacing                     : 0.5px;                        /* <-- Slight letter spacing */
+        text-align                         : center;                       /* <-- Center text */
+        margin-top                         : 0;                            /* <-- Remove default margin */
+        transition                         : color 0.3s ease;              /* <-- Smooth color change on success */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LAYOUT LOADING SUCCESS STATE | Green text on completion */
+    /* ------------------------------------------------------------ */
+    .na-layout-loading-overlay__status--success {
+        color                              : #2a7d4f;                      /* <-- Green success color */
+        font-weight                        : 600;                          /* <-- Bold for emphasis */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+

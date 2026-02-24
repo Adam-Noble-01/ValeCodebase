@@ -47,7 +47,7 @@
         top                                : 50%;                        /* <-- Vertical center */
         left                               : 50%;                        /* <-- Horizontal center */
         transform                          : translate(-50%, -50%);      /* <-- Center offset */
-        width                              : 270px;                      /* <-- Button width (1.5x larger) */
+        width                              : calc(270px * var(--Vale_UIScale));  /* <-- Button width (1.5x larger) */
         height                             : auto;                       /* <-- Maintain aspect ratio */
         cursor                             : pointer;                    /* <-- Pointer cursor on hover */
         opacity                            : 0.8;                        /* <-- Semi-transparent by default */
@@ -78,7 +78,7 @@
     /* ------------------------------------------------------------ */
     @media (max-width: 1024px) {
         .image-carousel__valevision-overlay {
-            width                          : 225px;                      /* <-- Smaller button (1.5x of 150px) */
+            width                          : calc(225px * var(--Vale_UIScale));  /* <-- Smaller button (1.5x of 150px) */
         }
     }
     /* ------------------------------------------------------------ */
@@ -88,7 +88,7 @@
     /* ------------------------------------------------------------ */
     @media (max-width: 768px) {
         .image-carousel__valevision-overlay {
-            width                          : 180px;                      /* <-- Even smaller button (1.5x of 120px) */
+            width                          : calc(180px * var(--Vale_UIScale));  /* <-- Even smaller button (1.5x of 120px) */
         }
     }
     /* ------------------------------------------------------------ */

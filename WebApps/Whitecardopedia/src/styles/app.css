@@ -64,14 +64,14 @@
         background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
         padding                            : var(--Vale_Spacing_Large);    /* <-- Content padding */
         padding-top                        : 0;                            /* <-- Remove top padding for tighter spacing */
-        margin-top                         : -80px;                        /* <-- Move content up */
+        margin-top                         : calc(-80px * var(--Vale_UIScale));  /* <-- Move content up */
     }
     
     .homepage__logo {
         max-width                          : 500px;                        /* <-- Maximum logo width */
         width                              : 80%;                          /* <-- Responsive width */
         height                             : auto;                         /* <-- Maintain aspect ratio */
-        margin-bottom                      : 100px;                        /* <-- Space below logo */
+        margin-bottom                      : calc(100px * var(--Vale_UIScale));  /* <-- Space below logo */
     }
     
     .homepage__button {
@@ -132,13 +132,13 @@
     }
     
     .app-header__logo-left {
-        height                             : 42px;                         /* <-- Vale logo height */
-        width                              : auto;                         /* <-- Maintain aspect ratio */
+        height                             : calc(42px * var(--Vale_UIScale));  /* <-- Vale logo height */
+        width                              : auto;                              /* <-- Maintain aspect ratio */
     }
     
     .app-header__logo-right {
-        height                             : 36px;                         /* <-- Whitecardopedia logo height */
-        width                              : auto;                         /* <-- Maintain aspect ratio */
+        height                             : calc(36px * var(--Vale_UIScale));  /* <-- Whitecardopedia logo height */
+        width                              : auto;                              /* <-- Maintain aspect ratio */
     }
     
     .app-header__title {
@@ -396,7 +396,7 @@
         position                           : relative;                     /* <-- Relative positioning for overlay */
         margin-bottom                      : -3px;
         width                              : 100%;                         /* <-- Full card width */
-        height                             : 300px;                        /* <-- Fixed container height */
+        height                             : calc(300px * var(--Vale_UIScale));  /* <-- Fixed container height */
         background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
         border-bottom                      : 1px solid #172b3a;            /* <-- Only bottom border, ValeDesignSuite heading/nav blue */
         border-left                        : none;                         /* <-- No left border */
@@ -491,8 +491,8 @@
     }
     
     .project-card__content-icon {
-        width                              : 80px;                         /* <-- Fixed icon width */
-        height                             : 80px;                         /* <-- Fixed icon height */
+        width                              : calc(80px * var(--Vale_UIScale));  /* <-- Fixed icon width */
+        height                             : calc(80px * var(--Vale_UIScale));  /* <-- Fixed icon height */
         opacity                            : 0.9;                          /* <-- Slight Reduced opacity to soften icons to make them less intrusive */
         z-index                            : 15;                           /* <-- Layer above image */
     }
@@ -774,8 +774,8 @@
         font-size                          : var(--Vale_FontSize_Heading); /* <-- Large font for arrows */
         cursor                             : pointer;                      /* <-- Pointer cursor */
         border-radius                      : 50%;                          /* <-- Circular buttons */
-        width                              : 50px;                         /* <-- Fixed width */
-        height                             : 50px;                         /* <-- Fixed height */
+        width                              : calc(50px * var(--Vale_UIScale));  /* <-- Fixed width */
+        height                             : calc(50px * var(--Vale_UIScale));  /* <-- Fixed height */
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Center content */
         justify-content                    : center;                       /* <-- Center content */
@@ -805,8 +805,8 @@
     }
     
     .image-carousel__thumbnail {
-        width                              : 80px;                         /* <-- Fixed thumbnail width */
-        height                             : 80px;                         /* <-- Fixed thumbnail height */
+        width                              : calc(80px * var(--Vale_UIScale));  /* <-- Fixed thumbnail width */
+        height                             : calc(80px * var(--Vale_UIScale));  /* <-- Fixed thumbnail height */
         object-fit                         : cover;                        /* <-- Cover thumbnail area */
         cursor                             : pointer;                      /* <-- Pointer cursor */
         border                             : 2px solid transparent;        /* <-- Transparent border default */
@@ -987,7 +987,7 @@
     }
     
     .star-rating__star {
-        font-size                          : 20px;                         /* <-- Star size */
+        font-size                          : calc(20px * var(--Vale_UIScale));  /* <-- Star size */
         color                              : var(--Vale_StarEmpty);        /* <-- Empty star color */
         transition                         : color var(--Vale_Transition_Fast);  /* <-- Fast color transition */
     }
@@ -1022,7 +1022,7 @@
     }
     
     .efficiency-scale__pictogram {
-        height                             : 60px;                         /* <-- Pictogram height */
+        height                             : calc(60px * var(--Vale_UIScale));  /* <-- Pictogram height */
         width                              : auto;                         /* <-- Maintain aspect ratio */
         object-fit                         : contain;                      /* <-- Contain within bounds */
     }
@@ -1040,15 +1040,15 @@
     }
     
     .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--left {
-        height                             : 48px;                         /* <-- 20% smaller than default 60px */
+        height                             : calc(48px * var(--Vale_UIScale));  /* <-- 20% smaller than default 60px */
     }
     
     .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--right {
-        height                             : 48px;                         /* <-- 20% smaller than default 60px */
+        height                             : calc(48px * var(--Vale_UIScale));  /* <-- 20% smaller than default 60px */
     }
     
     .efficiency-scale:not(.efficiency-scale--compact) .efficiency-scale__pictogram--center {
-        height                             : 60px;                         /* <-- Keep original size (appears larger) */
+        height                             : calc(60px * var(--Vale_UIScale));  /* <-- Keep original size (appears larger) */
     }
     
     .efficiency-scale__bar-container {

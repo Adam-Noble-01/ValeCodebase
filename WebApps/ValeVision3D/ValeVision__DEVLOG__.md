@@ -2,6 +2,79 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.4  -  24-Feb-2026
+### `index.html` Modularisation Pass — 5 New Modules, Walk Mode Controls, Region Structure
+
+**Overview**
+- Systematic extraction of all inline JavaScript logic from `index.html` into dedicated ES modules.
+- `index.html` reduced from **1,075 lines → 691 lines** (~360 lines of inline JS removed).
+- All extractions follow the `@delegate:` breadcrumb protocol (`03-dependency-Traversal-Protocol-.mdc`) so future agents can trace offloaded logic.
+- Walk mode orchestration unified into shared modules consumed by both `index.html` and `TestEnv__PrototypeTestingSandbox__Main__.js`.
+- Inline JS section restructured with 10 named region blocks for future navigation.
+
+**New Module — `src__AppUtils/Na__AppUtils__ProjectLoader.js`**
+- Extracted 5 pure utility functions from `index.html` (lines 617–721): `Na__AppUtils__IsRunningOnLocalhost`, `Na__AppUtils__GetProjectCodeFromUrl`, `Na__AppUtils__NormalizeProjectFolderId`, `Na__AppUtils__FetchProjectJson`, `Na__AppUtils__ExtractModelUrls`.
+- Also extracts the `WebProjectsBaseUrl` and `DefaultProjectYear` constants.
+- Zero dependencies — pure browser APIs (`window`, `fetch`, `URLSearchParams`) only.
+- Housed in the new `src__AppUtils/` folder created for shared utility modules.
+
+**New Module — `src__CameraUtils/Na__UiFeature__SaveCameraSettings.js`**
+- Extracted `Na__UiFeature__SaveCameraSettings` and `Na__UiFeature__InitializeSaveCameraButton` from `index.html` (lines 992–1053).
+- Refactored both functions from closures over parent scope to explicit parameters: `(camera, controls, showToast)`.
+- Imports `Na__UiFeature__BuildCameraJson` from the existing `Na__UiFeature__CameraPosition__Controls.js` and auth utilities from `Na__AppUtils__ProjectLoader.js`.
+
+**New Module — `src__AppFlow/Na__AppFlow__LoadingSequence.js`**
+- Extracted `Na__UiFeature__UpdateStatus` (private), `Na__UiFeature__ShowScene` (private), and `Na__AppFlow__StartLoadingSequence` (exported) from `index.html` — including the embedded RAF render loop and window resize handler.
+- Refactored to accept a **context object** instead of closing over `index.html` scope variables; all Three.js instances and config values passed explicitly.
+- `Na__RenderPipeline__State` is written back to a mutable `Na__AppFlow__PipelineRef = { current: null }` ref held in `index.html` so the `ImageExportControls` lazy getter `() => Na__AppFlow__PipelineRef.current` continues to work across the module boundary.
+- `Na__LoadedModelGroups` and `Na__RenderComposer__Main` are now fully local to the function — removed from `index.html` outer scope.
+- Module imports 14 source modules (GLTFLoader, RenderPipeline, ModelLoader, SceneLighting, FogEffect, MathUtils, CameraUtils, MaterialsSystem, ModelToggle, DoorAnimation, WalkMode, DoorProximity, AppUtils).
+- Private DOM helpers (`UpdateStatus`, `ShowScene`) use `document.getElementById` directly, consistent with the `Na__UiFeature__ModelToggle__Controls.js` pattern.
+
+**New Module — `src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js`**
+- Extracted walk mode init and toggle orchestration from both `index.html` and `TestEnv__PrototypeTestingSandbox__Main__.js`.
+- Stores `controls`, `renderer`, and `useTouchControls` in module-level state at init time; callers pass them once only.
+- `Na__UiFeature__ToggleWalkMode(onActivate, onDeactivate)` accepts optional callbacks for caller-side UI reactions (used by the test environment to update its walk mode status indicator and save button).
+- Imports `Na__Navmode__WalkMode__SystemLogic`, `Na__Navmode__WalkMode__DesktopControls`, `Na__Navmode__WalkMode__TouchScreenControls`, and `Na__DoorProximity`.
+
+**New Module — `src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js`**
+- Pure event binding module — no Three.js dependencies, no state.
+- `Na__UiFeature__InitializeWalkModeHotkey(toggleFn)` — registers the `Alt+Shift+W` keydown listener.
+- `Na__UiFeature__InitializeWalkModeToggleButton(buttonId, toggleFn)` — wires a DOM button by ID; guards gracefully if the element doesn't exist (production has no such button; test env does).
+
+**`index.html` Import Block Simplification**
+- Removed 10 individual named imports across 4 import blocks (SystemLogic walk mode exports, DesktopControls, TouchControls, DoorProximity, RenderPipeline, GLTFLoader, ModelLoader, SceneLighting, ModelToggle, MaterialsSystem, CameraPosition, ApplyCameraConfig/BuildCameraJson).
+- Added 5 new targeted imports (AppFlow, WalkModeControls, WalkModeEventListeners, AppUtils was added to dependent modules only, SaveCameraSettings).
+
+**`TestEnv__PrototypeTestingSandbox__Main__.js` Updates**
+- Trimmed `Na__Navmode__WalkMode__SystemLogic.js` import to the 4 still-needed exports: `SetCollisionMeshes`, `Update`, `IsActive`, `GetCapsulePosition` (render loop + save guard).
+- Removed `Na__WalkModeDesktop__`, `Na__WalkModeTouch__`, `Na__DoorProximity__Initialize`, `Na__DoorProximity__SetEnabled` import lines entirely.
+- Replaced 82 lines of walk mode setup with the new shared modules + test-env-specific `onActivate`/`onDeactivate` UI callbacks.
+
+**`index.html` JavaScript Region Structure (10 Regions)**
+- Added 10 named `// REGION |` / `// endregion` blocks to the inline script for future navigation and code-folding:
+  1. Module Imports
+  2. DOM References
+  3. App Config Loading and Destructuring
+  4. Dev Mode Config Extraction
+  5. Device Detection
+  6. Scene, Camera, Renderer and Navigation Setup
+  7. Walk Mode System Initialization
+  8. Dev Default Cube, Orbit Pivot and Fog Setup
+  9. Camera UI Controls Initialization
+  10. UI Notification Helpers
+  11. Engine Entry Points
+
+**Key Files**
+- `src__AppUtils/Na__AppUtils__ProjectLoader.js` — new
+- `src__CameraUtils/Na__UiFeature__SaveCameraSettings.js` — new
+- `src__AppFlow/Na__AppFlow__LoadingSequence.js` — new (new `src__AppFlow/` folder)
+- `src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js` — new
+- `src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js` — new
+- `index.html` — major inline JS reduction (1,075 → 691 lines)
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js` — walk mode imports and setup updated
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.3  -  24-Feb-2026
 ### AppConfig Key Wiring Fix — `Camera__DefaultMisc__Fov` Key Name Regression
 

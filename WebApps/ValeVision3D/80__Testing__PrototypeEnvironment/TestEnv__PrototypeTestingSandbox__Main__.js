@@ -54,22 +54,14 @@
     // MODULE VARIABLES | Walk Mode Imports from Main ValeVision3D App
     // ------------------------------------------------------------
     import {
-        Na__WalkMode__Initialize,
         Na__WalkMode__SetCollisionMeshes,
-        Na__WalkMode__Activate,
-        Na__WalkMode__Deactivate,
         Na__WalkMode__Update,
         Na__WalkMode__IsActive,
-        Na__WalkMode__GetCapsulePosition,
-        Na__WalkMode__GetConfig
+        Na__WalkMode__GetCapsulePosition
     } from './src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
-    import { Na__WalkModeDesktop__Activate, Na__WalkModeDesktop__Deactivate } from './src__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js';
-    import { Na__WalkModeTouch__Activate, Na__WalkModeTouch__Deactivate } from './src__NavigationAndCameras/Na__Navmode__WalkMode__TouchScreenControls.js';
-    import {
-        Na__DoorProximity__Initialize,
-        Na__DoorProximity__SetEnabled,
-        Na__DoorProximity__Update
-    } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    import { Na__DoorProximity__Update } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
+    import { Na__UiFeature__InitializeWalkModeHotkey, Na__UiFeature__InitializeWalkModeToggleButton } from './src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     // ------------------------------------------------------------
 
 
@@ -342,74 +334,30 @@
 
     // MODULE INITIALIZATION | Walk Mode System
     // ------------------------------------------------------------
-    Na__WalkMode__Initialize(TestEnv__Scene, TestEnv__Camera, TestEnv__Renderer.domElement, TestEnv__Config__WalkMode);
-    Na__DoorProximity__Initialize(
-        TestEnv__Config__WalkMode.Navmode__WalkMode__DoorProximityThresholdMm || 2000
-    );
-    // ------------------------------------------------------------
+    // @delegate: ./src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
+    Na__UiFeature__InitializeWalkModeSystem(TestEnv__Scene, TestEnv__Camera, TestEnv__Renderer, TestEnv__Controls, TestEnv__Config__WalkMode, TestEnv__Device__UseTouchControls);
 
-
-    // HELPER FUNCTION | Toggle Walk Mode On/Off
+    // WALK MODE TOGGLE | With Test Environment UI Callbacks
     // ------------------------------------------------------------
-    function TestEnv__WalkMode__ToggleWalkMode() {
+    const TestEnv__WalkModeToggleFn = () => {
         const walkModeIndicatorEl = document.getElementById('testEnvWalkModeStatus');
         const saveViewBtn         = document.getElementById('testEnvSaveViewBtn');
-
-        if (Na__WalkMode__IsActive()) {
-            if (TestEnv__Device__UseTouchControls) {
-                Na__WalkModeTouch__Deactivate();
-            } else {
-                Na__WalkModeDesktop__Deactivate();
-            }
-            Na__DoorProximity__SetEnabled(false);
-            Na__WalkMode__Deactivate(TestEnv__Controls);
-
-            if (walkModeIndicatorEl) walkModeIndicatorEl.textContent = 'Orbit Mode';
-            if (saveViewBtn) {
-                saveViewBtn.disabled = false;                                 // <-- Re-enable save in orbit mode
-                saveViewBtn.title    = 'Save current camera position as default view on refresh';
-            }
-        } else {
-            const activated = Na__WalkMode__Activate(TestEnv__Controls);
-            if (activated) {
-                const walkConfig = Na__WalkMode__GetConfig();
-                if (TestEnv__Device__UseTouchControls) {
-                    Na__WalkModeTouch__Activate(TestEnv__Renderer.domElement, walkConfig);
-                } else {
-                    Na__WalkModeDesktop__Activate(TestEnv__Renderer.domElement, walkConfig);
-                }
-                Na__DoorProximity__SetEnabled(true);
-
+        Na__UiFeature__ToggleWalkMode(
+            () => {                                                           // <-- onActivate callback
                 if (walkModeIndicatorEl) walkModeIndicatorEl.textContent = 'Walk Mode';
-                if (saveViewBtn) {
-                    saveViewBtn.disabled = true;                              // <-- Disable save whilst in walk mode
-                    saveViewBtn.title    = 'Exit walk mode before saving view';
-                }
+                if (saveViewBtn) { saveViewBtn.disabled = true; saveViewBtn.title = 'Exit walk mode before saving view'; }
+            },
+            () => {                                                           // <-- onDeactivate callback
+                if (walkModeIndicatorEl) walkModeIndicatorEl.textContent = 'Orbit Mode';
+                if (saveViewBtn) { saveViewBtn.disabled = false; saveViewBtn.title = 'Save current camera position as default view on refresh'; }
             }
-        }
-    }
+        );
+    };
     // ------------------------------------------------------------
 
-
-    // MODULE INITIALIZATION | Walk Mode Hotkey Listener (Alt+Shift+W)
-    // ------------------------------------------------------------
-    window.addEventListener('keydown', (event) => {
-        if (event.altKey && event.shiftKey && event.key.toLowerCase() === 'w') {
-            event.preventDefault();
-            TestEnv__WalkMode__ToggleWalkMode();
-        }
-    });
-    // ------------------------------------------------------------
-
-
-    // MODULE INITIALIZATION | Walk Mode UI Toggle Button
-    // ------------------------------------------------------------
-    const TestEnv__WalkModeToggleBtn = document.getElementById('testEnvWalkModeToggle');
-    if (TestEnv__WalkModeToggleBtn) {
-        TestEnv__WalkModeToggleBtn.addEventListener('click', TestEnv__WalkMode__ToggleWalkMode);
-    }
-    // ------------------------------------------------------------
-
+    // @delegate: ./src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
+    Na__UiFeature__InitializeWalkModeHotkey(TestEnv__WalkModeToggleFn);
+    Na__UiFeature__InitializeWalkModeToggleButton('testEnvWalkModeToggle', TestEnv__WalkModeToggleFn);
 
     // MODULE INITIALIZATION | Save Default View Button
     // ------------------------------------------------------------

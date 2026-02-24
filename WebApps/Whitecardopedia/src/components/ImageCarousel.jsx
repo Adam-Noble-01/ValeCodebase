@@ -326,6 +326,8 @@
                                 src={currentImageUrl} 
                                 alt={`Project image ${currentIndex + 1}`}
                                 className="image-carousel__image"
+                                onContextMenu={(e) => e.preventDefault()}
+                                draggable="false"
                             />
                             {hasValeVisionModel(projectData) && (
                                 <img 
@@ -350,6 +352,8 @@
                                 src={currentImageUrl} 
                                 alt={`Project image ${currentIndex + 1}`}
                                 className="image-carousel__image image-carousel__image--base"
+                                onContextMenu={(e) => e.preventDefault()}
+                                draggable="false"
                             />
                             
                             {/* TOP LAYER - ART IMAGE (CLIPPED) */}
@@ -361,6 +365,8 @@
                                     src={artImageData.url} 
                                     alt={`${artImageData.label} version`}
                                     className="image-carousel__image image-carousel__image--art"
+                                    onContextMenu={(e) => e.preventDefault()}
+                                    draggable="false"
                                 />
                             </div>
                             
@@ -448,6 +454,8 @@
                                 alt={`Thumbnail ${index + 1}`}
                                 className={`image-carousel__thumbnail ${index === currentIndex ? 'image-carousel__thumbnail--active' : ''}`}
                                 onClick={() => handleThumbnailClick(index, setCurrentIndex)}
+                                onContextMenu={(e) => e.preventDefault()}
+                                draggable="false"
                             />
                         ))}
                     </div>

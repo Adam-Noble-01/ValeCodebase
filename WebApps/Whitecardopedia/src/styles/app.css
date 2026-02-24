@@ -410,6 +410,8 @@
         width                              : 100%;                         /* <-- Full container width */
         height                             : 100%;                         /* <-- Full container height */
         object-fit                         : contain;                      /* <-- Contain full image without cropping */
+        user-select                        : none;                         /* <-- Prevent image selection */
+        -webkit-user-drag                  : none;                         /* <-- Prevent drag-to-save */
     }
     
     .project-card__content {
@@ -757,6 +759,8 @@
         max-width                          : 100%;                         /* <-- Maximum width */
         max-height                         : 100%;                         /* <-- Maximum height */
         object-fit                         : contain;                      /* <-- Contain within bounds */
+        user-select                        : none;                         /* <-- Prevent image selection */
+        -webkit-user-drag                  : none;                         /* <-- Prevent drag-to-save */
     }
     
     .image-carousel__button {
@@ -809,6 +813,8 @@
         border-radius                      : 4px;                          /* <-- Slight rounding */
         transition                         : all var(--Vale_Transition_Fast);  /* <-- Fast transition */
         opacity                            : 0.6;                          /* <-- Semi-transparent default */
+        user-select                        : none;                         /* <-- Prevent image selection */
+        -webkit-user-drag                  : none;                         /* <-- Prevent drag-to-save */
     }
     
     .image-carousel__thumbnail:hover {

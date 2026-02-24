@@ -116,6 +116,8 @@
                                         src={getThumbnailImage(project)} 
                                         alt={project.projectName}
                                         className="project-card__image"
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        draggable="false"
                                     />
                                     {isHandDrawnProject(project) && (
                                         <div className="project-card__white-overlay"></div>

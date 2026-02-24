@@ -18,6 +18,24 @@
 
 ---
 
+## Whitecardopedia v0.2.9 - 24-Feb-2026 - Right-Click Image Protection
+### Features Added
+- **Right-Click Save Prevention**: Disabled browser right-click "Save Image As" context menu on all project content images
+  - Applied to main carousel image, ART comparison base and top layer images, and thumbnail strip
+  - Applied to gallery card thumbnails in the project gallery
+  - Users are directed to use the "Download Image Files" button for all image downloads
+- **Drag-to-Save Prevention**: Blocked HTML5 image drag behaviour on all project images
+  - Prevents drag-to-desktop and drag-to-folder save paths
+  - CSS `user-select: none` and `-webkit-user-drag: none` applied to all protected image classes
+
+### Technical Implementation
+- Updated `src/components/ImageCarousel.jsx` — added `onContextMenu={(e) => e.preventDefault()}` and `draggable="false"` to 4 image elements (main display, ART base, ART top layer, thumbnails)
+- Updated `src/components/ProjectGallery.jsx` — same attributes added to gallery card thumbnail
+- Updated `src/styles/app.css` — added `user-select: none` and `-webkit-user-drag: none` to `.image-carousel__image`, `.image-carousel__thumbnail`, and `.project-card__image`
+- All existing click handlers (thumbnail navigation, ValeVision overlay, ART comparison drag slider) remain fully unaffected
+
+---
+
 ## 11-Dec-2025 - Major Update - Version 0.2.8 - Project Sharing URLs
 ### Features Added
 - **URL Query Parameter System**: Direct project linking via `?id=12345` query parameter
@@ -83,5 +101,5 @@
 
 ---
 
-**Last Updated**: 11-Dec-2025
+**Last Updated**: 24-Feb-2026
 

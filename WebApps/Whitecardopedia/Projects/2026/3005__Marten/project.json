@@ -1,0 +1,81 @@
+{
+    "basePath": "Projects/2026/3005__Marten",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Feb-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "PLACEHOLDER - Fill In When Time",
+        "conceptArtist": "James",
+        "input": "Early Stage Sketch"
+    },
+    "projectCode": "3005",
+    "projectName": "Marten",
+    "scheduleData": {
+        "dateFulfilled": "25-Feb-2026",
+        "dateReceived": "23-Feb-2026",
+        "timeAllocated": 6,
+        "timeTaken": 6
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3005__Marten/Marten__ValeVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3005__Marten/Marten__ValeVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3005__Marten/Marten__ValeVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3005__Marten/Marten__ValeVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3005__Marten/Marten__ValeVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3005__Marten/Marten__ValeVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -7760,
+            "Camera__DefaultPos__PosY": 5771,
+            "Camera__DefaultPos__PosZ": 19454
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.1412,
+            "Camera__DefaultRotation__RotY": -0.676,
+            "Camera__DefaultRotation__RotZ": -0.0887
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 4254,
+        "OrbitHelperCube__Position__PosY": 3663,
+        "OrbitHelperCube__Position__PosZ": 4624
+    },
+    "folderId": "2026/3005__Marten",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Feb-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Feb-2026.png"
+    ]
+}

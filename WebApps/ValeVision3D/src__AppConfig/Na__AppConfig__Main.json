@@ -18,8 +18,8 @@
         "Scene__Default__FogConfig__Description"     : "Default orbit-cube anchored fog envelope. Distances are integer millimeters and must be converted to 3D units in code.",
         "Scene__Default__FogConfig__Enabled"         : true,
         "Scene__Default__FogConfig__Color"           : 16777215,
-        "Scene__Default__FogConfig__StartDistanceMm" : 45000,
-        "Scene__Default__FogConfig__EndDistanceMm"   : 65000
+        "Scene__Default__FogConfig__StartDistanceMm" : 65000,
+        "Scene__Default__FogConfig__EndDistanceMm"   : 95000
     },
     "Scene__Default__ControlsConfig": {
         "Scene__Default__ControlsConfig__MovementSpeed"   : 0.5,
@@ -88,7 +88,7 @@
             "Navmode__MouseControls__MovementSpeedMm"    : 50,
             "Navmode__MouseControls__ElevationSpeedMm"   : 50,
             "Navmode__MouseControls__OrbitMinDistanceMm" : 250,
-            "Navmode__MouseControls__OrbitMaxDistanceMm" : 50000,
+            "Navmode__MouseControls__OrbitMaxDistanceMm" : 60000,
             "Navmode__MouseControls__ZoomStepMm"         : 250
         },
         "Navmode__IpadControls": {

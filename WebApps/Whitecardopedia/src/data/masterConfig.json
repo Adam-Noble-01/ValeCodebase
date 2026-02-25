@@ -342,6 +342,10 @@
         {
             "folderId": "2026/3005__Marten",
             "enabled": true
+        },
+        {
+            "folderId": "2026/62386__Hardy",
+            "enabled": true
         }
     ]
 }

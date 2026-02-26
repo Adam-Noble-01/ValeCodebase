@@ -103,6 +103,7 @@
     const TestEnv__Config__GroundPlane      = TestEnv__Config.Scene__GroundPlane;                // <-- Ground plane settings
     const TestEnv__Config__Models           = TestEnv__Config.models;                            // <-- Model-specific settings
     const TestEnv__Config__NavmodeSettings = TestEnv__Config.Navmode__Settings;                  // <-- Navmode config (MM)
+    const TestEnv__Config__NavmodeDamping  = TestEnv__Config.Navmode__Damping || {};            // <-- Navmode damping config (unitless)
     const TestEnv__Config__ProfileLines    = TestEnv__Config.RenderEffect__ProfileLines || null; // <-- Profile lines config
     const TestEnv__Config__DevMode         = TestEnv__Config.Dev__DeveloperMode || {};            // <-- Dev mode config
     const TestEnv__Config__TestEnv         = TestEnv__Config.testEnvironment || {};               // <-- Test environment flags
@@ -259,6 +260,10 @@
         ? TestEnv__Config__NavmodeSettings.Navmode__MouseControls : {};
     const TestEnv__NavConfig__Ipad  = (TestEnv__Config__NavmodeSettings && TestEnv__Config__NavmodeSettings.Navmode__IpadControls)
         ? TestEnv__Config__NavmodeSettings.Navmode__IpadControls : {};
+    const TestEnv__NavDamping__Mouse = (TestEnv__Config__NavmodeDamping && TestEnv__Config__NavmodeDamping.Navmode__Damping__Mouse)
+        ? TestEnv__Config__NavmodeDamping.Navmode__Damping__Mouse : {};
+    const TestEnv__NavDamping__Ipad  = (TestEnv__Config__NavmodeDamping && TestEnv__Config__NavmodeDamping.Navmode__Damping__Ipad)
+        ? TestEnv__Config__NavmodeDamping.Navmode__Damping__Ipad : {};
 
     const TestEnv__Navmode__InitFn = TestEnv__Device__UseTouchControls
         ? Na__DefaultNavmode__InitializeIpadControls
@@ -270,7 +275,10 @@
 
     const TestEnv__NavConfig__Payload = TestEnv__Device__UseTouchControls
         ? {
-            enableDamping    : TestEnv__NavConfig__Active.Navmode__IpadControls__EnableDamping,
+            damping          : {
+                enabled : TestEnv__NavDamping__Ipad.Navmode__Damping__Ipad__Enabled,
+                factor  : TestEnv__NavDamping__Ipad.Navmode__Damping__Ipad__Factor
+            },
             enableWASD       : TestEnv__NavConfig__Active.Navmode__IpadControls__EnableWASD,
             movementSpeedMm  : TestEnv__NavConfig__Active.Navmode__IpadControls__MovementSpeedMm,
             elevationSpeedMm : TestEnv__NavConfig__Active.Navmode__IpadControls__ElevationSpeedMm,
@@ -278,7 +286,10 @@
             maxDistanceMm    : TestEnv__NavConfig__Active.Navmode__IpadControls__OrbitMaxDistanceMm
         }
         : {
-            enableDamping    : TestEnv__NavConfig__Active.Navmode__MouseControls__EnableDamping,
+            damping          : {
+                enabled : TestEnv__NavDamping__Mouse.Navmode__Damping__Mouse__Enabled,
+                factor  : TestEnv__NavDamping__Mouse.Navmode__Damping__Mouse__Factor
+            },
             enableWASD       : TestEnv__NavConfig__Active.Navmode__MouseControls__EnableWASD,
             movementSpeedMm  : TestEnv__NavConfig__Active.Navmode__MouseControls__MovementSpeedMm,
             elevationSpeedMm : TestEnv__NavConfig__Active.Navmode__MouseControls__ElevationSpeedMm,
@@ -321,7 +332,12 @@
     }
 
     const TestEnv__DevCube__Mesh = TestEnv__CreateDevCube();
-    TestEnv__Controls.target.copy(TestEnv__DevCube__PositionUnits);          // <-- Set orbit pivot to dev cube
+    const TestEnv__Camera__InitialForwardVector = new THREE.Vector3();
+    TestEnv__Camera.getWorldDirection(TestEnv__Camera__InitialForwardVector);
+    const TestEnv__Camera__InitialTarget = TestEnv__Camera.position.clone().add(
+        TestEnv__Camera__InitialForwardVector.multiplyScalar(10)
+    );
+    TestEnv__Controls.target.copy(TestEnv__Camera__InitialTarget);            // <-- Initial fallback uses camera forward direction (not dev cube)
     TestEnv__Controls.update();
     // ------------------------------------------------------------
 
@@ -384,6 +400,38 @@
         if (isError) {
             loadingIndicator.style.color = '#d32f2f';                        // <-- Error color
         }
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Resolve Orbit Helper Cube Center from Loaded Models
+    // ------------------------------------------------------------
+    function TestEnv__ResolveOrbitHelperCubeCenter() {
+        let helperRoot = null;
+
+        for (const child of TestEnv__ModelGroup__Root.children) {
+            if (typeof child.name === 'string' && child.name.includes('OrbitHelperCube__MeshModel__')) {
+                helperRoot = child;
+                break;
+            }
+        }
+
+        if (!helperRoot) {
+            console.warn('[TestEnv] OrbitHelperCube not found in loaded GLB model roots.');
+            return null;
+        }
+
+        const helperBox = new THREE.Box3().setFromObject(helperRoot);
+        if (helperBox.isEmpty()) {
+            console.warn('[TestEnv] OrbitHelperCube found but bounding box is empty.');
+            return null;
+        }
+
+        const helperCenter = helperBox.getCenter(new THREE.Vector3());
+        console.log('[TestEnv] OrbitHelperCube center resolved:', helperCenter);
+        return {
+            root   : helperRoot,
+            center : helperCenter
+        };
     }
     // ------------------------------------------------------------
 
@@ -1497,6 +1545,12 @@
                 }
             }
 
+            // RESOLVE ORBIT HELPER CUBE FROM LOADED MODELS
+            const TestEnv__OrbitHelper = TestEnv__ResolveOrbitHelperCubeCenter();
+            if (TestEnv__OrbitHelper && TestEnv__Config__DevMode.OrbitHelperCube__Debug__Visible === false) {
+                TestEnv__OrbitHelper.root.visible = false;                    // <-- Hide helper cube unless debug visibility is enabled
+            }
+
             // APPLY SAVED DEFAULT VIEW OR AUTO-CENTER ON LOADED MODELS
             if (TestEnv__Config__DefaultView) {
                 TestEnv__DefaultView__Apply(TestEnv__Config__DefaultView);   // <-- Restore saved camera view
@@ -1515,6 +1569,20 @@
                     );
                     TestEnv__Controls.update();
                 }
+            }
+
+            // RESOLVE FINAL ORBIT TARGET (STRICT PRECEDENCE)
+            // 1) Loaded OrbitHelperCube center (authoritative fixed anchor)
+            // 2) Saved default view orbit target (already applied if no helper center)
+            // 3) Existing controls target (if neither condition above can apply)
+            if (TestEnv__OrbitHelper && TestEnv__OrbitHelper.center && TestEnv__OrbitHelper.center.isVector3) {
+                if (TestEnv__Config__DefaultView) {
+                    console.warn('[TestEnv] Saved TestEnv__DefaultView orbit target ignored because OrbitHelperCube center is available.');
+                }
+                TestEnv__Controls.target.copy(TestEnv__OrbitHelper.center);
+                TestEnv__Controls.update();
+            } else if (!TestEnv__Config__DefaultView) {
+                console.warn('[TestEnv] No OrbitHelperCube center and no saved default view target. Keeping current controls.target.');
             }
 
             TestEnv__ShowScene();                                            // <-- Reveal scene

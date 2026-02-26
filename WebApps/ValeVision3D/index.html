@@ -322,6 +322,7 @@
     const Na__Config__PostProcessEffects = Na__AppConfig__Data.ImageExport__PostProcessEffects; // <-- Post-process effects config
     const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition;  // <-- Camera defaults (MM)
     const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;      // <-- Navmode config (MM)
+    const Na__Config__NavmodeDamping = Na__AppConfig__Data.Navmode__Damping;        // <-- Navmode damping config (unitless)
     const Na__Config__ProfileLines = Na__AppConfig__Data.RenderEffect__ProfileLines || null;  // <-- Profile lines effect (enable/disable + params)
     const Na__Config__3dObjectInteractions = Na__AppConfig__Data['3dObject__InteractionsSystem'] || {};                 // <-- 3D object interactions configuration
     const Na__Config__DoorAnimation = Na__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'] || {};  // <-- Door animation configuration
@@ -381,6 +382,12 @@
         : {};
     const Na__Navmode__ConfigIpad = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__IpadControls)
         ? Na__Config__NavmodeSettings.Navmode__IpadControls
+        : {};
+    const Na__Navmode__DampingMouse = (Na__Config__NavmodeDamping && Na__Config__NavmodeDamping.Navmode__Damping__Mouse)
+        ? Na__Config__NavmodeDamping.Navmode__Damping__Mouse
+        : {};
+    const Na__Navmode__DampingIpad = (Na__Config__NavmodeDamping && Na__Config__NavmodeDamping.Navmode__Damping__Ipad)
+        ? Na__Config__NavmodeDamping.Navmode__Damping__Ipad
         : {};
     // ------------------------------------------------------------
 
@@ -457,7 +464,10 @@
     const Na__Navmode__ActiveConfig = Na__Device__UseTouchControls ? Na__Navmode__ConfigIpad : Na__Navmode__ConfigMouse;
     const Na__Navmode__ConfigPayload = Na__Device__UseTouchControls
         ? {
-            enableDamping: Na__Navmode__ActiveConfig.Navmode__IpadControls__EnableDamping,        // <-- Orbit control damping
+            damping: {
+                enabled: Na__Navmode__DampingIpad.Navmode__Damping__Ipad__Enabled,                // <-- Orbit damping enabled
+                factor: Na__Navmode__DampingIpad.Navmode__Damping__Ipad__Factor                    // <-- Orbit damping factor (unitless)
+            },
             enableWASD: Na__Navmode__ActiveConfig.Navmode__IpadControls__EnableWASD,              // <-- Optional WASD fly mode
             movementSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__MovementSpeedMm,    // <-- Navigation speed (mm)
             elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__ElevationSpeedMm,  // <-- Vertical navigation speed (mm)
@@ -465,7 +475,10 @@
             maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMaxDistanceMm    // <-- Orbit zoom out (mm)
         }
         : {
-            enableDamping: Na__Navmode__ActiveConfig.Navmode__MouseControls__EnableDamping,       // <-- Orbit control damping
+            damping: {
+                enabled: Na__Navmode__DampingMouse.Navmode__Damping__Mouse__Enabled,              // <-- Orbit damping enabled
+                factor: Na__Navmode__DampingMouse.Navmode__Damping__Mouse__Factor                 // <-- Orbit damping factor (unitless)
+            },
             enableWASD: Na__Navmode__ActiveConfig.Navmode__MouseControls__EnableWASD,             // <-- Optional WASD fly mode
             movementSpeedMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__MovementSpeedMm,   // <-- Navigation speed (mm)
             elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__ElevationSpeedMm, // <-- Vertical navigation speed (mm)
@@ -546,13 +559,18 @@
     }
     
     const Na__Dev__DefaultCube__Mesh = Na__DevUtils__CreateDefaultCube();
-    Na__Controls__Orbit.target.copy(Na__Dev__DefaultCube__PositionUnits);       // <-- Fixed pivot based on cube
+    const Na__Camera__InitialForwardVector = new THREE.Vector3();
+    Na__Camera__Main.getWorldDirection(Na__Camera__InitialForwardVector);
+    const Na__Camera__InitialTarget = Na__Camera__Main.position.clone().add(
+        Na__Camera__InitialForwardVector.multiplyScalar(10)
+    );
+    Na__Controls__Orbit.target.copy(Na__Camera__InitialTarget);                 // <-- Initial fallback uses camera forward direction (not Dev cube)
     Na__Controls__Orbit.update();
     
     // @delegate: ./src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
     Na__Scene__ApplyFogBackground(Na__Scene__Main, Na__Config__FogConfig);
     const Na__SceneEffect__FogPass = Na__Scene__CreateFogPass(Na__Config__FogConfig);
-    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, Na__Dev__DefaultCube__PositionUnits);
+    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, Na__Controls__Orbit.target);
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

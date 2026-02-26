@@ -2,6 +2,88 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.6  -  26-Feb-2026
+### Orbit Anchor Hardening + Nav Damping Delegation
+
+**Overview**
+- Fixed an orbit regression where camera interaction could feel like head-look/first-person instead of stable orbit around the helper cube anchor.
+- Orbit target resolution is now deterministic and robust across project reloads and saved camera data.
+- Removed Dev__DefaultCube as an orbit/fog fallback anchor to avoid conflicting reference points.
+- Added explicit warning logs for missing/unloadable helper cube paths so failures are immediately visible in console output.
+
+**Orbit Target Precedence (Hardened)**
+- `Na__AppFlow__LoadingSequence.js` now resolves orbit target in strict order:
+  1. Loaded OrbitHelperCube GLB center (**authoritative**)
+  2. Saved `OrbitHelperCube__Position` from `project.json` (only if helper cube center is unavailable)
+  3. Keep current controls target (no implicit dev-cube override)
+- If both helper center and saved orbit target exist, saved target is ignored and a warning is emitted to prevent hidden drift from stale values.
+
+**Helper Cube Diagnostics**
+- Added warning when no OrbitHelperCube URL is found in the model URL list.
+- Added warning when OrbitHelperCube fails to load.
+- Added warning when helper file loads but center cannot be resolved.
+- Added warning when neither helper center nor saved orbit target can be applied.
+
+**Legacy Camera Target Conflict Guard**
+- During load, `Camera__DefaultTarget` is stripped from the applied camera payload so legacy target keys cannot overwrite helper-cube anchoring.
+- Save Camera Settings now removes legacy `valeVision_Camera__DefaultPosition` and deprecated `Camera__DefaultTarget` before writing updated project data.
+
+**Startup Fallback Update (No Dev Cube Anchor)**
+- `index.html` no longer sets initial orbit target to `Dev__DefaultCube`.
+- Initial target now derives from camera forward direction (temporary pre-load target only).
+- Initial fog anchor now follows current orbit target reference rather than dev cube position.
+
+**Key Files**
+- `src__AppFlow/Na__AppFlow__LoadingSequence.js` — strict helper-first target precedence, warnings, and legacy target guard.
+- `src__CameraUtils/Na__UiFeature__SaveCameraSettings.js` — legacy camera payload cleanup before save.
+- `index.html` — removed dev-cube pivot fallback and aligned initial fog anchor with orbit target.
+
+**Nav Damping Delegation — Config-Driven OrbitControls Damping (Mouse + iPad)**
+
+**Overview**
+- Refactored orbit-controls damping into a dedicated delegated module so damping behavior is no longer hardcoded inside device nav initializers.
+- Added a new top-level AppConfig group (`Navmode__Damping`) as the single source of truth for damping enable flags and damping factor values.
+- Updated both desktop mouse controls and iPad/touch controls to consume the new damping payload shape.
+- Removed legacy `EnableDamping` keys from `Navmode__MouseControls` and `Navmode__IpadControls` active read path.
+
+**New Delegated Module**
+- New file: `src__NavigationAndCameras/Na__Navmode__OrbitControls__Damping.js`.
+- Exposes `Na__Navmode__ApplyOrbitControlsDamping(controls, dampingConfig)`.
+- Applies:
+  - `controls.enableDamping` from `dampingConfig.enabled`
+  - `controls.dampingFactor` from `dampingConfig.factor`
+- Includes internal clamp helper for damping factor bounds (`0.0` to `1.0`) and finite-value guard with safe default (`0.08`).
+
+**AppConfig Schema Addition**
+- Added new top-level `Navmode__Damping` group in `src__AppConfig/Na__AppConfig__Main.json`:
+  - `Navmode__Damping__Description`
+  - `Navmode__Damping__Mouse`
+    - `Navmode__Damping__Mouse__Enabled`
+    - `Navmode__Damping__Mouse__Factor`
+  - `Navmode__Damping__Ipad`
+    - `Navmode__Damping__Ipad__Enabled`
+    - `Navmode__Damping__Ipad__Factor`
+- Clarified in description that damping factor is **unitless** (not millimeters).
+
+**Wiring Changes**
+- `index.html` now extracts `Navmode__Damping` from AppConfig and builds a `damping` payload block for both device paths.
+- Mouse/iPad nav modules now call the delegated damping module instead of setting damping directly.
+- Added required `@delegate` breadcrumbs at both offload call sites:
+  - `src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js`
+  - `src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js`
+
+**Units Compliance**
+- Confirmed against world-units rule: damping factor remains dimensionless and is intentionally **not** passed through mm→units conversion.
+- Existing mm-based navigation values (movement/elevation/min-max distance/zoom step) continue to use `Na__Math__ConvertMmToUnits`.
+
+**Key Files**
+- `src__NavigationAndCameras/Na__Navmode__OrbitControls__Damping.js` — new delegated damping module.
+- `src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js` — damping call delegated.
+- `src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js` — damping call delegated.
+- `src__AppConfig/Na__AppConfig__Main.json` — new `Navmode__Damping` group + legacy damping key removal from device groups.
+- `index.html` — new damping config extraction and payload wiring.
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.5  -  24-Feb-2026
 ### Layout View Loading Overlay — Spinner Feedback, Button State Fix, postMessage Handshake
 

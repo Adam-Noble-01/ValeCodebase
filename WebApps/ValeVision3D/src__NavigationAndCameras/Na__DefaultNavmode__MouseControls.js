@@ -7,6 +7,7 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { Na__Math__ConvertMmToUnits } from '../src__MathUtils/Na__Math__Units.js';
+    import { Na__Navmode__ApplyOrbitControlsDamping } from './Na__Navmode__OrbitControls__Damping.js';
     // ------------------------------------------------------------
 
 
@@ -121,7 +122,8 @@
         const config = Na__DefaultNavmode__MergeConfig(customConfig);
         
         const controls = new OrbitControls(camera, domElement);
-        controls.enableDamping = config.enableDamping;
+        // @delegate: ./Na__Navmode__OrbitControls__Damping.js
+        Na__Navmode__ApplyOrbitControlsDamping(controls, config.damping);
         controls.enableZoom = false;                                  // <-- Disable native wheel zoom
         // ------------------------------------------------------------
         

@@ -75,6 +75,14 @@
 
             const projectData = await projectResponse.json();                // <-- Parse project data
 
+            // CLEANUP LEGACY CAMERA BLOCKS
+            if (projectData.valeVision_Camera__DefaultPosition) {
+                delete projectData.valeVision_Camera__DefaultPosition;        // <-- Remove legacy camera payload to avoid target precedence conflicts
+            }
+            if (projectData.Camera__DefaultPosition && projectData.Camera__DefaultPosition.Camera__DefaultTarget) {
+                delete projectData.Camera__DefaultPosition.Camera__DefaultTarget; // <-- Remove deprecated target key from modern camera block
+            }
+
             projectData.Camera__DefaultPosition  = cameraData.Camera__DefaultPosition;  // <-- Merge camera position
             projectData.OrbitHelperCube__Position = cameraData.OrbitHelperCube__Position; // <-- Merge orbit target
 

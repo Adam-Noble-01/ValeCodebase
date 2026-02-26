@@ -262,9 +262,13 @@
         // SEPARATE ORBIT HELPER CUBE URL FROM MODEL URLS
         const { orbitCubeUrl, filteredUrls } = Na__ModelLoader__SeparateOrbitCubeUrl(modelUrls);
         modelUrls = filteredUrls;                                            // <-- Use filtered URLs (without orbit cube) for model loading
+        if (!orbitCubeUrl) {
+            console.warn('[ValeVision3D] OrbitHelperCube URL not found in model list. Orbit target will use saved project target if available.');
+        }
 
         // LOAD ORBIT HELPER CUBE IF PRESENT
         let Na__OrbitHelperCube__Mesh = null;                                // <-- Store orbit cube mesh reference
+        let Na__OrbitHelperCube__CenterPosition = null;                      // <-- Store orbit cube center for target precedence
         if (orbitCubeUrl) {
             try {
                 Na__UiFeature__UpdateStatus('Loading orbit helper cube...');
@@ -273,42 +277,57 @@
 
                 if (orbitCubeResult && orbitCubeResult.mesh && orbitCubeResult.centerPosition) {
                     Na__OrbitHelperCube__Mesh = orbitCubeResult.mesh;        // <-- Store mesh reference
+                    Na__OrbitHelperCube__CenterPosition = orbitCubeResult.centerPosition.clone(); // <-- Store center position
                     Na__OrbitHelperCube__Mesh.name = 'OrbitHelperCube';      // <-- Name for debugging
                     Na__OrbitHelperCube__Mesh.visible = Na__OrbitHelperCube__Debug__Visible;  // <-- Hide unless debug enabled
 
                     Na__Scene__Main.add(Na__OrbitHelperCube__Mesh);          // <-- Add to scene
-                    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, orbitCubeResult); // <-- Fog anchor now follows orbit cube center
+                    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, orbitCubeResult.centerPosition); // <-- Fog anchor now follows orbit cube center
 
-                    // SET ORBIT TARGET TO CUBE CENTER
-                    Na__Controls__Orbit.target.copy(orbitCubeResult.centerPosition);  // <-- Set orbit target to cube center
-                    Na__Controls__Orbit.update();                             // <-- Update controls
-
-                    console.log('[ValeVision3D] OrbitHelperCube loaded. Orbit target set to:', orbitCubeResult.centerPosition);
+                    console.log('[ValeVision3D] OrbitHelperCube loaded. Center resolved:', orbitCubeResult.centerPosition);
+                } else {
+                    console.warn('[ValeVision3D] OrbitHelperCube loaded but center position could not be resolved.');
                 }
             } catch (error) {
-                console.error('[ValeVision3D] Failed to load OrbitHelperCube:', error);
-                // Fall through to use Dev__DefaultCube fallback
+                console.warn('[ValeVision3D] OrbitHelperCube could not be loaded. Orbit will use saved project target if available.', error);
             }
         }
 
-        // RE-APPLY SAVED CAMERA + ORBIT TARGET FROM PROJECT.JSON
-        // OrbitHelperCube GLB sets a default orbit target above; override with saved values
-        // so camera position, orbit target, and FOV all match the previously saved state.
-        if (Na__Saved__ProjectOrbitTarget) {
+        // RESOLVE FINAL ORBIT TARGET (STRICT PRECEDENCE)
+        // 1) Loaded OrbitHelperCube GLB center (authoritative fixed anchor)
+        // 2) Saved project OrbitHelperCube__Position (only if helper cube unavailable)
+        // 3) Keep current controls target (no Dev__DefaultCube fallback)
+        let Na__FinalOrbitTargetApplied = false;
+        if (Na__OrbitHelperCube__CenterPosition && Na__OrbitHelperCube__CenterPosition.isVector3) {
+            Na__Controls__Orbit.target.copy(Na__OrbitHelperCube__CenterPosition);
+            Na__FinalOrbitTargetApplied = true;
+            if (Na__Saved__ProjectOrbitTarget) {
+                console.warn('[ValeVision3D] Saved OrbitHelperCube__Position ignored because OrbitHelperCube GLB center is available.');
+            }
+        } else if (Na__Saved__ProjectOrbitTarget) {
             Na__Controls__Orbit.target.set(
                 Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosX),  // <-- Saved orbit X
                 Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosY),  // <-- Saved orbit Y
                 Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosZ)   // <-- Saved orbit Z
             );
+            Na__FinalOrbitTargetApplied = true;
+        } else {
+            console.warn('[ValeVision3D] No saved orbit target and no OrbitHelperCube center resolved. Keeping current controls.target.');
         }
+
+        // RE-APPLY SAVED CAMERA (without legacy Camera__DefaultTarget override)
         if (Na__Saved__ProjectCameraConfig) {
+            const Na__CameraConfigWithoutLegacyTarget = { ...Na__Saved__ProjectCameraConfig };
+            if (Na__CameraConfigWithoutLegacyTarget.Camera__DefaultTarget) {
+                delete Na__CameraConfigWithoutLegacyTarget.Camera__DefaultTarget;
+            }
             Na__UiFeature__ApplyCameraConfig(
                 Na__Camera__Main,                                            // <-- Re-apply saved camera position + FOV
                 Na__Controls__Orbit,                                         // <-- Re-apply with correct orbit target
-                Na__Saved__ProjectCameraConfig
+                Na__CameraConfigWithoutLegacyTarget
             );
         }
-        if (Na__Saved__ProjectOrbitTarget || Na__Saved__ProjectCameraConfig) {
+        if (Na__FinalOrbitTargetApplied || Na__Saved__ProjectCameraConfig) {
             Na__Controls__Orbit.update();                                    // <-- Finalize controls with restored state
         }
 

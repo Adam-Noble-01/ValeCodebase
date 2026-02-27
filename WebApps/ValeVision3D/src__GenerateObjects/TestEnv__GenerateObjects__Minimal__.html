@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ValeVision3D - Generate Objects Test Environment</title>
+    <style>
+        html, body {
+            margin : 0;
+            padding : 0;
+            width : 100%;
+            height : 100%;
+            overflow : hidden;
+            background : #0e0e12;
+            color : #f5f5f5;
+            font-family : Arial, Helvetica, sans-serif;
+        }
+
+        #appCanvas {
+            display : block;
+            width : 100%;
+            height : 100%;
+        }
+
+        #hud {
+            position : fixed;
+            top : 12px;
+            left : 12px;
+            padding : 10px 12px;
+            border-radius : 8px;
+            background : rgba(0, 0, 0, 0.55);
+            font-size : 13px;
+            line-height : 1.4;
+            z-index : 10;
+            max-width : 420px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="appCanvas"></canvas>
+
+    <div id="hud">
+        <strong>Generate Objects Test Env</strong><br />
+        Paste your function chunks into this file in the marked section below.<br />
+        Keys: <code>1</code> Ball Cloud, <code>2</code> RGB Boxes, <code>3</code> White Stars, <code>0</code> Clear.
+    </div>
+
+    <script type="module">
+        import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
+
+        // -----------------------------------------------------------------------------
+        // REGION | Scene Setup
+        // -----------------------------------------------------------------------------
+
+            const canvas = document.getElementById("appCanvas");
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x121218);
+
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+            camera.position.set(0, 2.5, 10);
+            camera.lookAt(0, 1, 0);
+
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222244, 1.25);
+            scene.add(hemiLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            dirLight.position.set(4, 6, 3);
+            scene.add(dirLight);
+
+            const floor = new THREE.GridHelper(20, 20, 0x334455, 0x27303a);
+            floor.position.y = -2;
+            scene.add(floor);
+
+            const axes = new THREE.AxesHelper(2);
+            scene.add(axes);
+        // endregion -------------------------------------------------------------------
+
+
+        // -----------------------------------------------------------------------------
+        // REGION | Update Loop Registry
+        // -----------------------------------------------------------------------------
+
+            const registeredUpdates = [];
+            const activeGenerators = [];
+
+            function registerUpdate(updateFunction) {
+                if (typeof updateFunction === "function") {
+                    registeredUpdates.push(updateFunction);
+                }
+            }
+
+            function disposeAllGenerators() {
+                while (activeGenerators.length > 0) {
+                    const generator = activeGenerators.pop();
+                    if (generator && typeof generator.dispose === "function") {
+                        generator.dispose();
+                    }
+                }
+                registeredUpdates.length = 0;
+            }
+
+        // endregion -------------------------------------------------------------------
+
+
+        // -----------------------------------------------------------------------------
+        // REGION | Paste Zone - Your GenerateObject Functions
+        // -----------------------------------------------------------------------------
+
+            /*
+             * PASTE YOUR FUNCTION CHUNKS HERE.
+             *
+             * Example expected function names:
+             * - Na__GenerateObject__CreateAnimatedBallCloud
+             * - Na__GenerateObject__CreateAnimatedRGBBoxes
+             * - Na__GenerateObject__CreateAnimatedWhiteStars
+             *
+             * If pasting directly from module files:
+             * - Remove lines like: import * as THREE from 'three';
+             * - Remove the "export" keyword from function declarations.
+             */
+
+            function Na__GenerateObject__CreateAnimatedBallCloud(sceneReference, options = {}) {
+                console.warn("Paste BallCloud function here.");
+                return { update: () => {}, dispose: () => {}, meshes: [], velocities: [] };
+            }
+
+            function Na__GenerateObject__CreateAnimatedRGBBoxes(sceneReference, options = {}) {
+                console.warn("Paste RGBBoxes function here.");
+                return { update: () => {}, dispose: () => {}, meshes: [], velocities: [] };
+            }
+
+            function Na__GenerateObject__CreateAnimatedWhiteStars(sceneReference, options = {}) {
+                console.warn("Paste WhiteStars function here.");
+                return { update: () => {}, dispose: () => {}, meshes: [], velocities: [] };
+            }
+
+        // endregion -------------------------------------------------------------------
+
+
+        // -----------------------------------------------------------------------------
+        // REGION | Test Controls
+        // -----------------------------------------------------------------------------
+
+            function spawnBallCloud() {
+                disposeAllGenerators();
+                const generator = Na__GenerateObject__CreateAnimatedBallCloud(scene, {
+                    count: 500,
+                    diameter: 0.2,
+                    boundsX: 5,
+                    boundsY: 3,
+                    boundsZ: 5,
+                    centerY: 1,
+                    speed: 0.05,
+                    registerUpdate
+                });
+                activeGenerators.push(generator);
+            }
+
+            function spawnRGBBoxes() {
+                disposeAllGenerators();
+                const generator = Na__GenerateObject__CreateAnimatedRGBBoxes(scene, {
+                    count: 500,
+                    size: 0.2,
+                    boundsX: 5,
+                    boundsY: 3,
+                    boundsZ: 5,
+                    centerY: 1,
+                    speed: 0.05,
+                    registerUpdate
+                });
+                activeGenerators.push(generator);
+            }
+
+            function spawnWhiteStars() {
+                disposeAllGenerators();
+                const generator = Na__GenerateObject__CreateAnimatedWhiteStars(scene, {
+                    count: 500,
+                    diameter: 0.2,
+                    boundsX: 5,
+                    boundsY: 3,
+                    boundsZ: 5,
+                    centerY: 1,
+                    speed: 0.05,
+                    registerUpdate
+                });
+                activeGenerators.push(generator);
+            }
+
+            window.addEventListener("keydown", (event) => {
+                if (event.key === "1") spawnBallCloud();
+                if (event.key === "2") spawnRGBBoxes();
+                if (event.key === "3") spawnWhiteStars();
+                if (event.key === "0") disposeAllGenerators();
+            });
+
+            window.addEventListener("resize", () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Auto-start with Ball Cloud for a quick smoke test.
+            spawnBallCloud();
+
+        // endregion -------------------------------------------------------------------
+
+
+        // -----------------------------------------------------------------------------
+        // REGION | Animation Loop
+        // -----------------------------------------------------------------------------
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                for (let i = 0; i < registeredUpdates.length; i++) {
+                    registeredUpdates[i]();
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+        // endregion -------------------------------------------------------------------
+    </script>
+</body>
+</html>

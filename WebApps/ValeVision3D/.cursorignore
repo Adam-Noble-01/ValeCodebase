@@ -1,3 +1,7 @@
 # Ignore backup files ending with .--BAK
 **/*.--BAK
 
+# Ignore All Files In Folders Named 00__Archive
+00__Archive/
+00__Archive/*
+

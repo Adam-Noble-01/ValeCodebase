@@ -1,11 +1,11 @@
 /* ================================================================= */
-/* REGION  |  Babylon.js Canvas Rendering Styles                    */
+/* REGION  |  Three.js Canvas Rendering Styles                      */
 /* ================================================================= */
 
-/* Babylon.js Render Canvas - Full Screen 3D Viewport */
+/* Three.js Render Canvas - Full Screen 3D Viewport */
 /* ----------------------------------------------------------------- */
 #renderCanvas {
-    width                              : 100vw;                        /* <-- Full viewport width */
+    width                              : 100vw;                                   /* <-- Full viewport width */
     height                             : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Viewport height minus header */
     touch-action                       : none;
     outline                            : none;

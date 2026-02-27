@@ -1,49 +1,83 @@
-// #Region ------------------------------------------------
-// GENERATE OBJECTS | Scatter and animate white stars
-// --------------------------------------------------------
-const whiteStarCount = 500;
-const whiteStars = [];
-const whiteStarVelocities = [];
+import * as THREE from 'three';
 
-for (let i = 0; i < whiteStarCount; i++) {
-    const whiteStar = BABYLON.MeshBuilder.CreateSphere("whiteStar" + i, { diameter: 0.2 }, scene);
-    whiteStar.position.x = (Math.random() - 0.5) * 10;
-    whiteStar.position.y = (Math.random() - 0.5) * 5 + 1;
-    whiteStar.position.z = (Math.random() - 0.5) * 10;
+// -----------------------------------------------------------------------------
+// REGION | Generate Objects - Animated White Stars
+// -----------------------------------------------------------------------------
 
-    const whiteStarMat = new BABYLON.StandardMaterial("whiteStarMat" + i, scene);
-    whiteStarMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-    whiteStarMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-    whiteStarMat.specularColor = new BABYLON.Color3(0, 0, 0);
-    whiteStar.material = whiteStarMat;
+    // FUNCTION | Create Animated White Stars
+    // ------------------------------------------------------------
+    export function Na__GenerateObject__CreateAnimatedWhiteStars(scene, options = {}) {
+        const count = Number.isFinite(options.count) ? options.count : 500;
+        const diameter = Number.isFinite(options.diameter) ? options.diameter : 0.2;
+        const boundsX = Number.isFinite(options.boundsX) ? options.boundsX : 5;
+        const boundsY = Number.isFinite(options.boundsY) ? options.boundsY : 3;
+        const boundsZ = Number.isFinite(options.boundsZ) ? options.boundsZ : 5;
+        const centerY = Number.isFinite(options.centerY) ? options.centerY : 1;
+        const speed = Number.isFinite(options.speed) ? options.speed : 0.05;
 
-    // Random velocity
-    // ------------------------------------
-    whiteStarVelocities.push(new BABYLON.Vector3(
-        (Math.random() - 0.5) * 0.05,
-        (Math.random() - 0.5) * 0.05,
-        (Math.random() - 0.5) * 0.05
-    ));
+        const sphereGeometry = new THREE.SphereGeometry(diameter * 0.5, 12, 12);
+        const whiteStars = [];
+        const whiteStarVelocities = [];
 
-    whiteStars.push(whiteStar);
-}
+        for (let i = 0; i < count; i++) {
+            const whiteStarMaterial = new THREE.MeshPhongMaterial({
+                color: new THREE.Color(1, 1, 1),
+                emissive: new THREE.Color(1, 1, 1),
+                specular: new THREE.Color(0, 0, 0)
+            });
 
-// Animate stars each frame
-// ------------------------------------
-scene.registerBeforeRender(() => {
-    for (let i = 0; i < whiteStarCount; i++) {
-        const whiteStar = whiteStars[i];
-        const whiteStarVel = whiteStarVelocities[i];
+            const whiteStar = new THREE.Mesh(sphereGeometry, whiteStarMaterial);
+            whiteStar.name = `whiteStar${i}`;
+            whiteStar.position.set(
+                (Math.random() - 0.5) * (boundsX * 2),
+                (Math.random() - 0.5) * (boundsY * 2) + centerY,
+                (Math.random() - 0.5) * (boundsZ * 2)
+            );
 
-        whiteStar.position.addInPlace(whiteStarVel);
+            scene.add(whiteStar);
+            whiteStars.push(whiteStar);
+            whiteStarVelocities.push(
+                new THREE.Vector3(
+                    (Math.random() - 0.5) * speed,
+                    (Math.random() - 0.5) * speed,
+                    (Math.random() - 0.5) * speed
+                )
+            );
+        }
 
-        // Bounce back when reaching the bounds
-        // ------------------------------------
-        if (Math.abs(whiteStar.position.x) > 5) whiteStarVel.x *= -1;
-        if (Math.abs(whiteStar.position.y - 1) > 3) whiteStarVel.y *= -1;
-        if (Math.abs(whiteStar.position.z) > 5) whiteStarVel.z *= -1;
+        const Na__GenerateObject__UpdateAnimatedWhiteStars = () => {
+            for (let i = 0; i < count; i++) {
+                const whiteStar = whiteStars[i];
+                const whiteStarVelocity = whiteStarVelocities[i];
+
+                whiteStar.position.add(whiteStarVelocity);
+
+                if (Math.abs(whiteStar.position.x) > boundsX) whiteStarVelocity.x *= -1;
+                if (Math.abs(whiteStar.position.y - centerY) > boundsY) whiteStarVelocity.y *= -1;
+                if (Math.abs(whiteStar.position.z) > boundsZ) whiteStarVelocity.z *= -1;
+            }
+        };
+
+        if (typeof options.registerUpdate === 'function') {
+            options.registerUpdate(Na__GenerateObject__UpdateAnimatedWhiteStars);
+        }
+
+        const Na__GenerateObject__DisposeAnimatedWhiteStars = () => {
+            whiteStars.forEach((mesh) => {
+                scene.remove(mesh);
+                if (mesh.material) mesh.material.dispose();
+            });
+            sphereGeometry.dispose();
+        };
+
+        return {
+            meshes: whiteStars,
+            velocities: whiteStarVelocities,
+            update: Na__GenerateObject__UpdateAnimatedWhiteStars,
+            dispose: Na__GenerateObject__DisposeAnimatedWhiteStars
+        };
     }
-});
+    // ------------------------------------------------------------
 
-// #endregion ---------------------------------------------
+// endregion -------------------------------------------------------------------
 

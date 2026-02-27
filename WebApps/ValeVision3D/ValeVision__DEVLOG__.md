@@ -2,6 +2,24 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.7  -  27-Feb-2026
+### Stylesheet Naming Standardization 
+
+**Overview**
+- Standardized stylesheet naming to the project namespace pattern (`Na__<DomainOrModule>__Styles__<FeatureOrScope>__.css`) for improved maintainability and clearer ownership by module.
+- Updated stylesheet link/import wiring across main app, Page Layout System, and Test Environment to match renamed files.
+- Removed all remaining Babylon/BABYLON engine references from ValeVision3D runtime/docs.
+- Ported legacy `src__GenerateObjects` helper modules from Babylon APIs to Three.js-compatible utility modules.
+
+**Stylesheet Refactor**
+- Renamed `src__Styles` files to namespaced equivalents (Core UI, UiFeature, ImageExport scopes).
+- Renamed Page Layout stylesheet to `Na__PageLayoutSystem__Styles__Main__.css`.
+- Renamed Test Environment stylesheet to `Na__TestEnv__Styles__PrototypeSandbox__.css`.
+- Updated `index.html`, Page Layout HTML, and TestEnv HTML to point at new stylesheet names.
+- Updated `Na__CoreUi__Styles__Index__.css` import list to new filenames while preserving import order.
+
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.6  -  26-Feb-2026
 ### Orbit Anchor Hardening + Nav Damping Delegation
 
@@ -1071,7 +1089,7 @@
 ## 04-Feb-2026 - ValeVision3D v0.1.0 
 ### Total Engine Rebuild and New Features
 - Switched to a new engine architecture.
-  - Previously use Babylon.js for the 3D engine.
-  - Now using Three.js for the 3D engine.
+  - Previously used Babylon.js as the legacy engine for the 3D runtime.
+  - Now using **Three.js** for the 3D engine.
 - Refactored the old codebase to be more modular and maintainable.
 # ---------------------------------------------------------

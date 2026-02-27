@@ -180,7 +180,8 @@
 		  "bold": false,
 		  "italic": false
 		}
-	  ],
+    ],
+    "liveServer.settings.multiRootWorkspaceName": "ValeVision3D",
 	}
 }
   

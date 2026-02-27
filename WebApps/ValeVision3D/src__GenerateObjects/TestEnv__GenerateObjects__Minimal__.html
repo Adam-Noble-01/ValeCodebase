@@ -5,45 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ValeVision3D - Generate Objects Test Environment</title>
     <style>
+        /* ----------------------------------------------------------------------------- */
+        /* REGION | Generate Objects Test Environment - CSS */
+        /* ----------------------------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------------------- */
+        /* SUB REGION | Base Layout and Canvas */
+        /* ----------------------------------------------------------------------------- */
+
+        /* Base Layout */
         html, body {
-            margin : 0;
-            padding : 0;
-            width : 100%;
-            height : 100%;
-            overflow : hidden;
-            background : #0e0e12;
-            color : #f5f5f5;
+            margin      : 0;
+            padding     : 0;
+            width       : 100%;
+            height      : 100%;
+            overflow    : hidden;
+            background  : #0e0e12;
+            color       : #f5f5f5;
             font-family : Arial, Helvetica, sans-serif;
         }
 
+        /* Render Canvas */
         #appCanvas {
             display : block;
-            width : 100%;
-            height : 100%;
+            width   : 100%;
+            height  : 100%;
         }
 
-        #hud {
-            position : fixed;
-            top : 12px;
-            left : 12px;
-            padding : 10px 12px;
+        /* ----------------------------------------------------------------------------- */
+        /* SUB REGION | Overlay Panels */
+        /* ----------------------------------------------------------------------------- */
+
+        /* Top Left Status Panel */
+        #hudInfo {
+            position      : fixed;
+            top           : 12px;
+            left          : 12px;
+            padding       : 10px 12px;
             border-radius : 8px;
-            background : rgba(0, 0, 0, 0.55);
-            font-size : 13px;
-            line-height : 1.4;
-            z-index : 10;
-            max-width : 420px;
+            background    : rgba(0, 0, 0, 0.55);
+            font-size     : 13px;
+            line-height   : 1.4;
+            z-index       : 10;
+            max-width     : 360px;
         }
+
+        /* Code Input Panel */
+        #codePanel {
+            position      : fixed;
+            top           : 12px;
+            right         : 12px;
+            width         : min(48vw, 720px);
+            height        : min(74vh, 780px);
+            padding       : 10px;
+            border-radius : 10px;
+            background    : rgba(0, 0, 0, 0.65);
+            border        : 1px solid rgba(255, 255, 255, 0.18);
+            z-index       : 20;
+            display       : flex;
+            flex-direction : column;
+            gap           : 8px;
+        }
+
+        /* ----------------------------------------------------------------------------- */
+        /* SUB REGION | Inputs, Buttons, and Status */
+        /* ----------------------------------------------------------------------------- */
+
+        /* Raw Code Textarea */
+        #codeInput {
+            flex          : 1;
+            width         : 100%;
+            resize        : none;
+            border        : 1px solid #3d3d47;
+            border-radius : 6px;
+            background    : #12121a;
+            color         : #f2f4ff;
+            padding       : 10px;
+            box-sizing : border-box;
+            font-size     : 12px;
+            line-height : 1.4;
+            font-family   : Consolas, "Courier New", monospace;
+        }
+
+        /* Buttons Row */
+        #buttonRow {
+            display   : flex;
+            flex-wrap : wrap;
+            gap       : 6px;
+        }
+
+        /* Generic Action Button */
+        .actionBtn {
+            background    : #1f1f2c;
+            color         : #f5f5f5;
+            border        : 1px solid #4a4a64;
+            border-radius : 6px;
+            padding       : 6px 10px;
+            font-size     : 12px;
+            cursor        : pointer;
+        }
+
+        .actionBtn:hover {
+            background : #2a2a3a;
+        }
+
+        /* Runtime Status */
+        #statusLine {
+            min-height    : 18px;
+            font-size     : 12px;
+            color         : #90ee90;
+            white-space   : nowrap;
+            overflow      : hidden;
+            text-overflow : ellipsis;
+        }
+
+        /* endregion ------------------------------------------------------------------- */
     </style>
 </head>
 <body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Generate Objects Test Environment - HTML -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | 3D Render Canvas -->
+    <!-- ----------------------------------------------------------------- -->
     <canvas id="appCanvas"></canvas>
 
-    <div id="hud">
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | Test Environment Info Panel -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="hudInfo">
         <strong>Generate Objects Test Env</strong><br />
-        Paste your function chunks into this file in the marked section below.<br />
-        Keys: <code>1</code> Ball Cloud, <code>2</code> RGB Boxes, <code>3</code> White Stars, <code>0</code> Clear.
+        Paste raw module code into the textbox and click <code>Load Pasted Code</code>.<br />
+        Controls: <code>S</code> Spawn, <code>U</code> Unspawn.
     </div>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- UI MENU | Code Input and Runtime Controls -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="codePanel">
+        <textarea id="codeInput" spellcheck="false" placeholder="Paste your code block here...
+
+You can paste as-is, including:
+- import * as THREE from 'three';
+- export function Na__GenerateObject__CreateAnimatedBallCloud(...) { ... }"></textarea>
+
+        <div id="buttonRow">
+            <button class="actionBtn" id="loadCodeBtn">Load Pasted Code</button>
+            <button class="actionBtn" id="spawnBtn">Spawn</button>
+            <button class="actionBtn" id="unspawnBtn">Unspawn</button>
+        </div>
+
+        <div id="statusLine">Ready.</div>
+    </div>
+    <!-- endregion ----------------------------------------------------------------- -->
 
     <script type="module">
         import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
@@ -86,6 +202,15 @@
 
             const registeredUpdates = [];
             const activeGenerators = [];
+            let Na__GenerateObject__CreateAnimatedBallCloud = null;
+            let Na__GenerateObject__CreateAnimatedRGBBoxes = null;
+            let Na__GenerateObject__CreateAnimatedWhiteStars = null;
+
+            const codeInput = document.getElementById("codeInput");
+            const statusLine = document.getElementById("statusLine");
+            const loadCodeBtn = document.getElementById("loadCodeBtn");
+            const spawnBtn = document.getElementById("spawnBtn");
+            const unspawnBtn = document.getElementById("unspawnBtn");
 
             function registerUpdate(updateFunction) {
                 if (typeof updateFunction === "function") {
@@ -103,39 +228,83 @@
                 registeredUpdates.length = 0;
             }
 
+            function setStatus(message, isError = false) {
+                statusLine.textContent = message;
+                statusLine.style.color = isError ? "#ff9a9a" : "#90ee90";
+            }
+
         // endregion -------------------------------------------------------------------
 
 
         // -----------------------------------------------------------------------------
-        // REGION | Paste Zone - Your GenerateObject Functions
+        // REGION | Paste Zone Runtime Loader
         // -----------------------------------------------------------------------------
 
-            /*
-             * PASTE YOUR FUNCTION CHUNKS HERE.
-             *
-             * Example expected function names:
-             * - Na__GenerateObject__CreateAnimatedBallCloud
-             * - Na__GenerateObject__CreateAnimatedRGBBoxes
-             * - Na__GenerateObject__CreateAnimatedWhiteStars
-             *
-             * If pasting directly from module files:
-             * - Remove lines like: import * as THREE from 'three';
-             * - Remove the "export" keyword from function declarations.
-             */
+            function sanitizePastedModuleCode(rawCode) {
+                if (!rawCode || !rawCode.trim()) return "";
 
-            function Na__GenerateObject__CreateAnimatedBallCloud(sceneReference, options = {}) {
-                console.warn("Paste BallCloud function here.");
-                return { update: () => {}, dispose: () => {}, meshes: [], velocities: [] };
+                // Remove any top-level import lines so browser runtime parser accepts the code block.
+                const withoutImports = rawCode.replace(/^\s*import\s+.*?;?\s*$/gm, "");
+
+                // Convert "export function" to plain function declarations.
+                const withoutExportFunctions = withoutImports.replace(/^\s*export\s+function\s+/gm, "function ");
+
+                // Convert "export const" to plain const declarations (safe fallback).
+                const withoutExportConsts = withoutExportFunctions.replace(/^\s*export\s+const\s+/gm, "const ");
+
+                // Remove any "export default".
+                const withoutExportDefault = withoutExportConsts.replace(/^\s*export\s+default\s+/gm, "");
+
+                return withoutExportDefault;
             }
 
-            function Na__GenerateObject__CreateAnimatedRGBBoxes(sceneReference, options = {}) {
-                console.warn("Paste RGBBoxes function here.");
-                return { update: () => {}, dispose: () => {}, meshes: [], velocities: [] };
-            }
+            function loadPastedCodeFromTextbox() {
+                try {
+                    const rawCode = codeInput.value;
+                    const sanitizedCode = sanitizePastedModuleCode(rawCode);
 
-            function Na__GenerateObject__CreateAnimatedWhiteStars(sceneReference, options = {}) {
-                console.warn("Paste WhiteStars function here.");
-                return { update: () => {}, dispose: () => {}, meshes: [], velocities: [] };
+                    if (!sanitizedCode.trim()) {
+                        setStatus("Textbox is empty. Paste code first.", true);
+                        return;
+                    }
+
+                    const loaderFactory = new Function(
+                        "THREE",
+                        `${sanitizedCode}
+                        return {
+                            Na__GenerateObject__CreateAnimatedBallCloud:
+                                (typeof Na__GenerateObject__CreateAnimatedBallCloud === "function")
+                                    ? Na__GenerateObject__CreateAnimatedBallCloud : null,
+                            Na__GenerateObject__CreateAnimatedRGBBoxes:
+                                (typeof Na__GenerateObject__CreateAnimatedRGBBoxes === "function")
+                                    ? Na__GenerateObject__CreateAnimatedRGBBoxes : null,
+                            Na__GenerateObject__CreateAnimatedWhiteStars:
+                                (typeof Na__GenerateObject__CreateAnimatedWhiteStars === "function")
+                                    ? Na__GenerateObject__CreateAnimatedWhiteStars : null
+                        };`
+                    );
+
+                    const loaded = loaderFactory(THREE);
+
+                    Na__GenerateObject__CreateAnimatedBallCloud = loaded.Na__GenerateObject__CreateAnimatedBallCloud;
+                    Na__GenerateObject__CreateAnimatedRGBBoxes = loaded.Na__GenerateObject__CreateAnimatedRGBBoxes;
+                    Na__GenerateObject__CreateAnimatedWhiteStars = loaded.Na__GenerateObject__CreateAnimatedWhiteStars;
+
+                    const loadedNames = [];
+                    if (Na__GenerateObject__CreateAnimatedBallCloud) loadedNames.push("BallCloud");
+                    if (Na__GenerateObject__CreateAnimatedRGBBoxes) loadedNames.push("RGBBoxes");
+                    if (Na__GenerateObject__CreateAnimatedWhiteStars) loadedNames.push("WhiteStars");
+
+                    if (loadedNames.length === 0) {
+                        setStatus("No matching generator function names found in pasted code.", true);
+                        return;
+                    }
+
+                    setStatus(`Loaded: ${loadedNames.join(", ")}`);
+                } catch (error) {
+                    console.error(error);
+                    setStatus(`Load error: ${error.message}`, true);
+                }
             }
 
         // endregion -------------------------------------------------------------------
@@ -145,40 +314,40 @@
         // REGION | Test Controls
         // -----------------------------------------------------------------------------
 
-            function spawnBallCloud() {
-                disposeAllGenerators();
-                const generator = Na__GenerateObject__CreateAnimatedBallCloud(scene, {
-                    count: 500,
-                    diameter: 0.2,
-                    boundsX: 5,
-                    boundsY: 3,
-                    boundsZ: 5,
-                    centerY: 1,
-                    speed: 0.05,
-                    registerUpdate
-                });
-                activeGenerators.push(generator);
+            function getLoadedGeneratorReference() {
+                if (typeof Na__GenerateObject__CreateAnimatedBallCloud === "function") {
+                    return {
+                        name: "Ball Cloud",
+                        createFunction: Na__GenerateObject__CreateAnimatedBallCloud
+                    };
+                }
+                if (typeof Na__GenerateObject__CreateAnimatedRGBBoxes === "function") {
+                    return {
+                        name: "RGB Boxes",
+                        createFunction: Na__GenerateObject__CreateAnimatedRGBBoxes
+                    };
+                }
+                if (typeof Na__GenerateObject__CreateAnimatedWhiteStars === "function") {
+                    return {
+                        name: "White Stars",
+                        createFunction: Na__GenerateObject__CreateAnimatedWhiteStars
+                    };
+                }
+                return null;
             }
 
-            function spawnRGBBoxes() {
+            function spawnLoadedGenerator() {
                 disposeAllGenerators();
-                const generator = Na__GenerateObject__CreateAnimatedRGBBoxes(scene, {
+
+                const loadedGeneratorReference = getLoadedGeneratorReference();
+                if (!loadedGeneratorReference) {
+                    setStatus("No supported generator function loaded yet.", true);
+                    return;
+                }
+
+                const generator = loadedGeneratorReference.createFunction(scene, {
                     count: 500,
                     size: 0.2,
-                    boundsX: 5,
-                    boundsY: 3,
-                    boundsZ: 5,
-                    centerY: 1,
-                    speed: 0.05,
-                    registerUpdate
-                });
-                activeGenerators.push(generator);
-            }
-
-            function spawnWhiteStars() {
-                disposeAllGenerators();
-                const generator = Na__GenerateObject__CreateAnimatedWhiteStars(scene, {
-                    count: 500,
                     diameter: 0.2,
                     boundsX: 5,
                     boundsY: 3,
@@ -188,13 +357,17 @@
                     registerUpdate
                 });
                 activeGenerators.push(generator);
+                setStatus(`Spawned ${loadedGeneratorReference.name}.`);
+            }
+
+            function unspawnLoadedGenerator() {
+                disposeAllGenerators();
+                setStatus("Unspawned active generator.");
             }
 
             window.addEventListener("keydown", (event) => {
-                if (event.key === "1") spawnBallCloud();
-                if (event.key === "2") spawnRGBBoxes();
-                if (event.key === "3") spawnWhiteStars();
-                if (event.key === "0") disposeAllGenerators();
+                if (event.key.toLowerCase() === "s") spawnLoadedGenerator();
+                if (event.key.toLowerCase() === "u") unspawnLoadedGenerator();
             });
 
             window.addEventListener("resize", () => {
@@ -203,8 +376,9 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            // Auto-start with Ball Cloud for a quick smoke test.
-            spawnBallCloud();
+            loadCodeBtn.addEventListener("click", loadPastedCodeFromTextbox);
+            spawnBtn.addEventListener("click", spawnLoadedGenerator);
+            unspawnBtn.addEventListener("click", unspawnLoadedGenerator);
 
         // endregion -------------------------------------------------------------------
 

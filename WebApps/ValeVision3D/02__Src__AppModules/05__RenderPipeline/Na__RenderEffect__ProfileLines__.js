@@ -71,7 +71,7 @@
     // ---------------------------------------------------------------
     function collectLineObjects(scene) {
         const lineObjects = [];
-        scene.traverseVisible((obj) => {
+        scene.traverse((obj) => {
             if (obj.isLine2 || obj.isLineSegments2) lineObjects.push(obj); // <-- Collect all line segment objects
         });
         return lineObjects;
@@ -83,7 +83,7 @@
     // ---------------------------------------------------------------
     function collectMeshObjects(scene) {
         const meshObjects = [];
-        scene.traverseVisible((obj) => {
+        scene.traverse((obj) => {
             if (obj.isMesh) meshObjects.push(obj); // <-- Collect all visible mesh objects
         });
         return meshObjects;
@@ -187,11 +187,14 @@
             format:        THREE.RGBAFormat,
             type:          THREE.UnsignedByteType,
             depthBuffer:   true,
-            stencilBuffer: false
+            stencilBuffer: false,
+            depthTexture:  new THREE.DepthTexture(w, h, THREE.FloatType) // <-- Shared with fog to eliminate the separate depth pre-pass
         });
         normalRenderTarget.texture.name = 'ProfileLines_NormalBuffer';
 
-        const profileColorRenderTarget = new THREE.WebGLRenderTarget(w, h, {
+        const halfW = Math.max(1, Math.ceil(w * 0.5));                       // <-- Half-res width
+        const halfH = Math.max(1, Math.ceil(h * 0.5));                       // <-- Half-res height
+        const profileColorRenderTarget = new THREE.WebGLRenderTarget(halfW, halfH, {
             minFilter:     THREE.LinearFilter,
             magFilter:     THREE.LinearFilter,
             format:        THREE.RGBAFormat,
@@ -236,19 +239,46 @@
             ? config.RenderEffect__ProfileLines__EdgeWidthDistanceFar
             : PROFILE_LINES__DEFAULT_EDGE_WIDTH_DIST_FAR;
         const edgeWidthDistRange = edgeWidthDistFar - edgeWidthDistNear; // <-- Precompute denominator
+        let cachedLineObjects = [];
+        let cachedMeshObjects = [];
+        let cachedOriginalMaterials = [];                                    // <-- Pre-allocated per-mesh material backup array
+        let sceneCacheDirty = true;
 
 
         // SUB FUNCTION | Resize Render Targets to Match Viewport
         // ---------------------------------------------------------------
         function setSize(nw, nh) {
-            const nwPx = nw * pixelRatio;
-            const nhPx = nh * pixelRatio;
-            normalRenderTarget.setSize(nwPx, nhPx);                                      // <-- Resize normal buffer
-            profileColorRenderTarget.setSize(nwPx, nhPx);                               // <-- Resize colour buffer
+            const currentPixelRatio = renderer.getPixelRatio();
+            const nwPx = nw * currentPixelRatio;
+            const nhPx = nh * currentPixelRatio;
+            normalRenderTarget.setSize(nwPx, nhPx);                                      // <-- Resize normal buffer (full-res, also carries the shared depth texture)
+            profileColorRenderTarget.setSize(
+                Math.max(1, Math.ceil(nwPx * 0.5)),                                      // <-- Half-res width
+                Math.max(1, Math.ceil(nhPx * 0.5))                                       // <-- Half-res height
+            );
             profileLinesPass.material.uniforms.resolution.value.set(nwPx, nhPx);        // <-- Update shader resolution uniform
         }
         // ---------------------------------------------------------------
         setSize(width || window.innerWidth, height || window.innerHeight);
+
+
+        // SUB FUNCTION | Rebuild Cached Scene Object Collections
+        // ---------------------------------------------------------------
+        function rebuildSceneCache() {
+            cachedLineObjects = collectLineObjects(scene);
+            cachedMeshObjects = collectMeshObjects(scene);
+            cachedOriginalMaterials = new Array(cachedMeshObjects.length);    // <-- Pre-allocate to mesh count; slots reused every frame
+            sceneCacheDirty = false;
+        }
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Invalidate Cached Scene Object Collections
+        // ---------------------------------------------------------------
+        function invalidateSceneCache() {
+            sceneCacheDirty = true;
+        }
+        // ---------------------------------------------------------------
 
 
         // SUB FUNCTION | Render Normal and Profile Colour Pre-Passes
@@ -260,8 +290,12 @@
                 profileLinesPass.material.uniforms.u_edgeWidth.value = edgeWidthMin + t * (edgeWidthMax - edgeWidthMin); // <-- Lerp: far=min, near=max
             }
 
-            const lineObjects = collectLineObjects(scene); // <-- Gather line segment objects
-            const meshObjects = collectMeshObjects(scene); // <-- Gather mesh objects
+            if (sceneCacheDirty) {
+                rebuildSceneCache();
+            }
+
+            const lineObjects = cachedLineObjects; // <-- Reuse cached line segment objects
+            const meshObjects = cachedMeshObjects; // <-- Reuse cached mesh objects
 
             lineObjects.forEach((obj) => { obj.visible = false; }); // <-- Hide linework for normal prepass
 
@@ -277,14 +311,13 @@
             renderer.render(scene, camera);
             scene.overrideMaterial = savedOverrideMaterial;
 
-            // PASS 2 | Profile colour (meshes fallback + linework vertex colours)
+            // PASS 2 | Profile colour at half-res (meshes fallback + linework vertex colours)
             lineObjects.forEach((obj) => { obj.visible = true; }); // <-- Restore linework for colour pass
 
-            const originalMaterials = [];
-            meshObjects.forEach((obj) => {
-                originalMaterials.push({ object: obj, material: obj.material });
-                obj.material = profileColorFallbackMaterial; // <-- Swap mesh to flat fallback colour
-            });
+            for (let i = 0, len = meshObjects.length; i < len; i++) {
+                cachedOriginalMaterials[i] = meshObjects[i].material;        // <-- Stash into pre-allocated slot (no per-frame object creation)
+                meshObjects[i].material = profileColorFallbackMaterial;      // <-- Swap mesh to flat fallback colour
+            }
 
             renderer.setClearColor(fallbackProfileColor, 1.0); // <-- Background pixels receive fallback colour
             renderer.setRenderTarget(profileColorRenderTarget);
@@ -292,9 +325,9 @@
             renderer.render(scene, camera);                    // <-- Meshes (dark fallback) + lines (vertex colours) in one depth context
             renderer.setRenderTarget(null);
 
-            originalMaterials.forEach((entry) => {
-                entry.object.material = entry.material; // <-- Restore original mesh materials
-            });
+            for (let i = 0, len = meshObjects.length; i < len; i++) {
+                meshObjects[i].material = cachedOriginalMaterials[i];        // <-- Restore original mesh materials
+            }
 
             renderer.setClearColor(savedClearColor, savedClearAlpha);
         }
@@ -305,8 +338,10 @@
             pass: profileLinesPass,
             normalRenderTarget,
             profileColorRenderTarget,
+            depthTexture: normalRenderTarget.depthTexture,               // <-- Reusable depth from the normal pass (avoids a separate depth pre-pass)
             setSize,
-            renderProfileNormals
+            renderProfileNormals,
+            invalidateSceneCache
         };
     }
     // ------------------------------------------------------------

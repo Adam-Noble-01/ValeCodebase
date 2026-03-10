@@ -92,25 +92,27 @@
     // HELPER FUNCTION | Resolve Render Pipeline State from Getter
     // ------------------------------------------------------------
     function Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState) {
+        const noop = () => {};
         if (typeof getRenderPipelineState !== 'function') {
-            return { composer: null, renderProfileNormals: () => {}, setProfileLinesSize: () => {} };
+            return { composer: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop };
         }
 
         const pipelineState = getRenderPipelineState();
         if (!pipelineState) {
-            return { composer: null, renderProfileNormals: () => {}, setProfileLinesSize: () => {} };
+            return { composer: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop };
         }
 
         // BACKWARD COMPAT | Legacy getter may return composer directly
         // ------------------------------------------------------------
         if (typeof pipelineState.render === 'function' && !pipelineState.composer) {
-            return { composer: pipelineState, renderProfileNormals: () => {}, setProfileLinesSize: () => {} };
+            return { composer: pipelineState, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop };
         }
 
         return {
             composer            : pipelineState.composer || null,
-            renderProfileNormals: (typeof pipelineState.renderProfileNormals === 'function') ? pipelineState.renderProfileNormals : () => {},
-            setProfileLinesSize : (typeof pipelineState.setProfileLinesSize === 'function') ? pipelineState.setProfileLinesSize : () => {}
+            renderProfileNormals: (typeof pipelineState.renderProfileNormals === 'function') ? pipelineState.renderProfileNormals : noop,
+            setProfileLinesSize : (typeof pipelineState.setProfileLinesSize === 'function') ? pipelineState.setProfileLinesSize : noop,
+            setFxaaSize         : (typeof pipelineState.setFxaaSize === 'function') ? pipelineState.setFxaaSize : noop
         };
     }
     // ------------------------------------------------------------
@@ -188,6 +190,7 @@
         if (composer) {
             composer.setSize(targetWidth, targetHeight); // <-- Resize composer
             pipelineState.setProfileLinesSize(targetWidth, targetHeight); // <-- Resize profile lines render target
+            pipelineState.setFxaaSize(targetWidth, targetHeight); // <-- Resize FXAA resolution uniform
             pipelineState.renderProfileNormals(); // <-- Refresh profile normals at export dimensions
             composer.render(); // <-- Render via composer
         } else {
@@ -218,6 +221,7 @@
         if (composer) {
             composer.setSize(size.x, size.y); // <-- Restore composer size
             pipelineState.setProfileLinesSize(size.x, size.y); // <-- Restore profile lines render target size
+            pipelineState.setFxaaSize(size.x, size.y); // <-- Restore FXAA resolution uniform
             pipelineState.renderProfileNormals(); // <-- Refresh profile normals for live viewport after restore
         }
 

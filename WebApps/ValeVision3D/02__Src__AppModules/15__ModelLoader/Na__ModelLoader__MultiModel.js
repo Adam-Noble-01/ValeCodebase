@@ -474,6 +474,8 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
             if (importedColors) {
                 fatLineGeometry.setColors(importedColors);                     // <-- Carry glTF COLOR_0 into fat-line geometry
             }
+            fatLineGeometry.computeBoundingBox();                              // <-- Required for frustum culling
+            fatLineGeometry.computeBoundingSphere();                           // <-- Required for frustum culling
 
             const fatLineMaterial = new LineMaterial({
                 color               : importedColors ? 0xffffff : lineworkConfig.RenderConfig__Linework__EdgeColor,  // <-- Imported colours use white multiplier; config colour is fallback
@@ -506,7 +508,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 
             const fatLineSegment = new LineSegments2(fatLineGeometry, fatLineMaterial);
             fatLineSegment.computeLineDistances();                             // <-- Compute for proper rendering
-            fatLineSegment.frustumCulled = false;                              // <-- Always render (no culling)
+            fatLineSegment.frustumCulled = true;                               // <-- Allow frustum culling with computed bounds
             fatLineSegment.renderOrder   = lineworkConfig.RenderConfig__Linework__RenderOrder;   // <-- Render order from config
             fatLineSegment.name          = node.name;                          // <-- Preserve original node naming for hierarchy/debug
             fatLineSegment.visible       = node.visible;                       // <-- Preserve visibility state

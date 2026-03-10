@@ -104,7 +104,8 @@
     // ------------------------------------------------------------
     import {
         Na__DoorAnimation__Initialize,
-        Na__DoorAnimation__Update
+        Na__DoorAnimation__Update,
+        Na__DoorAnimation__HasActiveAnimations
     } from '../25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     // ------------------------------------------------------------
 
@@ -130,6 +131,15 @@
         Na__AppUtils__FetchProjectJson,
         Na__AppUtils__ExtractModelUrls
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Render Loop Invalidation
+    // ------------------------------------------------------------
+    import {
+        NA__REQUEST_RENDER_EVENT,
+        NA__REQUEST_ACTIVE_RENDER_EVENT,
+        NA__STOP_ACTIVE_RENDER_EVENT
+    } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -403,21 +413,47 @@
             Na__UiFeature__UpdateStatus('Model load error - check console', true);
         }
 
-        // RENDER LOOP (with delta time tracking for animations)
+        // INVALIDATE PROFILE LINES CACHE (scene objects changed after model load)
+        if (Na__RenderPipeline__State.invalidateProfileLinesCache) {
+            Na__RenderPipeline__State.invalidateProfileLinesCache();
+        }
+
+        // RENDER LOOP | Invalidation-Based Rendering
         let Na__RenderLoop__PrevTimestamp = performance.now();               // <-- Previous frame timestamp for delta
-        function Na__RenderLoop__Animate() {
-            requestAnimationFrame(Na__RenderLoop__Animate);
+        let Na__RenderLoop__FrameHandle = null;                              // <-- Active RAF handle (or null when idle)
+        const Na__RenderLoop__ActiveReasons = new Set();                     // <-- Reasons that require continuous frames
 
-            const now     = performance.now();                               // <-- Current timestamp
-            const deltaMs = now - Na__RenderLoop__PrevTimestamp;             // <-- Time since last frame
-            Na__RenderLoop__PrevTimestamp = now;                             // <-- Update previous timestamp
+        function Na__RenderLoop__ScheduleFrame() {
+            if (Na__RenderLoop__FrameHandle !== null) return;
+            Na__RenderLoop__FrameHandle = requestAnimationFrame(Na__RenderLoop__Tick);
+        }
 
+        function Na__RenderLoop__RequestRenderOnce() {
+            if (document.hidden) return;
+            Na__RenderLoop__ScheduleFrame();
+        }
+
+        function Na__RenderLoop__EnableActiveRendering(reason = 'general') {
+            Na__RenderLoop__ActiveReasons.add(reason);
+            Na__RenderLoop__RequestRenderOnce();
+        }
+
+        function Na__RenderLoop__DisableActiveRendering(reason = 'general') {
+            Na__RenderLoop__ActiveReasons.delete(reason);
+            Na__RenderLoop__RequestRenderOnce();
+        }
+
+        const NA__ORBIT_TRAILING_FRAMES = 3;                                   // <-- Extra frames after orbit 'end' to let controls.update() settle
+        let Na__RenderLoop__OrbitTrailingFrames = 0;
+
+        function Na__RenderLoop__RenderFrame(deltaMs) {
             if (Na__WalkMode__IsActive()) {
                 Na__WalkMode__Update(deltaMs);                               // <-- Update walk mode physics and camera
                 Na__DoorProximity__Update(Na__WalkMode__GetCapsulePosition()); // <-- Proximity door triggers
             } else {
                 Na__Navmode__UpdateNavigation();                             // <-- Update orbit controls
             }
+
             Na__DoorAnimation__Update(deltaMs);                              // <-- Update door animations
             Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__Camera__Main); // <-- Update fog camera matrices
 
@@ -425,9 +461,55 @@
                 Na__RenderPipeline__State.renderProfileNormals();            // <-- Update profile lines
                 Na__RenderComposer__Main.render();                           // <-- Render with post-processing
             }
+
+            if (Na__RenderLoop__OrbitTrailingFrames > 0) {
+                Na__RenderLoop__OrbitTrailingFrames--;
+                return true;                                                 // <-- Keep rendering for trailing settle frames
+            }
+
+            return Na__WalkMode__IsActive()
+                || Na__DoorAnimation__HasActiveAnimations()
+                || Na__RenderLoop__ActiveReasons.size > 0;
         }
 
-        Na__RenderLoop__Animate();
+        function Na__RenderLoop__Tick(timestamp) {
+            Na__RenderLoop__FrameHandle = null;
+
+            const now     = timestamp || performance.now();                  // <-- Current timestamp
+            const deltaMs = now - Na__RenderLoop__PrevTimestamp;             // <-- Time since last frame
+            Na__RenderLoop__PrevTimestamp = now;                             // <-- Update previous timestamp
+
+            const keepRendering = Na__RenderLoop__RenderFrame(deltaMs);
+            if (!document.hidden && keepRendering) {
+                Na__RenderLoop__ScheduleFrame();
+            }
+        }
+
+        window.addEventListener(NA__REQUEST_RENDER_EVENT, Na__RenderLoop__RequestRenderOnce);
+        window.addEventListener(NA__REQUEST_ACTIVE_RENDER_EVENT, (event) => {
+            Na__RenderLoop__EnableActiveRendering(event.detail && event.detail.reason ? event.detail.reason : 'general');
+        });
+        window.addEventListener(NA__STOP_ACTIVE_RENDER_EVENT, (event) => {
+            Na__RenderLoop__DisableActiveRendering(event.detail && event.detail.reason ? event.detail.reason : 'general');
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                Na__RenderLoop__RequestRenderOnce();
+            }
+        });
+
+        Na__Controls__Orbit.addEventListener('start', () => {
+            Na__RenderLoop__OrbitTrailingFrames = 0;                          // <-- Cancel any pending trail; user is actively interacting
+            Na__RenderLoop__EnableActiveRendering('orbit');
+        });
+        Na__Controls__Orbit.addEventListener('end', () => {
+            Na__RenderLoop__DisableActiveRendering('orbit');
+            Na__RenderLoop__OrbitTrailingFrames = NA__ORBIT_TRAILING_FRAMES;  // <-- Render a few more frames to let controls.update() settle
+            Na__RenderLoop__RequestRenderOnce();
+        });
+        Na__Controls__Orbit.addEventListener('change', Na__RenderLoop__RequestRenderOnce);
+
+        Na__RenderLoop__RequestRenderOnce();
 
         // RESIZE HANDLER
         window.addEventListener('resize', () => {
@@ -440,9 +522,11 @@
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
                 Na__RenderComposer__Main.setSize(width, height);
                 Na__RenderPipeline__State.setProfileLinesSize(width, height);
+                Na__RenderPipeline__State.setFxaaSize(width, height);        // <-- Update FXAA resolution uniform
             }
 
             Na__LineResolution__Screen.set(width, height);
+            Na__RenderLoop__RequestRenderOnce();
         });
     }
     // ------------------------------------------------------------

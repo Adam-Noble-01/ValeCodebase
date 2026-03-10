@@ -2,6 +2,75 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.0  -  10-Mar-2026
+### GPU Performance Overhaul — Profile Lines Pipeline Optimisation
+
+**Overview**
+- Ported all TrueVision3D v2.2.4 GPU performance optimisations to ValeVision3D.
+- Diagnosed and resolved sustained 100% GPU usage introduced by the profile lines system.
+- Root cause: the profile lines effect added two extra full-scene `renderer.render()` calls per frame (normal pass + profile colour pass), and the continuous RAF loop never idled.
+- Implemented six targeted optimisations that reduce per-frame scene renders, cut profile colour pass cost by ~75%, eliminate per-frame allocations, fix a render loop spin issue, and add a user-facing toggle.
+
+**Depth Pre-Pass Elimination**
+- Attached a `DepthTexture` to the normal render target so the normal pass writes depth as a side-effect.
+- Fog now reads depth from the normal pass instead of the render target's built-in depth texture.
+- Falls back to the original depth texture when profile lines are disabled.
+
+**Half-Resolution Profile Colour Buffer**
+- Profile colour render target now created at 50% viewport dimensions (quarter the pixel count).
+- The profile colour buffer only carries edge tint information; full resolution is unnecessary.
+- `setSize()` updated to maintain half-res on window resize.
+
+**Pre-Allocated Material Swap Cache**
+- `cachedOriginalMaterials` is now a pre-allocated `Array` sized during `rebuildSceneCache()`.
+- Per-frame material swap uses index-based `for` loops writing into fixed array slots instead of creating `{ object, material }` pairs every frame.
+- Eliminates all per-frame heap allocations in the profile lines hot path.
+
+**Scene Object Caching**
+- Replaced per-frame `scene.traverseVisible()` calls with `scene.traverse()` and cached results.
+- Added `cachedLineObjects`, `cachedMeshObjects`, `sceneCacheDirty` flag, `rebuildSceneCache()`, and `invalidateSceneCache()` methods.
+- Cache is rebuilt only when models are loaded or scene structure changes.
+
+**Invalidation-Based Render Loop**
+- Replaced the unconditional `requestAnimationFrame` loop with an invalidation-based system.
+- Frames are only scheduled when user interaction, animations, or explicit invalidation events require a redraw.
+- Added `Na__RenderLoop__Invalidation.js` as a centralised event dispatcher for render requests.
+- All UI controls (model toggles, walk mode, door animations) now dispatch render requests through the invalidation system.
+
+**Orbit Controls Render Loop Fix**
+- Added a 3-frame trailing budget after the orbit `end` event.
+- Previously, `controls.update()` could return `true` after the user stopped interacting, keeping the render loop spinning indefinitely.
+- The loop now renders the trailing frames then stops, dropping GPU usage to near-zero when idle.
+
+**Profile Lines Toggle**
+- Added "Profile Lines" ON/OFF button to the Tools dropdown menu.
+- `toggleProfileLines()` disables both the shader pass and the pre-pass renders.
+- Users can instantly halve per-frame GPU load by toggling profile lines off.
+
+**Additional Optimisations**
+- Directional light shadow map resolution reduced from 2048 to 1024.
+- Renderer pixel ratio cap reduced from 2.0 to 1.5.
+- Fat line segments re-enabled frustum culling with computed bounding geometry.
+- Navigation controls (`updateMovement`/`updateNavigation`) now return booleans indicating change.
+
+**Files Added**
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js`
+
+**Files Changed**
+- `index.html`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js`
+- `02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js`
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+- `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.9  -  10-Mar-2026
 ### Profile Lines — Dynamic Edge Width, Smooth Threshold, Config Alignment
 

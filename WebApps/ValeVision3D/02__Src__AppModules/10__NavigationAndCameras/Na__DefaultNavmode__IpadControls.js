@@ -84,7 +84,7 @@
             
             updateMovement = () => {
                 if (!Na__DefaultNavmode__KeyState.w && !Na__DefaultNavmode__KeyState.a && !Na__DefaultNavmode__KeyState.s && !Na__DefaultNavmode__KeyState.d && !Na__DefaultNavmode__KeyState.q && !Na__DefaultNavmode__KeyState.e && !Na__DefaultNavmode__KeyState.arrowup && !Na__DefaultNavmode__KeyState.arrowleft && !Na__DefaultNavmode__KeyState.arrowdown && !Na__DefaultNavmode__KeyState.arrowright) {
-                    return;
+                    return false;
                 }
                 
                 const forward = new THREE.Vector3();
@@ -112,12 +112,14 @@
                 if (Na__DefaultNavmode__KeyState.q) {
                     camera.position.y -= elevationSpeedUnits;
                 }
+                return true;
             };
         }
         
         const updateNavigation = () => {
-            updateMovement();
-            controls.update();
+            const moved = updateMovement();
+            const orbitChanged = controls.update();
+            return moved || orbitChanged;
         };
         
         const dispose = () => {

@@ -22,6 +22,18 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Render Loop Invalidation
+    // ------------------------------------------------------------
+    import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Constants and Category Display Names
 // -----------------------------------------------------------------------------
 
@@ -160,6 +172,7 @@
                 } else {
                     button.classList.remove(Na__ModelToggle__ActiveClass);  // <-- Remove active class
                 }
+                Na__RenderLoop__RequestRender();
             });
 
             listContainer.appendChild(button);                           // <-- Add button to container

@@ -244,6 +244,12 @@
                         Save Camera Settings
                     </button>
                 </li>
+                <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-walk-mode__toggle na-walk-mode__toggle--active" id="naProfileLinesToggle">
+                        <span class="na-walk-mode__label">Profile Lines</span>
+                        <span class="na-walk-mode__status" id="naProfileLinesStatus">ON</span>
+                    </button>
+                </li>
             </ul>
             
         </details>
@@ -282,6 +288,7 @@
     import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
     import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
+    import { Na__RenderLoop__RequestRender } from './02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -448,7 +455,7 @@
         logarithmicDepthBuffer: true
     });
     Na__Renderer__Main.setSize(window.innerWidth, window.innerHeight);
-    Na__Renderer__Main.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    Na__Renderer__Main.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     Na__Renderer__Main.shadowMap.enabled = true;
     Na__Renderer__Main.shadowMap.type = THREE.PCFSoftShadowMap;
     Na__Renderer__Main.outputColorSpace = THREE.SRGBColorSpace;
@@ -693,6 +700,33 @@
     });
     Na__UiFeature__PromptToolsMenu();
     Na__UiFeature__InitializeSaveCameraButton(Na__Camera__Main, Na__Controls__Orbit, Na__UiFeature__ShowToast);
+    // ------------------------------------------------------------
+
+    // SETTINGS MENU | Profile Lines Real-Time Toggle
+    // ------------------------------------------------------------
+    const Na__ProfileLinesToggleBtn = document.getElementById('naProfileLinesToggle');
+    const Na__ProfileLinesStatusEl  = document.getElementById('naProfileLinesStatus');
+
+    function Na__UiFeature__UpdateProfileLinesStatus(isOn) {
+        if (Na__ProfileLinesStatusEl)  Na__ProfileLinesStatusEl.textContent = isOn ? 'ON' : 'OFF';
+        if (Na__ProfileLinesToggleBtn) Na__ProfileLinesToggleBtn.classList.toggle('na-walk-mode__toggle--active', isOn);
+    }
+
+    if (Na__ProfileLinesToggleBtn) {
+        Na__ProfileLinesToggleBtn.addEventListener('click', () => {
+            const pipeline = Na__AppFlow__PipelineRef.current;
+            if (!pipeline || !pipeline.toggleProfileLines) return;
+            const isNowOn = pipeline.toggleProfileLines();
+            Na__UiFeature__UpdateProfileLinesStatus(isNowOn);
+            Na__RenderLoop__RequestRender();
+        });
+    }
+
+    if (Na__Config__ProfileLines && Na__Config__ProfileLines.RenderEffect__ProfileLines__Enabled === true) {
+        Na__UiFeature__UpdateProfileLinesStatus(true);
+    } else {
+        Na__UiFeature__UpdateProfileLinesStatus(false);
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

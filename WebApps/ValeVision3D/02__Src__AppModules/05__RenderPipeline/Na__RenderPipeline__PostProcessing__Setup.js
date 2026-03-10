@@ -20,8 +20,8 @@
         const width      = window.innerWidth * pixelRatio;
         const height     = window.innerHeight * pixelRatio;
 
-        const depthTexture = new THREE.DepthTexture(width, height); // <-- Required for fog pass depth reads
-        depthTexture.type  = THREE.FloatType;
+        const depthTextureFallback = new THREE.DepthTexture(width, height); // <-- Fallback for fog when profile lines are disabled
+        depthTextureFallback.type  = THREE.FloatType;
 
         const renderTarget = new THREE.WebGLRenderTarget(width, height, {
             minFilter    : THREE.LinearFilter,
@@ -29,7 +29,7 @@
             format       : THREE.RGBAFormat,
             type         : THREE.HalfFloatType,
             samples      : 4,
-            depthTexture : depthTexture
+            depthTexture : depthTextureFallback
         });
         
         const composer = new EffectComposer(renderer, renderTarget);
@@ -37,31 +37,71 @@
         
         let renderProfileNormals = () => {};
         let setProfileLinesSize = () => {};
+        let invalidateProfileLinesCache = () => {};
+        let profileLinesPassRef = null;
+        let profileLinesDepthTexture = null;                               // <-- Depth texture from profile normal pass (avoids separate depth render)
         
         const profileLinesEnabled = profileLinesConfig
             && profileLinesConfig.RenderEffect__ProfileLines__Enabled === true;
         if (profileLinesEnabled) {
             const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, window.innerWidth, window.innerHeight, orbitTarget);
+            profileLines.pass.material.depthWrite = false;
+            profileLines.pass.material.depthTest  = false;
             composer.addPass(profileLines.pass);
             renderProfileNormals = profileLines.renderProfileNormals;
             setProfileLinesSize = profileLines.setSize;
+            invalidateProfileLinesCache = profileLines.invalidateSceneCache;
+            profileLinesPassRef = profileLines.pass;
+            profileLinesDepthTexture = profileLines.depthTexture;          // <-- Normal pass already writes depth; reuse it
         }
+
+        // DEPTH SOURCE | Use normal-pass depth when available, fall back to render target depth
+        const depthTexture = profileLinesDepthTexture || depthTextureFallback;
 
         // FOG PASS | Inserted after profile lines, before FXAA
         if (fogPass) {
+            fogPass.material.depthWrite = false;
+            fogPass.material.depthTest  = false;
             fogPass.uniforms['tDepth'].value = depthTexture; // <-- Wire depth texture into fog shader
             composer.addPass(fogPass);
         }
+
+        // Runtime toggle — profile lines ON/OFF; returns new state
+        let profileLinesRuntimeEnabled = true;
+        function toggleProfileLines() {
+            if (!profileLinesPassRef) return false;
+            profileLinesRuntimeEnabled = !profileLinesRuntimeEnabled;
+            profileLinesPassRef.enabled = profileLinesRuntimeEnabled;
+            return profileLinesRuntimeEnabled;
+        }
+
+        // Wrapped renderProfileNormals that respects the runtime toggle
+        const originalRenderProfileNormals = renderProfileNormals;
+        renderProfileNormals = () => {
+            if (!profileLinesRuntimeEnabled) return;
+            originalRenderProfileNormals();
+        };
         
         const fxaaPass = new ShaderPass(FXAAShader);
+        fxaaPass.material.depthWrite = false;
+        fxaaPass.material.depthTest  = false;
         fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
         fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
         composer.addPass(fxaaPass);
+
+        function setFxaaSize(w, h) {
+            const currentPixelRatio = renderer.getPixelRatio();
+            fxaaPass.material.uniforms['resolution'].value.x = 1 / (w * currentPixelRatio);
+            fxaaPass.material.uniforms['resolution'].value.y = 1 / (h * currentPixelRatio);
+        }
         
         return {
             composer,
             renderProfileNormals,
             setProfileLinesSize,
+            invalidateProfileLinesCache,
+            setFxaaSize,
+            toggleProfileLines,
             depthTexture
         };
     }

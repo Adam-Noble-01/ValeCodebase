@@ -68,6 +68,15 @@
     } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Render Loop Invalidation
+    // ------------------------------------------------------------
+    import {
+        Na__RenderLoop__RequestActiveRender,
+        Na__RenderLoop__StopActiveRender,
+        Na__RenderLoop__RequestRender
+    } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -122,6 +131,8 @@
             }
             Na__DoorProximity__SetEnabled(false);                              // <-- Disable door proximity triggers
             Na__WalkMode__Deactivate(Na__UiFeature__WalkMode__Controls);       // <-- Restore orbit camera state
+            Na__RenderLoop__StopActiveRender('walk-mode');
+            Na__RenderLoop__RequestRender();
 
             if (onDeactivate) onDeactivate();                                  // <-- Fire caller UI callback
         } else {
@@ -135,6 +146,7 @@
                     Na__WalkModeDesktop__Activate(Na__UiFeature__WalkMode__Renderer.domElement, walkConfig); // <-- Keyboard/mouse input
                 }
                 Na__DoorProximity__SetEnabled(true);                           // <-- Enable door proximity triggers
+                Na__RenderLoop__RequestActiveRender('walk-mode');
 
                 if (onActivate) onActivate();                                  // <-- Fire caller UI callback
             }

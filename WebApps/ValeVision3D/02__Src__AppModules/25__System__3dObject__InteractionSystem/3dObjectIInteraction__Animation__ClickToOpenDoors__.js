@@ -42,6 +42,11 @@
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Render Loop Invalidation
+    // ------------------------------------------------------------
+    import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -453,6 +458,8 @@
             console.log(`[DoorAnimation] Reversed mid-animation: "${doorRecord.adrName}"`);
 
         }
+
+        Na__RenderLoop__RequestRender();
     }
     // ------------------------------------------------------------
 
@@ -601,7 +608,22 @@
         rendererDomElement.addEventListener('pointerup',   Na__DoorAnim__OnPointerUp);    // <-- Pointer up
 
         Na__DoorAnim__Initialized = true;                                        // <-- Mark as initialized
+        Na__RenderLoop__RequestRender();
         console.log('[DoorAnimation] Door animation system initialized');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Check If Any Door Is Currently Animating
+    // ------------------------------------------------------------
+    function Na__DoorAnimation__HasActiveAnimations() {
+        if (!Na__DoorAnim__Initialized || Na__DoorAnim__DoorRegistry.size === 0) return false;
+        for (const [, doorRecord] of Na__DoorAnim__DoorRegistry) {
+            if (doorRecord.state === Na__DoorAnim__STATE_OPENING || doorRecord.state === Na__DoorAnim__STATE_CLOSING) {
+                return true;
+            }
+        }
+        return false;
     }
     // ------------------------------------------------------------
 
@@ -617,6 +639,7 @@
     export {
         Na__DoorAnimation__Initialize,                                           // <-- Initialize system
         Na__DoorAnimation__Update,                                               // <-- Per-frame update
+        Na__DoorAnimation__HasActiveAnimations,                                  // <-- Query active animations (for render loop)
         Na__DoorAnimation__ScanForDoors,                                         // <-- Re-scan scene graph
         Na__DoorAnim__DoorRegistry,                                              // <-- Door registry Map (for proximity system)
         Na__DoorAnim__ToggleDoor                                                 // <-- Toggle door open/close (for proximity system)

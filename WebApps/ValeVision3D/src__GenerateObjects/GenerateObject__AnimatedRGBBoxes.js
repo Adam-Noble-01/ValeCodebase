@@ -1,57 +1,88 @@
-// #Region ------------------------------------------------
-// GENERATE OBJECTS | Scatter and animate RGB boxes
-// --------------------------------------------------------
-const rgbBoxCount = 500;
-const rgbBoxes = [];
-const rgbBoxVelocities = [];
+import * as THREE from 'three';
 
-// RGB color values
-// ------------------------------------
-const rgbBoxColors = [
-    new BABYLON.Color3(1, 0, 0), // Red
-    new BABYLON.Color3(0, 1, 0), // Green
-    new BABYLON.Color3(0, 0, 1)  // Blue
-];
+// -----------------------------------------------------------------------------
+// REGION | Generate Objects - Animated RGB Boxes
+// -----------------------------------------------------------------------------
 
-for (let i = 0; i < rgbBoxCount; i++) {
-    const rgbBox = BABYLON.MeshBuilder.CreateBox("rgbBox" + i, { size: 0.2 }, scene);
-    rgbBox.position.x = (Math.random() - 0.5) * 10;
-    rgbBox.position.y = (Math.random() - 0.5) * 5 + 1;
-    rgbBox.position.z = (Math.random() - 0.5) * 10;
+    // FUNCTION | Create Animated RGB Boxes
+    // ------------------------------------------------------------
+    export function Na__GenerateObject__CreateAnimatedRGBBoxes(scene, options = {}) {
+        const count = Number.isFinite(options.count) ? options.count : 500;
+        const size = Number.isFinite(options.size) ? options.size : 0.2;
+        const boundsX = Number.isFinite(options.boundsX) ? options.boundsX : 5;
+        const boundsY = Number.isFinite(options.boundsY) ? options.boundsY : 3;
+        const boundsZ = Number.isFinite(options.boundsZ) ? options.boundsZ : 5;
+        const centerY = Number.isFinite(options.centerY) ? options.centerY : 1;
+        const speed = Number.isFinite(options.speed) ? options.speed : 0.05;
 
-    const rgbBoxMat = new BABYLON.StandardMaterial("rgbBoxMat" + i, scene);
-    const rgbBoxColorIndex = i % 3;
-    rgbBoxMat.diffuseColor = rgbBoxColors[rgbBoxColorIndex];
-    rgbBoxMat.emissiveColor = rgbBoxColors[rgbBoxColorIndex];
-    rgbBox.material = rgbBoxMat;
+        const boxGeometry = new THREE.BoxGeometry(size, size, size);
+        const rgbBoxes = [];
+        const rgbBoxVelocities = [];
+        const rgbBoxColours = [
+            new THREE.Color(1, 0, 0),
+            new THREE.Color(0, 1, 0),
+            new THREE.Color(0, 0, 1)
+        ];
 
-    // Random velocity
-    // ------------------------------------
-    rgbBoxVelocities.push(new BABYLON.Vector3(
-        (Math.random() - 0.5) * 0.05,
-        (Math.random() - 0.5) * 0.05,
-        (Math.random() - 0.5) * 0.05
-    ));
+        for (let i = 0; i < count; i++) {
+            const colour = rgbBoxColours[i % 3];
+            const rgbBoxMaterial = new THREE.MeshStandardMaterial({
+                color: colour,
+                emissive: colour
+            });
 
-    rgbBoxes.push(rgbBox);
-}
+            const rgbBox = new THREE.Mesh(boxGeometry, rgbBoxMaterial);
+            rgbBox.name = `rgbBox${i}`;
+            rgbBox.position.set(
+                (Math.random() - 0.5) * (boundsX * 2),
+                (Math.random() - 0.5) * (boundsY * 2) + centerY,
+                (Math.random() - 0.5) * (boundsZ * 2)
+            );
 
-// Animate boxes each frame
-// ------------------------------------
-scene.registerBeforeRender(() => {
-    for (let i = 0; i < rgbBoxCount; i++) {
-        const rgbBox = rgbBoxes[i];
-        const rgbBoxVel = rgbBoxVelocities[i];
+            scene.add(rgbBox);
+            rgbBoxes.push(rgbBox);
+            rgbBoxVelocities.push(
+                new THREE.Vector3(
+                    (Math.random() - 0.5) * speed,
+                    (Math.random() - 0.5) * speed,
+                    (Math.random() - 0.5) * speed
+                )
+            );
+        }
 
-        rgbBox.position.addInPlace(rgbBoxVel);
+        const Na__GenerateObject__UpdateAnimatedRGBBoxes = () => {
+            for (let i = 0; i < count; i++) {
+                const rgbBox = rgbBoxes[i];
+                const rgbBoxVelocity = rgbBoxVelocities[i];
 
-        // Bounce back when reaching the bounds
-        // ------------------------------------
-        if (Math.abs(rgbBox.position.x) > 5) rgbBoxVel.x *= -1;
-        if (Math.abs(rgbBox.position.y - 1) > 3) rgbBoxVel.y *= -1;
-        if (Math.abs(rgbBox.position.z) > 5) rgbBoxVel.z *= -1;
+                rgbBox.position.add(rgbBoxVelocity);
+
+                if (Math.abs(rgbBox.position.x) > boundsX) rgbBoxVelocity.x *= -1;
+                if (Math.abs(rgbBox.position.y - centerY) > boundsY) rgbBoxVelocity.y *= -1;
+                if (Math.abs(rgbBox.position.z) > boundsZ) rgbBoxVelocity.z *= -1;
+            }
+        };
+
+        if (typeof options.registerUpdate === 'function') {
+            options.registerUpdate(Na__GenerateObject__UpdateAnimatedRGBBoxes);
+        }
+
+        const Na__GenerateObject__DisposeAnimatedRGBBoxes = () => {
+            rgbBoxes.forEach((mesh) => {
+                scene.remove(mesh);
+                if (mesh.material) mesh.material.dispose();
+            });
+            boxGeometry.dispose();
+        };
+
+        return {
+            meshes: rgbBoxes,
+            velocities: rgbBoxVelocities,
+            update: Na__GenerateObject__UpdateAnimatedRGBBoxes,
+            dispose: Na__GenerateObject__DisposeAnimatedRGBBoxes
+        };
     }
-});
+    // ------------------------------------------------------------
 
-// #endregion ---------------------------------------------
+// endregion -------------------------------------------------------------------
 

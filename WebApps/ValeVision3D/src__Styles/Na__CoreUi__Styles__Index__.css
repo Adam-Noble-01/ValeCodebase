@@ -6,49 +6,49 @@
  * Import order matters: fonts → base → components
  * 
  * Author: Adam Noble - Noble Architecture
- * Project: ValeVision3D - Babylon.js Test Environment
+ * Project: ValeVision3D
  */
 /* ================================================================= */
 
 
 /* Custom Fonts - Open Sans from CDN */
 /* ----------------------------------------------------------------- */
-@import url('fonts.css');
+@import url('Na__CoreUi__Styles__Fonts__.css');
 
 
 /* Base Styles - Reset & Layout */
 /* ----------------------------------------------------------------- */
-@import url('base.css');
+@import url('Na__CoreUi__Styles__BaseLayout__.css');
 
 
-/* Canvas Styles - Babylon.js Rendering */
+/* Canvas Styles - Three.js Rendering */
 /* ----------------------------------------------------------------- */
-@import url('canvas.css');
+@import url('Na__CoreUi__Styles__RenderCanvas__.css');
 
 
 /* UI Components - Overlays & Indicators */
 /* ----------------------------------------------------------------- */
-@import url('ui-components.css');
+@import url('Na__UiFeature__Styles__DropdownAndToast__.css');
 
 
 /* Header Component - Vale Branding */
 /* ----------------------------------------------------------------- */
-@import url('header.css');
+@import url('Na__UiFeature__Styles__AppHeader__.css');
 
 
 /* Controls Instructions Panel - Navigation Help */
 /* ----------------------------------------------------------------- */
-@import url('controls-instructions-panel.css');
+@import url('Na__UiFeature__Styles__ControlsHelpPanel__.css');
 
 
 /* Loading Overlay - Scene Initialization Loader */
 /* ----------------------------------------------------------------- */
-@import url('loading-overlay.css');
+@import url('Na__UiFeature__Styles__LoadingOverlays__.css');
 
 
 /* Image Export Overlays - Safe Frame & Rule of Thirds Grid */
 /* ----------------------------------------------------------------- */
-@import url('image-export-overlays.css');
+@import url('Na__ImageExport__Styles__ViewportOverlays__.css');
 
 /* endregion -------------------------------------------------------- */
 

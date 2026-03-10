@@ -2,7 +2,7 @@
  * VALEVISION3D - PAGE LAYOUT SYSTEM STYLESHEET
  * =============================================================================
  *
- * FILE       : Na__PageLayoutSystem__Stylesheet__.css
+ * FILE       : Na__PageLayoutSystem__Styles__Main__.css
  * NAMESPACE  : ValeVision3D
  * MODULE     : Page Layout System Styles
  * AUTHOR     : Adam Noble - Noble Architecture
@@ -25,7 +25,7 @@
 
 /* Import Main App Header Styles */
 /* ----------------------------------------------------------------- */
-@import url('../src__Styles/header.css');
+@import url('../src__Styles/Na__UiFeature__Styles__AppHeader__.css');
 
 
 /* -----------------------------------------------------------------------------
@@ -44,7 +44,7 @@
         --Vale_AccentBlue                   : #336699;
         --Vale_ErrorRed                     : #d32f2f;
 
-        /* Layout Dimensions - Vale_HeaderHeight (60px) defined in header.css */
+        /* Layout Dimensions - Vale_HeaderHeight (60px) defined in app header stylesheet */
         --Vale_LayoutActionsBarHeight       : 48px;
 
         /* Typography */

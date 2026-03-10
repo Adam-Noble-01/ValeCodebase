@@ -394,15 +394,18 @@
     
     .project-card__image-container {
         position                           : relative;                     /* <-- Relative positioning for overlay */
-        margin-bottom                      : -3px;
+        z-index                            : 2;                            /* <-- Above card bg (+2) and text section (+1), ensures border renders on top */
         width                              : 100%;                         /* <-- Full card width */
         height                             : calc(300px * var(--Vale_UIScale));  /* <-- Fixed container height */
         background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
-        border-bottom                      : 1px solid #172b3a;            /* <-- Only bottom border, ValeDesignSuite heading/nav blue */
+        border-bottom                      : 1.0px solid #172b3a;            /* <-- Only bottom border, ValeDesignSuite heading/nav blue */
         border-left                        : none;                         /* <-- No left border */
         border-right                       : none;                         /* <-- No right border */
         border-top                         : none;                         /* <-- No top border */
         box-sizing                         : border-box;                   /* <-- Ensure padding/border are inside width/height */
+        padding-top                        : 5px;
+        padding-bottom                     : 5px;
+        margin-bottom                      : -5px;
     }
     
     .project-card__image {
@@ -415,6 +418,8 @@
     }
     
     .project-card__content {
+        position                           : relative;                     /* <-- Positioning context for z-index */
+        z-index                            : 1;                            /* <-- Above card bg, below image container */
         padding                            : var(--Vale_Spacing_Medium);   /* <-- Content padding */
         display                            : flex;                         /* <-- Flexbox layout */
         justify-content                    : space-between;                /* <-- Space between text and icons */

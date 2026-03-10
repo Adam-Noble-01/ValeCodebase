@@ -3,7 +3,7 @@
 
 **Status:** ✅ COMPLETED AND MIGRATED  
 **Migrated:** 14-Feb-2026  
-**New Location:** `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+**New Location:** `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
 
 ---
 
@@ -14,13 +14,13 @@ The door animation feature has been successfully moved from the test environment
 ### Main Application Files
 
 **Module:**
-- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
 
 **Documentation:**
-- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`
 
 **Configuration:**
-- `src__AppConfig/Na__AppConfig__Main.json` (DoorAnimation section)
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` (DoorAnimation section)
 
 **Integration:**
 - `index.html` (import, initialization, render loop update)
@@ -33,7 +33,7 @@ The test environment now imports the door animation module directly from the mai
 import {
     Na__DoorAnimation__Initialize,
     Na__DoorAnimation__Update
-} from '../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+} from '../02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
 ```
 
 This ensures:

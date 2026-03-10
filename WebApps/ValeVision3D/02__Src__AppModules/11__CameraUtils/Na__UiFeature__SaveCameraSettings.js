@@ -39,7 +39,7 @@
 
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
-    import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../src__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

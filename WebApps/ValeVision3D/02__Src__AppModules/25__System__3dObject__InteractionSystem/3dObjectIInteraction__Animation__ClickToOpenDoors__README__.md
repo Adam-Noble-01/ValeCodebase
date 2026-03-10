@@ -28,10 +28,10 @@
 ## Integration (Main Application)
 
 ### Module Location
-**File:** [`src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`](../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js)
+**File:** [`02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`](../02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js)
 
 ### Configuration
-**File:** [`src__AppConfig/Na__AppConfig__Main.json`](../src__AppConfig/Na__AppConfig__Main.json)
+**File:** [`02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`](../02__Src__AppModules/02__AppData/Na__AppConfig__Main.json)
 
 ```json
 {
@@ -55,7 +55,7 @@
 import {
     Na__DoorAnimation__Initialize,
     Na__DoorAnimation__Update
-} from './src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+} from './02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
 
 // After models load (find door groups)
 let doorMeshGroup = null;
@@ -304,8 +304,8 @@ Re-scans scene graph for door assemblies. Useful for dynamically loaded models.
 - `Na__TrueVision__GlbBuilder__Main__.rb` - TAG_RANGES configuration
 
 **ValeVision3D Application (JavaScript):**
-- `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` - Door animation module
-- `src__AppConfig/Na__AppConfig__Main.json` - Configuration
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` - Door animation module
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` - Configuration
 - `index.html` - Main application bootstrap
 
 **Test Environment:**

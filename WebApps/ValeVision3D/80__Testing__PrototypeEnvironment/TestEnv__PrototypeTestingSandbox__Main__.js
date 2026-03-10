@@ -33,10 +33,10 @@
 
     // MODULE VARIABLES | ValeVision3D Engine Imports (from parent project)
     // ------------------------------------------------------------
-    import { Na__DefaultNavmode__InitializeMouseControls } from './src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
-    import { Na__DefaultNavmode__InitializeIpadControls } from './src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
-    import { Na__RenderPipeline__SetupComposer } from './src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
-    import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
+    import { Na__DefaultNavmode__InitializeMouseControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
+    import { Na__DefaultNavmode__InitializeIpadControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
+    import { Na__RenderPipeline__SetupComposer } from './02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
+    import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
 
@@ -45,9 +45,9 @@
     import {
         Na__DoorAnimation__Initialize,
         Na__DoorAnimation__Update
-    } from '../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+    } from './02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     
-    import * as Na__StoreySystem from '../src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
+    import * as Na__StoreySystem from './02__Src__AppModules/26__System__ToggleModelElements/3dObject__ViewBuildingStoreys__SystemLogic__.js';
     // ------------------------------------------------------------
 
 
@@ -58,17 +58,17 @@
         Na__WalkMode__Update,
         Na__WalkMode__IsActive,
         Na__WalkMode__GetCapsulePosition
-    } from './src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
-    import { Na__DoorProximity__Update } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
-    import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
-    import { Na__UiFeature__InitializeWalkModeHotkey, Na__UiFeature__InitializeWalkModeToggleButton } from './src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
+    } from './02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
+    import { Na__DoorProximity__Update } from './02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
+    import { Na__UiFeature__InitializeWalkModeHotkey, Na__UiFeature__InitializeWalkModeToggleButton } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     // ------------------------------------------------------------
 
 
     // MODULE VARIABLES | Materials System Imports (from parent project)
     // ------------------------------------------------------------
-    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from '../src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
-    import { Na__MaterialsSystem__ApplyMaterials } from '../src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
+    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from './02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
+    import { Na__MaterialsSystem__ApplyMaterials } from './02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -350,7 +350,7 @@
 
     // MODULE INITIALIZATION | Walk Mode System
     // ------------------------------------------------------------
-    // @delegate: ./src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
     Na__UiFeature__InitializeWalkModeSystem(TestEnv__Scene, TestEnv__Camera, TestEnv__Renderer, TestEnv__Controls, TestEnv__Config__WalkMode, TestEnv__Device__UseTouchControls);
 
     // WALK MODE TOGGLE | With Test Environment UI Callbacks
@@ -371,7 +371,7 @@
     };
     // ------------------------------------------------------------
 
-    // @delegate: ./src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
     Na__UiFeature__InitializeWalkModeHotkey(TestEnv__WalkModeToggleFn);
     Na__UiFeature__InitializeWalkModeToggleButton('testEnvWalkModeToggle', TestEnv__WalkModeToggleFn);
 

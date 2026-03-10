@@ -37,7 +37,7 @@
     <!-- ----------------------------------------------------------------- -->
     
     <!-- Main Stylesheet Index (imports all component stylesheets) -->
-    <link rel="stylesheet" href="src__Styles/Na__CoreUi__Styles__Index__.css">
+    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
     
     <!-- endregion -------------------------------------------------------- -->
     
@@ -267,21 +267,21 @@
     // MODULE VARIABLES | Three.js Imports
     // ------------------------------------------------------------
     import * as THREE from 'three';
-    import { Na__DefaultNavmode__InitializeMouseControls } from './src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
-    import { Na__DefaultNavmode__InitializeIpadControls } from './src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
-    import { Na__AppConfig__LoadConfig } from './src__AppConfig/Na__AppConfig__Loader.js';
-    import { Na__UiFeature__InitializeCameraLensControls } from './src__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
-    import { Na__UiFeature__InitializeImageExportControls } from './src__ImageExport/Na__UiFeature__ImageExport__Controls.js';
-    import { Na__UiFeature__InitializeSaveCameraButton } from './src__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
-    import { Na__Math__ConvertMmToUnits } from './src__MathUtils/Na__Math__Units.js';
+    import { Na__DefaultNavmode__InitializeMouseControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
+    import { Na__DefaultNavmode__InitializeIpadControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
+    import { Na__AppConfig__LoadConfig } from './02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js';
+    import { Na__UiFeature__InitializeCameraLensControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
+    import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
+    import { Na__UiFeature__InitializeSaveCameraButton } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
+    import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     import {
         Na__Scene__CreateFogPass,
         Na__Scene__SetFogOrbitReference,
         Na__Scene__ApplyFogBackground
-    } from './src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
-    import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
-    import { Na__UiFeature__InitializeWalkModeHotkey } from './src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
-    import { Na__AppFlow__StartLoadingSequence } from './src__AppFlow/Na__AppFlow__LoadingSequence.js';
+    } from './02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
+    import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
+    import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
+    import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -416,7 +416,7 @@
     // MODULE VARIABLES | Scene Objects
     // ------------------------------------------------------------
     const Na__Scene__Main = new THREE.Scene();
-    // @delegate: ./src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
+    // @delegate: ./02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
     
     const Na__Camera__Main = new THREE.PerspectiveCamera(
         Na__Config__CameraConfig.Scene__Default__CameraConfig__Fov,
@@ -513,7 +513,7 @@
     const Na__ModelGroup__Root = new THREE.Group();
     Na__Scene__Main.add(Na__ModelGroup__Root);
     
-    // @delegate: ./src__AppFlow/Na__AppFlow__LoadingSequence.js            // <-- Na__LoadedModelGroups is internal to AppFlow
+    // @delegate: ./02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js            // <-- Na__LoadedModelGroups is internal to AppFlow
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -525,10 +525,10 @@
 
     // MODULE INITIALIZATION | Walk Mode System
     // ------------------------------------------------------------
-    // @delegate: ./src__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
     Na__UiFeature__InitializeWalkModeSystem(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__Config__WalkMode, Na__Device__UseTouchControls);
 
-    // @delegate: ./src__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
     Na__UiFeature__InitializeWalkModeHotkey(() => Na__UiFeature__ToggleWalkMode());
     // ------------------------------------------------------------
 
@@ -567,7 +567,7 @@
     Na__Controls__Orbit.target.copy(Na__Camera__InitialTarget);                 // <-- Initial fallback uses camera forward direction (not Dev cube)
     Na__Controls__Orbit.update();
     
-    // @delegate: ./src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
+    // @delegate: ./02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
     Na__Scene__ApplyFogBackground(Na__Scene__Main, Na__Config__FogConfig);
     const Na__SceneEffect__FogPass = Na__Scene__CreateFogPass(Na__Config__FogConfig);
     Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, Na__Controls__Orbit.target);
@@ -597,23 +597,23 @@
         Na__Config__ImageExport,
         Na__Config__PostProcessEffects
     );
-    // @delegate: ./src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js
+    // @delegate: ./02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js
     // ------------------------------------------------------------
 
 
-    // @delegate: ./src__AppFlow/Na__AppFlow__LoadingSequence.js
+    // @delegate: ./02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
 
 
-    // @delegate: ./src__AppUtils/Na__AppUtils__ProjectLoader.js
+    // @delegate: ./02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js
 
 
-    // @delegate: ./src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js
+    // @delegate: ./02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js
 
 
-    // @delegate: ./src__AppFlow/Na__AppFlow__LoadingSequence.js
+    // @delegate: ./02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
 
 
-    // @delegate: ./src__AppFlow/Na__AppFlow__LoadingSequence.js
+    // @delegate: ./02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js
 
 // endregion -------------------------------------------------------------------
 
@@ -659,7 +659,7 @@
     // ------------------------------------------------------------
 
 
-    // @delegate: ./src__CameraUtils/Na__UiFeature__SaveCameraSettings.js
+    // @delegate: ./02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js
 
 // endregion -------------------------------------------------------------------
 

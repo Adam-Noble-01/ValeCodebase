@@ -435,7 +435,7 @@
 
                         // Open the Page Layout System in a new browser tab
                         // ------------------------------------------------------------
-                        window.open('./src__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html', '_blank'); // <-- Open layout page
+                        window.open('./02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html', '_blank'); // <-- Open layout page
 
                         // HELPER | Dismiss overlay with success state
                         // ------------------------------------------------------------

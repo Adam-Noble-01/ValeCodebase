@@ -5,7 +5,7 @@
     // FUNCTION | Load App Config JSON
     // ------------------------------------------------------------
     async function Na__AppConfig__LoadConfig() {
-        const response = await fetch('./src__AppConfig/Na__AppConfig__Main.json');
+        const response = await fetch('./02__Src__AppModules/02__AppData/Na__AppConfig__Main.json');
         
         if (!response.ok) {
             throw new Error(`Na__AppConfig__LoadConfig failed: ${response.status} ${response.statusText}`);

@@ -2,6 +2,33 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.8  -  10-Mar-2026
+### Project Structure Alignment — TrueVision3D Numbered Layout
+
+**Overview**
+- Restructured ValeVision3D source folder layout to match TrueVision3D numbered band taxonomy for consistency across ValeDesignSuite projects.
+- Moved flat `src__*` folders into `02__Src__AppModules/` with numbered bands; styles, distribution, and testing helpers relocated to their designated bands.
+- Updated imports, config fetch paths, and cross-file references throughout the codebase.
+- Browser-tested via Whitecardopedia localhost with random project; viewer boot, model loading, navigation, export, and Layout View handoff all verified.
+
+**Folder Mapping (Numbered Bands)**
+- `01__AppCore`, `02__AppData`, `03__AppUtils`, `04__MathUtils`, `05__RenderPipeline`
+- `06__Scene__LightingEffects`, `07__Scene__EnvironmentEffects`
+- `10__NavigationAndCameras`, `11__CameraUtils`
+- `15__ModelLoader`
+- `20__System__MaterialsSystem`, `25__System__3dObject__InteractionSystem`, `26__System__ToggleModelElements`
+- `30__System__ImageExport`, `35__System__PageLayoutSystem`
+- `03__Style__AppStylesheets`, `60__DistributionEmails`
+- `79__Testing__GenerateObjects`, `80__Testing__PrototypeEnvironment`
+
+**Key Files Updated**
+- `index.html` — script/style import paths
+- `Na__AppConfig__Loader.js` — config fetch path
+- `Na__AppFlow__LoadingSequence.js` and runtime modules — module import paths
+- `Na__UiFeature__ImageExport__Controls.js` — layout page path
+- Page layout subtree and prototype sandbox HTML/JS/config — relative paths
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.7  -  27-Feb-2026
 ### Stylesheet Naming Standardization 
 

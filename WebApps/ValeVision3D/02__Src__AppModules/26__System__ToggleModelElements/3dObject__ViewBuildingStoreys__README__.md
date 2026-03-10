@@ -34,7 +34,7 @@ The Building Storey Visibility System enables per-storey visibility control for 
 
 **3. ValeVision3D Integration:**
 ```javascript
-import * as Na__StoreySystem from './src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
+import * as Na__StoreySystem from './3dObject__ViewBuildingStoreys__SystemLogic__.js';
 
 // After models are loaded
 const hasStoreys = Na__StoreySystem__DetectStoreys(modelGroupRoot);
@@ -53,7 +53,7 @@ if (hasStoreys) {
 ## Integration Guide
 
 ### Module Location
-**File:** [`src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js`](./3dObject__ViewBuildingStoreys__SystemLogic__.js)
+**File:** [`02__Src__AppModules/26__System__ToggleModelElements/3dObject__ViewBuildingStoreys__SystemLogic__.js`](./3dObject__ViewBuildingStoreys__SystemLogic__.js)
 
 ### Configuration
 
@@ -72,7 +72,7 @@ Na__StoreySystem__Initialize(modelGroupRoot, config);
 
 ```javascript
 // 1. Import module
-import * as Na__StoreySystem from './src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
+import * as Na__StoreySystem from './3dObject__ViewBuildingStoreys__SystemLogic__.js';
 
 // 2. After GLB models load
 Na__StoreySystem__DetectStoreys(sceneModelGroup);
@@ -100,7 +100,7 @@ if (state.hasStoreys) {
 
 ```javascript
 // Import
-import * as Na__StoreySystem from '../src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
+import * as Na__StoreySystem from '../3dObject__ViewBuildingStoreys__SystemLogic__.js';
 
 // After models load
 Na__StoreySystem__DetectStoreys(TestEnv__ModelGroup__Root);
@@ -247,7 +247,7 @@ Models with **"Roof"** substring in name are automatically classified as roof mo
 ## Example: Full Integration
 
 ```javascript
-import * as Na__StoreySystem from './src__3dObject__ViewBuildingStoreysSystem/3dObject__ViewBuildingStoreys__SystemLogic__.js';
+import * as Na__StoreySystem from './3dObject__ViewBuildingStoreys__SystemLogic__.js';
 
 // After models load
 async function onModelsLoaded(modelGroupRoot) {
@@ -521,5 +521,5 @@ function syncUI() {
 ## References
 
 - **SketchUp GLB Builder**: [`Na__TrueVision__GlbBuilder__Doc__ReadMe__.md`](../../../../../../Users/Administrator/AppData/Roaming/SketchUp/SketchUp%202026/SketchUp/Plugins/Na__TrueVision__WhitecardModel__GlbBuilderUtility__Modules__/Na__TrueVision__GlbBuilder__Doc__ReadMe__.md)
-- **Door Animation System**: [`src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`](../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md)
+- **Door Animation System**: [`02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`](../25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md)
 - **Test Environment**: [`80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js`](../80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js)

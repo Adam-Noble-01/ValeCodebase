@@ -65,7 +65,7 @@
     import {
         Na__DoorProximity__Initialize,
         Na__DoorProximity__SetEnabled
-    } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

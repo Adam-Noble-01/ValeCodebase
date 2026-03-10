@@ -18,9 +18,9 @@ It also pinpoints where profile-line (Sobel/normal-edge) output and camera proje
 
 ### Configuration Layer
 
-- `src__AppConfig/Na__AppConfig__Loader.js`
-  - Loads JSON config from `src__AppConfig/Na__AppConfig__Main.json`.
-- `src__AppConfig/Na__AppConfig__Main.json`
+- `02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js`
+  - Loads JSON config from `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`.
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
   - Source-of-truth for:
     - scene/camera defaults
     - model/material config
@@ -31,54 +31,54 @@ It also pinpoints where profile-line (Sobel/normal-edge) output and camera proje
 
 ### Core 3D Runtime
 
-- `src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js`
   - Builds `EffectComposer`, `RenderPass`, optional ProfileLines `ShaderPass`, and FXAA pass.
   - Returns `{ composer, renderProfileNormals, setProfileLinesSize }`.
-- `src__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
   - Builds Sobel-like normal-edge pass.
   - Creates separate normal render target.
   - Exposes `renderProfileNormals()` and size sync helper.
 
 ### Scene Navigation and Camera Tools
 
-- `src__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js`
-- `src__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js`
   - Orbit + movement controls, mm->units normalized behavior.
-- `src__CameraUtils/Na__UiFeature__CameraLens__Controls.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js`
   - Lens mm slider <-> camera FOV conversion.
-- `src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js`
   - Export/import camera JSON (position/rotation/FOV).
 
 ### Model Loading and Layering
 
-- `src__ModelLoader/Na__ModelLoader__MultiModel.js`
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
   - Parses and classifies model URLs.
   - Loads mesh + linework pairs per category.
   - Applies render/material settings, line conversions, and ordering.
 
 ### Export System and Bridge to Layout
 
-- `src__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
   - Render-to-image flow used by both Export Now and Layout View.
   - Performs temporary custom resolution/aspect render path.
   - Stores payload in `window.__Na__PageLayout__PendingImage` and opens layout tab.
-- `src__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js`
   - Optional canvas post-filters (levels, high-pass sharpen) after renderer/composer output.
-- `src__ImageExport/Na__UiFeature__ImageExport__ViewportOverlays.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__ViewportOverlays.js`
   - Safe-frame and rule-of-thirds viewport overlays for export framing.
 
 ### PageLayoutSystem (2D Composition)
 
-- `src__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html`
   - Standalone tab app shell and module boot.
-- `src__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
   - Reads pending image from opener, initializes state, loads title block.
-- `src__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js`
   - 2D canvas renderer for A3 page + title block + viewport image.
-- `src__PageLayoutSystem/Na__PageLayoutSystem__2dNavigationControls__.js`
-- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js`
-- `src__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
-- `src__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__2dNavigationControls__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
 
 ---
 
@@ -218,4 +218,44 @@ If any step is skipped or out of order, profile-line projection mismatch can app
 - Layout receives a bitmap snapshot, not live 3D state.
 - Sobel/profile-lines correctness in layout is entirely dependent on export capture sequencing in the main viewer.
 - The critical failure surface is camera/projection and profile-normal buffer synchronization during temporary export resize/render.
+
+---
+
+## 9) Structure Alignment Verification Checklist
+
+Use this checklist after any future folder, module, or path restructure:
+
+### Main Viewer Boot
+
+1. Open `index.html` and confirm the main stylesheet loads from `03__Style__AppStylesheets`.
+2. Confirm the HTML import map still resolves bare `three` imports.
+3. Confirm `Na__AppConfig__LoadConfig()` fetches `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`.
+4. Confirm scene boot reaches `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` without missing-module errors.
+
+### Core Runtime
+
+1. Confirm default scene lighting and fog modules load from `06__Scene__LightingEffects` and `07__Scene__EnvironmentEffects`.
+2. Confirm navigation and camera controls load from `10__NavigationAndCameras` and `11__CameraUtils`.
+3. Confirm model loading and materials system resolve from `15__ModelLoader` and `20__System__MaterialsSystem`.
+4. Confirm walk mode, door interaction, and storey/model toggle clusters resolve from `25__` and `26__`.
+
+### Export And Layout
+
+1. Trigger `Export Now` and confirm the render path completes without missing post-process modules.
+2. Trigger `Layout View` and confirm `window.open()` resolves `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Layout__.html`.
+3. Confirm the layout page loads its own CSS, title block PNG, and vendored `jspdf.umd.js`.
+4. Confirm the layout page still reaches shared assets outside the app root using the deeper relative paths.
+
+### Prototype Sandbox
+
+1. Open `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__DomAndLayout.html`.
+2. Confirm the sandbox still loads shared CSS from `03__Style__AppStylesheets`.
+3. Confirm the sandbox JS entrypoint resolves the moved engine modules under `02__Src__AppModules`.
+4. Confirm the sandbox materials library path resolves `02__Src__AppModules/02__AppData/Na__AppConfig__MaterialsLibrary.json`.
+
+### Documentation And Rules
+
+1. Confirm `DEPENDENCY_CHART.md` reflects the numbered module tree.
+2. Confirm `Na__Architecture__ProjectStructure__PipelineMap__.md` references the current runtime paths.
+3. Confirm `.cursor` rules that mention AppConfig and unit conversion point at the new locations.
 

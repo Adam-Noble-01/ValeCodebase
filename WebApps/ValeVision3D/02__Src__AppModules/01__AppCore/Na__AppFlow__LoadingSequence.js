@@ -54,7 +54,7 @@
 
     // MODULE IMPORTS | Render Pipeline
     // ------------------------------------------------------------
-    import { Na__RenderPipeline__SetupComposer } from '../src__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
+    import { Na__RenderPipeline__SetupComposer } from '../05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Model Loader
@@ -63,12 +63,12 @@
         Na__ModelLoader__LoadAllModels,
         Na__ModelLoader__SeparateOrbitCubeUrl,
         Na__ModelLoader__LoadOrbitHelperCube
-    } from '../src__ModelLoader/Na__ModelLoader__MultiModel.js';
+    } from '../15__ModelLoader/Na__ModelLoader__MultiModel.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Scene Lighting
     // ------------------------------------------------------------
-    import { Na__Scene__SetupDefaultSceneLighting } from '../src__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
+    import { Na__Scene__SetupDefaultSceneLighting } from '../06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Fog Effect
@@ -76,28 +76,28 @@
     import {
         Na__Scene__SetFogOrbitReference,
         Na__Scene__UpdateFogPassUniforms
-    } from '../src__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
+    } from '../07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Math Utils
     // ------------------------------------------------------------
-    import { Na__Math__ConvertMmToUnits } from '../src__MathUtils/Na__Math__Units.js';
+    import { Na__Math__ConvertMmToUnits } from '../04__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Camera Controls
     // ------------------------------------------------------------
-    import { Na__UiFeature__ApplyCameraConfig } from '../src__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
+    import { Na__UiFeature__ApplyCameraConfig } from '../11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Materials System
     // ------------------------------------------------------------
-    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from '../src__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
-    import { Na__MaterialsSystem__ApplyMaterials } from '../src__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
+    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from '../20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
+    import { Na__MaterialsSystem__ApplyMaterials } from '../20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Model Toggle Controls
     // ------------------------------------------------------------
-    import { Na__UiFeature__InitializeModelToggleControls } from '../src__ModelToggle/Na__UiFeature__ModelToggle__Controls.js';
+    import { Na__UiFeature__InitializeModelToggleControls } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Door Animation System
@@ -105,7 +105,7 @@
     import {
         Na__DoorAnimation__Initialize,
         Na__DoorAnimation__Update
-    } from '../src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+    } from '../25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Walk Mode System
@@ -115,12 +115,12 @@
         Na__WalkMode__Update,
         Na__WalkMode__SetCollisionMeshes,
         Na__WalkMode__GetCapsulePosition
-    } from '../src__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
+    } from '../10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Door Proximity System
     // ------------------------------------------------------------
-    import { Na__DoorProximity__Update } from '../src__3dObject__InteractionsSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    import { Na__DoorProximity__Update } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Project Loader Utilities
@@ -129,7 +129,7 @@
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__FetchProjectJson,
         Na__AppUtils__ExtractModelUrls
-    } from '../src__AppUtils/Na__AppUtils__ProjectLoader.js';
+    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

@@ -49,7 +49,7 @@
         },
         "RenderConfig__Linework": {
             "RenderConfig__Linework__EdgeColor": 1315860,
-            "RenderConfig__Linework__LineWidth": 0.9,
+            "RenderConfig__Linework__LineWidth": 1.2,
             "RenderConfig__Linework__PolygonOffsetFactor": -4,
             "RenderConfig__Linework__PolygonOffsetUnits": -4,
             "RenderConfig__Linework__RenderOrder": 999,
@@ -62,7 +62,11 @@
         "RenderEffect__ProfileLines__EdgeColor": 4210752,
         "RenderEffect__ProfileLines__EdgeThresholdNormal": 0.2,
         "RenderEffect__ProfileLines__EdgeThresholdDepth": 0.002,
-        "RenderEffect__ProfileLines__EdgeWidth": 0.5
+        "RenderEffect__ProfileLines__EdgeWidth": 0.25,
+        "RenderEffect__ProfileLines__EdgeWidthMin": 0.20,
+        "RenderEffect__ProfileLines__EdgeWidthMax": 0.60,
+        "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
+        "RenderEffect__ProfileLines__EdgeWidthDistanceFar": 80.0
     },
     "Global__Hotkeys": {
         "Global__Hotkeys__Description": "Global keyboard shortcuts. Modifier keys joined with '+'. Evaluated in keydown handlers.",

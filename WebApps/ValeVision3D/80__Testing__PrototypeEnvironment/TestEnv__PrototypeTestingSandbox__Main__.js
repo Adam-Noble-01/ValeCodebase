@@ -37,6 +37,11 @@
     import { Na__DefaultNavmode__InitializeIpadControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
     import { Na__RenderPipeline__SetupComposer } from './02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
+    import {
+        Na__ModelLoader__UpgradeLineworkRoot,
+        Na__ModelLoader__ApplyProfileLineColoursToMeshRoot,
+        Na__ModelLoader__ParseModelUrl
+    } from './02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js';
     // ------------------------------------------------------------
 
 
@@ -688,6 +693,13 @@
 
             const model = gltf.scene;
             model.name = filename.replace('.glb', '').replace('.GLB', '');    // <-- Name from filename
+            model.userData.Na__SourceFilename = filename;                      // <-- Preserve original filename for profile-colour pairing
+
+            Na__ModelLoader__UpgradeLineworkRoot(
+                model,
+                TestEnv__Config__Models.RenderConfig__Linework,
+                TestEnv__LineResolution
+            );                                                                // <-- Align sandbox linework with main viewer conversion path
 
             // Apply shadows to all meshes
             model.traverse((child) => {
@@ -733,6 +745,42 @@
         }
 
         return results;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Apply Profile-Line Colour Metadata Across Loaded GLB Pairs
+    // ------------------------------------------------------------
+    function TestEnv__ApplyProfileLineColoursAcrossLoadedModels() {
+        const categoryPairs = new Map();                                     // <-- { categoryKey => { meshRoot, lineworkRoot } }
+
+        for (const child of TestEnv__ModelGroup__Root.children) {
+            const sourceFilename = child.userData && child.userData.Na__SourceFilename
+                ? child.userData.Na__SourceFilename
+                : `${child.name}.glb`;
+            const parsed = Na__ModelLoader__ParseModelUrl(sourceFilename);
+            if (!parsed) continue;                                            // <-- Skip non-standard helper assets
+
+            if (!categoryPairs.has(parsed.category)) {
+                categoryPairs.set(parsed.category, {
+                    meshRoot     : null,
+                    lineworkRoot : null
+                });
+            }
+
+            const pairRecord = categoryPairs.get(parsed.category);
+            if (parsed.modelType === 'MeshModel') {
+                pairRecord.meshRoot = child;                                  // <-- Register mesh root for this category
+            } else if (parsed.modelType === 'LineworkModel') {
+                pairRecord.lineworkRoot = child;                              // <-- Register linework root for this category
+            }
+        }
+
+        categoryPairs.forEach((pairRecord) => {
+            if (pairRecord.meshRoot && pairRecord.lineworkRoot) {
+                Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(pairRecord.meshRoot, pairRecord.lineworkRoot);
+            }
+        });
     }
     // ------------------------------------------------------------
 
@@ -1521,13 +1569,16 @@
             TestEnv__Renderer,
             TestEnv__Scene,
             TestEnv__Camera,
-            TestEnv__Config__ProfileLines
+            TestEnv__Config__ProfileLines,
+            null,                                                               // <-- No fog pass in test env
+            TestEnv__Controls.target                                            // <-- Orbit target for dynamic edge width
         );
         TestEnv__RenderComposer = TestEnv__RenderPipelineState.composer;
 
         // LOAD ALL GLB FILES FROM LOCAL FOLDER
         try {
             const glbResults = await TestEnv__LoadAllGlbFiles();             // <-- Load all local GLBs
+            TestEnv__ApplyProfileLineColoursAcrossLoadedModels();            // <-- Align sandbox profile-colour metadata with paired linework models
 
             // APPLY PBR MATERIALS FROM LIBRARY (second pass - selective override)
             if (TestEnv__Config__MaterialsSystem.MaterialsSystem__Config__Enabled && glbResults.length > 0) {

@@ -2,6 +2,36 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v1.9.9  -  10-Mar-2026
+### Profile Lines — Dynamic Edge Width, Smooth Threshold, Config Alignment
+
+**Overview**
+- Profile line edge width now scales dynamically with camera distance to the orbit target: thicker when zoomed in, thinner when zoomed out (reduces clustering on detailed items).
+- Replaced hard threshold cutoff with `smoothstep` blending so transitions are gradual instead of abrupt.
+- Aligned main app `Na__AppConfig__Main.json` profile lines with the tuned test environment values.
+
+**Dynamic Edge Width**
+- Added four config keys: `EdgeWidthMin`, `EdgeWidthMax`, `EdgeWidthDistanceNear`, `EdgeWidthDistanceFar`.
+- `u_edgeWidth` uniform updated per-frame inside `renderProfileNormals()` using `camera.position.distanceTo(orbitTarget)`.
+- Lerp: far distance = min width (thin), near distance = max width (thick).
+- `orbitTarget` passed from `Na__AppFlow__LoadingSequence` via `Na__RenderPipeline__SetupComposer` into `Na__RenderEffect__ProfileLines__Create`.
+
+**Smooth Threshold**
+- Fragment shader now uses `smoothstep` instead of `if (edge > threshold)` for profile-line blending.
+- Softness zone = half the threshold value on each side; transitions are smoother.
+
+**Config Alignment**
+- `Na__AppConfig__Main.json` profile lines: `EdgeWidth` 0.4→0.25, `EdgeWidthMin` 0.25→0.20, `EdgeWidthMax` 1.5→0.60, `DistanceNear` 2.0→1.0, `DistanceFar` 40.0→80.0.
+
+**Key Files**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js`
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json`
+
+# ---------------------------------------------------------
 ## ValeVision3D v1.9.8  -  10-Mar-2026
 ### Project Structure Alignment — TrueVision3D Numbered Layout
 

@@ -57,11 +57,15 @@
     },
     "RenderEffect__ProfileLines": {
         "RenderEffect__ProfileLines__Description"        : "Profile lines render silhouette edges around curved/rounded geometry, similar to SketchUp profile lines.",
-        "RenderEffect__ProfileLines__Enabled"           : true,
-        "RenderEffect__ProfileLines__EdgeColor"          : 4210752,
-        "RenderEffect__ProfileLines__EdgeThresholdNormal": 0.2,
-        "RenderEffect__ProfileLines__EdgeThresholdDepth" : 0.002,
-        "RenderEffect__ProfileLines__EdgeWidth"          : 0.4
+        "RenderEffect__ProfileLines__Enabled"              : true,
+        "RenderEffect__ProfileLines__EdgeColor"            : 4210752,
+        "RenderEffect__ProfileLines__EdgeThresholdNormal"  : 0.2,
+        "RenderEffect__ProfileLines__EdgeThresholdDepth"   : 0.002,
+        "RenderEffect__ProfileLines__EdgeWidth"            : 0.25,
+        "RenderEffect__ProfileLines__EdgeWidthMin"         : 0.20,
+        "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.60,
+        "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
+        "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0
     },
     "cameraLens": {
         "minFocalLengthMM": 24,

@@ -15,7 +15,7 @@
 
     // FUNCTION | Setup Post Processing Composer
     // ------------------------------------------------------------
-    function Na__RenderPipeline__SetupComposer(renderer, scene, camera, profileLinesConfig, fogPass) {
+    function Na__RenderPipeline__SetupComposer(renderer, scene, camera, profileLinesConfig, fogPass, orbitTarget) {
         const pixelRatio = renderer.getPixelRatio();
         const width      = window.innerWidth * pixelRatio;
         const height     = window.innerHeight * pixelRatio;
@@ -41,7 +41,7 @@
         const profileLinesEnabled = profileLinesConfig
             && profileLinesConfig.RenderEffect__ProfileLines__Enabled === true;
         if (profileLinesEnabled) {
-            const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, window.innerWidth, window.innerHeight);
+            const profileLines = Na__RenderEffect__ProfileLines__Create(renderer, scene, camera, profileLinesConfig, window.innerWidth, window.innerHeight, orbitTarget);
             composer.addPass(profileLines.pass);
             renderProfileNormals = profileLines.renderProfileNormals;
             setProfileLinesSize = profileLines.setSize;

@@ -274,30 +274,213 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Load Single Linework GLB (Fat Lines)
+    // HELPER FUNCTION | Extract Imported Line Vertex Colours
     // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadSingleLinework(modelUrl, lineworkConfig, loader, lineResolution) {
-        const gltf         = await loader.loadAsync(modelUrl);           // <-- Load GLB file
-        const lineworkRoot = gltf.scene;                                 // <-- Extract scene graph
-        const nodesToReplace = [];                                       // <-- Collect line nodes for replacement
+    function Na__ModelLoader__ExtractLineColors(geometry) {
+        const colorAttribute = geometry && geometry.getAttribute ? geometry.getAttribute('color') : null;
+        if (!colorAttribute || colorAttribute.itemSize < 3) {
+            return null;                                                     // <-- No usable imported line colours
+        }
 
+        const lineColors = [];
+        const tempColor  = new THREE.Color();
+
+        for (let vertexIndex = 0; vertexIndex < colorAttribute.count; vertexIndex++) {
+            tempColor.fromBufferAttribute(colorAttribute, vertexIndex);      // <-- Reads RGB, safely ignoring alpha if present
+            lineColors.push(tempColor.r, tempColor.g, tempColor.b);
+        }
+
+        return lineColors;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Quantized Colour Key
+    // ------------------------------------------------------------
+    function Na__ModelLoader__BuildColorKey(colorTriplet) {
+        if (!Array.isArray(colorTriplet) || colorTriplet.length < 3) {
+            return null;                                                     // <-- Guard against invalid colour triplets
+        }
+
+        const r = Math.round(THREE.MathUtils.clamp(colorTriplet[0], 0, 1) * 255);
+        const g = Math.round(THREE.MathUtils.clamp(colorTriplet[1], 0, 1) * 255);
+        const b = Math.round(THREE.MathUtils.clamp(colorTriplet[2], 0, 1) * 255);
+        return `${r}_${g}_${b}`;                                             // <-- Stable RGB key for vote maps
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Register Colour Vote
+    // ------------------------------------------------------------
+    function Na__ModelLoader__RegisterColorVote(voteMap, colorTriplet, weight = 1) {
+        const colorKey = Na__ModelLoader__BuildColorKey(colorTriplet);
+        if (!colorKey) return;                                               // <-- Ignore invalid colours
+
+        const existingVote = voteMap.get(colorKey);
+        if (existingVote) {
+            existingVote.weight += weight;                                   // <-- Accumulate weight for repeated colours
+            return;
+        }
+
+        voteMap.set(colorKey, {
+            color  : [colorTriplet[0], colorTriplet[1], colorTriplet[2]],    // <-- Store normalized RGB triplet
+            weight : weight
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Dominant Colour from Vote Map
+    // ------------------------------------------------------------
+    function Na__ModelLoader__ResolveDominantColor(voteMap) {
+        let dominantVote = null;
+
+        voteMap.forEach((vote) => {
+            if (!dominantVote || vote.weight > dominantVote.weight) {
+                dominantVote = vote;                                          // <-- Track strongest vote
+            }
+        });
+
+        return dominantVote ? [...dominantVote.color] : null;                 // <-- Return detached RGB triplet
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Dominant Imported Line Colour
+    // ------------------------------------------------------------
+    function Na__ModelLoader__ResolveDominantImportedLineColor(importedColors) {
+        if (!Array.isArray(importedColors) || importedColors.length < 3) {
+            return null;                                                      // <-- No imported colours to resolve
+        }
+
+        const colorVotes = new Map();
+        for (let colorIndex = 0; colorIndex < importedColors.length; colorIndex += 3) {
+            Na__ModelLoader__RegisterColorVote(colorVotes, [
+                importedColors[colorIndex],
+                importedColors[colorIndex + 1],
+                importedColors[colorIndex + 2]
+            ]);
+        }
+
+        return Na__ModelLoader__ResolveDominantColor(colorVotes);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Find Colour by Exact or Prefix Name Match
+    // ------------------------------------------------------------
+    // Exact match first; otherwise longest prefix match (e.g. linework "CubeInstance1"
+    // preferred over "Cube" when mesh is "CubeInstance1").
+    // ------------------------------------------------------------
+    function Na__ModelLoader__FindColorByName(objectName, colorByName) {
+        if (!objectName || typeof objectName !== 'string') return null;
+
+        if (colorByName[objectName]) {
+            return colorByName[objectName];                                   // <-- Exact match
+        }
+
+        let bestMatch = null;
+        let bestLength = 0;
+        for (const key of Object.keys(colorByName)) {
+            if (!key) continue;
+            const objectStartsKey = objectName.startsWith(key);
+            const keyStartsObject = key.startsWith(objectName);
+            if (objectStartsKey || keyStartsObject) {
+                const matchLen = Math.min(key.length, objectName.length);
+                if (matchLen > bestLength) {
+                    bestLength = matchLen;
+                    bestMatch = colorByName[key];
+                }
+            }
+        }
+        return bestMatch;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Profile Colour from Named Context
+    // ------------------------------------------------------------
+    function Na__ModelLoader__ResolveProfileColorForObject(object, colorByName, rootColor) {
+        let current = object;
+
+        while (current) {
+            const matchedColor = current.name ? Na__ModelLoader__FindColorByName(current.name, colorByName) : null;
+            if (matchedColor) {
+                return [...matchedColor];                                    // <-- Prefer nearest named colour match (exact or prefix)
+            }
+            current = current.parent;
+        }
+
+        return rootColor ? [...rootColor] : null;                             // <-- Fall back to linework root colour
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Apply Profile Line Colours to Mesh Root
+    // ------------------------------------------------------------
+    function Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(meshRoot, lineworkRoot) {
+        if (!meshRoot || !lineworkRoot) {
+            return meshRoot;                                                  // <-- Need both roots to build profile-colour mapping
+        }
+
+        const colorByName = lineworkRoot.userData.Na__ProfileLineColorByName || {};
+        const rootColor   = lineworkRoot.userData.Na__ProfileLineColorDominant || null;
+        if (!rootColor && Object.keys(colorByName).length === 0) {
+            return meshRoot;                                                  // <-- No usable linework colours to propagate
+        }
+
+        meshRoot.userData.Na__ProfileLineColorDominant = rootColor ? [...rootColor] : null;
+        if (rootColor) {
+            meshRoot.userData.Na__ProfileLineColor = [...rootColor];           // <-- Set on root so child meshes inherit when no name match
+        }
+
+        meshRoot.traverse((node) => {
+            if (!node.isMesh) return;                                         // <-- Profile colour is only needed on mesh objects
+
+            const resolvedColor = Na__ModelLoader__ResolveProfileColorForObject(node, colorByName, rootColor);
+            if (resolvedColor) {
+                node.userData.Na__ProfileLineColor = resolvedColor;            // <-- Store per-mesh dominant colour for profile prepass
+            }
+        });
+
+        return meshRoot;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Upgrade Imported Linework Root to Fat Lines
+    // ------------------------------------------------------------
+    function Na__ModelLoader__UpgradeLineworkRoot(lineworkRoot, lineworkConfig, lineResolution) {
+        if (!lineworkRoot) {
+            return lineworkRoot;                                              // <-- Guard against invalid scene roots
+        }
+
+        const nodesToReplace = [];                                            // <-- Collect line nodes for replacement
+        const rootColorVotes = new Map();                                     // <-- Dominant colour votes for whole linework root
+        const colorVotesByName = new Map();                                   // <-- Dominant colour votes keyed by line object name
         lineworkRoot.traverse((node) => {
             if (node.isLineSegments || node.isLine) {
-                nodesToReplace.push(node);                               // <-- Queue for fat-line replacement
+                nodesToReplace.push(node);                                    // <-- Queue for fat-line replacement
             }
         });
 
         nodesToReplace.forEach((node) => {
-            const positions = node.geometry.attributes.position.array;   // <-- Get vertex positions
+            const positions = node.geometry.attributes.position.array;         // <-- Get vertex positions
+            const importedColors = Na__ModelLoader__ExtractLineColors(node.geometry);   // <-- Preserve exported SketchUp edge colours when present
+            const dominantLineColor = Na__ModelLoader__ResolveDominantImportedLineColor(importedColors);
 
             const fatLineGeometry = new LineSegmentsGeometry();
-            fatLineGeometry.setPositions(positions);                     // <-- Set line segment positions
+            fatLineGeometry.setPositions(positions);                           // <-- Set line segment positions
+            if (importedColors) {
+                fatLineGeometry.setColors(importedColors);                     // <-- Carry glTF COLOR_0 into fat-line geometry
+            }
 
             const fatLineMaterial = new LineMaterial({
-                color               : lineworkConfig.RenderConfig__Linework__EdgeColor,          // <-- Line color from config
+                color               : importedColors ? 0xffffff : lineworkConfig.RenderConfig__Linework__EdgeColor,  // <-- Imported colours use white multiplier; config colour is fallback
                 linewidth           : lineworkConfig.RenderConfig__Linework__LineWidth,          // <-- Line width from config
                 resolution          : lineResolution,                                            // <-- Screen resolution for line width
                 worldUnits          : false,                                                     // <-- Screen-space line width
+                vertexColors        : !!importedColors,                                          // <-- Enable per-vertex colours when exported linework provides them
                 depthTest           : true,                                                      // <-- Enable depth testing
                 depthWrite          : true,                                                      // <-- Enable depth writing
                 polygonOffset       : true,                                                      // <-- Enable polygon offset
@@ -307,8 +490,8 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 
             // DEPTH BIAS | Pull line fragments forward when logarithmic depth buffer is used
             // ------------------------------------------------------------
-            const depthBias = (lineworkConfig.RenderConfig__Linework__DepthBias != null) 
-                ? lineworkConfig.RenderConfig__Linework__DepthBias 
+            const depthBias = (lineworkConfig.RenderConfig__Linework__DepthBias != null)
+                ? lineworkConfig.RenderConfig__Linework__DepthBias
                 : 0.00015;
             fatLineMaterial.onBeforeCompile = (shader) => {
                 shader.fragmentShader = shader.fragmentShader.replace(
@@ -322,28 +505,60 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
             // ------------------------------------------------------------
 
             const fatLineSegment = new LineSegments2(fatLineGeometry, fatLineMaterial);
-            fatLineSegment.computeLineDistances();                                       // <-- Compute for proper rendering
-            fatLineSegment.frustumCulled = false;                                        // <-- Always render (no culling)
+            fatLineSegment.computeLineDistances();                             // <-- Compute for proper rendering
+            fatLineSegment.frustumCulled = false;                              // <-- Always render (no culling)
             fatLineSegment.renderOrder   = lineworkConfig.RenderConfig__Linework__RenderOrder;   // <-- Render order from config
+            fatLineSegment.name          = node.name;                          // <-- Preserve original node naming for hierarchy/debug
+            fatLineSegment.visible       = node.visible;                       // <-- Preserve visibility state
+            fatLineSegment.userData      = { ...node.userData };               // <-- Preserve glTF extras/user data
+            if (dominantLineColor) {
+                fatLineSegment.userData.Na__ProfileLineColor = [...dominantLineColor];  // <-- Store object-level dominant colour
+                Na__ModelLoader__RegisterColorVote(rootColorVotes, dominantLineColor, importedColors.length / 3);
 
-            fatLineSegment.position.copy(node.position);                 // <-- Copy transform from original
+                if (node.name) {
+                    if (!colorVotesByName.has(node.name)) {
+                        colorVotesByName.set(node.name, new Map());
+                    }
+                    Na__ModelLoader__RegisterColorVote(colorVotesByName.get(node.name), dominantLineColor, importedColors.length / 3);
+                }
+            }
+
+            fatLineSegment.position.copy(node.position);                       // <-- Copy transform from original
             fatLineSegment.rotation.copy(node.rotation);
             fatLineSegment.scale.copy(node.scale);
             fatLineSegment.matrix.copy(node.matrix);
             fatLineSegment.matrixAutoUpdate = node.matrixAutoUpdate;
 
             if (node.parent) {
-                node.parent.add(fatLineSegment);                         // <-- Replace in parent
+                node.parent.add(fatLineSegment);                               // <-- Replace in parent
                 node.parent.remove(node);
             } else {
-                lineworkRoot.add(fatLineSegment);                        // <-- Add to root fallback
+                lineworkRoot.add(fatLineSegment);                              // <-- Add to root fallback
             }
 
-            node.geometry.dispose();                                     // <-- Clean up original geometry
+            node.geometry.dispose();                                           // <-- Clean up original geometry
         });
 
-        lineworkRoot.renderOrder = 100;                                  // <-- Linework always renders on top
-        return lineworkRoot;                                             // <-- Return processed linework root
+        lineworkRoot.renderOrder = 100;                                        // <-- Linework always renders on top
+        lineworkRoot.userData.Na__ProfileLineColorDominant = Na__ModelLoader__ResolveDominantColor(rootColorVotes);
+        lineworkRoot.userData.Na__ProfileLineColorByName = {};
+        colorVotesByName.forEach((voteMap, objectName) => {
+            const dominantNamedColor = Na__ModelLoader__ResolveDominantColor(voteMap);
+            if (dominantNamedColor) {
+                lineworkRoot.userData.Na__ProfileLineColorByName[objectName] = dominantNamedColor;
+            }
+        });
+        return lineworkRoot;                                                   // <-- Return processed linework root
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Load Single Linework GLB (Fat Lines)
+    // ------------------------------------------------------------
+    async function Na__ModelLoader__LoadSingleLinework(modelUrl, lineworkConfig, loader, lineResolution) {
+        const gltf         = await loader.loadAsync(modelUrl);           // <-- Load GLB file
+        const lineworkRoot = gltf.scene;                                 // <-- Extract scene graph
+        return Na__ModelLoader__UpgradeLineworkRoot(lineworkRoot, lineworkConfig, lineResolution);
     }
     // ------------------------------------------------------------
 
@@ -410,6 +625,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                         lineResolution
                     );
                     categoryGroup.add(lineworkRoot);                     // <-- Add linework to category group
+                    Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
                     console.log(`[ValeVision3D] Loaded Linework: ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Linework for ${shortName}:`, error);
@@ -444,6 +660,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 try {
                     const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(entry.lineworkUrl, config.RenderConfig__Linework, loader, lineResolution);
                     categoryGroup.add(lineworkRoot);
+                    Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
                     console.log(`[ValeVision3D] Loaded Linework (unordered): ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Linework for ${shortName}:`, error);
@@ -470,6 +687,8 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // ------------------------------------------------------------
     export {
         Na__ModelLoader__LoadAllModels,
+        Na__ModelLoader__UpgradeLineworkRoot,
+        Na__ModelLoader__ApplyProfileLineColoursToMeshRoot,
         Na__ModelLoader__ClassifyUrls,
         Na__ModelLoader__ParseModelUrl,
         Na__ModelLoader__SeparateOrbitCubeUrl,

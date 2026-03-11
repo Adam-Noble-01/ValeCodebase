@@ -1,24 +1,32 @@
 {
-    "projectName": "Russell",
-    "projectCode": "62526",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/62526__Russell",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
+    ],
+    "folderId": "2026/62526__Russell",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
+    ],
     "productionData": {
-        "input": "CAD File",
+        "additionalNotes": "Flawless CAD file, Anna did a great job as always. Nothing else to report.",
         "conceptArtist": "Anna",
-        "additionalNotes": "Flawless CAD file, Anna did a great job as always. Nothing else to report."
+        "input": "CAD File"
     },
+    "projectCode": "62526",
+    "projectName": "Russell",
     "scheduleData": {
-        "dateReceived": "11-Mar-2026",
         "dateFulfilled": "11-Mar-2026",
+        "dateReceived": "11-Mar-2026",
         "timeAllocated": 2.5,
         "timeTaken": 2.5
     },
     "sketchUpModel": {
         "url": "Nil"
     },
-    "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
-    ],
-    "basePath": "Projects/2026/62526__Russell",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62526__Russell/Russell__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62526__Russell/Russell__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
@@ -28,33 +36,26 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62526__Russell/Russell__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62526__Russell/Russell__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "valeVision_Camera__DefaultPosition": {
+    "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -5000,
-            "Camera__DefaultPos__PosY": 2800,
-            "Camera__DefaultPos__PosZ": 3250
-        },
-        "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX": -1250,
-            "Camera__DefaultTarget__TargetY": 2570,
-            "Camera__DefaultTarget__TargetZ": -350
+            "Camera__DefaultPos__PosX": -2830,
+            "Camera__DefaultPos__PosY": 2548,
+            "Camera__DefaultPos__PosZ": 14074
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.073,
-            "Camera__DefaultRotation__RotY": -0.8346,
-            "Camera__DefaultRotation__RotZ": -0.0541
+            "Camera__DefaultRotation__RotX": -0.0195,
+            "Camera__DefaultRotation__RotY": -0.6226,
+            "Camera__DefaultRotation__RotZ": -0.0114
         },
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
         }
     },
-    "folderId": "2026/62526__Russell",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
-    ]
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 16365,
+        "OrbitHelperCube__Position__PosY": 2026,
+        "OrbitHelperCube__Position__PosZ": -12659
+    }
 }

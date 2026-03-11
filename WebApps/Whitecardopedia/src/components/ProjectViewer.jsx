@@ -212,49 +212,53 @@
                                 </>
                             )}
                             
-                            <h3 className="project-viewer__actions-title">Project Actions</h3>
-                            
-                            {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
-                                <div className="project-viewer__download-section">
-                                    <a 
-                                        href={project.sketchUpModel.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="project-viewer__download-button"
-                                    >
-                                        <img 
-                                            src="../assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
-                                            alt="SketchUp" 
-                                            className="project-viewer__download-icon"
-                                        />
-                                        View SketchUp Model
-                                    </a>
-                                </div>
-                            )}
-                            
-                            <div className="project-viewer__download-section">
-                                <button 
-                                    className={`project-viewer__download-button ${isDownloading ? 'project-viewer__download-button--loading' : ''}`}
-                                    onClick={() => downloadProjectImages(project, setIsDownloading)}
-                                    disabled={isDownloading}
-                                >
-                                    {isDownloading ? (
-                                        <>
-                                            <span className="project-viewer__download-spinner"></span>
-                                            Downloading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <img 
-                                                src="../assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
-                                                alt="Download" 
-                                                className="project-viewer__download-icon"
-                                            />
-                                            Download Image Files
-                                        </>
+                            {!checkValeVisionModelUrl(project) && (
+                                <>
+                                    <h3 className="project-viewer__actions-title">Project Actions</h3>
+                                    
+                                    {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
+                                        <div className="project-viewer__download-section">
+                                            <a 
+                                                href={project.sketchUpModel.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="project-viewer__download-button"
+                                            >
+                                                <img 
+                                                    src="../assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
+                                                    alt="SketchUp" 
+                                                    className="project-viewer__download-icon"
+                                                />
+                                                View SketchUp Model
+                                            </a>
+                                        </div>
                                     )}
-                                </button>
-                            </div>
+                                    
+                                    <div className="project-viewer__download-section">
+                                        <button 
+                                            className={`project-viewer__download-button ${isDownloading ? 'project-viewer__download-button--loading' : ''}`}
+                                            onClick={() => downloadProjectImages(project, setIsDownloading)}
+                                            disabled={isDownloading}
+                                        >
+                                            {isDownloading ? (
+                                                <>
+                                                    <span className="project-viewer__download-spinner"></span>
+                                                    Downloading...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <img 
+                                                        src="../assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg" 
+                                                        alt="Download" 
+                                                        className="project-viewer__download-icon"
+                                                    />
+                                                    Download Image Files
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

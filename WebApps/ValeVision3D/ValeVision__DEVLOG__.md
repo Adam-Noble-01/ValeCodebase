@@ -2,6 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.1  -  11-Mar-2026
+### Multi-Model Loader — TrueVision Namespace Support (Ribbins 62854)
+
+**Overview**
+- Fixed loader not recognising `TrueVision` namespace in project model URLs.
+- Projects using SketchUp GLB Builder (TrueVision plugin) export naming (e.g. `Ribbins__TrueVision__MainBuildingModel__Existing__MeshModel__.glb`) were incorrectly classified as legacy, collapsing all four building models (Existing + Proposed, Mesh + Linework) into a single `ValeVision__LegacyModel` category.
+- Only the last pair (Proposed) was loaded; Existing models were overwritten and never displayed.
+
+**Root Cause**
+- Primary URL parse regex accepted only `ValeVision` or `NaModel`; `TrueVision` fell through to legacy path.
+- Legacy path assigns one mesh + one linework per category; multiple pairs overwrote each other.
+
+**Fix**
+- Added `TrueVision` to primary regex namespace alternation in `Na__ModelLoader__ParseModelUrl`.
+- URLs now parse as `ValeVision__MainBuildingModel__Existing` and `ValeVision__MainBuildingModel__Proposed` (both already in load-order priority).
+- All four GLBs load with separate model toggle controls.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.0.0  -  10-Mar-2026
 ### GPU Performance Overhaul — Profile Lines Pipeline Optimisation
 

@@ -18,6 +18,15 @@
 
 ---
 
+## Whitecardopedia v0.2.10 - 11-Mar-2026 - ValeVision Project Actions Exemption
+### Minor Update
+- **Project Actions Section**: Hidden for projects with Vale Vision 3D files
+  - Projects with Vale Vision 3D models no longer show the "Project Actions" section (Download Image Files, View SketchUp Model)
+  - Projects without Vale Vision 3D continue to display the section as before
+- Updated `src/components/ProjectViewer.jsx` — wrapped Project Actions block in `!checkValeVisionModelUrl(project)` conditional
+
+---
+
 ## Whitecardopedia v0.2.9 - 24-Feb-2026 - Right-Click Image Protection
 ### Features Added
 - **Right-Click Save Prevention**: Disabled browser right-click "Save Image As" context menu on all project content images

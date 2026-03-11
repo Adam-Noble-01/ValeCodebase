@@ -73,12 +73,19 @@
         "defaultFocalLengthMM": 45,
         "sensorHeightMM": 24
     },
-    "imageExport": {
-        "customEnabled": true,
-        "aspectRatios": ["3:2", "4:3", "16:9"],
-        "defaultAspectIndex": 0,
-        "resolutions": [1024, 2048, 4096],
-        "defaultResolutionIndex": 2
+    "ImageExport__Config": {
+        "ImageExport__Config__Description"              : "Configuration for the WebGL viewport image export tool. Aspect ratios are W:H format strings. Resolutions are pixel height values.",
+        "ImageExport__Config__CustomEnabled"            : true,
+        "ImageExport__Config__AspectRatios"             : ["3:2", "4:3", "16:9"],
+        "ImageExport__Config__DefaultAspectIndex"       : 0,
+        "ImageExport__Config__Resolutions"              : [1024, 2048, 4096],
+        "ImageExport__Config__DefaultResolutionIndex"   : 2
+    },
+    "PageLayout__PdfExport__Config": {
+        "PageLayout__PdfExport__Config__Description"    : "Configuration for the A3 page layout PDF export. The full A3 sheet is flattened to a single lossless PNG at the target DPI before embedding into the PDF.",
+        "PageLayout__PdfExport__Config__TargetDpi"      : 600,
+        "PageLayout__PdfExport__Config__Compress"       : true,
+        "PageLayout__PdfExport__Config__FloatPrecision" : "smart"
     },
     "Global__Hotkeys": {
         "Global__Hotkeys__Description"                             : "Global keyboard shortcuts. Modifier keys joined with '+'. Evaluated in keydown handlers.",

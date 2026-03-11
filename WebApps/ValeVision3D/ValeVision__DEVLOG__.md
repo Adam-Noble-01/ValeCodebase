@@ -2,6 +2,82 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.3  -  11-Mar-2026
+### Dev Tools Panel — Localhost-Only Developer Menu System
+
+**Overview**
+- Introduced a dedicated `Dev Tools` dropdown menu that appears exclusively on localhost and is hidden on all live deployments.
+- Extracted two developer-only actions (`Save Camera Settings`, `Profile Lines`) from the public `Tools` menu into the new panel, keeping the user-facing Tools menu clean.
+- Added a Scene Inspector tool for on-demand Three.js scene graph traversal and reporting.
+- Added a drag-resize handle so the Dev Tools panel width can be adjusted at runtime.
+- All new modules follow the existing Noble Architecture clean-code conventions and sit in a dedicated `26__System__DevTools` folder.
+
+**Dev Tools Menu**
+- New HTML shell added to `index.html` as a second `na-dropdown-menu--dev-localhost` container, pinned to the top-left of the viewport.
+- New `Na__UiFeature__DevMenu__LocalhostOnly.js` gates the container via `Na__AppUtils__IsRunningOnLocalhost()` — mirrors the TrueVision cousin project pattern.
+- `Save Camera Settings` and `Profile Lines` markup moved from the public `Tools` list into the new `Dev Tools` list with a section divider between them.
+
+**Profile Lines — Extracted Module**
+- New `Na__UiFeature__ProfileLines__Controls.js` owns Profile Lines button state, `aria-pressed` sync, status text, click handling, and render invalidation.
+- Removes all inline Profile Lines wiring from `index.html`; replaced with a single `Na__UiFeature__InitializeProfileLinesControls(pipelineRef, profileLinesConfig)` call.
+- Button restyled using new `na-dev-toggle` / `na-dev-toggle--active` classes, matching the TrueVision green active-dot indicator pattern.
+
+**Scene Inspector**
+- New `Na__UiFeature__SceneInspector__Controls.js` provides on-demand scene graph reporting.
+- Scan button traverses the live `THREE.Scene` using `Object3D.traverse()`, building a plain data tree (no DOM interaction during traversal).
+- Reports per-node: type badge (Mesh / Group / Light / Line / Camera), visibility dot (green / muted), name, and triangle/vertex counts for mesh nodes.
+- Summary header shows total nodes, meshes, triangle count, line objects, and lights after each scan.
+- Collapsible tree defaults to 3 levels expanded; click any parent row to expand/collapse its children.
+- Works on-demand because `Na__AppFlow__StartLoadingSequence` is not awaited — models may load after boot.
+
+**Drag-Resize Handle**
+- Resize grip element added to the bottom-right corner of the Dev Tools container.
+- Drag logic in `Na__UiFeature__DevMenu__LocalhostOnly.js` listens for `mousedown → mousemove → mouseup` on `document`, clamping new width between 220px and 640px.
+- Grip rendered as a 3×3 dot grid via `radial-gradient` background — no image assets required.
+
+**Styling**
+- New CSS classes: `na-dev-toggle`, `na-dev-toggle--active`, `na-dev-toggle__label`, `na-dev-toggle__status`.
+- New CSS classes: `na-scene-inspector__*` — tree rows, type badges (colour-coded by family), visibility dot, scrollable container, stats bar, scan button, resize handle.
+- `na-dropdown-menu--dev-localhost` modifier positions the panel top-left, overrides `right`, and sets `transform-origin: top left`.
+
+**Files Added**
+- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js`
+- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__ProfileLines__Controls.js`
+- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__SceneInspector__Controls.js`
+
+**Files Changed**
+- `index.html`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.2  -  11-Mar-2026
+### PDF Export — Flattened 600 dpi Pipeline & Config Naming Convention
+
+**Overview**
+- Replaced the multi-image PDF composition pipeline with a single flattened PNG export at 600 dpi.
+- Both export modes (Full Layout and Image Only) now render the entire A3 sheet to one offscreen canvas before embedding, eliminating file-size blowout caused by embedding separate full-page PNGs per layer.
+- Applied project naming conventions to the `imageExport` config block and its downstream consumers.
+
+**PDF Export Rewrite**
+- Added `Na__PageLayout__PDF_EXPORT_DPI = 600` and derived `Na__PageLayout__PIXELS_PER_MM` constants.
+- Added `Na__PageLayout__FlattenSheetToDataUrl(state, includeTitleBlock)` — composites title block and viewport image onto a single `9921 × 7016 px` offscreen canvas at 600 dpi, applying all `clipTop/Right/Bottom/Left` values with the same clip-mask approach used in the live canvas preview.
+- `Na__PageLayout__CreateA3Document` now passes `compress: true` and `floatPrecision: 'smart'` to jsPDF.
+- Both export functions reduced to: flatten sheet → single `addImage` call → `doc.save`.
+
+**Config Naming Convention**
+- `imageExport` block renamed to `ImageExport__Config` with fully-qualified double-underscore key names throughout, matching the project convention.
+- New `PageLayout__PdfExport__Config` block added documenting `TargetDpi`, `Compress`, and `FloatPrecision` settings.
+- `Na__UiFeature__ExportConfigKeys` string values updated to new JSON key names.
+- New `Na__UiFeature__NormalizeExportConfig` helper added — maps long JSON keys to short internal names so all downstream dot-property accesses remain unchanged.
+
+**Files Changed**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `index.html`
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.0.1  -  11-Mar-2026
 ### Multi-Model Loader — TrueVision Namespace Support (Ribbins 62854)
 

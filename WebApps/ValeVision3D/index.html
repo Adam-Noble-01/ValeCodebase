@@ -239,20 +239,47 @@
                         </div>
                     </div>
                 </li>
+            </ul>
+            
+        </details>
+    </div>
+
+    <div class="na-dropdown-menu na-dropdown-menu--dev-localhost" id="naDevToolsMenuContainer" style="display:none;">
+        <details class="na-dropdown-menu__details" id="naDevToolsMenu">
+            <summary class="na-dropdown-menu__summary">
+                Dev Tools
+                <span class="na-dropdown-menu__arrow">▾</span>
+            </summary>
+            <ul class="na-dropdown-menu__list">
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naSaveCameraSettingsItem" style="display:none;">
                     <button class="na-dropdown-menu__button" id="naSaveCameraSettingsButton">
                         Save Camera Settings
                     </button>
                 </li>
+                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item">
-                    <button class="na-dropdown-menu__button na-walk-mode__toggle na-walk-mode__toggle--active" id="naProfileLinesToggle">
-                        <span class="na-walk-mode__label">Profile Lines</span>
-                        <span class="na-walk-mode__status" id="naProfileLinesStatus">ON</span>
+                    <button class="na-dropdown-menu__button na-dev-toggle na-dev-toggle--active" id="naProfileLinesToggle" aria-pressed="true">
+                        <span class="na-dev-toggle__label">Profile Lines</span>
+                        <span class="na-dev-toggle__status" id="naProfileLinesStatus">ON</span>
                     </button>
                 </li>
+                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
+                <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naSceneInspectorToggle" aria-expanded="false">
+                        Scene Inspector
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naSceneInspectorPanel">
+                        <div class="na-scene-inspector__header">
+                            <div class="na-scene-inspector__stats" id="naSceneInspectorStats">Press Scan to analyse scene.</div>
+                            <button class="na-scene-inspector__scan-btn" id="naSceneInspectorScanBtn">Scan Scene</button>
+                        </div>
+                        <div class="na-scene-inspector__tree" id="naSceneInspectorTree" aria-label="Scene node tree"></div>
+                    </div>
+                </li>
             </ul>
-            
         </details>
+        <div class="na-dev-menu__resize-handle" id="naDevMenuResizeHandle" aria-hidden="true"></div>
     </div>
     
     <!-- Toast Notification (success / error feedback) -->
@@ -279,6 +306,9 @@
     import { Na__UiFeature__InitializeCameraLensControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__InitializeSaveCameraButton } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
+    import { Na__UiFeature__InitializeLocalhostDevMenu } from './02__Src__AppModules/26__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js';
+    import { Na__UiFeature__InitializeProfileLinesControls } from './02__Src__AppModules/26__System__DevTools/Na__UiFeature__ProfileLines__Controls.js';
+    import { Na__UiFeature__InitializeSceneInspector } from './02__Src__AppModules/26__System__DevTools/Na__UiFeature__SceneInspector__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     import {
         Na__Scene__CreateFogPass,
@@ -288,7 +318,6 @@
     import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
     import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
-    import { Na__RenderLoop__RequestRender } from './02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -325,7 +354,7 @@
     const Na__Config__GroundPlane = Na__AppConfig__Data.Scene__GroundPlane;         // <-- Ground plane settings
     const Na__Config__Models = Na__AppConfig__Data.models;                          // <-- Model-specific settings
     const Na__Config__CameraLens = Na__AppConfig__Data.cameraLens;                  // <-- Camera lens settings
-    const Na__Config__ImageExport = Na__AppConfig__Data.imageExport;                // <-- Image export settings
+    const Na__Config__ImageExport = Na__AppConfig__Data.ImageExport__Config;          // <-- Image export settings
     const Na__Config__PostProcessEffects = Na__AppConfig__Data.ImageExport__PostProcessEffects; // <-- Post-process effects config
     const Na__Config__CameraDefault = Na__AppConfig__Data.Camera__DefaultPosition;  // <-- Camera defaults (MM)
     const Na__Config__NavmodeSettings = Na__AppConfig__Data.Navmode__Settings;      // <-- Navmode config (MM)
@@ -699,34 +728,10 @@
         }
     });
     Na__UiFeature__PromptToolsMenu();
+    Na__UiFeature__InitializeLocalhostDevMenu();
     Na__UiFeature__InitializeSaveCameraButton(Na__Camera__Main, Na__Controls__Orbit, Na__UiFeature__ShowToast);
-    // ------------------------------------------------------------
-
-    // SETTINGS MENU | Profile Lines Real-Time Toggle
-    // ------------------------------------------------------------
-    const Na__ProfileLinesToggleBtn = document.getElementById('naProfileLinesToggle');
-    const Na__ProfileLinesStatusEl  = document.getElementById('naProfileLinesStatus');
-
-    function Na__UiFeature__UpdateProfileLinesStatus(isOn) {
-        if (Na__ProfileLinesStatusEl)  Na__ProfileLinesStatusEl.textContent = isOn ? 'ON' : 'OFF';
-        if (Na__ProfileLinesToggleBtn) Na__ProfileLinesToggleBtn.classList.toggle('na-walk-mode__toggle--active', isOn);
-    }
-
-    if (Na__ProfileLinesToggleBtn) {
-        Na__ProfileLinesToggleBtn.addEventListener('click', () => {
-            const pipeline = Na__AppFlow__PipelineRef.current;
-            if (!pipeline || !pipeline.toggleProfileLines) return;
-            const isNowOn = pipeline.toggleProfileLines();
-            Na__UiFeature__UpdateProfileLinesStatus(isNowOn);
-            Na__RenderLoop__RequestRender();
-        });
-    }
-
-    if (Na__Config__ProfileLines && Na__Config__ProfileLines.RenderEffect__ProfileLines__Enabled === true) {
-        Na__UiFeature__UpdateProfileLinesStatus(true);
-    } else {
-        Na__UiFeature__UpdateProfileLinesStatus(false);
-    }
+    Na__UiFeature__InitializeProfileLinesControls(Na__AppFlow__PipelineRef, Na__Config__ProfileLines);
+    Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

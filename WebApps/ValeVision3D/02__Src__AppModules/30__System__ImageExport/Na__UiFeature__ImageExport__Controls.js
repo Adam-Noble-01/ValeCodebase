@@ -25,11 +25,11 @@
     // MODULE CONSTANTS | Export Config Keys
     // ------------------------------------------------------------
     const Na__UiFeature__ExportConfigKeys = {
-        aspectRatios: 'aspectRatios',
-        defaultAspectIndex: 'defaultAspectIndex',
-        resolutions: 'resolutions',
-        defaultResolutionIndex: 'defaultResolutionIndex',
-        customEnabled: 'customEnabled'
+        aspectRatios           : 'ImageExport__Config__AspectRatios',           // <-- Aspect ratio options array key
+        defaultAspectIndex     : 'ImageExport__Config__DefaultAspectIndex',     // <-- Default aspect ratio index key
+        resolutions            : 'ImageExport__Config__Resolutions',             // <-- Pixel height resolution options key
+        defaultResolutionIndex : 'ImageExport__Config__DefaultResolutionIndex', // <-- Default resolution index key
+        customEnabled          : 'ImageExport__Config__CustomEnabled'           // <-- Custom size toggle default key
     };
     // ------------------------------------------------------------
 
@@ -72,6 +72,20 @@
         if (config[Na__UiFeature__ExportConfigKeys.aspectRatios].length === 0) return false;
         if (config[Na__UiFeature__ExportConfigKeys.resolutions].length === 0) return false;
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Normalize Export Config to Internal Short Keys
+    // ------------------------------------------------------------
+    function Na__UiFeature__NormalizeExportConfig(config) {
+        return {
+            aspectRatios           : config[Na__UiFeature__ExportConfigKeys.aspectRatios],           // <-- Map long JSON key to short internal name
+            defaultAspectIndex     : config[Na__UiFeature__ExportConfigKeys.defaultAspectIndex],     // <-- Map long JSON key to short internal name
+            resolutions            : config[Na__UiFeature__ExportConfigKeys.resolutions],             // <-- Map long JSON key to short internal name
+            defaultResolutionIndex : config[Na__UiFeature__ExportConfigKeys.defaultResolutionIndex], // <-- Map long JSON key to short internal name
+            customEnabled          : config[Na__UiFeature__ExportConfigKeys.customEnabled]           // <-- Map long JSON key to short internal name
+        };
     }
     // ------------------------------------------------------------
 
@@ -247,7 +261,7 @@
         if (!renderer || !scene || !camera) return;
         
         if (!Na__UiFeature__ValidateExportConfig(config)) return;
-        const exportConfig     = config;
+        const exportConfig     = Na__UiFeature__NormalizeExportConfig(config); // <-- Normalize long JSON keys to short internal names
         const toggleButton     = document.getElementById('naImageExportToggle');
         const panel            = document.getElementById('naImageExportPanel');
         const customToggle     = document.getElementById('naImageExportCustomToggle');

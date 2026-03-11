@@ -6,13 +6,13 @@
 // NAMESPACE  : Na__UiFeature
 // MODULE     : SaveCameraSettings
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Localhost-only camera position save feature for project.json
+// PURPOSE    : Localhost-only camera position save action for the Dev Tools menu
 // CREATED    : 24-Feb-2026
 //
 // DESCRIPTION:
-// - Provides a save button (localhost only) that writes the current camera
-//   position and orbit target back into the active project's project.json
-//   via the local Flask API.
+// - Provides a save action inside the localhost-only Dev Tools menu that writes
+//   the current camera position and orbit target back into the active project's
+//   project.json via the local Flask API.
 // - Fetches the existing project.json, merges Camera__DefaultPosition and
 //   OrbitHelperCube__Position, then POSTs the updated document back.
 // - Button is hidden on production (non-localhost) environments.
@@ -115,7 +115,7 @@
         const button   = document.getElementById('naSaveCameraSettingsButton');
         if (!menuItem || !button) return;
 
-        menuItem.style.display = '';                                         // <-- Reveal the menu item
+        menuItem.style.display = '';                                         // <-- Reveal the Dev Tools menu item
         button.addEventListener('click', () => Na__UiFeature__SaveCameraSettings(camera, controls, showToast)); // <-- Wire up save handler
     }
     // ------------------------------------------------------------

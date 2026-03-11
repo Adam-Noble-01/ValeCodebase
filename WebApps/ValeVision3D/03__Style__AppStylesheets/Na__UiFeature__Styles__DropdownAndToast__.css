@@ -45,6 +45,43 @@
     transform-origin                   : top right;
 }
 
+.na-dropdown-menu--dev-localhost {
+    top                                : calc(var(--Vale_HeaderHeight) + 10px); /* <-- Align vertically with the Tools menu */
+    right                              : unset;                                 /* <-- Override base right positioning */
+    left                               : 20px;                                 /* <-- Pin to the left side of the viewport */
+    transform-origin                   : top left;                              /* <-- Scale from top-left corner */
+    position                           : fixed;                                /* <-- Explicit fixed for absolute child positioning */
+}
+
+.na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
+    width                              : 100%;                                  /* <-- Fill container when resized by drag handle */
+}
+
+
+/* Dev Menu Resize Handle - Bottom-Right Drag Corner */
+/* ----------------------------------------------------------------- */
+.na-dev-menu__resize-handle {
+    position                           : absolute;
+    bottom                             : 0;
+    right                              : 0;
+    width                              : 18px;
+    height                             : 18px;
+    cursor                             : se-resize;
+    z-index                            : 10;
+    opacity                            : 0.35;
+    transition                         : opacity 0.15s ease;
+    background-image                   : radial-gradient(circle, rgba(23, 43, 58, 0.6) 1px, transparent 1px);
+    background-size                    : 4px 4px;                               /* <-- 3x3 grip-dot grid */
+    background-position                : bottom 3px right 3px;
+    background-repeat                  : repeat;
+    background-clip                    : content-box;
+    padding                            : 2px;
+}
+
+.na-dev-menu__resize-handle:hover {
+    opacity                            : 0.75;
+}
+
 .na-dropdown-menu__details {
     background                          : rgba(255, 255, 255, 0.95);
     border                              : 1px solid rgba(0, 0, 0, 0.12);
@@ -93,6 +130,14 @@
 
 .na-dropdown-menu__item:hover {
     background                          : rgba(23, 43, 58, 0.06);
+}
+
+.na-dropdown-menu__divider {
+    height                              : 1px;
+    background                          : rgba(23, 43, 58, 0.1);
+    margin                              : 4px 14px;
+    list-style                          : none;
+    padding                             : 0;
 }
 
 .na-dropdown-menu__button {
@@ -686,6 +731,280 @@
 .na-model-toggle__button--active:hover {
     background                          : rgba(23, 43, 58, 0.1);
 }
+
+
+/* ================================================================= */
+/* REGION  |  Dev Tools Toggle Controls                              */
+/* ================================================================= */
+
+.na-dev-toggle {
+    width                               : 100%;
+    border                              : 1px solid rgba(23, 43, 58, 0.15);
+    border-radius                       : 4px;
+    padding                             : 6px 10px;
+    background                          : rgba(23, 43, 58, 0.04);
+    text-align                          : left;
+    font-size                           : 0.8rem;
+    font-weight                         : 400;
+    font-family                         : 'Open Sans', sans-serif;
+    color                               : rgba(23, 43, 58, 0.6);
+    cursor                              : pointer;
+    transition                          : all 0.15s ease;
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 8px;
+}
+
+.na-dev-toggle::before {
+    content                             : '';
+    display                             : inline-block;
+    width                               : 8px;
+    height                              : 8px;
+    border-radius                       : 50%;
+    background                          : rgba(23, 43, 58, 0.2);
+    flex-shrink                         : 0;
+    transition                          : background 0.15s ease;
+}
+
+.na-dev-toggle:hover {
+    background                          : rgba(23, 43, 58, 0.08);
+}
+
+.na-dev-toggle--active {
+    color                               : #172b3a;
+    font-weight                         : 500;
+    background                          : rgba(23, 43, 58, 0.06);
+    border-color                        : rgba(23, 43, 58, 0.25);
+}
+
+.na-dev-toggle--active::before {
+    background                          : #2a7d4f;
+}
+
+.na-dev-toggle--active:hover {
+    background                          : rgba(23, 43, 58, 0.1);
+}
+
+.na-dev-toggle__label {
+    flex                                : 1;
+}
+
+.na-dev-toggle__status {
+    min-width                           : 32px;
+    text-align                          : right;
+    font-size                           : 0.74rem;
+    font-weight                         : 600;
+    letter-spacing                      : 0.04em;
+    color                               : rgba(23, 43, 58, 0.45);
+}
+
+.na-dev-toggle--active .na-dev-toggle__status {
+    color                               : #2a7d4f;
+}
+
+
+/* endregion -------------------------------------------------------- */
+
+
+/* ================================================================= */
+/* REGION  |  Scene Inspector - Dev Tools Panel                      */
+/* ================================================================= */
+
+/* Dev Tools menu - wider details panel to accommodate tree */
+/* ----------------------------------------------------------------- */
+.na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
+    min-width                           : 290px;
+}
+
+
+/* Inspector Header - Stats Row + Scan Button */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__header {
+    display                             : flex;
+    flex-direction                      : column;
+    gap                                 : 6px;
+    margin-bottom                       : 8px;
+}
+
+.na-scene-inspector__stats {
+    font-size                           : 0.72rem;
+    color                               : rgba(23, 43, 58, 0.55);
+    display                             : flex;
+    flex-wrap                           : wrap;
+    gap                                 : 6px;
+}
+
+.na-scene-inspector__stat-item {
+    white-space                         : nowrap;
+}
+
+.na-scene-inspector__scan-btn {
+    width                               : 100%;
+    border                              : none;
+    border-radius                       : 4px;
+    padding                             : 5px 10px;
+    background                          : #172b3a;
+    color                               : #ffffff;
+    font-family                         : 'Open Sans', sans-serif;
+    font-size                           : 0.76rem;
+    font-weight                         : 500;
+    cursor                              : pointer;
+    transition                          : background 0.15s ease;
+}
+
+.na-scene-inspector__scan-btn:hover {
+    background                          : #1e3a4f;
+}
+
+.na-scene-inspector__scan-btn:disabled {
+    opacity                             : 0.5;
+    cursor                              : not-allowed;
+}
+
+
+/* Tree Container - Scrollable */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__tree {
+    max-height                          : 360px;
+    overflow-y                          : auto;
+    overflow-x                          : hidden;
+    border-top                          : 1px solid rgba(23, 43, 58, 0.08);
+    padding-top                         : 6px;
+    font-size                           : 0.72rem;
+}
+
+.na-scene-inspector__tree::-webkit-scrollbar {
+    width                               : 4px;
+}
+
+.na-scene-inspector__tree::-webkit-scrollbar-thumb {
+    background                          : rgba(23, 43, 58, 0.2);
+    border-radius                       : 2px;
+}
+
+
+/* Node Row */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__row {
+    display                             : flex;
+    align-items                         : center;
+    gap                                 : 4px;
+    padding                             : 2px 0;
+    min-height                          : 20px;
+    white-space                         : nowrap;
+}
+
+.na-scene-inspector__row:hover {
+    background                          : rgba(23, 43, 58, 0.04);
+}
+
+.na-scene-inspector__indent {
+    display                             : inline-block;
+    flex-shrink                         : 0;
+}
+
+.na-scene-inspector__toggle {
+    display                             : inline-block;
+    width                               : 10px;
+    flex-shrink                         : 0;
+    font-size                           : 0.65rem;
+    color                               : rgba(23, 43, 58, 0.4);
+    user-select                         : none;
+}
+
+
+/* Visibility Dot */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__dot {
+    display                             : inline-block;
+    width                               : 6px;
+    height                              : 6px;
+    border-radius                       : 50%;
+    flex-shrink                         : 0;
+    transition                          : background 0.15s ease;
+}
+
+.na-scene-inspector__dot--visible {
+    background                          : #2a7d4f;                            /* <-- Green: visible */
+}
+
+.na-scene-inspector__dot--hidden {
+    background                          : rgba(23, 43, 58, 0.2);              /* <-- Muted: hidden */
+}
+
+
+/* Type Badge */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__badge {
+    display                             : inline-block;
+    flex-shrink                         : 0;
+    padding                             : 0 4px;
+    border-radius                       : 3px;
+    font-size                           : 0.60rem;
+    font-weight                         : 600;
+    font-family                         : 'Courier New', monospace;
+    letter-spacing                      : 0.01em;
+    line-height                         : 1.5;
+}
+
+.na-scene-inspector__badge--mesh {
+    background                          : rgba(23, 43, 58, 0.14);             /* <-- Navy tint: mesh */
+    color                               : #172b3a;
+}
+
+.na-scene-inspector__badge--group {
+    background                          : rgba(23, 43, 58, 0.06);             /* <-- Muted: groups */
+    color                               : rgba(23, 43, 58, 0.55);
+}
+
+.na-scene-inspector__badge--light {
+    background                          : rgba(180, 130, 40, 0.15);           /* <-- Amber tint: lights */
+    color                               : #7a5a10;
+}
+
+.na-scene-inspector__badge--line {
+    background                          : rgba(30, 110, 110, 0.12);           /* <-- Teal tint: line segments */
+    color                               : #1a6060;
+}
+
+.na-scene-inspector__badge--camera {
+    background                          : rgba(80, 60, 140, 0.12);            /* <-- Purple tint: cameras */
+    color                               : #3a2870;
+}
+
+.na-scene-inspector__badge--other {
+    background                          : rgba(23, 43, 58, 0.06);
+    color                               : rgba(23, 43, 58, 0.45);
+}
+
+
+/* Node Name */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__name {
+    flex                                : 1;
+    min-width                           : 0;
+    overflow                            : hidden;
+    text-overflow                       : ellipsis;
+    white-space                         : nowrap;
+    color                               : #172b3a;
+    font-family                         : 'Courier New', monospace;
+    font-size                           : 0.68rem;
+}
+
+
+/* Triangle / Child Count */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__count {
+    flex-shrink                         : 0;
+    font-size                           : 0.60rem;
+    font-family                         : 'Courier New', monospace;
+    color                               : rgba(23, 43, 58, 0.4);
+    text-align                          : right;
+    margin-left                         : 2px;
+}
+
+
+/* endregion -------------------------------------------------------- */
 
 
 /* ================================================================= */

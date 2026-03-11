@@ -2,6 +2,49 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.4  -  11-Mar-2026
+### Scene Inspector — Visibility Controls, Filter, Isolate Pair, Viewport Height
+
+**Overview**
+- Extended the Scene Inspector tool (introduced in v2.0.3) with a full set of interactive visibility controls for live scene debugging.
+- All changes are self-contained within `Na__UiFeature__SceneInspector__Controls.js` and its companion HTML/CSS.
+
+**Per-Node Visibility Dot Toggle**
+- Visibility dots in the node tree are now interactive — click any dot to toggle `node.visible` on the live Three.js object and immediately invalidate the render loop.
+- Dot colour syncs to the new state (green = visible, muted = hidden); tooltip updates to "Click to hide" / "Click to show".
+- `e.stopPropagation()` prevents the dot click from also triggering the row expand/collapse.
+
+**Node Registry and Visibility Snapshot**
+- A flat `Na__SceneInspector__NodeRegistry` is built during tree rendering, storing `{ uuid, nodeRef, dotEl, wrapperEl, name }` for every node.
+- On each scan, `Na__SceneInspector__VisibilitySnapshot` records the `node.visible` state of every registered node as the scan-time baseline.
+
+**Hide All / Restore All**
+- "Hide All" sets every registered node to `visible = false` and syncs all dot colours in one pass.
+- "Restore All" reinstates the scan-time snapshot state so the scene returns to exactly how it looked at last scan.
+- Both buttons added to a compact toolbar row below the filter input.
+
+**Filter Input**
+- Text input filters the displayed node tree by name fragment on every keystroke.
+- On a non-empty query, all wrappers are hidden first; matching nodes and all their DOM ancestors (`.na-scene-inspector__node`, `.na-scene-inspector__children`) are then revealed, so parent groups always display when a child matches.
+- Filter is cleared automatically on each Rescan.
+
+**Isolate Pair Mode**
+- "Isolate Pair" toggle button added to the same toolbar row as Hide All and Restore All (compact three-button layout).
+- When active, toggling any node's dot also toggles the paired sibling model under the same ValeVision category group — i.e. the mesh model and its corresponding linework model are always switched together.
+- Pairing algorithm: walks `nodeRef.parent` chain until a node matching `/^ValeVision__\w+__\w+/` is found (the category group), then toggles all other direct children of that group and syncs their dot elements from the registry.
+- Button uses the existing `na-scene-inspector__toolbar-btn--active` CSS state for ON/OFF visual feedback.
+
+**Viewport Height and Scrollability**
+- Scene Inspector tree `max-height` changed from the fixed `360px` to `calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2 - 280px)` to dynamically fill the available viewport.
+- Outer Dev Tools panel given a matching `max-height` and `overflow-y: auto` so it scrolls when content exceeds the viewport.
+- Both values divide by `1.2` to account for the inherited `transform: scale(1.2)` on the base `.na-dropdown-menu` class — without this correction the layout height is 1.2× the visual height, causing the bottom to overflow off-screen and the scrollbar to clip inside a region never visible to the user.
+
+**Files Changed**
+- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__SceneInspector__Controls.js`
+- `index.html`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.0.3  -  11-Mar-2026
 ### Dev Tools Panel — Localhost-Only Developer Menu System
 
@@ -10,7 +53,7 @@
 - Extracted two developer-only actions (`Save Camera Settings`, `Profile Lines`) from the public `Tools` menu into the new panel, keeping the user-facing Tools menu clean.
 - Added a Scene Inspector tool for on-demand Three.js scene graph traversal and reporting.
 - Added a drag-resize handle so the Dev Tools panel width can be adjusted at runtime.
-- All new modules follow the existing Noble Architecture clean-code conventions and sit in a dedicated `26__System__DevTools` folder.
+- All new modules follow the existing Noble Architecture clean-code conventions and sit in a dedicated `70__System__DevTools` folder.
 
 **Dev Tools Menu**
 - New HTML shell added to `index.html` as a second `na-dropdown-menu--dev-localhost` container, pinned to the top-left of the viewport.
@@ -41,9 +84,9 @@
 - `na-dropdown-menu--dev-localhost` modifier positions the panel top-left, overrides `right`, and sets `transform-origin: top left`.
 
 **Files Added**
-- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js`
-- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__ProfileLines__Controls.js`
-- `02__Src__AppModules/26__System__DevTools/Na__UiFeature__SceneInspector__Controls.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js`
 
 **Files Changed**
 - `index.html`

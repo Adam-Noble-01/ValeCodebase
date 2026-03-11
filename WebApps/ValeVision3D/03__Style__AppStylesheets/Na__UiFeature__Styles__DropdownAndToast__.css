@@ -51,6 +51,8 @@
     left                               : 20px;                                 /* <-- Pin to the left side of the viewport */
     transform-origin                   : top left;                              /* <-- Scale from top-left corner */
     position                           : fixed;                                /* <-- Explicit fixed for absolute child positioning */
+    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2); /* <-- Divide by scale(1.2) so visual height fills viewport exactly */
+    overflow-y                         : auto;                                  /* <-- Allow panel to scroll when content exceeds scaled height */
 }
 
 .na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
@@ -865,7 +867,7 @@
 /* Tree Container - Scrollable */
 /* ----------------------------------------------------------------- */
 .na-scene-inspector__tree {
-    max-height                          : 360px;
+    max-height                          : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2 - 280px); /* <-- Fill remaining panel height after header controls, scaled */
     overflow-y                          : auto;
     overflow-x                          : hidden;
     border-top                          : 1px solid rgba(23, 43, 58, 0.08);
@@ -1001,6 +1003,80 @@
     color                               : rgba(23, 43, 58, 0.4);
     text-align                          : right;
     margin-left                         : 2px;
+}
+
+
+/* Visibility Dot - Interactive Toggle */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__dot {
+    cursor                              : pointer;
+}
+
+.na-scene-inspector__dot:hover {
+    opacity                             : 0.65;
+}
+
+
+/* Filter Input */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__filter {
+    width                               : 100%;
+    box-sizing                          : border-box;
+    border                              : 1px solid rgba(23, 43, 58, 0.18);
+    border-radius                       : 4px;
+    padding                             : 4px 8px;
+    background                          : rgba(23, 43, 58, 0.04);
+    color                               : #172b3a;
+    font-family                         : 'Open Sans', sans-serif;
+    font-size                           : 0.72rem;
+    outline                             : none;
+    transition                          : border-color 0.15s ease, background 0.15s ease;
+}
+
+.na-scene-inspector__filter::placeholder {
+    color                               : rgba(23, 43, 58, 0.35);
+}
+
+.na-scene-inspector__filter:focus {
+    border-color                        : rgba(23, 43, 58, 0.40);
+    background                          : rgba(23, 43, 58, 0.07);
+}
+
+
+/* Visibility Toolbar - Hide All / Restore All */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__toolbar {
+    display                             : flex;
+    gap                                 : 6px;
+}
+
+.na-scene-inspector__toolbar-btn {
+    flex                                : 1;
+    border                              : 1px solid rgba(23, 43, 58, 0.25);
+    border-radius                       : 4px;
+    padding                             : 4px 8px;
+    background                          : transparent;
+    color                               : rgba(23, 43, 58, 0.70);
+    font-family                         : 'Open Sans', sans-serif;
+    font-size                           : 0.70rem;
+    font-weight                         : 500;
+    cursor                              : pointer;
+    transition                          : background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.na-scene-inspector__toolbar-btn:hover {
+    background                          : rgba(23, 43, 58, 0.08);
+    border-color                        : rgba(23, 43, 58, 0.40);
+    color                               : #172b3a;
+}
+
+
+/* Toolbar Button - Active Toggle State (e.g. Isolate Pair when ON) */
+/* ----------------------------------------------------------------- */
+.na-scene-inspector__toolbar-btn--toggle.na-scene-inspector__toolbar-btn--active {
+    background                          : rgba(23, 43, 58, 0.14);
+    border-color                        : rgba(23, 43, 58, 0.50);
+    color                               : #172b3a;
 }
 
 

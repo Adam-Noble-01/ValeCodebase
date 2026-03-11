@@ -272,6 +272,12 @@
                     <div class="na-dropdown-menu__panel" id="naSceneInspectorPanel">
                         <div class="na-scene-inspector__header">
                             <div class="na-scene-inspector__stats" id="naSceneInspectorStats">Press Scan to analyse scene.</div>
+                            <input class="na-scene-inspector__filter" id="naSceneInspectorFilter" type="text" placeholder="Filter nodes..." />
+                            <div class="na-scene-inspector__toolbar">
+                                <button class="na-scene-inspector__toolbar-btn" id="naSceneInspectorHideAll">Hide All</button>
+                                <button class="na-scene-inspector__toolbar-btn" id="naSceneInspectorRestoreAll">Restore All</button>
+                                <button class="na-scene-inspector__toolbar-btn na-scene-inspector__toolbar-btn--toggle" id="naSceneInspectorIsolatePair" aria-pressed="false">Isolate Pair</button>
+                            </div>
                             <button class="na-scene-inspector__scan-btn" id="naSceneInspectorScanBtn">Scan Scene</button>
                         </div>
                         <div class="na-scene-inspector__tree" id="naSceneInspectorTree" aria-label="Scene node tree"></div>
@@ -306,9 +312,9 @@
     import { Na__UiFeature__InitializeCameraLensControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__InitializeSaveCameraButton } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
-    import { Na__UiFeature__InitializeLocalhostDevMenu } from './02__Src__AppModules/26__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js';
-    import { Na__UiFeature__InitializeProfileLinesControls } from './02__Src__AppModules/26__System__DevTools/Na__UiFeature__ProfileLines__Controls.js';
-    import { Na__UiFeature__InitializeSceneInspector } from './02__Src__AppModules/26__System__DevTools/Na__UiFeature__SceneInspector__Controls.js';
+    import { Na__UiFeature__InitializeLocalhostDevMenu } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js';
+    import { Na__UiFeature__InitializeProfileLinesControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js';
+    import { Na__UiFeature__InitializeSceneInspector } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     import {
         Na__Scene__CreateFogPass,

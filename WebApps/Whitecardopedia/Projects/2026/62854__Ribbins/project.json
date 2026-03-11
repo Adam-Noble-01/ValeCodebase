@@ -2,14 +2,14 @@
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -4182,
-            "Camera__DefaultPos__PosY": 3181,
-            "Camera__DefaultPos__PosZ": 8170
+            "Camera__DefaultPos__PosX": -3857,
+            "Camera__DefaultPos__PosY": 2883,
+            "Camera__DefaultPos__PosZ": 10454
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.0228,
-            "Camera__DefaultRotation__RotY": -0.6114,
-            "Camera__DefaultRotation__RotZ": -0.0131
+            "Camera__DefaultRotation__RotX": -0.0071,
+            "Camera__DefaultRotation__RotY": -0.5468,
+            "Camera__DefaultRotation__RotZ": -0.0037
         },
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -17,26 +17,26 @@
     },
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
-        "OrbitHelperCube__Position__PosX": 10683,
-        "OrbitHelperCube__Position__PosY": 2698,
-        "OrbitHelperCube__Position__PosZ": -13030
+        "OrbitHelperCube__Position__PosX": 10413,
+        "OrbitHelperCube__Position__PosY": 2715,
+        "OrbitHelperCube__Position__PosZ": -12988
     },
     "basePath": "Projects/2026/62854__Ribbins",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "A slightly more complex than usual job, allowed 3 hours and didn't exceed that. Rachael's CAD File was great. A great design by Dan, nothing else to report.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File"
     },
     "projectCode": "62854",
     "projectName": "Ribbins",
     "scheduleData": {
         "dateFulfilled": "11-Mar-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "10-Mar-2026",
+        "timeAllocated": 3,
+        "timeTaken": 3
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -47,5 +47,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62854__Ribbins/Ribbins__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62854__Ribbins/Ribbins__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62854__Ribbins/Ribbins__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/62854__Ribbins",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Mar-2026.png"
     ]
 }

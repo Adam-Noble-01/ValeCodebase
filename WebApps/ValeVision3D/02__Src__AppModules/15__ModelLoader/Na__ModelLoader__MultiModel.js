@@ -59,7 +59,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // Captures: [1] model type indicator (BaseMeshModel|LineworkModel).
     // OrbitHelperCube: Matches OrbitHelperCube GLB files exported from SketchUp for orbit target positioning.
     // ------------------------------------------------------------
-    const Na__ModelUrl__ParseRegex        = /(?:.*?__)?(ValeVision|NaModel)__(.+?)__(MeshModel|LineworkModel)__\.glb/i;
+    const Na__ModelUrl__ParseRegex        = /(?:.*?__)?(ValeVision|NaModel|TrueVision)__(.+?)__(MeshModel|LineworkModel)__\.glb/i;
     const Na__ModelUrl__LegacyParseRegex  = /__(BaseMeshModel|LineworkModel|MeshModel)__/i;
     const Na__ModelUrl__LegacyCategoryKey = "ValeVision__LegacyModel";   // <-- Fallback category for legacy URLs
     const Na__ModelUrl__OrbitCubeRegex    = /OrbitHelperCube__MeshModel__\.glb$/i;  // <-- Orbit helper cube detection

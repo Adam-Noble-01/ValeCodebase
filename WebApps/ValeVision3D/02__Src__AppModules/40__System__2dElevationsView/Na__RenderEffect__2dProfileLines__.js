@@ -136,10 +136,6 @@
         function renderProfileNormals(camera) {
             if (!camera) return;
 
-            if (pipeline.profileLinesPassRef) {
-                pipeline.profileLinesPassRef.material.uniforms.u_edgeWidth.value = PROFILE_2D__DEFAULT_EDGE_WIDTH; // <-- Fixed width for ortho
-            }
-
             if (sceneCacheDirty) {
                 rebuildSceneCache();
             }

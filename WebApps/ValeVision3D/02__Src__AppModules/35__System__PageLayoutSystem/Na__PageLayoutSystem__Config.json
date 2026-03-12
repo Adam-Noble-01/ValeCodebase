@@ -12,7 +12,7 @@
         "PageLayout__PdfExport__Config__Orientation"             : "landscape",
         "PageLayout__PdfExport__Config__Unit"                    : "mm",
         "PageLayout__PdfExport__Config__Format"                  : "a3",
-        "PageLayout__PdfExport__Config__TargetDpi"               : 600,
+        "PageLayout__PdfExport__Config__TargetDpi"               : 450,
         "PageLayout__PdfExport__Config__JpegQuality"             : 1.0,
         "PageLayout__PdfExport__Config__Compress"                : true,
         "PageLayout__PdfExport__Config__FloatPrecision"          : "smart",

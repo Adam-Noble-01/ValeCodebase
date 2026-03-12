@@ -2,6 +2,76 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.7  -  12-Mar-2026
+### Page Layout System — Config Externalisation
+
+**Overview**
+- Created a standalone `Na__PageLayoutSystem__Config.json` that externalises every hard-coded parameter from the six Page Layout System JS modules.
+- All sub-modules now read their settings from `state.config` (attached at boot) with typed fallback defaults for graceful degradation if the config fetch fails.
+- Follows the project double-underscore naming convention (`PageLayout__Document__Config__WidthMm`, etc.) matching `Na__AppConfig__Main.json`.
+
+**Config File — `Na__PageLayoutSystem__Config.json`**
+- Four config sections covering the entire layout system:
+  - `PageLayout__Document__Config` — A3 dimensions, title block path, fit-to-page padding, initial image placement fraction.
+  - `PageLayout__PdfExport__Config` — PDF orientation, format, DPI, JPEG quality, compression, float precision, export filenames.
+  - `PageLayout__CanvasAppearance__Config` — background colour, paper shadow, selection handle appearance, image border styling.
+  - `PageLayout__Navigation__Config` — zoom min/max/factor, mouse hit radius, touch hit radius, minimum image size, minimum visible clipping.
+
+**Loading Strategy**
+- `Na__PageLayout__FetchConfig()` added to `SystemLogic__Main__` — fetches the JSON at boot with `try/catch` fallback.
+- `Na__PageLayout__ResolveDocumentConfig()` extracts document settings with per-key type checks and fallback values.
+- The full raw config object is attached to `state.config` so every sub-module reads its own section independently.
+- Helper functions (`CalculateFitToPage`, `CalculateInitialImageTransform`) refactored to accept their previously hard-coded values as parameters from the resolved config.
+
+**Sub-Module Config Resolution**
+- `PdfExport__A3__` — `Na__PageLayout__ResolvePdfConfig(state)` reads all export parameters; `CreateDocument` and `FlattenSheetToDataUrl` now use the resolved config.
+- `CanvasRenderPipeline__` — `Na__PageLayout__ResolveAppearanceConfig(state)` reads all visual styling; appearance object threaded through all draw functions.
+- `2dNavigationControls__` — `Na__PageLayout__ResolveNavConfig(state)` reads zoom limits and step; resolved once at init.
+- `Controls__Pc__` — `Na__PageLayout__ResolvePcConfig(state)` reads hit radius and minimum dimensions; removed obsolete render pipeline import.
+- `Controls__TouchScreen__` — `Na__PageLayout__ResolveTouchConfig(state)` reads touch hit radius, zoom limits, and minimum dimensions.
+
+**Files Added**
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Config.json`
+
+**Files Changed**
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__CanvasRenderPipeline__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__2dNavigationControls__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__Pc__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__Controls__TouchScreen__.js`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.0.6  -  12-Mar-2026
+### PDF Export — Canvas Corruption Fix, JPEG Pipeline & Data Validation
+
+**Overview**
+- Diagnosed and fixed vertical-stripe corruption in exported PDFs caused by browsers silently capping the 600 dpi offscreen canvas (`9921 × 7016 px`, ~70 M pixels).
+- Switched the flattened sheet from PNG to JPEG (0.92 quality) for a 5-10× reduction in data URL size and memory pressure.
+- Added three layers of validation to prevent corrupt PDFs from being saved.
+
+**Root Cause — Canvas Dimension Capping**
+- At 600 dpi the A3 offscreen canvas requests 9921 × 7016 px (~278 MB RGBA buffer).
+- Some browser/GPU combinations silently allocate a smaller backing store while still reporting the requested `canvas.width`/`canvas.height`.
+- `toDataURL` then serializes pixel data with the wrong row stride, producing the characteristic vertical-stripe corruption visible in the PDF.
+
+**Canvas Allocation Validation**
+- After setting `canvas.width` and `canvas.height`, a new guard checks the actual allocation matches the request; returns `null` with a descriptive console error if capped.
+- Added a `getContext('2d')` null-check for total allocation failure.
+
+**PNG → JPEG Switch**
+- `FlattenSheetToDataUrl` now serializes as `image/jpeg` at `Na__PageLayout__JPEG_QUALITY` (0.92) instead of `image/png`.
+- `addImage` format parameter changed from `'PNG'` to `'JPEG'` in both export functions.
+- New constants: `Na__PageLayout__JPEG_QUALITY`, `Na__PageLayout__MIN_DATAURL_LEN`.
+
+**Data URL Validation**
+- The returned data URL is checked for null, empty, or suspiciously short length (< 1000 chars) before being passed to jsPDF.
+- Both `ExportFullLayout` and `ExportImageOnly` now check for a `null` return from the flatten function and abort cleanly — no corrupt PDF is saved.
+
+**Files Changed**
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__PdfExport__A3__.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.0.5  -  12-Mar-2026
 ### Viewport Refresh — Camera Lens Slider & Post-Export Repaint
 

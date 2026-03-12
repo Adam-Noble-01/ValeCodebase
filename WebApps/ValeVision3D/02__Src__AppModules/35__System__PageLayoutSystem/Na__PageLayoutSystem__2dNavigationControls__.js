@@ -14,20 +14,48 @@
 // - Middle-click drag: pans the canvas view.
 // - Right-click drag: alternative pan for trackpad users.
 // - Two-finger pinch: zoom (touch devices), handled in touch controls module.
+// - Zoom limits and factor read from state.config
+//   (PageLayout__Navigation__Config section) with hard-coded fallbacks.
 // - Updates canvasTransform on shared state and requests redraw.
 //
 // =============================================================================
 
 
 // -----------------------------------------------------------------------------
-// REGION | Module Constants
+// REGION | Module Constants (Hard-Coded Fallback Defaults)
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Zoom Limits and Step
+    // MODULE CONSTANTS | Fallback Zoom Limits and Step
     // ------------------------------------------------------------
-    const Na__PageLayout__ZOOM_MIN      = 0.1;                           // <-- Minimum zoom (pixels per mm)
-    const Na__PageLayout__ZOOM_MAX      = 5.0;                           // <-- Maximum zoom (pixels per mm)
-    const Na__PageLayout__ZOOM_FACTOR   = 1.08;                          // <-- Zoom multiplier per wheel tick
+    const Na__PageLayout__FALLBACK_ZOOM_MIN    = 0.1;                             // <-- Default minimum zoom (pixels per mm)
+    const Na__PageLayout__FALLBACK_ZOOM_MAX    = 5.0;                             // <-- Default maximum zoom (pixels per mm)
+    const Na__PageLayout__FALLBACK_ZOOM_FACTOR = 1.08;                            // <-- Default zoom multiplier per wheel tick
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Config Resolution
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Resolve Navigation Config from State
+    // ------------------------------------------------------------
+    function Na__PageLayout__ResolveNavConfig(state) {
+        const section = (state && state.config) ? state.config['PageLayout__Navigation__Config'] : null;
+
+        return {
+            zoomMin    : (section && typeof section['PageLayout__Navigation__Config__ZoomMin'] === 'number')
+                            ? section['PageLayout__Navigation__Config__ZoomMin']
+                            : Na__PageLayout__FALLBACK_ZOOM_MIN,
+            zoomMax    : (section && typeof section['PageLayout__Navigation__Config__ZoomMax'] === 'number')
+                            ? section['PageLayout__Navigation__Config__ZoomMax']
+                            : Na__PageLayout__FALLBACK_ZOOM_MAX,
+            zoomFactor : (section && typeof section['PageLayout__Navigation__Config__ZoomFactor'] === 'number')
+                            ? section['PageLayout__Navigation__Config__ZoomFactor']
+                            : Na__PageLayout__FALLBACK_ZOOM_FACTOR
+        };
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -42,6 +70,7 @@
     function Na__PageLayout__InitNavigation(canvas, state, requestRedraw) {
         if (!canvas || !state) return; // <-- Guard against missing canvas or state
 
+        const navConfig  = Na__PageLayout__ResolveNavConfig(state); // <-- Resolve once at init
         let isPanning    = false; // <-- Pan drag active flag
         let panStartX    = 0; // <-- Pan drag start X (screen pixels)
         let panStartY    = 0; // <-- Pan drag start Y (screen pixels)
@@ -65,11 +94,11 @@
             // ------------------------------------------------------------
             let newZoom; // <-- Target zoom level
             if (event.deltaY < 0) { // <-- Scroll up = zoom in
-                newZoom = oldZoom * Na__PageLayout__ZOOM_FACTOR; // <-- Increase zoom
+                newZoom = oldZoom * navConfig.zoomFactor; // <-- Increase zoom
             } else { // <-- Scroll down = zoom out
-                newZoom = oldZoom / Na__PageLayout__ZOOM_FACTOR; // <-- Decrease zoom
+                newZoom = oldZoom / navConfig.zoomFactor; // <-- Decrease zoom
             }
-            newZoom = Math.max(Na__PageLayout__ZOOM_MIN, Math.min(Na__PageLayout__ZOOM_MAX, newZoom)); // <-- Clamp zoom
+            newZoom = Math.max(navConfig.zoomMin, Math.min(navConfig.zoomMax, newZoom)); // <-- Clamp zoom
 
             // Zoom toward cursor position
             // ------------------------------------------------------------

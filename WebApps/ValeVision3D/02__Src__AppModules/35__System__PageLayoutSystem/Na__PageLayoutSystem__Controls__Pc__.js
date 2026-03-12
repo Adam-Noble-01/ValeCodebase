@@ -16,29 +16,21 @@
 // - Left-click drag on edge handle: clip/trim the image in that axis.
 // - Cursor feedback changes based on hover state.
 // - All coordinates transformed through canvasTransform for accurate interaction.
+// - Hit-test radius and minimum image dimensions read from state.config
+//   (PageLayout__Navigation__Config section) with hard-coded fallbacks.
 //
 // =============================================================================
 
 
 // -----------------------------------------------------------------------------
-// REGION | Module Imports
+// REGION | Module Constants (Hard-Coded Fallback Defaults)
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | Canvas Render Pipeline Constants
+    // MODULE CONSTANTS | Fallback Handle Hit-Test Radius
     // ------------------------------------------------------------
-    import { Na__PageLayout__HANDLE_SIZE_PX } from './Na__PageLayoutSystem__CanvasRenderPipeline__.js';
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Module Constants
-// -----------------------------------------------------------------------------
-
-    // MODULE CONSTANTS | Handle Hit-Test Radius
-    // ------------------------------------------------------------
-    const Na__PageLayout__HANDLE_HIT_RADIUS_PX = 10; // <-- Hit radius in CSS pixels for handle detection
+    const Na__PageLayout__FALLBACK_HIT_RADIUS_PX  = 10;                          // <-- Default hit radius in CSS pixels for handle detection
+    const Na__PageLayout__FALLBACK_MIN_IMAGE_MM   = 10;                          // <-- Default minimum image size in mm
+    const Na__PageLayout__FALLBACK_MIN_VISIBLE_MM = 10;                          // <-- Default minimum visible content when clipping in mm
     // ------------------------------------------------------------
 
 
@@ -77,6 +69,32 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Config Resolution
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Resolve PC Interaction Config from State
+    // ------------------------------------------------------------
+    function Na__PageLayout__ResolvePcConfig(state) {
+        const section = (state && state.config) ? state.config['PageLayout__Navigation__Config'] : null;
+
+        return {
+            hitRadiusPx  : (section && typeof section['PageLayout__Navigation__Config__HandleHitRadiusPx'] === 'number')
+                                ? section['PageLayout__Navigation__Config__HandleHitRadiusPx']
+                                : Na__PageLayout__FALLBACK_HIT_RADIUS_PX,
+            minImageMm   : (section && typeof section['PageLayout__Navigation__Config__MinImageSizeMm'] === 'number')
+                                ? section['PageLayout__Navigation__Config__MinImageSizeMm']
+                                : Na__PageLayout__FALLBACK_MIN_IMAGE_MM,
+            minVisibleMm : (section && typeof section['PageLayout__Navigation__Config__MinVisibleMm'] === 'number')
+                                ? section['PageLayout__Navigation__Config__MinVisibleMm']
+                                : Na__PageLayout__FALLBACK_MIN_VISIBLE_MM
+        };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Helper Functions
 // -----------------------------------------------------------------------------
 
@@ -92,10 +110,10 @@
 
     // HELPER FUNCTION | Hit-Test Handles and Image Body
     // ------------------------------------------------------------
-    function Na__PageLayout__HitTest(screenX, screenY, state) {
+    function Na__PageLayout__HitTest(screenX, screenY, state, hitRadiusPx) {
         const ct  = state.canvasTransform; // <-- Canvas transform shorthand
         const it  = state.imageTransform; // <-- Image transform shorthand
-        const hit = Na__PageLayout__HANDLE_HIT_RADIUS_PX; // <-- Hit radius in CSS pixels
+        const hit = hitRadiusPx; // <-- Hit radius in CSS pixels
 
         // Convert image corners to screen coordinates
         // ------------------------------------------------------------
@@ -108,22 +126,22 @@
 
         // Check corner handles first (highest priority)
         // ------------------------------------------------------------
-        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgTop) < hit)       return HANDLE_TL; // <-- Top-left
-        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TR; // <-- Top-right
-        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BL; // <-- Bottom-left
-        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgBottom) < hit)   return HANDLE_BR; // <-- Bottom-right
+        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgTop) < hit)       return HANDLE_TL;
+        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TR;
+        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BL;
+        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgBottom) < hit)   return HANDLE_BR;
 
         // Check edge midpoint handles
         // ------------------------------------------------------------
-        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TC; // <-- Top-center
-        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BC; // <-- Bottom-center
-        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgMidY) < hit)      return HANDLE_LC; // <-- Left-center
-        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgMidY) < hit)     return HANDLE_RC; // <-- Right-center
+        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgTop) < hit)      return HANDLE_TC;
+        if (Math.abs(screenX - imgMidX) < hit && Math.abs(screenY - imgBottom) < hit)    return HANDLE_BC;
+        if (Math.abs(screenX - imgLeft) < hit && Math.abs(screenY - imgMidY) < hit)      return HANDLE_LC;
+        if (Math.abs(screenX - imgRight) < hit && Math.abs(screenY - imgMidY) < hit)     return HANDLE_RC;
 
         // Check image body (move region)
         // ------------------------------------------------------------
         if (screenX >= imgLeft && screenX <= imgRight && screenY >= imgTop && screenY <= imgBottom) {
-            return HANDLE_BODY; // <-- Inside image body
+            return HANDLE_BODY;
         }
 
         return HANDLE_NONE; // <-- No hit
@@ -153,6 +171,7 @@
     function Na__PageLayout__InitPcControls(canvas, state, requestRedraw) {
         if (!canvas || !state) return; // <-- Guard against missing canvas or state
 
+        const pcConfig   = Na__PageLayout__ResolvePcConfig(state); // <-- Resolve once at init
         let activeHandle = HANDLE_NONE; // <-- Currently active drag handle
         let isDragging   = false; // <-- Drag active flag
         let dragStartMm  = { x: 0, y: 0 }; // <-- Mouse position at drag start (mm)
@@ -169,7 +188,7 @@
             const screenX = event.clientX - rect.left; // <-- Mouse X in CSS pixels
             const screenY = event.clientY - rect.top; // <-- Mouse Y in CSS pixels
 
-            const hitResult = Na__PageLayout__HitTest(screenX, screenY, state); // <-- Perform hit-test
+            const hitResult = Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx);
 
             if (hitResult === HANDLE_NONE) {
                 state.isImageSelected = false; // <-- Deselect image
@@ -184,10 +203,10 @@
             isDragging   = true; // <-- Set drag active
             activeHandle = hitResult; // <-- Store active handle
 
-            const mmPos  = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
+            const mmPos  = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
             dragStartMm  = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
 
-            dragStartTransform = { // <-- Store initial image transform
+            dragStartTransform = {
                 x          : state.imageTransform.x,
                 y          : state.imageTransform.y,
                 width      : state.imageTransform.width,
@@ -227,7 +246,7 @@
                 // ------------------------------------------------------------
                 if (!state.isImageSelected) return; // <-- No cursor feedback when deselected
 
-                const hoverResult = Na__PageLayout__HitTest(screenX, screenY, state); // <-- Hit-test for cursor
+                const hoverResult = Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx);
                 Na__PageLayout__ClearCursorClasses(canvas); // <-- Clear previous cursor
                 const cursorClass = Na__PageLayout__HandleCursorMap[hoverResult]; // <-- Get cursor class
                 if (cursorClass) canvas.classList.add(cursorClass); // <-- Apply cursor
@@ -236,76 +255,54 @@
 
             // Active drag - update image transform
             // ------------------------------------------------------------
-            const mmPos = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
+            const mmPos = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
             const dx    = mmPos.x - dragStartMm.x; // <-- Delta X in mm
             const dy    = mmPos.y - dragStartMm.y; // <-- Delta Y in mm
             const it    = state.imageTransform; // <-- Shorthand for image transform
 
             if (activeHandle === HANDLE_BODY) {
-                // Move image
-                // ------------------------------------------------------------
                 it.x = dragStartTransform.x + dx; // <-- Update X position
                 it.y = dragStartTransform.y + dy; // <-- Update Y position
             }
             else if (activeHandle === HANDLE_BR) {
-                // Bottom-right corner: proportional resize from top-left anchor
-                // ------------------------------------------------------------
-                const newWidth = Math.max(10, dragStartTransform.width + dx); // <-- Minimum 10mm width
-                it.width  = newWidth; // <-- Update width
-                it.height = newWidth / imageAspect; // <-- Maintain aspect ratio
+                const newWidth = Math.max(pcConfig.minImageMm, dragStartTransform.width + dx);
+                it.width  = newWidth;
+                it.height = newWidth / imageAspect;
             }
             else if (activeHandle === HANDLE_TL) {
-                // Top-left corner: proportional resize from bottom-right anchor
-                // ------------------------------------------------------------
-                const newWidth = Math.max(10, dragStartTransform.width - dx); // <-- Calculate new width
-                it.width  = newWidth; // <-- Update width
-                it.height = newWidth / imageAspect; // <-- Maintain aspect ratio
-                it.x      = dragStartTransform.x + dragStartTransform.width - newWidth; // <-- Anchor bottom-right
-                it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect); // <-- Anchor bottom-right
+                const newWidth = Math.max(pcConfig.minImageMm, dragStartTransform.width - dx);
+                it.width  = newWidth;
+                it.height = newWidth / imageAspect;
+                it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
+                it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect);
             }
             else if (activeHandle === HANDLE_TR) {
-                // Top-right corner: proportional resize from bottom-left anchor
-                // ------------------------------------------------------------
-                const newWidth = Math.max(10, dragStartTransform.width + dx); // <-- Calculate new width
-                it.width  = newWidth; // <-- Update width
-                it.height = newWidth / imageAspect; // <-- Maintain aspect ratio
-                it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect); // <-- Anchor bottom-left
+                const newWidth = Math.max(pcConfig.minImageMm, dragStartTransform.width + dx);
+                it.width  = newWidth;
+                it.height = newWidth / imageAspect;
+                it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect);
             }
             else if (activeHandle === HANDLE_BL) {
-                // Bottom-left corner: proportional resize from top-right anchor
-                // ------------------------------------------------------------
-                const newWidth = Math.max(10, dragStartTransform.width - dx); // <-- Calculate new width
-                it.width  = newWidth; // <-- Update width
-                it.height = newWidth / imageAspect; // <-- Maintain aspect ratio
-                it.x      = dragStartTransform.x + dragStartTransform.width - newWidth; // <-- Anchor top-right
+                const newWidth = Math.max(pcConfig.minImageMm, dragStartTransform.width - dx);
+                it.width  = newWidth;
+                it.height = newWidth / imageAspect;
+                it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
             }
             else if (activeHandle === HANDLE_RC) {
-                // Right-center edge: clip image from right
-                // ------------------------------------------------------------
-                const minVisible = 10; // <-- Minimum visible width in mm
-                const maxClip    = dragStartTransform.width - minVisible - (dragStartTransform.clipLeft || 0); // <-- Maximum right clip
-                it.clipRight     = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx)); // <-- Update right clip
+                const maxClip = dragStartTransform.width - pcConfig.minVisibleMm - (dragStartTransform.clipLeft || 0);
+                it.clipRight  = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx));
             }
             else if (activeHandle === HANDLE_LC) {
-                // Left-center edge: clip image from left
-                // ------------------------------------------------------------
-                const minVisible = 10; // <-- Minimum visible width in mm
-                const maxClip    = dragStartTransform.width - minVisible - (dragStartTransform.clipRight || 0); // <-- Maximum left clip
-                it.clipLeft      = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx)); // <-- Update left clip
+                const maxClip = dragStartTransform.width - pcConfig.minVisibleMm - (dragStartTransform.clipRight || 0);
+                it.clipLeft   = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx));
             }
             else if (activeHandle === HANDLE_BC) {
-                // Bottom-center edge: clip image from bottom
-                // ------------------------------------------------------------
-                const minVisible = 10; // <-- Minimum visible height in mm
-                const maxClip    = dragStartTransform.height - minVisible - (dragStartTransform.clipTop || 0); // <-- Maximum bottom clip
-                it.clipBottom    = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy)); // <-- Update bottom clip
+                const maxClip = dragStartTransform.height - pcConfig.minVisibleMm - (dragStartTransform.clipTop || 0);
+                it.clipBottom = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy));
             }
             else if (activeHandle === HANDLE_TC) {
-                // Top-center edge: clip image from top
-                // ------------------------------------------------------------
-                const minVisible = 10; // <-- Minimum visible height in mm
-                const maxClip    = dragStartTransform.height - minVisible - (dragStartTransform.clipBottom || 0); // <-- Maximum top clip
-                it.clipTop       = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy)); // <-- Update top clip
+                const maxClip = dragStartTransform.height - pcConfig.minVisibleMm - (dragStartTransform.clipBottom || 0);
+                it.clipTop    = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy));
             }
 
             requestRedraw(); // <-- Trigger canvas redraw
@@ -329,7 +326,7 @@
                     const rect    = canvas.getBoundingClientRect(); // <-- Canvas bounding rect
                     const screenX = event.clientX - rect.left; // <-- Mouse position
                     const screenY = event.clientY - rect.top; // <-- Mouse position
-                    const hoverResult = Na__PageLayout__HitTest(screenX, screenY, state); // <-- Hit-test
+                    const hoverResult = Na__PageLayout__HitTest(screenX, screenY, state, pcConfig.hitRadiusPx);
                     const cursorClass = Na__PageLayout__HandleCursorMap[hoverResult]; // <-- Get cursor
                     if (cursorClass) canvas.classList.add(cursorClass); // <-- Apply hover cursor
                 }

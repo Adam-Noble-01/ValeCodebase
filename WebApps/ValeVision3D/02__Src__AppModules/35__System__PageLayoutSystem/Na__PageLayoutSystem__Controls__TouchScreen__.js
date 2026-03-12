@@ -18,21 +18,55 @@
 // - Distinguishes image interaction (single touch on image) from navigation
 //   gestures (two-finger touch).
 // - Uses preventDefault to suppress browser scroll/zoom during interaction.
+// - All interaction parameters read from state.config
+//   (PageLayout__Navigation__Config section) with hard-coded fallbacks.
 //
 // =============================================================================
 
 
 // -----------------------------------------------------------------------------
-// REGION | Module Constants
+// REGION | Module Constants (Hard-Coded Fallback Defaults)
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Touch Hit-Test Settings
+    // MODULE CONSTANTS | Fallback Touch Settings
     // ------------------------------------------------------------
-    const Na__PageLayout__TOUCH_HIT_RADIUS_PX = 20; // <-- Larger hit radius for fingers (CSS pixels)
-    const Na__PageLayout__MIN_IMAGE_SIZE_MM   = 10; // <-- Minimum image dimension in mm
-    const Na__PageLayout__MIN_VISIBLE_MM      = 10; // <-- Minimum visible content when clipping
-    const Na__PageLayout__ZOOM_MIN            = 0.1; // <-- Minimum zoom level
-    const Na__PageLayout__ZOOM_MAX            = 5.0; // <-- Maximum zoom level
+    const Na__PageLayout__FALLBACK_TOUCH_HIT_RADIUS_PX = 20;                     // <-- Default larger hit radius for fingers (CSS pixels)
+    const Na__PageLayout__FALLBACK_MIN_IMAGE_SIZE_MM   = 10;                     // <-- Default minimum image dimension in mm
+    const Na__PageLayout__FALLBACK_MIN_VISIBLE_MM      = 10;                     // <-- Default minimum visible content when clipping
+    const Na__PageLayout__FALLBACK_ZOOM_MIN            = 0.1;                    // <-- Default minimum zoom level
+    const Na__PageLayout__FALLBACK_ZOOM_MAX            = 5.0;                    // <-- Default maximum zoom level
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Config Resolution
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Resolve Touch Interaction Config from State
+    // ------------------------------------------------------------
+    function Na__PageLayout__ResolveTouchConfig(state) {
+        const section = (state && state.config) ? state.config['PageLayout__Navigation__Config'] : null;
+
+        return {
+            touchHitRadiusPx : (section && typeof section['PageLayout__Navigation__Config__TouchHitRadiusPx'] === 'number')
+                                    ? section['PageLayout__Navigation__Config__TouchHitRadiusPx']
+                                    : Na__PageLayout__FALLBACK_TOUCH_HIT_RADIUS_PX,
+            minImageSizeMm   : (section && typeof section['PageLayout__Navigation__Config__MinImageSizeMm'] === 'number')
+                                    ? section['PageLayout__Navigation__Config__MinImageSizeMm']
+                                    : Na__PageLayout__FALLBACK_MIN_IMAGE_SIZE_MM,
+            minVisibleMm     : (section && typeof section['PageLayout__Navigation__Config__MinVisibleMm'] === 'number')
+                                    ? section['PageLayout__Navigation__Config__MinVisibleMm']
+                                    : Na__PageLayout__FALLBACK_MIN_VISIBLE_MM,
+            zoomMin          : (section && typeof section['PageLayout__Navigation__Config__ZoomMin'] === 'number')
+                                    ? section['PageLayout__Navigation__Config__ZoomMin']
+                                    : Na__PageLayout__FALLBACK_ZOOM_MIN,
+            zoomMax          : (section && typeof section['PageLayout__Navigation__Config__ZoomMax'] === 'number')
+                                    ? section['PageLayout__Navigation__Config__ZoomMax']
+                                    : Na__PageLayout__FALLBACK_ZOOM_MAX
+        };
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -75,10 +109,10 @@
 
     // HELPER FUNCTION | Hit-Test for Touch (Larger Radius)
     // ------------------------------------------------------------
-    function Na__PageLayout__TouchHitTest(screenX, screenY, state) {
+    function Na__PageLayout__TouchHitTest(screenX, screenY, state, hitRadiusPx) {
         const ct  = state.canvasTransform; // <-- Canvas transform shorthand
         const it  = state.imageTransform; // <-- Image transform shorthand
-        const hit = Na__PageLayout__TOUCH_HIT_RADIUS_PX; // <-- Hit radius
+        const hit = hitRadiusPx; // <-- Hit radius from config
 
         // Convert image bounds to screen coordinates
         // ------------------------------------------------------------
@@ -125,10 +159,11 @@
     function Na__PageLayout__InitTouchControls(canvas, state, requestRedraw) {
         if (!canvas || !state) return; // <-- Guard against missing canvas or state
 
+        const touchConfig   = Na__PageLayout__ResolveTouchConfig(state); // <-- Resolve once at init
         let touchMode       = 'none'; // <-- Current touch mode: 'none', 'image-move', 'image-resize', 'nav-pinch'
         let activeHandle    = 'none'; // <-- Active handle during resize
         let dragStartMm     = { x: 0, y: 0 }; // <-- Touch start position in mm
-        let dragStartTransform = { x: 0, y: 0, width: 0, height: 0, clipTop: 0, clipRight: 0, clipBottom: 0, clipLeft: 0 }; // <-- Image transform at start
+        let dragStartTransform = { x: 0, y: 0, width: 0, height: 0, clipTop: 0, clipRight: 0, clipBottom: 0, clipLeft: 0 };
         let imageAspect     = 1; // <-- Image aspect ratio
 
         // Two-finger navigation state
@@ -171,16 +206,16 @@
                 const screenX = touches[0].clientX - rect.left; // <-- Touch X in CSS pixels
                 const screenY = touches[0].clientY - rect.top; // <-- Touch Y in CSS pixels
 
-                const hitResult = Na__PageLayout__TouchHitTest(screenX, screenY, state); // <-- Hit-test
+                const hitResult = Na__PageLayout__TouchHitTest(screenX, screenY, state, touchConfig.touchHitRadiusPx);
 
                 if (hitResult === 'body') {
                     event.preventDefault(); // <-- Suppress scroll
                     touchMode = 'image-move'; // <-- Set move mode
                     state.isImageSelected = true; // <-- Select image
 
-                    const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
+                    const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
                     dragStartMm   = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
-                    dragStartTransform = { // <-- Store initial transform
+                    dragStartTransform = {
                         ...state.imageTransform,
                         clipTop    : state.imageTransform.clipTop || 0,
                         clipRight  : state.imageTransform.clipRight || 0,
@@ -195,9 +230,9 @@
                     activeHandle = hitResult; // <-- Store active handle
                     state.isImageSelected = true; // <-- Select image
 
-                    const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
+                    const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
                     dragStartMm   = { x: mmPos.x, y: mmPos.y }; // <-- Store start position
-                    dragStartTransform = { // <-- Store initial transform
+                    dragStartTransform = {
                         ...state.imageTransform,
                         clipTop    : state.imageTransform.clipTop || 0,
                         clipRight  : state.imageTransform.clipRight || 0,
@@ -208,8 +243,6 @@
                     requestRedraw(); // <-- Show handles
                 }
                 else {
-                    // Touch on empty space: deselect
-                    // ------------------------------------------------------------
                     state.isImageSelected = false; // <-- Deselect image
                     touchMode = 'none'; // <-- No active mode
                     requestRedraw(); // <-- Hide handles
@@ -230,14 +263,14 @@
                 event.preventDefault(); // <-- Suppress browser zoom
 
                 const rect = canvas.getBoundingClientRect(); // <-- Canvas rect
-                const currentDistance = Na__PageLayout__TouchDistance(touches[0], touches[1]); // <-- Current distance
-                const currentMid     = Na__PageLayout__TouchMidpoint(touches[0], touches[1], rect); // <-- Current midpoint
+                const currentDistance = Na__PageLayout__TouchDistance(touches[0], touches[1]);
+                const currentMid     = Na__PageLayout__TouchMidpoint(touches[0], touches[1], rect);
 
                 // Calculate new zoom from pinch ratio
                 // ------------------------------------------------------------
                 const pinchRatio = currentDistance / pinchStartDistance; // <-- Pinch ratio
                 let newZoom      = pinchStartZoom * pinchRatio; // <-- Scale zoom by ratio
-                newZoom          = Math.max(Na__PageLayout__ZOOM_MIN, Math.min(Na__PageLayout__ZOOM_MAX, newZoom)); // <-- Clamp
+                newZoom          = Math.max(touchConfig.zoomMin, Math.min(touchConfig.zoomMax, newZoom)); // <-- Clamp
 
                 // Calculate pan delta from midpoint movement
                 // ------------------------------------------------------------
@@ -247,8 +280,8 @@
                 // Apply zoom toward pinch midpoint + pan
                 // ------------------------------------------------------------
                 const zoomRatio = newZoom / pinchStartZoom; // <-- Zoom change ratio
-                state.canvasTransform.offsetX = pinchStartMidX - (pinchStartMidX - pinchStartOffsetX) * zoomRatio + panDx; // <-- Update offset
-                state.canvasTransform.offsetY = pinchStartMidY - (pinchStartMidY - pinchStartOffsetY) * zoomRatio + panDy; // <-- Update offset
+                state.canvasTransform.offsetX = pinchStartMidX - (pinchStartMidX - pinchStartOffsetX) * zoomRatio + panDx;
+                state.canvasTransform.offsetY = pinchStartMidY - (pinchStartMidY - pinchStartOffsetY) * zoomRatio + panDy;
                 state.canvasTransform.zoom    = newZoom; // <-- Apply zoom
 
                 requestRedraw(); // <-- Trigger redraw
@@ -263,59 +296,55 @@
             const rect    = canvas.getBoundingClientRect(); // <-- Canvas rect
             const screenX = touches[0].clientX - rect.left; // <-- Touch X
             const screenY = touches[0].clientY - rect.top; // <-- Touch Y
-            const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform); // <-- Convert to mm
+            const mmPos   = Na__PageLayout__ScreenToDocMm(screenX, screenY, state.canvasTransform);
             const dx      = mmPos.x - dragStartMm.x; // <-- Delta X in mm
             const dy      = mmPos.y - dragStartMm.y; // <-- Delta Y in mm
             const it      = state.imageTransform; // <-- Image transform shorthand
 
             if (touchMode === 'image-move') {
-                // Move image
-                // ------------------------------------------------------------
                 it.x = dragStartTransform.x + dx; // <-- Update X
                 it.y = dragStartTransform.y + dy; // <-- Update Y
             }
             else if (touchMode === 'image-resize') {
-                // Resize or clip image via active handle
-                // ------------------------------------------------------------
                 if (activeHandle === 'br') {
-                    const newWidth = Math.max(Na__PageLayout__MIN_IMAGE_SIZE_MM, dragStartTransform.width + dx);
+                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width + dx);
                     it.width  = newWidth;
                     it.height = newWidth / imageAspect;
                 }
                 else if (activeHandle === 'tl') {
-                    const newWidth = Math.max(Na__PageLayout__MIN_IMAGE_SIZE_MM, dragStartTransform.width - dx);
+                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width - dx);
                     it.width  = newWidth;
                     it.height = newWidth / imageAspect;
                     it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
                     it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect);
                 }
                 else if (activeHandle === 'tr') {
-                    const newWidth = Math.max(Na__PageLayout__MIN_IMAGE_SIZE_MM, dragStartTransform.width + dx);
+                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width + dx);
                     it.width  = newWidth;
                     it.height = newWidth / imageAspect;
                     it.y      = dragStartTransform.y + dragStartTransform.height - (newWidth / imageAspect);
                 }
                 else if (activeHandle === 'bl') {
-                    const newWidth = Math.max(Na__PageLayout__MIN_IMAGE_SIZE_MM, dragStartTransform.width - dx);
+                    const newWidth = Math.max(touchConfig.minImageSizeMm, dragStartTransform.width - dx);
                     it.width  = newWidth;
                     it.height = newWidth / imageAspect;
                     it.x      = dragStartTransform.x + dragStartTransform.width - newWidth;
                 }
                 else if (activeHandle === 'rc') {
-                    const maxClip = dragStartTransform.width - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipLeft || 0); // <-- Maximum right clip
-                    it.clipRight  = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx)); // <-- Update right clip
+                    const maxClip = dragStartTransform.width - touchConfig.minVisibleMm - (dragStartTransform.clipLeft || 0);
+                    it.clipRight  = Math.max(0, Math.min(maxClip, dragStartTransform.clipRight - dx));
                 }
                 else if (activeHandle === 'lc') {
-                    const maxClip = dragStartTransform.width - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipRight || 0); // <-- Maximum left clip
-                    it.clipLeft   = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx)); // <-- Update left clip
+                    const maxClip = dragStartTransform.width - touchConfig.minVisibleMm - (dragStartTransform.clipRight || 0);
+                    it.clipLeft   = Math.max(0, Math.min(maxClip, dragStartTransform.clipLeft + dx));
                 }
                 else if (activeHandle === 'bc') {
-                    const maxClip = dragStartTransform.height - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipTop || 0); // <-- Maximum bottom clip
-                    it.clipBottom = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy)); // <-- Update bottom clip
+                    const maxClip = dragStartTransform.height - touchConfig.minVisibleMm - (dragStartTransform.clipTop || 0);
+                    it.clipBottom = Math.max(0, Math.min(maxClip, dragStartTransform.clipBottom - dy));
                 }
                 else if (activeHandle === 'tc') {
-                    const maxClip = dragStartTransform.height - Na__PageLayout__MIN_VISIBLE_MM - (dragStartTransform.clipBottom || 0); // <-- Maximum top clip
-                    it.clipTop    = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy)); // <-- Update top clip
+                    const maxClip = dragStartTransform.height - touchConfig.minVisibleMm - (dragStartTransform.clipBottom || 0);
+                    it.clipTop    = Math.max(0, Math.min(maxClip, dragStartTransform.clipTop + dy));
                 }
             }
 
@@ -328,14 +357,10 @@
         // ------------------------------------------------------------
         const onTouchEnd = (event) => {
             if (event.touches.length === 0) {
-                // All fingers lifted
-                // ------------------------------------------------------------
                 touchMode    = 'none'; // <-- Reset mode
                 activeHandle = 'none'; // <-- Reset handle
             }
             else if (event.touches.length === 1 && touchMode === 'nav-pinch') {
-                // Transitioned from two-finger to one-finger: cancel nav
-                // ------------------------------------------------------------
                 touchMode = 'none'; // <-- Stop navigation
             }
         };

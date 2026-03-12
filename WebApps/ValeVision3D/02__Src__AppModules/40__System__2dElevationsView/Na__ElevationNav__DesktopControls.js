@@ -56,7 +56,11 @@
 
     // FUNCTION | Initialize Desktop 2D Navigation Controls
     // ------------------------------------------------------------
-    function Na__ElevationNav__InitDesktopControls(camera, horizontalNormal, domElement) {
+    function Na__ElevationNav__InitDesktopControls(camera, horizontalNormal, domElement, navConfig) {
+        const ZOOM_STEP     = (navConfig && navConfig.zoomStep) || Na__DesktopNav__ZOOM_STEP; // <-- Config or fallback
+        const ZOOM_MIN      = (navConfig && navConfig.zoomMin)  || Na__DesktopNav__ZOOM_MIN;  // <-- Config or fallback
+        const ZOOM_MAX      = (navConfig && navConfig.zoomMax)  || Na__DesktopNav__ZOOM_MAX;  // <-- Config or fallback
+
         let active          = false;                                              // <-- Controls currently enabled
         let isPanning       = false;                                              // <-- Pan drag in progress
         let panStartX       = 0;                                                  // <-- Pointer X at pan start
@@ -138,9 +142,9 @@
             event.preventDefault();
 
             if (event.deltaY > 0) {
-                orthoHalfHeight = Math.min(orthoHalfHeight / Na__DesktopNav__ZOOM_STEP, Na__DesktopNav__ZOOM_MAX);
+                orthoHalfHeight = Math.min(orthoHalfHeight / ZOOM_STEP, ZOOM_MAX);
             } else {
-                orthoHalfHeight = Math.max(orthoHalfHeight * Na__DesktopNav__ZOOM_STEP, Na__DesktopNav__ZOOM_MIN);
+                orthoHalfHeight = Math.max(orthoHalfHeight * ZOOM_STEP, ZOOM_MIN);
             }
 
             updateFrustum();

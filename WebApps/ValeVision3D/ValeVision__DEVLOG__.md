@@ -2,6 +2,50 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.8  -  12-Mar-2026
+### Elevation View System — 2D Elevation Tool
+
+**Overview**
+- New Elevation View tool allowing users to click a building face, place a configurable plane, and switch to a true orthographic 2D elevation view with independent profile lines rendering and 2D navigation controls.
+
+**Elevation View — Core System (`Na__ElevationView__SystemLogic.js`)**
+- Click any building face to define the elevation direction via raycasting and XZ-projected normals.
+- Semi-transparent red-tinted plane spawns offset from the selected face with directional corner arrows indicating the camera look direction.
+- Inner drag-handle rectangle with "Click and drag to set plane" label — only clicking this smaller region initiates constrained plane dragging along the face normal axis.
+- Orthographic camera created and aligned to the horizontal face normal for perfect parallel projection.
+- View switching between perspective orbit (3D) and orthographic elevation (2D) with automatic plane hide/show.
+- Left-click-only drag restriction with orbit controls suppressed during drag and restored on release.
+
+**2D Profile Lines Renderer (`Na__RenderEffect__2dProfileLines__.js`)**
+- Independent 2D profile lines module sharing the 3D system's normal and colour render targets.
+- Renders with the ortho camera instead of the captured perspective camera, fixing stale/misaligned profile line artifacts.
+- Fixed edge width (no distance-based scaling) set once on activation from config, simplifying the 2D render pipeline.
+- Render loop dynamically switches between 3D and 2D profile lines based on elevation mode state.
+
+**2D Navigation Controls**
+- `Na__ElevationNav__DesktopControls.js` — middle mouse + drag or right-click + drag for pan; scroll wheel for zoom; directly manipulates ortho camera position and frustum.
+- `Na__ElevationNav__TouchScreenControls.js` — single finger drag for pan; two-finger pinch for zoom with simultaneous pan; prevents default touch behaviour.
+- Controls activate on entering elevation view and deactivate on return to 3D.
+- Zoom step, min, and max driven by config JSON with fallback defaults.
+
+**Elevation View Config (`Na__ElevationView__Config.json`)**
+- Four config sections: Plane, Camera, 2dProfileLines, Navigation.
+- Plane section drives outer plane dimensions/appearance, inner drag handle size/opacity, label text, and directional arrow length/colour.
+- Camera section covers ortho frustum half-height, camera distance, click threshold, and drag sensitivity.
+- Async `fetch()` at init with per-key fallback defaults for graceful degradation.
+
+**3D Fog Disabled in Elevation Mode**
+- `uFogEnabled` uniform toggled to 0.0 when entering ortho view, restored when returning to 3D.
+- Placeholder for future 2D fog plane system.
+
+**UI Controls (`Na__UiFeature__ElevationView__Controls.js`)**
+- Elevation View dropdown menu with "View Elevation", "Back To 3D", "Toggle Elevation Plane", and "Reselect Elevation Plane" actions.
+- State-driven button visibility reacting to custom `na-elevation-state-changed` events.
+
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.0.7  -  12-Mar-2026
 ### Page Layout System — Config Externalisation
 

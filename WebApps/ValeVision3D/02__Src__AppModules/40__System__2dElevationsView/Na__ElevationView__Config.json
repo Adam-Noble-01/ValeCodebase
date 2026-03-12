@@ -9,7 +9,14 @@
         "ElevationView__Plane__Config__EdgeColor"           : "#ff3333",
         "ElevationView__Plane__Config__LabelText"           : "Click and drag to set plane",
         "ElevationView__Plane__Config__LabelColor"          : "#cc3333",
-        "ElevationView__Plane__Config__LabelOpacity"        : 0.35
+        "ElevationView__Plane__Config__LabelOpacity"        : 0.35,
+        "ElevationView__Plane__Config__HandleWidthUnits"    : 12,
+        "ElevationView__Plane__Config__HandleHeightUnits"   : 5,
+        "ElevationView__Plane__Config__HandleFillColor"     : "#ff6666",
+        "ElevationView__Plane__Config__HandleFillOpacity"   : 0.12,
+        "ElevationView__Plane__Config__HandleEdgeColor"     : "#ff3333",
+        "ElevationView__Plane__Config__ArrowLength"         : 5,
+        "ElevationView__Plane__Config__ArrowColor"          : "#ff3333"
     },
     "ElevationView__Camera__Config": {
         "ElevationView__Camera__Config__Description"        : "Orthographic camera setup, click detection, and drag sensitivity parameters.",
@@ -20,7 +27,7 @@
     },
     "ElevationView__2dProfileLines__Config": {
         "ElevationView__2dProfileLines__Config__Description": "Fixed profile line parameters for the orthographic 2D elevation renderer.",
-        "ElevationView__2dProfileLines__Config__EdgeWidth"  : 1.0
+        "ElevationView__2dProfileLines__Config__EdgeWidth"  : 0.5
     },
     "ElevationView__Navigation__Config": {
         "ElevationView__Navigation__Config__Description"    : "Zoom limits and scroll-wheel zoom factor for 2D elevation navigation.",

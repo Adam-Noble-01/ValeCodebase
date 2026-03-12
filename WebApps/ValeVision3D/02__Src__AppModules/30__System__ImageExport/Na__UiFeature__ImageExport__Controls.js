@@ -95,7 +95,7 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Download Image
+    // HELPER FUNCTION | Download Image from Data URL
     // ------------------------------------------------------------
     function Na__UiFeature__DownloadImage(dataUrl, filename) {
         const link = document.createElement('a');
@@ -104,6 +104,21 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Download Image from Blob via Object URL
+    // ------------------------------------------------------------
+    function Na__UiFeature__DownloadBlob(blob, filename) {
+        const url  = URL.createObjectURL(blob);   // <-- Create temporary object URL from blob
+        const link = document.createElement('a');
+        link.href     = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);                 // <-- Free memory immediately after triggering download
     }
     // ------------------------------------------------------------
 
@@ -140,115 +155,144 @@
 
 
     // -------------------------------------------------------------------------
-    // REGION | Shared Render-to-DataURL Helper
+    // REGION | Shared Render-to-Canvas Helper
     // -------------------------------------------------------------------------
 
-    // FUNCTION | Render Scene to DataURL with Current Export Settings
+    // FUNCTION | Render Scene to Canvas with Current Export Settings
     // ------------------------------------------------------------
-    // Shared by both "Export Now" and "Layout View" handlers.
+    // Shared by both "Download Image" and "Layout View" handlers.
     // Renders the scene at the configured resolution and aspect ratio,
     // applies post-processing if enhance is enabled, and returns an
-    // object with the dataUrl and image metadata.
+    // object with the captured canvas and image metadata.
     //
-    // Returns: { dataUrl, width, height, aspectRatio }
+    // Always copies the WebGL framebuffer into a 2D offscreen canvas
+    // immediately after render() to guarantee reliable pixel readback,
+    // regardless of the renderer's preserveDrawingBuffer setting.
+    //
+    // Returns: { canvas, width, height, aspectRatio }
     // ------------------------------------------------------------
-    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
+    function Na__UiFeature__RenderToCanvas(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
 
         // NON-CUSTOM MODE | Render at current viewport size
         // ------------------------------------------------------------
         if (!isCustomEnabled) {
             const pipelineState = Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState); // <-- Resolve render pipeline state
-            const composer = pipelineState.composer; // <-- Composer reference
+            const composer      = pipelineState.composer;                                            // <-- Composer reference
 
             if (composer) {
                 pipelineState.renderProfileNormals(); // <-- Refresh profile normals before compose render
-                composer.render(); // <-- Render via post-processing composer
+                composer.render();                    // <-- Render via post-processing composer
             } else {
                 renderer.render(scene, camera); // <-- Direct render fallback
             }
 
+            // Copy WebGL buffer to 2D canvas for reliable pixel readback
+            // ------------------------------------------------------------
+            const captureCanvas  = document.createElement('canvas'); // <-- Create offscreen 2D canvas
+            captureCanvas.width  = renderer.domElement.width;         // <-- Match renderer width
+            captureCanvas.height = renderer.domElement.height;        // <-- Match renderer height
+            const captureCtx     = captureCanvas.getContext('2d');    // <-- Get 2D context
+            captureCtx.drawImage(renderer.domElement, 0, 0);          // <-- Copy WebGL pixels immediately
+
             // Apply post-processing if enhance is enabled
             // ------------------------------------------------------------
-            let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
-            if (isEnhanceEnabled && postProcessConfig) {
-                const offscreenCanvas    = document.createElement('canvas'); // <-- Create offscreen canvas
-                offscreenCanvas.width    = renderer.domElement.width; // <-- Set width
-                offscreenCanvas.height   = renderer.domElement.height; // <-- Set height
-                const offscreenCtx       = offscreenCanvas.getContext('2d'); // <-- Get context
-                offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
-                finalCanvas              = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
-            }
+            const finalCanvas = (isEnhanceEnabled && postProcessConfig)
+                ? Na__PostProcess__RunPipeline(captureCanvas, postProcessConfig) // <-- Apply post-processing pipeline
+                : captureCanvas;                                                  // <-- Use capture canvas directly
 
-            const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
             return {
-                dataUrl     : dataUrl,                           // <-- PNG data URL
-                width       : renderer.domElement.width,         // <-- Rendered width in pixels
-                height      : renderer.domElement.height,        // <-- Rendered height in pixels
-                aspectRatio : null                               // <-- No custom aspect ratio (viewport native)
+                canvas      : finalCanvas,                 // <-- Final 2D canvas with rendered image
+                width       : renderer.domElement.width,   // <-- Rendered width in pixels
+                height      : renderer.domElement.height,  // <-- Rendered height in pixels
+                aspectRatio : null                         // <-- No custom aspect ratio (viewport native)
             };
         }
 
         // CUSTOM MODE | Render at configured aspect ratio and resolution
         // ------------------------------------------------------------
         const ratio         = Na__UiFeature__ParseAspectRatio(exportConfig.aspectRatios[ratioIndex]); // <-- Parse selected aspect ratio
-        const targetHeight  = exportConfig.resolutions[resIndex]; // <-- Target height from resolution slider
-        const targetWidth   = Math.round(targetHeight * (ratio.width / ratio.height)); // <-- Calculate width from ratio
+        const targetHeight  = exportConfig.resolutions[resIndex];                                      // <-- Target height from resolution slider
+        const targetWidth   = Math.round(targetHeight * (ratio.width / ratio.height));                 // <-- Calculate width from ratio
 
         const size           = renderer.getSize(new THREE.Vector2()); // <-- Store current renderer size
-        const pixelRatio     = renderer.getPixelRatio(); // <-- Store current pixel ratio
+        const pixelRatio     = renderer.getPixelRatio();               // <-- Store current pixel ratio
         const pipelineState  = Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState); // <-- Resolve render pipeline state
-        const composer       = pipelineState.composer; // <-- Composer reference
-        const originalAspect = camera.aspect; // <-- Store original camera aspect
+        const composer       = pipelineState.composer;                 // <-- Composer reference
+        const originalAspect = camera.aspect;                          // <-- Store original camera aspect
 
-        renderer.setPixelRatio(1); // <-- Set pixel ratio to 1 for exact resolution
+        renderer.setPixelRatio(1);                   // <-- Set pixel ratio to 1 for exact resolution
         renderer.setSize(targetWidth, targetHeight); // <-- Resize renderer to target dimensions
 
         camera.aspect = targetWidth / targetHeight; // <-- Update camera aspect ratio
-        camera.updateProjectionMatrix(); // <-- Apply camera changes
+        camera.updateProjectionMatrix();             // <-- Apply camera changes
 
         if (composer) {
-            composer.setSize(targetWidth, targetHeight); // <-- Resize composer
+            composer.setSize(targetWidth, targetHeight);                  // <-- Resize composer
             pipelineState.setProfileLinesSize(targetWidth, targetHeight); // <-- Resize profile lines render target
-            pipelineState.setFxaaSize(targetWidth, targetHeight); // <-- Resize FXAA resolution uniform
-            pipelineState.renderProfileNormals(); // <-- Refresh profile normals at export dimensions
-            composer.render(); // <-- Render via composer
+            pipelineState.setFxaaSize(targetWidth, targetHeight);         // <-- Resize FXAA resolution uniform
+            pipelineState.renderProfileNormals();                         // <-- Refresh profile normals at export dimensions
+            composer.render();                                            // <-- Render via composer
         } else {
             renderer.render(scene, camera); // <-- Direct render fallback
         }
 
+        // Copy WebGL buffer to 2D canvas for reliable pixel readback
+        // ------------------------------------------------------------
+        const captureCanvas  = document.createElement('canvas'); // <-- Create offscreen 2D canvas
+        captureCanvas.width  = targetWidth;                       // <-- Match target width
+        captureCanvas.height = targetHeight;                      // <-- Match target height
+        const captureCtx     = captureCanvas.getContext('2d');    // <-- Get 2D context
+        captureCtx.drawImage(renderer.domElement, 0, 0);          // <-- Copy WebGL pixels immediately
+
         // Apply post-processing if enhance is enabled
         // ------------------------------------------------------------
-        let finalCanvas = renderer.domElement; // <-- Default to renderer canvas
-        if (isEnhanceEnabled && postProcessConfig) {
-            const offscreenCanvas    = document.createElement('canvas'); // <-- Create offscreen canvas
-            offscreenCanvas.width    = targetWidth; // <-- Set width
-            offscreenCanvas.height   = targetHeight; // <-- Set height
-            const offscreenCtx       = offscreenCanvas.getContext('2d'); // <-- Get context
-            offscreenCtx.drawImage(renderer.domElement, 0, 0); // <-- Copy renderer canvas
-            finalCanvas              = Na__PostProcess__RunPipeline(offscreenCanvas, postProcessConfig); // <-- Apply post-processing
-        }
-
-        const dataUrl = finalCanvas.toDataURL('image/png'); // <-- Get data URL from final canvas
+        const finalCanvas = (isEnhanceEnabled && postProcessConfig)
+            ? Na__PostProcess__RunPipeline(captureCanvas, postProcessConfig) // <-- Apply post-processing pipeline
+            : captureCanvas;                                                  // <-- Use capture canvas directly
 
         // Restore renderer, camera, and composer to original state
         // ------------------------------------------------------------
         camera.aspect = originalAspect; // <-- Restore camera aspect
         camera.updateProjectionMatrix(); // <-- Apply camera restore
 
-        renderer.setPixelRatio(pixelRatio); // <-- Restore pixel ratio
-        renderer.setSize(size.x, size.y); // <-- Restore renderer size
+        renderer.setPixelRatio(pixelRatio);  // <-- Restore pixel ratio
+        renderer.setSize(size.x, size.y);    // <-- Restore renderer size
         if (composer) {
-            composer.setSize(size.x, size.y); // <-- Restore composer size
-            pipelineState.setProfileLinesSize(size.x, size.y); // <-- Restore profile lines render target size
-            pipelineState.setFxaaSize(size.x, size.y); // <-- Restore FXAA resolution uniform
-            pipelineState.renderProfileNormals(); // <-- Refresh profile normals for live viewport after restore
+            composer.setSize(size.x, size.y);                              // <-- Restore composer size
+            pipelineState.setProfileLinesSize(size.x, size.y);             // <-- Restore profile lines render target size
+            pipelineState.setFxaaSize(size.x, size.y);                     // <-- Restore FXAA resolution uniform
+            pipelineState.renderProfileNormals();                           // <-- Refresh profile normals for live viewport after restore
         }
 
         return {
-            dataUrl     : dataUrl,                               // <-- PNG data URL
-            width       : targetWidth,                           // <-- Rendered width in pixels
-            height      : targetHeight,                          // <-- Rendered height in pixels
-            aspectRatio : exportConfig.aspectRatios[ratioIndex]  // <-- Selected aspect ratio string
+            canvas      : finalCanvas,                            // <-- Final 2D canvas with rendered image
+            width       : targetWidth,                            // <-- Rendered width in pixels
+            height      : targetHeight,                           // <-- Rendered height in pixels
+            aspectRatio : exportConfig.aspectRatios[ratioIndex]   // <-- Selected aspect ratio string
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render Scene to DataURL - Wrapper for Layout View
+    // ------------------------------------------------------------
+    // Thin wrapper around Na__UiFeature__RenderToCanvas for the
+    // Layout View path, which requires a PNG data URL string to
+    // pass to the Page Layout System via window globals.
+    //
+    // Returns: { dataUrl, width, height, aspectRatio }
+    // ------------------------------------------------------------
+    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
+        const result = Na__UiFeature__RenderToCanvas(           // <-- Delegate to canvas render helper
+            renderer, scene, camera, getRenderPipelineState,
+            postProcessConfig, isEnhanceEnabled,
+            isCustomEnabled, exportConfig, ratioIndex, resIndex
+        );
+        return {
+            dataUrl     : result.canvas.toDataURL('image/png'), // <-- Encode canvas to PNG data URL string
+            width       : result.width,                          // <-- Pass through width
+            height      : result.height,                         // <-- Pass through height
+            aspectRatio : result.aspectRatio                     // <-- Pass through aspect ratio
         };
     }
     // ------------------------------------------------------------
@@ -389,19 +433,80 @@
         // ------------------------------------------------------------
         // SUB FUNCTION | Handle Export Now Action
         // ------------------------------------------------------------
+        let downloadInProgress = false;                                    // <-- Guard against double-click
+
         exportButton.addEventListener('click', () => {
-            const result = Na__UiFeature__RenderToDataUrl( // <-- Render using shared helper
-                renderer, scene, camera, getRenderPipelineState,
-                postProcessConfig, isEnhanceEnabled,
-                isCustomEnabled, exportConfig, ratioIndex, resIndex
-            );
+            if (downloadInProgress) return;                                // <-- Ignore if already running
+            downloadInProgress = true;                                     // <-- Lock
 
-            const filename = isCustomEnabled // <-- Generate filename based on mode
-                ? `ValeVision3D__${result.width}x${result.height}.png`
-                : 'ValeVision3D__Viewport.png';
+            // DOM references for layout loading overlay
+            // ------------------------------------------------------------
+            const loadingOverlay = document.getElementById('naLayoutLoadingOverlay'); // <-- Overlay container
+            const loadingStatus  = document.getElementById('naLayoutLoadingStatus');  // <-- Status text element
 
-            Na__UiFeature__DownloadImage(result.dataUrl, filename); // <-- Download the rendered image
-            Na__RenderLoop__RequestRender();                         // <-- Refresh viewport after renderer restore
+            // SHOW OVERLAY | Phase 1 - "Rendering Your Image..."
+            // ------------------------------------------------------------
+            exportButton.classList.add('is-loading');                      // <-- Dim the button
+            if (loadingOverlay && loadingStatus) {
+                loadingStatus.textContent = 'Rendering Your Image...';     // <-- Phase 1 message
+                loadingStatus.classList.remove('na-layout-loading-overlay__status--success'); // <-- Reset success state
+                loadingOverlay.classList.remove('na-layout-loading-overlay--fade-out');        // <-- Reset fade-out
+                loadingOverlay.classList.add('na-layout-loading-overlay--visible');            // <-- Show overlay
+            }
+
+            // DEFER RENDER | Allow overlay to paint before blocking render
+            // ------------------------------------------------------------
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+
+                    const result = Na__UiFeature__RenderToCanvas(          // <-- Render to 2D canvas using shared helper
+                        renderer, scene, camera, getRenderPipelineState,
+                        postProcessConfig, isEnhanceEnabled,
+                        isCustomEnabled, exportConfig, ratioIndex, resIndex
+                    );
+
+                    // UPDATE OVERLAY | Phase 2 - "Encoding Image..."
+                    // ------------------------------------------------------------
+                    if (loadingStatus) {
+                        loadingStatus.textContent = 'Encoding Image...';   // <-- Phase 2 message
+                    }
+
+                    const filename = isCustomEnabled                        // <-- Generate filename based on mode
+                        ? `ValeVision3D__${result.width}x${result.height}.png`
+                        : 'ValeVision3D__Viewport.png';
+
+                    // HELPER | Dismiss overlay with success state
+                    // ------------------------------------------------------------
+                    function Na__ImageExport__DismissOverlay() {
+                        if (loadingStatus) {
+                            loadingStatus.textContent = 'Download Ready!';                              // <-- Phase 3 message
+                            loadingStatus.classList.add('na-layout-loading-overlay__status--success');  // <-- Green text
+                        }
+                        setTimeout(() => {
+                            if (loadingOverlay) {
+                                loadingOverlay.classList.add('na-layout-loading-overlay--fade-out');    // <-- Start fade-out
+                                setTimeout(() => {
+                                    loadingOverlay.classList.remove('na-layout-loading-overlay--visible');  // <-- Hide completely
+                                    loadingOverlay.classList.remove('na-layout-loading-overlay--fade-out'); // <-- Reset fade class
+                                }, 400);
+                            }
+                            exportButton.classList.remove('is-loading');   // <-- Re-enable button
+                            downloadInProgress = false;                    // <-- Unlock
+                        }, 2500);
+                    }
+
+                    // ENCODE AND DOWNLOAD | Async PNG blob encoding - non-blocking
+                    // ------------------------------------------------------------
+                    result.canvas.toBlob((blob) => {
+                        if (blob) {
+                            Na__UiFeature__DownloadBlob(blob, filename); // <-- Trigger download via object URL
+                        }
+                        Na__RenderLoop__RequestRender();                 // <-- Refresh viewport after renderer restore
+                        Na__ImageExport__DismissOverlay();               // <-- Show success and dismiss overlay
+                    }, 'image/png');
+
+                });
+            });
         });
         // ------------------------------------------------------------
 

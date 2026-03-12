@@ -68,6 +68,13 @@
     const Na__Elev__FB_PLANE_LABEL_TEXT     = 'Click and drag to set plane';          // <-- Plane label text
     const Na__Elev__FB_PLANE_LABEL_COLOR   = '#cc3333';                              // <-- Plane label colour
     const Na__Elev__FB_PLANE_LABEL_OPACITY = 0.35;                                   // <-- Plane label opacity
+    const Na__Elev__FB_HANDLE_WIDTH        = 12;                                      // <-- Inner drag handle width (m)
+    const Na__Elev__FB_HANDLE_HEIGHT       = 5;                                       // <-- Inner drag handle height (m)
+    const Na__Elev__FB_HANDLE_FILL_COLOR   = '#ff6666';                              // <-- Handle fill colour
+    const Na__Elev__FB_HANDLE_FILL_OPACITY = 0.12;                                   // <-- Handle fill opacity (more opaque than outer)
+    const Na__Elev__FB_HANDLE_EDGE_COLOR   = '#ff3333';                              // <-- Handle border colour
+    const Na__Elev__FB_ARROW_LENGTH        = 5;                                       // <-- Directional arrow length (m)
+    const Na__Elev__FB_ARROW_COLOR         = '#ff3333';                              // <-- Directional arrow colour
     // ------------------------------------------------------------
 
 
@@ -129,9 +136,10 @@
     // MODULE VARIABLES | Elevation Objects
     // ------------------------------------------------------------
     let Na__Elev__CurrentState       = Na__Elev__STATE_IDLE;                            // <-- Current system state
-    let Na__Elev__PlaneMesh          = null;                                            // <-- Elevation plane mesh
+    let Na__Elev__PlaneMesh          = null;                                            // <-- Elevation plane mesh (outer, passive)
     let Na__Elev__PlaneEdges         = null;                                            // <-- Elevation plane edge lines
-    let Na__Elev__PlaneGroup         = null;                                            // <-- Group holding plane + edges
+    let Na__Elev__PlaneGroup         = null;                                            // <-- Group holding plane + handle + arrows
+    let Na__Elev__DragHandleMesh     = null;                                            // <-- Inner drag handle mesh (raycast target)
     let Na__Elev__OrthoCamera        = null;                                            // <-- Orthographic camera for elevation
     let Na__Elev__HorizontalNormal   = null;                                            // <-- Face normal projected onto XZ
     let Na__Elev__HitPoint           = null;                                            // <-- Original raycast hit point
@@ -221,6 +229,13 @@
     function Na__Elev__PlaneLabelText()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LabelText',     Na__Elev__FB_PLANE_LABEL_TEXT); }
     function Na__Elev__PlaneLabelColor()  { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LabelColor',    Na__Elev__FB_PLANE_LABEL_COLOR); }
     function Na__Elev__PlaneLabelOpacity(){ return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LabelOpacity',  Na__Elev__FB_PLANE_LABEL_OPACITY); }
+    function Na__Elev__HandleWidth()       { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleWidthUnits',  Na__Elev__FB_HANDLE_WIDTH); }
+    function Na__Elev__HandleHeight()      { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleHeightUnits', Na__Elev__FB_HANDLE_HEIGHT); }
+    function Na__Elev__HandleFillColor()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleFillColor',   Na__Elev__FB_HANDLE_FILL_COLOR); }
+    function Na__Elev__HandleFillOpacity() { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleFillOpacity', Na__Elev__FB_HANDLE_FILL_OPACITY); }
+    function Na__Elev__HandleEdgeColor()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleEdgeColor',   Na__Elev__FB_HANDLE_EDGE_COLOR); }
+    function Na__Elev__ArrowLength()       { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__ArrowLength',       Na__Elev__FB_ARROW_LENGTH); }
+    function Na__Elev__ArrowColor()        { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__ArrowColor',        Na__Elev__FB_ARROW_COLOR); }
     // ------------------------------------------------------------
 
 
@@ -398,11 +413,11 @@
 // REGION | Elevation Plane Creation
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Create Canvas Texture for Elevation Plane
+    // HELPER FUNCTION | Create Canvas Texture for Inner Drag Handle
     // ---------------------------------------------------------------
-    function Na__Elev__CreatePlaneCanvasTexture(planeW, planeH) {
-        const canvasW   = 1024;                                                         // <-- Canvas pixel width
-        const canvasH   = Math.round(canvasW * (planeH / planeW));                      // <-- Maintain plane aspect ratio
+    function Na__Elev__CreateHandleCanvasTexture(handleW, handleH) {
+        const canvasW   = 512;                                                          // <-- Canvas pixel width
+        const canvasH   = Math.round(canvasW * (handleH / handleW));                    // <-- Maintain handle aspect ratio
         const canvas    = document.createElement('canvas');
         canvas.width    = canvasW;
         canvas.height   = canvasH;
@@ -410,16 +425,16 @@
 
         ctx.clearRect(0, 0, canvasW, canvasH);                                         // <-- Start with transparent background
 
-        const fillColor   = Na__Elev__PlaneFillColor();
-        const fillOpacity = Na__Elev__PlaneFillOpacity();
+        const fillColor   = Na__Elev__HandleFillColor();
+        const fillOpacity = Na__Elev__HandleFillOpacity();
         ctx.fillStyle     = fillColor;
         ctx.globalAlpha   = fillOpacity;
-        ctx.fillRect(0, 0, canvasW, canvasH);                                          // <-- Semi-transparent red fill
+        ctx.fillRect(0, 0, canvasW, canvasH);                                          // <-- Semi-transparent red fill (more opaque than outer)
 
         const labelText    = Na__Elev__PlaneLabelText();
         const labelColor   = Na__Elev__PlaneLabelColor();
         const labelOpacity = Na__Elev__PlaneLabelOpacity();
-        const fontSize     = Math.round(canvasH * 0.07);                                // <-- Font size proportional to canvas
+        const fontSize     = Math.round(canvasH * 0.14);                                // <-- Font size proportional to handle canvas
         ctx.globalAlpha    = labelOpacity;
         ctx.fillStyle      = labelColor;
         ctx.font           = `${fontSize}px Arial, sans-serif`;
@@ -441,32 +456,78 @@
     function Na__Elev__CreateElevationPlane() {
         Na__Elev__DisposeElevationPlane();                                              // <-- Remove previous if any
 
-        const planeW = Na__Elev__PlaneWidth();
-        const planeH = Na__Elev__PlaneHeight();
+        const planeW   = Na__Elev__PlaneWidth();
+        const planeH   = Na__Elev__PlaneHeight();
+        const handleW  = Na__Elev__HandleWidth();
+        const handleH  = Na__Elev__HandleHeight();
+        const edgeColor = Na__Elev__PlaneEdgeColor();
 
+        // OUTER PLANE | Large semi-transparent fill (passive, not draggable)
         const planeGeometry = new THREE.PlaneGeometry(planeW, planeH);
-
-        const canvasTexture = Na__Elev__CreatePlaneCanvasTexture(planeW, planeH);
         const planeMaterial = new THREE.MeshBasicMaterial({
-            map         : canvasTexture,
+            color       : Na__Elev__PlaneFillColor(),
+            opacity     : Na__Elev__PlaneFillOpacity(),
             transparent : true,
             side        : THREE.DoubleSide,
             depthWrite  : false
         });
-
         Na__Elev__PlaneMesh = new THREE.Mesh(planeGeometry, planeMaterial);
         Na__Elev__PlaneMesh.name = 'Na__ElevationView__Plane';
 
-        const edgesGeometry = new THREE.EdgesGeometry(planeGeometry);
+        // OUTER EDGES | Red border around large plane
+        const outerEdgesGeom = new THREE.EdgesGeometry(planeGeometry);
         Na__Elev__PlaneEdges = new THREE.LineSegments(
-            edgesGeometry,
-            new THREE.LineBasicMaterial({ color: Na__Elev__PlaneEdgeColor(), linewidth: 2 })
+            outerEdgesGeom,
+            new THREE.LineBasicMaterial({ color: edgeColor, linewidth: 2 })
         );
 
+        // INNER HANDLE | Smaller drag-target rectangle with label text
+        const handleGeom    = new THREE.PlaneGeometry(handleW, handleH);
+        const handleTexture = Na__Elev__CreateHandleCanvasTexture(handleW, handleH);
+        const handleMaterial = new THREE.MeshBasicMaterial({
+            map         : handleTexture,
+            transparent : true,
+            side        : THREE.DoubleSide,
+            depthWrite  : false
+        });
+        Na__Elev__DragHandleMesh = new THREE.Mesh(handleGeom, handleMaterial);
+        Na__Elev__DragHandleMesh.name = 'Na__ElevationView__DragHandle';
+        Na__Elev__DragHandleMesh.position.set(0, 0, 0.01);                             // <-- Slightly in front of outer plane
+
+        // HANDLE EDGES | Border around inner rectangle
+        const handleEdgesGeom = new THREE.EdgesGeometry(handleGeom);
+        const handleEdges = new THREE.LineSegments(
+            handleEdgesGeom,
+            new THREE.LineBasicMaterial({ color: Na__Elev__HandleEdgeColor(), linewidth: 2 })
+        );
+        handleEdges.position.set(0, 0, 0.01);
+
+        // DIRECTIONAL ARROWS | Show camera look direction at 4 corners
+        const arrowLength = Na__Elev__ArrowLength();
+        const arrowHex    = new THREE.Color(Na__Elev__ArrowColor()).getHex();
+        const arrowDir    = new THREE.Vector3(0, 0, -1);                                // <-- Local -Z (inward toward building, look direction)
+        const corners = [
+            new THREE.Vector3(-planeW / 2, planeH / 2, 0),                             // <-- Top-left
+            new THREE.Vector3( planeW / 2, planeH / 2, 0),                             // <-- Top-right
+            new THREE.Vector3(-planeW / 2, -planeH / 2, 0),                            // <-- Bottom-left
+            new THREE.Vector3( planeW / 2, -planeH / 2, 0)                             // <-- Bottom-right
+        ];
+
+        // BUILD GROUP | Assemble all child objects
         Na__Elev__PlaneGroup = new THREE.Group();
         Na__Elev__PlaneGroup.name = 'Na__ElevationView__PlaneGroup';
         Na__Elev__PlaneGroup.add(Na__Elev__PlaneMesh);
         Na__Elev__PlaneGroup.add(Na__Elev__PlaneEdges);
+        Na__Elev__PlaneGroup.add(Na__Elev__DragHandleMesh);
+        Na__Elev__PlaneGroup.add(handleEdges);
+
+        for (let i = 0; i < corners.length; i++) {
+            const arrow = new THREE.ArrowHelper(
+                arrowDir, corners[i], arrowLength, arrowHex,
+                arrowLength * 0.3, arrowLength * 0.15                                  // <-- Head length and width proportional
+            );
+            Na__Elev__PlaneGroup.add(arrow);
+        }
 
         Na__Elev__UpdatePlaneTransform();                                               // <-- Position and orient
         Na__Elev__Scene.add(Na__Elev__PlaneGroup);
@@ -499,19 +560,18 @@
         if (Na__Elev__PlaneGroup) {
             Na__Elev__Scene.remove(Na__Elev__PlaneGroup);                               // <-- Remove from scene
 
-            if (Na__Elev__PlaneMesh) {
-                Na__Elev__PlaneMesh.geometry.dispose();
-                if (Na__Elev__PlaneMesh.material.map) Na__Elev__PlaneMesh.material.map.dispose(); // <-- Dispose canvas texture
-                Na__Elev__PlaneMesh.material.dispose();
-            }
-            if (Na__Elev__PlaneEdges) {
-                Na__Elev__PlaneEdges.geometry.dispose();
-                Na__Elev__PlaneEdges.material.dispose();
-            }
+            Na__Elev__PlaneGroup.traverse((child) => {
+                if (child.geometry) child.geometry.dispose();                            // <-- Dispose geometry for all children
+                if (child.material) {
+                    if (child.material.map) child.material.map.dispose();                // <-- Dispose canvas textures
+                    child.material.dispose();                                            // <-- Dispose materials
+                }
+            });
 
-            Na__Elev__PlaneGroup = null;
-            Na__Elev__PlaneMesh  = null;
-            Na__Elev__PlaneEdges = null;
+            Na__Elev__PlaneGroup     = null;
+            Na__Elev__PlaneMesh      = null;
+            Na__Elev__PlaneEdges     = null;
+            Na__Elev__DragHandleMesh = null;
         }
     }
     // ------------------------------------------------------------
@@ -716,9 +776,9 @@
 
         Na__Elev__Raycaster.setFromCamera(ndc, Na__Elev__PerspCamera);                 // <-- Always persp camera in 3D mode
 
-        if (!Na__Elev__PlaneMesh) return;
-        const hits = Na__Elev__Raycaster.intersectObject(Na__Elev__PlaneMesh, false);
-        if (hits.length === 0) return;                                                  // <-- Did not click on plane
+        if (!Na__Elev__DragHandleMesh) return;
+        const hits = Na__Elev__Raycaster.intersectObject(Na__Elev__DragHandleMesh, false);
+        if (hits.length === 0) return;                                                  // <-- Did not click on inner handle
 
         Na__Elev__IsDragging = true;                                                    // <-- Begin drag
         Na__Elev__DragStartPointerY = event.clientY;                                    // <-- Record start Y
@@ -975,11 +1035,12 @@
             Na__Elev__Scene.remove(Na__Elev__OrthoCamera);                              // <-- Remove ortho camera from scene
         }
 
-        Na__Elev__OrthoCamera      = null;
-        Na__Elev__HorizontalNormal = null;
-        Na__Elev__HitPoint         = null;
-        Na__Elev__PlaneOffset      = Na__Elev__PlaneOffsetUnits();
-        Na__Elev__2dProfileLines   = null;                                              // <-- Clear 2D profile lines reference
+        Na__Elev__OrthoCamera       = null;
+        Na__Elev__HorizontalNormal  = null;
+        Na__Elev__HitPoint          = null;
+        Na__Elev__DragHandleMesh    = null;                                             // <-- Clear handle reference
+        Na__Elev__PlaneOffset       = Na__Elev__PlaneOffsetUnits();
+        Na__Elev__2dProfileLines    = null;                                             // <-- Clear 2D profile lines reference
     }
     // ------------------------------------------------------------
 

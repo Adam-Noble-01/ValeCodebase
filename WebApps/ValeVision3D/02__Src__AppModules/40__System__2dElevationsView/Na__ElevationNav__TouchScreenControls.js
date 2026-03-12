@@ -82,7 +82,10 @@
 
     // FUNCTION | Initialize Touchscreen 2D Navigation Controls
     // ------------------------------------------------------------
-    function Na__ElevationNav__InitTouchControls(camera, horizontalNormal, domElement) {
+    function Na__ElevationNav__InitTouchControls(camera, horizontalNormal, domElement, navConfig) {
+        const ZOOM_MIN      = (navConfig && navConfig.zoomMin) || Na__TouchNav__ZOOM_MIN; // <-- Config or fallback
+        const ZOOM_MAX      = (navConfig && navConfig.zoomMax) || Na__TouchNav__ZOOM_MAX; // <-- Config or fallback
+
         let active          = false;                                              // <-- Controls currently enabled
         let touchCount      = 0;                                                  // <-- Active touch count
         let orthoHalfHeight = camera.top;                                         // <-- Current frustum half-height
@@ -165,8 +168,8 @@
                 const scale       = pinchStartDist / currentDist;                 // <-- >1 = pinch in (zoom out), <1 = spread (zoom in)
 
                 orthoHalfHeight = Math.max(
-                    Na__TouchNav__ZOOM_MIN,
-                    Math.min(Na__TouchNav__ZOOM_MAX, pinchStartHalfH * scale)
+                    ZOOM_MIN,
+                    Math.min(ZOOM_MAX, pinchStartHalfH * scale)
                 );
                 updateFrustum();
 

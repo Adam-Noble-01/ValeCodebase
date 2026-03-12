@@ -445,6 +445,29 @@
 
         const NA__ORBIT_TRAILING_FRAMES = 3;                                   // <-- Extra frames after orbit 'end' to let controls.update() settle
         let Na__RenderLoop__OrbitTrailingFrames = 0;
+        let Na__RenderLoop__ActiveCamera       = Na__Camera__Main;              // <-- Tracks which camera the render pipeline is using
+        let Na__RenderLoop__ElevationActive    = false;                          // <-- True when ortho elevation camera is active
+        let Na__RenderLoop__2dProfileNormals   = null;                           // <-- 2D profile lines render function (set via event)
+        let Na__RenderLoop__FogEnabledCache    = Na__SceneEffect__FogPass       // <-- Cache original fog enabled state
+            ? Na__SceneEffect__FogPass.uniforms['uFogEnabled'].value
+            : 1.0;
+
+        window.addEventListener('na-elevation-camera-changed', (event) => {
+            if (event.detail && event.detail.camera) {
+                Na__RenderLoop__ActiveCamera = event.detail.camera;             // <-- Swap active camera for fog/effects
+            }
+            Na__RenderLoop__ElevationActive = !!(event.detail && event.detail.isOrtho); // <-- Track elevation mode
+            if (event.detail && event.detail.render2dProfileNormals) {
+                Na__RenderLoop__2dProfileNormals = event.detail.render2dProfileNormals; // <-- Store 2D profile lines renderer
+            }
+            if (Na__SceneEffect__FogPass) {
+                if (event.detail && event.detail.isOrtho) {
+                    Na__SceneEffect__FogPass.uniforms['uFogEnabled'].value = 0.0;   // <-- Disable 3D fog in elevation mode
+                } else {
+                    Na__SceneEffect__FogPass.uniforms['uFogEnabled'].value = Na__RenderLoop__FogEnabledCache; // <-- Restore fog
+                }
+            }
+        });
 
         function Na__RenderLoop__RenderFrame(deltaMs) {
             if (Na__WalkMode__IsActive()) {
@@ -455,10 +478,14 @@
             }
 
             Na__DoorAnimation__Update(deltaMs);                              // <-- Update door animations
-            Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__Camera__Main); // <-- Update fog camera matrices
+            Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__RenderLoop__ActiveCamera); // <-- Update fog with active camera
 
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
-                Na__RenderPipeline__State.renderProfileNormals();            // <-- Update profile lines
+                if (Na__RenderLoop__ElevationActive && Na__RenderLoop__2dProfileNormals) {
+                    Na__RenderLoop__2dProfileNormals(Na__RenderLoop__ActiveCamera); // <-- 2D profile lines with ortho camera
+                } else {
+                    Na__RenderPipeline__State.renderProfileNormals();         // <-- 3D profile lines with persp camera
+                }
                 Na__RenderComposer__Main.render();                           // <-- Render with post-processing
             }
 

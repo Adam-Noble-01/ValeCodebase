@@ -39,6 +39,8 @@
         let setProfileLinesSize = () => {};
         let invalidateProfileLinesCache = () => {};
         let profileLinesPassRef = null;
+        let profileNormalTarget = null;                                    // <-- Exposed for 2D profile lines module
+        let profileColorTarget  = null;                                    // <-- Exposed for 2D profile lines module
         let profileLinesDepthTexture = null;                               // <-- Depth texture from profile normal pass (avoids separate depth render)
         
         const profileLinesEnabled = profileLinesConfig
@@ -52,6 +54,8 @@
             setProfileLinesSize = profileLines.setSize;
             invalidateProfileLinesCache = profileLines.invalidateSceneCache;
             profileLinesPassRef = profileLines.pass;
+            profileNormalTarget = profileLines.normalRenderTarget;         // <-- Expose for 2D elevation profile lines
+            profileColorTarget  = profileLines.profileColorRenderTarget;   // <-- Expose for 2D elevation profile lines
             profileLinesDepthTexture = profileLines.depthTexture;          // <-- Normal pass already writes depth; reuse it
         }
 
@@ -102,7 +106,10 @@
             invalidateProfileLinesCache,
             setFxaaSize,
             toggleProfileLines,
-            depthTexture
+            depthTexture,
+            profileNormalTarget,
+            profileColorTarget,
+            profileLinesPassRef
         };
     }
     // ------------------------------------------------------------

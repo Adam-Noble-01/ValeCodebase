@@ -54,15 +54,15 @@
 
     // MODULE CONSTANTS | DOM IDs
     // ------------------------------------------------------------
-    const Na__SceneInspector__ToggleId        = 'naSceneInspectorToggle';       // <-- Panel open/close button
-    const Na__SceneInspector__PanelId         = 'naSceneInspectorPanel';        // <-- Collapsible panel container
-    const Na__SceneInspector__StatsId         = 'naSceneInspectorStats';        // <-- Summary stats line
-    const Na__SceneInspector__TreeId          = 'naSceneInspectorTree';         // <-- Tree scroll container
-    const Na__SceneInspector__ScanBtnId       = 'naSceneInspectorScanBtn';      // <-- Scan trigger button
-    const Na__SceneInspector__FilterId        = 'naSceneInspectorFilter';       // <-- Name filter input
-    const Na__SceneInspector__HideAllBtnId    = 'naSceneInspectorHideAll';      // <-- Hide all nodes button
-    const Na__SceneInspector__RestoreAllBtnId = 'naSceneInspectorRestoreAll';   // <-- Restore all nodes button
-    const Na__SceneInspector__IsolatePairBtnId    = 'naSceneInspectorIsolatePair';       // <-- Isolate Pair mode toggle
+    const Na__SceneInspector__ToggleId        = 'naSceneInspectorToggle';             // <-- Panel open/close button
+    const Na__SceneInspector__PanelId         = 'naSceneInspectorPanel';              // <-- Collapsible panel container
+    const Na__SceneInspector__StatsId         = 'naSceneInspectorStats';              // <-- Summary stats line
+    const Na__SceneInspector__TreeId          = 'naSceneInspectorTree';               // <-- Tree scroll container
+    const Na__SceneInspector__ScanBtnId       = 'naSceneInspectorScanBtn';            // <-- Scan trigger button
+    const Na__SceneInspector__FilterId        = 'naSceneInspectorFilter';             // <-- Name filter input
+    const Na__SceneInspector__HideAllBtnId    = 'naSceneInspectorHideAll';            // <-- Hide all nodes button
+    const Na__SceneInspector__RestoreAllBtnId = 'naSceneInspectorRestoreAll';         // <-- Restore all nodes button
+    const Na__SceneInspector__IsolatePairBtnId    = 'naSceneInspectorIsolatePair';    // <-- Isolate Pair mode toggle
     // ------------------------------------------------------------
 
 

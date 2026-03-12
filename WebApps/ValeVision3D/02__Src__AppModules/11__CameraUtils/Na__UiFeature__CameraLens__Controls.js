@@ -7,6 +7,11 @@
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Render Loop Invalidation
+    // ------------------------------------------------------------
+    import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
 
     // MODULE CONSTANTS | Lens Conversion Defaults
     // ------------------------------------------------------------
@@ -73,6 +78,7 @@
             camera.fov = fovDegrees;
             camera.updateProjectionMatrix();
             valueLabel.textContent = `${Math.round(focalLengthMM)} mm`;
+            Na__RenderLoop__RequestRender();                                        // <-- Invalidate render after FOV change
         };
         
         applyLens(clampedFocal);

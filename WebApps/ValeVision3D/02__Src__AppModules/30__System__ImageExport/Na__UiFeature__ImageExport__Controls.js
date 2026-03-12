@@ -12,6 +12,11 @@
     import { Na__PostProcess__RunPipeline } from './Na__ImageExport__PostProcessEffects__Pipeline.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Render Loop Invalidation
+    // ------------------------------------------------------------
+    import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Viewport Overlays
     // ------------------------------------------------------------
     import { Na__UiFeature__CreateViewportOverlays, Na__UiFeature__UpdateViewportOverlays } from './Na__UiFeature__ImageExport__ViewportOverlays.js';
@@ -396,6 +401,7 @@
                 : 'ValeVision3D__Viewport.png';
 
             Na__UiFeature__DownloadImage(result.dataUrl, filename); // <-- Download the rendered image
+            Na__RenderLoop__RequestRender();                         // <-- Refresh viewport after renderer restore
         });
         // ------------------------------------------------------------
 

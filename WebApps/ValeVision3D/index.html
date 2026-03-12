@@ -239,6 +239,22 @@
                         </div>
                     </div>
                 </li>
+                <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naElevationViewToggle">
+                        Elevation View
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naElevationViewPanel">
+                        <button class="na-dropdown-menu__action" id="naElevationSelectFace">Select Elevation Face</button>
+                        <button class="na-dropdown-menu__action" id="naElevationViewBtn" style="display:none;">View Elevation</button>
+                        <button class="na-dropdown-menu__action" id="naElevationBackTo3D" style="display:none;">Back to 3D</button>
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle" id="naElevationPlaneToggleRow" style="display:none;">
+                            <span class="na-dropdown-menu__panel-title">Toggle Elevation Plane</span>
+                            <input type="checkbox" id="naElevationPlaneToggle" class="na-dropdown-menu__checkbox" checked />
+                        </div>
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naElevationReselect" style="display:none;">Reselect Elevation Plane</button>
+                    </div>
+                </li>
             </ul>
             
         </details>
@@ -324,6 +340,7 @@
     import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
     import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
+    import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -738,6 +755,7 @@
     Na__UiFeature__InitializeSaveCameraButton(Na__Camera__Main, Na__Controls__Orbit, Na__UiFeature__ShowToast);
     Na__UiFeature__InitializeProfileLinesControls(Na__AppFlow__PipelineRef, Na__Config__ProfileLines);
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
+    Na__UiFeature__InitializeElevationViewControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root, Na__Device__UseTouchControls);
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

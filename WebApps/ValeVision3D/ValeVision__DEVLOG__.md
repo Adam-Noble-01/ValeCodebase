@@ -2,6 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.0.5  -  12-Mar-2026
+### Viewport Refresh — Camera Lens Slider & Post-Export Repaint
+
+**Overview**
+- Fixed two missing render-invalidation calls that prevented the viewport from updating after camera lens adjustments and after an image export completed.
+- The app uses an invalidation-based render loop (`Na__RenderLoop__RequestRender`); these two systems were never wired into it.
+
+**Camera Lens Slider — Real-Time FOV Feedback**
+- `Na__UiFeature__CameraLens__Controls.js` — added `Na__RenderLoop__RequestRender` import from `../05__RenderPipeline/Na__RenderLoop__Invalidation.js`.
+- Added `Na__RenderLoop__RequestRender()` as the last line of `applyLens()`, so every slider `input` event (and the initial load call) schedules a render frame immediately after `camera.updateProjectionMatrix()`.
+- Previously the FOV was updated internally but no frame was scheduled, requiring a manual pan to trigger a repaint.
+
+**Post-Export Viewport Repaint**
+- `Na__UiFeature__ImageExport__Controls.js` — added same `Na__RenderLoop__RequestRender` import.
+- Added `Na__RenderLoop__RequestRender()` after `Na__UiFeature__DownloadImage()` in the export button click handler, so the viewport repaints once the renderer, camera, and composer have been fully restored to viewport dimensions.
+- The high-res render path (`Na__UiFeature__RenderToDataUrl`) and the restore block are untouched — ability to render above viewport resolution is preserved.
+
+# ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.0.4  -  11-Mar-2026
 ### Scene Inspector — Visibility Controls, Filter, Isolate Pair, Viewport Height
 

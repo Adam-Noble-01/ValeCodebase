@@ -1,0 +1,45 @@
+{
+    "PageLayout__Document__Config": {
+        "PageLayout__Document__Config__Description"              : "A3 document dimensions, title block asset, and initial image placement settings for the Page Layout System.",
+        "PageLayout__Document__Config__WidthMm"                  : 420,
+        "PageLayout__Document__Config__HeightMm"                 : 297,
+        "PageLayout__Document__Config__TitleBlockPath"           : "PageLayoutSystem__TitleBlock__A3__.png",
+        "PageLayout__Document__Config__FitToPagePaddingPx"       : 40,
+        "PageLayout__Document__Config__InitialImagePlacement"    : 0.80
+    },
+    "PageLayout__PdfExport__Config": {
+        "PageLayout__PdfExport__Config__Description"             : "PDF export and flattening settings. The full A3 sheet is flattened to a single JPEG at the target DPI before embedding into the PDF via jsPDF.",
+        "PageLayout__PdfExport__Config__Orientation"             : "landscape",
+        "PageLayout__PdfExport__Config__Unit"                    : "mm",
+        "PageLayout__PdfExport__Config__Format"                  : "a3",
+        "PageLayout__PdfExport__Config__TargetDpi"               : 600,
+        "PageLayout__PdfExport__Config__JpegQuality"             : 1.0,
+        "PageLayout__PdfExport__Config__Compress"                : true,
+        "PageLayout__PdfExport__Config__FloatPrecision"          : "smart",
+        "PageLayout__PdfExport__Config__FilenameFullLayout"      : "ValeVision3D__Layout__A3.pdf",
+        "PageLayout__PdfExport__Config__FilenameImageOnly"       : "ValeVision3D__ImageOnly__A3.pdf"
+    },
+    "PageLayout__CanvasAppearance__Config": {
+        "PageLayout__CanvasAppearance__Config__Description"      : "Visual styling of the 2D layout canvas: background colour, paper shadow, selection handles, and image border appearance.",
+        "PageLayout__CanvasAppearance__Config__BackgroundColor"  : "#b0b5ba",
+        "PageLayout__CanvasAppearance__Config__PaperShadowBlur"  : 12,
+        "PageLayout__CanvasAppearance__Config__PaperShadowColor" : "rgba(0, 0, 0, 0.25)",
+        "PageLayout__CanvasAppearance__Config__PaperShadowOffset": 4,
+        "PageLayout__CanvasAppearance__Config__HandleSizePx"     : 8,
+        "PageLayout__CanvasAppearance__Config__HandleFillColor"  : "#336699",
+        "PageLayout__CanvasAppearance__Config__HandleStrokeColor": "#ffffff",
+        "PageLayout__CanvasAppearance__Config__HandleLineWidth"  : 1.5,
+        "PageLayout__CanvasAppearance__Config__ImageBorderColor" : "rgba(51, 102, 153, 0.6)",
+        "PageLayout__CanvasAppearance__Config__ImageBorderWidth" : 1
+    },
+    "PageLayout__Navigation__Config": {
+        "PageLayout__Navigation__Config__Description"            : "Zoom limits, zoom step factor, hit-test radii for mouse and touch interaction, and minimum image/clipping dimensions.",
+        "PageLayout__Navigation__Config__ZoomMin"                : 0.1,
+        "PageLayout__Navigation__Config__ZoomMax"                : 5.0,
+        "PageLayout__Navigation__Config__ZoomFactor"             : 1.08,
+        "PageLayout__Navigation__Config__HandleHitRadiusPx"      : 10,
+        "PageLayout__Navigation__Config__TouchHitRadiusPx"       : 20,
+        "PageLayout__Navigation__Config__MinImageSizeMm"         : 10,
+        "PageLayout__Navigation__Config__MinVisibleMm"           : 10
+    }
+}

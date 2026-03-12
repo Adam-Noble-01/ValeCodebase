@@ -1129,3 +1129,31 @@
 
 /* endregion -------------------------------------------------------- */
 
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Elevation View - Cursor and UI States                  */
+/* ----------------------------------------------------------------- */
+
+/* Elevation Selecting State - Crosshair Cursor */
+/* ----------------------------------------------------------------- */
+body.na-elevation-selecting,
+body.na-elevation-selecting canvas {
+    cursor                             : crosshair !important;
+}
+
+
+/* Elevation Select Face Button - Pulsing State */
+/* ----------------------------------------------------------------- */
+.na-dropdown-menu__action#naElevationSelectFace:disabled {
+    opacity                            : 0.7;
+    cursor                             : default;
+    animation                          : na-elevation-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes na-elevation-pulse {
+    0%, 100% { opacity : 0.7; }
+    50%      { opacity : 1.0; }
+}
+
+
+/* endregion -------------------------------------------------------- */

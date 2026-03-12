@@ -12,8 +12,8 @@
 // DESCRIPTION:
 // - "Export Full Layout": A3 landscape PDF with title block + viewport image.
 // - "Export Image Only": A3 landscape PDF with viewport image only (no title block).
-// - Both exports flatten the entire composed A3 sheet into one PNG at 600 dpi,
-//   then embed that single image into the PDF as a lossless, full-page bitmap.
+// - Both exports flatten the entire composed A3 sheet into one JPEG at 600 dpi,
+//   then embed that single image into the PDF as a full-page bitmap.
 // - Flattening mirrors the live canvas render exactly, including viewport clipping.
 // - jsPDF is loaded as a UMD global via <script> tag in the layout HTML.
 // - Accessed via window.jspdf.jsPDF (standard jsPDF UMD pattern).
@@ -33,6 +33,15 @@
 // - Added Na__PageLayout__PDF_EXPORT_DPI and Na__PageLayout__PIXELS_PER_MM constants.
 // - Added Na__PageLayout__FlattenSheetToDataUrl helper.
 //
+// 12-Mar-2026 - Version 2.1.0
+// - Switched flattened sheet from PNG to JPEG (0.92 quality) — 5-10x smaller data
+//   URLs, dramatically reducing memory pressure and PDF file size.
+// - Added canvas allocation validation to detect silent browser dimension capping
+//   that caused vertical-stripe corruption on some devices/GPUs.
+// - Added 2D context null-check to guard against total canvas allocation failure.
+// - Added data URL length validation before passing to jsPDF addImage.
+// - Export functions now abort cleanly (no corrupt PDF saved) when flatten fails.
+//
 // =============================================================================
 
 
@@ -48,10 +57,12 @@
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Flattened PNG Export Settings
+    // MODULE CONSTANTS | Flattened JPEG Export Settings
     // ------------------------------------------------------------
-    const Na__PageLayout__PDF_EXPORT_DPI  = 600;                                  // <-- Target DPI for the flattened sheet PNG
+    const Na__PageLayout__PDF_EXPORT_DPI  = 600;                                  // <-- Target DPI for the flattened sheet
     const Na__PageLayout__PIXELS_PER_MM   = Na__PageLayout__PDF_EXPORT_DPI / 25.4; // <-- Derived pixels-per-mm at target DPI
+    const Na__PageLayout__JPEG_QUALITY    = 0.92;                                  // <-- JPEG compression quality (0.0 - 1.0)
+    const Na__PageLayout__MIN_DATAURL_LEN = 1000;                                  // <-- Minimum valid data URL length (sanity check)
     // ------------------------------------------------------------
 
 
@@ -97,16 +108,20 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Flatten Full A3 Sheet to PNG Data URL
+    // HELPER FUNCTION | Flatten Full A3 Sheet to JPEG Data URL
     // ------------------------------------------------------------
     // Renders the entire composed A3 page into a single offscreen canvas at
     // Na__PageLayout__PDF_EXPORT_DPI (600 dpi), exactly mirroring the live canvas
     // preview. Both title block and viewport image are composited together here
     // before PDF embedding, so the PDF carries one image rather than many layers.
     //
+    // Validates that the browser actually allocated the requested canvas
+    // dimensions (browsers may silently cap large canvases, causing corrupt
+    // pixel data with misaligned row stride). Returns null on failure.
+    //
     // @param  {object}  state             - Shared layout state object
     // @param  {boolean} includeTitleBlock - Whether to draw the title block layer
-    // @returns {string} PNG data URL of the fully composed sheet
+    // @returns {string|null} JPEG data URL of the fully composed sheet, or null on failure
     // ------------------------------------------------------------
     function Na__PageLayout__FlattenSheetToDataUrl(state, includeTitleBlock) {
         const ppm          = Na__PageLayout__PIXELS_PER_MM; // <-- Pixels per mm at export DPI
@@ -116,7 +131,19 @@
         const canvas       = document.createElement('canvas'); // <-- Create offscreen export canvas
         canvas.width       = canvasWidth; // <-- Set pixel width
         canvas.height      = canvasHeight; // <-- Set pixel height
-        const ctx          = canvas.getContext('2d'); // <-- Get 2D context
+
+        // Validate canvas allocation (browser may silently cap dimensions)
+        // ------------------------------------------------------------
+        if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
+            console.error(`[PageLayout] Canvas capped by browser: requested ${canvasWidth}x${canvasHeight}, got ${canvas.width}x${canvas.height}`);
+            return null;
+        }
+
+        const ctx = canvas.getContext('2d'); // <-- Get 2D context
+        if (!ctx) {
+            console.error('[PageLayout] Failed to acquire 2D context for offscreen canvas');
+            return null;
+        }
 
         // Fill white paper background
         // ------------------------------------------------------------
@@ -163,7 +190,18 @@
             }
         }
 
-        return canvas.toDataURL('image/png'); // <-- Serialize composed sheet as lossless PNG
+        // Serialize as JPEG (5-10x smaller than PNG for photographic content)
+        // ------------------------------------------------------------
+        const dataUrl = canvas.toDataURL('image/jpeg', Na__PageLayout__JPEG_QUALITY);
+
+        // Validate data URL is not empty or suspiciously short
+        // ------------------------------------------------------------
+        if (!dataUrl || dataUrl.length < Na__PageLayout__MIN_DATAURL_LEN) {
+            console.error(`[PageLayout] Canvas toDataURL returned invalid result (length: ${dataUrl ? dataUrl.length : 0})`);
+            return null;
+        }
+
+        return dataUrl; // <-- Serialized composed sheet as JPEG
     }
     // ------------------------------------------------------------
 
@@ -182,20 +220,26 @@
         const doc = Na__PageLayout__CreateA3Document(); // <-- Create compressed PDF document
         if (!doc) return; // <-- Abort if jsPDF unavailable
 
-        // Flatten full A3 sheet (title block + viewport) into one PNG
+        // Flatten full A3 sheet (title block + viewport) into one JPEG
         // ------------------------------------------------------------
         try {
             const flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, true); // <-- Compose full sheet at 600 dpi
-            doc.addImage( // <-- Embed single flattened PNG as the only image in the PDF
+            if (!flattenedDataUrl) {
+                console.error('[PageLayout] Flatten returned null — canvas may have been capped or corrupt');
+                return;
+            }
+
+            doc.addImage(
                 flattenedDataUrl,
-                'PNG',
+                'JPEG',
                 0,                   // <-- X position: left edge
                 0,                   // <-- Y position: top edge
                 state.a3.widthMm,    // <-- Full A3 width (420mm)
                 state.a3.heightMm    // <-- Full A3 height (297mm)
             );
         } catch (err) {
-            console.error('[PageLayout] Failed to flatten or embed full layout sheet:', err); // <-- Log error
+            console.error('[PageLayout] Failed to flatten or embed full layout sheet:', err);
+            return;
         }
 
         doc.save(Na__PageLayout__FILENAME_FULL_LAYOUT); // <-- Download PDF
@@ -211,20 +255,26 @@
         const doc = Na__PageLayout__CreateA3Document(); // <-- Create compressed PDF document
         if (!doc) return; // <-- Abort if jsPDF unavailable
 
-        // Flatten viewport-only sheet (no title block) into one PNG
+        // Flatten viewport-only sheet (no title block) into one JPEG
         // ------------------------------------------------------------
         try {
             const flattenedDataUrl = Na__PageLayout__FlattenSheetToDataUrl(state, false); // <-- Compose viewport-only sheet at 600 dpi
-            doc.addImage( // <-- Embed single flattened PNG as the only image in the PDF
+            if (!flattenedDataUrl) {
+                console.error('[PageLayout] Flatten returned null — canvas may have been capped or corrupt');
+                return;
+            }
+
+            doc.addImage(
                 flattenedDataUrl,
-                'PNG',
+                'JPEG',
                 0,                   // <-- X position: left edge
                 0,                   // <-- Y position: top edge
                 state.a3.widthMm,    // <-- Full A3 width (420mm)
                 state.a3.heightMm    // <-- Full A3 height (297mm)
             );
         } catch (err) {
-            console.error('[PageLayout] Failed to flatten or embed image-only sheet:', err); // <-- Log error
+            console.error('[PageLayout] Failed to flatten or embed image-only sheet:', err);
+            return;
         }
 
         doc.save(Na__PageLayout__FILENAME_IMAGE_ONLY); // <-- Download PDF

@@ -1,22 +1,5 @@
 {
-    "projectName": "Curtis",
-    "projectCode": "62444",
-    "productionData": {
-        "input": "CAD File",
-        "conceptArtist": "Amy",
-        "additionalNotes": "Amy prepared the CAD file for me and it was perfect, very easy to work with. The design was a little none standard and I ended up having to bring in some mapping data to model the wall as the architects drawings and survey cut the wall off fairly close to the Orangery, so I have to research and model the true conditions which made the job take a little longer than usual."
-    },
-    "scheduleData": {
-        "dateReceived": "19-Dec-2025",
-        "dateFulfilled": "19-Dec-2025",
-        "timeAllocated": 3.5,
-        "timeTaken": 3.5
-    },
-    "sketchUpModel": {
-        "url": "Nil"
-    },
-    "valeVision_ModelUrl": null,
-    "images": [
+    "allImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__19-Dec-2025.png",
         "IMG02__3dView__ViewOption-02____WhitecardImage__19-Dec-2025.png",
         "IMG03__3dView__ViewOption-03____WhitecardImage__19-Dec-2025.png",
@@ -31,7 +14,7 @@
         "IMG10__3dView__TopDownView-03____WhitecardImage__19-Dec-2025.png",
         "IMG21__Elevation__FrontElevation__WhitecardImage__19-Dec-2025.png"
     ],
-    "folderId": "62444__Curtis",
+    "artPairsMap": {},
     "basePath": "Projects/2025/62444__Curtis",
     "displayImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__19-Dec-2025.png",
@@ -48,8 +31,8 @@
         "IMG10__3dView__TopDownView-03____WhitecardImage__19-Dec-2025.png",
         "IMG21__Elevation__FrontElevation__WhitecardImage__19-Dec-2025.png"
     ],
-    "artPairsMap": {},
-    "allImages": [
+    "folderId": "62444__Curtis",
+    "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__19-Dec-2025.png",
         "IMG02__3dView__ViewOption-02____WhitecardImage__19-Dec-2025.png",
         "IMG03__3dView__ViewOption-03____WhitecardImage__19-Dec-2025.png",
@@ -63,5 +46,51 @@
         "IMG09__3dView__TopDownView-02____WhitecardImage__19-Dec-2025.png",
         "IMG10__3dView__TopDownView-03____WhitecardImage__19-Dec-2025.png",
         "IMG21__Elevation__FrontElevation__WhitecardImage__19-Dec-2025.png"
-    ]
+    ],
+    "productionData": {
+        "additionalNotes": "Amy prepared the CAD file for me and it was perfect, very easy to work with. The design was a little none standard and I ended up having to bring in some mapping data to model the wall as the architects drawings and survey cut the wall off fairly close to the Orangery, so I have to research and model the true conditions which made the job take a little longer than usual.",
+        "conceptArtist": "Amy",
+        "input": "CAD File"
+    },
+    "projectCode": "62444",
+    "projectName": "Curtis",
+    "scheduleData": {
+        "dateFulfilled": "19-Dec-2025",
+        "dateReceived": "19-Dec-2025",
+        "timeAllocated": 3.5,
+        "timeTaken": 3.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 24764,
+            "Camera__DefaultPos__PosY": 1350,
+            "Camera__DefaultPos__PosZ": 18895
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": 0.0043,
+            "Camera__DefaultRotation__RotY": 0.3621,
+            "Camera__DefaultRotation__RotZ": -0.0015
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 17450,
+        "OrbitHelperCube__Position__PosY": 1434,
+        "OrbitHelperCube__Position__PosZ": -413
+    }
 }

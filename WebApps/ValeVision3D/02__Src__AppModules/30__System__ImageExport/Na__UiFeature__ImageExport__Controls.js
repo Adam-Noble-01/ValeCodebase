@@ -171,7 +171,14 @@
     //
     // Returns: { canvas, width, height, aspectRatio }
     // ------------------------------------------------------------
-    function Na__UiFeature__RenderToCanvas(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
+    function Na__UiFeature__RenderToCanvas(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex, getElevationOverrides) {
+
+        // ELEVATION OVERRIDE | Check if we are in 2D elevation mode
+        // ------------------------------------------------------------
+        const elevOverrides = (typeof getElevationOverrides === 'function')
+            ? getElevationOverrides()                                       // <-- Returns overrides object or null
+            : null;
+        const isElevationMode = elevOverrides !== null;                      // <-- True when exporting the 2D ortho view
 
         // NON-CUSTOM MODE | Render at current viewport size
         // ------------------------------------------------------------
@@ -180,10 +187,15 @@
             const composer      = pipelineState.composer;                                            // <-- Composer reference
 
             if (composer) {
-                pipelineState.renderProfileNormals(); // <-- Refresh profile normals before compose render
+                if (isElevationMode) {
+                    elevOverrides.renderProfileNormals(elevOverrides.camera); // <-- 2D profile normals with ortho camera
+                } else {
+                    pipelineState.renderProfileNormals();                     // <-- 3D profile normals with persp camera
+                }
                 composer.render();                    // <-- Render via post-processing composer
             } else {
-                renderer.render(scene, camera); // <-- Direct render fallback
+                const renderCamera = isElevationMode ? elevOverrides.camera : camera; // <-- Pick active camera
+                renderer.render(scene, renderCamera);                                  // <-- Direct render fallback
             }
 
             // Copy WebGL buffer to 2D canvas for reliable pixel readback
@@ -218,22 +230,33 @@
         const pixelRatio     = renderer.getPixelRatio();               // <-- Store current pixel ratio
         const pipelineState  = Na__UiFeature__ResolveRenderPipelineState(getRenderPipelineState); // <-- Resolve render pipeline state
         const composer       = pipelineState.composer;                 // <-- Composer reference
-        const originalAspect = camera.aspect;                          // <-- Store original camera aspect
+        const originalAspect = camera.aspect;                          // <-- Store original perspective camera aspect
 
         renderer.setPixelRatio(1);                   // <-- Set pixel ratio to 1 for exact resolution
         renderer.setSize(targetWidth, targetHeight); // <-- Resize renderer to target dimensions
 
-        camera.aspect = targetWidth / targetHeight; // <-- Update camera aspect ratio
-        camera.updateProjectionMatrix();             // <-- Apply camera changes
+        // CAMERA RESIZE | Update the active camera for export dimensions
+        // ------------------------------------------------------------
+        if (isElevationMode) {
+            elevOverrides.resizeFrustum(targetWidth, targetHeight); // <-- Update ortho frustum for export aspect
+        } else {
+            camera.aspect = targetWidth / targetHeight;             // <-- Update perspective camera aspect ratio
+            camera.updateProjectionMatrix();                        // <-- Apply camera changes
+        }
 
         if (composer) {
             composer.setSize(targetWidth, targetHeight);                  // <-- Resize composer
             pipelineState.setProfileLinesSize(targetWidth, targetHeight); // <-- Resize profile lines render target
             pipelineState.setFxaaSize(targetWidth, targetHeight);         // <-- Resize FXAA resolution uniform
-            pipelineState.renderProfileNormals();                         // <-- Refresh profile normals at export dimensions
+            if (isElevationMode) {
+                elevOverrides.renderProfileNormals(elevOverrides.camera); // <-- 2D profile normals at export dimensions
+            } else {
+                pipelineState.renderProfileNormals();                     // <-- 3D profile normals at export dimensions
+            }
             composer.render();                                            // <-- Render via composer
         } else {
-            renderer.render(scene, camera); // <-- Direct render fallback
+            const renderCamera = isElevationMode ? elevOverrides.camera : camera; // <-- Pick active camera
+            renderer.render(scene, renderCamera);                                  // <-- Direct render fallback
         }
 
         // Copy WebGL buffer to 2D canvas for reliable pixel readback
@@ -250,10 +273,14 @@
             ? Na__PostProcess__RunPipeline(captureCanvas, postProcessConfig) // <-- Apply post-processing pipeline
             : captureCanvas;                                                  // <-- Use capture canvas directly
 
-        // Restore renderer, camera, and composer to original state
+        // RESTORE | Camera, renderer, and composer to original state
         // ------------------------------------------------------------
-        camera.aspect = originalAspect; // <-- Restore camera aspect
-        camera.updateProjectionMatrix(); // <-- Apply camera restore
+        if (isElevationMode) {
+            elevOverrides.restoreFrustum();                       // <-- Restore ortho frustum to viewport dimensions
+        } else {
+            camera.aspect = originalAspect;                       // <-- Restore perspective camera aspect
+            camera.updateProjectionMatrix();                      // <-- Apply camera restore
+        }
 
         renderer.setPixelRatio(pixelRatio);  // <-- Restore pixel ratio
         renderer.setSize(size.x, size.y);    // <-- Restore renderer size
@@ -261,7 +288,11 @@
             composer.setSize(size.x, size.y);                              // <-- Restore composer size
             pipelineState.setProfileLinesSize(size.x, size.y);             // <-- Restore profile lines render target size
             pipelineState.setFxaaSize(size.x, size.y);                     // <-- Restore FXAA resolution uniform
-            pipelineState.renderProfileNormals();                           // <-- Refresh profile normals for live viewport after restore
+            if (isElevationMode) {
+                elevOverrides.renderProfileNormals(elevOverrides.camera);   // <-- Refresh 2D profile normals for live viewport
+            } else {
+                pipelineState.renderProfileNormals();                       // <-- Refresh 3D profile normals for live viewport
+            }
         }
 
         return {
@@ -282,11 +313,12 @@
     //
     // Returns: { dataUrl, width, height, aspectRatio }
     // ------------------------------------------------------------
-    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex) {
+    function Na__UiFeature__RenderToDataUrl(renderer, scene, camera, getRenderPipelineState, postProcessConfig, isEnhanceEnabled, isCustomEnabled, exportConfig, ratioIndex, resIndex, getElevationOverrides) {
         const result = Na__UiFeature__RenderToCanvas(           // <-- Delegate to canvas render helper
             renderer, scene, camera, getRenderPipelineState,
             postProcessConfig, isEnhanceEnabled,
-            isCustomEnabled, exportConfig, ratioIndex, resIndex
+            isCustomEnabled, exportConfig, ratioIndex, resIndex,
+            getElevationOverrides
         );
         return {
             dataUrl     : result.canvas.toDataURL('image/png'), // <-- Encode canvas to PNG data URL string
@@ -306,7 +338,7 @@
 
     // FUNCTION | Initialize Image Export Controls
     // ------------------------------------------------------------
-    function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getRenderPipelineState, config = {}, postProcessConfig = null) {
+    function Na__UiFeature__InitializeImageExportControls(renderer, scene, camera, getRenderPipelineState, config = {}, postProcessConfig = null, getElevationOverrides = null) {
         if (!renderer || !scene || !camera) return;
         
         if (!Na__UiFeature__ValidateExportConfig(config)) return;
@@ -462,7 +494,8 @@
                     const result = Na__UiFeature__RenderToCanvas(          // <-- Render to 2D canvas using shared helper
                         renderer, scene, camera, getRenderPipelineState,
                         postProcessConfig, isEnhanceEnabled,
-                        isCustomEnabled, exportConfig, ratioIndex, resIndex
+                        isCustomEnabled, exportConfig, ratioIndex, resIndex,
+                        getElevationOverrides
                     );
 
                     // UPDATE OVERLAY | Phase 2 - "Encoding Image..."
@@ -544,7 +577,8 @@
                         const result = Na__UiFeature__RenderToDataUrl(       // <-- Render using shared helper
                             renderer, scene, camera, getRenderPipelineState,
                             postProcessConfig, isEnhanceEnabled,
-                            isCustomEnabled, exportConfig, ratioIndex, resIndex
+                            isCustomEnabled, exportConfig, ratioIndex, resIndex,
+                            getElevationOverrides
                         );
 
                         // UPDATE OVERLAY | Phase 2 - "Sending To Drawing Document..."

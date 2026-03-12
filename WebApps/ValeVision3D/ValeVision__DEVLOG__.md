@@ -1,5 +1,31 @@
 # ValeVision3D Development Log
 # =========================================================
+# ---------------------------------------------------------
+##  ValeVision3D v2.0.8 - 12-Mar-2026
+### Image Export Fix — Download Image Black Output + Elevation-Aware 2D Pipeline
+
+**Overview**
+- Fixed "Download Image" producing black PNGs, main-thread hang, and memory leak. Create Drawing (Layout View) already worked; root cause was synchronous render capture outside `requestAnimationFrame` plus blocking `toDataURL()` at 4K.
+- Added elevation-aware export so Download Image and Create Drawing correctly render the 2D orthographic elevation view when the user is in Elevation View mode, instead of the 3D perspective pipeline.
+
+**Download Image — Black Image + Hang Fix**
+- Extracted `Na__UiFeature__RenderToCanvas` from `Na__UiFeature__RenderToDataUrl`; always copies WebGL framebuffer to a 2D offscreen canvas immediately after `render()` for reliable pixel readback regardless of `preserveDrawingBuffer`.
+- Wrapped export handler in double `requestAnimationFrame` (same pattern as Create Drawing) so render and capture occur within a proper animation frame lifecycle.
+- Replaced synchronous `canvas.toDataURL('image/png')` with async `canvas.toBlob()` + `URL.createObjectURL()` + `URL.revokeObjectURL()` to avoid blocking the main thread and large base64 string retention at 4K–6K resolution.
+- Added loading overlay (phases: "Rendering Your Image...", "Encoding Image...", "Download Ready!") reusing the existing Layout View overlay system for visual feedback on slower devices.
+
+**Elevation-Aware Export**
+- Created `Na__ElevationView__ExportOverrides.js` in `40__System__2dElevationsView`. Listens for `na-elevation-camera-changed` to capture the ortho camera and 2D profile normals renderer.
+- `Na__ElevationView__GetExportOverrides()` returns `null` in 3D mode, or an overrides object with `camera`, `renderProfileNormals`, `resizeFrustum`, `restoreFrustum` when in `VIEWING_ELEVATION`.
+- `Na__UiFeature__RenderToCanvas` now accepts optional `getElevationOverrides`; when non-null, uses 2D profile normals and ortho camera instead of 3D pipeline, and updates ortho frustum for custom-resolution exports while preserving zoom level.
+- Zero impact on real-time renderer; no `preserveDrawingBuffer` change; export logic branches only at export time.
+
+**Files Added**
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js`
+
+**Files Changed**
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `index.html`
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.0.8  -  12-Mar-2026

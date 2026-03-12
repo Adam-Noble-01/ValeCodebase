@@ -341,6 +341,7 @@
     import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
     import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
+    import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -654,7 +655,8 @@
         Na__Camera__Main,
         () => Na__AppFlow__PipelineRef.current,                            // <-- Read pipeline state from mutable ref
         Na__Config__ImageExport,
-        Na__Config__PostProcessEffects
+        Na__Config__PostProcessEffects,
+        Na__ElevationView__GetExportOverrides                              // <-- Elevation overrides getter (returns null when in 3D mode)
     );
     // @delegate: ./02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js
     // ------------------------------------------------------------

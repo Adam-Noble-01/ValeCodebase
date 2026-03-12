@@ -11,8 +11,8 @@
         "Scene__Default__CameraConfig__Far": 1000
     },
     "Scene__Default__LightingConfig": {
-        "Scene__Default__LightingConfig__AmbientIntensity": 2.5,
-        "Scene__Default__LightingConfig__DirectionalIntensity": 1.0
+        "Scene__Default__LightingConfig__AmbientIntensity": 2.8,
+        "Scene__Default__LightingConfig__DirectionalIntensity": 0.5
     },
     "Scene__Default__FogConfig": {
         "Scene__Default__FogConfig__Description"     : "Default orbit-cube anchored fog envelope. Distances are integer millimeters and must be converted to 3D units in code.",
@@ -80,12 +80,6 @@
         "ImageExport__Config__DefaultAspectIndex"       : 0,
         "ImageExport__Config__Resolutions"              : [1024, 2048, 4096],
         "ImageExport__Config__DefaultResolutionIndex"   : 2
-    },
-    "PageLayout__PdfExport__Config": {
-        "PageLayout__PdfExport__Config__Description"    : "Configuration for the A3 page layout PDF export. The full A3 sheet is flattened to a single lossless PNG at the target DPI before embedding into the PDF.",
-        "PageLayout__PdfExport__Config__TargetDpi"      : 600,
-        "PageLayout__PdfExport__Config__Compress"       : true,
-        "PageLayout__PdfExport__Config__FloatPrecision" : "smart"
     },
     "Global__Hotkeys": {
         "Global__Hotkeys__Description"                             : "Global keyboard shortcuts. Modifier keys joined with '+'. Evaluated in keydown handlers.",

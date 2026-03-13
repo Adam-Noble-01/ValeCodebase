@@ -12,6 +12,11 @@
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Vertical Perspective Correction
+    // ------------------------------------------------------------
+    import { Na__VerticalCorrection__ApplyFrame } from './Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js';
+    // ------------------------------------------------------------
+
 
     // MODULE CONSTANTS | Lens Conversion Defaults
     // ------------------------------------------------------------
@@ -77,6 +82,7 @@
             const fovDegrees = Na__UiFeature__LensFocalToFov(focalLengthMM, lensConfig.sensorHeightMM);
             camera.fov = fovDegrees;
             camera.updateProjectionMatrix();
+            Na__VerticalCorrection__ApplyFrame();                                   // <-- Re-apply vertical correction after projection rebuild
             valueLabel.textContent = `${Math.round(focalLengthMM)} mm`;
             Na__RenderLoop__RequestRender();                                        // <-- Invalidate render after FOV change
         };

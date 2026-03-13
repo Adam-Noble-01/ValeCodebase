@@ -22,6 +22,11 @@
     import { Na__UiFeature__CreateViewportOverlays, Na__UiFeature__UpdateViewportOverlays } from './Na__UiFeature__ImageExport__ViewportOverlays.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Vertical Perspective Correction
+    // ------------------------------------------------------------
+    import { Na__VerticalCorrection__ApplyFrame } from '../11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js';
+    // ------------------------------------------------------------
+
 
     // -------------------------------------------------------------------------
     // REGION | Export Configuration and Defaults
@@ -242,6 +247,7 @@
         } else {
             camera.aspect = targetWidth / targetHeight;             // <-- Update perspective camera aspect ratio
             camera.updateProjectionMatrix();                        // <-- Apply camera changes
+            Na__VerticalCorrection__ApplyFrame();                   // <-- Re-apply vertical shear after projection rebuild (no-op when disabled)
         }
 
         if (composer) {
@@ -280,6 +286,7 @@
         } else {
             camera.aspect = originalAspect;                       // <-- Restore perspective camera aspect
             camera.updateProjectionMatrix();                      // <-- Apply camera restore
+            Na__VerticalCorrection__ApplyFrame();                 // <-- Re-apply vertical shear so live viewport remains corrected immediately
         }
 
         renderer.setPixelRatio(pixelRatio);  // <-- Restore pixel ratio

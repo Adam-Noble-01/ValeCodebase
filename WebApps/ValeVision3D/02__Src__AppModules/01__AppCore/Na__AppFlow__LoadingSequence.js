@@ -124,6 +124,11 @@
     import { Na__DoorProximity__Update } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Vertical Perspective Correction
+    // ------------------------------------------------------------
+    import { Na__VerticalCorrection__ApplyFrame } from '../11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
     import {
@@ -476,6 +481,8 @@
             } else {
                 Na__Navmode__UpdateNavigation();                             // <-- Update orbit controls
             }
+
+            Na__VerticalCorrection__ApplyFrame();                            // <-- Apply vertical perspective correction (no-ops when disabled)
 
             Na__DoorAnimation__Update(deltaMs);                              // <-- Update door animations
             Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__RenderLoop__ActiveCamera); // <-- Update fog with active camera

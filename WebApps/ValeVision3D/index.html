@@ -162,11 +162,11 @@
             <ul class="na-dropdown-menu__list">
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCameraLensToggle">
-                        Adjust Field of View
+                        Camera Settings
                         <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
                     <div class="na-dropdown-menu__panel" id="naCameraLensPanel">
-                        <div class="na-dropdown-menu__panel-title">Camera Lens Width</div>
+                        <div class="na-dropdown-menu__panel-title">Camera Focal Length</div>
                         <div class="na-dropdown-menu__panel-row">
                             <input
                                 type="range"
@@ -178,6 +178,11 @@
                                 value="50"
                             />
                             <span class="na-dropdown-menu__value" id="naCameraLensValue">50 mm</span>
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Perspective Correction</span>
+                            <input type="checkbox" id="naVerticalCorrectionToggle" class="na-dropdown-menu__checkbox" />
                         </div>
                     </div>
                 </li>
@@ -217,6 +222,7 @@
                             />
                             <span class="na-dropdown-menu__value" id="naImageExportResolutionValue">2k</span>
                         </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
                         <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
                             <span class="na-dropdown-menu__panel-title">Enhance Whitecard</span>
                             <input type="checkbox" id="naImageExportEnhanceToggle" class="na-dropdown-menu__checkbox" checked />
@@ -326,6 +332,7 @@
     import { Na__DefaultNavmode__InitializeIpadControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
     import { Na__AppConfig__LoadConfig } from './02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js';
     import { Na__UiFeature__InitializeCameraLensControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js';
+    import { Na__UiFeature__InitializeVerticalCorrectionControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__InitializeSaveCameraButton } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
     import { Na__UiFeature__InitializeLocalhostDevMenu } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js';
@@ -649,6 +656,7 @@
     }
     
     Na__UiFeature__InitializeCameraLensControls(Na__Camera__Main, Na__CameraLens__Config);
+    Na__UiFeature__InitializeVerticalCorrectionControls(Na__Camera__Main, Na__Controls__Orbit);
     Na__UiFeature__InitializeImageExportControls(
         Na__Renderer__Main,
         Na__Scene__Main,

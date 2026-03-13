@@ -1,6 +1,49 @@
 # ValeVision3D Development Log
 # =========================================================
 # ---------------------------------------------------------
+## ValeVision3D v2.1.0 - 13-Mar-2026
+### Vertical Perspective Correction — Architectural Line Straightening
+
+**Overview**
+- New feature that corrects the perspective distortion of vertical lines when the camera is tilted up or down, a critical requirement for architectural imagery. When enabled, vertical world lines render as true pixel-aligned verticals in both the live viewport and all image exports.
+
+**Technical Approach — Projection Matrix Shear**
+- Applied a shift-lens correction directly to `camera.projectionMatrix` rather than a post-process shader, eliminating resampling artifacts.
+- Each rendered frame: `camera.updateProjectionMatrix()` resets to a clean symmetric frustum, then `elements[9] += tan(pitch) * elements[5]` shifts the frustum asymmetrically to cancel vertical convergence. `projectionMatrixInverse` is kept in sync for correct raycasting.
+- The pitch angle is derived from `camera.getWorldDirection()` each frame, so the correction tracks any camera movement in real time.
+- `camera.updateProjectionMatrix()` is called at the start of `ApplyFrame` every frame to prevent the shear from compounding across frames — ensuring the horizon stays level.
+
+**Navigation Lock**
+- When vertical correction is active, orbit controls are disabled to prevent the jarring camera drift loop that occurs when navigating with the shear applied.
+- A centred overlay notification ("Navigation locked — Vertical Correction is active") appears and fades automatically after 3 seconds.
+- Any attempted navigation input (mouse, wheel, touch) while locked re-shows the notification so the user is clearly informed.
+
+**Export Pipeline Integration**
+- The correction is applied in both the "Download Image" (PNG) and "Create Drawing" (Layout View) export paths.
+- In custom-resolution export mode, `camera.updateProjectionMatrix()` is called internally to apply the export aspect ratio, which previously wiped the shear. `Na__VerticalCorrection__ApplyFrame()` is now called immediately after to re-apply the correction before `composer.render()` fires.
+- After the export restore block, `ApplyFrame()` is called again so the live viewport remains corrected immediately without waiting for the next render-loop frame.
+- All calls are no-ops when the feature is disabled, with zero impact on users not using the toggle.
+- Elevation view exports are unaffected (guarded by existing `isElevationMode` checks).
+
+**UI**
+- "Vertical Correction" toggle checkbox added inside the "Adjust Field of View" panel, below the Camera Lens Width slider, separated by an HR divider.
+- Inherits the existing fold/collapse behaviour — the panel opens automatically when Export Image is clicked.
+- HR divider also added in the Export Image panel between the Resolution slider and the Enhance Whitecard toggle for improved visual breathing room.
+
+**Files Added**
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__EffectLogic.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__NavLockNotification.js`
+
+**Files Changed**
+- `index.html` — toggle HTML, import, and initialization call with orbit controls reference
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — `Na__VerticalCorrection__ApplyFrame()` called in render loop after navigation updates
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js` — `ApplyFrame()` called after `updateProjectionMatrix()` in `applyLens()` so FOV changes preserve the correction
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js` — import + two `ApplyFrame()` insertions in custom export path
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — `.na-dropdown-menu__panel-divider` HR style + `.na-navlock-notification` overlay styles
+
+# ---------------------------------------------------------
+# ---------------------------------------------------------
 ##  ValeVision3D v2.0.8 - 12-Mar-2026
 ### Image Export Fix — Download Image Black Output + Elevation-Aware 2D Pipeline
 

@@ -63,7 +63,7 @@
         "RenderEffect__ProfileLines__EdgeThresholdDepth"   : 0.002,
         "RenderEffect__ProfileLines__EdgeWidth"            : 0.25,
         "RenderEffect__ProfileLines__EdgeWidthMin"         : 0.20,
-        "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.60,
+        "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.50,
         "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
         "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0
     },

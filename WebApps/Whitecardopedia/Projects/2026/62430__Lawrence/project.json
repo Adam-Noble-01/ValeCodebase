@@ -26,17 +26,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "A very technically tricky job to draw up, highlighted the need for a lead lines sub-division tool as this task was tedious when it needn't had been. compliments to Steph for managing to draw up such a difficult building. Lesson have been learned to avoid this level of time overrun in the future.",
+        "conceptArtist": "Steph",
+        "input": "Early Stage Sketch"
     },
     "projectCode": "62430",
     "projectName": "Lawrence",
     "scheduleData": {
         "dateFulfilled": "12-Mar-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "11-Mar-2026",
+        "timeAllocated": 3,
+        "timeTaken": 4.5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -48,5 +48,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62430__Lawrence/Lawrence__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62430__Lawrence/Lawrence__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62430__Lawrence/Lawrence__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/62430__Lawrence",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
     ]
 }

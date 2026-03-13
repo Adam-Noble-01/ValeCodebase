@@ -11,3 +11,5 @@ alwaysApply: true
 - The model aesthetic is a "Whitecard" style, so the tool should be able to load and display Whitecard models.
 - The project is highly modular. so you ALWAYS need to trace the code and understand module relationships before editing any code.
 - Each specific feature should be its own module and neatly seperated into seperate files to seperate concerns and keep code clean and maintainable.
+- The tool allows for Vale Staff to create 3D models of their projects and to view them in a 3D environment.
+- The tool allows for Vale Staff to create 2D images from rendered shots of the 3D Models and drawing PDF Files with company branding title blocks etc.

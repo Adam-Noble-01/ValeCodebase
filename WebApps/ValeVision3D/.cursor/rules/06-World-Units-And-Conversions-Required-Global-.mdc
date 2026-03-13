@@ -14,3 +14,7 @@ alwaysApply: false
 **Models Loaded From Glb Files Are Already Properly Scaled**
 - SketchUp Glb Exporter exports units as millimeters.
   - So assume Glb models are in millimeters so already properly scaled.
+
+**Three.js Coordinate System**
+- Three.js uses a right-handed coordinate system with the Y axis pointing up. 
+- In this system, the X axis runs left-to-right, the Y axis runs up, and the Z axis runs forward/backward. 

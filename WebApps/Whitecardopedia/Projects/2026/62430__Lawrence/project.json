@@ -1,18 +1,18 @@
 {
     "Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
         "Camera__DefaultPos": {
             "Camera__DefaultPos__PosX": 7542,
             "Camera__DefaultPos__PosY": 2214,
             "Camera__DefaultPos__PosZ": 13505
         },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultRotation": {
             "Camera__DefaultRotation__RotX": -0.017,
             "Camera__DefaultRotation__RotY": -0.3224,
             "Camera__DefaultRotation__RotZ": -0.0054
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
         }
     },
     "OrbitHelperCube__Position": {
@@ -21,7 +21,15 @@
         "OrbitHelperCube__Position__PosY": 1786,
         "OrbitHelperCube__Position__PosZ": -11713
     },
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/62430__Lawrence",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
+    ],
+    "folderId": "2026/62430__Lawrence",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
     ],
@@ -49,12 +57,10 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62430__Lawrence/Lawrence__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62430__Lawrence/Lawrence__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "folderId": "2026/62430__Lawrence",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__13-Mar-2026.png"
-    ]
+    "GridLine__Grid__Offset__Config": {
+        "GridLine__Grid__Config__Offset__Description": "Grid origin offset on X and Z axes in millimeters.",
+        "GridLine__Grid__Config__Offset__OffsetXMm": 10000,
+        "GridLine__Grid__Config__Offset__OffsetZMm": 10000,
+        "GridLine__Grid__Config__Offset__HeightMm": -100
+    }
 }

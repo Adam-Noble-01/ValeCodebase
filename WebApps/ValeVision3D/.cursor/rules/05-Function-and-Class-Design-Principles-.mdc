@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+
+## Function and Class Design Principles
+
+**Core Rule:** One responsibility per function.
+
+**Function Guidelines:**
+- Each function must perform one clearly defined task.
+- Do not mix unrelated concerns within a single function.
+- If additional behaviour is required, extract it into helper functions.
+- Prefer small, composable, independently testable functions.
+
+**Class Usage Rule:**
+- Introduce a class only when multiple related functions require shared state.
+- Use a class when behaviour must be grouped around a specific data structure.
+- Do not create classes for simple procedural grouping.
+
+**Naming:**
+- Use clear, descriptive names that accurately reflect the purpose of variables, functions, and classes.
+- Names must be namespaced using the three-stage delimiting convention: `Na__(SystemOrBroaderGrouping)__(ExactPurposeOrFunctionName)`.
+
+**Module Separation (One Feature = One File):**
+- Each distinct feature or system must live in its own dedicated module file.
+- Never co-locate unrelated features in the same file, even if they are small.
+- A module file should have a single, clearly stated purpose — if you cannot describe it in one phrase, it needs splitting.
+- Cross-feature communication must go through explicit imports/exports, never through shared globals or side effects.
+- File name must reflect the module's domain and purpose using the project file naming convention: `Domain__Purpose__.js`.
+
+**Avoid Duplicates (DRY):**
+- Reuse logic through abstraction or helper functions to reduce redundancy.
+
+**Intent:**
+- Maximise clarity and maintainability.
+- Reduce hidden side effects.
+- Keep logic modular and predictable.

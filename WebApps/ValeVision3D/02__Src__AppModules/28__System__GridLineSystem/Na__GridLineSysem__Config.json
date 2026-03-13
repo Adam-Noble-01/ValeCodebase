@@ -1,0 +1,55 @@
+{
+    "GridLine__Grid__Config": {
+        "GridLine__Grid__Config__Description"                : "Number of grid lines to draw in each direction from the origin point.",
+        "GridLine__Grid__Config__LineCount"                  : 50
+    },
+    "GridLine__Grid__Offset__Config": {
+        "GridLine__Grid__Config__Offset__Description"        : "Grid origin offset on X and Z axes in millimeters.",
+        "GridLine__Grid__Config__Offset__OffsetXMm"          : 10000,
+        "GridLine__Grid__Config__Offset__OffsetZMm"          : 10000
+    },
+    "GridLine__Size__Config": {
+        "GridLine__Size__Config__Description"                : "Discrete grid spacing steps in millimeters and the default selected index.",
+        "GridLine__Size__Config__StepsMm"                    : [100, 250, 500, 1000, 2000, 2500, 5000],
+        "GridLine__Size__Config__DefaultIndex"               : 3
+    },
+    "GridLine__Height__Config": {
+        "GridLine__Height__Config__Description"              : "Grid plane height above Y-axis origin in millimeters.",
+        "GridLine__Height__Config__MinMm"                    : -1000,
+        "GridLine__Height__Config__MaxMm"                    : 1000,
+        "GridLine__Height__Config__StepMm"                   : 50,
+        "GridLine__Height__Config__DefaultMm"                : 0
+    },
+    "GridLine__Style__Config": {
+        "GridLine__Style__Config__Description"               : "Line appearance: width steps, type options, colour palette, and dash/dot gap range.",
+        "GridLine__Style__Config__WidthStepsPx"              : [0.10, 0.25, 0.50, 1.00, 1.50, 3.00],
+        "GridLine__Style__Config__WidthDefaultIndex"         : 2,
+        "GridLine__Style__Config__LineTypes"                  : ["Solid", "Dashed", "Dotted"],
+        "GridLine__Style__Config__LineTypeDefaultIndex"       : 0,
+        "GridLine__Style__Config__ColorPalette"              : [
+            { "hex": "#141414", "label": "Grey"     },
+            { "hex": "#ff0000", "label": "Red"      },
+            { "hex": "#000000", "label": "Black"    },
+            { "hex": "#646464", "label": "Mid Grey" },
+            { "hex": "#172b3a", "label": "Vale Blue" }
+        ],
+        "GridLine__Style__Config__ColorDefaultIndex"         : 0,
+        "GridLine__Style__Config__GapScaleMin"               : 0.2,
+        "GridLine__Style__Config__GapScaleMax"               : 5.0,
+        "GridLine__Style__Config__GapScaleStep"              : 0.1,
+        "GridLine__Style__Config__GapScaleDefault"           : 1.0,
+        "GridLine__Style__Config__OpacityMin"                : 0.20,
+        "GridLine__Style__Config__OpacityMax"                : 1.00,
+        "GridLine__Style__Config__OpacityStep"               : 0.05,
+        "GridLine__Style__Config__OpacityDefault"            : 0.50,
+        "GridLine__Style__Config__OriginMarkerSizeMm"        : 500
+    },
+    "GridLine__Position__Config": {
+        "GridLine__Position__Config__Description"            : "Grid origin offset on X and Z axes in millimeters. Persisted via localhost Save Position.",
+        "GridLine__Position__Config__OffsetXMm"              : 0,
+        "GridLine__Position__Config__OffsetZMm"              : 0,
+        "GridLine__Position__Config__SliderMinMm"            : -35000,
+        "GridLine__Position__Config__SliderMaxMm"            : 35000,
+        "GridLine__Position__Config__SliderStepMm"           : 100
+    }
+}

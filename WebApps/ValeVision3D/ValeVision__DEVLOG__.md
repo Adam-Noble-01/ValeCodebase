@@ -1,6 +1,43 @@
 # ValeVision3D Development Log
 # =========================================================
 # ---------------------------------------------------------
+## ValeVision3D v2.1.1 - 13-Mar-2026
+### Grid Lines System — Configurable Scene Grid Overlay
+
+**Overview**
+- New Grid Lines system allowing users to overlay a configurable grid on the XZ plane. The grid is disabled by default and must be enabled via the "Show Grid" toggle in the toolbar. All parameters are driven by a dedicated JSON configuration file.
+
+**Grid Controls**
+- Grid Size: discrete steps (100mm, 250mm, 500mm, 1000mm, 2000mm, 2500mm, 5000mm) controlling cell spacing.
+- Grid Height: linear slider (-1000mm to 1000mm, 100mm step) to raise or lower the grid plane along Y.
+- Grid Style collapsible section containing:
+  - Line Width: discrete pixel steps (0.10, 0.25, 0.50, 1.00, 1.50, 3.00 px) using Three.js addons fat lines (`LineMaterial` / `LineSegments2`) for accurate GPU-rendered width control — standard `LineBasicMaterial` linewidth is capped at 1px on most hardware.
+  - Line Type: Solid, Dashed, or Dotted via `LineMaterial` dashing properties.
+  - Line Colour: predefined palette dropdown (Grey, Red, Black, Mid Grey, Vale Blue).
+  - Line Opacity: slider (20%–100%, default 50%) with transparent material blending.
+  - Line Gap Size: scalar slider (0.2x–5.0x) visible only for Dashed/Dotted types.
+- Localhost-only Grid Position section: X and Z axis offset sliders with a "Save Position" button that persists the current offsets and height to the project JSON via the Flask API (same pattern as Save Camera Settings). On next load, persisted offsets are read back from the project JSON and applied as initial slider values.
+
+**Technical Approach — Fat Lines**
+- Replaced `THREE.LineBasicMaterial` / `THREE.LineSegments` with `LineMaterial` / `LineSegments2` / `LineSegmentsGeometry` from `three/addons/lines` for robust line width rendering across all hardware.
+- `LineMaterial.resolution` is updated on window resize to maintain correct pixel-width rendering.
+- Z-axis offset is negated internally in the creation logic so the config and UI use intuitive positive values while correctly mapping to Three.js right-handed coordinates.
+
+**Origin Marker (Localhost Dev Aid)**
+- A red X marker renders at the grid origin on localhost, moving with X/Z position offsets to help align the grid to the model during development.
+
+**Default State**
+- Grid is disabled on startup. The user must check the "Show Grid" toggle to display it. No grid geometry is created until the user enables the toggle.
+
+**Files Added**
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSysem__Config.json`
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSysem__GridCreationLogic.js`
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js`
+
+**Files Changed**
+- `index.html` — Grid Lines menu HTML, import, and initialization call with toast callback
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.1.0 - 13-Mar-2026
 ### Vertical Perspective Correction — Architectural Line Straightening
 
@@ -43,6 +80,7 @@
 - `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — `.na-dropdown-menu__panel-divider` HR style + `.na-navlock-notification` overlay styles
 
 # ---------------------------------------------------------
+
 # ---------------------------------------------------------
 ##  ValeVision3D v2.0.8 - 12-Mar-2026
 ### Image Export Fix — Download Image Black Output + Elevation-Aware 2D Pipeline

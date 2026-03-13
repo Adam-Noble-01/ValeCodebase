@@ -1,7 +1,24 @@
 {
 	"folders": [
 	  {
-		"path": "."
+		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps",
+        "name"         : "WebApps - Main Parent Folder",
+        "description"  : "This is the main folder for the WebApps workspace. It is a collection of web applications that are related to Vale project.",
+	  },
+	  {
+		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D",
+        "name"         : "ValeVision3D - Child Project Folder",
+        "description"  : "This is the main project for the ValeVision3D Web Application. ValeVision3D is a 3D viewer for its sister project, Whitecardopedia."
+	  },
+	  {
+		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/Whitecardopedia",
+        "name"         : "Whitecardopedia - Child Project Folder",
+        "description"  : "This is the main project for the Whitecardopedia Web Application. Whitecardopedia is a gallery web app containing all of Vale projects whitecard images linking to the ValeVision3D viewer and providing a live web platform for staff to review and approve designs in a easy to use and navigate manner."
+	  },
+	  {
+		"path"         : "D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools",
+        "name"         : "Root_GeneralDeveloperTools - Sister Folder With Developer Tools",
+        "description"  : "This folder contains general developer tools that are used across the Vale project. These are miscellaneous utilities and tools that are not specific to any one project but are useful for the development process. The auto Vale Email generator tool can be found here and my Python version of AutoHotkey which is optimised for Vale Projects etc."
 	  }
 	],
 	"settings": {

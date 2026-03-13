@@ -53,6 +53,8 @@
     const Na__ElevUi__PLANE_TOGGLE_ROW_ID = 'naElevationPlaneToggleRow';          // <-- Plane toggle row wrapper
     const Na__ElevUi__PLANE_TOGGLE_ID     = 'naElevationPlaneToggle';             // <-- Plane toggle checkbox
     const Na__ElevUi__RESELECT_ID         = 'naElevationReselect';                // <-- Reselect button
+    const Na__ElevUi__DIVIDER1_ID         = 'naElevationDivider1';                // <-- Panel divider before toggle row
+    const Na__ElevUi__DIVIDER2_ID         = 'naElevationDivider2';                // <-- Panel divider before reselect button
     // ------------------------------------------------------------
 
 
@@ -81,6 +83,8 @@
     let Na__ElevUi__PlaneToggleRow  = null;
     let Na__ElevUi__PlaneToggle     = null;
     let Na__ElevUi__ReselectBtn     = null;
+    let Na__ElevUi__Divider1        = null;
+    let Na__ElevUi__Divider2        = null;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -109,6 +113,8 @@
         Na__ElevUi__BackBtn.style.display          = isViewing ? '' : 'none';
         Na__ElevUi__PlaneToggleRow.style.display   = hasElevation ? '' : 'none';
         Na__ElevUi__ReselectBtn.style.display      = hasElevation ? '' : 'none';
+        if (Na__ElevUi__Divider1) Na__ElevUi__Divider1.style.display = hasElevation ? '' : 'none';
+        if (Na__ElevUi__Divider2) Na__ElevUi__Divider2.style.display = hasElevation ? '' : 'none';
     }
     // ------------------------------------------------------------
 
@@ -141,6 +147,8 @@
         Na__ElevUi__PlaneToggleRow = document.getElementById(Na__ElevUi__PLANE_TOGGLE_ROW_ID);
         Na__ElevUi__PlaneToggle    = document.getElementById(Na__ElevUi__PLANE_TOGGLE_ID);
         Na__ElevUi__ReselectBtn    = document.getElementById(Na__ElevUi__RESELECT_ID);
+        Na__ElevUi__Divider1       = document.getElementById(Na__ElevUi__DIVIDER1_ID);
+        Na__ElevUi__Divider2       = document.getElementById(Na__ElevUi__DIVIDER2_ID);
 
         if (!Na__ElevUi__ToggleBtn || !Na__ElevUi__Panel) {
             console.warn('[ValeVision3D] Elevation View DOM elements not found');

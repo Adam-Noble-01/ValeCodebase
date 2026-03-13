@@ -112,6 +112,17 @@
     display                             : none;
 }
 
+/* Grid Line Style - Remove inset so Grid Style and Line Type & Colour align with panel content */
+/* ----------------------------------------------------------------- */
+.na-gridline-style-details {
+    padding-left                        : 0;
+    margin-left                         : 0;
+}
+
+.na-gridline-style-details .na-dropdown-menu__summary {
+    padding-left                         : 0;
+}
+
 .na-dropdown-menu__arrow {
     font-size                           : 0.85rem;
     color                               : #172b3a;
@@ -240,6 +251,36 @@
     font-family                         : 'Courier New', monospace;
     font-size                           : 0.85rem;
     color                               : #172b3a;
+}
+
+.na-dropdown-menu__value-input {
+    width                               : 78px;
+    min-width                           : 78px;
+    padding                             : 4px 6px;
+    text-align                          : right;
+    font-weight                         : 600;
+    font-family                         : 'Courier New', monospace;
+    font-size                           : 0.85rem;
+    color                               : #172b3a;
+    border                              : 1px solid rgba(23, 43, 58, 0.25);
+    border-radius                       : 4px;
+    background                          : #ffffff;
+}
+
+.na-dropdown-menu__value-input::-webkit-outer-spin-button,
+.na-dropdown-menu__value-input::-webkit-inner-spin-button {
+    -webkit-appearance                  : none;
+    margin                              : 0;
+}
+
+.na-dropdown-menu__value-input[type="number"] {
+    -moz-appearance                     : textfield;
+}
+
+.na-dropdown-menu__value-unit {
+    font-size                           : 0.75rem;
+    color                               : rgba(23, 43, 58, 0.65);
+    font-weight                         : 500;
 }
 
 .na-dropdown-menu__textarea {

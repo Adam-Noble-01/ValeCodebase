@@ -188,7 +188,6 @@
         Na__GridLine__SceneRef = scene;
         Na__GridLine__Group    = new THREE.Group();
         Na__GridLine__Group.name = 'Na__GridLineGroup';
-        Na__GridLine__Group.renderOrder = -1;                                // <-- Render behind scene objects
         scene.add(Na__GridLine__Group);
 
         window.addEventListener('resize', Na__GridLine__OnResize);

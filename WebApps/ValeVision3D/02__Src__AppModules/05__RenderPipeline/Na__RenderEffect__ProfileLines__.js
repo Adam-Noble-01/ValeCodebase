@@ -84,7 +84,7 @@
     function collectMeshObjects(scene) {
         const meshObjects = [];
         scene.traverse((obj) => {
-            if (obj.isMesh) meshObjects.push(obj); // <-- Collect all visible mesh objects
+            if (obj.isMesh && !obj.isLine2 && !obj.isLineSegments2) meshObjects.push(obj); // <-- Exclude fat-line meshes; their template quad corrupts the normal buffer
         });
         return meshObjects;
     }

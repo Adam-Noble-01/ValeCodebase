@@ -1,6 +1,30 @@
 # ValeVision3D Development Log
 # =========================================================
 # ---------------------------------------------------------
+## ValeVision3D v2.1.2 - 13-Mar-2026
+### Elevation View — Grid Origin Plane Anchor
+
+**Overview**
+- Elevation planes are now anchored to the project's saved grid origin (the red X marker) rather than the raw raycast hit point. This aligns the elevation coordinate system to the project UCS so orthographic views are centred on the correct site reference point.
+
+**New Module**
+- `Na__ElevationView__OffsetPlane__ToProjectGridOrigin.js` — fetches the project's persisted `GridLine__Grid__Offset__Config` from the Flask API, converts `OffsetXMm`/`OffsetZMm` to Three.js units (Z negated to match the grid convention), and caches the result as a `THREE.Vector3`. Exports `Na__ElevOffsetPlane__LoadGridOrigin()` (async, called at init) and `Na__ElevOffsetPlane__GetGridOriginPoint()` (synchronous getter).
+
+**Anchor Logic**
+- A new `Na__Elev__GridAnchorPoint` state variable holds the resolved anchor: XZ from the grid origin, Y from the raycast hit point. This replaces `Na__Elev__HitPoint` as the positional anchor in both `Na__Elev__UpdatePlaneTransform` and `Na__Elev__UpdateOrthoCameraTransform`.
+- If no grid origin is loaded (no project code, or project has no saved grid offset), the anchor falls back to the hit point — preserving the original behaviour.
+
+**Freeform Nudge Config**
+- Added `ElevationView__Plane__Config__AnchorOffsetXMm` and `ElevationView__Plane__Config__AnchorOffsetZMm` to `Na__ElevationView__Config.json` (both default `0`). These allow the anchor to be nudged away from the grid origin in world XZ without changing the saved grid UCS.
+
+**Files Added**
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__OffsetPlane__ToProjectGridOrigin.js`
+
+**Files Changed**
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__SystemLogic.js` — import, state variable, init call, anchor computation, plane and camera transform updates, cleanup reset
+- `02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__Config.json` — two new anchor offset keys
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.1.1 - 13-Mar-2026
 ### Grid Lines System — Configurable Scene Grid Overlay
 
@@ -35,7 +59,13 @@
 - `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js`
 
 **Files Changed**
-- `index.html` — Grid Lines menu HTML, import, and initialization call with toast callback
+- `index.html` — Grid Lines menu HTML, import, and initialization call with toast callback and pipeline ref
+
+**Bug Fixes**
+- Fixed a spurious white rectangle appearing near the origin when the grid was enabled. Root cause: the profile lines system caches scene objects once on init and never re-checks when new objects are added. Each call to `Na__GridLine__Update` disposes and recreates `LineSegments2` objects, leaving the cache pointing to stale references. The new objects were not hidden before the normal prepass, so `scene.overrideMaterial = MeshNormalMaterial` rendered their internal template quad as a white filled plane with profile edges. Fix: `invalidateProfileLinesCache()` is now called via the pipeline ref on every grid geometry rebuild (`Na__GridUi__ApplyUpdate`) and on every enable/disable toggle, forcing the cache to rebuild before the next render pass.
+
+**Elevation View Config — MM Units**
+- Elevation plane config values (Width, Height, Offset, LiftY, HandleWidth, HandleHeight) now use millimeters in `Na__ElevationView__Config.json` and are converted to scene units via `Na__Math__ConvertMmToUnits()` in `Na__ElevationView__SystemLogic.js`, aligning with AppConfig conventions.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.1.0 - 13-Mar-2026

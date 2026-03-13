@@ -32,6 +32,11 @@
     import * as THREE from 'three';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Math Unit Conversion
+    // ------------------------------------------------------------
+    import { Na__Math__ConvertMmToUnits } from '../04__MathUtils/Na__Math__Units.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Render Loop Invalidation
     // ------------------------------------------------------------
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
@@ -42,6 +47,12 @@
     import { Na__2dProfileLines__Create } from './Na__RenderEffect__2dProfileLines__.js';
     import { Na__ElevationNav__InitDesktopControls } from './Na__ElevationNav__DesktopControls.js';
     import { Na__ElevationNav__InitTouchControls } from './Na__ElevationNav__TouchScreenControls.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Grid Origin Anchor
+    // ------------------------------------------------------------
+    import { Na__ElevOffsetPlane__LoadGridOrigin, Na__ElevOffsetPlane__GetGridOriginPoint }
+        from './Na__ElevationView__OffsetPlane__ToProjectGridOrigin.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -59,22 +70,25 @@
 
     // MODULE CONSTANTS | Elevation Plane Fallback Defaults
     // ------------------------------------------------------------
-    const Na__Elev__FB_PLANE_WIDTH          = 50;                                     // <-- Plane width in scene units (50 m)
-    const Na__Elev__FB_PLANE_HEIGHT         = 30;                                     // <-- Plane height in scene units (30 m)
-    const Na__Elev__FB_PLANE_OFFSET         = 1.0;                                    // <-- Default offset from face (1 m)
+    const Na__Elev__FB_PLANE_WIDTH_MM       = 50000;                                  // <-- Plane width (50 m = 50000 mm)
+    const Na__Elev__FB_PLANE_HEIGHT_MM      = 30000;                                  // <-- Plane height (30 m = 30000 mm)
+    const Na__Elev__FB_PLANE_OFFSET_MM      = 1000;                                   // <-- Default offset from face (1 m = 1000 mm)
+    const Na__Elev__FB_PLANE_LIFT_Y_MM      = 10000;                                  // <-- Vertical lift above hit point (+10 m = 10000 mm)
     const Na__Elev__FB_PLANE_FILL_COLOR     = '#ff6666';                              // <-- Plane fill colour (red tint)
     const Na__Elev__FB_PLANE_FILL_OPACITY   = 0.05;                                   // <-- Plane fill opacity (5%)
     const Na__Elev__FB_PLANE_EDGE_COLOR     = '#ff3333';                              // <-- Plane edge colour
     const Na__Elev__FB_PLANE_LABEL_TEXT     = 'Click and drag to set plane';          // <-- Plane label text
     const Na__Elev__FB_PLANE_LABEL_COLOR   = '#cc3333';                              // <-- Plane label colour
     const Na__Elev__FB_PLANE_LABEL_OPACITY = 0.35;                                   // <-- Plane label opacity
-    const Na__Elev__FB_HANDLE_WIDTH        = 12;                                      // <-- Inner drag handle width (m)
-    const Na__Elev__FB_HANDLE_HEIGHT       = 5;                                       // <-- Inner drag handle height (m)
+    const Na__Elev__FB_HANDLE_WIDTH_MM     = 12000;                                  // <-- Inner drag handle width (12 m = 12000 mm)
+    const Na__Elev__FB_HANDLE_HEIGHT_MM    = 5000;                                   // <-- Inner drag handle height (5 m = 5000 mm)
     const Na__Elev__FB_HANDLE_FILL_COLOR   = '#ff6666';                              // <-- Handle fill colour
     const Na__Elev__FB_HANDLE_FILL_OPACITY = 0.12;                                   // <-- Handle fill opacity (more opaque than outer)
     const Na__Elev__FB_HANDLE_EDGE_COLOR   = '#ff3333';                              // <-- Handle border colour
     const Na__Elev__FB_ARROW_LENGTH        = 5;                                       // <-- Directional arrow length (m)
     const Na__Elev__FB_ARROW_COLOR         = '#ff3333';                              // <-- Directional arrow colour
+    const Na__Elev__FB_ANCHOR_OFFSET_X_MM = 0;                                       // <-- Freeform X nudge from grid origin (mm)
+    const Na__Elev__FB_ANCHOR_OFFSET_Z_MM = 0;                                       // <-- Freeform Z nudge from grid origin (mm)
     // ------------------------------------------------------------
 
 
@@ -143,6 +157,7 @@
     let Na__Elev__OrthoCamera        = null;                                            // <-- Orthographic camera for elevation
     let Na__Elev__HorizontalNormal   = null;                                            // <-- Face normal projected onto XZ
     let Na__Elev__HitPoint           = null;                                            // <-- Original raycast hit point
+    let Na__Elev__GridAnchorPoint    = null;                                            // <-- XZ from grid origin, Y from hit point
     let Na__Elev__OrthoHalfHeight    = Na__Elev__FB_ORTHO_HALF_HEIGHT;                  // <-- Current frustum half-height
     // ------------------------------------------------------------
 
@@ -162,7 +177,7 @@
     let Na__Elev__IsDragging         = false;                                           // <-- Plane drag active flag
     let Na__Elev__DragStartPointerY  = 0;                                               // <-- Screen Y at drag start
     let Na__Elev__DragStartOffset    = 0;                                               // <-- Plane offset at drag start
-    let Na__Elev__PlaneOffset        = Na__Elev__FB_PLANE_OFFSET;                       // <-- Current offset along normal
+    let Na__Elev__PlaneOffset        = Na__Math__ConvertMmToUnits(Na__Elev__FB_PLANE_OFFSET_MM); // <-- Current offset along normal (units)
     // ------------------------------------------------------------
 
 
@@ -220,22 +235,49 @@
 
     // HELPER FUNCTION | Resolve Plane Config Values
     // ------------------------------------------------------------
-    function Na__Elev__PlaneWidth()       { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__WidthUnits',    Na__Elev__FB_PLANE_WIDTH); }
-    function Na__Elev__PlaneHeight()      { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HeightUnits',   Na__Elev__FB_PLANE_HEIGHT); }
-    function Na__Elev__PlaneOffsetUnits() { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__OffsetUnits',   Na__Elev__FB_PLANE_OFFSET); }
+    function Na__Elev__PlaneWidth()       {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__WidthByMm',   Na__Elev__FB_PLANE_WIDTH_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                          // <-- Convert mm to scene units
+    }
+    function Na__Elev__PlaneHeight()      {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HeightByMm',  Na__Elev__FB_PLANE_HEIGHT_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                         // <-- Convert mm to scene units
+    }
+    function Na__Elev__PlaneOffsetUnits() {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__OffsetByMm',  Na__Elev__FB_PLANE_OFFSET_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                         // <-- Convert mm to scene units
+    }
+    function Na__Elev__PlaneLiftY()        {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LiftYbyMm',  Na__Elev__FB_PLANE_LIFT_Y_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                         // <-- Convert mm to scene units
+    }
     function Na__Elev__PlaneFillColor()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__FillColor',     Na__Elev__FB_PLANE_FILL_COLOR); }
     function Na__Elev__PlaneFillOpacity() { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__FillOpacity',   Na__Elev__FB_PLANE_FILL_OPACITY); }
     function Na__Elev__PlaneEdgeColor()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__EdgeColor',     Na__Elev__FB_PLANE_EDGE_COLOR); }
     function Na__Elev__PlaneLabelText()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LabelText',     Na__Elev__FB_PLANE_LABEL_TEXT); }
     function Na__Elev__PlaneLabelColor()  { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LabelColor',    Na__Elev__FB_PLANE_LABEL_COLOR); }
     function Na__Elev__PlaneLabelOpacity(){ return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__LabelOpacity',  Na__Elev__FB_PLANE_LABEL_OPACITY); }
-    function Na__Elev__HandleWidth()       { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleWidthUnits',  Na__Elev__FB_HANDLE_WIDTH); }
-    function Na__Elev__HandleHeight()      { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleHeightUnits', Na__Elev__FB_HANDLE_HEIGHT); }
+    function Na__Elev__HandleWidth()       {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleWidthByMm',   Na__Elev__FB_HANDLE_WIDTH_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                        // <-- Convert mm to scene units
+    }
+    function Na__Elev__HandleHeight()      {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleHeightByMm',  Na__Elev__FB_HANDLE_HEIGHT_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                         // <-- Convert mm to scene units
+    }
     function Na__Elev__HandleFillColor()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleFillColor',   Na__Elev__FB_HANDLE_FILL_COLOR); }
     function Na__Elev__HandleFillOpacity() { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleFillOpacity', Na__Elev__FB_HANDLE_FILL_OPACITY); }
     function Na__Elev__HandleEdgeColor()   { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__HandleEdgeColor',   Na__Elev__FB_HANDLE_EDGE_COLOR); }
     function Na__Elev__ArrowLength()       { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__ArrowLength',       Na__Elev__FB_ARROW_LENGTH); }
     function Na__Elev__ArrowColor()        { return Na__Elev__CfgVal('ElevationView__Plane__Config',  'ElevationView__Plane__Config__ArrowColor',        Na__Elev__FB_ARROW_COLOR); }
+    function Na__Elev__AnchorOffsetX()     {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config', 'ElevationView__Plane__Config__AnchorOffsetXMm', Na__Elev__FB_ANCHOR_OFFSET_X_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                        // <-- Convert mm to scene units
+    }
+    function Na__Elev__AnchorOffsetZ()     {
+        const mm = Na__Elev__CfgVal('ElevationView__Plane__Config', 'ElevationView__Plane__Config__AnchorOffsetZMm', Na__Elev__FB_ANCHOR_OFFSET_Z_MM);
+        return Na__Math__ConvertMmToUnits(mm);                                        // <-- Convert mm to scene units
+    }
     // ------------------------------------------------------------
 
 
@@ -349,6 +391,16 @@
         console.log('[ValeVision3D] Elevation: face selected at', hitPoint.toArray(), 'normal:', horizontalNormal.toArray());
 
         Na__Elev__HitPoint = hitPoint;                                                  // <-- Store hit point
+
+        const Na__Elev__GridOrigin = Na__ElevOffsetPlane__GetGridOriginPoint();         // <-- Read cached grid origin (null if not loaded)
+        const Na__Elev__BaseX      = Na__Elev__GridOrigin ? Na__Elev__GridOrigin.x : hitPoint.x; // <-- XZ base from grid origin or hit point
+        const Na__Elev__BaseZ      = Na__Elev__GridOrigin ? Na__Elev__GridOrigin.z : hitPoint.z;
+        Na__Elev__GridAnchorPoint  = new THREE.Vector3(
+            Na__Elev__BaseX + Na__Elev__AnchorOffsetX(),                                // <-- Apply freeform X nudge from config
+            hitPoint.y,                                                                 // <-- Y always from hit point
+            Na__Elev__BaseZ + Na__Elev__AnchorOffsetZ()                                 // <-- Apply freeform Z nudge from config
+        );
+
         Na__Elev__HorizontalNormal = horizontalNormal;                                  // <-- Store projected normal
         Na__Elev__PlaneOffset = Na__Elev__PlaneOffsetUnits();                            // <-- Reset offset from config
 
@@ -538,12 +590,13 @@
     // SUB FUNCTION | Update Plane Position and Orientation
     // ------------------------------------------------------------
     function Na__Elev__UpdatePlaneTransform() {
-        if (!Na__Elev__PlaneGroup || !Na__Elev__HitPoint || !Na__Elev__HorizontalNormal) return;
+        if (!Na__Elev__PlaneGroup || !Na__Elev__GridAnchorPoint || !Na__Elev__HorizontalNormal) return;
 
-        const position = Na__Elev__HitPoint.clone().addScaledVector(
+        const position = Na__Elev__GridAnchorPoint.clone().addScaledVector(
             Na__Elev__HorizontalNormal,
-            Na__Elev__PlaneOffset                                                       // <-- Offset along outward normal
+            Na__Elev__PlaneOffset                                                       // <-- Offset along outward normal from grid origin
         );
+        position.y += Na__Elev__PlaneLiftY();                                           // <-- Lift plane +Y above hit point (default +10 m)
 
         Na__Elev__PlaneGroup.position.copy(position);
 
@@ -611,13 +664,14 @@
     // SUB FUNCTION | Update Ortho Camera Position and LookAt
     // ------------------------------------------------------------
     function Na__Elev__UpdateOrthoCameraTransform() {
-        if (!Na__Elev__OrthoCamera || !Na__Elev__HitPoint || !Na__Elev__HorizontalNormal) return;
+        if (!Na__Elev__OrthoCamera || !Na__Elev__GridAnchorPoint || !Na__Elev__HorizontalNormal) return;
 
         const camDistance = Na__Elev__CfgCameraDistance();
-        const planeCenter = Na__Elev__HitPoint.clone().addScaledVector(
+        const planeCenter = Na__Elev__GridAnchorPoint.clone().addScaledVector(
             Na__Elev__HorizontalNormal,
-            Na__Elev__PlaneOffset
+            Na__Elev__PlaneOffset                                                       // <-- Plane center derived from grid origin anchor
         );
+        planeCenter.y += Na__Elev__PlaneLiftY();                                        // <-- Match plane lift (+Y)
 
         const cameraPos = planeCenter.clone().addScaledVector(
             Na__Elev__HorizontalNormal,
@@ -918,6 +972,8 @@
             if (config) console.log('[ValeVision3D] Elevation config loaded');
         });
 
+        Na__ElevOffsetPlane__LoadGridOrigin();                                          // <-- Load project grid origin for plane anchoring
+
         window.addEventListener('resize', Na__Elev__OnWindowResize);
         console.log('[ValeVision3D] Elevation View system initialized');
     }
@@ -1038,6 +1094,7 @@
         Na__Elev__OrthoCamera       = null;
         Na__Elev__HorizontalNormal  = null;
         Na__Elev__HitPoint          = null;
+        Na__Elev__GridAnchorPoint   = null;                                             // <-- Clear grid anchor point
         Na__Elev__DragHandleMesh    = null;                                             // <-- Clear handle reference
         Na__Elev__PlaneOffset       = Na__Elev__PlaneOffsetUnits();
         Na__Elev__2dProfileLines    = null;                                             // <-- Clear 2D profile lines reference

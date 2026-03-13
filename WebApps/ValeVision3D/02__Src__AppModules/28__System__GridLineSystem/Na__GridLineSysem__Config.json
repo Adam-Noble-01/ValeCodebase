@@ -1,7 +1,7 @@
 {
     "GridLine__Grid__Config": {
         "GridLine__Grid__Config__Description"                : "Number of grid lines to draw in each direction from the origin point.",
-        "GridLine__Grid__Config__LineCount"                  : 50
+        "GridLine__Grid__Config__LineCount"                  : 75
     },
     "GridLine__Grid__Offset__Config": {
         "GridLine__Grid__Config__Offset__Description"        : "Grid origin offset on X and Z axes in millimeters.",
@@ -27,10 +27,9 @@
         "GridLine__Style__Config__LineTypes"                  : ["Solid", "Dashed", "Dotted"],
         "GridLine__Style__Config__LineTypeDefaultIndex"       : 0,
         "GridLine__Style__Config__ColorPalette"              : [
-            { "hex": "#141414", "label": "Grey"     },
-            { "hex": "#ff0000", "label": "Red"      },
-            { "hex": "#000000", "label": "Black"    },
-            { "hex": "#646464", "label": "Mid Grey" },
+            { "hex": "#000000", "label": "Black"     },
+            { "hex": "#ff0000", "label": "Red"       },
+            { "hex": "#2a7d4f", "label": "Green"     },
             { "hex": "#172b3a", "label": "Vale Blue" }
         ],
         "GridLine__Style__Config__ColorDefaultIndex"         : 0,

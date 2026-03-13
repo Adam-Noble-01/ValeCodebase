@@ -284,8 +284,9 @@
                         </div>
                         <hr class="na-dropdown-menu__panel-divider" />
                         <details class="na-gridline-style-details" id="naGridLineStyleDetails">
-                            <summary class="na-dropdown-menu__panel-title" style="cursor:pointer;user-select:none;">
-                                Grid Style ▾
+                            <summary class="na-dropdown-menu__summary">
+                                Grid Style
+                                <span class="na-dropdown-menu__arrow">▾</span>
                             </summary>
                             <div style="margin-top:6px;">
                                 <div class="na-dropdown-menu__panel-title">Line Width</div>
@@ -300,24 +301,6 @@
                                         value="3"
                                     />
                                     <span class="na-dropdown-menu__value" id="naGridLineWidthValue">1.00 px</span>
-                                </div>
-                                <div class="na-dropdown-menu__panel-title">Line Type</div>
-                                <div class="na-dropdown-menu__panel-row">
-                                    <select id="naGridLineTypeSelect" class="na-dropdown-menu__select" style="flex:1;padding:4px 6px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;font-family:'Open Sans',sans-serif;font-size:0.8rem;color:#172b3a;background:#fff;">
-                                        <option value="Solid">Solid</option>
-                                        <option value="Dashed">Dashed</option>
-                                        <option value="Dotted">Dotted</option>
-                                    </select>
-                                </div>
-                                <div class="na-dropdown-menu__panel-title">Line Colour</div>
-                                <div class="na-dropdown-menu__panel-row">
-                                    <select id="naGridLineColorSelect" class="na-dropdown-menu__select" style="flex:1;padding:4px 6px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;font-family:'Open Sans',sans-serif;font-size:0.8rem;color:#172b3a;background:#fff;">
-                                        <option value="0">Grey</option>
-                                        <option value="1">Red</option>
-                                        <option value="2">Black</option>
-                                        <option value="3">Mid Grey</option>
-                                        <option value="4">Vale Blue</option>
-                                    </select>
                                 </div>
                                 <div class="na-dropdown-menu__panel-title">Line Opacity</div>
                                 <div class="na-dropdown-menu__panel-row">
@@ -347,6 +330,28 @@
                                         <span class="na-dropdown-menu__value" id="naGridLineGapValue">1.0x</span>
                                     </div>
                                 </div>
+                                <details class="na-gridline-style-details" id="naGridLineTypeColourDetails" style="margin-top:6px;">
+                                    <summary class="na-dropdown-menu__summary" style="font-size:0.85rem;">
+                                        Line Type & Colour
+                                        <span class="na-dropdown-menu__arrow">▾</span>
+                                    </summary>
+                                    <div style="margin-top:6px;">
+                                        <div class="na-dropdown-menu__panel-title">Line Type</div>
+                                        <div class="na-dropdown-menu__panel-row">
+                                            <select id="naGridLineTypeSelect" class="na-dropdown-menu__select" style="flex:1;padding:4px 6px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;font-family:'Open Sans',sans-serif;font-size:0.8rem;color:#172b3a;background:#fff;">
+                                                <option value="Solid">Solid</option>
+                                                <option value="Dashed">Dashed</option>
+                                                <option value="Dotted">Dotted</option>
+                                            </select>
+                                        </div>
+                                        <div class="na-dropdown-menu__panel-title">Line Colour</div>
+                                        <div class="na-dropdown-menu__panel-row">
+                                            <select id="naGridLineColorSelect" class="na-dropdown-menu__select" style="flex:1;padding:4px 6px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;font-family:'Open Sans',sans-serif;font-size:0.8rem;color:#172b3a;background:#fff;">
+                                                <!-- Options populated from config at init -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </details>
                             </div>
                         </details>
                         <div id="naGridLinePositionSection" style="display:none;">
@@ -363,7 +368,8 @@
                                     step="100"
                                     value="0"
                                 />
-                                <span class="na-dropdown-menu__value" id="naGridLinePosXValue">0 mm</span>
+                                <input type="number" id="naGridLinePosXInput" class="na-dropdown-menu__value-input" min="-35000" max="35000" step="100" value="0" />
+                                <span class="na-dropdown-menu__value-unit">mm</span>
                             </div>
                             <div class="na-dropdown-menu__panel-title" style="font-weight:400;font-size:0.75rem;">Offset Z</div>
                             <div class="na-dropdown-menu__panel-row">
@@ -376,7 +382,8 @@
                                     step="100"
                                     value="0"
                                 />
-                                <span class="na-dropdown-menu__value" id="naGridLinePosZValue">0 mm</span>
+                                <input type="number" id="naGridLinePosZInput" class="na-dropdown-menu__value-input" min="-35000" max="35000" step="100" value="0" />
+                                <span class="na-dropdown-menu__value-unit">mm</span>
                             </div>
                             <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naGridLineSavePosition">Save Position</button>
                         </div>
@@ -391,10 +398,12 @@
                         <button class="na-dropdown-menu__action" id="naElevationSelectFace">Select Elevation Face</button>
                         <button class="na-dropdown-menu__action" id="naElevationViewBtn" style="display:none;">View Elevation</button>
                         <button class="na-dropdown-menu__action" id="naElevationBackTo3D" style="display:none;">Back to 3D</button>
+                        <hr class="na-dropdown-menu__panel-divider" id="naElevationDivider1" style="display:none;" />
                         <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle" id="naElevationPlaneToggleRow" style="display:none;">
                             <span class="na-dropdown-menu__panel-title">Toggle Elevation Plane</span>
                             <input type="checkbox" id="naElevationPlaneToggle" class="na-dropdown-menu__checkbox" checked />
                         </div>
+                        <hr class="na-dropdown-menu__panel-divider" id="naElevationDivider2" style="display:none;" />
                         <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naElevationReselect" style="display:none;">Reselect Elevation Plane</button>
                     </div>
                 </li>
@@ -903,7 +912,7 @@
     Na__UiFeature__InitializeSaveCameraButton(Na__Camera__Main, Na__Controls__Orbit, Na__UiFeature__ShowToast);
     Na__UiFeature__InitializeProfileLinesControls(Na__AppFlow__PipelineRef, Na__Config__ProfileLines);
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
-    Na__UiFeature__InitializeGridLineControls(Na__Scene__Main, Na__UiFeature__ShowToast);
+    Na__UiFeature__InitializeGridLineControls(Na__Scene__Main, Na__UiFeature__ShowToast, Na__AppFlow__PipelineRef);
     Na__UiFeature__InitializeElevationViewControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root, Na__Device__UseTouchControls);
     // ------------------------------------------------------------
 

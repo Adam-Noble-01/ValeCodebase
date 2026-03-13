@@ -84,9 +84,9 @@
     // ------------------------------------------------------------
     const Na__GridUi__POS_SECTION_ID      = 'naGridLinePositionSection';     // <-- Position controls wrapper
     const Na__GridUi__POS_X_SLIDER_ID     = 'naGridLinePosXSlider';          // <-- X offset slider
-    const Na__GridUi__POS_X_VALUE_ID      = 'naGridLinePosXValue';           // <-- X offset display label
+    const Na__GridUi__POS_X_INPUT_ID      = 'naGridLinePosXInput';           // <-- X offset numeric input
     const Na__GridUi__POS_Z_SLIDER_ID     = 'naGridLinePosZSlider';          // <-- Z offset slider
-    const Na__GridUi__POS_Z_VALUE_ID      = 'naGridLinePosZValue';           // <-- Z offset display label
+    const Na__GridUi__POS_Z_INPUT_ID      = 'naGridLinePosZInput';           // <-- Z offset numeric input
     const Na__GridUi__SAVE_BTN_ID         = 'naGridLineSavePosition';        // <-- Save position button
     // ------------------------------------------------------------
 
@@ -117,9 +117,9 @@
     let Na__GridUi__GapValue      = null;
     let Na__GridUi__PosSection    = null;
     let Na__GridUi__PosXSlider    = null;
-    let Na__GridUi__PosXValue     = null;
+    let Na__GridUi__PosXInput     = null;
     let Na__GridUi__PosZSlider    = null;
-    let Na__GridUi__PosZValue     = null;
+    let Na__GridUi__PosZInput     = null;
     let Na__GridUi__SaveBtn       = null;
     // ------------------------------------------------------------
 
@@ -129,6 +129,7 @@
     let Na__GridUi__GridEnabled   = false;                                   // <-- Grid visibility state (off by default)
     let Na__GridUi__IsLocalhost   = false;                                   // <-- Localhost environment flag
     let Na__GridUi__ShowToast     = null;                                    // <-- Toast notification callback
+    let Na__GridUi__PipelineRef   = null;                                    // <-- Ref to render pipeline for cache invalidation
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -216,9 +217,9 @@
         Na__GridUi__GapValue     = document.getElementById(Na__GridUi__GAP_VALUE_ID);
         Na__GridUi__PosSection   = document.getElementById(Na__GridUi__POS_SECTION_ID);
         Na__GridUi__PosXSlider   = document.getElementById(Na__GridUi__POS_X_SLIDER_ID);
-        Na__GridUi__PosXValue    = document.getElementById(Na__GridUi__POS_X_VALUE_ID);
+        Na__GridUi__PosXInput    = document.getElementById(Na__GridUi__POS_X_INPUT_ID);
         Na__GridUi__PosZSlider   = document.getElementById(Na__GridUi__POS_Z_SLIDER_ID);
-        Na__GridUi__PosZValue    = document.getElementById(Na__GridUi__POS_Z_VALUE_ID);
+        Na__GridUi__PosZInput    = document.getElementById(Na__GridUi__POS_Z_INPUT_ID);
         Na__GridUi__SaveBtn      = document.getElementById(Na__GridUi__SAVE_BTN_ID);
     }
     // ------------------------------------------------------------
@@ -265,6 +266,7 @@
     function Na__GridUi__ApplyUpdate() {
         if (!Na__GridUi__GridEnabled) return;
         Na__GridLine__Update(Na__GridUi__GatherParams());
+        Na__GridUi__PipelineRef?.current?.invalidateProfileLinesCache?.();  // <-- New LineSegments2 objects created; force cache rebuild
     }
     // ------------------------------------------------------------
 
@@ -315,17 +317,17 @@
     }
     // ------------------------------------------------------------
 
-    // HELPER FUNCTION | Update Position X Display Label
+    // HELPER FUNCTION | Update Position X Numeric Input from Slider
     // ------------------------------------------------------------
     function Na__GridUi__UpdatePosXLabel() {
-        Na__GridUi__PosXValue.textContent = `${Na__GridUi__PosXSlider.value} mm`;
+        if (Na__GridUi__PosXInput) Na__GridUi__PosXInput.value = Na__GridUi__PosXSlider.value;
     }
     // ------------------------------------------------------------
 
-    // HELPER FUNCTION | Update Position Z Display Label
+    // HELPER FUNCTION | Update Position Z Numeric Input from Slider
     // ------------------------------------------------------------
     function Na__GridUi__UpdatePosZLabel() {
-        Na__GridUi__PosZValue.textContent = `${Na__GridUi__PosZSlider.value} mm`;
+        if (Na__GridUi__PosZInput) Na__GridUi__PosZInput.value = Na__GridUi__PosZSlider.value;
     }
     // ------------------------------------------------------------
 
@@ -420,6 +422,7 @@
             Na__GridUi__GridEnabled = Na__GridUi__EnableToggle.checked;
             const gridGroup = Na__GridLine__GetGridGroup();
             if (gridGroup) gridGroup.visible = Na__GridUi__GridEnabled;
+            Na__GridUi__PipelineRef?.current?.invalidateProfileLinesCache?.();  // <-- Scene composition changed; rebuild line cache
             if (Na__GridUi__GridEnabled) Na__GridUi__ApplyUpdate();
             Na__RenderLoop__RequestRender();
         });
@@ -473,12 +476,52 @@
             });
         }
 
+        // Position X numeric input
+        if (Na__GridUi__PosXInput) {
+            const handlePosXInput = () => {
+                const posCfg = Na__GridUi__Config?.GridLine__Position__Config;
+                const minMm  = posCfg?.GridLine__Position__Config__SliderMinMm ?? -35000;
+                const maxMm  = posCfg?.GridLine__Position__Config__SliderMaxMm ?? 35000;
+                let val      = parseInt(Na__GridUi__PosXInput.value, 10);
+                if (Number.isNaN(val) || Na__GridUi__PosXInput.value.trim() === '') {
+                    Na__GridUi__PosXInput.value = Na__GridUi__PosXSlider.value;
+                    return;
+                }
+                val = Math.max(minMm, Math.min(maxMm, val));
+                Na__GridUi__PosXSlider.value = val;
+                Na__GridUi__PosXInput.value  = val;
+                Na__GridUi__ApplyUpdate();
+            };
+            Na__GridUi__PosXInput.addEventListener('input', handlePosXInput);
+            Na__GridUi__PosXInput.addEventListener('change', handlePosXInput);
+        }
+
         // Position Z slider
         if (Na__GridUi__PosZSlider) {
             Na__GridUi__PosZSlider.addEventListener('input', () => {
                 Na__GridUi__UpdatePosZLabel();
                 Na__GridUi__ApplyUpdate();
             });
+        }
+
+        // Position Z numeric input
+        if (Na__GridUi__PosZInput) {
+            const handlePosZInput = () => {
+                const posCfg = Na__GridUi__Config?.GridLine__Position__Config;
+                const minMm  = posCfg?.GridLine__Position__Config__SliderMinMm ?? -35000;
+                const maxMm  = posCfg?.GridLine__Position__Config__SliderMaxMm ?? 35000;
+                let val      = parseInt(Na__GridUi__PosZInput.value, 10);
+                if (Number.isNaN(val) || Na__GridUi__PosZInput.value.trim() === '') {
+                    Na__GridUi__PosZInput.value = Na__GridUi__PosZSlider.value;
+                    return;
+                }
+                val = Math.max(minMm, Math.min(maxMm, val));
+                Na__GridUi__PosZSlider.value = val;
+                Na__GridUi__PosZInput.value  = val;
+                Na__GridUi__ApplyUpdate();
+            };
+            Na__GridUi__PosZInput.addEventListener('input', handlePosZInput);
+            Na__GridUi__PosZInput.addEventListener('change', handlePosZInput);
         }
 
         // Save position button
@@ -495,6 +538,21 @@
 // REGION | Initialization Helpers
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Populate Colour Select from Config Palette
+    // ------------------------------------------------------------
+    function Na__GridUi__PopulateColorSelect() {
+        const palette = Na__GridUi__Config.GridLine__Style__Config.GridLine__Style__Config__ColorPalette;
+        if (!palette || !Na__GridUi__ColorSelect) return;
+        Na__GridUi__ColorSelect.innerHTML = '';
+        palette.forEach((entry, idx) => {
+            const opt = document.createElement('option');
+            opt.value = String(idx);
+            opt.textContent = entry.label;
+            Na__GridUi__ColorSelect.appendChild(opt);
+        });
+    }
+    // ------------------------------------------------------------
+
     // HELPER FUNCTION | Apply Config Defaults to DOM Elements
     // ------------------------------------------------------------
     function Na__GridUi__ApplyDefaults() {
@@ -502,6 +560,8 @@
         const heightCfg   = Na__GridUi__Config.GridLine__Height__Config;
         const styleCfg    = Na__GridUi__Config.GridLine__Style__Config;
         const posCfg      = Na__GridUi__Config.GridLine__Position__Config;
+
+        Na__GridUi__PopulateColorSelect(); // <-- Build colour options from config before applying defaults
 
         // Size slider (discrete steps)
         Na__GridUi__SizeSlider.min   = 0;
@@ -550,11 +610,23 @@
             Na__GridUi__PosXSlider.step  = posCfg.GridLine__Position__Config__SliderStepMm;
             Na__GridUi__PosXSlider.value = initialXMm;
         }
+        if (Na__GridUi__PosXInput) {
+            Na__GridUi__PosXInput.min    = posCfg.GridLine__Position__Config__SliderMinMm;
+            Na__GridUi__PosXInput.max    = posCfg.GridLine__Position__Config__SliderMaxMm;
+            Na__GridUi__PosXInput.step   = posCfg.GridLine__Position__Config__SliderStepMm;
+            Na__GridUi__PosXInput.value  = initialXMm;
+        }
         if (Na__GridUi__PosZSlider) {
             Na__GridUi__PosZSlider.min   = posCfg.GridLine__Position__Config__SliderMinMm;
             Na__GridUi__PosZSlider.max   = posCfg.GridLine__Position__Config__SliderMaxMm;
             Na__GridUi__PosZSlider.step  = posCfg.GridLine__Position__Config__SliderStepMm;
             Na__GridUi__PosZSlider.value = initialZMm;
+        }
+        if (Na__GridUi__PosZInput) {
+            Na__GridUi__PosZInput.min    = posCfg.GridLine__Position__Config__SliderMinMm;
+            Na__GridUi__PosZInput.max    = posCfg.GridLine__Position__Config__SliderMaxMm;
+            Na__GridUi__PosZInput.step   = posCfg.GridLine__Position__Config__SliderStepMm;
+            Na__GridUi__PosZInput.value  = initialZMm;
         }
 
         // Enable toggle (off by default — user must enable)
@@ -581,8 +653,9 @@
 
     // FUNCTION | Initialize Grid Line Controls
     // ------------------------------------------------------------
-    async function Na__UiFeature__InitializeGridLineControls(scene, showToast) {
-        Na__GridUi__ShowToast = showToast || null;
+    async function Na__UiFeature__InitializeGridLineControls(scene, showToast, pipelineRef) {
+        Na__GridUi__ShowToast   = showToast   || null;
+        Na__GridUi__PipelineRef = pipelineRef || null;                       // <-- Store for profile lines cache invalidation
         Na__GridUi__Config    = await Na__GridUi__LoadConfig();
         if (!Na__GridUi__Config) return;
 

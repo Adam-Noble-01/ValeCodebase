@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ValeVision3D |  0.2.5_LivePreview</title>
+    <title>ValeVision3D</title>
     
     <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  BRANDING | Favicon and Brand Icons                     -->
@@ -692,7 +692,8 @@
             movementSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__MovementSpeedMm,    // <-- Navigation speed (mm)
             elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__ElevationSpeedMm,  // <-- Vertical navigation speed (mm)
             minDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMinDistanceMm,   // <-- Orbit zoom in (mm)
-            maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMaxDistanceMm    // <-- Orbit zoom out (mm)
+            maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMaxDistanceMm,  // <-- Orbit zoom out (mm)
+            minCameraYMm:  Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMinCameraYMm    // <-- Camera floor guard (mm)
         }
         : {
             damping: {
@@ -704,7 +705,8 @@
             elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__ElevationSpeedMm, // <-- Vertical navigation speed (mm)
             minDistanceMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__OrbitMinDistanceMm,  // <-- Orbit zoom in (mm)
             maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__OrbitMaxDistanceMm,  // <-- Orbit zoom out (mm)
-            zoomStepMm: Na__Navmode__ActiveConfig.Navmode__MouseControls__ZoomStepMm              // <-- Fixed wheel zoom step (mm)
+            zoomStepMm:    Na__Navmode__ActiveConfig.Navmode__MouseControls__ZoomStepMm,          // <-- Fixed wheel zoom step (mm)
+            minCameraYMm:  Na__Navmode__ActiveConfig.Navmode__MouseControls__OrbitMinCameraYMm    // <-- Camera floor guard (mm)
         };
     
     const Na__NavBundle__Main = Na__Navmode__InitializeControls(Na__Camera__Main, Na__Renderer__Main.domElement, {

@@ -67,6 +67,7 @@
         const elevationSpeedUnits = Na__Math__ConvertMmToUnits(config.elevationSpeedMm);
         const minDistanceUnits = Number.isFinite(config.minDistanceMm) ? Na__Math__ConvertMmToUnits(config.minDistanceMm) : null;
         const maxDistanceUnits = Number.isFinite(config.maxDistanceMm) ? Na__Math__ConvertMmToUnits(config.maxDistanceMm) : null;
+        const minCameraYUnits  = Number.isFinite(config.minCameraYMm)  ? Na__Math__ConvertMmToUnits(config.minCameraYMm)  : null; // <-- Camera floor guard (units)
         
         if (Number.isFinite(minDistanceUnits)) {
             controls.minDistance = minDistanceUnits;                 // <-- Clamp orbit zoom in
@@ -119,7 +120,13 @@
         const updateNavigation = () => {
             const moved = updateMovement();
             const orbitChanged = controls.update();
-            return moved || orbitChanged;
+            let clamped = false;
+            if (Number.isFinite(minCameraYUnits) && camera.position.y < minCameraYUnits) {
+                camera.position.y = minCameraYUnits;                 // <-- Enforce camera floor guard
+                controls.update();
+                clamped = true;
+            }
+            return moved || orbitChanged || clamped;
         };
         
         const dispose = () => {

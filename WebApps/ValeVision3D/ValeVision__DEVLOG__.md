@@ -1,6 +1,31 @@
 # ValeVision3D Development Log
 # =========================================================
 # ---------------------------------------------------------
+## ValeVision3D v2.1.3 - 13-Mar-2026
+### Tools Menu — Icon Set Added
+
+**Overview**
+- Added custom icon set to the Tools dropdown menu to improve visual clarity and reduce reliance on text-only labels.
+
+**Icons Added**
+- Five 540p PNG icons added to `01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/`:
+  - `Icon__ToolsMenu__CameraSettings__540p__.png`
+  - `Icon__ToolsMenu__ExportImage__540p__.png`
+  - `Icon__ToolsMenu__GridSystem__540p__.png`
+  - `Icon__ToolsMenu__ViewModelLayers__540p__.png`
+  - `Icon__ToolsMenu__ElevationView__540p__.png`
+
+**UI Changes**
+- Each Tools menu button now displays its icon to the left of the label at 24px (1.2× base size).
+- Icon uses `opacity: 0.75` to sit subordinate to the text label.
+- `.na-dropdown-menu__btn-icon` and `.na-dropdown-menu__btn-label` CSS classes added to `Na__UiFeature__Styles__DropdownAndToast__.css`.
+- Menu item order updated: Grid Lines moved to third position (above Toggle Model Layers).
+
+**Files Changed**
+- `index.html` — icon `<img>` elements and `<span>` label wrappers added to all 5 Tools menu buttons; Grid Lines item reordered to position 3
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — `.na-dropdown-menu__btn-icon` and `.na-dropdown-menu__btn-label` classes added
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.1.2 - 13-Mar-2026
 ### Elevation View — Grid Origin Plane Anchor
 

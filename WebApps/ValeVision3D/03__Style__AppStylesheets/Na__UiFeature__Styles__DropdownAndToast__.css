@@ -173,6 +173,18 @@
     gap                                 : 10px;
 }
 
+.na-dropdown-menu__btn-icon {
+    width                               : 24px;
+    height                              : 24px;
+    flex-shrink                         : 0;
+    object-fit                          : contain;
+    opacity                             : 0.75;
+}
+
+.na-dropdown-menu__btn-label {
+    flex                                : 1;
+}
+
 .na-dropdown-menu__subarrow {
     font-size                           : 0.75rem;
     color                               : #172b3a;

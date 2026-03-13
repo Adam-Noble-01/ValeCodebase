@@ -99,13 +99,16 @@
 .na-dropdown-menu__summary {
     list-style                          : none;
     cursor                              : pointer;
-    padding                             : 10px 14px;
+    padding-top                         : 10px;
+    padding-right                       : 14px;
+    padding-bottom                      : 10px;
+    padding-left                        : 8px;
     font-weight                         : 600;
     color                               : #172b3a;
     display                             : flex;
     align-items                         : center;
     justify-content                     : space-between;
-    gap                                 : 10px;
+    gap                                 : 8px;
 }
 
 .na-dropdown-menu__summary::-webkit-details-marker {
@@ -179,6 +182,11 @@
     flex-shrink                         : 0;
     object-fit                          : contain;
     opacity                             : 0.75;
+}
+
+.na-dropdown-menu__summary .na-dropdown-menu__btn-icon {
+    opacity                             : 1;
+    filter                              : brightness(0.55) saturate(1.2) contrast(1.1);
 }
 
 .na-dropdown-menu__btn-label {

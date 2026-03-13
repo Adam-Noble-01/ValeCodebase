@@ -21,13 +21,13 @@
     "ElevationView__Camera__Config": {
         "ElevationView__Camera__Config__Description"        : "Orthographic camera setup, click detection, and drag sensitivity parameters.",
         "ElevationView__Camera__Config__OrthoHalfHeight"    : 15,
-        "ElevationView__Camera__Config__CameraDistance"      : 80,
+        "ElevationView__Camera__Config__CameraDistance"     : 80,
         "ElevationView__Camera__Config__ClickThresholdPx"   : 4,
         "ElevationView__Camera__Config__DragScale"          : 0.05
     },
     "ElevationView__2dProfileLines__Config": {
         "ElevationView__2dProfileLines__Config__Description": "Fixed profile line parameters for the orthographic 2D elevation renderer.",
-        "ElevationView__2dProfileLines__Config__EdgeWidth"  : 0.5
+        "ElevationView__2dProfileLines__Config__EdgeWidth"  : 0.55
     },
     "ElevationView__Navigation__Config": {
         "ElevationView__Navigation__Config__Description"    : "Zoom limits and scroll-wheel zoom factor for 2D elevation navigation.",

@@ -358,6 +358,10 @@
         {
             "folderId": "2026/62526__Russell",
             "enabled": true
+        },
+        {
+            "folderId": "2026/62430__Lawrence",
+            "enabled": true
         }
     ]
 }

@@ -1,0 +1,61 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 24458,
+            "Camera__DefaultPos__PosY": 2422,
+            "Camera__DefaultPos__PosZ": 4804
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0233,
+            "Camera__DefaultRotation__RotY": 0.5575,
+            "Camera__DefaultRotation__RotZ": 0.0123
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 13178,
+        "OrbitHelperCube__Position__PosY": 2000,
+        "OrbitHelperCube__Position__PosZ": -13283
+    },
+    "basePath": "Projects/2026/62722__Parkes",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__17-Mar-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "A very easy project, completed well within time, good drawing provided by Steph, nothing else to report",
+        "conceptArtist": "Steph",
+        "input": "Early Stage Sketch"
+    },
+    "projectCode": "62722",
+    "projectName": "Parkes",
+    "scheduleData": {
+        "dateFulfilled": "17-Mar-2026",
+        "dateReceived": "17-Mar-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62722__Parkes/Parkes__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/62722__Parkes",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__17-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__17-Mar-2026.png"
+    ]
+}

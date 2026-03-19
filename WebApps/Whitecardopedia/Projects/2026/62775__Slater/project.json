@@ -26,17 +26,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "An extremely difficult and time consuming project, large commercial sized existing building with extreme amounts of ornamentation. The orangery itself also had bespoke elements not in my standards library so these also had to be modelled, I over-ran quite dramatically on this project, but I cant think what I could have done to turn this one around faster.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File"
     },
     "projectCode": "62775",
     "projectName": "Slater",
     "scheduleData": {
         "dateFulfilled": "19-Mar-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "17-Mar-2026",
+        "timeAllocated": 6,
+        "timeTaken": 7.5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -49,5 +49,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/62775__Slater",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
     ]
 }

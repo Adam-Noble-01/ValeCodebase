@@ -366,6 +366,10 @@
         {
             "folderId": "2026/62722__Parkes",
             "enabled": true
+        },
+        {
+            "folderId": "2026/62775__Slater",
+            "enabled": true
         }
     ]
 }

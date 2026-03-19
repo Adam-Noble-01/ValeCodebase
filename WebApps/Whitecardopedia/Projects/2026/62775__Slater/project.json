@@ -1,0 +1,53 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 631,
+            "Camera__DefaultPos__PosY": 3289,
+            "Camera__DefaultPos__PosZ": 16751
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": 0.0021,
+            "Camera__DefaultRotation__RotY": -0.5331,
+            "Camera__DefaultRotation__RotZ": 0.0011
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 16842,
+        "OrbitHelperCube__Position__PosY": 3347,
+        "OrbitHelperCube__Position__PosZ": -10719
+    },
+    "basePath": "Projects/2026/62775__Slater",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__19-Mar-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "62775",
+    "projectName": "Slater",
+    "scheduleData": {
+        "dateFulfilled": "19-Mar-2026",
+        "dateReceived": "10-Oct-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62775__Slater/Slater__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
+}

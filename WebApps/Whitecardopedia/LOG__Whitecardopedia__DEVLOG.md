@@ -18,6 +18,20 @@
 
 ---
 
+## Whitecardopedia v0.2.11 - 20-Mar-2026 - PWA App Installability (Edge & Chrome)
+### Features Added
+- **Web App Manifest**: Linked from `app.html` so Chromium-based browsers can treat Whitecardopedia as an installable app (Install / Save as app, Start menu and taskbar shortcuts, standalone window with `display: standalone`)
+- **Install Icons**: PNG icons at 192×192 and 512×512 generated from shared Vale main icon SVG for manifest install criteria
+- **Browser Install Delegate**: Captures `beforeinstallprompt`, exposes `window.Na__AppInstallability__BrowserDelegate` for future in-app install UI (`isStandaloneMode`, `isPromptAvailable`, `triggerInstallPrompt`)
+
+### Technical Implementation
+- Added `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest` — `start_url` and `scope` resolve to Whitecardopedia root and `app.html`
+- Added `02__Src__AppModules/62__Feature__AppInstallability/Na__UiFeature__AppInstallability__BrowserDelegate.js` — install event wiring and global API
+- Added `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png` and `Na__AppInstallability__Icon__512x512.png`
+- Updated `app.html` — `<link rel="manifest" ...>` in head; delegate script included with other utilities
+
+---
+
 ## Whitecardopedia v0.2.10 - 11-Mar-2026 - ValeVision Project Actions Exemption
 ### Minor Update
 - **Project Actions Section**: Hidden for projects with Vale Vision 3D files
@@ -110,5 +124,5 @@
 
 ---
 
-**Last Updated**: 24-Feb-2026
+**Last Updated**: 20-Mar-2026
 

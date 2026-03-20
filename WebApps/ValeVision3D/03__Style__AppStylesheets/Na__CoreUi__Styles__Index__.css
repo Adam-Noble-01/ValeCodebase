@@ -55,5 +55,9 @@
 /* ----------------------------------------------------------------- */
 @import url('../02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__FormOverlay__Stylesheet__.css');
 
+/* Full Screen Mode - tools menu integration */
+/* ----------------------------------------------------------------- */
+@import url('../02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__Stylesheet__.css');
+
 /* endregion -------------------------------------------------------- */
 

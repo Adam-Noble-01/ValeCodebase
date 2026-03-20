@@ -1,8 +1,8 @@
 {
     "id": "../../app.html",
-    "name": "Whitecardopedia",
-    "short_name": "Whitecardopedia",
-    "description": "Whitecard project review app for Vale Garden Houses projects.",
+    "name": "ValeVision 3D",
+    "short_name": "ValeVision 3D",
+    "description": "ValeVision 3D project viewer for VGH projects.",
     "start_url": "../../app.html",
     "scope": "../../../",
     "display": "standalone",

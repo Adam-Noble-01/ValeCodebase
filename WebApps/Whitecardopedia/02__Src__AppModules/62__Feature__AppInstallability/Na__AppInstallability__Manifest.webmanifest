@@ -1,11 +1,14 @@
 {
     "id": "../../app.html",
-    "name": "ValeVision3D",
-    "short_name": "ValeVision3D",
-    "description": "Professional 3D model review system for VGH Projects.",
+    "name": "Whitecardopedia",
+    "short_name": "Whitecardopedia",
+    "description": "Whitecard project review app for Vale Garden Houses projects.",
     "start_url": "../../app.html",
-    "scope": "../../",
+    "scope": "../../../",
     "display": "standalone",
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
     "orientation": "any",
     "theme_color": "#172b3a",
     "background_color": "#172b3a",

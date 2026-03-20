@@ -80,36 +80,19 @@
     // ---------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Detect if Running on Localhost
-    // ---------------------------------------------------------------
-    const isRunningOnLocalhost = () => {
-        const hostname = window.location.hostname;                       // <-- Get current hostname
-        const port = window.location.port;                               // <-- Get current port
-        return hostname === 'localhost' || hostname === '127.0.0.1' || port === '8000';  // <-- Check localhost indicators
-    };
-    // ---------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Generate ValeVision3D URL with Project Parameter
-    // ---------------------------------------------------------------
-    const getValeVisionUrl = (projectCode) => {
-        if (isRunningOnLocalhost()) {
-            // LOCALHOST MODE - Use Flask server route
-            return `/ValeVision3D/index.html?project=${projectCode}`;    // <-- Server-relative path
-        } else {
-            // STATIC MODE - Use relative file path
-            return `../ValeVision3D/index.html?project=${projectCode}`;  // <-- File-relative path
-        }
-    };
-    // ---------------------------------------------------------------
-
-
     // HELPER FUNCTION | Handle ValeVision Button Click
     // ---------------------------------------------------------------
     const handleValeVisionClick = (projectData) => {
-        const projectCode = projectData.folderId;                        // <-- Get project folder ID
-        const valeVisionUrl = getValeVisionUrl(projectCode);             // <-- Generate ValeVision URL
-        window.open(valeVisionUrl, '_blank');                            // <-- Open in new tab
+        const valeVisionLinkRoutingHelper = window.Na__Feature__PwaAppHelpers__ValeVisionLinkRouting; // <-- Read dedicated PWA helper
+        if (valeVisionLinkRoutingHelper && typeof valeVisionLinkRoutingHelper.navigateToValeVisionProject === 'function') {
+            valeVisionLinkRoutingHelper.navigateToValeVisionProject(projectData); // <-- Keep navigation in current app client
+            return;
+        }
+
+        const projectCode = projectData && projectData.folderId;         // <-- Fallback: derive project code
+        if (!projectCode) return;
+
+        window.location.assign(`../ValeVision3D/index.html?project=${encodeURIComponent(projectCode)}`); // <-- Fallback same-client navigation
     };
     // ---------------------------------------------------------------
 

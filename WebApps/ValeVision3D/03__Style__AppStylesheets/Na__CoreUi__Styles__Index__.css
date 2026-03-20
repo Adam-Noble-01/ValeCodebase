@@ -50,5 +50,10 @@
 /* ----------------------------------------------------------------- */
 @import url('Na__ImageExport__Styles__ViewportOverlays__.css');
 
+
+/* Share Project Link — modal overlay */
+/* ----------------------------------------------------------------- */
+@import url('../02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__FormOverlay__Stylesheet__.css');
+
 /* endregion -------------------------------------------------------- */
 

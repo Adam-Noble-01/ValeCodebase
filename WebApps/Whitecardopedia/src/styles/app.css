@@ -618,6 +618,80 @@
         border-top                         : 1px solid var(--Vale_BorderLight);  /* <-- Top border separator */
         text-align                         : center;                       /* <-- Center text */
     }
+
+    .project-viewer__divider--viewer-actions {
+        margin-top                         : var(--Vale_Spacing_XLarge);   /* <-- Space above viewer actions divider */
+        margin-bottom                      : 0;                            /* <-- Keep tight before title spacing */
+    }
+
+    .project-viewer__actions-title--viewer-actions {
+        margin-top                         : var(--Vale_Spacing_Large);    /* <-- Space after divider */
+        margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space above action buttons */
+        padding-top                        : 0;                            /* <-- Divider already provides separation */
+        border-top                         : none;                         /* <-- Avoid duplicate border line */
+    }
+
+    .project-viewer__viewer-actions {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Vertical button stacking */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between action buttons */
+        margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Breathing room below final section */
+    }
+
+    .project-viewer__viewer-action-button {
+        position                           : relative;                     /* <-- Anchor copied message positioning */
+        display                            : flex;                         /* <-- Flexbox for icon alignment */
+        align-items                        : center;                       /* <-- Vertical centering */
+        justify-content                    : center;                       /* <-- Horizontal centering */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between icon and label */
+        width                              : 100%;                         /* <-- Full width in side panel */
+        min-height                         : 46px;                         /* <-- Consistent touch target height */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        background                         : #172b3a;                      /* <-- ValeVision dark navy button tone */
+        color                              : #ffffff;                      /* <-- High contrast text */
+        border                             : 1px solid #172b3a;            /* <-- Match background for clean edge */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold label */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match app typography */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth hover/press */
+    }
+
+    .project-viewer__viewer-action-button:hover {
+        background                         : #0f1e28;                      /* <-- Darker navy on hover */
+        border-color                       : #0f1e28;                      /* <-- Keep border matched on hover */
+        transform                          : translateY(-1px);             /* <-- Subtle lift effect */
+        box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Soft elevation on hover */
+    }
+
+    .project-viewer__viewer-action-button:active {
+        transform                          : translateY(0);                /* <-- Reset lift on click */
+        box-shadow                         : none;                         /* <-- Remove elevation while pressed */
+    }
+
+    .project-viewer__viewer-action-icon {
+        width                              : 16px;                         /* <-- Icon width */
+        height                             : 16px;                         /* <-- Icon height */
+        filter                             : brightness(0) invert(1);      /* <-- Force icon to white */
+    }
+
+    .project-viewer__viewer-action-copied-message {
+        position                           : absolute;                     /* <-- Show feedback below button */
+        top                                : 100%;                         /* <-- Attach message below button */
+        left                               : 50%;                          /* <-- Center horizontally */
+        transform                          : translateX(-50%);             /* <-- Center offset correction */
+        margin-top                         : 8px;                          /* <-- Gap below button */
+        padding                            : 4px 10px;                     /* <-- Compact chip padding */
+        border-radius                      : 4px;                          /* <-- Rounded chip */
+        background                         : #172b3a;                      /* <-- Match button tone */
+        color                              : #ffffff;                      /* <-- White feedback text */
+        font-size                          : 12px;                         /* <-- Smaller feedback size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold feedback text */
+        white-space                        : nowrap;                       /* <-- Keep text on one line */
+        pointer-events                     : none;                         /* <-- Never block button interactions */
+        z-index                            : 2;                            /* <-- Ensure feedback appears above nearby content */
+    }
     
     .project-viewer__data-field {
         margin-bottom                      : var(--Vale_Spacing_Medium);   /* <-- Space between fields */

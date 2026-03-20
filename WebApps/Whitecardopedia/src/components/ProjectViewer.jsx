@@ -110,6 +110,26 @@
     // ------------------------------------------------------------
     function ProjectViewer({ project, onBack }) {
         const [isDownloading, setIsDownloading] = React.useState(false);  // <-- Track download state
+        const [showCopiedMessage, setShowCopiedMessage] = React.useState(false);  // <-- Track copied message state
+
+        // SUB FUNCTION | Handle Share Link Copy Action
+        // ---------------------------------------------------------------
+        const handleShareLink = async () => {
+            if (!project || !project.projectCode) {
+                console.error('No project available for sharing');      // <-- Log error
+                return;                                                  // <-- Exit if no project
+            }
+
+            const result = await copyShareLinkToClipboard(project.projectCode);  // <-- Copy share URL
+            if (result.success) {
+                setShowCopiedMessage(true);                             // <-- Show copied confirmation
+                setTimeout(() => setShowCopiedMessage(false), 3000);    // <-- Auto-hide confirmation
+            } else {
+                alert(`Failed to copy link. URL: ${result.url}`);       // <-- Show fallback URL
+            }
+        };
+        // ---------------------------------------------------------------
+
         if (!project) {
             return (
                 <div className="project-viewer">
@@ -120,12 +140,7 @@
         
         return (
             <>
-                <Header 
-                    showBackButton={true} 
-                    onBack={onBack} 
-                    showShareButton={true} 
-                    currentProject={project} 
-                />
+                <Header />
                 
                 <div className="project-viewer">
                     <div className="project-viewer__header">
@@ -259,6 +274,39 @@
                                     </div>
                                 </>
                             )}
+
+                            <hr className="project-viewer__divider project-viewer__divider--viewer-actions" />
+                            <h3 className="project-viewer__actions-title project-viewer__actions-title--viewer-actions">Viewer Actions</h3>
+
+                            <div className="project-viewer__viewer-actions">
+                                <button
+                                    className="project-viewer__viewer-action-button"
+                                    onClick={onBack}
+                                >
+                                    <img
+                                        src="../assets__CommonApplicationAssets/AppIcons/Icon__BackSymbol__WhiteVersion.svg"
+                                        alt="Back"
+                                        className="project-viewer__viewer-action-icon"
+                                    />
+                                    Back to Gallery
+                                </button>
+
+                                <button
+                                    className="project-viewer__viewer-action-button project-viewer__viewer-action-button--share"
+                                    onClick={handleShareLink}
+                                    title="Copy sharing link to clipboard"
+                                >
+                                    <img
+                                        src="../assets__CommonApplicationAssets/AppIcons/Icon__DownloadButtonSymbol__.svg"
+                                        alt="Share"
+                                        className="project-viewer__viewer-action-icon"
+                                    />
+                                    Copy Share Link
+                                    {showCopiedMessage && (
+                                        <span className="project-viewer__viewer-action-copied-message">Copied!</span>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

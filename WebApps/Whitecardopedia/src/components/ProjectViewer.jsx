@@ -219,14 +219,6 @@
                                 </>
                             )}
                             
-                            {project.scheduleData && (
-                                <>
-                                    <hr className="project-viewer__divider" />
-                                    <h3 className="project-viewer__production-title">Efficiency Scale</h3>
-                                    <EfficiencyScale scheduleData={project.scheduleData} compact={false} />
-                                </>
-                            )}
-                            
                             {!checkValeVisionModelUrl(project) && (
                                 <>
                                     <h3 className="project-viewer__actions-title">Project Actions</h3>
@@ -276,7 +268,7 @@
                             )}
 
                             <hr className="project-viewer__divider project-viewer__divider--viewer-actions" />
-                            <h3 className="project-viewer__actions-title project-viewer__actions-title--viewer-actions">Viewer Actions</h3>
+                            <h3 className="project-viewer__actions-title project-viewer__actions-title--viewer-actions">Project Actions</h3>
 
                             <div className="project-viewer__viewer-actions">
                                 <button
@@ -307,6 +299,14 @@
                                     )}
                                 </button>
                             </div>
+
+                            {project.scheduleData && (
+                                <>
+                                    <hr className="project-viewer__divider" />
+                                    <h3 className="project-viewer__production-title">Efficiency Scale</h3>
+                                    <EfficiencyScale scheduleData={project.scheduleData} compact={false} />
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -634,7 +634,7 @@
     .project-viewer__viewer-actions {
         display                            : flex;                         /* <-- Flexbox layout */
         flex-direction                     : column;                       /* <-- Vertical button stacking */
-        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between action buttons */
+        gap                                : 10px;                         /* <-- Slightly larger gap between action buttons */
         margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Breathing room below final section */
     }
 
@@ -643,19 +643,20 @@
         display                            : flex;                         /* <-- Flexbox for icon alignment */
         align-items                        : center;                       /* <-- Vertical centering */
         justify-content                    : center;                       /* <-- Horizontal centering */
-        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between icon and label */
-        width                              : 100%;                         /* <-- Full width in side panel */
-        min-height                         : 46px;                         /* <-- Consistent touch target height */
-        padding                            : var(--Vale_Spacing_Medium);   /* <-- Button padding */
+        gap                                : 10px;                         /* <-- Add clear icon-to-label spacing */
+        width                              : 92%;                          /* <-- Less wide buttons for cleaner panel fit */
+        min-height                         : 34px;                         /* <-- Smaller ValeVision-like action height */
+        padding                            : 8px 12px;                     /* <-- Compact button padding */
         background                         : #172b3a;                      /* <-- ValeVision dark navy button tone */
         color                              : #ffffff;                      /* <-- High contrast text */
         border                             : 1px solid #172b3a;            /* <-- Match background for clean edge */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
-        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard text size */
+        font-size                          : 0.72rem;                      /* <-- Smaller label size to match VV3D tools buttons */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold label */
         font-family                        : var(--Vale_FontFamily);       /* <-- Match app typography */
         cursor                             : pointer;                      /* <-- Pointer cursor */
         transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth hover/press */
+        margin                             : 0 auto;                       /* <-- Center narrower button width */
     }
 
     .project-viewer__viewer-action-button:hover {
@@ -670,10 +671,26 @@
         box-shadow                         : none;                         /* <-- Remove elevation while pressed */
     }
 
+    .project-viewer__viewer-action-button--share {
+        background                         : #dfe2e6;                      /* <-- ValeVision-style light grey secondary button */
+        color                              : #172b3a;                      /* <-- Dark text for contrast on light button */
+        border-color                       : #d1d5db;                      /* <-- Subtle grey border */
+    }
+
+    .project-viewer__viewer-action-button--share:hover {
+        background                         : #cfd5dc;                      /* <-- Slightly darker grey on hover */
+        border-color                       : #c2c9d2;                      /* <-- Keep secondary border in sync */
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.14);  /* <-- Softer hover shadow than primary */
+    }
+
     .project-viewer__viewer-action-icon {
-        width                              : 16px;                         /* <-- Icon width */
-        height                             : 16px;                         /* <-- Icon height */
+        width                              : 12px;                         /* <-- Smaller icon width */
+        height                             : 12px;                         /* <-- Smaller icon height */
         filter                             : brightness(0) invert(1);      /* <-- Force icon to white */
+    }
+
+    .project-viewer__viewer-action-button--share .project-viewer__viewer-action-icon {
+        filter                             : none;                         /* <-- Preserve original dark icon on light button */
     }
 
     .project-viewer__viewer-action-copied-message {

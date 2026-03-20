@@ -1,0 +1,61 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -10321,
+            "Camera__DefaultPos__PosY": 2991,
+            "Camera__DefaultPos__PosZ": 4786
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0504,
+            "Camera__DefaultRotation__RotY": -0.8854,
+            "Camera__DefaultRotation__RotZ": -0.039
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 12812,
+        "OrbitHelperCube__Position__PosY": 2039,
+        "OrbitHelperCube__Position__PosZ": -14104
+    },
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__20-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/61721__Payne__Scheme-02",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__20-Mar-2026.png"
+    ],
+    "folderId": "2026/61721__Payne__Scheme-02",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__20-Mar-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "A quick set of changes, only the Vale Scheme needed updating to reflect a new design. Amy provided a great drawing to work from.",
+        "conceptArtist": "Amy",
+        "input": "Early Stage Sketch"
+    },
+    "projectCode": "61721",
+    "projectName": "Payne  -  Scheme-02",
+    "scheduleData": {
+        "dateFulfilled": "20-Mar-2026",
+        "dateReceived": "20-Mar-2026",
+        "timeAllocated": 1.5,
+        "timeTaken": 1.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/61721__Payne__Scheme-02/Payne__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
+}

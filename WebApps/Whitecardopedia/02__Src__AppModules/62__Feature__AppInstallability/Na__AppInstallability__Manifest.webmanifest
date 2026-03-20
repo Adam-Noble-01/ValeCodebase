@@ -1,8 +1,8 @@
 {
     "id": "../../app.html",
-    "name": "Whitecardopedia - Vale Garden Houses",
-    "short_name": "Whitecardopedia",
-    "description": "Professional whitecard massing model review system for Vale Garden Houses architectural projects.",
+    "name": "ValeVision3D",
+    "short_name": "ValeVision3D",
+    "description": "Professional 3D model review system for VGH Projects.",
     "start_url": "../../app.html",
     "scope": "../../",
     "display": "standalone",

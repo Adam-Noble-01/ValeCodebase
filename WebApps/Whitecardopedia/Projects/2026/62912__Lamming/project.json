@@ -2,14 +2,14 @@
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -10299,
-            "Camera__DefaultPos__PosY": 2933,
-            "Camera__DefaultPos__PosZ": 15825
+            "Camera__DefaultPos__PosX": -8329,
+            "Camera__DefaultPos__PosY": 2194,
+            "Camera__DefaultPos__PosZ": 13016
         },
         "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.0254,
-            "Camera__DefaultRotation__RotY": -0.5675,
-            "Camera__DefaultRotation__RotZ": -0.0136
+            "Camera__DefaultRotation__RotX": -0.0106,
+            "Camera__DefaultRotation__RotY": -0.548,
+            "Camera__DefaultRotation__RotZ": -0.0055
         },
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -17,11 +17,19 @@
     },
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
-        "OrbitHelperCube__Position__PosX": 8114,
-        "OrbitHelperCube__Position__PosY": 2200,
-        "OrbitHelperCube__Position__PosZ": -13047
+        "OrbitHelperCube__Position__PosX": 9030,
+        "OrbitHelperCube__Position__PosY": 1893,
+        "OrbitHelperCube__Position__PosZ": -15426
     },
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/62912__Lamming",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
+    ],
+    "folderId": "2026/62912__Lamming",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
     ],
@@ -49,13 +57,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "folderId": "2026/62912__Lamming",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
     ]
 }

@@ -309,22 +309,19 @@
         }
 
         // RESOLVE FINAL ORBIT TARGET (STRICT PRECEDENCE)
-        // 1) Loaded OrbitHelperCube GLB center (authoritative fixed anchor)
-        // 2) Saved project OrbitHelperCube__Position (only if helper cube unavailable)
+        // 1) Saved project OrbitHelperCube__Position (preserves user's panned view exactly as saved)
+        // 2) Loaded OrbitHelperCube GLB center (fallback when no saved position exists)
         // 3) Keep current controls target (no Dev__DefaultCube fallback)
         let Na__FinalOrbitTargetApplied = false;
-        if (Na__OrbitHelperCube__CenterPosition && Na__OrbitHelperCube__CenterPosition.isVector3) {
-            Na__Controls__Orbit.target.copy(Na__OrbitHelperCube__CenterPosition);
-            Na__FinalOrbitTargetApplied = true;
-            if (Na__Saved__ProjectOrbitTarget) {
-                console.warn('[ValeVision3D] Saved OrbitHelperCube__Position ignored because OrbitHelperCube GLB center is available.');
-            }
-        } else if (Na__Saved__ProjectOrbitTarget) {
+        if (Na__Saved__ProjectOrbitTarget) {
             Na__Controls__Orbit.target.set(
                 Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosX),  // <-- Saved orbit X
                 Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosY),  // <-- Saved orbit Y
                 Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitTarget.OrbitHelperCube__Position__PosZ)   // <-- Saved orbit Z
             );
+            Na__FinalOrbitTargetApplied = true;
+        } else if (Na__OrbitHelperCube__CenterPosition && Na__OrbitHelperCube__CenterPosition.isVector3) {
+            Na__Controls__Orbit.target.copy(Na__OrbitHelperCube__CenterPosition);
             Na__FinalOrbitTargetApplied = true;
         } else {
             console.warn('[ValeVision3D] No saved orbit target and no OrbitHelperCube center resolved. Keeping current controls.target.');

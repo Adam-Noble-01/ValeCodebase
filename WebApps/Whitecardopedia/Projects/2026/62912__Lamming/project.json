@@ -1,0 +1,61 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -10299,
+            "Camera__DefaultPos__PosY": 2933,
+            "Camera__DefaultPos__PosZ": 15825
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0254,
+            "Camera__DefaultRotation__RotY": -0.5675,
+            "Camera__DefaultRotation__RotZ": -0.0136
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 8114,
+        "OrbitHelperCube__Position__PosY": 2200,
+        "OrbitHelperCube__Position__PosZ": -13047
+    },
+    "basePath": "Projects/2026/62912__Lamming",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Nothing really to report, took a little longer than expected due to variation of modelling different windows etc as i worked from a hand drawing, Steph's drawing was top notch though, very accurate.",
+        "conceptArtist": "Steph",
+        "input": "Early Stage Sketch"
+    },
+    "projectCode": "62912",
+    "projectName": "Lamming",
+    "scheduleData": {
+        "dateFulfilled": "24-Mar-2026",
+        "dateReceived": "24-Mar-2026",
+        "timeAllocated": 3,
+        "timeTaken": 3.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/62912__Lamming",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Mar-2026.png"
+    ]
+}

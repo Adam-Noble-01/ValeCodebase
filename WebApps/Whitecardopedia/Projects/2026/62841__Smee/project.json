@@ -1,0 +1,61 @@
+{
+    "basePath": "Projects/2026/62841__Smee",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__26-Mar-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "A typical project, nothing to report.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File"
+    },
+    "projectCode": "62841",
+    "projectName": "Smee",
+    "scheduleData": {
+        "dateFulfilled": "26-Mar-2026",
+        "dateReceived": "25-Mar-2026",
+        "timeAllocated": 2.5,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62841__Smee/Smee__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -10632,
+            "Camera__DefaultPos__PosY": 2675,
+            "Camera__DefaultPos__PosZ": 3301
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0321,
+            "Camera__DefaultRotation__RotY": -0.7994,
+            "Camera__DefaultRotation__RotZ": -0.023
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 10226,
+        "OrbitHelperCube__Position__PosY": 2023,
+        "OrbitHelperCube__Position__PosZ": -16970
+    },
+    "folderId": "2026/62841__Smee",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__26-Mar-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__26-Mar-2026.png"
+    ]
+}

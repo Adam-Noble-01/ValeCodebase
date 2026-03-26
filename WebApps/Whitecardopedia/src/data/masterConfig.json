@@ -382,6 +382,10 @@
         {
             "folderId": "2026/62557__Lister",
             "enabled": true
+        },
+        {
+            "folderId": "2026/62841__Smee",
+            "enabled": true
         }
     ]
 }

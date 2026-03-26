@@ -1,0 +1,315 @@
+2025-07-01 17:28:00,165 - ERROR - Error combining videos: No module named 'moviepy.editor'
+2025-07-01 17:28:06,666 - ERROR - Error combining videos: No module named 'moviepy.editor'
+2025-07-01 17:28:58,649 - ERROR - Error combining videos: No module named 'moviepy.editor'
+2025-07-01 17:32:04,580 - ERROR - Error combining videos: No module named 'moviepy.editor'
+2025-07-01 17:33:42,262 - ERROR - Error combining videos: No module named 'moviepy.editor'
+2025-07-01 17:37:12,002 - ERROR - Error combining videos: got an unexpected keyword argument 'verbose'
+2025-07-01 17:38:10,809 - ERROR - Error combining videos: got an unexpected keyword argument 'verbose'
+2025-07-24 10:43:54,040 - ERROR - Error combining videos: 'CompositeVideoClip' object has no attribute 'fx'
+2025-07-24 10:46:39,546 - ERROR - Error combining videos: module 'moviepy.video.fx' has no attribute 'speedx'
+2025-07-24 10:47:50,903 - ERROR - Error loading video C:/Users/adamw/Videos/OBS-Studio__RawVideo__Screen_Recordings/01-Jul-2025__3dSpeedTest/01__RawVideos/2025-07-01 12-30-14.mp4: invalid command name ".!frame5.!label"
+2025-07-24 10:48:51,467 - ERROR - Error combining videos: 'CompositeVideoClip' object has no attribute 'speedx'
+2025-07-24 10:50:26,012 - ERROR - Could not apply speed factor: 'CompositeVideoClip' object has no attribute 'set_duration'
+2025-07-24 10:54:14,462 - ERROR - Error combining videos: index 0 is out of bounds for axis 0 with size 0
+2025-07-24 11:00:38,839 - ERROR - Error combining videos: index 0 is out of bounds for axis 0 with size 0
+2025-07-24 11:07:57,956 - INFO - GPU detected: NVIDIA GeForce RTX 5080, 576.80
+2025-07-24 11:07:57,957 - WARNING - GPU check failed: [WinError 2] The system cannot find the file specified
+2025-07-24 11:07:59,153 - INFO - Video: App-Update.mp4 | FPS: 23.976023976023978 | Duration: 162.12s | Size: [1920, 1080]
+2025-07-24 11:08:00,420 - INFO - Video: 2025-07-01 11-34-15.mp4 | FPS: 2.0 | Duration: 420.5s | Size: [1920, 1080]
+2025-07-24 11:08:00,420 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-34-15.mp4
+2025-07-24 11:08:00,420 - ERROR - Failed to process clip 2025-07-01 11-34-15.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:01,681 - INFO - Video: 2025-07-01 11-41-26.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:08:01,681 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-41-26.mp4
+2025-07-24 11:08:01,681 - ERROR - Failed to process clip 2025-07-01 11-41-26.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:02,888 - INFO - Video: 2025-07-01 11-49-46.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:08:02,888 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-49-46.mp4
+2025-07-24 11:08:02,888 - ERROR - Failed to process clip 2025-07-01 11-49-46.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:04,108 - INFO - Video: 2025-07-01 11-58-06.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:08:04,108 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-58-06.mp4
+2025-07-24 11:08:04,108 - ERROR - Failed to process clip 2025-07-01 11-58-06.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:05,489 - INFO - Video: 2025-07-01 12-06-26.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:08:05,489 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-06-26.mp4
+2025-07-24 11:08:05,489 - ERROR - Failed to process clip 2025-07-01 12-06-26.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:06,772 - INFO - Video: 2025-07-01 12-14-46.mp4 | FPS: 2.0 | Duration: 499.01s | Size: [1920, 1080]
+2025-07-24 11:08:06,772 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-14-46.mp4
+2025-07-24 11:08:06,772 - ERROR - Failed to process clip 2025-07-01 12-14-46.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:07,996 - INFO - Video: 2025-07-01 12-23-05.mp4 | FPS: 2.0 | Duration: 429.5s | Size: [1920, 1080]
+2025-07-24 11:08:07,997 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-23-05.mp4
+2025-07-24 11:08:07,997 - ERROR - Failed to process clip 2025-07-01 12-23-05.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:09,218 - INFO - Video: 2025-07-01 12-30-14.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:08:09,218 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-30-14.mp4
+2025-07-24 11:08:09,218 - ERROR - Failed to process clip 2025-07-01 12-30-14.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:10,456 - INFO - Video: 2025-07-01 12-38-34.mp4 | FPS: 2.0 | Duration: 118.5s | Size: [1920, 1080]
+2025-07-24 11:08:10,456 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-38-34.mp4
+2025-07-24 11:08:10,456 - ERROR - Failed to process clip 2025-07-01 12-38-34.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:11,812 - INFO - Video: 2025-07-01 13-03-28.mp4 | FPS: 2.0 | Duration: 543.51s | Size: [1920, 1080]
+2025-07-24 11:08:11,812 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-03-28.mp4
+2025-07-24 11:08:11,812 - ERROR - Failed to process clip 2025-07-01 13-03-28.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:13,046 - INFO - Video: 2025-07-01 13-12-41.mp4 | FPS: 2.0 | Duration: 454.51s | Size: [1920, 1080]
+2025-07-24 11:08:13,046 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-12-41.mp4
+2025-07-24 11:08:13,046 - ERROR - Failed to process clip 2025-07-01 13-12-41.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:14,531 - INFO - Video: 2025-07-01 13-20-16.mp4 | FPS: 2.0 | Duration: 507.5s | Size: [1920, 1080]
+2025-07-24 11:08:14,531 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-20-16.mp4
+2025-07-24 11:08:14,531 - ERROR - Failed to process clip 2025-07-01 13-20-16.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:15,828 - INFO - Video: 2025-07-01 13-28-43.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:08:15,828 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-28-43.mp4
+2025-07-24 11:08:15,828 - ERROR - Failed to process clip 2025-07-01 13-28-43.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:17,199 - INFO - Video: 2025-07-01 13-37-03.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:08:17,200 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-37-03.mp4
+2025-07-24 11:08:17,200 - ERROR - Failed to process clip 2025-07-01 13-37-03.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:18,482 - INFO - Video: 2025-07-01 13-45-23.mp4 | FPS: 2.0 | Duration: 435.5s | Size: [1920, 1080]
+2025-07-24 11:08:18,482 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-45-23.mp4
+2025-07-24 11:08:18,482 - ERROR - Failed to process clip 2025-07-01 13-45-23.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:19,753 - INFO - Video: 2025-07-01 13-52-39.mp4 | FPS: 2.0 | Duration: 2.0s | Size: [1920, 1080]
+2025-07-24 11:08:19,753 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-52-39.mp4
+2025-07-24 11:08:19,753 - ERROR - Failed to process clip 2025-07-01 13-52-39.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:21,055 - INFO - Video: 2025-07-01 13-54-11.mp4 | FPS: 2.0 | Duration: 493.5s | Size: [1920, 1080]
+2025-07-24 11:08:21,055 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-54-11.mp4
+2025-07-24 11:08:21,055 - ERROR - Failed to process clip 2025-07-01 13-54-11.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:22,359 - INFO - Video: 2025-07-01 14-02-34.mp4 | FPS: 2.0 | Duration: 517.5s | Size: [1920, 1080]
+2025-07-24 11:08:22,359 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-02-34.mp4
+2025-07-24 11:08:22,359 - ERROR - Failed to process clip 2025-07-01 14-02-34.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:23,654 - INFO - Video: 2025-07-01 14-11-11.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:08:23,654 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-11-11.mp4
+2025-07-24 11:08:23,655 - ERROR - Failed to process clip 2025-07-01 14-11-11.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:24,905 - INFO - Video: 2025-07-01 14-19-31.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:08:24,905 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-19-31.mp4
+2025-07-24 11:08:24,905 - ERROR - Failed to process clip 2025-07-01 14-19-31.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:26,232 - INFO - Video: 2025-07-01 14-27-51.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:08:26,233 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-27-51.mp4
+2025-07-24 11:08:26,233 - ERROR - Failed to process clip 2025-07-01 14-27-51.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:27,497 - INFO - Video: 2025-07-01 14-36-11.mp4 | FPS: 2.0 | Duration: 440.0s | Size: [1920, 1080]
+2025-07-24 11:08:27,497 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-36-11.mp4
+2025-07-24 11:08:27,497 - ERROR - Failed to process clip 2025-07-01 14-36-11.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:28,776 - INFO - Video: 2025-07-01 14-43-31.mp4 | FPS: 2.0 | Duration: 420.0s | Size: [1920, 1080]
+2025-07-24 11:08:28,776 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-43-31.mp4
+2025-07-24 11:08:28,776 - ERROR - Failed to process clip 2025-07-01 14-43-31.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:29,992 - INFO - Video: 2025-07-01 14-50-31.mp4 | FPS: 2.0 | Duration: 1.5s | Size: [1920, 1080]
+2025-07-24 11:08:29,992 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-50-31.mp4
+2025-07-24 11:08:29,992 - ERROR - Failed to process clip 2025-07-01 14-50-31.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:31,218 - INFO - Video: 2025-07-01 14-54-16.mp4 | FPS: 2.0 | Duration: 361.5s | Size: [1920, 1080]
+2025-07-24 11:08:31,218 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-54-16.mp4
+2025-07-24 11:08:31,218 - ERROR - Failed to process clip 2025-07-01 14-54-16.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:08:57,069 - INFO - Successfully encoded using CPU
+2025-07-24 11:20:04,646 - INFO - Refreshed video list with 26 videos:
+2025-07-24 11:20:04,646 - INFO -   1. 2025-06-24 18:11 - App-Update.mp4
+2025-07-24 11:20:04,646 - INFO -   2. 2025-07-01 11:41 - 2025-07-01 11-34-15.mp4
+2025-07-24 11:20:04,646 - INFO -   3. 2025-07-01 11:49 - 2025-07-01 11-41-26.mp4
+2025-07-24 11:20:04,646 - INFO -   4. 2025-07-01 11:58 - 2025-07-01 11-49-46.mp4
+2025-07-24 11:20:04,647 - INFO -   5. 2025-07-01 12:06 - 2025-07-01 11-58-06.mp4
+2025-07-24 11:20:04,647 - INFO -   6. 2025-07-01 12:14 - 2025-07-01 12-06-26.mp4
+2025-07-24 11:20:04,647 - INFO -   7. 2025-07-01 12:23 - 2025-07-01 12-14-46.mp4
+2025-07-24 11:20:04,647 - INFO -   8. 2025-07-01 12:30 - 2025-07-01 12-23-05.mp4
+2025-07-24 11:20:04,647 - INFO -   9. 2025-07-01 12:38 - 2025-07-01 12-30-14.mp4
+2025-07-24 11:20:04,647 - INFO -   10. 2025-07-01 12:40 - 2025-07-01 12-38-34.mp4
+2025-07-24 11:20:04,647 - INFO -   11. 2025-07-01 13:12 - 2025-07-01 13-03-28.mp4
+2025-07-24 11:20:04,647 - INFO -   12. 2025-07-01 13:20 - 2025-07-01 13-12-41.mp4
+2025-07-24 11:20:04,647 - INFO -   13. 2025-07-01 13:28 - 2025-07-01 13-20-16.mp4
+2025-07-24 11:20:04,647 - INFO -   14. 2025-07-01 13:37 - 2025-07-01 13-28-43.mp4
+2025-07-24 11:20:04,647 - INFO -   15. 2025-07-01 13:45 - 2025-07-01 13-37-03.mp4
+2025-07-24 11:20:04,647 - INFO -   16. 2025-07-01 13:52 - 2025-07-01 13-45-23.mp4
+2025-07-24 11:20:04,647 - INFO -   17. 2025-07-01 13:52 - 2025-07-01 13-52-39.mp4
+2025-07-24 11:20:04,647 - INFO -   18. 2025-07-01 14:02 - 2025-07-01 13-54-11.mp4
+2025-07-24 11:20:04,647 - INFO -   19. 2025-07-01 14:11 - 2025-07-01 14-02-34.mp4
+2025-07-24 11:20:04,647 - INFO -   20. 2025-07-01 14:19 - 2025-07-01 14-11-11.mp4
+2025-07-24 11:20:04,647 - INFO -   21. 2025-07-01 14:27 - 2025-07-01 14-19-31.mp4
+2025-07-24 11:20:04,647 - INFO -   22. 2025-07-01 14:36 - 2025-07-01 14-27-51.mp4
+2025-07-24 11:20:04,647 - INFO -   23. 2025-07-01 14:43 - 2025-07-01 14-36-11.mp4
+2025-07-24 11:20:04,648 - INFO -   24. 2025-07-01 14:50 - 2025-07-01 14-43-31.mp4
+2025-07-24 11:20:04,648 - INFO -   25. 2025-07-01 14:50 - 2025-07-01 14-50-31.mp4
+2025-07-24 11:20:04,648 - INFO -   26. 2025-07-01 15:00 - 2025-07-01 14-54-16.mp4
+2025-07-24 11:20:17,761 - INFO - GPU detected: NVIDIA GeForce RTX 5080, 576.80
+2025-07-24 11:20:17,762 - WARNING - GPU check failed: [WinError 2] The system cannot find the file specified
+2025-07-24 11:20:18,973 - INFO - Video: App-Update.mp4 | FPS: 23.976023976023978 | Duration: 162.12s | Size: [1920, 1080]
+2025-07-24 11:20:20,285 - INFO - Video: 2025-07-01 11-34-15.mp4 | FPS: 2.0 | Duration: 420.5s | Size: [1920, 1080]
+2025-07-24 11:20:20,285 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-34-15.mp4
+2025-07-24 11:20:20,285 - ERROR - Failed to process clip 2025-07-01 11-34-15.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:21,567 - INFO - Video: 2025-07-01 11-41-26.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:20:21,567 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-41-26.mp4
+2025-07-24 11:20:21,567 - ERROR - Failed to process clip 2025-07-01 11-41-26.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:22,793 - INFO - Video: 2025-07-01 11-49-46.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:20:22,793 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-49-46.mp4
+2025-07-24 11:20:22,793 - ERROR - Failed to process clip 2025-07-01 11-49-46.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:24,031 - INFO - Video: 2025-07-01 11-58-06.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:20:24,031 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-58-06.mp4
+2025-07-24 11:20:24,031 - ERROR - Failed to process clip 2025-07-01 11-58-06.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:25,428 - INFO - Video: 2025-07-01 12-06-26.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:20:25,428 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-06-26.mp4
+2025-07-24 11:20:25,428 - ERROR - Failed to process clip 2025-07-01 12-06-26.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:26,731 - INFO - Video: 2025-07-01 12-14-46.mp4 | FPS: 2.0 | Duration: 499.01s | Size: [1920, 1080]
+2025-07-24 11:20:26,731 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-14-46.mp4
+2025-07-24 11:20:26,731 - ERROR - Failed to process clip 2025-07-01 12-14-46.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:27,975 - INFO - Video: 2025-07-01 12-23-05.mp4 | FPS: 2.0 | Duration: 429.5s | Size: [1920, 1080]
+2025-07-24 11:20:27,975 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-23-05.mp4
+2025-07-24 11:20:27,975 - ERROR - Failed to process clip 2025-07-01 12-23-05.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:29,205 - INFO - Video: 2025-07-01 12-30-14.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:20:29,205 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-30-14.mp4
+2025-07-24 11:20:29,205 - ERROR - Failed to process clip 2025-07-01 12-30-14.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:30,466 - INFO - Video: 2025-07-01 12-38-34.mp4 | FPS: 2.0 | Duration: 118.5s | Size: [1920, 1080]
+2025-07-24 11:20:30,466 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-38-34.mp4
+2025-07-24 11:20:30,466 - ERROR - Failed to process clip 2025-07-01 12-38-34.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:31,830 - INFO - Video: 2025-07-01 13-03-28.mp4 | FPS: 2.0 | Duration: 543.51s | Size: [1920, 1080]
+2025-07-24 11:20:31,830 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-03-28.mp4
+2025-07-24 11:20:31,830 - ERROR - Failed to process clip 2025-07-01 13-03-28.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:33,090 - INFO - Video: 2025-07-01 13-12-41.mp4 | FPS: 2.0 | Duration: 454.51s | Size: [1920, 1080]
+2025-07-24 11:20:33,090 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-12-41.mp4
+2025-07-24 11:20:33,091 - ERROR - Failed to process clip 2025-07-01 13-12-41.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:34,599 - INFO - Video: 2025-07-01 13-20-16.mp4 | FPS: 2.0 | Duration: 507.5s | Size: [1920, 1080]
+2025-07-24 11:20:34,599 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-20-16.mp4
+2025-07-24 11:20:34,599 - ERROR - Failed to process clip 2025-07-01 13-20-16.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:35,918 - INFO - Video: 2025-07-01 13-28-43.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:20:35,918 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-28-43.mp4
+2025-07-24 11:20:35,918 - ERROR - Failed to process clip 2025-07-01 13-28-43.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:37,320 - INFO - Video: 2025-07-01 13-37-03.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:20:37,320 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-37-03.mp4
+2025-07-24 11:20:37,320 - ERROR - Failed to process clip 2025-07-01 13-37-03.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:38,624 - INFO - Video: 2025-07-01 13-45-23.mp4 | FPS: 2.0 | Duration: 435.5s | Size: [1920, 1080]
+2025-07-24 11:20:38,624 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-45-23.mp4
+2025-07-24 11:20:38,625 - ERROR - Failed to process clip 2025-07-01 13-45-23.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:39,902 - INFO - Video: 2025-07-01 13-52-39.mp4 | FPS: 2.0 | Duration: 2.0s | Size: [1920, 1080]
+2025-07-24 11:20:39,902 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-52-39.mp4
+2025-07-24 11:20:39,902 - ERROR - Failed to process clip 2025-07-01 13-52-39.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:41,214 - INFO - Video: 2025-07-01 13-54-11.mp4 | FPS: 2.0 | Duration: 493.5s | Size: [1920, 1080]
+2025-07-24 11:20:41,214 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-54-11.mp4
+2025-07-24 11:20:41,214 - ERROR - Failed to process clip 2025-07-01 13-54-11.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:42,526 - INFO - Video: 2025-07-01 14-02-34.mp4 | FPS: 2.0 | Duration: 517.5s | Size: [1920, 1080]
+2025-07-24 11:20:42,526 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-02-34.mp4
+2025-07-24 11:20:42,526 - ERROR - Failed to process clip 2025-07-01 14-02-34.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:43,825 - INFO - Video: 2025-07-01 14-11-11.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:20:43,825 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-11-11.mp4
+2025-07-24 11:20:43,825 - ERROR - Failed to process clip 2025-07-01 14-11-11.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:45,084 - INFO - Video: 2025-07-01 14-19-31.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:20:45,084 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-19-31.mp4
+2025-07-24 11:20:45,084 - ERROR - Failed to process clip 2025-07-01 14-19-31.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:46,437 - INFO - Video: 2025-07-01 14-27-51.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:20:46,437 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-27-51.mp4
+2025-07-24 11:20:46,437 - ERROR - Failed to process clip 2025-07-01 14-27-51.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:47,706 - INFO - Video: 2025-07-01 14-36-11.mp4 | FPS: 2.0 | Duration: 440.0s | Size: [1920, 1080]
+2025-07-24 11:20:47,706 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-36-11.mp4
+2025-07-24 11:20:47,706 - ERROR - Failed to process clip 2025-07-01 14-36-11.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:49,000 - INFO - Video: 2025-07-01 14-43-31.mp4 | FPS: 2.0 | Duration: 420.0s | Size: [1920, 1080]
+2025-07-24 11:20:49,000 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-43-31.mp4
+2025-07-24 11:20:49,000 - ERROR - Failed to process clip 2025-07-01 14-43-31.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:50,227 - INFO - Video: 2025-07-01 14-50-31.mp4 | FPS: 2.0 | Duration: 1.5s | Size: [1920, 1080]
+2025-07-24 11:20:50,227 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-50-31.mp4
+2025-07-24 11:20:50,227 - ERROR - Failed to process clip 2025-07-01 14-50-31.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:51,455 - INFO - Video: 2025-07-01 14-54-16.mp4 | FPS: 2.0 | Duration: 361.5s | Size: [1920, 1080]
+2025-07-24 11:20:51,455 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-54-16.mp4
+2025-07-24 11:20:51,455 - ERROR - Failed to process clip 2025-07-01 14-54-16.mp4: 'VideoFileClip' object has no attribute 'subclip'
+2025-07-24 11:20:51,476 - INFO - Successfully loaded 1 videos for concatenation
+2025-07-24 11:20:51,476 - INFO - Clip 1: Duration=162.12s, FPS=23.976023976023978, Size=[1920, 1080]
+2025-07-24 11:20:51,506 - INFO - Final concatenated clip: Duration=162.12s, FPS=23.976023976023978
+2025-07-24 11:20:51,555 - INFO - Removing audio channel as requested
+2025-07-24 11:21:18,130 - INFO - Successfully encoded using CPU
+2025-07-24 11:25:47,456 - INFO - Refreshed video list with 26 videos:
+2025-07-24 11:25:47,456 - INFO -   1. 2025-06-24 18:11 - App-Update.mp4
+2025-07-24 11:25:47,456 - INFO -   2. 2025-07-01 11:41 - 2025-07-01 11-34-15.mp4
+2025-07-24 11:25:47,457 - INFO -   3. 2025-07-01 11:49 - 2025-07-01 11-41-26.mp4
+2025-07-24 11:25:47,457 - INFO -   4. 2025-07-01 11:58 - 2025-07-01 11-49-46.mp4
+2025-07-24 11:25:47,457 - INFO -   5. 2025-07-01 12:06 - 2025-07-01 11-58-06.mp4
+2025-07-24 11:25:47,457 - INFO -   6. 2025-07-01 12:14 - 2025-07-01 12-06-26.mp4
+2025-07-24 11:25:47,457 - INFO -   7. 2025-07-01 12:23 - 2025-07-01 12-14-46.mp4
+2025-07-24 11:25:47,457 - INFO -   8. 2025-07-01 12:30 - 2025-07-01 12-23-05.mp4
+2025-07-24 11:25:47,457 - INFO -   9. 2025-07-01 12:38 - 2025-07-01 12-30-14.mp4
+2025-07-24 11:25:47,457 - INFO -   10. 2025-07-01 12:40 - 2025-07-01 12-38-34.mp4
+2025-07-24 11:25:47,457 - INFO -   11. 2025-07-01 13:12 - 2025-07-01 13-03-28.mp4
+2025-07-24 11:25:47,457 - INFO -   12. 2025-07-01 13:20 - 2025-07-01 13-12-41.mp4
+2025-07-24 11:25:47,457 - INFO -   13. 2025-07-01 13:28 - 2025-07-01 13-20-16.mp4
+2025-07-24 11:25:47,457 - INFO -   14. 2025-07-01 13:37 - 2025-07-01 13-28-43.mp4
+2025-07-24 11:25:47,458 - INFO -   15. 2025-07-01 13:45 - 2025-07-01 13-37-03.mp4
+2025-07-24 11:25:47,458 - INFO -   16. 2025-07-01 13:52 - 2025-07-01 13-45-23.mp4
+2025-07-24 11:25:47,458 - INFO -   17. 2025-07-01 13:52 - 2025-07-01 13-52-39.mp4
+2025-07-24 11:25:47,458 - INFO -   18. 2025-07-01 14:02 - 2025-07-01 13-54-11.mp4
+2025-07-24 11:25:47,458 - INFO -   19. 2025-07-01 14:11 - 2025-07-01 14-02-34.mp4
+2025-07-24 11:25:47,458 - INFO -   20. 2025-07-01 14:19 - 2025-07-01 14-11-11.mp4
+2025-07-24 11:25:47,458 - INFO -   21. 2025-07-01 14:27 - 2025-07-01 14-19-31.mp4
+2025-07-24 11:25:47,458 - INFO -   22. 2025-07-01 14:36 - 2025-07-01 14-27-51.mp4
+2025-07-24 11:25:47,458 - INFO -   23. 2025-07-01 14:43 - 2025-07-01 14-36-11.mp4
+2025-07-24 11:25:47,458 - INFO -   24. 2025-07-01 14:50 - 2025-07-01 14-43-31.mp4
+2025-07-24 11:25:47,458 - INFO -   25. 2025-07-01 14:50 - 2025-07-01 14-50-31.mp4
+2025-07-24 11:25:47,458 - INFO -   26. 2025-07-01 15:00 - 2025-07-01 14-54-16.mp4
+2025-07-24 11:25:56,029 - INFO - Using MoviePy v2.x+ import syntax
+2025-07-24 11:25:56,149 - INFO - GPU detected: NVIDIA GeForce RTX 5080, 576.80
+2025-07-24 11:25:56,149 - WARNING - FFmpeg not found in system PATH - GPU acceleration unavailable
+2025-07-24 11:25:57,375 - INFO - Video: App-Update.mp4 | FPS: 23.976023976023978 | Duration: 162.12s | Size: [1920, 1080]
+2025-07-24 11:25:58,681 - INFO - Video: 2025-07-01 11-34-15.mp4 | FPS: 2.0 | Duration: 420.5s | Size: [1920, 1080]
+2025-07-24 11:25:58,681 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-34-15.mp4
+2025-07-24 11:25:59,955 - INFO - Video: 2025-07-01 11-41-26.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:25:59,955 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-41-26.mp4
+2025-07-24 11:26:01,175 - INFO - Video: 2025-07-01 11-49-46.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:26:01,175 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-49-46.mp4
+2025-07-24 11:26:02,413 - INFO - Video: 2025-07-01 11-58-06.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:26:02,413 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 11-58-06.mp4
+2025-07-24 11:26:03,816 - INFO - Video: 2025-07-01 12-06-26.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:26:03,816 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-06-26.mp4
+2025-07-24 11:26:05,138 - INFO - Video: 2025-07-01 12-14-46.mp4 | FPS: 2.0 | Duration: 499.01s | Size: [1920, 1080]
+2025-07-24 11:26:05,139 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-14-46.mp4
+2025-07-24 11:26:06,425 - INFO - Video: 2025-07-01 12-23-05.mp4 | FPS: 2.0 | Duration: 429.5s | Size: [1920, 1080]
+2025-07-24 11:26:06,425 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-23-05.mp4
+2025-07-24 11:26:07,698 - INFO - Video: 2025-07-01 12-30-14.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:26:07,698 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-30-14.mp4
+2025-07-24 11:26:08,983 - INFO - Video: 2025-07-01 12-38-34.mp4 | FPS: 2.0 | Duration: 118.5s | Size: [1920, 1080]
+2025-07-24 11:26:08,983 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 12-38-34.mp4
+2025-07-24 11:26:10,377 - INFO - Video: 2025-07-01 13-03-28.mp4 | FPS: 2.0 | Duration: 543.51s | Size: [1920, 1080]
+2025-07-24 11:26:10,377 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-03-28.mp4
+2025-07-24 11:26:11,656 - INFO - Video: 2025-07-01 13-12-41.mp4 | FPS: 2.0 | Duration: 454.51s | Size: [1920, 1080]
+2025-07-24 11:26:11,656 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-12-41.mp4
+2025-07-24 11:26:13,192 - INFO - Video: 2025-07-01 13-20-16.mp4 | FPS: 2.0 | Duration: 507.5s | Size: [1920, 1080]
+2025-07-24 11:26:13,192 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-20-16.mp4
+2025-07-24 11:26:14,537 - INFO - Video: 2025-07-01 13-28-43.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:26:14,538 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-28-43.mp4
+2025-07-24 11:26:15,956 - INFO - Video: 2025-07-01 13-37-03.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:26:15,956 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-37-03.mp4
+2025-07-24 11:26:17,269 - INFO - Video: 2025-07-01 13-45-23.mp4 | FPS: 2.0 | Duration: 435.5s | Size: [1920, 1080]
+2025-07-24 11:26:17,269 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-45-23.mp4
+2025-07-24 11:26:18,541 - INFO - Video: 2025-07-01 13-52-39.mp4 | FPS: 2.0 | Duration: 2.0s | Size: [1920, 1080]
+2025-07-24 11:26:18,541 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-52-39.mp4
+2025-07-24 11:26:19,877 - INFO - Video: 2025-07-01 13-54-11.mp4 | FPS: 2.0 | Duration: 493.5s | Size: [1920, 1080]
+2025-07-24 11:26:19,877 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 13-54-11.mp4
+2025-07-24 11:26:21,206 - INFO - Video: 2025-07-01 14-02-34.mp4 | FPS: 2.0 | Duration: 517.5s | Size: [1920, 1080]
+2025-07-24 11:26:21,207 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-02-34.mp4
+2025-07-24 11:26:22,526 - INFO - Video: 2025-07-01 14-11-11.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:26:22,526 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-11-11.mp4
+2025-07-24 11:26:23,801 - INFO - Video: 2025-07-01 14-19-31.mp4 | FPS: 2.0 | Duration: 500.0s | Size: [1920, 1080]
+2025-07-24 11:26:23,801 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-19-31.mp4
+2025-07-24 11:26:25,162 - INFO - Video: 2025-07-01 14-27-51.mp4 | FPS: 2.0 | Duration: 500.01s | Size: [1920, 1080]
+2025-07-24 11:26:25,162 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-27-51.mp4
+2025-07-24 11:26:26,465 - INFO - Video: 2025-07-01 14-36-11.mp4 | FPS: 2.0 | Duration: 440.0s | Size: [1920, 1080]
+2025-07-24 11:26:26,465 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-36-11.mp4
+2025-07-24 11:26:27,777 - INFO - Video: 2025-07-01 14-43-31.mp4 | FPS: 2.0 | Duration: 420.0s | Size: [1920, 1080]
+2025-07-24 11:26:27,777 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-43-31.mp4
+2025-07-24 11:26:29,001 - INFO - Video: 2025-07-01 14-50-31.mp4 | FPS: 2.0 | Duration: 1.5s | Size: [1920, 1080]
+2025-07-24 11:26:29,001 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-50-31.mp4
+2025-07-24 11:26:29,001 - WARNING - Very few frames (1) in 2025-07-01 14-50-31.mp4
+2025-07-24 11:26:30,266 - INFO - Video: 2025-07-01 14-54-16.mp4 | FPS: 2.0 | Duration: 361.5s | Size: [1920, 1080]
+2025-07-24 11:26:30,266 - INFO - Processing low FPS video: 2.0fps - 2025-07-01 14-54-16.mp4
+2025-07-24 11:26:30,267 - INFO - Successfully loaded 26 out of 26 videos for concatenation
+2025-07-24 11:26:30,267 - INFO - Clip 1: Duration=162.12s, FPS=23.976023976023978, Size=[1920, 1080]
+2025-07-24 11:26:30,267 - INFO - Clip 2: Duration=419.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 3: Duration=499.01s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 4: Duration=499.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 5: Duration=499.01s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 6: Duration=499.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 7: Duration=498.01s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 8: Duration=428.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 9: Duration=499.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 10: Duration=117.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 11: Duration=542.51s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 12: Duration=453.51s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 13: Duration=506.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 14: Duration=499.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 15: Duration=499.01s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 16: Duration=434.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 17: Duration=1.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 18: Duration=492.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 19: Duration=516.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 20: Duration=499.01s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 21: Duration=499.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 22: Duration=499.01s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 23: Duration=439.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 24: Duration=419.0s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 25: Duration=0.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,267 - INFO - Clip 26: Duration=360.5s, FPS=2.0, Size=(1920, 1080)
+2025-07-24 11:26:30,461 - INFO - Final concatenated clip: Duration=10781.7s, FPS=23.976023976023978
+2025-07-24 11:26:30,524 - INFO - Removing audio channel as requested
+2025-07-24 11:38:33,811 - INFO - Successfully encoded using CPU

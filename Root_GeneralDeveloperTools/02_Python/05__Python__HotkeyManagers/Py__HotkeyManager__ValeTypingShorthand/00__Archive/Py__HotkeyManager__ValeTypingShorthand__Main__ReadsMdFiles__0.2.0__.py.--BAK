@@ -1,0 +1,436 @@
+# =============================================================================
+# VALEDESIGNSUITE - VALE TYPING SHORTHAND HOTKEY MANAGER
+# =============================================================================
+#
+# FILE       : Py__HotkeyManager__ValeTypingShorthand__Main__.py
+# NAMESPACE  : ValeTypingShorthand
+# MODULE     : ValeTypingShorthand
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : AutoHotkey-style text replacement hotkey manager for Windows
+# CREATED    : 04-Dec-2025
+#
+# DESCRIPTION:
+# - This script implements a text replacement system similar to AutoHotkey.
+# - Monitors keyboard input and replaces trigger sequences with content from markdown files.
+# - Uses local keyboard library from Dependencies folder.
+# - Supports custom trigger patterns with space delimiter.
+# - Prevents recursion during text replacement operations.
+# - Configurable hotstring groups with file-based content loading.
+# - Uses Windows clipboard for reliable paste operations (preserves all text).
+#
+# -----------------------------------------------------------------------------
+#
+# DEVELOPMENT LOG:
+# 04-Dec-2025 - Version 0.5.1
+# - Fixed PowerShell clipboard to use stdin piping
+# - Prevents markdown content from being parsed as PowerShell code
+# - Text is now sent via stdin instead of command-line arguments
+#
+# 04-Dec-2025 - Version 0.5.0
+# - Switched to PowerShell for clipboard operations (most reliable method)
+# - Removed complex ctypes implementation that had access violations
+# - Uses built-in Windows PowerShell commands (Set-Clipboard/Get-Clipboard)
+# - 100% reliable clipboard operations with no dependencies
+#
+# 04-Dec-2025 - Version 0.4.1
+# - Added retry mechanism for clipboard operations (5 attempts with 0.1s delay)
+# - Handles clipboard contention from other applications
+# - Improved error handling and reliability
+#
+# 04-Dec-2025 - Version 0.4.0
+# - Switched to clipboard-based paste operation using Windows API
+# - Added clipboard backup and restore functionality
+# - Significantly improved reliability for large text blocks
+# - Fixed issue with missing characters during paste
+#
+# 04-Dec-2025 - Version 0.3.0
+# - Refactored to use configurable hotstring groups
+# - Added support for markdown file content loading
+# - Implemented JSON-like configuration region for hotstring definitions
+# - Added file-based content replacement system
+#
+# 2025 - Version 0.2.0
+# - Initial implementation with trigger detection and text replacement
+# - Windows 11 compatible key press handling
+# - Buffer-based trigger matching system
+#
+# =============================================================================
+
+import sys
+import os
+import time
+import subprocess
+
+# -----------------------------------------------------------------------------
+# REGION | Dependency Loading and Path Configuration
+# -----------------------------------------------------------------------------
+
+# FUNCTION | Load External Keyboard Library from Dependencies Folder
+# ------------------------------------------------------------
+def load_keyboard_library():
+    """Load keyboard library from local Dependencies folder"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))                    # <-- Get current script directory
+    lib_path = os.path.join(script_dir, "Dependencies__HotkeyManager__ExternalLibrarys")  # <-- Construct library path
+    
+    if lib_path not in sys.path:                                               # <-- Check if path already in sys.path
+        sys.path.insert(0, lib_path)                                           # <-- Add to beginning of Python path
+    
+    try:
+        import keyboard                                                         # <-- Import keyboard library
+        return keyboard                                                         # <-- Return imported module
+    except ImportError:
+        print(f"Error: Could not find the 'keyboard' library in {lib_path}")   # <-- Display error message
+        print("Please check that the folder name matches exactly.")             # <-- Display troubleshooting hint
+        input("Press Enter to exit...")                                        # <-- Wait for user input
+        sys.exit(1)                                                            # <-- Exit with error code
+# ---------------------------------------------------------------
+
+# Load keyboard library at module level
+keyboard = load_keyboard_library()
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Windows Clipboard Operations via PowerShell
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Copy Text to Windows Clipboard using PowerShell
+# ------------------------------------------------------------
+def copy_to_clipboard(text):
+    """Copy text to Windows clipboard using PowerShell (most reliable method)"""
+    try:
+        # Use PowerShell with stdin piping to avoid command-line parsing issues
+        # This prevents markdown content from being interpreted as PowerShell code
+        powershell_command = '$input | Set-Clipboard'                           # <-- PowerShell command that reads from stdin
+        
+        process = subprocess.Popen(
+            ['powershell', '-command', powershell_command],                     # <-- Execute PowerShell command
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NO_WINDOW                           # <-- Hide PowerShell window
+        )
+        
+        # Send text through stdin (avoids command-line parsing)
+        stdout, stderr = process.communicate(input=text.encode('utf-8'), timeout=2)  # <-- Send text via stdin
+        
+        if process.returncode == 0:                                             # <-- Check if command succeeded
+            return True                                                          # <-- Return success
+        else:
+            print(f"PowerShell clipboard error: {stderr.decode('utf-8', errors='ignore')}")  # <-- Display error
+            return False                                                         # <-- Return failure
+            
+    except subprocess.TimeoutExpired:
+        print("Error: Clipboard operation timed out")                           # <-- Display timeout error
+        process.kill()                                                          # <-- Kill the process
+        return False                                                             # <-- Return failure
+    except Exception as e:
+        print(f"Error copying to clipboard: {e}")                               # <-- Display error message
+        return False                                                             # <-- Return failure
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Get Current Clipboard Content using PowerShell
+# ------------------------------------------------------------
+def get_clipboard_content():
+    """Get current clipboard content using PowerShell"""
+    try:
+        # Use PowerShell Get-Clipboard command
+        process = subprocess.Popen(
+            ['powershell', '-command', 'Get-Clipboard'],                        # <-- PowerShell get clipboard command
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NO_WINDOW                           # <-- Hide PowerShell window
+        )
+        stdout, stderr = process.communicate(timeout=2)                         # <-- Wait up to 2 seconds
+        
+        if process.returncode == 0:                                             # <-- Check if command succeeded
+            content = stdout.decode('utf-8', errors='ignore').rstrip('\r\n')   # <-- Decode and remove trailing newlines
+            return content if content else None                                 # <-- Return content or None if empty
+        else:
+            return None                                                          # <-- Return None on error
+            
+    except subprocess.TimeoutExpired:
+        return None                                                              # <-- Return None on timeout
+    except Exception as e:
+        return None                                                              # <-- Return None on error
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Module Constants and Configuration
+# -----------------------------------------------------------------------------
+
+# MODULE CONSTANTS | System Configuration
+# ------------------------------------------------------------
+MAX_BUFFER_SIZE_OFFSET    =   1                                                # <-- Additional buffer size beyond trigger length
+REPLACEMENT_DELAY_SECONDS =   0.01                                            # <-- Delay to ensure space key is processed
+EXIT_KEY                  =   'esc'                                            # <-- Key to stop the script
+MESSAGES_FOLDER_NAME      =   "01__Messages"                                  # <-- Name of messages folder relative to script root
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Hotstring Configuration Groups
+# -----------------------------------------------------------------------------
+
+# CONFIGURATION | Hotstring Groups - JSON-like Structure
+# ------------------------------------------------------------
+HOTSTRING_GROUPS = [
+    {
+        "Hotstring"  : ";vsl",                                                # <-- Trigger sequence without space delimiter
+        "Action"     : "Copy&Paste",                                          # <-- Action type for this hotstring
+        "Location"   : "HotkeyManager__TestFile__.md"                         # <-- Markdown file name in 01__Messages folder
+    }
+    # Add more hotstring groups here as needed
+    # {
+    #     "Hotstring"  : ";example",
+    #     "Action"     : "Copy&Paste",                                        # <-- Action type for this hotstring
+    #     "Location"   : "ExampleFile__.md"
+    # }
+]
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | File System and Content Loading
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Get Script Root Directory
+# ------------------------------------------------------------
+def get_script_root_directory():
+    """Get the root directory where this script is located"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))                    # <-- Get current script directory
+    return script_dir                                                          # <-- Return script root directory
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Get Messages Folder Path
+# ------------------------------------------------------------
+def get_messages_folder_path():
+    """Get the full path to the messages folder"""
+    script_root = get_script_root_directory()                                  # <-- Get script root directory
+    messages_path = os.path.join(script_root, MESSAGES_FOLDER_NAME)           # <-- Construct messages folder path
+    return os.path.normpath(messages_path)                                     # <-- Return normalized path
+# ---------------------------------------------------------------
+
+# FUNCTION | Read Content from Markdown File
+# ------------------------------------------------------------
+def read_markdown_file_content(filename):
+    """Read and return content from a markdown file in the messages folder"""
+    messages_folder = get_messages_folder_path()                               # <-- Get messages folder path
+    file_path = os.path.join(messages_folder, filename)                        # <-- Construct full file path
+    file_path = os.path.normpath(file_path)                                    # <-- Normalize path for cross-platform compatibility
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:                   # <-- Open file with UTF-8 encoding
+            content = file.read()                                               # <-- Read entire file content
+        return content                                                          # <-- Return file content
+    except FileNotFoundError:
+        print(f"Error: File not found: {file_path}")                           # <-- Display file not found error
+        return None                                                             # <-- Return None on error
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")                          # <-- Display general error message
+        return None                                                             # <-- Return None on error
+# ---------------------------------------------------------------
+
+# FUNCTION | Build Hotstring Lookup Dictionary
+# ------------------------------------------------------------
+def build_hotstring_lookup(hotstring_groups):
+    """Build a dictionary mapping hotstrings to their configuration"""
+    lookup = {}                                                                 # <-- Initialize lookup dictionary
+    
+    for group in hotstring_groups:                                              # <-- Loop through each hotstring group
+        hotstring = group.get("Hotstring")                                      # <-- Get hotstring trigger text
+        action = group.get("Action")                                             # <-- Get action type
+        location = group.get("Location")                                         # <-- Get file location
+        
+        if hotstring and action and location:                                   # <-- Validate all fields exist
+            lookup[hotstring] = {                                               # <-- Create entry in lookup dictionary
+                "Action"   : action,                                            # <-- Store action type
+                "Location" : location                                           # <-- Store file location
+            }
+    
+    return lookup                                                               # <-- Return lookup dictionary
+# ---------------------------------------------------------------
+
+# FUNCTION | Get Replacement Content for Hotstring
+# ------------------------------------------------------------
+def get_replacement_content(hotstring_config):
+    """Get replacement content based on hotstring configuration"""
+    action = hotstring_config.get("Action")                                     # <-- Get action type from config
+    
+    if action == "Copy&Paste":                                                  # <-- Check if action is Copy&Paste
+        filename = hotstring_config.get("Location")                             # <-- Get filename from config
+        content = read_markdown_file_content(filename)                          # <-- Read content from markdown file
+        return content                                                           # <-- Return file content
+    
+    return None                                                                  # <-- Return None for unknown actions
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Main Script Logic and Key Handler
+# -----------------------------------------------------------------------------
+
+# HELPER FUNCTION | Handle Backspace Key Press
+# ------------------------------------------------------------
+def handle_backspace(typed_buffer):
+    """Remove last character from buffer when backspace is pressed"""
+    if typed_buffer:                                                           # <-- Check if buffer has content
+        typed_buffer.pop()                                                      # <-- Remove last character
+    return typed_buffer                                                         # <-- Return updated buffer
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Calculate Maximum Buffer Size
+# ------------------------------------------------------------
+def calculate_max_buffer_size(hotstring_lookup):
+    """Calculate maximum buffer size based on longest hotstring"""
+    if not hotstring_lookup:                                                    # <-- Check if lookup is empty
+        return 10                                                               # <-- Return default buffer size
+    
+    max_hotstring_length = max(len(hotstring) for hotstring in hotstring_lookup.keys())  # <-- Find longest hotstring
+    return max_hotstring_length + MAX_BUFFER_SIZE_OFFSET                       # <-- Return calculated buffer size
+# ---------------------------------------------------------------
+
+# HELPER FUNCTION | Add Character to Typing Buffer
+# ------------------------------------------------------------
+def add_character_to_buffer(typed_buffer, key_name, max_buffer_size):
+    """Add character to buffer and maintain maximum size"""
+    if key_name == 'space':                                                     # <-- Check if space key pressed
+        typed_buffer.append(' ')                                                # <-- Add space character to buffer
+    else:
+        typed_buffer.append(key_name)                                           # <-- Add character key to buffer
+    
+    if len(typed_buffer) > max_buffer_size:                                     # <-- Check if buffer exceeds maximum
+        typed_buffer.pop(0)                                                     # <-- Remove oldest character from buffer
+    
+    return typed_buffer                                                         # <-- Return updated buffer
+# ---------------------------------------------------------------
+
+# SUB FUNCTION | Execute Text Replacement Operation via Clipboard
+# ------------------------------------------------------------
+def execute_text_replacement(trigger_text, replacement_text):
+    """Remove trigger text and paste replacement text using clipboard"""
+    if not replacement_text:                                                    # <-- Check if replacement text exists
+        return                                                                  # <-- Exit if no replacement text
+    
+    trigger_with_space = trigger_text + ' '                                     # <-- Create trigger with space delimiter
+    
+    time.sleep(REPLACEMENT_DELAY_SECONDS)                                      # <-- Delay to ensure space key is processed
+    
+    # Remove trigger text
+    for _ in range(len(trigger_with_space)):                                   # <-- Loop through trigger characters
+        keyboard.press_and_release('backspace')                                # <-- Remove each character with backspace
+    
+    # Backup current clipboard content
+    previous_clipboard = get_clipboard_content()                                # <-- Save current clipboard for restoration
+    
+    # Copy replacement text to clipboard
+    if not copy_to_clipboard(replacement_text):                                 # <-- Copy text to clipboard
+        print("Warning: Failed to copy text to clipboard")                     # <-- Display warning on failure
+        return                                                                  # <-- Exit if clipboard copy failed
+    
+    time.sleep(0.05)                                                            # <-- Brief delay for clipboard operation
+    
+    # Paste using Ctrl+V
+    keyboard.press('ctrl')                                                      # <-- Press Ctrl key
+    keyboard.press('v')                                                         # <-- Press V key
+    keyboard.release('v')                                                       # <-- Release V key
+    keyboard.release('ctrl')                                                    # <-- Release Ctrl key
+    
+    time.sleep(0.1)                                                             # <-- Wait for paste to complete
+    
+    # Restore previous clipboard content if it existed
+    if previous_clipboard:                                                      # <-- Check if previous content existed
+        copy_to_clipboard(previous_clipboard)                                   # <-- Restore previous clipboard content
+# ---------------------------------------------------------------
+
+# SUB FUNCTION | Check Trigger Pattern and Replace if Matched
+# ------------------------------------------------------------
+def check_trigger_and_replace(typed_buffer, hotstring_lookup, is_replacing_flag):
+    """Check if buffer ends with any trigger pattern and replace if matched"""
+    if is_replacing_flag:                                                       # <-- Check if replacement in progress
+        return typed_buffer, is_replacing_flag                                  # <-- Return unchanged if replacing
+    
+    current_text = ''.join(typed_buffer)                                       # <-- Convert buffer to string
+    
+    for hotstring, config in hotstring_lookup.items():                         # <-- Loop through all configured hotstrings
+        trigger_with_space = hotstring + ' '                                    # <-- Create trigger with space delimiter
+        
+        if current_text.endswith(trigger_with_space):                          # <-- Check if buffer ends with trigger
+            replacement_content = get_replacement_content(config)               # <-- Get replacement content from config
+            
+            if replacement_content:                                             # <-- Check if content was loaded successfully
+                is_replacing_flag = True                                        # <-- Set flag to prevent recursion
+                execute_text_replacement(hotstring, replacement_content)       # <-- Execute replacement operation
+                typed_buffer.clear()                                            # <-- Clear the buffer
+                is_replacing_flag = False                                       # <-- Reset recursion flag
+                break                                                            # <-- Exit loop after successful replacement
+    
+    return typed_buffer, is_replacing_flag                                      # <-- Return updated buffer and flag
+# ---------------------------------------------------------------
+
+# FUNCTION | Key Press Event Handler
+# ------------------------------------------------------------
+def create_key_press_handler(hotstring_lookup):
+    """Create and return key press handler function for keyboard events"""
+    typed_buffer = []                                                           # <-- Initialize character buffer
+    is_replacing = False                                                        # <-- Initialize recursion prevention flag
+    max_buffer_size = calculate_max_buffer_size(hotstring_lookup)               # <-- Calculate maximum buffer size
+    
+    def on_key_press(event):
+        """Handle individual key press events and detect trigger patterns"""
+        nonlocal typed_buffer, is_replacing                                     # <-- Access outer scope variables
+        
+        key_name = event.name                                                   # <-- Get name of pressed key
+        
+        if key_name == 'backspace':                                             # <-- Check if backspace key pressed
+            typed_buffer = handle_backspace(typed_buffer)                       # <-- Handle backspace operation
+            return                                                              # <-- Exit handler
+        
+        if len(key_name) == 1 or key_name == 'space':                           # <-- Check if single character or space
+            typed_buffer = add_character_to_buffer(typed_buffer, key_name, max_buffer_size)  # <-- Add character to buffer
+            typed_buffer, is_replacing = check_trigger_and_replace(typed_buffer, hotstring_lookup, is_replacing)  # <-- Check for trigger match
+    
+    return on_key_press                                                         # <-- Return handler function
+# ---------------------------------------------------------------
+
+# FUNCTION | Main Entry Point
+# ------------------------------------------------------------
+def main():
+    """Main entry point for Vale Typing Shorthand Hotkey Manager"""
+    print("Local AutoHotkey-style script is running...")                        # <-- Display startup message
+    print(f"Loaded dependencies from: Dependencies__HotkeyManager__ExternalLibrarys")  # <-- Display library path
+    
+    hotstring_lookup = build_hotstring_lookup(HOTSTRING_GROUPS)                 # <-- Build hotstring lookup dictionary
+    
+    if not hotstring_lookup:                                                    # <-- Check if any hotstrings configured
+        print("Error: No hotstrings configured. Please add hotstring groups.")  # <-- Display error message
+        input("Press Enter to exit...")                                        # <-- Wait for user input
+        return                                                                  # <-- Exit function
+    
+    print(f"Loaded {len(hotstring_lookup)} hotstring(s):")                     # <-- Display number of hotstrings
+    for hotstring in hotstring_lookup.keys():                                  # <-- Loop through configured hotstrings
+        print(f"  - '{hotstring}'")                                             # <-- Display each hotstring
+    
+    print(f"\nType any hotstring followed by SPACE to trigger replacement.")    # <-- Display usage instructions
+    print(f"Press {EXIT_KEY.upper()} to stop the script.")                     # <-- Display exit instructions
+    
+    key_handler = create_key_press_handler(hotstring_lookup)                   # <-- Create key press handler
+    keyboard.on_press(key_handler)                                             # <-- Register handler with keyboard library
+    keyboard.wait(EXIT_KEY)                                                     # <-- Wait for exit key to be pressed
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Script Entry Point
+# -----------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    main()
+
+# endregion -------------------------------------------------------------------

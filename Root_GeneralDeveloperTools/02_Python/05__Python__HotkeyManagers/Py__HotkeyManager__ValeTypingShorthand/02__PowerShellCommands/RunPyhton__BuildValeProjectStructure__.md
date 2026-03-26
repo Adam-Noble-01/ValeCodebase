@@ -1,0 +1,1 @@
+python "D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\10__Python__WinFileSystemTools\Py_WinUtil__BuildValeProjectStructure\Py_WinUtil__BuildValeProjectStructure__Main__.py"

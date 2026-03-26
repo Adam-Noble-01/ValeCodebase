@@ -1,0 +1,14 @@
+2025-09-02 16:19:39,999 | ERROR | Processing error for D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools/02_Python/Python__PdfUtil__DrawingPostProcessing__PdfFiles/Input__TestPdf-03__.pdf: bad dict key(s): {'Page1_PaperSize', 'Page1_ActualSize', 'Page1_Dimensions'}
+Traceback (most recent call last):
+  File "D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\Python__PdfUtil__DrawingPostProcessing__PdfFiles\Python__PdfUtil__DrawingPostProcessing__PdfFiles__1.3.0__.py", line 1091, in run
+    result = process_pdf(                                    # <-- Call main processing function
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\Python__PdfUtil__DrawingPostProcessing__PdfFiles\Python__PdfUtil__DrawingPostProcessing__PdfFiles__1.3.0__.py", line 792, in process_pdf
+    set_pdf_page_size_metadata(doc, log_fn)                             # <-- Set paper size metadata
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\Python__PdfUtil__DrawingPostProcessing__PdfFiles\Python__PdfUtil__DrawingPostProcessing__PdfFiles__1.3.0__.py", line 392, in set_pdf_page_size_metadata
+    doc.set_metadata(metadata)                                           # <-- Update document metadata
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adamw\AppData\Local\Programs\Python\Python312\Lib\site-packages\pymupdf\utils.py", line 1406, in set_metadata
+    raise ValueError(msg)
+ValueError: bad dict key(s): {'Page1_PaperSize', 'Page1_ActualSize', 'Page1_Dimensions'}

@@ -1,0 +1,734 @@
+# =========================================================
+# PROJECT FILE TREE VIEWER
+# =========================================================
+#
+# FILENAME  |  PyWindowUtil__ProjectFileTreeViewer.py
+# DIRECTORY |  D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\PyWindowUtil__ProjectFileTreeViewer
+#
+# AUTHOR    |  Adam Noble
+# DATE      |  28-Aug-2025
+#
+# DESCRIPTION
+# - Advanced Tkinter GUI application for visualizing project directory structures.
+# - Provides both interactive tree view (left pane) and text-based tree output (right pane).
+# - Supports high-quality image export with proper font rendering and box-drawing characters.
+# - File sizes displayed in left tree view only; right pane shows clean text structure.
+# - Includes clipboard functionality and text export capabilities.
+#
+# PIP DEPENDENCIES COMMAND LINE
+# pip install Pillow
+#
+# DEVELOPMENT LOG
+# 1.0.0 - 28-Aug-2025 |  Code refactoring and organization
+# - Refactored from ChatGPT output to match Vale coding standards.
+# - Reorganized code into proper regional structure with aligned comments.
+# - Improved naming conventions and added proper header documentation.
+# - Maintained all existing functionality while improving code clarity.
+#
+# 1.2.0 - 28-Aug-2025 |  Visual spacing enhancement for improved readability
+# - Added vertical spacing lines between directory sections in text output.
+# - Enhanced tree structure display with visual separation for better hierarchy comprehension.
+# - Maintains both Unicode (│) and ASCII (|) character support for spacing lines.
+# - Improves visual clarity when viewing complex directory structures.
+#
+# =========================================================
+
+# ==================================================================================================
+# REGION | IMPORTS - Standard library imports
+# ==================================================================================================
+import os                                                    # <-- File system operations
+import sys                                                   # <-- System-specific parameters
+import io                                                    # <-- I/O operations for clipboard
+import time                                                  # <-- Time utilities
+import platform                                              # <-- Platform detection
+import logging                                               # <-- Logging for error handling
+from pathlib import Path                                     # <-- Modern path handling
+
+# IMPORTS | Tkinter GUI components
+# --------------------------------------------------------------------------------------------------
+import tkinter as tk                                         # <-- Main GUI framework
+from tkinter import ttk, filedialog, messagebox              # <-- GUI dialogs and widgets
+from tkinter.scrolledtext import ScrolledText                # <-- Scrollable text widget
+
+# IMPORTS | Optional PIL dependency for image features
+# --------------------------------------------------------------------------------------------------
+try:
+    from PIL import Image, ImageDraw, ImageFont              # <-- Image processing library
+    PIL_AVAILABLE = True                                     # <-- Flag for PIL availability
+except Exception:
+    PIL_AVAILABLE = False                                    # <-- Fallback when PIL not found
+
+# IMPORTS | Icon Loader setup for the script
+# --------------------------------------------------------------------------------------------------
+# Add the common local code libraries directory to sys.path for imports                                   # <-- This adds the icon loader path
+parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))                                 # <-- Navigate up three levels to 02_Python root
+icon_loader_path = os.path.join(parent_dir, '02__Python__CommonLocalCodeLibs')                           # <-- Build path to common local code libs
+if icon_loader_path not in sys.path:                                                                     # <-- This checks if path exists in sys.path
+    sys.path.insert(0, os.path.abspath(icon_loader_path))                                                # <-- This adds path at beginning for priority
+    
+try:
+    from Py_CoreCommonUtils__IconLoaderAndHandling import set_noble_icon                              # type: ignore  # <-- This imports Noble icon handler
+    logging.info("Successfully imported Noble Architecture icon loader")                              # <-- Log successful import
+except ImportError as e:                                                                             # <-- This catches import errors
+    logging.warning(f"Could not import icon handling module: {e}. Windows will use default icons.")  # <-- This logs warning
+    def set_noble_icon(window):                                                                       # <-- This creates fallback function
+        pass                                                                                         # <-- This does nothing as fallback
+
+# endregion -------------------------------------------------------------------
+
+
+# ==================================================================================================
+# REGION | CLASS DEFINITIONS - Main File Tree Application
+# ==================================================================================================
+class FileTreeApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Project File Tree Viewer")                           # <-- Main window title
+        self.geometry("1200x720")                                        # <-- Default window size
+        self.minsize(980, 620)                                           # <-- Minimum window dimensions
+        
+        # Apply custom logo
+        set_noble_icon(self)                                            # <-- Apply Vale custom icon
+
+        self.selected_directory = None                                   # <-- Currently selected project directory
+        self.tree_text_content = ""                                     # <-- Right-side text without sizes
+        self.last_rendered_image = None                                  # <-- PIL Image for clipboard/export
+
+        self._initialize_user_interface()                                # <-- Build the GUI components
+
+    # METHOD | Initialize and build the main user interface
+    # ------------------------------------------------------------
+    def _initialize_user_interface(self):
+        toolbar_frame = ttk.Frame(self, padding=(8, 6))       # <-- Main toolbar container
+        toolbar_frame.pack(side=tk.TOP, fill=tk.X)            # <-- Pack toolbar at top
+
+        ttk.Button(toolbar_frame, text="Select Directory", command=self.select_directory).pack(side=tk.LEFT, padx=(0, 6))     # <-- Directory selection button
+        ttk.Button(toolbar_frame, text="Refresh", command=self.refresh_view).pack(side=tk.LEFT, padx=6)                        # <-- Refresh current view
+        ttk.Button(toolbar_frame, text="Copy Log Text", command=self.copy_text_to_clipboard).pack(side=tk.LEFT, padx=6)        # <-- Copy text content
+        ttk.Button(toolbar_frame, text="Copy Tree Image", command=self.copy_image_to_clipboard).pack(side=tk.LEFT, padx=6)     # <-- Copy as image
+        ttk.Button(toolbar_frame, text="Save Tree Image", command=self.save_tree_as_image).pack(side=tk.LEFT, padx=6)          # <-- Save image file
+        ttk.Button(toolbar_frame, text="Export Index__FileTree.txt", command=self.export_text_file).pack(side=tk.LEFT, padx=6) # <-- Export text file
+
+        # INTERFACE | Main paned window with left tree and right text
+        main_paned_window = ttk.PanedWindow(self, orient=tk.HORIZONTAL)   # <-- Horizontal split layout
+        main_paned_window.pack(fill=tk.BOTH, expand=True, padx=8, pady=8) # <-- Fill entire window
+
+        # INTERFACE | Left panel - Interactive tree view with file sizes
+        left_panel_frame = ttk.Frame(main_paned_window)                  # <-- Left side container
+        main_paned_window.add(left_panel_frame, weight=1)                # <-- Add to paned window
+
+        self.interactive_tree = ttk.Treeview(left_panel_frame, columns=("size",), show="tree headings", selectmode="browse")  # <-- Main tree widget
+        self.interactive_tree.heading("#0", text="Name")                 # <-- Name column header
+        self.interactive_tree.heading("size", text="Size")               # <-- Size column header
+        self.interactive_tree.column("#0", width=520, stretch=True)      # <-- Name column width
+        self.interactive_tree.column("size", width=110, anchor=tk.E, stretch=False)  # <-- Size column width
+
+        vertical_scrollbar = ttk.Scrollbar(left_panel_frame, orient=tk.VERTICAL, command=self.interactive_tree.yview)     # <-- Vertical scroll
+        horizontal_scrollbar = ttk.Scrollbar(left_panel_frame, orient=tk.HORIZONTAL, command=self.interactive_tree.xview) # <-- Horizontal scroll
+        self.interactive_tree.configure(yscroll=vertical_scrollbar.set, xscroll=horizontal_scrollbar.set)                 # <-- Link scrollbars
+
+        self.interactive_tree.grid(row=0, column=0, sticky="nsew")       # <-- Position tree widget
+        vertical_scrollbar.grid(row=0, column=1, sticky="ns")            # <-- Position vertical scrollbar
+        horizontal_scrollbar.grid(row=1, column=0, columnspan=2, sticky="ew")  # <-- Position horizontal scrollbar
+        left_panel_frame.rowconfigure(0, weight=1)                       # <-- Configure row expansion
+        left_panel_frame.columnconfigure(0, weight=1)                    # <-- Configure column expansion
+
+        # INTERFACE | Right panel - Text view without file sizes
+        right_panel_frame = ttk.Frame(main_paned_window)                 # <-- Right side container
+        main_paned_window.add(right_panel_frame, weight=1)               # <-- Add to paned window
+
+        self.text_display = ScrolledText(right_panel_frame, wrap=tk.NONE, undo=False, font=("Consolas", 12))  # <-- Text display widget
+        self.text_display.pack(fill=tk.BOTH, expand=True)                # <-- Fill right panel
+
+        # INTERFACE | Status bar at bottom
+        self.status_text = tk.StringVar()                                # <-- Status text variable
+        ttk.Label(self, textvariable=self.status_text, anchor="w", padding=(8, 3)).pack(side=tk.BOTTOM, fill=tk.X)  # <-- Status label
+        self._update_status_display("Select a directory to begin.")      # <-- Initial status message
+
+    # ==================================================================================================
+    # REGION | USER INTERFACE METHODS - Directory and View Management
+    # ==================================================================================================
+    
+    # METHOD | Handle directory selection via file dialog
+    # --------------------------------------------------------------------------------------------------
+    def select_directory(self):
+        initial_directory = str(Path.home())                             # <-- Start at user home directory
+        selected_path = filedialog.askdirectory(title="Select Project Directory", initialdir=initial_directory, mustexist=True)  # <-- Open directory dialog
+        if selected_path:
+            self.selected_directory = Path(selected_path)                # <-- Store selected path
+            self._update_status_display(f"Selected: {self.selected_directory}")  # <-- Update status
+            self.build_tree_views()                                      # <-- Generate tree views
+
+    # METHOD | Refresh the current directory view
+    # ------------------------------------------------------------
+    def refresh_view(self):
+        if not self.selected_directory:                                  # <-- Check if directory selected
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("No Directory", "Please select a directory first.")  # <-- Show warning dialog
+            temp_root.destroy()
+            return
+        self.build_tree_views()                                          # <-- Rebuild tree views
+
+    # METHOD | Copy tree text content to system clipboard
+    # ------------------------------------------------------------
+    def copy_text_to_clipboard(self):
+        tree_text = self.tree_text_content.strip()                       # <-- Get clean tree text
+        if not tree_text:                                                # <-- Check if content exists
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("Nothing To Copy", "No tree content available yet.")  # <-- Show warning
+            temp_root.destroy()
+            return
+        self.clipboard_clear()                                           # <-- Clear existing clipboard
+        self.clipboard_append(tree_text)                                 # <-- Add text to clipboard
+        self.update()                                                    # <-- Update GUI
+        # Create temporary window for message box with custom icon
+        temp_root = tk.Tk()
+        temp_root.withdraw()
+        set_noble_icon(temp_root)
+        messagebox.showinfo("Copied", "Tree text copied to clipboard.")  # <-- Confirm success
+        temp_root.destroy()
+
+    # METHOD | Copy tree as image to system clipboard
+    # ------------------------------------------------------------
+    def copy_image_to_clipboard(self):
+        if not PIL_AVAILABLE:                                            # <-- Check PIL availability
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showerror("Pillow Required", "Image features require Pillow.\npip install Pillow")  # <-- Show error
+            temp_root.destroy()
+            return
+        if not self.tree_text_content.strip():                           # <-- Check if content exists
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("No Tree", "Generate the tree first by selecting a directory.")  # <-- Show warning
+            temp_root.destroy()
+            return
+
+        rendered_image = self._render_tree_text_as_image(self.tree_text_content)  # <-- Create image from text
+        self.last_rendered_image = rendered_image                        # <-- Store for future use
+
+        current_system = platform.system().lower()                       # <-- Detect operating system
+        if "windows" in current_system:                                  # <-- Windows-specific clipboard
+            copy_success = self._copy_image_to_windows_clipboard(rendered_image)  # <-- Use Windows API
+            if copy_success:
+                # Create temporary window for message box with custom icon
+                temp_root = tk.Tk()
+                temp_root.withdraw()
+                set_noble_icon(temp_root)
+                messagebox.showinfo("Copied", "Tree image copied to clipboard.")  # <-- Success message
+                temp_root.destroy()
+            else:
+                # Create temporary window for message box with custom icon
+                temp_root = tk.Tk()
+                temp_root.withdraw()
+                set_noble_icon(temp_root)
+                messagebox.showerror("Copy Failed", "Could not copy image to clipboard.")  # <-- Error message
+                temp_root.destroy()
+        else:                                                            # <-- Non-Windows fallback
+            temp_png_path = Path(os.path.expanduser("~")) / f"FileTree_{int(time.time())}.png"  # <-- Temp file path
+            rendered_image.save(temp_png_path)                           # <-- Save to file instead
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo(
+                "Saved Instead",
+                f"Clipboard image copy is only implemented on Windows.\nSaved image to:\n{temp_png_path}"
+            )                                                            # <-- Inform user of fallback
+            temp_root.destroy()
+
+    # METHOD | Save tree as image file via file dialog
+    # ------------------------------------------------------------
+    def save_tree_as_image(self):
+        if not PIL_AVAILABLE:                                            # <-- Check PIL availability
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showerror("Pillow Required", "Image features require Pillow.\npip install Pillow")  # <-- Show error
+            temp_root.destroy()
+            return
+        if not self.tree_text_content.strip():                           # <-- Check if content exists
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("No Tree", "Generate the tree first by selecting a directory.")  # <-- Show warning
+            temp_root.destroy()
+            return
+
+        rendered_image = self._render_tree_text_as_image(self.tree_text_content)  # <-- Create image from text
+        self.last_rendered_image = rendered_image                        # <-- Store for future use
+
+        save_file_path = filedialog.asksaveasfilename(
+            title="Save Tree Image",
+            defaultextension=".png",
+            filetypes=[("PNG Image", "*.png")],
+            initialfile="FileTree.png"
+        )                                                                # <-- Open save dialog
+        if save_file_path:
+            try:
+                rendered_image.save(save_file_path)                      # <-- Save image to file
+                # Create temporary window for message box with custom icon
+                temp_root = tk.Tk()
+                temp_root.withdraw()
+                set_noble_icon(temp_root)
+                messagebox.showinfo("Saved", f"Image saved to:\n{save_file_path}")  # <-- Success message
+                temp_root.destroy()
+            except Exception as error:
+                # Create temporary window for message box with custom icon
+                temp_root = tk.Tk()
+                temp_root.withdraw()
+                set_noble_icon(temp_root)
+                messagebox.showerror("Save Failed", str(error))          # <-- Error message
+                temp_root.destroy()
+
+    # METHOD | Export tree text to Index__FileTree.txt in selected directory
+    # ------------------------------------------------------------
+    def export_text_file(self):
+        if not self.selected_directory:                                  # <-- Check if directory selected
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("No Directory", "Please select a directory first.")  # <-- Show warning
+            temp_root.destroy()
+            return
+        if not self.tree_text_content.strip():                           # <-- Check if content exists
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("No Tree", "Generate the tree first by selecting a directory.")  # <-- Show warning
+            temp_root.destroy()
+            return
+        export_file_path = self.selected_directory / "Index__FileTree.txt"  # <-- Create export path
+        try:
+            with open(export_file_path, "w", encoding="utf-8") as text_file:  # <-- Open file for writing
+                text_file.write(self.tree_text_content.rstrip() + "\n")  # <-- Write clean content
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showinfo("Exported", f"Exported tree to:\n{export_file_path}")  # <-- Success message
+            temp_root.destroy()
+        except Exception as error:
+            # Create temporary window for message box with custom icon
+            temp_root = tk.Tk()
+            temp_root.withdraw()
+            set_noble_icon(temp_root)
+            messagebox.showerror("Export Failed", str(error))            # <-- Error message
+            temp_root.destroy()
+
+    # endregion -------------------------------------------------------------------
+
+    # ==================================================================================================
+    # REGION | TREE BUILDING METHODS - Directory Scanning and View Population
+    # ==================================================================================================
+    
+    # METHOD | Build and populate both tree view and text display
+    # --------------------------------------------------------------------------------------------------
+    def build_tree_views(self):
+        root_directory = self.selected_directory                         # <-- Get selected directory
+        self.interactive_tree.delete(*self.interactive_tree.get_children())  # <-- Clear existing tree
+        self.text_display.delete("1.0", tk.END)                          # <-- Clear text display
+
+        # PROCESS | Scan directory structure
+        directory_structure = self._scan_directory_structure(root_directory)  # <-- Get directory data
+
+        # POPULATE | Left tree view with file sizes
+        root_tree_id = self.interactive_tree.insert("", "end", text=f"{root_directory.name}/", values=("",), open=True)  # <-- Root node
+        self._populate_interactive_tree(root_tree_id, directory_structure)  # <-- Fill tree widget
+
+        # POPULATE | Right text display without sizes
+        text_lines = [f"{root_directory.name}/"]                         # <-- Start with root name
+        self._build_text_tree_structure(text_lines, directory_structure, prefix="", unicode_branches=True, include_sizes=False)  # <-- Build text tree
+        self.tree_text_content = "\n".join(text_lines)                   # <-- Join lines into content
+        self.text_display.insert("1.0", self.tree_text_content)          # <-- Display in text widget
+
+        self._update_status_display(f"Scanned: {root_directory}")        # <-- Update status bar
+
+    # METHOD | Scan directory and return nested structure with file data
+    # ------------------------------------------------------------
+    def _scan_directory_structure(self, root_path: Path):
+        """
+        Returns a nested directory structure:
+        {
+            "dirs": { "dirname": {...}, ... },
+            "files": [ (name, size_in_bytes), ... ]
+        }
+        """
+        def _recursive_scan(current_path: Path):                         # <-- Inner recursive function
+            scan_data = {"dirs": {}, "files": []}                        # <-- Initialize data structure
+            try:
+                directory_entries = sorted(current_path.iterdir(), key=lambda p: (p.is_file(), p.name.lower()))  # <-- Sort dirs first, then files
+            except PermissionError:
+                return scan_data                                         # <-- Return empty on permission error
+            
+            for entry in directory_entries:                              # <-- Process each entry
+                if entry.is_dir():                                       # <-- Handle directories
+                    scan_data["dirs"][entry.name] = _recursive_scan(entry)  # <-- Recursively scan subdirectory
+                elif entry.is_file():                                    # <-- Handle files
+                    try:
+                        file_size = entry.stat().st_size                 # <-- Get file size
+                    except Exception:
+                        file_size = 0                                    # <-- Default to 0 on error
+                    scan_data["files"].append((entry.name, file_size))   # <-- Add file to list
+            return scan_data                                             # <-- Return collected data
+
+        return _recursive_scan(root_path)                                # <-- Start recursive scan
+
+    # METHOD | Populate the interactive tree view with directories and files
+    # ------------------------------------------------------------
+    def _populate_interactive_tree(self, parent_tree_id, directory_node):
+        # POPULATE | Add directories first
+        for directory_name in sorted(directory_node["dirs"].keys(), key=lambda s: s.lower()):  # <-- Sort directories alphabetically
+            child_tree_id = self.interactive_tree.insert(parent_tree_id, "end", text=f"{directory_name}/", values=("",), open=False)  # <-- Insert directory node
+            self._populate_interactive_tree(child_tree_id, directory_node["dirs"][directory_name])  # <-- Recursively populate subdirectory
+
+        # POPULATE | Add files with sizes
+        for file_name, file_size in sorted(directory_node["files"], key=lambda t: t[0].lower()):  # <-- Sort files alphabetically
+            self.interactive_tree.insert(parent_tree_id, "end", text=file_name, values=(self._format_file_size(file_size),))  # <-- Insert file node with size
+
+    # METHOD | Build text-based tree structure with ASCII or Unicode characters
+    # ------------------------------------------------------------
+    def _build_text_tree_structure(self, output_lines, directory_node, prefix="", unicode_branches=True, include_sizes=False):
+        """
+        Builds a tree with either Unicode branches (│ ├ └) or ASCII (| + -).
+        File sizes may be included or suppressed based on include_sizes parameter.
+        Includes visual spacing lines between directory sections for improved readability.
+        """
+        # ORGANIZE | Prepare directory and file items
+        directory_items = [(name, directory_node["dirs"][name]) for name in sorted(directory_node["dirs"].keys(), key=lambda s: s.lower())]  # <-- Directory list
+        file_items = sorted(directory_node["files"], key=lambda t: t[0].lower())  # <-- File list
+        total_items = len(directory_items) + len(file_items)             # <-- Total item count
+
+        # DEFINE | Branch characters based on unicode_branches setting
+        if unicode_branches:                                             # <-- Use Unicode box-drawing characters
+            def get_branch_char_dir(item_index): return "└── " if item_index == total_items - 1 else "├── "  # <-- Directory branch connector (2 dashes)
+            def get_branch_char_file(item_index): return "└──── " if item_index == total_items - 1 else "├──── "  # <-- File branch connector (4 dashes)
+            def get_next_prefix(item_index): return "    " if item_index == total_items - 1 else "│   "  # <-- Prefix for next level
+            spacing_char = "│"                                           # <-- Unicode vertical line for spacing
+        else:                                                            # <-- Use ASCII characters
+            def get_branch_char_dir(item_index): return "+-- " if item_index == total_items - 1 else "+-- "       # <-- ASCII directory branch (2 dashes)
+            def get_branch_char_file(item_index): return "+---- " if item_index == total_items - 1 else "+---- "  # <-- ASCII file branch (4 dashes)
+            def get_next_prefix(item_index): return "    " if item_index == total_items - 1 else "|   "   # <-- ASCII prefix   
+            spacing_char = "|"                                           # <-- ASCII vertical line for spacing
+
+        current_index = 0                                                # <-- Current item index
+        
+        # PROCESS | Add directories to tree with visual spacing
+        for dir_index, (directory_name, directory_subnode) in enumerate(directory_items):
+            # Add spacing line before directory (except first)
+            if dir_index > 0:                                            # <-- Skip spacing for first directory
+                output_lines.append(f"{prefix}{spacing_char}")           # <-- Add vertical spacing line
+            
+            output_lines.append(f"{prefix}{get_branch_char_dir(current_index)}{directory_name}/")  # <-- Add directory line with 2 dashes
+            self._build_text_tree_structure(output_lines, directory_subnode, prefix + get_next_prefix(current_index), unicode_branches, include_sizes)  # <-- Recurse into subdirectory
+            current_index += 1                                           # <-- Increment index
+
+        # PROCESS | Add spacing before files if directories exist
+        if directory_items and file_items:                               # <-- Add spacing between dirs and files
+            output_lines.append(f"{prefix}{spacing_char}")               # <-- Add vertical spacing line
+
+        # PROCESS | Add files to tree
+        for file_name, file_size in file_items:
+            if include_sizes:                                            # <-- Include file size if requested
+                tree_line = f"{prefix}{get_branch_char_file(current_index)}{file_name} ({self._format_file_size(file_size)})"
+            else:                                                        # <-- Exclude file size
+                tree_line = f"{prefix}{get_branch_char_file(current_index)}{file_name}"
+            output_lines.append(tree_line)                               # <-- Add file line with 4 dashes
+            current_index += 1                                           # <-- Increment index
+
+    # HELPER FUNC | Format file size in human-readable format
+    # ------------------------------------------------------------
+    @staticmethod
+    def _format_file_size(size_in_bytes: int) -> str:
+        if size_in_bytes < 1024:                                         # <-- Less than 1 KB
+            return f"{size_in_bytes:.1f}B"                               # <-- Display in bytes
+        kilobytes = size_in_bytes / 1024.0                               # <-- Convert to KB
+        if kilobytes < 1024:                                             # <-- Less than 1 MB
+            return f"{kilobytes:.0f}KB" if kilobytes >= 10 else f"{kilobytes:.1f}KB"  # <-- Display in KB
+        megabytes = kilobytes / 1024.0                                   # <-- Convert to MB
+        return f"{megabytes:.0f}MB" if megabytes >= 10 else f"{megabytes:.1f}MB"  # <-- Display in MB
+
+    # endregion -------------------------------------------------------------------
+
+    # ==================================================================================================
+    # REGION | IMAGE RENDERING METHODS - Font Handling and High-Quality Rendering
+    # ==================================================================================================
+    
+    # METHOD | Render tree text as high-quality image with proper font handling
+    # --------------------------------------------------------------------------------------------------
+    def _render_tree_text_as_image(self, tree_text: str) -> "Image.Image":
+        """
+        High quality image rendering process:
+        - Attempts to use robust monospace font with box-drawing glyphs.
+        - Renders at 2x scale then downsamples with LANCZOS for crisp output.
+        - Falls back to ASCII branches if no suitable font is found.
+        """
+        if not PIL_AVAILABLE:                                            # <-- Check PIL availability
+            raise RuntimeError("Pillow library not available")           # <-- Raise error if missing
+
+        # FONT | Select appropriate font and check Unicode support
+        selected_font, unicode_supported = self._select_optimal_font_for_box_drawing()  # <-- Get best font
+
+        # FALLBACK | Rebuild text with ASCII if Unicode not supported
+        if not unicode_supported:                                        # <-- Check Unicode support
+            # Rebuild tree structure using ASCII characters
+            if not self.selected_directory:                              # <-- Check if directory available
+                text_for_rendering = tree_text                           # <-- Use existing text
+            else:
+                directory_structure = self._scan_directory_structure(self.selected_directory)  # <-- Rescan directory
+                text_lines = [f"{self.selected_directory.name}/"]         # <-- Start with root
+                self._build_text_tree_structure(text_lines, directory_structure, prefix="", unicode_branches=False, include_sizes=False)  # <-- Build ASCII tree
+                text_for_rendering = "\n".join(text_lines)                # <-- Join lines
+        else:
+            text_for_rendering = tree_text                               # <-- Use Unicode text
+
+        text_lines = text_for_rendering.rstrip("\n").split("\n")         # <-- Split into lines
+        if not text_lines:                                               # <-- Handle empty content
+            text_lines = ["(empty)"]                                     # <-- Default content
+
+        # RENDERING | Configure supersampling for crisp output
+        supersampling_scale = 2                                          # <-- 2x supersampling
+        scaled_font = self._scale_font_for_supersampling(selected_font, supersampling_scale)  # <-- Scale font
+
+        # MEASUREMENT | Calculate required image dimensions
+        measurement_image = Image.new("L", (1, 1), 255)                 # <-- Dummy image for measurement
+        measurement_draw = ImageDraw.Draw(measurement_image)             # <-- Drawing context
+        maximum_width = 0                                                # <-- Track maximum line width
+        line_height = 0                                                  # <-- Track line height
+        
+        for text_line in text_lines:                                    # <-- Measure each line
+            text_bbox = measurement_draw.textbbox((0, 0), text_line, font=scaled_font)  # <-- Get bounding box
+            line_width = text_bbox[2] - text_bbox[0]                     # <-- Calculate width
+            current_line_height = text_bbox[3] - text_bbox[1]            # <-- Calculate height
+            maximum_width = max(maximum_width, line_width)               # <-- Update maximum width
+            line_height = max(line_height, current_line_height)          # <-- Update line height
+
+        image_padding = 28 * supersampling_scale                        # <-- Calculate padding
+        line_spacing = int(line_height * 0.20)                          # <-- Extra spacing for readability
+        total_width = maximum_width + image_padding * 2                 # <-- Total image width
+        total_height = (line_height + line_spacing) * len(text_lines) + image_padding * 2 - line_spacing  # <-- Total image height
+
+        # RENDERING | Create high-resolution image and render text
+        high_res_image = Image.new("L", (total_width, total_height), 255)  # <-- Create 2x image
+        high_res_draw = ImageDraw.Draw(high_res_image)                   # <-- Drawing context
+        current_y_position = image_padding                               # <-- Starting Y position
+        
+        for text_line in text_lines:                                    # <-- Render each line
+            high_res_draw.text((image_padding, current_y_position), text_line, fill=0, font=scaled_font)  # <-- Draw text
+            current_y_position += line_height + line_spacing             # <-- Move to next line
+
+        # DOWNSAMPLING | Resize to final size with high-quality filtering
+        final_image = high_res_image.resize((total_width // supersampling_scale, total_height // supersampling_scale), Image.LANCZOS).convert("RGB")  # <-- Downsample to RGB
+        return final_image                                               # <-- Return final image
+
+    # METHOD | Select optimal font for box-drawing characters
+    # ------------------------------------------------------------
+    def _select_optimal_font_for_box_drawing(self):
+        """
+        Attempt to load a monospace font with box-drawing glyph support.
+        Returns (font_object, supports_unicode_branches: bool)
+        """
+        font_candidates = []                                              # <-- List of font paths to try
+
+        current_system = platform.system().lower()                      # <-- Detect operating system
+        
+        # SYSTEM | Windows font paths
+        if "windows" in current_system:                                  # <-- Windows-specific fonts
+            font_candidates += [
+                r"C:\Windows\Fonts\consola.ttf",                        # <-- Consolas font
+                r"C:\Windows\Fonts\lucon.ttf",                          # <-- Lucida Console
+                r"C:\Windows\Fonts\cour.ttf",                           # <-- Courier New
+            ]
+        # SYSTEM | macOS font paths
+        elif "darwin" in current_system:                                 # <-- macOS-specific fonts
+            font_candidates += [
+                "/System/Library/Fonts/Menlo.ttc",                       # <-- System Menlo
+                "/Library/Fonts/Menlo.ttc",                              # <-- Library Menlo
+                "/Library/Fonts/Courier New.ttf",                        # <-- Courier New
+            ]
+        # SYSTEM | Linux font paths
+        else:                                                            # <-- Linux common fonts
+            font_candidates += [
+                "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",   # <-- DejaVu Sans Mono
+                "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",  # <-- Liberation Mono
+            ]
+
+        # FALLBACK | Generic font names with sizes
+        generic_font_names = [
+            ("DejaVuSansMono.ttf", 14),                                  # <-- DejaVu file name
+            ("DejaVu Sans Mono", 14),                                    # <-- DejaVu font name
+            ("Consolas", 14),                                            # <-- Consolas font name
+            ("Menlo", 14),                                               # <-- Menlo font name
+            ("Courier New", 15),                                         # <-- Courier New font name
+        ]
+
+        # TRY | Explicit font file paths first
+        for font_path in font_candidates:                               # <-- Try each candidate path
+            try:
+                loaded_font = ImageFont.truetype(font_path, 14)          # <-- Load font at size 14
+                if self._check_font_has_box_drawing_characters(loaded_font):  # <-- Check Unicode support
+                    return loaded_font, True                             # <-- Return with Unicode support
+                # Keep font even if missing glyphs, but mark as no Unicode
+                return loaded_font, False                                # <-- Return without Unicode support
+            except Exception:
+                pass                                                     # <-- Continue to next candidate
+
+        # TRY | Generic font names
+        for font_name, font_size in generic_font_names:                 # <-- Try each generic name
+            try:
+                loaded_font = ImageFont.truetype(font_name, font_size)   # <-- Load font by name
+                return (loaded_font, self._check_font_has_box_drawing_characters(loaded_font))  # <-- Return with Unicode check
+            except Exception:
+                continue                                                 # <-- Continue to next candidate
+
+        # FALLBACK | Default bitmap font as last resort
+        default_font = ImageFont.load_default()                         # <-- Load system default
+        return default_font, False                                      # <-- Return without Unicode support
+
+    # HELPER FUNC | Check if font supports box-drawing characters
+    # ------------------------------------------------------------
+    @staticmethod
+    def _check_font_has_box_drawing_characters(font) -> bool:
+        """
+        Heuristic check for box-drawing glyph support in the given font.
+        Tests if common Unicode box-drawing characters render properly.
+        """
+        try:
+            # Test Unicode box-drawing characters
+            test_characters = "│─└├"                              # <-- Vertical, horizontal, corner, junction
+            character_mask = font.getmask(test_characters)               # <-- Get font mask
+            return character_mask.size[0] > 0 and character_mask.size[1] > 0  # <-- Check if mask has content
+        except Exception:
+            return False                                                 # <-- Return False on any error
+
+    # HELPER FUNC | Scale font for supersampling rendering
+    # ------------------------------------------------------------
+    @staticmethod
+    def _scale_font_for_supersampling(font, scale_factor: int):
+        """
+        Create a larger version of the font for supersampling if possible.
+        Falls back to original font if scaling is not supported.
+        """
+        # TRY | Scale TrueType font using path attribute (Pillow >= 10)
+        try:
+            if hasattr(font, "path"):                                    # <-- Check if font has path attribute
+                base_font_size = getattr(font, "size", 14)               # <-- Get current font size
+                return ImageFont.truetype(font.path, int(base_font_size * scale_factor))  # <-- Create scaled font
+        except Exception:
+            pass                                                         # <-- Continue to next method
+
+        # TRY | Alternative scaling method using font attributes
+        try:
+            base_font_size = getattr(font, "size", 14)                   # <-- Get base size
+            font_path = getattr(font, "path", None)                      # <-- Get font path
+            if font_path:                                                # <-- Check if path available
+                return ImageFont.truetype(font_path, int(base_font_size * scale_factor))  # <-- Create scaled font
+        except Exception:
+            pass                                                         # <-- Continue to fallback
+
+        # FALLBACK | Return original font if scaling fails
+        return font                                                      # <-- Return original (bitmap fonts cannot scale)
+
+    # METHOD | Copy image to Windows clipboard using native API
+    # ------------------------------------------------------------
+    @staticmethod
+    def _copy_image_to_windows_clipboard(image_to_copy: "Image.Image") -> bool:
+        """
+        Copy a PIL image to the Windows clipboard as CF_DIB format.
+        Strips the BMP header to create proper DIB data for the clipboard.
+        """
+        try:
+            import ctypes                                                # <-- Windows API access
+            from ctypes import windll                                    # <-- Windows DLL access
+
+            CF_DIB_FORMAT = 8                                            # <-- Clipboard format constant
+            GMEM_MOVEABLE_FLAG = 0x0002                                  # <-- Memory allocation flag
+
+            # CONVERT | Create BMP data and strip header for DIB format
+            with io.BytesIO() as bmp_output:                             # <-- Create memory buffer
+                image_to_copy.convert("RGB").save(bmp_output, "BMP")     # <-- Save as BMP
+                dib_data = bmp_output.getvalue()[14:]                    # <-- Strip 14-byte BMP header for DIB
+
+            # ALLOCATE | Create global memory for clipboard data
+            global_memory_handle = windll.kernel32.GlobalAlloc(GMEM_MOVEABLE_FLAG, len(dib_data))  # <-- Allocate memory
+            if not global_memory_handle:                                 # <-- Check allocation success
+                return False                                             # <-- Return failure
+                
+            memory_pointer = windll.kernel32.GlobalLock(global_memory_handle)  # <-- Lock memory
+            if not memory_pointer:                                       # <-- Check lock success
+                windll.kernel32.GlobalFree(global_memory_handle)        # <-- Free on failure
+                return False                                             # <-- Return failure
+
+            # COPY | Move image data to allocated memory
+            ctypes.memmove(memory_pointer, dib_data, len(dib_data))     # <-- Copy data to memory
+            windll.kernel32.GlobalUnlock(global_memory_handle)          # <-- Unlock memory
+
+            # CLIPBOARD | Set data to Windows clipboard
+            if windll.user32.OpenClipboard(0):                           # <-- Open clipboard
+                try:
+                    windll.user32.EmptyClipboard()                       # <-- Clear existing content
+                    windll.user32.SetClipboardData(CF_DIB_FORMAT, global_memory_handle)  # <-- Set image data
+                    operation_success = True                             # <-- Mark success
+                finally:
+                    windll.user32.CloseClipboard()                       # <-- Always close clipboard
+                return operation_success                                 # <-- Return operation result
+            else:
+                windll.kernel32.GlobalFree(global_memory_handle)         # <-- Free memory on clipboard failure
+                return False                                             # <-- Return failure
+        except Exception:
+            return False                                                 # <-- Return failure on any exception
+
+    # endregion -------------------------------------------------------------------
+
+    # ==================================================================================================
+    # REGION | UTILITY METHODS - Status Updates and Helper Functions
+    # ==================================================================================================
+    
+    # HELPER FUNC | Update status bar display text
+    # --------------------------------------------------------------------------------------------------
+    def _update_status_display(self, status_message: str):
+        self.status_text.set(status_message)                            # <-- Update status bar text
+
+    # endregion -------------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+
+# ==================================================================================================
+# REGION | MAIN EXECUTION - Application Entry Point and Startup
+# ==================================================================================================
+
+# FUNCTION | Main application entry point
+# --------------------------------------------------------------------------------------------------
+def main():
+    if not PIL_AVAILABLE:                                               # <-- Check PIL availability
+        print("Note: Pillow not found. Image features will be disabled.\nInstall with: pip install Pillow", file=sys.stderr)  # <-- Warn about missing PIL
+    
+    application = FileTreeApp()                                         # <-- Create main application
+    application.mainloop()                                              # <-- Start GUI event loop
+
+
+# BLOCK | Main execution block
+# ------------------------------------------------------------
+if __name__ == "__main__":
+    main()                                                              # <-- Run main function
+
+# endregion -------------------------------------------------------------------
+
+# --------------------------------------------------------------------------------------------------
+# END OF FILE
+# --------------------------------------------------------------------------------------------------

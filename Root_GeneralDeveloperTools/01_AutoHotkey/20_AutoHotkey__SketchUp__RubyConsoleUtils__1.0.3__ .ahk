@@ -1,0 +1,160 @@
+#Requires AutoHotkey v1.1+  ; Ensure you're using AHK v1.1+ for UTF-8 support
+#Warn  ; Enables warnings to assist with detecting common errors.
+SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+#SingleInstance, Force
+
+; =============================================================================
+; PYTHON SCRIPTS ROOT DIRECTORY - SINGLE SOURCE OF TRUTH
+; =============================================================================
+; All Python script references use relative paths from this root directory
+PYTHON_ROOT := "D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python"
+; =============================================================================
+
+; region  |  - - - - - - - - - - - - - - - - - - - - - - - - |  VERSION NOTES  | - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  |
+
+    ; Version 0.9.0 | 19-Sep-2025 | Added new Hotstring - SketchUp Ruby Console Clear Utility
+    ; Version 1.0.0 | 19-Sep-2025 | Added Util.ReportTags Hotstring - this will return a list of all tags in the current model
+    ; Version 1.0.1 | 20-Sep-2025 | Added SimpleWindowMaker.Ceate3dObject__PlaneToWindow - this will create a simple window in SketchUp
+    ; Version 1.0.2 | 20-Sep-2025 | Added Na__InsertPrimatives.Na__InsertPrimatives__InsertCube - Interactive tool to place primitive cube with 5mm grid snapping
+
+; |--------------------------------------------------------------------------------------------------------------------------------|
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+; #region  - - - |  Clear Ruby Console  | - -
+::;r_Clear::
+::;r__Clear::
+::;rb_Clear::
+::;rb__Clear::
+::;r_ClearConsole::
+::;r__ClearConsole::
+::;rb_ClearConsole::
+::;rb__ClearConsole::
+{
+    SendRaw, def clear_console; puts "\n" * 100; end; clear_console
+    Sleep, 50
+    Send, {Enter}
+    return
+}
+; #endregion | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+; #region  - - - - |  Util.ReportTags  | - - - - - 
+; Util.ReportTags - this will return a list of all tags in the current model
+::;r_ReportTags::
+::;r__ReportTags::
+::;rb_ReportTags::
+::;rb__ReportTags::
+{
+    SendRaw, Util.ReportTags
+    Sleep, 50
+    Send, {Enter}
+    return
+}
+; #endregion | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+; #region  - - - - |  Util.MoveDeepNestedTagsToUntagged  | - - - - - 
+; Util.MoveDeepNestedTagsToUntagged - this will move deeply nested tags to the untagged layer
+::;r_UntagSelection::
+::;r__UntagSelection::
+::;rb_UntagSelection::
+::;rb__UntagSelection::
+::;r_UntagSelectedEntities::
+::;r__UntagSelectedEntities::
+::;rb_UntagSelectedEntities::
+::;rb__UntagSelectedEntities::
+
+{
+    SendRaw, Util.MoveDeepNestedTagsToUntagged
+    Sleep, 50
+    Send, {Enter}
+    return
+}
+; #endregion | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+; #region  - - - - |  SimpleWindowMaker  | - - - - - 
+; SimpleWindowMaker.Ceate3dObject__PlaneToWindow - this will create a window from a plane
+::;r_CreateWindow::
+::;r__CreateWindow::
+::;rb_CreateWindow::
+::;rb__CreateWindow::
+::;r_MakeWindow::
+::;r__MakeWindow::
+::;rb_MakeWindow::
+::;rb__MakeWindow::
+::;r_PlaneToWindow::
+::;r__PlaneToWindow::
+::;rb_PlaneToWindow::
+::;rb__PlaneToWindow::
+::;r_MakeSimpleWindow::
+::;r__MakeSimpleWindow::
+::;rb_MakeSimpleWindow::
+::;rb__MakeSimpleWindow::
+{
+    SendRaw, SimpleWindowMaker.Ceate3dObject__PlaneToWindow
+    Sleep, 60
+    Send, {Enter}
+    return
+}
+; #endregion | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+; #region  - - - - |  Util.InsertAnchorPoint  | - - - - - 
+; Util.InsertAnchorPoint - Interactive tool to place anchor point crosshairs
+::;r_InsertAnchorPoint::
+::;r__InsertAnchorPoint::
+::;rb_InsertAnchorPoint::
+::;rb__InsertAnchorPoint::
+::;r_InsertAnchor::
+::;r__InsertAnchor::
+::;rb_InsertAnchor::
+::;rb__InsertAnchor::
+::;r_AddAnchorPoint::
+::;r__AddAnchorPoint::
+::;rb_AddAnchorPoint::
+::;rb__AddAnchorPoint::
+::;r_AddAnchor::
+::;r__AddAnchor::
+::;rb_AddAnchor::
+::;rb__AddAnchor::
+{
+    SendRaw, Util.InsertAnchorPoint
+    Sleep, 50
+    Send, {Enter}
+    return
+}
+; #endregion | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+
+
+; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+; #region  - - - - |  Na__InsertPrimatives.InsertCube  | - - - - - 
+; Na__InsertPrimatives.Na__InsertPrimatives__InsertCube - Interactive tool to place primitive cube with 5mm grid snapping
+::;r_InsertCube::
+::;r__InsertCube::
+::;rb_InsertCube::
+::;rb__InsertCube::
+::;r_InsertPrimitive::
+::;r__InsertPrimitive::
+::;rb_InsertPrimitive::
+::;rb__InsertPrimitive::
+::;r_InsertPrimitiveCube::
+::;r__InsertPrimitiveCube::
+::;rb_InsertPrimitiveCube::
+::;rb__InsertPrimitiveCube::
+::;r_AddCube::
+::;r__AddCube::
+::;rb_AddCube::
+::;rb__AddCube::
+{
+    SendRaw, Na__InsertPrimatives.Na__InsertPrimatives__InsertCube
+    Sleep, 50
+    Send, {Enter}
+    return
+}
+; #endregion | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |

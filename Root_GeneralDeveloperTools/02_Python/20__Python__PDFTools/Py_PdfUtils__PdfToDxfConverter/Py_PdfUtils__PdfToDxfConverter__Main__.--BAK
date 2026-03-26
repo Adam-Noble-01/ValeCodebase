@@ -1,0 +1,1076 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Py_PdfUtils__PdfToDxfConverter__Main__.py
+
+PDF (vector) -> DXF converter with:
+- Tkinter UI (input PDF, output DXF/folder, options)
+- Vector-vs-flattened analysis (per page)
+- Page size readout (pt / mm / inches) + nearest ISO A-size guess
+- Scaling system: PDF page units -> paper mm -> model mm via drawing scale (e.g. 1:50)
+- DXF export via ezdxf (lines + rectangles + cubic bezier approximations; optional text)
+
+NOTES / REALITY CHECK
+- If your PDF is truly raster/flattened, you cannot recover accurate vectors from it. This tool will detect that and warn.
+- Cloned repos alone are often not enough for compiled libs (notably PyMuPDF / pikepdf). If imports fail, install wheels in your venv.
+- Default assumes PyMuPDF coordinates are in PDF points (1/72 inch) and converts to mm, then multiplies by drawing scale.
+
+DEPENDENCY FOLDER LOADING
+- External dependencies folder is expected at:
+  <PROJECT_ROOT>\01__ExternalDependencies
+- This script tries to add those to sys.path (repo root and "src") relative to this file.
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import sys
+import math
+import time
+import traceback
+import subprocess
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, Iterable, List, Optional, Tuple
+
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
+
+
+# =============================================================================
+# Path + dependency loader (relative to project root)
+# =============================================================================
+
+def _add_external_dependencies_to_syspath() -> None:
+    project_root = Path(__file__).resolve().parent
+    ext_dir = project_root / "01__ExternalDependencies"
+
+    if not ext_dir.exists():
+        return
+
+    # Add the external deps folder itself (some projects may be structured that way)
+    sys.path.insert(0, str(ext_dir))
+
+    # Add each cloned repo root + common "src" folder
+    # Handle specific known packages explicitly for better reliability
+    for child in ext_dir.iterdir():
+        if not child.is_dir():
+            continue
+        
+        # Add repo root
+        sys.path.insert(0, str(child))
+        
+        # Add src folder if it exists (common pattern)
+        src = child / "src"
+        if src.exists() and src.is_dir():
+            sys.path.insert(0, str(src))
+        
+        # Special handling for known packages
+        # ezdxf: package is in src/ezdxf/, so src/ needs to be in path
+        if child.name.lower() == "ezdxf":
+            ezdxf_src = child / "src"
+            if ezdxf_src.exists() and ezdxf_src.is_dir():
+                sys.path.insert(0, str(ezdxf_src))
+        
+        # PyMuPDF: fitz module is in src/, so src/ needs to be in path
+        # Note: PyMuPDF requires compilation - cloned repo alone may not work
+        if child.name.lower() == "pymupdf":
+            pymupdf_src = child / "src"
+            if pymupdf_src.exists() and pymupdf_src.is_dir():
+                sys.path.insert(0, str(pymupdf_src))
+
+
+_add_external_dependencies_to_syspath()
+
+
+def _try_install_pymupdf_from_cloned_repo() -> bool:
+    """
+    Attempt to install PyMuPDF from the cloned repository if it exists.
+    Returns True if installation was attempted (may still fail).
+    Note: PyMuPDF requires compilation, so this may not work without build tools.
+    """
+    project_root = Path(__file__).resolve().parent
+    pymupdf_dir = project_root / "01__ExternalDependencies" / "PyMuPDF"
+    
+    if not pymupdf_dir.exists() or not pymupdf_dir.is_dir():
+        return False
+    
+    # PyMuPDF is a compiled library - try installing via pip
+    # The cloned repo alone won't work without building from source
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "pymupdf"],
+            check=False,
+            capture_output=True,
+            timeout=120,
+            text=True
+        )
+        # Return True if installation succeeded (exit code 0)
+        return result.returncode == 0
+    except Exception:
+        return False
+
+
+# Imports that matter for the actual conversion
+try:
+    import fitz  # PyMuPDF
+except Exception as e:
+    fitz = None  # type: ignore
+    # Try to install from cloned repo if available
+    _try_install_pymupdf_from_cloned_repo()
+    # Try importing again after installation attempt
+    try:
+        import fitz  # PyMuPDF
+    except Exception:
+        fitz = None  # type: ignore
+
+try:
+    import ezdxf
+    from ezdxf import units as dxf_units
+    from ezdxf.colors import rgb2int
+except Exception as e:
+    ezdxf = None  # type: ignore
+
+
+# =============================================================================
+# Helpers
+# =============================================================================
+
+MM_PER_INCH = 25.4
+PT_PER_INCH = 72.0
+MM_PER_PT = MM_PER_INCH / PT_PER_INCH  # ~0.3527777778
+
+
+def _safe_float(s: str, default: float = 0.0) -> float:
+    try:
+        return float(s)
+    except Exception:
+        return default
+
+
+def parse_drawing_scale(scale_text: str) -> float:
+    """
+    Accepts:
+      "50" -> 50
+      "1:50" -> 50
+      "1/50" -> 50
+      "1 = 50" -> 50
+      " 1 :  100 " -> 100
+    Returns: denominator as float (must be > 0)
+    """
+    t = (scale_text or "").strip().lower()
+    if not t:
+        raise ValueError("Drawing scale is empty.")
+
+    # Common patterns
+    t = t.replace("=", ":")
+    t = t.replace("\\", "/")
+
+    # Extract numbers in a "1:50" or "1/50" style
+    m = re.search(r"(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)", t)
+    if m:
+        a = float(m.group(1))
+        b = float(m.group(2))
+        if a == 0 or b <= 0:
+            raise ValueError("Invalid scale ratio.")
+        # If user enters 1:50 we want 50; if 2:100 we want 50 too (b/a)
+        return b / a
+
+    # Otherwise, assume it's already the denominator (e.g. "50")
+    v = float(re.sub(r"[^\d.]+", "", t))
+    if v <= 0:
+        raise ValueError("Scale must be > 0.")
+    return v
+
+
+def parse_page_range(text: str, page_count: int) -> List[int]:
+    """
+    "all" -> all pages
+    "1-3,5" -> [0,1,2,4]
+    empty -> all
+    """
+    if page_count <= 0:
+        return []
+
+    t = (text or "").strip().lower()
+    if not t or t == "all":
+        return list(range(page_count))
+
+    parts = [p.strip() for p in t.split(",") if p.strip()]
+    out: List[int] = []
+    for p in parts:
+        if "-" in p:
+            a_s, b_s = [x.strip() for x in p.split("-", 1)]
+            a = int(a_s)
+            b = int(b_s)
+            if a < 1:
+                a = 1
+            if b > page_count:
+                b = page_count
+            if b < a:
+                a, b = b, a
+            out.extend(list(range(a - 1, b)))
+        else:
+            n = int(p)
+            if 1 <= n <= page_count:
+                out.append(n - 1)
+
+    # De-dupe while preserving order
+    seen = set()
+    uniq: List[int] = []
+    for i in out:
+        if i not in seen:
+            uniq.append(i)
+            seen.add(i)
+    return uniq
+
+
+def nearest_iso_a_size(width_mm: float, height_mm: float, tol_mm: float = 6.0) -> str:
+    # ISO A-series in mm (portrait)
+    a_sizes = {
+        "A0": (841, 1189),
+        "A1": (594, 841),
+        "A2": (420, 594),
+        "A3": (297, 420),
+        "A4": (210, 297),
+        "A5": (148, 210),
+    }
+
+    w, h = sorted((width_mm, height_mm))
+    best = ("Unknown", 1e9)
+
+    for name, (W, H) in a_sizes.items():
+        ww, hh = sorted((float(W), float(H)))
+        d = abs(ww - w) + abs(hh - h)
+        if d < best[1]:
+            best = (name, d)
+
+    if best[0] != "Unknown":
+        # Check tolerance (sum-of-abs)
+        if best[1] <= (tol_mm * 2.0):
+            return best[0]
+    return "Unknown"
+
+
+def _format_page_size(points_w: float, points_h: float) -> str:
+    mm_w = points_w * MM_PER_PT
+    mm_h = points_h * MM_PER_PT
+    in_w = points_w / PT_PER_INCH
+    in_h = points_h / PT_PER_INCH
+    iso = nearest_iso_a_size(mm_w, mm_h)
+    return (
+        f"{points_w:.2f} pt x {points_h:.2f} pt | "
+        f"{mm_w:.1f} mm x {mm_h:.1f} mm | "
+        f"{in_w:.2f} in x {in_h:.2f} in | "
+        f"Nearest ISO: {iso}"
+    )
+
+
+def _cubic_bezier(p0, p1, p2, p3, t: float):
+    # Bernstein basis
+    u = 1.0 - t
+    tt = t * t
+    uu = u * u
+    uuu = uu * u
+    ttt = tt * t
+    x = (uuu * p0[0]) + (3 * uu * t * p1[0]) + (3 * u * tt * p2[0]) + (ttt * p3[0])
+    y = (uuu * p0[1]) + (3 * uu * t * p1[1]) + (3 * u * tt * p2[1]) + (ttt * p3[1])
+    return (x, y)
+
+
+def _adaptive_curve_steps(p0, p1, p2, p3, min_steps=8, max_steps=64) -> int:
+    # Crude curvature/length heuristic: steps scale with control polygon length.
+    def dist(a, b):
+        return math.hypot(b[0] - a[0], b[1] - a[1])
+    poly_len = dist(p0, p1) + dist(p1, p2) + dist(p2, p3)
+    chord = dist(p0, p3)
+    k = max(0.0, poly_len - chord)  # more "excess" -> more curvature
+    steps = int(min_steps + (k / 50.0))  # tweak denominator to taste
+    return max(min_steps, min(max_steps, steps))
+
+
+def _dxf_insunits_from_choice(choice: str) -> int:
+    c = (choice or "mm").strip().lower()
+    if c == "mm":
+        return dxf_units.MM
+    if c == "m":
+        return dxf_units.M
+    if c in ("in", "inch", "inches"):
+        return dxf_units.IN
+    return dxf_units.MM
+
+
+def _unit_scale_from_mm(choice: str) -> float:
+    c = (choice or "mm").strip().lower()
+    if c == "mm":
+        return 1.0
+    if c == "m":
+        return 1.0 / 1000.0
+    if c in ("in", "inch", "inches"):
+        return 1.0 / MM_PER_INCH
+    return 1.0
+
+
+# =============================================================================
+# PDF analysis + conversion
+# =============================================================================
+
+@dataclass
+class PageAnalysis:
+    index: int
+    size_points: Tuple[float, float]
+    size_mm: Tuple[float, float]
+    drawings_count: int
+    images_count: int
+    max_image_coverage: float
+    likely_vector: bool
+    likely_flattened: bool
+    note: str
+
+
+def analyze_pdf(input_pdf: str) -> Tuple[int, List[PageAnalysis]]:
+    if fitz is None:
+        raise RuntimeError("PyMuPDF (fitz) import failed. Install pymupdf in your venv, or ensure it imports correctly.")
+
+    doc = fitz.open(input_pdf)
+    page_count = doc.page_count
+    results: List[PageAnalysis] = []
+
+    for i in range(page_count):
+        page = doc[i]
+        w_pt = float(page.rect.width)
+        h_pt = float(page.rect.height)
+        w_mm = w_pt * MM_PER_PT
+        h_mm = h_pt * MM_PER_PT
+
+        # Drawings (vector paths)
+        try:
+            drawings = page.get_drawings()
+            dcount = len(drawings)
+        except Exception:
+            dcount = 0
+
+        # Images + coverage estimate
+        try:
+            imgs = page.get_images(full=True)
+            icount = len(imgs)
+        except Exception:
+            imgs = []
+            icount = 0
+
+        page_area = max(1.0, w_pt * h_pt)
+        max_cov = 0.0
+        try:
+            for info in imgs:
+                xref = info[0]
+                rects = page.get_image_rects(xref)
+                for r in rects:
+                    cov = (float(r.width) * float(r.height)) / page_area
+                    if cov > max_cov:
+                        max_cov = cov
+        except Exception:
+            pass
+
+        # Heuristics
+        likely_vector = (dcount >= 10) or (dcount >= 1 and max_cov < 0.50)
+        likely_flattened = (dcount <= 2 and max_cov >= 0.80 and icount >= 1)
+
+        if likely_flattened and not likely_vector:
+            note = "Looks flattened (raster-dominant). Vector recovery will be poor/impossible."
+        elif likely_vector and max_cov < 0.80:
+            note = "Looks like vector linework is present."
+        else:
+            note = "Mixed/uncertain (some vectors and/or large images)."
+
+        results.append(
+            PageAnalysis(
+                index=i,
+                size_points=(w_pt, h_pt),
+                size_mm=(w_mm, h_mm),
+                drawings_count=dcount,
+                images_count=icount,
+                max_image_coverage=max_cov,
+                likely_vector=likely_vector,
+                likely_flattened=likely_flattened,
+                note=note,
+            )
+        )
+
+    doc.close()
+    return page_count, results
+
+
+@dataclass
+class ConvertOptions:
+    input_pdf: str
+    output_path: str  # either .dxf file or folder depending on mode
+    output_mode: str  # "single" or "per_page"
+    page_range_text: str
+    coord_mode: str   # "paper_points" or "assume_mm"
+    drawing_scale: float
+    output_units: str  # "mm" / "m" / "inch"
+    include_text: bool
+    layer_by_page: bool
+    separate_pages_by_offset: bool
+    page_gap_mm: float
+    curve_quality: str  # "low" / "med" / "high"
+
+
+def _make_point_transform(page, options: ConvertOptions, page_offset_mm: Tuple[float, float]):
+    page_h_pt = float(page.rect.height)
+    derot = getattr(page, "derotation_matrix", None)
+
+    unit_out_scale = _unit_scale_from_mm(options.output_units)  # mm -> chosen
+    drawing_scale = float(options.drawing_scale)
+
+    # Base scale: PDF units -> mm
+    if options.coord_mode == "paper_points":
+        base = MM_PER_PT
+    else:
+        # Assume incoming coords are already mm (common when PDF is plotted from CAD "model units")
+        base = 1.0
+
+    # Full scale to output units
+    s = base * drawing_scale * unit_out_scale
+
+    # Offset already in mm, so convert it to output units too
+    ox_out = page_offset_mm[0] * unit_out_scale
+    oy_out = page_offset_mm[1] * unit_out_scale
+
+    def tx(p) -> Tuple[float, float]:
+        # p is fitz.Point-like
+        if derot is not None:
+            try:
+                p2 = p * derot
+            except Exception:
+                p2 = p
+        else:
+            p2 = p
+
+        x_pt = float(p2.x)
+        y_pt = float(p2.y)
+
+        # Flip Y so CAD has +Y upwards, origin bottom-left of the page
+        y_pt = page_h_pt - y_pt
+
+        x = (x_pt * s) + ox_out
+        y = (y_pt * s) + oy_out
+        return (x, y)
+
+    return tx
+
+
+def _curve_steps_from_quality(quality: str, base_steps: int) -> int:
+    q = (quality or "med").strip().lower()
+    if q == "low":
+        return max(6, base_steps // 2)
+    if q == "high":
+        return min(96, base_steps * 2)
+    return base_steps
+
+
+def export_pdf_to_dxf(options: ConvertOptions, progress_cb: Optional[Callable[[float, str], None]] = None) -> List[str]:
+    if fitz is None:
+        raise RuntimeError("PyMuPDF (fitz) import failed. Install pymupdf in your venv, or ensure it imports correctly.")
+    if ezdxf is None:
+        raise RuntimeError("ezdxf import failed. Install ezdxf in your venv, or ensure it imports correctly.")
+
+    doc = fitz.open(options.input_pdf)
+    page_count = doc.page_count
+    pages = parse_page_range(options.page_range_text, page_count)
+    if not pages:
+        raise ValueError("No pages selected.")
+
+    created_files: List[str] = []
+
+    # Decide per-page offset spacing (so multi-page export doesn't overlap)
+    # Offset is calculated in mm-space (before output unit conversion happens).
+    gap_mm = max(0.0, float(options.page_gap_mm))
+
+    def page_offset_for_index(k: int, page_w_mm: float) -> Tuple[float, float]:
+        if not options.separate_pages_by_offset:
+            return (0.0, 0.0)
+        return (k * (page_w_mm + gap_mm), 0.0)
+
+    # DXF document creation helper
+    def new_dxf_doc() -> "ezdxf.EzDxf":
+        d = ezdxf.new("R2010")
+        d.header["$INSUNITS"] = _dxf_insunits_from_choice(options.output_units)
+        # Layers
+        d.layers.new(name="PDF_VECTORS")
+        d.layers.new(name="PDF_TEXT")
+        return d
+
+    # Export mode
+    if options.output_mode == "single":
+        out_file = options.output_path
+        if not out_file.lower().endswith(".dxf"):
+            out_file = str(Path(out_file).with_suffix(".dxf"))
+
+        dxf_doc = new_dxf_doc()
+        msp = dxf_doc.modelspace()
+
+        total = len(pages)
+        for idx, pno in enumerate(pages):
+            page = doc[pno]
+            w_pt = float(page.rect.width)
+            h_pt = float(page.rect.height)
+            w_mm = w_pt * MM_PER_PT
+            # Offset in mm
+            offset_mm = page_offset_for_index(idx, w_mm)
+
+            tx = _make_point_transform(page, options, offset_mm)
+
+            # Layer selection
+            page_layer = f"P{pno + 1:03d}" if options.layer_by_page else "PDF_VECTORS"
+            if page_layer not in dxf_doc.layers:
+                dxf_doc.layers.new(name=page_layer)
+
+            # Drawings
+            drawings = []
+            try:
+                drawings = page.get_drawings()
+            except Exception:
+                drawings = []
+
+            for path in drawings:
+                items = path.get("items", [])
+                rgb = path.get("color", None)
+                width_pt = path.get("width", None)
+
+                dxfattribs = {"layer": page_layer}
+                if isinstance(rgb, tuple) and len(rgb) == 3:
+                    try:
+                        r = int(max(0, min(255, round(rgb[0] * 255))))
+                        g = int(max(0, min(255, round(rgb[1] * 255))))
+                        b = int(max(0, min(255, round(rgb[2] * 255))))
+                        dxfattribs["true_color"] = rgb2int((r, g, b))
+                    except Exception:
+                        pass
+
+                # Width: keep light-touch (lineweight is in 1/100 mm). Don’t scale by drawing scale.
+                if isinstance(width_pt, (int, float)) and width_pt > 0:
+                    try:
+                        lw_mm = width_pt * MM_PER_PT
+                        dxfattribs["lineweight"] = int(max(0, min(211, round(lw_mm * 100))))  # 2.11mm max DXF lw
+                    except Exception:
+                        pass
+
+                for it in items:
+                    if not it:
+                        continue
+                    cmd = it[0]
+
+                    # ('l', Point(a), Point(b))
+                    if cmd == "l" and len(it) >= 3:
+                        p1 = tx(it[1])
+                        p2 = tx(it[2])
+                        msp.add_line(p1, p2, dxfattribs=dxfattribs)
+
+                    # ('re', Rect(x0,y0,x1,y1), close_flag)
+                    elif cmd == "re" and len(it) >= 2:
+                        r = it[1]
+                        # Rect has x0,y0,x1,y1
+                        pA = tx(fitz.Point(r.x0, r.y0))
+                        pB = tx(fitz.Point(r.x1, r.y0))
+                        pC = tx(fitz.Point(r.x1, r.y1))
+                        pD = tx(fitz.Point(r.x0, r.y1))
+                        msp.add_lwpolyline([pA, pB, pC, pD, pA], dxfattribs=dxfattribs)
+
+                    # ('c', Point(p0), Point(p1), Point(p2), Point(p3))
+                    elif cmd == "c" and len(it) >= 5:
+                        p0 = tx(it[1])
+                        p1 = tx(it[2])
+                        p2 = tx(it[3])
+                        p3 = tx(it[4])
+
+                        base_steps = _adaptive_curve_steps(p0, p1, p2, p3)
+                        steps = _curve_steps_from_quality(options.curve_quality, base_steps)
+
+                        pts = [_cubic_bezier(p0, p1, p2, p3, t / float(steps)) for t in range(0, steps + 1)]
+                        msp.add_lwpolyline(pts, dxfattribs=dxfattribs)
+
+                    # Unknown / unhandled commands are ignored
+                    else:
+                        continue
+
+            # Optional text (very simple)
+            if options.include_text:
+                try:
+                    tdict = page.get_text("dict")
+                    blocks = tdict.get("blocks", [])
+                    for b in blocks:
+                        if b.get("type", 0) != 0:
+                            continue
+                        for line in b.get("lines", []):
+                            for span in line.get("spans", []):
+                                txt = span.get("text", "")
+                                if not txt or not txt.strip():
+                                    continue
+                                x = span.get("origin", [None, None])[0]
+                                y = span.get("origin", [None, None])[1]
+                                if x is None or y is None:
+                                    continue
+                                p = tx(fitz.Point(float(x), float(y)))
+
+                                # Span size is in points. Convert to mm (paper) then to output units,
+                                # but DO NOT multiply by drawing scale (text height should stay "paper-ish").
+                                size_pt = float(span.get("size", 9.0))
+                                if options.coord_mode == "paper_points":
+                                    height_mm = size_pt * MM_PER_PT
+                                else:
+                                    # If coords are assumed mm, span size is still likely points; fall back
+                                    height_mm = size_pt * MM_PER_PT
+                                height_out = height_mm * _unit_scale_from_mm(options.output_units)
+
+                                msp.add_text(
+                                    txt,
+                                    dxfattribs={"layer": "PDF_TEXT", "height": max(0.1, height_out)}
+                                ).set_pos(p)
+
+                except Exception:
+                    # Text is best-effort; ignore failures.
+                    pass
+
+            if progress_cb:
+                progress_cb((idx + 1) / float(total), f"Converted page {pno + 1} of {page_count}")
+
+        dxf_doc.saveas(out_file)
+        created_files.append(out_file)
+
+    else:
+        # per-page DXF files
+        out_dir = Path(options.output_path)
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        total = len(pages)
+        for idx, pno in enumerate(pages):
+            page = doc[pno]
+            w_pt = float(page.rect.width)
+            w_mm = w_pt * MM_PER_PT
+            offset_mm = (0.0, 0.0)  # per page file, no need to offset
+
+            tx = _make_point_transform(page, options, offset_mm)
+
+            dxf_doc = new_dxf_doc()
+            msp = dxf_doc.modelspace()
+
+            drawings = []
+            try:
+                drawings = page.get_drawings()
+            except Exception:
+                drawings = []
+
+            for path in drawings:
+                items = path.get("items", [])
+                rgb = path.get("color", None)
+                width_pt = path.get("width", None)
+
+                dxfattribs = {"layer": "PDF_VECTORS"}
+                if isinstance(rgb, tuple) and len(rgb) == 3:
+                    try:
+                        r = int(max(0, min(255, round(rgb[0] * 255))))
+                        g = int(max(0, min(255, round(rgb[1] * 255))))
+                        b = int(max(0, min(255, round(rgb[2] * 255))))
+                        dxfattribs["true_color"] = rgb2int((r, g, b))
+                    except Exception:
+                        pass
+                if isinstance(width_pt, (int, float)) and width_pt > 0:
+                    try:
+                        lw_mm = width_pt * MM_PER_PT
+                        dxfattribs["lineweight"] = int(max(0, min(211, round(lw_mm * 100))))
+                    except Exception:
+                        pass
+
+                for it in items:
+                    if not it:
+                        continue
+                    cmd = it[0]
+                    if cmd == "l" and len(it) >= 3:
+                        p1 = tx(it[1])
+                        p2 = tx(it[2])
+                        msp.add_line(p1, p2, dxfattribs=dxfattribs)
+                    elif cmd == "re" and len(it) >= 2:
+                        r = it[1]
+                        pA = tx(fitz.Point(r.x0, r.y0))
+                        pB = tx(fitz.Point(r.x1, r.y0))
+                        pC = tx(fitz.Point(r.x1, r.y1))
+                        pD = tx(fitz.Point(r.x0, r.y1))
+                        msp.add_lwpolyline([pA, pB, pC, pD, pA], dxfattribs=dxfattribs)
+                    elif cmd == "c" and len(it) >= 5:
+                        p0 = tx(it[1])
+                        p1 = tx(it[2])
+                        p2 = tx(it[3])
+                        p3 = tx(it[4])
+                        base_steps = _adaptive_curve_steps(p0, p1, p2, p3)
+                        steps = _curve_steps_from_quality(options.curve_quality, base_steps)
+                        pts = [_cubic_bezier(p0, p1, p2, p3, t / float(steps)) for t in range(0, steps + 1)]
+                        msp.add_lwpolyline(pts, dxfattribs=dxfattribs)
+
+            out_file = out_dir / (Path(options.input_pdf).stem + f"__P{pno + 1:03d}.dxf")
+            dxf_doc.saveas(str(out_file))
+            created_files.append(str(out_file))
+
+            if progress_cb:
+                progress_cb((idx + 1) / float(total), f"Saved {out_file.name}")
+
+    doc.close()
+    return created_files
+
+
+# =============================================================================
+# Tkinter App
+# =============================================================================
+
+class PdfToDxfApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+
+        self.title("Py_PdfUtils__PdfToDxfConverter — PDF (Vector) to DXF")
+        self.geometry("860x640")
+        self.minsize(860, 640)
+
+        self.var_input_pdf = tk.StringVar()
+        self.var_output_mode = tk.StringVar(value="single")  # single / per_page
+        self.var_output_path = tk.StringVar()
+
+        self.var_page_range = tk.StringVar(value="all")
+
+        self.var_coord_mode = tk.StringVar(value="paper_points")  # paper_points / assume_mm
+        self.var_scale = tk.StringVar(value="1:50")
+
+        self.var_units = tk.StringVar(value="mm")
+        self.var_include_text = tk.BooleanVar(value=False)
+        self.var_layer_by_page = tk.BooleanVar(value=True)
+        self.var_separate_pages = tk.BooleanVar(value=True)
+        self.var_page_gap = tk.StringVar(value="50")  # mm
+        self.var_curve_quality = tk.StringVar(value="med")
+
+        self.var_status = tk.StringVar(value="Ready.")
+        self.var_progress = tk.DoubleVar(value=0.0)
+
+        self._analysis_cache: Optional[List[PageAnalysis]] = None
+        self._build_ui()
+
+    def _build_ui(self):
+        pad = {"padx": 10, "pady": 8}
+
+        # Input PDF
+        frm_in = ttk.LabelFrame(self, text="Input PDF")
+        frm_in.pack(fill="x", **pad)
+
+        row = ttk.Frame(frm_in)
+        row.pack(fill="x", padx=10, pady=10)
+
+        ent = ttk.Entry(row, textvariable=self.var_input_pdf)
+        ent.pack(side="left", fill="x", expand=True)
+
+        ttk.Button(row, text="Browse…", command=self._browse_pdf).pack(side="left", padx=8)
+        ttk.Button(row, text="Analyze", command=self._analyze).pack(side="left")
+
+        # Analysis output
+        frm_an = ttk.LabelFrame(self, text="Analysis")
+        frm_an.pack(fill="both", expand=False, **pad)
+
+        self.txt_analysis = tk.Text(frm_an, height=8, wrap="word")
+        self.txt_analysis.pack(fill="both", expand=True, padx=10, pady=10)
+        self.txt_analysis.configure(state="disabled")
+
+        # Output settings
+        frm_out = ttk.LabelFrame(self, text="Output")
+        frm_out.pack(fill="x", **pad)
+
+        out_top = ttk.Frame(frm_out)
+        out_top.pack(fill="x", padx=10, pady=10)
+
+        ttk.Radiobutton(out_top, text="Single DXF", variable=self.var_output_mode, value="single",
+                        command=self._refresh_output_hint).pack(side="left")
+        ttk.Radiobutton(out_top, text="DXF per page (folder)", variable=self.var_output_mode, value="per_page",
+                        command=self._refresh_output_hint).pack(side="left", padx=12)
+
+        out_mid = ttk.Frame(frm_out)
+        out_mid.pack(fill="x", padx=10, pady=(0, 10))
+
+        self.ent_out = ttk.Entry(out_mid, textvariable=self.var_output_path)
+        self.ent_out.pack(side="left", fill="x", expand=True)
+
+        self.btn_out = ttk.Button(out_mid, text="Browse…", command=self._browse_output)
+        self.btn_out.pack(side="left", padx=8)
+
+        self.lbl_out_hint = ttk.Label(frm_out, text="")
+        self.lbl_out_hint.pack(anchor="w", padx=12, pady=(0, 10))
+        self._refresh_output_hint()
+
+        # Conversion options
+        frm_opts = ttk.LabelFrame(self, text="Conversion options")
+        frm_opts.pack(fill="x", **pad)
+
+        grid = ttk.Frame(frm_opts)
+        grid.pack(fill="x", padx=10, pady=10)
+
+        def add_row(r, label, widget):
+            ttk.Label(grid, text=label).grid(row=r, column=0, sticky="w", padx=(0, 10), pady=4)
+            widget.grid(row=r, column=1, sticky="ew", pady=4)
+            grid.grid_columnconfigure(1, weight=1)
+
+        # Page range
+        add_row(0, "Pages (e.g. all, 1-3,5):", ttk.Entry(grid, textvariable=self.var_page_range))
+
+        # Coordinate mode
+        coord_frame = ttk.Frame(grid)
+        ttk.Radiobutton(coord_frame, text="Treat PDF units as paper points (recommended)", variable=self.var_coord_mode,
+                        value="paper_points").pack(anchor="w")
+        ttk.Radiobutton(coord_frame, text="Assume PDF coordinates already represent mm", variable=self.var_coord_mode,
+                        value="assume_mm").pack(anchor="w")
+        add_row(1, "Coordinate mode:", coord_frame)
+
+        # Scale
+        add_row(2, "Drawing scale (e.g. 1:50):", ttk.Entry(grid, textvariable=self.var_scale))
+
+        # Output units
+        units_box = ttk.Combobox(grid, textvariable=self.var_units, values=["mm", "m", "inch"], state="readonly")
+        add_row(3, "DXF units:", units_box)
+
+        # Curve quality
+        curve_box = ttk.Combobox(grid, textvariable=self.var_curve_quality, values=["low", "med", "high"], state="readonly")
+        add_row(4, "Curve quality:", curve_box)
+
+        # Checkboxes
+        chk_frame = ttk.Frame(grid)
+        ttk.Checkbutton(chk_frame, text="Include text (best-effort)", variable=self.var_include_text).pack(anchor="w")
+        ttk.Checkbutton(chk_frame, text="Layer by page (single DXF mode)", variable=self.var_layer_by_page).pack(anchor="w")
+        ttk.Checkbutton(chk_frame, text="Separate pages by X-offset (single DXF mode)", variable=self.var_separate_pages).pack(anchor="w")
+        add_row(5, "Options:", chk_frame)
+
+        # Page gap
+        add_row(6, "Page gap (mm, when separating pages):", ttk.Entry(grid, textvariable=self.var_page_gap))
+
+        # Run
+        frm_run = ttk.Frame(self)
+        frm_run.pack(fill="x", **pad)
+
+        ttk.Button(frm_run, text="Convert to DXF", command=self._convert).pack(side="left")
+
+        pb = ttk.Progressbar(frm_run, variable=self.var_progress, maximum=1.0)
+        pb.pack(side="left", fill="x", expand=True, padx=10)
+
+        ttk.Label(frm_run, textvariable=self.var_status).pack(side="left")
+
+    def _refresh_output_hint(self):
+        mode = self.var_output_mode.get()
+        if mode == "single":
+            self.lbl_out_hint.configure(text="Choose a DXF file path (e.g. C:\\Temp\\drawing.dxf).")
+        else:
+            self.lbl_out_hint.configure(text="Choose an output folder; one DXF will be saved per PDF page.")
+
+    def _browse_pdf(self):
+        path = filedialog.askopenfilename(
+            title="Select PDF",
+            filetypes=[("PDF Files", "*.pdf"), ("All files", "*.*")]
+        )
+        if path:
+            self.var_input_pdf.set(path)
+            self.var_status.set("PDF selected. Click Analyze if you want a quick vector/flattened check.")
+
+    def _browse_output(self):
+        mode = self.var_output_mode.get()
+        if mode == "single":
+            path = filedialog.asksaveasfilename(
+                title="Save DXF As",
+                defaultextension=".dxf",
+                filetypes=[("DXF Files", "*.dxf"), ("All files", "*.*")]
+            )
+            if path:
+                self.var_output_path.set(path)
+        else:
+            path = filedialog.askdirectory(title="Select output folder")
+            if path:
+                self.var_output_path.set(path)
+
+    def _set_analysis_text(self, text: str):
+        self.txt_analysis.configure(state="normal")
+        self.txt_analysis.delete("1.0", "end")
+        self.txt_analysis.insert("1.0", text)
+        self.txt_analysis.configure(state="disabled")
+
+    def _analyze(self):
+        pdf = self.var_input_pdf.get().strip()
+        if not pdf or not Path(pdf).exists():
+            messagebox.showerror("Missing PDF", "Select a valid PDF first.")
+            return
+
+        if fitz is None:
+            project_root = Path(__file__).resolve().parent
+            pymupdf_dir = project_root / "01__ExternalDependencies" / "PyMuPDF"
+            cloned_exists = pymupdf_dir.exists() and pymupdf_dir.is_dir()
+            
+            if cloned_exists:
+                msg = (
+                    "PyMuPDF (fitz) failed to import.\n\n"
+                    "PyMuPDF repository is cloned but requires compilation.\n"
+                    "Install with:\n  pip install pymupdf\n\n"
+                    "Or install from cloned repo:\n"
+                    f"  pip install -e \"{pymupdf_dir}\"\n\n"
+                    "Then re-run the application."
+                )
+            else:
+                msg = (
+                    "PyMuPDF (fitz) failed to import.\n\n"
+                    "Install with:\n  pip install pymupdf\n\n"
+                    "Then re-run."
+                )
+            messagebox.showerror("Missing dependency", msg)
+            return
+
+        try:
+            self.var_status.set("Analyzing…")
+            self.update_idletasks()
+
+            page_count, analyses = analyze_pdf(pdf)
+            self._analysis_cache = analyses
+
+            lines = []
+            lines.append(f"File: {pdf}")
+            lines.append(f"Pages: {page_count}")
+            lines.append("")
+            for a in analyses:
+                w_pt, h_pt = a.size_points
+                size_str = _format_page_size(w_pt, h_pt)
+                lines.append(f"Page {a.index + 1}: {size_str}")
+                lines.append(f"  Drawings (vector paths): {a.drawings_count}")
+                lines.append(f"  Images: {a.images_count} | Max image coverage: {a.max_image_coverage * 100:.1f}%")
+                lines.append(f"  Verdict: {a.note}")
+                lines.append("")
+
+            # Overall verdict
+            any_vector = any(x.likely_vector for x in analyses)
+            any_flat = any(x.likely_flattened for x in analyses)
+            if any_flat and not any_vector:
+                lines.append("Overall: This PDF looks mostly flattened/raster. Expect poor CAD results.")
+            elif any_vector:
+                lines.append("Overall: Vector linework detected. DXF export should be meaningful.")
+            else:
+                lines.append("Overall: Mixed/uncertain. Try exporting and inspect the DXF.")
+
+            self._set_analysis_text("\n".join(lines))
+            self.var_status.set("Analysis complete.")
+        except Exception as e:
+            self.var_status.set("Analysis failed.")
+            messagebox.showerror("Analysis failed", f"{e}\n\n{traceback.format_exc()}")
+
+    def _convert(self):
+        pdf = self.var_input_pdf.get().strip()
+        out = self.var_output_path.get().strip()
+        mode = self.var_output_mode.get()
+
+        if not pdf or not Path(pdf).exists():
+            messagebox.showerror("Missing PDF", "Select a valid PDF first.")
+            return
+
+        if not out:
+            messagebox.showerror("Missing output", "Set an output file/folder first.")
+            return
+
+        if fitz is None or ezdxf is None:
+            project_root = Path(__file__).resolve().parent
+            pymupdf_dir = project_root / "01__ExternalDependencies" / "PyMuPDF"
+            ezdxf_dir = project_root / "01__ExternalDependencies" / "ezdxf"
+            pymupdf_cloned = pymupdf_dir.exists() and pymupdf_dir.is_dir()
+            ezdxf_cloned = ezdxf_dir.exists() and ezdxf_dir.is_dir()
+            
+            missing = []
+            if fitz is None:
+                missing.append("PyMuPDF (pymupdf)")
+            if ezdxf is None:
+                missing.append("ezdxf")
+            
+            msg_parts = ["Required imports failed.\n"]
+            msg_parts.append(f"Missing: {', '.join(missing)}\n\n")
+            
+            if pymupdf_cloned and fitz is None:
+                msg_parts.append(
+                    "PyMuPDF repository is cloned but requires compilation.\n"
+                    "Install with:\n  pip install pymupdf\n"
+                    f"Or: pip install -e \"{pymupdf_dir}\"\n\n"
+                )
+            elif fitz is None:
+                msg_parts.append("Install PyMuPDF with:\n  pip install pymupdf\n\n")
+            
+            if ezdxf_cloned and ezdxf is None:
+                msg_parts.append(
+                    f"ezdxf repository is cloned at:\n  {ezdxf_dir}\n"
+                    "But import failed. Check if src/ezdxf exists.\n"
+                    "Or install with: pip install ezdxf\n\n"
+                )
+            elif ezdxf is None:
+                msg_parts.append("Install ezdxf with:\n  pip install ezdxf\n\n")
+            
+            msg_parts.append("Then re-run the application.")
+            messagebox.showerror("Missing dependency", "".join(msg_parts))
+            return
+
+        try:
+            scale = parse_drawing_scale(self.var_scale.get())
+        except Exception as e:
+            messagebox.showerror("Invalid scale", str(e))
+            return
+
+        gap_mm = _safe_float(self.var_page_gap.get(), 50.0)
+
+        opts = ConvertOptions(
+            input_pdf=pdf,
+            output_path=out,
+            output_mode="single" if mode == "single" else "per_page",
+            page_range_text=self.var_page_range.get(),
+            coord_mode=self.var_coord_mode.get(),
+            drawing_scale=scale,
+            output_units=self.var_units.get(),
+            include_text=bool(self.var_include_text.get()),
+            layer_by_page=bool(self.var_layer_by_page.get()),
+            separate_pages_by_offset=bool(self.var_separate_pages.get()),
+            page_gap_mm=gap_mm,
+            curve_quality=self.var_curve_quality.get(),
+        )
+
+        # If analysis indicates flattened, warn but allow conversion
+        if self._analysis_cache:
+            likely_flat = all(a.likely_flattened and not a.likely_vector for a in self._analysis_cache)
+            if likely_flat:
+                if not messagebox.askyesno(
+                    "Looks flattened",
+                    "This PDF looks mostly flattened/raster.\n\nDXF output will likely be empty or poor.\n\nContinue anyway?"
+                ):
+                    return
+
+        self.var_progress.set(0.0)
+        self.var_status.set("Converting…")
+        self.update_idletasks()
+
+        def progress(p: float, msg: str):
+            self.var_progress.set(max(0.0, min(1.0, p)))
+            self.var_status.set(msg)
+            self.update_idletasks()
+
+        try:
+            files = export_pdf_to_dxf(opts, progress_cb=progress)
+            self.var_progress.set(1.0)
+            self.var_status.set("Done.")
+
+            if opts.output_mode == "single":
+                messagebox.showinfo("Complete", f"Saved DXF:\n{files[0]}")
+            else:
+                messagebox.showinfo("Complete", f"Saved {len(files)} DXF files into:\n{opts.output_path}")
+        except Exception as e:
+            self.var_status.set("Conversion failed.")
+            messagebox.showerror("Conversion failed", f"{e}\n\n{traceback.format_exc()}")
+
+
+def main():
+    app = PdfToDxfApp()
+    app.mainloop()
+
+
+if __name__ == "__main__":
+    main()

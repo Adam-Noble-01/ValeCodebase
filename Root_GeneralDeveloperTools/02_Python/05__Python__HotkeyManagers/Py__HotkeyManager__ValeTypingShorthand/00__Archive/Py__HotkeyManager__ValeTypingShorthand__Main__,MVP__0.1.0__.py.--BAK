@@ -1,0 +1,113 @@
+import sys
+import os
+
+# ---------------------------------------------------------
+# DEPENDENCY LOADING
+# ---------------------------------------------------------
+
+# 1. Get the directory where this script is currently running
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Construct the path to your external libraries folder
+# Note: Ensure the folder name matches exactly. 
+# Based on your prompt, I used double underscores, but your screenshot showed single underscores.
+# Adjust the string below if necessary.
+lib_path = os.path.join(script_dir, "Dependencies__HotkeyManager__ExternalLibrarys")
+
+# 3. Add this path to the beginning of sys.path
+# This tells Python to look in this folder for imports first.
+if lib_path not in sys.path:
+    sys.path.insert(0, lib_path)
+
+# 4. Now import the library from the local folder
+try:
+    import keyboard
+except ImportError:
+    print(f"Error: Could not find the 'keyboard' library in {lib_path}")
+    print("Please check that the folder name matches exactly.")
+    input("Press Enter to exit...")
+    sys.exit(1)
+
+# ---------------------------------------------------------
+# MAIN SCRIPT
+# ---------------------------------------------------------
+
+def main():
+    print("Local AutoHotkey-style script is running...")
+    print(f"Loaded dependencies from: {lib_path}")
+    print("Type ';vsl' followed by SPACE to test.")
+    print("Press ESC to stop the script.")
+
+    # Configuration
+    trigger = ";vsl"  # Trigger text without space
+    replacement = "TEST TEXT\nThis Works Well"
+    
+    # Buffer to track recent keypresses
+    typed_buffer = []
+    # Flag to prevent recursion during replacement
+    is_replacing = False
+    
+    def on_key_press(event):
+        """Custom trigger detection that works reliably on Windows 11"""
+        nonlocal typed_buffer, is_replacing
+        
+        # Ignore keypresses during replacement to avoid recursion
+        if is_replacing:
+            return
+        
+        # Get the key name
+        key_name = event.name
+        
+        # Handle backspace - remove last character from buffer
+        if key_name == 'backspace':
+            if typed_buffer:
+                typed_buffer.pop()
+            return
+        
+        # Only process single character keys and space
+        if len(key_name) == 1 or key_name == 'space':
+            # Add character to buffer
+            if key_name == 'space':
+                typed_buffer.append(' ')
+            else:
+                typed_buffer.append(key_name)
+            
+            # Keep buffer size manageable (only last N characters needed)
+            max_buffer_size = len(trigger) + 1
+            if len(typed_buffer) > max_buffer_size:
+                typed_buffer.pop(0)
+            
+            # Check if buffer ends with trigger + space
+            current_text = ''.join(typed_buffer)
+            trigger_with_space = trigger + ' '
+            
+            if current_text.endswith(trigger_with_space):
+                # Match found! Remove the trigger text and replace it
+                # Set flag to prevent recursion
+                is_replacing = True
+                
+                # Small delay to ensure the space key is fully processed
+                import time
+                time.sleep(0.01)
+                
+                # Backspace to remove trigger + space
+                for _ in range(len(trigger_with_space)):
+                    keyboard.press_and_release('backspace')
+                
+                # Type the replacement text
+                keyboard.write(replacement)
+                
+                # Clear the buffer
+                typed_buffer.clear()
+                
+                # Reset flag
+                is_replacing = False
+    
+    # Register the custom key press handler
+    keyboard.on_press(on_key_press)
+    
+    # Keep running
+    keyboard.wait('esc')
+
+if __name__ == "__main__":
+    main()

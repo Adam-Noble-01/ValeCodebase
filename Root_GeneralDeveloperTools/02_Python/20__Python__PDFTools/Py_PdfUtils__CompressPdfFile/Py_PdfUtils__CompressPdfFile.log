@@ -1,0 +1,244 @@
+2025-12-16 16:10:43,933 | INFO | PyMuPDF (fitz) library loaded successfully
+2025-12-16 16:10:43,962 | INFO | Successfully imported Noble Architecture icon loader
+2025-12-16 16:10:44,022 | INFO | PDF Compression App initialized
+2025-12-16 16:10:54,598 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0__.pdf
+2025-12-16 16:10:54,598 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2025-12-16 16:10:54,600 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-90.pdf
+2025-12-16 16:10:55,214 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-90.pdf
+2025-12-16 16:11:08,286 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0__.pdf
+2025-12-16 16:11:08,286 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2025-12-16 16:11:08,287 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-600__JPEG-100.pdf
+2025-12-16 16:11:10,680 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-600__JPEG-100.pdf
+2025-12-16 16:11:25,598 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0__.pdf
+2025-12-16 16:11:25,598 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2025-12-16 16:11:25,599 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-100.pdf
+2025-12-16 16:11:26,439 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-100.pdf
+2025-12-16 16:11:39,427 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0__.pdf
+2025-12-16 16:11:39,427 | INFO | Settings: DPI=300, JPEG=True, Quality=95
+2025-12-16 16:11:39,428 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-95.pdf
+2025-12-16 16:11:40,058 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-95.pdf
+2025-12-16 16:11:56,239 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0__.pdf
+2025-12-16 16:11:56,239 | INFO | Settings: DPI=300, JPEG=True, Quality=99
+2025-12-16 16:11:56,240 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-99.pdf
+2025-12-16 16:11:57,004 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V01__Concept 3D Visual - View 01__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-99.pdf
+2025-12-16 16:12:15,426 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V02__Concept 3D Visual - View 02__Iso-A4__RevA__2.0.0__.pdf
+2025-12-16 16:12:15,426 | INFO | Settings: DPI=300, JPEG=True, Quality=99
+2025-12-16 16:12:15,438 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V02__Concept 3D Visual - View 02__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-99.pdf
+2025-12-16 16:12:16,230 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/40425__Skelding__Whitecard/10__ContentDelivered__Local/03__VisDpt__Whitecard__SecondEdition__ForApproval__16-Dec-2025/A3Q-150611-V02__Concept 3D Visual - View 02__Iso-A4__RevA__2.0.0____Compressed__DPI-300__JPEG-99.pdf
+2026-01-23 10:06:17,941 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-23 10:06:18,062 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-23 10:06:18,209 | INFO | PDF Compression App initialized
+2026-01-23 10:06:32,286 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0__.pdf
+2026-01-23 10:06:32,286 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-01-23 10:06:32,287 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-90.pdf
+2026-01-23 10:06:32,741 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-90.pdf
+2026-01-23 10:06:49,270 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0__.pdf
+2026-01-23 10:06:49,270 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-01-23 10:06:49,271 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-23 10:06:51,359 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-23 10:07:47,084 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-23 10:07:47,131 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-23 10:07:47,203 | INFO | PDF Compression App initialized
+2026-01-23 10:07:54,814 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-01__Stayley__/06__PdfFile/Photorealism-02__Stayley__Iso-A4__RevA__1.0.0__.pdf
+2026-01-23 10:07:54,814 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-01-23 10:07:54,816 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-01__Stayley__/06__PdfFile/Photorealism-02__Stayley__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-23 10:07:57,631 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-01__Stayley__/06__PdfFile/Photorealism-02__Stayley__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-23 10:18:15,292 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-23 10:18:15,327 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-23 10:18:15,398 | INFO | PDF Compression App initialized
+2026-01-23 10:18:26,548 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0__.pdf
+2026-01-23 10:18:26,548 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-01-23 10:18:26,549 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-23 10:18:28,662 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Baxter__/06__PdfFile/Photorealism-03__Baxter__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-29 09:21:16,789 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 09:21:16,819 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 09:21:16,873 | INFO | PDF Compression App initialized
+2026-01-29 09:21:23,069 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0__.pdf
+2026-01-29 09:21:23,069 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-29 09:21:23,072 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 09:21:23,754 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 09:22:22,166 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 09:22:22,195 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 09:22:22,259 | INFO | PDF Compression App initialized
+2026-01-29 09:22:33,054 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0__.pdf
+2026-01-29 09:22:33,054 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-01-29 09:22:33,065 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-29 09:22:35,318 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-29 09:31:53,357 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 09:31:53,385 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 09:31:53,452 | INFO | PDF Compression App initialized
+2026-01-29 09:32:01,554 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.1.0__.pdf
+2026-01-29 09:32:01,554 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-29 09:32:01,556 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.1.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 09:32:02,236 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.1.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 09:41:45,822 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 09:41:45,851 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 09:41:45,915 | INFO | PDF Compression App initialized
+2026-01-29 09:41:55,789 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0__.pdf
+2026-01-29 09:41:55,789 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-29 09:41:55,792 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 09:41:56,502 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 09:43:06,771 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 09:43:06,799 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 09:43:06,864 | INFO | PDF Compression App initialized
+2026-01-29 09:43:22,273 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0__.pdf
+2026-01-29 09:43:22,273 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-01-29 09:43:22,275 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0____Compressed__DPI-450__JPEG-100.pdf
+2026-01-29 09:43:23,679 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0____Compressed__DPI-450__JPEG-100.pdf
+2026-01-29 09:57:43,121 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__ExistingSiteConditionsPhoto__Iso-A4__RevA__1.2.0__.pdf
+2026-01-29 09:57:43,121 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-01-29 09:57:43,122 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__ExistingSiteConditionsPhoto__Iso-A4__RevA__1.2.0____Compressed__DPI-450__JPEG-100.pdf
+2026-01-29 09:57:44,567 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Photorealism-03__Frankland__ExistingSiteConditionsPhoto__Iso-A4__RevA__1.2.0____Compressed__DPI-450__JPEG-100.pdf
+2026-01-29 10:13:35,621 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.3.0__.pdf
+2026-01-29 10:13:35,621 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-01-29 10:13:35,623 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.3.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-29 10:13:38,658 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/03__3dPerspective__Photorealism__Standards/01__ProcessImages__Photorealism-03__Frankland__/06__PdfFile/Frankland__SchemeProposalVisualisation__Iso-A4__RevA__1.3.0____Compressed__DPI-600__JPEG-100.pdf
+2026-01-29 12:25:15,842 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 12:25:15,951 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 12:25:16,069 | INFO | PDF Compression App initialized
+2026-01-29 12:25:34,788 | INFO | Starting compression: C:/Users/adamw/Downloads/Johnstone__Iso-A4__RevA__1.0.0__.pdf
+2026-01-29 12:25:34,788 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-29 12:25:34,790 | INFO | Output path: C:/Users/adamw/Downloads/Johnstone__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 12:25:35,573 | INFO | Compression successful: C:/Users/adamw/Downloads/Johnstone__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 13:03:30,477 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-29 13:03:30,505 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-29 13:03:30,567 | INFO | PDF Compression App initialized
+2026-01-29 13:03:36,468 | INFO | Starting compression: D:/50_CoreLib__Approved__FinalContentLibrary/02__3dPerspective__Watercolor__Standards/01__ProcessImages__Watercolour-09/Partridge__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0__.pdf
+2026-01-29 13:03:36,468 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-29 13:03:36,470 | INFO | Output path: D:/50_CoreLib__Approved__FinalContentLibrary/02__3dPerspective__Watercolor__Standards/01__ProcessImages__Watercolour-09/Partridge__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-29 13:03:37,472 | INFO | Compression successful: D:/50_CoreLib__Approved__FinalContentLibrary/02__3dPerspective__Watercolor__Standards/01__ProcessImages__Watercolour-09/Partridge__SchemeProposalVisualisation__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-30 11:26:22,488 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-01-30 11:26:22,631 | INFO | Successfully imported Noble Architecture icon loader
+2026-01-30 11:26:22,751 | INFO | PDF Compression App initialized
+2026-01-30 11:26:34,452 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__FirstEdition__30-Jan-2026/Footit__SchemeProposalVisualisation__View-01__Iso-A4__RevA__1.0.0__.pdf
+2026-01-30 11:26:34,452 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-30 11:26:34,460 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__FirstEdition__30-Jan-2026/Footit__SchemeProposalVisualisation__View-01__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-30 11:26:35,528 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__FirstEdition__30-Jan-2026/Footit__SchemeProposalVisualisation__View-01__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-30 11:26:40,904 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__FirstEdition__30-Jan-2026/Footit__SchemeProposalVisualisation__View-02__Iso-A4__RevA__1.0.0__.pdf
+2026-01-30 11:26:40,904 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-01-30 11:26:40,910 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__FirstEdition__30-Jan-2026/Footit__SchemeProposalVisualisation__View-02__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-01-30 11:26:41,716 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__FirstEdition__30-Jan-2026/Footit__SchemeProposalVisualisation__View-02__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-05 13:50:36,318 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-05 13:50:36,472 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-05 13:50:36,624 | INFO | PDF Compression App initialized
+2026-02-05 13:50:59,138 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-01__Iso-A4__RevB__1.0.0__.pdf
+2026-02-05 13:50:59,138 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-02-05 13:50:59,139 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-01__Iso-A4__RevB__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-05 13:51:00,162 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-01__Iso-A4__RevB__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-05 13:51:08,841 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-02__Iso-A4__RevB__1.0.0__.pdf
+2026-02-05 13:51:08,841 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-02-05 13:51:08,842 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-02__Iso-A4__RevB__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-05 13:51:09,572 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-02__Iso-A4__RevB__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-05 13:51:11,748 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-03__Iso-A4__RevA__1.0.0__.pdf
+2026-02-05 13:51:11,748 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-02-05 13:51:11,749 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-03__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-05 13:51:12,677 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62514__Footitt__Whitecard/10__ContentDelivered__Local/VisDpt__CGI__SecondEdition__05-Feb-2026/Footit__SchemeProposalVisualisation__View-03__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-02-11 18:18:44,336 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-11 18:18:44,471 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-11 18:18:44,603 | INFO | PDF Compression App initialized
+2026-02-11 18:18:54,588 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3.pdf
+2026-02-11 18:18:54,588 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-02-11 18:18:54,589 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3__Compressed__DPI-300__JPEG-100.pdf
+2026-02-11 18:18:55,370 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3__Compressed__DPI-300__JPEG-100.pdf
+2026-02-11 18:21:51,343 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-11 18:21:51,371 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-11 18:21:51,435 | INFO | PDF Compression App initialized
+2026-02-11 18:21:56,320 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1).pdf
+2026-02-11 18:21:56,320 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-02-11 18:21:56,321 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-300__JPEG-90.pdf
+2026-02-11 18:21:57,062 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-300__JPEG-90.pdf
+2026-02-11 18:22:14,336 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1).pdf
+2026-02-11 18:22:14,336 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-02-11 18:22:14,337 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-600__JPEG-100.pdf
+2026-02-11 18:22:16,348 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-600__JPEG-100.pdf
+2026-02-12 07:49:10,064 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-12 07:49:10,171 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-12 07:49:10,287 | INFO | PDF Compression App initialized
+2026-02-12 07:49:19,656 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2).pdf
+2026-02-12 07:49:19,656 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-02-12 07:49:19,657 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2)__Compressed__DPI-300__JPEG-90.pdf
+2026-02-12 07:49:20,403 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2)__Compressed__DPI-300__JPEG-90.pdf
+2026-02-12 07:49:26,311 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2).pdf
+2026-02-12 07:49:26,311 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-02-12 07:49:26,313 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2)__Compressed__DPI-300__JPEG-90.pdf
+2026-02-12 07:49:27,068 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2)__Compressed__DPI-300__JPEG-90.pdf
+2026-02-12 07:49:37,877 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2).pdf
+2026-02-12 07:49:37,877 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-02-12 07:49:37,878 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2)__Compressed__DPI-450__JPEG-100.pdf
+2026-02-12 07:49:39,346 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (2)__Compressed__DPI-450__JPEG-100.pdf
+2026-02-12 07:49:43,021 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3.pdf
+2026-02-12 07:49:43,021 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-02-12 07:49:43,022 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3__Compressed__DPI-450__JPEG-100.pdf
+2026-02-12 07:49:44,481 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3__Compressed__DPI-450__JPEG-100.pdf
+2026-02-12 13:44:11,264 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-12 13:44:11,386 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-12 13:44:11,545 | INFO | PDF Compression App initialized
+2026-02-12 13:44:21,928 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3.pdf
+2026-02-12 13:44:21,928 | INFO | Settings: DPI=600, JPEG=True, Quality=100
+2026-02-12 13:44:21,929 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3__Compressed__DPI-600__JPEG-100.pdf
+2026-02-12 13:44:24,108 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3__Compressed__DPI-600__JPEG-100.pdf
+2026-02-25 11:47:47,214 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-25 11:47:47,243 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-25 11:47:47,300 | INFO | PDF Compression App initialized
+2026-02-25 11:47:53,765 | INFO | Starting compression: C:/Users/adamw/Downloads/GaryThing.pdf
+2026-02-25 11:47:53,765 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-02-25 11:47:53,766 | INFO | Output path: C:/Users/adamw/Downloads/GaryThing__Compressed__DPI-300__JPEG-100.pdf
+2026-02-25 11:47:54,772 | INFO | Compression successful: C:/Users/adamw/Downloads/GaryThing__Compressed__DPI-300__JPEG-100.pdf
+2026-02-26 09:34:55,433 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-26 09:34:55,535 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-26 09:34:55,693 | INFO | PDF Compression App initialized
+2026-02-26 09:35:05,430 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-26 09:35:05,468 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-26 09:35:05,532 | INFO | PDF Compression App initialized
+2026-02-26 09:35:17,426 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__ExistingReference__Iso-A4__RevA__1.0.0__.pdf
+2026-02-26 09:35:17,426 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-02-26 09:35:17,427 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__ExistingReference__Iso-A4__RevA__1.0.0____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 09:35:18,948 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__ExistingReference__Iso-A4__RevA__1.0.0____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 09:35:24,738 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__SchemeProposalVisualisation__Iso-A4__RevA__1.1.0__.pdf
+2026-02-26 09:35:24,738 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-02-26 09:35:24,741 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__SchemeProposalVisualisation__Iso-A4__RevA__1.1.0____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 09:35:26,425 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__SchemeProposalVisualisation__Iso-A4__RevA__1.1.0____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 09:35:29,660 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0__.pdf
+2026-02-26 09:35:29,660 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-02-26 09:35:29,675 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 09:35:31,607 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/3005__Marten__Whitecard/Marten__SchemeProposalVisualisation__Iso-A4__RevA__1.2.0____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 13:16:08,897 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-02-26 13:16:09,082 | INFO | Successfully imported Noble Architecture icon loader
+2026-02-26 13:16:09,226 | INFO | PDF Compression App initialized
+2026-02-26 13:16:23,390 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62609__Bagot__DigitalConcept/10__ContentDelivered__Local/VisDpt__CompositeCgi__26-Feb-2026/Bagot__SchemeProposalVisualisation__Iso-A4__RevA__1.6.1__.pdf
+2026-02-26 13:16:23,390 | INFO | Settings: DPI=450, JPEG=True, Quality=90
+2026-02-26 13:16:23,391 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62609__Bagot__DigitalConcept/10__ContentDelivered__Local/VisDpt__CompositeCgi__26-Feb-2026/Bagot__SchemeProposalVisualisation__Iso-A4__RevA__1.6.1____Compressed__DPI-450__JPEG-90.pdf
+2026-02-26 13:16:24,482 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62609__Bagot__DigitalConcept/10__ContentDelivered__Local/VisDpt__CompositeCgi__26-Feb-2026/Bagot__SchemeProposalVisualisation__Iso-A4__RevA__1.6.1____Compressed__DPI-450__JPEG-90.pdf
+2026-02-26 13:16:34,873 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2026/62609__Bagot__DigitalConcept/10__ContentDelivered__Local/VisDpt__CompositeCgi__26-Feb-2026/Bagot__SchemeProposalVisualisation__Iso-A4__RevA__1.6.1__.pdf
+2026-02-26 13:16:34,873 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-02-26 13:16:34,874 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/62609__Bagot__DigitalConcept/10__ContentDelivered__Local/VisDpt__CompositeCgi__26-Feb-2026/Bagot__SchemeProposalVisualisation__Iso-A4__RevA__1.6.1____Compressed__DPI-450__JPEG-100.pdf
+2026-02-26 13:16:36,586 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/62609__Bagot__DigitalConcept/10__ContentDelivered__Local/VisDpt__CompositeCgi__26-Feb-2026/Bagot__SchemeProposalVisualisation__Iso-A4__RevA__1.6.1____Compressed__DPI-450__JPEG-100.pdf
+2026-03-18 16:33:50,439 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-03-18 16:33:50,486 | INFO | Successfully imported Noble Architecture icon loader
+2026-03-18 16:33:50,553 | INFO | PDF Compression App initialized
+2026-03-18 16:34:06,018 | INFO | Starting compression: C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Desktop/MartinMullions/10__DeliveredPdf/Martin Mullions.pdf
+2026-03-18 16:34:06,018 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-03-18 16:34:06,020 | INFO | Output path: C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Desktop/MartinMullions/10__DeliveredPdf/Martin Mullions__Compressed__DPI-450__JPEG-100.pdf
+2026-03-18 16:34:09,395 | INFO | Compression successful: C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Desktop/MartinMullions/10__DeliveredPdf/Martin Mullions__Compressed__DPI-450__JPEG-100.pdf
+2026-03-19 15:14:00,888 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-03-19 15:14:01,040 | INFO | Successfully imported Noble Architecture icon loader
+2026-03-19 15:14:01,191 | INFO | PDF Compression App initialized
+2026-03-19 15:14:07,735 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/VE-0002__Vale__ParkerSiteMockup__SpecialJob/04__LayoutFile/10__NickSurvey__19-Mar-2026/A3Q-Vale-01__ParkerSitePack__RevA/A3Q-Vale-01__ParkerSitePack__RevA__2.0.0__.pdf
+2026-03-19 15:14:07,735 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-03-19 15:14:07,736 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/VE-0002__Vale__ParkerSiteMockup__SpecialJob/04__LayoutFile/10__NickSurvey__19-Mar-2026/A3Q-Vale-01__ParkerSitePack__RevA/A3Q-Vale-01__ParkerSitePack__RevA__2.0.0____Compressed__DPI-300__JPEG-90.pdf
+2026-03-19 15:14:09,496 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/VE-0002__Vale__ParkerSiteMockup__SpecialJob/04__LayoutFile/10__NickSurvey__19-Mar-2026/A3Q-Vale-01__ParkerSitePack__RevA/A3Q-Vale-01__ParkerSitePack__RevA__2.0.0____Compressed__DPI-300__JPEG-90.pdf
+2026-03-19 15:14:32,563 | INFO | Starting compression: C:/01__ValeProjects/ValeProjects__2025/VE-0002__Vale__ParkerSiteMockup__SpecialJob/04__LayoutFile/10__NickSurvey__19-Mar-2026/A3Q-Vale-01__ParkerSitePack__RevA/A3Q-Vale-01__ParkerSitePack__RevA__2.0.0__.pdf
+2026-03-19 15:14:32,563 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-03-19 15:14:32,564 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2025/VE-0002__Vale__ParkerSiteMockup__SpecialJob/04__LayoutFile/10__NickSurvey__19-Mar-2026/A3Q-Vale-01__ParkerSitePack__RevA/A3Q-Vale-01__ParkerSitePack__RevA__2.0.0____Compressed__DPI-450__JPEG-100.pdf
+2026-03-19 15:14:36,158 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2025/VE-0002__Vale__ParkerSiteMockup__SpecialJob/04__LayoutFile/10__NickSurvey__19-Mar-2026/A3Q-Vale-01__ParkerSitePack__RevA/A3Q-Vale-01__ParkerSitePack__RevA__2.0.0____Compressed__DPI-450__JPEG-100.pdf
+2026-03-20 09:06:21,346 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-03-20 09:06:21,465 | INFO | Successfully imported Noble Architecture icon loader
+2026-03-20 09:06:21,629 | INFO | PDF Compression App initialized
+2026-03-20 09:06:27,609 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1).pdf
+2026-03-20 09:06:27,609 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-03-20 09:06:27,610 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-300__JPEG-90.pdf
+2026-03-20 09:06:28,450 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-300__JPEG-90.pdf
+2026-03-20 09:06:39,734 | INFO | Starting compression: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1).pdf
+2026-03-20 09:06:39,734 | INFO | Settings: DPI=450, JPEG=True, Quality=100
+2026-03-20 09:06:39,735 | INFO | Output path: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-450__JPEG-100.pdf
+2026-03-20 09:06:40,937 | INFO | Compression successful: C:/Users/adamw/Downloads/ValeVision3D__Layout__A3 (1)__Compressed__DPI-450__JPEG-100.pdf

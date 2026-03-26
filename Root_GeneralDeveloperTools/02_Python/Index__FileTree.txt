@@ -1,0 +1,60 @@
+02_Python/        <--- This is the root folder for the Python codebase, all files should be referenced from here.
+├── .vscode/
+│   └──── settings.json
+│
+├── 00__Demo__MarkdownExample/
+│   ├──── Demo__Notes__ValeTemplate.md
+│   └──── GPT_Text.txt
+│
+├── 00__Python__CommonDependencyFiles/
+│   ├── __pycache__/
+│   │   ├──── SnPy_Core_Utils_IconLoaderAndHandling.cpython-312.pyc
+│   │   └──── SnPy_Core_Utils_IconLoaderAndHandling.cpython-313.pyc
+│   │
+│   ├── Na__CommonBrandAssets/
+│   │   └──── CustomAppIcon__NobleArchLogo.png
+│   │
+│   └── Vale__CommonBrandAssets/
+│       └──── Logo__ValeLogo__HorizontalFormat.png
+│
+├── 01__Python__CommonExternalCodeLibs/
+│
+├── 02__Python__CommonLocalCodeLibs/
+│   ├──── SnPy_Core_Utils_IconLoaderAndHandling.py
+│   └──── SnPy_MasterPipDependencies.txt
+│
+├── 03__Python__CommonConfigFiles/
+│   ├── __pycache__/
+│   │   ├──── SnPy_Core_Utils_IconLoaderAndHandling.cpython-312.pyc
+│   │   └──── SnPy_Core_Utils_IconLoaderAndHandling.cpython-313.pyc
+│   │
+│   ├── Na__CommonBrandAssets/
+│   │   └──── CustomAppIcon__NobleArchLogo.png
+│   │
+│   ├── Vale__CommonBrandAssets/
+│   │   └──── Logo__ValeLogo__HorizontalFormat.png
+│   │
+│   ├──── SnPy_Core_Utils_IconLoaderAndHandling.py
+│   └──── SnPy_MasterPipDependencies.txt
+│
+├── 10__Python__WinFileSystemTools/
+│   ├── Py__WinFileUtil__ProjectFileTreeViewer/
+│   │   ├── 00__ArchivedVersions/
+│   │   │   ├──── PyWindowUtil__ProjectFileTreeViewer__1.1.0__.--BAK
+│   │   │   └──── PyWindowUtil__ProjectFileTreeViewer__1.2.0__.--BAK
+│   │   │
+│   │   └──── Python__WindowsUtil__ProjectFileTreeViewer.py
+│   │
+│       │
+│       ├──── Download_Dependencies.ps1
+│       ├──── INSTALL_DEPENDENCIES.bat
+│       ├──── png_to_timelapse.log
+│       ├──── Py_FileUtils__PngFilesToTimelapseVideo__Main__.py
+│       └──── README.txt
+│
+├── Reference__CodingStandardsReference/
+│   ├──── SnPy_01_CodeRegionTagsAndStandards.txt
+│   └──── SnPy_02_CodeHeaderStandards.txt
+│
+├──── Python__WindowsUtil__ProjectFileTreeViewer.py
+└──── PythonDev__WorkSpace.code-workspace

@@ -1,60 +1,76 @@
 {
-    "workers": [
+  "workers": [
+    {
+      "id": "w1",
+      "name": "Adam Noble",
+      "role": "3D Visualiser & Chief Nerd",
+      "avatar": "https://i.pravatar.cc/150?u=adam",
+      "shifts": [
         {
-            "id": "w1",
-            "name": "Adam Noble",
-            "role": "3D Visualiser & Chief Nerd",
-            "avatar": "https://i.pravatar.cc/150?u=adam",
-            "shifts": [
-                {
-                    "id": "s1",
-                    "date": "2024-10-21",
-                    "startTime": "09:00",
-                    "endTime": "12:30",
-                    "title": "3D Modeling - Character",
-                    "color": "na-shift-color-blue"
-                },
-                {
-                    "id": "s2",
-                    "date": "2024-10-21",
-                    "startTime": "13:30",
-                    "endTime": "17:00",
-                    "title": "Texture Baking",
-                    "color": "na-shift-color-purple"
-                },
-                {
-                    "id": "s3",
-                    "date": "2024-10-22",
-                    "startTime": "10:00",
-                    "endTime": "15:00",
-                    "title": "Client Review Sync",
-                    "color": "na-shift-color-emerald"
-                },
-                {
-                    "id": "s4",
-                    "date": "2024-10-23",
-                    "startTime": "08:30",
-                    "endTime": "14:00",
-                    "title": "Environment Modeling",
-                    "color": "na-shift-color-blue"
-                },
-                {
-                    "id": "s5",
-                    "date": "2024-10-24",
-                    "startTime": "09:00",
-                    "endTime": "16:00",
-                    "title": "Lighting & Rendering",
-                    "color": "na-shift-color-amber"
-                },
-                {
-                    "id": "s6",
-                    "date": "2024-10-25",
-                    "startTime": "10:00",
-                    "endTime": "16:00",
-                    "title": "Final Compositing",
-                    "color": "na-shift-color-rose"
-                }
-            ]
+          "id": "s1",
+          "date": "2024-10-21",
+          "startTime": "08:00",
+          "endTime": "10:00",
+          "title": "Whitecard |  Lister",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1774547690418",
+          "date": "2024-10-21",
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "title": "Organise Standards Library",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1774547700416",
+          "date": "2024-10-21",
+          "startTime": "11:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Lamming",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "s3",
+          "date": "2024-10-22",
+          "startTime": "08:00",
+          "endTime": "14:00",
+          "title": "Whitecard |  Lister",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1774547758484",
+          "date": "2024-10-22",
+          "startTime": "14:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Foster",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "s4",
+          "date": "2024-10-23",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "Whitecard |  Foster",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1774547798534",
+          "date": "2024-10-23",
+          "startTime": "11:00",
+          "endTime": "15:00",
+          "title": "Whitecard |  Smee",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1774547832683",
+          "date": "2024-10-23",
+          "startTime": "15:00",
+          "endTime": "17:00",
+          "title": "Dev Work |  Time Management System",
+          "color": "na-shift-color-emerald"
         }
-    ]
+      ]
+    }
+  ]
 }

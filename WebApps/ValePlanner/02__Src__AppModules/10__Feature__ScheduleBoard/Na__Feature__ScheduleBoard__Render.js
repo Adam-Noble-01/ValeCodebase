@@ -69,6 +69,9 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 
      panelElement.querySelectorAll('[data-action="create-shift"]').forEach((cellElement) => {
          cellElement.addEventListener('mousedown', (mouseEvent) => {
+            const targetElement = mouseEvent.target instanceof Element ? mouseEvent.target : null;
+            if (targetElement && targetElement.closest('.na-shift-card')) return;
+
              const columnId = cellElement.getAttribute('data-column-id');
              if (!columnId) return;
 
@@ -114,27 +117,33 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
              });
          });
 
-         shiftElement.addEventListener('dblclick', (mouseEvent) => {
-             mouseEvent.stopPropagation();
-             const shiftId = shiftElement.getAttribute('data-shift-id');
-             if (!shiftId) return;
-
-             const sourceShift = allShifts.find((shiftValue) => shiftValue.id === shiftId);
-             if (!sourceShift) return;
-
-             const editedTitle = window.prompt('Update shift title', sourceShift.title);
-             if (editedTitle === null) return;
-
-             setWorkers((workersValue) => workersValue.map((workerValue) => ({
-                 ...workerValue,
-                 shifts: workerValue.shifts.map((shiftValue) => (
-                     shiftValue.id === shiftId
-                         ? { ...shiftValue, title: editedTitle.trim() || 'Untitled Task' }
-                         : shiftValue
-                 ))
-             })));
-         });
+        shiftElement.addEventListener('dblclick', (mouseEvent) => {
+            const shiftId = shiftElement.getAttribute('data-shift-id');
+            Na__Schedule__HandleShiftMetaEditRequest({
+                mouseEvent,
+                shiftId,
+                allShifts,
+                setWorkers
+            });
+        });
      });
+
+    panelElement.querySelectorAll('[data-action="edit-shift-meta"]').forEach((editElement) => {
+        editElement.addEventListener('mousedown', (mouseEvent) => {
+            mouseEvent.stopPropagation();
+            mouseEvent.preventDefault();
+        });
+
+        editElement.addEventListener('dblclick', (mouseEvent) => {
+            const shiftId = editElement.getAttribute('data-shift-id');
+            Na__Schedule__HandleShiftMetaEditRequest({
+                mouseEvent,
+                shiftId,
+                allShifts,
+                setWorkers
+            });
+        });
+    });
 
      panelElement.querySelectorAll('[data-action="resize-shift"]').forEach((resizeElement) => {
          resizeElement.addEventListener('mousedown', (mouseEvent) => {
@@ -161,15 +170,23 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
      });
 
      panelElement.querySelectorAll('[data-action="delete-shift"]').forEach((buttonElement) => {
-         buttonElement.addEventListener('click', (clickEvent) => {
-             clickEvent.stopPropagation();
-             const shiftId = buttonElement.getAttribute('data-shift-id');
-             if (!shiftId) return;
+        buttonElement.addEventListener('mousedown', (mouseEvent) => {
+            Na__Schedule__HandleShiftDeleteRequest({
+                mouseEvent,
+                phase: 'mousedown'
+            });
+        });
 
-             setWorkers((workersValue) => workersValue.map((workerValue) => ({
-                 ...workerValue,
-                 shifts: workerValue.shifts.filter((shiftValue) => shiftValue.id !== shiftId)
-             })));
+         buttonElement.addEventListener('click', (clickEvent) => {
+             const shiftId = buttonElement.getAttribute('data-shift-id');
+            Na__Schedule__HandleShiftDeleteRequest({
+                mouseEvent: clickEvent,
+                phase: 'click',
+                shiftId,
+                setWorkers,
+                state,
+                setState
+            });
          });
      });
 
@@ -214,10 +231,11 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
          return `
             <div class="na-shift-card ${shiftValue.color} ${isSelected ? 'na-shift-card--selected' : ''}" style="top:${topOffset}px;height:${heightValue}px;">
                 <div class="na-shift-card__main" data-action="move-shift" data-shift-id="${shiftValue.id}" data-column-id="${columnValue.id}">
+                    <div class="na-shift-card__edit-target" data-action="edit-shift-meta" data-shift-id="${shiftValue.id}" title="Double-click to edit task and color">Edit</div>
                     ${showWorkerInfo ? `<span class="na-shift-card__worker">${shiftValue.workerName}</span>` : ''}
                     <div class="na-shift-card__title">${shiftValue.title}</div>
                     <div class="na-shift-card__time">${shiftValue.startTime} - ${shiftValue.endTime}</div>
-                    ${isSelected ? `<button class="na-shift-card__delete" data-action="delete-shift" data-shift-id="${shiftValue.id}">X</button>` : ''}
+                    <button class="na-shift-card__delete" data-action="delete-shift" data-shift-id="${shiftValue.id}" title="Delete shift">X</button>
                 </div>
                 <div class="na-shift-card__resize" data-action="resize-shift" data-shift-id="${shiftValue.id}" data-column-id="${columnValue.id}">:::</div>
             </div>
@@ -247,6 +265,112 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
      `;
  }
  // ------------------------------------------------------------
+
+
+ // HELPER FUNCTION | Handle Shift Delete Request
+ // ------------------------------------------------------------
+function Na__Schedule__HandleShiftDeleteRequest(config) {
+    const { mouseEvent, phase, shiftId, setWorkers, state, setState } = config;
+
+    if (mouseEvent) {
+        mouseEvent.stopPropagation();
+        mouseEvent.preventDefault();
+    }
+
+    if (phase === 'mousedown') {
+        return;
+    }
+
+    if (!shiftId || !setWorkers) return;
+
+    setWorkers((workersValue) => workersValue.map((workerValue) => ({
+        ...workerValue,
+        shifts: workerValue.shifts.filter((shiftValue) => shiftValue.id !== shiftId)
+    })));
+
+    if (state && state.selectedShiftId === shiftId && setState) {
+        setState({ selectedShiftId: null });
+    }
+}
+// ------------------------------------------------------------
+
+
+ // HELPER FUNCTION | Handle Shift Meta Edit Request
+ // ------------------------------------------------------------
+function Na__Schedule__HandleShiftMetaEditRequest(config) {
+    const { mouseEvent, shiftId, allShifts, setWorkers } = config;
+
+    mouseEvent.stopPropagation();
+    mouseEvent.preventDefault();
+
+    if (!shiftId) return;
+
+    const sourceShift = allShifts.find((shiftValue) => shiftValue.id === shiftId);
+    if (!sourceShift) return;
+
+    const editedTitle = window.prompt('Update shift title', sourceShift.title);
+    if (editedTitle === null) return;
+
+    const colorPrompt = [
+        'Update shift color class',
+        'Options:',
+        '1 = blue',
+        '2 = emerald',
+        '3 = amber',
+        '4 = purple',
+        '5 = rose'
+    ].join('\n');
+    const colorInput = window.prompt(colorPrompt, Na__Schedule__MapColourClassToPromptNumber(sourceShift.color));
+    if (colorInput === null) return;
+
+    const mappedColourClass = Na__Schedule__MapPromptNumberToColourClass(colorInput.trim());
+
+    setWorkers((workersValue) => workersValue.map((workerValue) => ({
+        ...workerValue,
+        shifts: workerValue.shifts.map((shiftValue) => (
+            shiftValue.id === shiftId
+                ? {
+                    ...shiftValue,
+                    title: editedTitle.trim() || 'Untitled Task',
+                    color: mappedColourClass || shiftValue.color
+                }
+                : shiftValue
+        ))
+    })));
+}
+// ------------------------------------------------------------
+
+
+ // HELPER FUNCTION | Map Prompt Number to Shift Colour Class
+ // ------------------------------------------------------------
+function Na__Schedule__MapPromptNumberToColourClass(colorPromptValue) {
+    const colourMap = {
+        1: 'na-shift-color-blue',
+        2: 'na-shift-color-emerald',
+        3: 'na-shift-color-amber',
+        4: 'na-shift-color-purple',
+        5: 'na-shift-color-rose'
+    };
+
+    return colourMap[colorPromptValue] || '';
+}
+// ------------------------------------------------------------
+
+
+ // HELPER FUNCTION | Map Shift Colour Class to Prompt Number
+ // ------------------------------------------------------------
+function Na__Schedule__MapColourClassToPromptNumber(colourClassValue) {
+    const promptMap = {
+        'na-shift-color-blue': '1',
+        'na-shift-color-emerald': '2',
+        'na-shift-color-amber': '3',
+        'na-shift-color-purple': '4',
+        'na-shift-color-rose': '5'
+    };
+
+    return promptMap[colourClassValue] || '1';
+}
+// ------------------------------------------------------------
 
 
  // HELPER FUNCTION | Render Current Time Indicator

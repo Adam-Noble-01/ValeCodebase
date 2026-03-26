@@ -22,7 +22,7 @@
  */
 
 /**
- * @typedef {'schedule' | 'analytics'} Na__MainTab
+ * @typedef {'schedule' | 'analytics' | 'timecard'} Na__MainTab
  */
 
 /**

@@ -11,11 +11,13 @@ Purpose:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import socket
 import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlparse
 from typing import Tuple
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -26,8 +28,128 @@ if hasattr(sys.stdout, "reconfigure"):
 # REGION | Server Handler
 # -----------------------------------------------------------------------------
 
+NA__SERVER__WORKERS_JSON_PATH = Path("02__Src__AppModules/03__AppData/Na__AppData__Workers__Seed.json")
+NA__SERVER__TIMECARD_JSON_PATH = Path("02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json")
+
 
 class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
+    # SUB FUNCTION | Resolve API route key from request path
+    # ------------------------------------------------------------
+    def Na__Server__GetApiRouteKey(self) -> str | None:
+        request_path = urlparse(self.path).path.rstrip("/")
+        if request_path.endswith("/api/data/workers"):
+            return "workers"
+        if request_path.endswith("/api/data/timecard"):
+            return "timecard"
+        return None
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Handle API data reads on GET requests
+    # ------------------------------------------------------------
+    def do_GET(self) -> None:
+        api_route_key = self.Na__Server__GetApiRouteKey()
+        if api_route_key == "workers":
+            self.Na__Server__HandleApiRead(NA__SERVER__WORKERS_JSON_PATH)
+            return
+        if api_route_key == "timecard":
+            self.Na__Server__HandleApiRead(NA__SERVER__TIMECARD_JSON_PATH)
+            return
+        super().do_GET()
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Handle API data writes on PUT requests
+    # ------------------------------------------------------------
+    def do_PUT(self) -> None:
+        api_route_key = self.Na__Server__GetApiRouteKey()
+        if api_route_key == "workers":
+            payload = self.Na__Server__ReadJsonBody()
+            if payload is None:
+                return
+            workers_value = payload.get("workers")
+            if not isinstance(workers_value, list):
+                self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Invalid payload. Expected object with workers array."})
+                return
+            self.Na__Server__WriteJsonFile(NA__SERVER__WORKERS_JSON_PATH, {"workers": workers_value})
+            return
+        if api_route_key == "timecard":
+            payload = self.Na__Server__ReadJsonBody()
+            if payload is None:
+                return
+            if not isinstance(payload, dict):
+                self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Invalid payload. Expected JSON object."})
+                return
+            self.Na__Server__WriteJsonFile(NA__SERVER__TIMECARD_JSON_PATH, payload)
+            return
+        self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": "Unknown API route"})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Read JSON file and return API response
+    # ------------------------------------------------------------
+    def Na__Server__HandleApiRead(self, relative_file_path: Path) -> None:
+        try:
+            target_path = (Path.cwd() / relative_file_path).resolve()
+            with target_path.open("r", encoding="utf-8") as json_file:
+                payload = json.load(json_file)
+            self.Na__Server__WriteJsonResponse(200, {"ok": True, "data": payload})
+        except FileNotFoundError:
+            self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": f"File not found: {relative_file_path.as_posix()}"})
+        except json.JSONDecodeError as decode_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": f"JSON parse error: {decode_error}"})
+        except OSError as os_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": f"File read error: {os_error}"})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Write payload JSON to disk and reply
+    # ------------------------------------------------------------
+    def Na__Server__WriteJsonFile(self, relative_file_path: Path, payload: dict) -> None:
+        try:
+            target_path = (Path.cwd() / relative_file_path).resolve()
+            with target_path.open("w", encoding="utf-8", newline="\n") as json_file:
+                json.dump(payload, json_file, indent=2, ensure_ascii=False)
+                json_file.write("\n")
+            self.Na__Server__WriteJsonResponse(200, {"ok": True, "message": f"Saved {relative_file_path.as_posix()}"})
+        except OSError as os_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": f"File write error: {os_error}"})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Parse JSON request body
+    # ------------------------------------------------------------
+    def Na__Server__ReadJsonBody(self) -> dict | None:
+        try:
+            content_length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Invalid Content-Length header"})
+            return None
+        if content_length <= 0:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Request body is required"})
+            return None
+        try:
+            raw_bytes = self.rfile.read(content_length)
+            payload = json.loads(raw_bytes.decode("utf-8"))
+        except UnicodeDecodeError:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Request body must be UTF-8 encoded JSON"})
+            return None
+        except json.JSONDecodeError as decode_error:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": f"Invalid JSON body: {decode_error}"})
+            return None
+        if not isinstance(payload, dict):
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Invalid payload. Expected JSON object."})
+            return None
+        return payload
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Write JSON HTTP response body
+    # ------------------------------------------------------------
+    def Na__Server__WriteJsonResponse(self, status_code: int, payload: dict) -> None:
+        body_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body_bytes)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body_bytes)
+    # ------------------------------------------------------------
+
     # SUB FUNCTION | Reduce noisy default formatting
     # ------------------------------------------------------------
     def log_message(self, format: str, *args) -> None:

@@ -7,17 +7,19 @@ import { Na__AppCore__InitializeValePlannerApp } from './Na__AppCore__ValePlanne
 
  // FUNCTION | Initialize App From Root Element
  // ------------------------------------------------------------
- function Na__AppCore__Bootstrap() {
+ async function Na__AppCore__Bootstrap() {
      const appRootElement = document.getElementById('naValePlannerAppRoot');
      if (!appRootElement) {
          throw new Error('ValePlanner root element not found');
      }
 
-     Na__AppCore__InitializeValePlannerApp(appRootElement);
+    await Na__AppCore__InitializeValePlannerApp(appRootElement);
  }
  // ------------------------------------------------------------
 
 
- Na__AppCore__Bootstrap();
+Na__AppCore__Bootstrap().catch((errorValue) => {
+    console.error('ValePlanner bootstrap failed:', errorValue);
+});
 
 // endregion ----------------------------------------------------

@@ -145,10 +145,34 @@
     font-size    : 10px;
     font-weight  : 700;
     opacity      : 0.82;
+    margin-top   : 12px;
     margin-bottom: 2px;
     white-space  : nowrap;
     overflow     : hidden;
     text-overflow: ellipsis;
+}
+
+.na-shift-card__edit-target {
+    position       : absolute;
+    top            : 5px;
+    left           : 6px;
+    padding        : 1px 5px;
+    border-radius  : 5px;
+    background     : rgba(255, 255, 255, 0.76);
+    border         : 1px solid rgba(15, 23, 42, 0.18);
+    color          : inherit;
+    font-size      : 9px;
+    font-weight    : 700;
+    line-height    : 1.35;
+    cursor         : pointer;
+    user-select    : none;
+    opacity        : 0;
+    pointer-events : none;
+    transition     : opacity 120ms ease;
+}
+
+.na-shift-card__edit-target:hover {
+    background  : rgba(255, 255, 255, 0.94);
 }
 
 .na-shift-card__title {
@@ -178,6 +202,17 @@
     background     : rgba(255, 255, 255, 0.78);
     font-size      : 11px;
     font-weight    : 700;
+    opacity        : 0;
+    pointer-events : none;
+    transition     : opacity 120ms ease;
+}
+
+.na-shift-card:hover .na-shift-card__edit-target,
+.na-shift-card:hover .na-shift-card__delete,
+.na-shift-card:focus-within .na-shift-card__edit-target,
+.na-shift-card:focus-within .na-shift-card__delete {
+    opacity        : 1;
+    pointer-events : auto;
 }
 
 .na-shift-card__resize {

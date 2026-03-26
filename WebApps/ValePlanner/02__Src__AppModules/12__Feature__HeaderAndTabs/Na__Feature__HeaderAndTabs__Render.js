@@ -10,7 +10,7 @@ import { Na__Utils__GetDayLabel, Na__Utils__GetWeekRangeLabel } from '../05__App
      const dateLabel = state.viewMode === 'day'
          ? Na__Utils__GetDayLabel(state.currentDate)
          : Na__Utils__GetWeekRangeLabel(state.currentDate);
-    const thumbnailImageUrl = state.workers[0]?.avatar || '../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg';
+    const thumbnailImageUrl = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/ValePlanner/01__AppAssets__ValePlanner/ProfileImage__CorporateHeadshot__AdamW__.png';
 
      rootElement.innerHTML = `
         <header class="na-app-header">
@@ -20,6 +20,7 @@ import { Na__Utils__GetDayLabel, Na__Utils__GetWeekRangeLabel } from '../05__App
                     <div class="na-app-header__title">Adam's Schedule</div>
                 </div>
                 <div class="na-pill-group">
+                    <button class="na-pill-group__btn ${state.mainTab === 'timecard' ? 'na-pill-group__btn--active' : ''}" data-action="set-main-tab" data-value="timecard">Timecard</button>
                     <button class="na-pill-group__btn ${state.mainTab === 'schedule' ? 'na-pill-group__btn--active' : ''}" data-action="set-main-tab" data-value="schedule">Schedule</button>
                     <button class="na-pill-group__btn ${state.mainTab === 'analytics' ? 'na-pill-group__btn--active' : ''}" data-action="set-main-tab" data-value="analytics">Analytics</button>
                 </div>

@@ -5,6 +5,10 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
 // REGION | Schedule Board Interaction Logic
 // -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+// REGION | Module State and Helper Utilities
+// -----------------------------------------------------------------------------
+
  // MODULE VARIABLES | Drag Listener Cleanup Handle
  // ------------------------------------------------------------
  let Na__Schedule__DragListenerCleanup = null;
@@ -18,6 +22,13 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
      return Na__Schedule__ShiftColourClasses[randomIndex];
  }
  // ------------------------------------------------------------
+
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public Interaction Entry Points
+// -----------------------------------------------------------------------------
 
 
  // FUNCTION | Start Shift Interaction
@@ -82,6 +93,10 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
  }
  // ------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------------
+// REGION | Drag Lifecycle Handler Wiring
+// -----------------------------------------------------------------------------
 
  // FUNCTION | Setup Drag Handlers
  // ------------------------------------------------------------
@@ -220,10 +235,11 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
              return nextWorkers;
          });
 
-         setState({
-             ...finalState,
-             draftShift: null
-         });
+        setState({
+            draftShift: null,
+            pendingDrag: null,
+            dragOffsetMins: 0
+        });
      };
 
      window.addEventListener('mousemove', handleMouseMove);
@@ -246,5 +262,7 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
      }
  }
  // ------------------------------------------------------------
+
+// endregion ----------------------------------------------------
 
 // endregion ----------------------------------------------------

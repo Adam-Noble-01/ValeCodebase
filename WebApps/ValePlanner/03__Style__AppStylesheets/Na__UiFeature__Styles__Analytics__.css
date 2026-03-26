@@ -1,0 +1,68 @@
+/* ================================================================= */
+/* REGION  |  Analytics Styles                                       */
+/* ================================================================= */
+
+.na-analytics-root {
+    padding      : 20px;
+    height       : 100%;
+    overflow-y   : auto;
+    background   : rgba(248, 250, 252, 0.6);
+}
+
+.na-analytics-grid {
+    width                 : min(1200px, 100%);
+    margin                : 0 auto;
+    display               : grid;
+    grid-template-columns : 1fr;
+    gap                   : 16px;
+}
+
+.na-analytics-stats {
+    display               : grid;
+    grid-template-columns : repeat(3, minmax(0, 1fr));
+    gap                   : 14px;
+}
+
+.na-analytics-card {
+    background     : #ffffff;
+    border         : 1px solid var(--na-colour-border);
+    border-radius  : 12px;
+    box-shadow     : var(--na-shadow-card);
+    padding        : 16px;
+}
+
+.na-analytics-value {
+    font-size    : 28px;
+    font-weight  : 700;
+    margin-top   : 3px;
+}
+
+.na-analytics-value--indigo {
+    color : #4f46e5;
+}
+
+.na-analytics-value--emerald {
+    color : #059669;
+}
+
+.na-analytics-chart-grid {
+    display               : grid;
+    grid-template-columns : repeat(2, minmax(0, 1fr));
+    gap                   : 14px;
+}
+
+.na-analytics-chart-wrap {
+    height : 360px;
+}
+
+@media (max-width: 980px) {
+    .na-analytics-stats {
+        grid-template-columns : 1fr;
+    }
+
+    .na-analytics-chart-grid {
+        grid-template-columns : 1fr;
+    }
+}
+
+/* endregion -------------------------------------------------------- */

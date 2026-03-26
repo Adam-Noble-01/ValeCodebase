@@ -1,0 +1,229 @@
+/* ================================================================= */
+/* REGION  |  Schedule Board Styles                                  */
+/* ================================================================= */
+
+.na-schedule-root {
+    display          : flex;
+    flex-direction   : column;
+    height           : 100%;
+    user-select      : none;
+}
+
+.na-schedule-columns-header {
+    display          : flex;
+    border-bottom    : 1px solid var(--na-colour-border);
+    background       : #f8fafc;
+}
+
+.na-schedule-time-axis-header {
+    width            : 78px;
+    border-right     : 1px solid var(--na-colour-border);
+}
+
+.na-schedule-columns-grid {
+    flex             : 1;
+    display          : grid;
+}
+
+.na-schedule-column-header {
+    padding          : 10px 12px;
+    border-right     : 1px solid var(--na-colour-border);
+}
+
+.na-schedule-column-header:last-child {
+    border-right : 0;
+}
+
+.na-schedule-column-title {
+    font-size    : 13px;
+    font-weight  : 700;
+}
+
+.na-schedule-column-subtitle {
+    font-size    : 12px;
+    color        : var(--na-colour-text-muted);
+}
+
+.na-schedule-grid-scroll {
+    flex        : 1;
+    overflow-y  : auto;
+    position    : relative;
+}
+
+.na-schedule-grid-wrap {
+    display : flex;
+}
+
+.na-schedule-time-axis {
+    width            : 78px;
+    border-right     : 1px solid var(--na-colour-border);
+    position         : relative;
+    background       : #f8fafc;
+}
+
+.na-schedule-time-label {
+    position      : absolute;
+    right         : 10px;
+    transform     : translateY(-50%);
+    color         : #94a3b8;
+    font-size     : 11px;
+    font-weight   : 600;
+}
+
+.na-schedule-grid-main {
+    position      : relative;
+    flex          : 1;
+}
+
+.na-schedule-grid-lines,
+.na-schedule-grid-columns,
+.na-schedule-grid-cells {
+    position      : absolute;
+    inset         : 0;
+}
+
+.na-schedule-grid-columns,
+.na-schedule-grid-cells {
+    display : grid;
+}
+
+.na-schedule-grid-hour-line {
+    position       : absolute;
+    width          : 100%;
+    border-top     : 1px solid #f1f5f9;
+}
+
+.na-schedule-grid-column-line {
+    border-right : 1px solid #f1f5f9;
+}
+
+.na-schedule-grid-column-line:last-child {
+    border-right : 0;
+}
+
+.na-schedule-cell {
+    position   : relative;
+    height     : 100%;
+}
+
+.na-shift-card {
+    position         : absolute;
+    left             : 6px;
+    right            : 6px;
+    border-radius    : 8px;
+    border           : 1px solid transparent;
+    box-shadow       : var(--na-shadow-card);
+    overflow         : hidden;
+    display          : flex;
+    flex-direction   : column;
+}
+
+.na-shift-card--draft {
+    opacity   : 0.82;
+    z-index   : 35;
+}
+
+.na-shift-card--selected {
+    outline        : 2px solid var(--na-colour-brand);
+    outline-offset : 1px;
+    z-index        : 30;
+}
+
+.na-shift-card__main {
+    flex       : 1;
+    padding    : 7px 8px;
+    cursor     : grab;
+    position   : relative;
+}
+
+.na-shift-card__main:active {
+    cursor : grabbing;
+}
+
+.na-shift-card__worker {
+    display      : block;
+    font-size    : 10px;
+    font-weight  : 700;
+    opacity      : 0.82;
+    margin-bottom: 2px;
+    white-space  : nowrap;
+    overflow     : hidden;
+    text-overflow: ellipsis;
+}
+
+.na-shift-card__title {
+    font-size       : 12px;
+    font-weight     : 700;
+    margin-bottom   : 2px;
+    white-space     : nowrap;
+    overflow        : hidden;
+    text-overflow   : ellipsis;
+}
+
+.na-shift-card__time {
+    font-size    : 10px;
+    font-weight  : 600;
+    opacity      : 0.85;
+}
+
+.na-shift-card__delete {
+    position       : absolute;
+    right          : 6px;
+    top            : 6px;
+    border         : 0;
+    border-radius  : 4px;
+    padding        : 2px 4px;
+    cursor         : pointer;
+    color          : var(--na-colour-danger);
+    background     : rgba(255, 255, 255, 0.78);
+    font-size      : 11px;
+    font-weight    : 700;
+}
+
+.na-shift-card__resize {
+    height         : 11px;
+    border-top     : 1px solid rgba(15, 23, 42, 0.16);
+    cursor         : ns-resize;
+    text-align     : center;
+    font-size      : 10px;
+}
+
+.na-current-time-line {
+    position      : absolute;
+    left          : 0;
+    right         : 0;
+    border-top    : 2px solid #ef4444;
+    z-index       : 40;
+}
+
+.na-shift-color-blue {
+    background : #eff6ff;
+    border-color : #bfdbfe;
+    color : #1d4ed8;
+}
+
+.na-shift-color-emerald {
+    background : #ecfdf5;
+    border-color : #a7f3d0;
+    color : #047857;
+}
+
+.na-shift-color-amber {
+    background : #fffbeb;
+    border-color : #fde68a;
+    color : #b45309;
+}
+
+.na-shift-color-purple {
+    background : #f5f3ff;
+    border-color : #ddd6fe;
+    color : #6d28d9;
+}
+
+.na-shift-color-rose {
+    background : #fff1f2;
+    border-color : #fecdd3;
+    color : #be123c;
+}
+
+/* endregion -------------------------------------------------------- */

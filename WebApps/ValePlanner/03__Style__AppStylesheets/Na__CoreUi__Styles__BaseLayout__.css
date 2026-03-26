@@ -1,0 +1,64 @@
+/* ================================================================= */
+/* REGION  |  Base Layout and Typography                             */
+/* ================================================================= */
+
+:root {
+    --na-colour-bg-main             : #f8fafc;
+    --na-colour-bg-card             : #ffffff;
+    --na-colour-bg-subtle           : #f1f5f9;
+    --na-colour-border              : #e2e8f0;
+    --na-colour-text-main           : #0f172a;
+    --na-colour-text-muted          : #64748b;
+    --na-colour-brand               : #4f46e5;
+    --na-colour-danger              : #dc2626;
+    --na-shadow-card                : 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+* {
+    box-sizing : border-box;
+}
+
+html, body {
+    margin                       : 0;
+    padding                      : 0;
+    font-family                  : "Open Sans", Arial, sans-serif;
+    color                        : var(--na-colour-text-main);
+    background                   : var(--na-colour-bg-main);
+    height                       : 100%;
+}
+
+body {
+    min-height : 100vh;
+}
+
+#naValePlannerAppRoot {
+    min-height      : 100vh;
+    display         : flex;
+    flex-direction  : column;
+}
+
+.na-hidden {
+    display : none !important;
+}
+
+.na-button {
+    border                      : 1px solid transparent;
+    border-radius               : 8px;
+    background                  : var(--na-colour-bg-subtle);
+    color                       : var(--na-colour-text-main);
+    padding                     : 7px 12px;
+    font-size                   : 13px;
+    font-weight                 : 600;
+    cursor                      : pointer;
+}
+
+.na-button:hover {
+    filter : brightness(0.985);
+}
+
+.na-button--primary {
+    background : var(--na-colour-brand);
+    color      : #ffffff;
+}
+
+/* endregion -------------------------------------------------------- */

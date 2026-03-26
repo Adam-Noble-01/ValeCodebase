@@ -1,0 +1,96 @@
+/* ================================================================= */
+/* REGION  |  Header and Navigation Tabs                             */
+/* ================================================================= */
+
+.na-app-header {
+    position                     : sticky;
+    top                          : 0;
+    z-index                      : 50;
+    background                   : #ffffff;
+    border-bottom                : 1px solid var(--na-colour-border);
+    padding                      : 14px 22px;
+    display                      : flex;
+    justify-content              : space-between;
+    align-items                  : center;
+    gap                          : 16px;
+}
+
+.na-app-header__left,
+.na-app-header__right {
+    display      : flex;
+    align-items  : center;
+    gap          : 14px;
+}
+
+.na-app-header__brand {
+    display      : flex;
+    align-items  : center;
+    gap          : 12px;
+}
+
+.na-app-header__avatar {
+    width             : 40px;
+    height            : 40px;
+    border-radius     : 50%;
+    object-fit        : cover;
+    flex-shrink       : 0;
+    border            : 1px solid var(--na-colour-border);
+    box-shadow        : var(--na-shadow-card);
+}
+
+.na-app-header__title {
+    font-size    : 20px;
+    font-weight  : 700;
+}
+
+.na-pill-group {
+    display         : inline-flex;
+    gap             : 4px;
+    padding         : 4px;
+    border-radius   : 10px;
+    background      : var(--na-colour-bg-subtle);
+}
+
+.na-pill-group__btn {
+    border            : 0;
+    padding           : 6px 12px;
+    border-radius     : 7px;
+    background        : transparent;
+    color             : var(--na-colour-text-muted);
+    cursor            : pointer;
+    font-size         : 13px;
+    font-weight       : 600;
+}
+
+.na-pill-group__btn--active {
+    background   : #ffffff;
+    color        : var(--na-colour-text-main);
+    box-shadow   : var(--na-shadow-card);
+}
+
+.na-date-pill {
+    font-size      : 13px;
+    color          : var(--na-colour-text-muted);
+    background     : var(--na-colour-bg-subtle);
+    border-radius  : 999px;
+    padding        : 7px 12px;
+}
+
+.na-app-main {
+    padding        : 20px;
+    display        : flex;
+    justify-content: center;
+    flex           : 1;
+}
+
+.na-app-main__panel {
+    width          : min(1420px, 100%);
+    min-height     : calc(100vh - 110px);
+    background     : var(--na-colour-bg-card);
+    border         : 1px solid var(--na-colour-border);
+    border-radius  : 14px;
+    box-shadow     : var(--na-shadow-card);
+    overflow       : hidden;
+}
+
+/* endregion -------------------------------------------------------- */

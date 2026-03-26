@@ -19,6 +19,11 @@
 		"path"         : "D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools",
         "name"         : "Root_GeneralDeveloperTools - Sister Folder With Developer Tools",
         "description"  : "This folder contains general developer tools that are used across the Vale project. These are miscellaneous utilities and tools that are not specific to any one project but are useful for the development process. The auto Vale Email generator tool can be found here and my Python version of AutoHotkey which is optimised for Vale Projects etc."
+	  },
+	  {
+		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValePlanner",
+        "name"         : "ValePlanner - Sister Project Folder",
+        "description"  : "This is the main project for the ValePlanner Web Application. ValePlanner is a planning tool for Vale projects and time management. It allows users to plan and manage their projects in a easy to use and navigate manner."
 	  }
 	],
 	"settings": {

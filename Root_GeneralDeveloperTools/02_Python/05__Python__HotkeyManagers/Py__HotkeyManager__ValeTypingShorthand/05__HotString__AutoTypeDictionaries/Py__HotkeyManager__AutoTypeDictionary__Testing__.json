@@ -1,7 +1,7 @@
 [
     {
-        "Hotstring"  : ";wcc",
+        "Hotstring"  : ";test",
         "Action"     : "TypeOutText",
-        "Text"       : "✅ Complete | Whitecard Delivery - "
+        "Text"       : "This is a test to see if the hotstring manager is working."
     }
 ]

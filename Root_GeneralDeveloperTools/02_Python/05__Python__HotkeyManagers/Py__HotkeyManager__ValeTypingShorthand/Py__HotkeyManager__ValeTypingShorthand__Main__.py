@@ -132,6 +132,8 @@ def get_icon_path():
 APP_RUNNING              =   True                                           # <-- Flag to control application running state
 TRAY_ICON                =   None                                           # <-- Global reference to tray icon
 HOTSTRING_COUNT          =   0                                              # <-- Number of loaded hotstrings
+ACTIVE_KEY_HANDLER       =   None                                           # <-- Active keyboard handler reference for reload operations
+HOTSTRING_RELOAD_LOCK    =   threading.Lock()                               # <-- Lock to protect runtime hotstring reload operations
     # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -652,6 +654,56 @@ def create_key_press_handler(hotstring_lookup):
 # REGION | System Tray Icon Management
 # -----------------------------------------------------------------------------
 
+    # HELPER FUNCTION | Build Tooltip Text for System Tray
+    # ------------------------------------------------------------
+def get_tray_tooltip_text():
+    """Build tray tooltip text using current hotstring count"""
+    return f"{APP_NAME} - {HOTSTRING_COUNT} hotstring(s) loaded"            # <-- Return current tooltip text
+    # ---------------------------------------------------------------
+
+    # FUNCTION | Build Merged Hotstring Lookup from All Sources
+    # ------------------------------------------------------------
+def build_current_hotstring_lookup():
+    """Build merged hotstring lookup from hardcoded and JSON dictionary sources"""
+    auto_type_hotstring_groups = load_auto_type_hotstring_groups()            # <-- Load external JSON dictionary hotstrings
+    merged_hotstring_groups = HOTSTRING_GROUPS + auto_type_hotstring_groups   # <-- Append JSON entries after base config
+    return build_hotstring_lookup(merged_hotstring_groups)                    # <-- Return built lookup dictionary
+    # ---------------------------------------------------------------
+
+    # FUNCTION | Register Active Keyboard Handler with Hotstring Lookup
+    # ------------------------------------------------------------
+def register_keyboard_handler(hotstring_lookup):
+    """Register keyboard handler for the provided hotstring lookup"""
+    global ACTIVE_KEY_HANDLER                                                  # <-- Access global handler reference
+    
+    if ACTIVE_KEY_HANDLER is not None:                                        # <-- Check if old handler exists
+        keyboard.unhook(ACTIVE_KEY_HANDLER)                                   # <-- Unhook previous handler before rebinding
+    
+    key_handler = create_key_press_handler(hotstring_lookup)                  # <-- Build new key press handler
+    keyboard.on_press(key_handler)                                            # <-- Register new handler with keyboard library
+    ACTIVE_KEY_HANDLER = key_handler                                          # <-- Store handler reference for future reload
+    # ---------------------------------------------------------------
+
+    # FUNCTION | Reload Hotstring Configuration at Runtime
+    # ------------------------------------------------------------
+def reload_hotstrings(icon=None, item=None):
+    """Reload hotstrings from hardcoded and JSON dictionary sources"""
+    global HOTSTRING_COUNT, TRAY_ICON                                         # <-- Access global state
+    
+    with HOTSTRING_RELOAD_LOCK:                                               # <-- Guard against concurrent reload operations
+        hotstring_lookup = build_current_hotstring_lookup()                   # <-- Rebuild merged lookup from all sources
+        
+        if not hotstring_lookup:                                              # <-- Keep existing handler if rebuild produced no hotstrings
+            return                                                            # <-- Exit without replacing active configuration
+        
+        register_keyboard_handler(hotstring_lookup)                           # <-- Rebind keyboard listener to new lookup
+        HOTSTRING_COUNT = len(hotstring_lookup)                               # <-- Update displayed hotstring count
+        
+        if TRAY_ICON:                                                         # <-- Refresh tray title and menu text if tray exists
+            TRAY_ICON.title = get_tray_tooltip_text()                         # <-- Update tray tooltip with latest count
+            TRAY_ICON.update_menu()                                           # <-- Force menu refresh for dynamic count label
+    # ---------------------------------------------------------------
+
     # FUNCTION | Exit Application Handler
     # ------------------------------------------------------------
 def exit_application(icon, item):
@@ -681,14 +733,18 @@ def create_system_tray_icon():
         icon_image = Image.new('RGB', (16, 16), color='blue')                # <-- Create blue square as fallback
     
     # Create tooltip text with hotstring count
-    tooltip_text = f"{APP_NAME} - {HOTSTRING_COUNT} hotstring(s) loaded"     # <-- Tooltip shows loaded count
+    tooltip_text = get_tray_tooltip_text()                                    # <-- Tooltip shows loaded count
     
     # Create menu items
     menu = pystray.Menu(
         pystray.MenuItem(
-            f"{HOTSTRING_COUNT} hotstring(s) loaded",                        # <-- Display count in menu
+            lambda item: f"{HOTSTRING_COUNT} hotstring(s) loaded",           # <-- Display current count in menu
             lambda: None,                                                     # <-- No action on click
             enabled=False                                                     # <-- Disabled (info only)
+        ),
+        pystray.MenuItem(
+            "Reload Hotstrings",                                              # <-- Reload menu item
+            reload_hotstrings                                                 # <-- Reload hotstring dictionaries and bindings
         ),
         pystray.Menu.SEPARATOR,                                              # <-- Visual separator
         pystray.MenuItem(
@@ -720,9 +776,6 @@ def keyboard_listener_thread(hotstring_lookup):
     """Run keyboard listener in background thread"""
     global APP_RUNNING                                                        # <-- Access global running flag
     
-    key_handler = create_key_press_handler(hotstring_lookup)                 # <-- Create key press handler
-    keyboard.on_press(key_handler)                                           # <-- Register handler with keyboard library
-    
     # Keep thread alive while app is running
     while APP_RUNNING:                                                        # <-- Loop while app is running
         time.sleep(0.1)                                                       # <-- Short sleep to reduce CPU usage
@@ -740,12 +793,8 @@ def main():
     """Main entry point for Vale Typing Shorthand Hotkey Manager"""
     global HOTSTRING_COUNT, TRAY_ICON                                        # <-- Access global variables
     
-    # Build merged hotstring configuration (hardcoded + external dictionaries)
-    auto_type_hotstring_groups = load_auto_type_hotstring_groups()            # <-- Load external JSON dictionary hotstrings
-    merged_hotstring_groups = HOTSTRING_GROUPS + auto_type_hotstring_groups   # <-- Append JSON entries after base config
-    
-    # Build hotstring lookup dictionary
-    hotstring_lookup = build_hotstring_lookup(merged_hotstring_groups)        # <-- Build hotstring lookup dictionary
+    # Build hotstring lookup dictionary from all sources
+    hotstring_lookup = build_current_hotstring_lookup()                       # <-- Build merged hotstring lookup dictionary
     
     if not hotstring_lookup:                                                  # <-- Check if any hotstrings configured
         # Write error to log file since we have no console
@@ -757,6 +806,9 @@ def main():
     
     # Store hotstring count for tray icon display
     HOTSTRING_COUNT = len(hotstring_lookup)                                  # <-- Store count globally
+    
+    # Register keyboard handler before starting background keepalive thread
+    register_keyboard_handler(hotstring_lookup)                               # <-- Register active keyboard handler
     
     # Start keyboard listener in background thread
     listener_thread = threading.Thread(

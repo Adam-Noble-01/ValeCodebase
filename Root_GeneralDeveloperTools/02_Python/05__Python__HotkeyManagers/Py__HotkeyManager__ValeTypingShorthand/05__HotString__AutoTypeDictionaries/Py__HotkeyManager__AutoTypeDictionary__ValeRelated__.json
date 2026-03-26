@@ -3,5 +3,10 @@
         "Hotstring"  : ";wcd",
         "Action"     : "TypeOutText",
         "Text"       : "✅ Complete | Whitecard Delivery - "
+    },
+    {
+        "Hotstring"  : ";wcc",
+        "Action"     : "TypeOutText",
+        "Text"       : "✅ Complete | Whitecard Delivery - "
     }
 ]

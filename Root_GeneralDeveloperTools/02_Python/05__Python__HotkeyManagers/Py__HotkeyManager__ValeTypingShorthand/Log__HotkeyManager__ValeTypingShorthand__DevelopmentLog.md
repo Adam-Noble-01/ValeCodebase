@@ -1,6 +1,13 @@
 # DEVELOPMENT LOG:  
 ================================================================================
 
+26-Mar-2026 - Version 0.6.0
+- Added tray menu action to reload hotstrings without restarting the app
+- Added runtime rebind of keyboard handler after reloading hotstring sources
+- Updated tray tooltip/menu count to refresh after hotstring reload
+
+-----------------------------------------------------------
+
 04-Dec-2025 - Version 0.5.1
 - Fixed PowerShell clipboard to use stdin piping
 - Prevents markdown content from being parsed as PowerShell code

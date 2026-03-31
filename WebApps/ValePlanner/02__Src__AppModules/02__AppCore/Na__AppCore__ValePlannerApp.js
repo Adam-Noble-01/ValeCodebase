@@ -1,4 +1,4 @@
-import workersSeedData from '../03__AppData/Na__AppData__Workers__Seed.json' with { type: 'json' };
+import workersAdamWData from '../03__AppData/Na__AppData__Workers__AdamW__.json' with { type: 'json' };
 import { Na__Analytics__DestroyCharts, Na__Analytics__RenderAnalytics } from '../11__Feature__Analytics/Na__Feature__Analytics__Render.js';
 import { Na__Header__RenderShell } from '../12__Feature__HeaderAndTabs/Na__Feature__HeaderAndTabs__Render.js';
 import { Na__Timecard__DestroyTimecardSystem, Na__Timecard__RenderTimecardSystem } from '../12__Feature__TimecardSystem/Na__Feature__TimecardSystem__EventHandlers__.js';
@@ -30,7 +30,7 @@ export async function Na__AppCore__InitializeValePlannerApp(rootElement) {
 
      const nowValue = new Date();
      const currentTimeMins = (nowValue.getHours() * 60) + nowValue.getMinutes();
-    const seededWorkers = structuredClone(workersSeedData.workers);
+    const seededWorkers = structuredClone(workersAdamWData.workers);
     const persistedWorkers = await Na__Persistence__LoadWorkersAsync();
     const initialWorkers = Array.isArray(persistedWorkers) ? persistedWorkers : seededWorkers;
 

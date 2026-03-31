@@ -8,7 +8,7 @@
       "shifts": [
         {
           "id": "s1",
-          "date": "2026-03-23",
+          "date": "2026-03-24",
           "startTime": "08:00",
           "endTime": "10:00",
           "title": "Whitecard |  Lister",
@@ -16,15 +16,23 @@
         },
         {
           "id": "new-1774547690418",
-          "date": "2026-03-23",
+          "date": "2026-03-24",
           "startTime": "10:00",
           "endTime": "11:00",
           "title": "Organise Standards Library",
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "s3",
+          "id": "new-1774547700416",
           "date": "2026-03-24",
+          "startTime": "11:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Lamming",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "s3",
+          "date": "2026-03-25",
           "startTime": "08:00",
           "endTime": "14:00",
           "title": "Whitecard |  Lister",
@@ -32,15 +40,23 @@
         },
         {
           "id": "new-1774547758484",
-          "date": "2026-03-24",
+          "date": "2026-03-25",
           "startTime": "14:00",
           "endTime": "17:00",
           "title": "Whitecard |  Foster",
           "color": "na-shift-color-purple"
         },
         {
+          "id": "s4",
+          "date": "2026-03-26",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "Whitecard |  Foster",
+          "color": "na-shift-color-purple"
+        },
+        {
           "id": "new-1774547798534",
-          "date": "2026-03-25",
+          "date": "2026-03-26",
           "startTime": "11:00",
           "endTime": "15:00",
           "title": "Whitecard |  Smee",
@@ -48,27 +64,11 @@
         },
         {
           "id": "new-1774547832683",
-          "date": "2026-03-25",
+          "date": "2026-03-26",
           "startTime": "15:00",
           "endTime": "17:00",
           "title": "Dev Work |  Time Management System",
           "color": "na-shift-color-emerald"
-        },
-        {
-          "id": "s4",
-          "date": "2026-03-25",
-          "startTime": "08:00",
-          "endTime": "11:00",
-          "title": "Whitecard |  Foster",
-          "color": "na-shift-color-purple"
-        },
-        {
-          "id": "new-1774547700416",
-          "date": "2026-03-23",
-          "startTime": "11:00",
-          "endTime": "17:00",
-          "title": "Whitecard |  Lamming",
-          "color": "na-shift-color-amber"
         },
         {
           "id": "new-1774942868450",

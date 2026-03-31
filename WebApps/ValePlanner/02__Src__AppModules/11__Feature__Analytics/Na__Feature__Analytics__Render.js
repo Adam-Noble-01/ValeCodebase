@@ -1,5 +1,5 @@
 import { Na__Utils__TimeToMinutes } from '../05__AppUtils/Na__Utils__Time.js';
-import { Na__Utils__CompareYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__FormatUkWeekdayShort } from '../05__AppUtils/Na__Utils__Dates.js';
+import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__FormatUkWeekdayShort, Na__Utils__CompareYyyyMmDd } from '../05__AppUtils/Na__Utils__Dates.js';
 
 // -----------------------------------------------------------------------------
 // REGION | Analytics Renderer
@@ -31,35 +31,17 @@ import { Na__Utils__CompareYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__For
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Get Monday-to-Sunday Range for Current Week
+    // HELPER FUNCTION | Get First-to-Last Day Range for Current Month
     // ------------------------------------------------------------
-    function Na__Analytics__GetCurrentWeekRange() {
+    function Na__Analytics__GetCurrentMonthRange() {
         const todayValue   = new Date();
-        const dayOfWeek    = todayValue.getDay();
-        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-
-        const mondayDate = new Date(todayValue);
-        mondayDate.setDate(todayValue.getDate() + mondayOffset);
-        mondayDate.setHours(0, 0, 0, 0);
-
-        const sundayDate = new Date(mondayDate);
-        sundayDate.setDate(mondayDate.getDate() + 6);
+        const firstOfMonth = new Date(todayValue.getFullYear(), todayValue.getMonth(), 1);
+        const lastOfMonth  = new Date(todayValue.getFullYear(), todayValue.getMonth() + 1, 0);
 
         return {
-            rangeStart : Na__Analytics__FormatDateISO(mondayDate),
-            rangeEnd   : Na__Analytics__FormatDateISO(sundayDate)
+            rangeStart : Na__Utils__FormatLocalDateAsYyyyMmDd(firstOfMonth),
+            rangeEnd   : Na__Utils__FormatLocalDateAsYyyyMmDd(lastOfMonth)
         };
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Format Date as YYYY-MM-DD String
-    // ------------------------------------------------------------
-    function Na__Analytics__FormatDateISO(dateValue) {
-        const yearValue  = dateValue.getFullYear();
-        const monthValue = String(dateValue.getMonth() + 1).padStart(2, '0');
-        const dayValue   = String(dateValue.getDate()).padStart(2, '0');
-        return `${yearValue}-${monthValue}-${dayValue}`;
     }
     // ------------------------------------------------------------
 
@@ -76,11 +58,11 @@ import { Na__Utils__CompareYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__For
     // ------------------------------------------------------------
     function Na__Analytics__GenerateCalendarDates(startISO, endISO) {
         const dates       = [];
-        const currentDate = new Date(startISO + 'T00:00:00');
-        const endDate     = new Date(endISO + 'T00:00:00');
+        const currentDate = Na__Utils__ParseYyyyMmDdToLocalDate(startISO);
+        const endDate     = Na__Utils__ParseYyyyMmDdToLocalDate(endISO);
 
         while (currentDate <= endDate) {
-            dates.push(Na__Analytics__FormatDateISO(currentDate));
+            dates.push(Na__Utils__FormatLocalDateAsYyyyMmDd(currentDate));
             currentDate.setDate(currentDate.getDate() + 1);
         }
 
@@ -160,18 +142,18 @@ import { Na__Utils__CompareYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__For
             Na__Analytics__AllCalendarDates = [];
         }
 
-        const weekRange          = Na__Analytics__GetCurrentWeekRange();
-        const hasCurrentWeekData = worker.shifts.some((s) => s.date >= weekRange.rangeStart && s.date <= weekRange.rangeEnd);
+        const monthRange          = Na__Analytics__GetCurrentMonthRange();
+        const hasCurrentMonthData = worker.shifts.some((s) => s.date >= monthRange.rangeStart && s.date <= monthRange.rangeEnd);
 
-        if (hasCurrentWeekData) {
-            Na__Analytics__CurrentRange = weekRange;
+        if (hasCurrentMonthData) {
+            Na__Analytics__CurrentRange = monthRange;
         } else if (shiftDatesSorted.length > 0) {
             Na__Analytics__CurrentRange = {
                 rangeStart : shiftDatesSorted[0],
                 rangeEnd   : shiftDatesSorted[shiftDatesSorted.length - 1]
             };
         } else {
-            Na__Analytics__CurrentRange = weekRange;
+            Na__Analytics__CurrentRange = monthRange;
         }
 
         Na__Analytics__RenderFullView();

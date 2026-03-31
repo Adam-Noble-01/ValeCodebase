@@ -28,7 +28,7 @@ if hasattr(sys.stdout, "reconfigure"):
 # REGION | Server Handler
 # -----------------------------------------------------------------------------
 
-NA__SERVER__WORKERS_JSON_PATH = Path("02__Src__AppModules/03__AppData/Na__AppData__Workers__Seed.json")
+NA__SERVER__WORKERS_JSON_PATH = Path("02__Src__AppModules/03__AppData/Na__AppData__Workers__AdamW__.json")
 NA__SERVER__TIMECARD_JSON_PATH = Path("02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json")
 
 

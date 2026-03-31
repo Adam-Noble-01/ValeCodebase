@@ -51,6 +51,7 @@
 
 .na-analytics-levels {
     padding-bottom : 26px;
+    overflow       : visible;
 }
 
 .na-analytics-levels__header {
@@ -88,6 +89,7 @@
     border-radius : 6px;
     overflow      : visible;
     user-select   : none;
+    margin        : 0 10px;
 }
 
 .na-analytics-levels__canvas {

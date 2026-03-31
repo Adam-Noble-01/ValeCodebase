@@ -2,7 +2,23 @@
 # =========================================================
 # ---------------------------------------------------------
 
-## ValePlanner v0.5.3 - 31-Mar-2026
+# ---------------------------------------------------------
+## ValePlanner v0.4.4 - 26-Mar-2026
+### Analytics Time Range (Levels Bar) + Muted Palette + Current-Month Default
+
+**Overview**
+- Added a **Photoshop Levels–style** time range control between the three summary cards and the doughnut / bar charts: canvas **area + contour line** shows **hours per calendar day** across the full shift span; **two draggable triangle handles** clamp the filtered range; **Total Tracked Hours**, **Total Tasks** (filtered shift count), and both charts update live while dragging.
+- **Default filter** is the **current calendar month** (first–last day via local dates). If no shifts fall in that month, the range falls back to the min–max shift dates; if there are no shifts, the month range is still used for an empty view.
+- **Chart colours** use a **fixed desaturated palette** (~25% lower saturation than the previous Tailwind-like set); the **Hours per Day** bar chart assigns **one colour per bar** (palette cycling).
+- **Date handling** in analytics uses shared **`Na__Utils__Dates.js`** helpers only: **`Na__Utils__FormatLocalDateAsYyyyMmDd`**, **`Na__Utils__ParseYyyyMmDdToLocalDate`**, **`Na__Utils__FormatUkDateLong`** (header labels), **`Na__Utils__FormatUkWeekdayShort`** (bar axis), **`Na__Utils__CompareYyyyMmDd`** (sorting).
+- **Levels UI polish**: track **horizontal margin** and card **`overflow: visible`** so the **left handle** stays visible at the start of the range; initial histogram draw deferred with **`requestAnimationFrame`** so canvas size matches layout.
+
+**Files Changed**
+- `02__Src__AppModules/11__Feature__Analytics/Na__Feature__Analytics__Render.js`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Analytics__.css`
+
+# ---------------------------------------------------------
+## ValePlanner v0.4.3 - 26-Mar-2026
 ### UK Date Standardisation + Canonical YYYY-MM-DD + Seed Week w/c 23-Mar-2026
 
 **Overview**
@@ -32,12 +48,13 @@
 - `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__TimecardSystem__EventHandlers__.js`
 - `02__Src__AppModules/11__Feature__Analytics/Na__Feature__Analytics__Render.js`
 - `02__Src__AppModules/02__AppCore/Na__AppCore__ValePlannerApp.js`
-- `02__Src__AppModules/03__AppData/Na__AppData__Workers__Seed.json`
+- `02__Src__AppModules/03__AppData/Na__AppData__Workers__AdamW__.json`
 - `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json`
 - `02__Src__AppModules/04__AppTypes/Na__AppTypes__Schema.js`
 
 
-## ValePlanner v0.5.2 - 31-Mar-2026
+# ---------------------------------------------------------
+## ValePlanner v0.4.2 - 26-Mar-2026
 ### Schedule Week / Day Navigation + Calendar Default Date
 
 **Overview**
@@ -88,7 +105,8 @@
 - `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__TimecardSystem__CoreLogic__.js`
 
 
-## ValePlanner v0.5.0 - 26-Mar-2026
+# ---------------------------------------------------------
+## ValePlanner v0.4.1 - 26-Mar-2026
 ### Localhost JSON Persistence + API Route Hardening
 
 **Overview**

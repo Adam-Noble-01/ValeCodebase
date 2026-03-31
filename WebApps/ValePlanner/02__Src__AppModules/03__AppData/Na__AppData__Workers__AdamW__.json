@@ -47,14 +47,6 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774547700416",
-          "date": "2026-03-24",
-          "startTime": "11:00",
-          "endTime": "17:00",
-          "title": "Whitecard |  Lamming",
-          "color": "na-shift-color-amber"
-        },
-        {
           "id": "new-1774547832683",
           "date": "2026-03-26",
           "startTime": "15:00",
@@ -71,76 +63,132 @@
           "color": "na-shift-color-blue"
         },
         {
+          "id": "new-1774945927430",
+          "date": "2026-03-31",
+          "startTime": "09:30",
+          "endTime": "09:45",
+          "title": "Planning Sesh With Amy",
+          "color": "na-shift-color-emerald"
+        },
+        {
           "id": "new-1774942868450",
           "date": "2026-03-31",
           "startTime": "08:00",
-          "endTime": "08:45",
+          "endTime": "09:00",
           "title": "Updates To Time Manager & Updating Files From Weekend Session",
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1774945955940",
+          "id": "new-1774961002974",
           "date": "2026-03-31",
-          "startTime": "08:45",
-          "endTime": "09:15",
+          "startTime": "09:00",
+          "endTime": "09:30",
           "title": "Time Planning",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774547700416",
+          "date": "2026-03-24",
+          "startTime": "11:00",
+          "endTime": "17:00",
+          "title": "Whitecard |  Lamming",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774961135431",
+          "date": "2026-03-31",
+          "startTime": "20:30",
+          "endTime": "21:00",
+          "title": "New Shift",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1774961198885",
+          "date": "2026-03-31",
+          "startTime": "13:00",
+          "endTime": "13:30",
+          "title": "Fix Server Port Issue",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1774961208523",
+          "date": "2026-03-31",
+          "startTime": "13:30",
+          "endTime": "13:45",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1774945701027",
+          "date": "2026-04-01",
+          "startTime": "13:00",
+          "endTime": "18:00",
+          "title": "Lee-Smith",
+          "color": "na-shift-color-rose"
         },
         {
           "id": "new-1774945548434",
           "date": "2026-04-01",
           "startTime": "08:00",
-          "endTime": "12:00",
+          "endTime": "13:00",
           "title": "Hampson",
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "new-1774945701027",
-          "date": "2026-04-01",
-          "startTime": "12:00",
-          "endTime": "17:00",
-          "title": "Lee-Smith",
-          "color": "na-shift-color-rose"
+          "id": "new-1774945758810",
+          "date": "2026-04-02",
+          "startTime": "13:00",
+          "endTime": "18:00",
+          "title": "Matharu",
+          "color": "na-shift-color-purple"
         },
         {
           "id": "new-1774945722352",
           "date": "2026-04-02",
           "startTime": "08:00",
-          "endTime": "12:00",
+          "endTime": "13:00",
           "title": "McLaughlin",
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774945758810",
-          "date": "2026-04-02",
-          "startTime": "12:00",
-          "endTime": "17:00",
-          "title": "Matharu",
+          "id": "new-1774945086272",
+          "date": "2026-03-31",
+          "startTime": "10:00",
+          "endTime": "13:00",
+          "title": "Lorriman",
           "color": "na-shift-color-purple"
         },
         {
-          "id": "new-1774945927430",
+          "id": "new-1774961255858",
           "date": "2026-03-31",
-          "startTime": "09:15",
-          "endTime": "09:30",
-          "title": "Planning Sesh With Amy",
+          "startTime": "09:45",
+          "endTime": "10:00",
+          "title": "Tea",
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774945198569",
+          "id": "new-1774964426089",
           "date": "2026-03-31",
-          "startTime": "13:00",
-          "endTime": "17:00",
+          "startTime": "14:45",
+          "endTime": "18:00",
           "title": "King",
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1774945086272",
+          "id": "new-1774964457928",
           "date": "2026-03-31",
-          "startTime": "09:45",
-          "endTime": "13:00",
-          "title": "Lorriman",
-          "color": "na-shift-color-purple"
+          "startTime": "13:45",
+          "endTime": "14:30",
+          "title": "King",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774964468638",
+          "date": "2026-03-31",
+          "startTime": "14:30",
+          "endTime": "14:45",
+          "title": "CatchUp - James",
+          "color": "na-shift-color-blue"
         }
       ]
     }

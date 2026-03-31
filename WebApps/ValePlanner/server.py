@@ -203,7 +203,7 @@ def main() -> int:
     # FUNCTION | Parse command-line options
     # ------------------------------------------------------------
     parser = argparse.ArgumentParser(description="ValePlanner local static server")
-    parser.add_argument("--port", type=int, default=8000, help="Port number (default: 8000)")
+    parser.add_argument("--port", type=int, default=8001, help="Port number (default: 8001)")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
     args = parser.parse_args()
     # ------------------------------------------------------------

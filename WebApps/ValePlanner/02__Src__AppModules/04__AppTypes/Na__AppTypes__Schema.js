@@ -5,7 +5,7 @@
 /**
  * @typedef {Object} Na__Shift
  * @property {string} id
- * @property {string} date
+ * @property {string} date  // YYYY-MM-DD (UK calendar, local interpretation)
  * @property {string} startTime
  * @property {string} endTime
  * @property {string} title
@@ -35,7 +35,7 @@
  * @property {Na__Worker[]} defaultWorkers
  * @property {Na__MainTab} mainTab
  * @property {Na__ViewMode} viewMode
- * @property {string} currentDate
+ * @property {string} currentDate  // YYYY-MM-DD (UK calendar, local interpretation)
  * @property {?string} selectedShiftId
  * @property {?Object} draftShift
  * @property {?Object} pendingDrag

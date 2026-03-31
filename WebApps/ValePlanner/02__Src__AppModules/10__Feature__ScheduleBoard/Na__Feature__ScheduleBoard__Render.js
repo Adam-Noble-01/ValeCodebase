@@ -1,4 +1,4 @@
-import { Na__Schedule__PixelsPerMinute } from './Na__Feature__ScheduleBoard__Constants.js';
+import { Na__Schedule__GridPaddingPx, Na__Schedule__PixelsPerMinute } from './Na__Feature__ScheduleBoard__Constants.js';
 import { Na__Schedule__GetAllShifts, Na__Schedule__GetBounds, Na__Schedule__GetColumns, Na__Schedule__GetTimeLabels } from './Na__Feature__ScheduleBoard__DataTransforms.js';
 import { Na__Schedule__SetupDragHandlers, Na__Schedule__StartInteraction, Na__Schedule__TeardownDragHandlers } from './Na__Feature__ScheduleBoard__Interactions.js';
 import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__AppUtils/Na__Utils__Time.js';
@@ -15,7 +15,8 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
      const allShifts = Na__Schedule__GetAllShifts(state.workers);
      const bounds = Na__Schedule__GetBounds(columns, allShifts);
      const timeLabels = Na__Schedule__GetTimeLabels(bounds);
-     const gridHeight = (bounds.end - bounds.start) * Na__Schedule__PixelsPerMinute;
+     const pad        = Na__Schedule__GridPaddingPx;                                         // <-- breathing room at top and bottom
+     const gridHeight = (bounds.end - bounds.start) * Na__Schedule__PixelsPerMinute + pad * 2; // <-- expanded to include padding
 
      panelElement.innerHTML = `
         <div class="na-schedule-root" id="naScheduleRoot">
@@ -35,7 +36,7 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
                 <div class="na-schedule-grid-wrap">
                     <div class="na-schedule-time-axis" style="height:${gridHeight}px;">
                         ${timeLabels.map((minuteValue) => `
-                            <div class="na-schedule-time-label" style="top:${(minuteValue - bounds.start) * Na__Schedule__PixelsPerMinute}px;">
+                            <div class="na-schedule-time-label" style="top:${(minuteValue - bounds.start) * Na__Schedule__PixelsPerMinute + pad}px;">
                                 ${Na__Utils__FormatHourLabel(minuteValue)}
                             </div>
                         `).join('')}
@@ -44,7 +45,7 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
                     <div class="na-schedule-grid-main" id="naScheduleGridMain" style="height:${gridHeight}px;">
                         <div class="na-schedule-grid-lines">
                             ${timeLabels.map((minuteValue) => `
-                                <div class="na-schedule-grid-hour-line" style="top:${(minuteValue - bounds.start) * Na__Schedule__PixelsPerMinute}px;"></div>
+                                <div class="na-schedule-grid-hour-line" style="top:${(minuteValue - bounds.start) * Na__Schedule__PixelsPerMinute + pad}px;"></div>
                             `).join('')}
                         </div>
                         <div class="na-schedule-grid-columns" style="grid-template-columns: repeat(${columns.length}, minmax(0, 1fr));">
@@ -53,11 +54,11 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
                         <div class="na-schedule-grid-cells" style="grid-template-columns: repeat(${columns.length}, minmax(0, 1fr));">
                             ${columns.map((columnValue) => `
                                 <div class="na-schedule-cell" data-action="create-shift" data-column-id="${columnValue.id}">
-                                    ${Na__Schedule__RenderShiftsForColumn({ columnValue, allShifts, bounds, state })}
+                                    ${Na__Schedule__RenderShiftsForColumn({ columnValue, allShifts, bounds, state, pad })}
                                 </div>
                             `).join('')}
                         </div>
-                        ${Na__Schedule__RenderCurrentTimeLine(state.currentTimeMins, bounds)}
+                        ${Na__Schedule__RenderCurrentTimeLine(state.currentTimeMins, bounds, pad)}
                     </div>
                 </div>
             </div>
@@ -205,7 +206,7 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
  // HELPER FUNCTION | Render Shift Cards for a Single Column
  // ------------------------------------------------------------
  function Na__Schedule__RenderShiftsForColumn(config) {
-     const { columnValue, allShifts, bounds, state } = config;
+     const { columnValue, allShifts, bounds, state, pad } = config;
      const columnShifts = allShifts.filter((shiftValue) => {
          const isDateMatch = shiftValue.date === columnValue.date;
          const isWorkerMatch = columnValue.workerId ? shiftValue.workerId === columnValue.workerId : true;
@@ -223,7 +224,7 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 
          const startMins = Na__Utils__TimeToMinutes(shiftValue.startTime);
          const endMins = Na__Utils__TimeToMinutes(shiftValue.endTime);
-         const topOffset = (startMins - bounds.start) * Na__Schedule__PixelsPerMinute;
+         const topOffset   = (startMins - bounds.start) * Na__Schedule__PixelsPerMinute + pad; // <-- offset by top padding
          const heightValue = (endMins - startMins) * Na__Schedule__PixelsPerMinute;
          const isSelected = state.selectedShiftId === shiftValue.id;
          const showWorkerInfo = state.viewMode === 'week' && shiftValue.workerName;
@@ -248,7 +249,7 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 
      const draftStartMins = Na__Utils__TimeToMinutes(draft.startTime);
      const draftEndMins = Na__Utils__TimeToMinutes(draft.endTime);
-     const draftTopOffset = (draftStartMins - bounds.start) * Na__Schedule__PixelsPerMinute;
+     const draftTopOffset = (draftStartMins - bounds.start) * Na__Schedule__PixelsPerMinute + pad; // <-- offset by top padding
      const draftHeight = (draftEndMins - draftStartMins) * Na__Schedule__PixelsPerMinute;
      const draftWorkerMarkup = state.viewMode === 'week' ? '<span class="na-shift-card__worker">Draft Shift</span>' : '';
 
@@ -375,12 +376,12 @@ function Na__Schedule__MapColourClassToPromptNumber(colourClassValue) {
 
  // HELPER FUNCTION | Render Current Time Indicator
  // ------------------------------------------------------------
- function Na__Schedule__RenderCurrentTimeLine(currentTimeMins, bounds) {
+ function Na__Schedule__RenderCurrentTimeLine(currentTimeMins, bounds, pad) {
      if (currentTimeMins < bounds.start || currentTimeMins > bounds.end) {
          return '';
      }
 
-     const topOffset = (currentTimeMins - bounds.start) * Na__Schedule__PixelsPerMinute;
+     const topOffset = (currentTimeMins - bounds.start) * Na__Schedule__PixelsPerMinute + pad; // <-- offset by top padding
      return `<div class="na-current-time-line" style="top:${topOffset}px;"></div>`;
  }
  // ------------------------------------------------------------

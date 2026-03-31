@@ -8,7 +8,7 @@
       "shifts": [
         {
           "id": "s1",
-          "date": "2024-10-21",
+          "date": "2026-03-23",
           "startTime": "08:00",
           "endTime": "10:00",
           "title": "Whitecard |  Lister",
@@ -16,7 +16,7 @@
         },
         {
           "id": "new-1774547690418",
-          "date": "2024-10-21",
+          "date": "2026-03-23",
           "startTime": "10:00",
           "endTime": "11:00",
           "title": "Organise Standards Library",
@@ -24,7 +24,7 @@
         },
         {
           "id": "s3",
-          "date": "2024-10-22",
+          "date": "2026-03-24",
           "startTime": "08:00",
           "endTime": "14:00",
           "title": "Whitecard |  Lister",
@@ -32,7 +32,7 @@
         },
         {
           "id": "new-1774547758484",
-          "date": "2024-10-22",
+          "date": "2026-03-24",
           "startTime": "14:00",
           "endTime": "17:00",
           "title": "Whitecard |  Foster",
@@ -40,7 +40,7 @@
         },
         {
           "id": "new-1774547798534",
-          "date": "2024-10-23",
+          "date": "2026-03-25",
           "startTime": "11:00",
           "endTime": "15:00",
           "title": "Whitecard |  Smee",
@@ -48,7 +48,7 @@
         },
         {
           "id": "new-1774547832683",
-          "date": "2024-10-23",
+          "date": "2026-03-25",
           "startTime": "15:00",
           "endTime": "17:00",
           "title": "Dev Work |  Time Management System",
@@ -56,7 +56,7 @@
         },
         {
           "id": "s4",
-          "date": "2024-10-23",
+          "date": "2026-03-25",
           "startTime": "08:00",
           "endTime": "11:00",
           "title": "Whitecard |  Foster",
@@ -64,11 +64,27 @@
         },
         {
           "id": "new-1774547700416",
-          "date": "2024-10-21",
+          "date": "2026-03-23",
           "startTime": "11:00",
           "endTime": "17:00",
           "title": "Whitecard |  Lamming",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774942868450",
+          "date": "2026-03-30",
+          "startTime": "08:00",
+          "endTime": "08:45",
+          "title": "Updates To Time Manager & Updating Files From Weekend Session",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1774942908003",
+          "date": "2026-03-30",
+          "startTime": "08:45",
+          "endTime": "09:00",
+          "title": "Time Planning Sesh",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

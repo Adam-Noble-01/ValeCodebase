@@ -27,7 +27,11 @@ import { Na__Utils__GetDayLabel, Na__Utils__GetWeekRangeLabel } from '../05__App
             </div>
             <div class="na-app-header__right">
                 ${state.mainTab === 'schedule' ? `
-                    <div class="na-date-pill">${dateLabel}</div>
+                    <div class="na-date-nav">
+                        <button class="na-date-nav__arrow" data-action="navigate-date" data-direction="prev" title="Previous">&#8249;</button>
+                        <div class="na-date-pill">${dateLabel}</div>
+                        <button class="na-date-nav__arrow" data-action="navigate-date" data-direction="next" title="Next">&#8250;</button>
+                    </div>
                     <div class="na-pill-group">
                         <button class="na-pill-group__btn ${state.viewMode === 'day' ? 'na-pill-group__btn--active' : ''}" data-action="set-view-mode" data-value="day">Day</button>
                         <button class="na-pill-group__btn ${state.viewMode === 'week' ? 'na-pill-group__btn--active' : ''}" data-action="set-view-mode" data-value="week">Week</button>

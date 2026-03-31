@@ -5,6 +5,7 @@ import { Na__Timecard__DestroyTimecardSystem, Na__Timecard__RenderTimecardSystem
 import { Na__Schedule__DestroyScheduleBoard, Na__Schedule__RenderScheduleBoard } from '../10__Feature__ScheduleBoard/Na__Feature__ScheduleBoard__Render.js';
 import { Na__AppCore__GetState, Na__AppCore__InitializeStateStore, Na__AppCore__RedoWorkersChange, Na__AppCore__SetState, Na__AppCore__SetWorkers, Na__AppCore__SubscribeStateChange, Na__AppCore__UndoWorkersChange } from './Na__AppCore__StateStore.js';
 import { Na__AppCore__SetupHotkeysHandler } from './Na__AppCore__HotkeysHandler.js';
+import { Na__Utils__ShiftDateByDays } from '../05__AppUtils/Na__Utils__Dates.js';
 import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__System__DevTools__LocalhostGuard.js';
 import { Na__Persistence__LoadWorkersAsync, Na__Persistence__SaveWorkersAsync } from '../70__System__DevTools/Na__System__PersistenceApi.js';
 
@@ -38,7 +39,7 @@ export async function Na__AppCore__InitializeValePlannerApp(rootElement) {
         defaultWorkers: structuredClone(initialWorkers),
          mainTab: 'schedule',
          viewMode: 'week',
-         currentDate: '2024-10-24',
+         currentDate: '2026-03-23',
          selectedShiftId: null,
          draftShift: null,
          pendingDrag: null,
@@ -129,6 +130,22 @@ export async function Na__AppCore__InitializeValePlannerApp(rootElement) {
              const nextMode = buttonElement.getAttribute('data-value');
              if (!nextMode) return;
              Na__AppCore__SetState({ viewMode: nextMode });
+         });
+     });
+
+     Na__AppCore__RootElement.querySelectorAll('[data-action="navigate-date"]').forEach((buttonElement) => {
+         buttonElement.addEventListener('click', () => {
+             const stateValue  = Na__AppCore__GetState();
+             const dirValue    = buttonElement.getAttribute('data-direction');
+             const daysDelta   = stateValue.viewMode === 'week' ? 7 : 1;
+             const offsetValue = dirValue === 'prev' ? -daysDelta : daysDelta;
+             const nextDate    = Na__Utils__ShiftDateByDays(stateValue.currentDate, offsetValue);
+             Na__AppCore__SetState({
+                 currentDate: nextDate,
+                 selectedShiftId: null,
+                 draftShift: null,
+                 pendingDrag: null
+             });
          });
      });
 

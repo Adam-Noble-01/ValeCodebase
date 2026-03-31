@@ -68,6 +68,33 @@
     box-shadow   : var(--na-shadow-card);
 }
 
+.na-date-nav {
+    display        : inline-flex;
+    align-items    : center;
+    gap            : 2px;
+}
+
+.na-date-nav__arrow {
+    border         : 0;
+    background     : transparent;
+    color          : var(--na-colour-text-muted);
+    cursor         : pointer;
+    font-size      : 20px;
+    line-height    : 1;
+    padding        : 4px 6px;
+    border-radius  : 6px;
+    transition     : background 0.15s, color 0.15s;
+}
+
+.na-date-nav__arrow:hover {
+    background     : var(--na-colour-bg-subtle);
+    color          : var(--na-colour-text-main);
+}
+
+.na-date-nav__arrow:active {
+    background     : var(--na-colour-border);
+}
+
 .na-date-pill {
     font-size      : 13px;
     color          : var(--na-colour-text-muted);

@@ -1,4 +1,5 @@
 import { Na__Timecard__BuildTimecardViewModel, Na__Timecard__ClearTimecardCache, Na__Timecard__ClockInNow, Na__Timecard__ClockOutNow } from './Na__Feature__TimecardSystem__CoreLogic__.js';
+import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js';
 
 // -----------------------------------------------------------------------------
 // REGION | Timecard Tab Render and Event Handlers
@@ -187,7 +188,7 @@ import { Na__Timecard__BuildTimecardViewModel, Na__Timecard__ClearTimecardCache,
 
          return `
             <tr class="${rowClassName}">
-                <td>${entryValue.Timecard__Date}</td>
+                <td>${Na__Utils__FormatUkDateLong(entryValue.Timecard__Date)}</td>
                 <td>${entryValue['Timcard__Clock-In__']}</td>
                 <td>${entryValue['Timcard__Clock-Out__']}</td>
                 <td>${entryValue.Timecard__WorkedHoursLabel}</td>

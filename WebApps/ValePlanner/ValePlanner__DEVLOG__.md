@@ -2,8 +2,74 @@
 # =========================================================
 # ---------------------------------------------------------
 
+## ValePlanner v0.5.3 - 31-Mar-2026
+### UK Date Standardisation + Canonical YYYY-MM-DD + Seed Week w/c 23-Mar-2026
+
+**Overview**
+- Standardised all planner and timecard dates on a single UK-oriented convention: **canonical storage** as ISO-style `YYYY-MM-DD` (local calendar, not UTC-shifted), and **user-facing** labels as **31 Mar 2026** (with shared helpers for **31-Mar-2026** and ordinal **31ˢᵗ March 2026** where needed).
+- Realigned demo **Workers** and **Timecard** seed data to **week commencing 23-Mar-2026** (Mon **2026-03-23** … Sun **2026-03-29**). Initial schedule `currentDate` is set to **2026-03-23** so week view opens on that seed week without navigation (swap back to `Na__Utils__GetTodayDateString()` when you want live “today” again).
+
+**Date Utilities (`Na__Utils__Dates.js`)**
+- Added **`Na__Utils__ParseYyyyMmDdToLocalDate`** and **`Na__Utils__FormatLocalDateAsYyyyMmDd`** so week boundaries and `ShiftDateByDays` never use `toISOString().split('T')[0]` for the calendar day.
+- Added UK formatters: **`Na__Utils__FormatUkDateLong`**, **`Na__Utils__FormatUkDateHyphen`**, **`Na__Utils__FormatUkDateOrdinal`**, **`Na__Utils__FormatUkWeekdayShort`**, **`Na__Utils__CompareYyyyMmDd`**.
+- **`GetWeekDates`**, **`GetWeekRangeLabel`**, **`GetDayLabel`** now use **`en-GB`** (day-first) instead of **`en-US`**.
+- Preserved pre-refactor implementations in a **commented** `REGION | Redundant / Legacy Date Helpers` block for traceability.
+
+**Timecard**
+- **`Timecard__Date`** rows are stored as **`YYYY-MM-DD`**; new clock-ins use the same via **`Na__Timecard__FormatDateLabel`** (delegates to shared local formatter).
+- **`Na__Timecard__MigrateLegacyTimecardDates`** runs on first datastore hydrate to rewrite legacy `DD-MMM-YYYY` (and `Sept`/`Sep` month tokens) to **`YYYY-MM-DD`**, clears affected **`Timecard__AuthHash`** values, and persists when migration mutates data so hashes backfill on next view-model build.
+- Timecard table **Date** column renders **`Na__Utils__FormatUkDateLong`** while storage stays canonical.
+
+**Analytics**
+- Bar chart day labels use **`Na__Utils__FormatUkWeekdayShort`**; sorting uses **`Na__Utils__CompareYyyyMmDd`**; range chip labels use **`FormatUkDateLong`**.
+
+**Types**
+- JSDoc notes on **`Na__Shift.date`** and **`Na__PlannerState.currentDate`**: **`YYYY-MM-DD`**.
+
+**Files Changed**
+- `02__Src__AppModules/05__AppUtils/Na__Utils__Dates.js`
+- `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__TimecardSystem__CoreLogic__.js`
+- `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__TimecardSystem__EventHandlers__.js`
+- `02__Src__AppModules/11__Feature__Analytics/Na__Feature__Analytics__Render.js`
+- `02__Src__AppModules/02__AppCore/Na__AppCore__ValePlannerApp.js`
+- `02__Src__AppModules/03__AppData/Na__AppData__Workers__Seed.json`
+- `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json`
+- `02__Src__AppModules/04__AppTypes/Na__AppTypes__Schema.js`
+
+
+## ValePlanner v0.5.2 - 31-Mar-2026
+### Schedule Week / Day Navigation + Calendar Default Date
+
+**Overview**
+- Added fluid week-by-week (and day-by-day) navigation in the Schedule header and replaced the fixed seed calendar anchor with today’s date on first load.
+
+**Header + Navigation UX**
+- Wrapped the schedule date range / day label in a `na-date-nav` cluster with previous and next arrow buttons flanking the existing pill.
+- Arrow navigation is view-mode aware: **Week** moves `currentDate` by ±7 days; **Day** moves by ±1 day.
+- Navigation clears transient schedule interaction state (`selectedShiftId`, `draftShift`, `pendingDrag`) so the board does not carry stale selection across weeks.
+
+**Date Utilities**
+- Added `Na__Utils__ShiftDateByDays` for ISO `YYYY-MM-DD` arithmetic used by navigation.
+- Added `Na__Utils__GetTodayDateString` so initial `currentDate` matches the real calendar day instead of a hardcoded historical date.
+
+**App Core**
+- Wired `data-action="navigate-date"` handlers in header event binding alongside existing tab, view-mode, and reset controls.
+
+**Styling**
+- Added `.na-date-nav` and `.na-date-nav__arrow` rules aligned with existing header pill and muted text tokens.
+
+**Note (Data vs Calendar)**
+- Shifts render only on columns whose date matches each shift’s `date` field; if seed or persisted workers still use older ISO dates, use the arrows to reach that week or add shifts for the current week.
+
+**Files Changed**
+- `02__Src__AppModules/05__AppUtils/Na__Utils__Dates.js`
+- `02__Src__AppModules/12__Feature__HeaderAndTabs/Na__Feature__HeaderAndTabs__Render.js`
+- `02__Src__AppModules/02__AppCore/Na__AppCore__ValePlannerApp.js`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__HeaderAndTabs__.css`
+
+
 ## ValePlanner v0.5.1 - 31-Mar-2026
-### Timecard Clock-In Grace Period + Panel Normalization
+### Timecard Clock-In Grace Period + Panel Normalisation
 
 **Overview**
 - Added a 6-minute grace period to Timecard clock-in behavior and aligned panel rendering so early-minute entries display as normalized hour values.

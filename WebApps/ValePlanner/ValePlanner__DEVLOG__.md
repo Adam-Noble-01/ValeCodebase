@@ -2,6 +2,26 @@
 # =========================================================
 # ---------------------------------------------------------
 
+## ValePlanner v0.5.1 - 31-Mar-2026
+### Timecard Clock-In Grace Period + Panel Normalization
+
+**Overview**
+- Added a 6-minute grace period to Timecard clock-in behavior and aligned panel rendering so early-minute entries display as normalized hour values.
+
+**Timecard Behavior Updates**
+- Added a dedicated clock-in grace helper in core logic:
+  - Clock-ins with minute value `<= 6` now flatten to `HH:00` (for example `08:04` -> `08:00`).
+- Wired grace normalization directly into `Clock In` record creation path so new entries are saved with normalized clock-in time labels.
+- Added view-model normalization for stored clock-in text so existing historical entries also render with grace normalization in the panel.
+
+**Panel + Duration Consistency**
+- Updated Timecard row normalization so worked-duration calculation uses the same normalized clock-in value shown in the panel.
+- Kept auth-hash validation/backfill semantics unchanged by continuing to validate against raw persisted payload values.
+
+**Files Changed**
+- `02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__TimecardSystem__CoreLogic__.js`
+
+
 ## ValePlanner v0.5.0 - 26-Mar-2026
 ### Localhost JSON Persistence + API Route Hardening
 

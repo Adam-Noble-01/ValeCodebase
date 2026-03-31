@@ -69,22 +69,6 @@
           "endTime": "17:00",
           "title": "Whitecard |  Lamming",
           "color": "na-shift-color-amber"
-        },
-        {
-          "id": "new-1774548445599",
-          "date": "2024-10-24",
-          "startTime": "08:00",
-          "endTime": "17:00",
-          "title": "Ironing Best Funeral Suite",
-          "color": "na-shift-color-rose"
-        },
-        {
-          "id": "new-1774548475959",
-          "date": "2024-10-25",
-          "startTime": "08:00",
-          "endTime": "17:00",
-          "title": "Ironing Best Funeral Suite",
-          "color": "na-shift-color-rose"
         }
       ]
     }

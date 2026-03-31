@@ -11,6 +11,7 @@ import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__Sy
  // ------------------------------------------------------------
  let Na__Timecard__DataStore = null;
  let Na__Timecard__CachedViewModel = null;
+ const Na__Timecard__ClockInGracePeriodMins = 6;
  // ------------------------------------------------------------
 
 
@@ -39,6 +40,7 @@ import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__Sy
              const dateValue = String(rawEntry?.Timecard__Date || '').trim();
              const clockInValue = String(rawEntry?.['Timcard__Clock-In__'] || '').trim();
              const clockOutValue = String(rawEntry?.['Timcard__Clock-Out__'] || '').trim();
+            const normalizedClockInValue = Na__Timecard__NormalizeClockInTextWithGracePeriod(clockInValue);
 
              const hashPayload = {
                  monthKey,
@@ -51,7 +53,7 @@ import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__Sy
              const expectedHash = await Na__Timecard__CreateAuthHashAsync(hashPayload);
              const storedHashValue = String(rawEntry?.Timecard__AuthHash || '').trim() || expectedHash;
              const isHashValid = await Na__Timecard__ValidateAuthHashAsync(hashPayload, storedHashValue);
-             const workedMinutesValue = Na__Timecard__CalculateWorkedMinutes(clockInValue, clockOutValue);
+            const workedMinutesValue = Na__Timecard__CalculateWorkedMinutes(normalizedClockInValue, clockOutValue);
             const isOpenShift = Boolean(clockInValue) && !clockOutValue;
 
             if (sourceData[monthKey][rowIndex].Timecard__AuthHash !== storedHashValue) {
@@ -64,7 +66,7 @@ import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__Sy
 
              const normalizedEntry = {
                  Timecard__Date: dateValue,
-                 'Timcard__Clock-In__': clockInValue,
+                'Timcard__Clock-In__': normalizedClockInValue,
                 'Timcard__Clock-Out__': clockOutValue || '--',
                  Timecard__AuthHash: storedHashValue,
                  Timecard__ExpectedAuthHash: expectedHash,
@@ -119,9 +121,10 @@ import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__Sy
  // ------------------------------------------------------------
 export async function Na__Timecard__ClockInNow() {
      const nowValue = new Date();
-     const monthKey = Na__Timecard__BuildMonthKey(nowValue);
-     const dateLabel = Na__Timecard__FormatDateLabel(nowValue);
-     const timeLabel = Na__Timecard__FormatTimeLabel(nowValue);
+    const normalizedClockInDate = Na__Timecard__ApplyClockInGracePeriod(nowValue);
+     const monthKey = Na__Timecard__BuildMonthKey(normalizedClockInDate);
+     const dateLabel = Na__Timecard__FormatDateLabel(normalizedClockInDate);
+     const timeLabel = Na__Timecard__FormatTimeLabel(normalizedClockInDate);
     const sourceData = await Na__Timecard__GetDataStore();
 
      if (!Array.isArray(sourceData[monthKey])) {
@@ -298,6 +301,33 @@ async function Na__Timecard__PersistDataStoreAsync() {
      return `${dayValue}-${monthLabel}-${yearValue}`;
  }
  // ------------------------------------------------------------
+
+
+ // HELPER FUNCTION | Apply Grace Period to Clock In Timestamp
+ // ------------------------------------------------------------
+ function Na__Timecard__ApplyClockInGracePeriod(dateValue) {
+     const normalizedDate = new Date(dateValue);
+     const minuteValue = normalizedDate.getMinutes();
+     if (minuteValue <= Na__Timecard__ClockInGracePeriodMins) {
+         normalizedDate.setMinutes(0, 0, 0);
+     }
+     return normalizedDate;
+ }
+ // ------------------------------------------------------------
+
+
+// HELPER FUNCTION | Normalize Clock-In Time Text With Grace Period
+// ------------------------------------------------------------
+function Na__Timecard__NormalizeClockInTextWithGracePeriod(clockInValue) {
+    const clockInMins = Na__Timecard__ParseClockTimeToMinutes(clockInValue);
+    if (clockInMins === null) return clockInValue;
+
+    const hourValue = Math.floor(clockInMins / 60);
+    const minuteValue = clockInMins % 60;
+    const normalizedMinuteValue = minuteValue <= Na__Timecard__ClockInGracePeriodMins ? 0 : minuteValue;
+    return `${String(hourValue).padStart(2, '0')}:${String(normalizedMinuteValue).padStart(2, '0')}`;
+}
+// ------------------------------------------------------------
 
 
  // HELPER FUNCTION | Format Time as HH:MM

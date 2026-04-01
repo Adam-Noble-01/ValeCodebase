@@ -1,0 +1,60 @@
+{
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__01-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/62970__Hampson",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__01-Apr-2026.png"
+    ],
+    "folderId": "2026/62970__Hampson",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__01-Apr-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Went slightly over, need to figure out a solution for bay windows, also took a while for me to figure out how the main house roofs merged so had do a little digging looking at satelite views etc so added a little extra time. Great CAD File from Amy on this one though.",
+        "conceptArtist": "Amy",
+        "input": "CAD File"
+    },
+    "projectCode": "62970",
+    "projectName": "Hampson",
+    "scheduleData": {
+        "dateFulfilled": "01-Apr-2026",
+        "dateReceived": "30-Mar-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62970__Hampson/Hampson__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62970__Hampson/Hampson__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62970__Hampson/Hampson__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62970__Hampson/Hampson__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62970__Hampson/Hampson__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62970__Hampson/Hampson__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 27861,
+            "Camera__DefaultPos__PosY": 2589,
+            "Camera__DefaultPos__PosZ": 9255
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0006,
+            "Camera__DefaultRotation__RotY": 0.4313,
+            "Camera__DefaultRotation__RotZ": 0.0003
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 18049,
+        "OrbitHelperCube__Position__PosY": 2576,
+        "OrbitHelperCube__Position__PosZ": -12062
+    }
+}

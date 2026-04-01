@@ -209,10 +209,18 @@
         {
           "id": "new-1774945548434",
           "date": "2026-04-01",
-          "startTime": "09:30",
+          "startTime": "10:00",
           "endTime": "13:00",
           "title": "Hampson",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1775035409811",
+          "date": "2026-04-01",
+          "startTime": "09:30",
+          "endTime": "10:00",
+          "title": "Dev - Fixed Anaylitics Not Aggregating Time",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

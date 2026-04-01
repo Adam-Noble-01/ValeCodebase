@@ -111,14 +111,6 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774945701027",
-          "date": "2026-04-01",
-          "startTime": "13:00",
-          "endTime": "18:00",
-          "title": "Lee-Smith",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1774945758810",
           "date": "2026-04-02",
           "startTime": "13:00",
@@ -175,14 +167,6 @@
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "new-1774964426089",
-          "date": "2026-03-31",
-          "startTime": "15:00",
-          "endTime": "18:00",
-          "title": "King",
-          "color": "na-shift-color-amber"
-        },
-        {
           "id": "new-1775031013056",
           "date": "2026-04-01",
           "startTime": "08:00",
@@ -207,20 +191,84 @@
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "new-1774945548434",
-          "date": "2026-04-01",
-          "startTime": "10:00",
-          "endTime": "13:00",
-          "title": "Hampson",
-          "color": "na-shift-color-orange"
-        },
-        {
           "id": "new-1775035409811",
           "date": "2026-04-01",
           "startTime": "09:30",
           "endTime": "10:00",
           "title": "Dev - Fixed Anaylitics Not Aggregating Time",
           "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1774964426089",
+          "date": "2026-03-31",
+          "startTime": "15:00",
+          "endTime": "18:00",
+          "title": "King",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1775051395696",
+          "date": "2026-04-01",
+          "startTime": "14:30",
+          "endTime": "14:45",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1775051425907",
+          "date": "2026-04-01",
+          "startTime": "14:45",
+          "endTime": "15:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775051487470",
+          "date": "2026-04-01",
+          "startTime": "14:15",
+          "endTime": "14:30",
+          "title": "Dev - Minor Bug Fix",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775051547140",
+          "date": "2026-04-01",
+          "startTime": "13:00",
+          "endTime": "14:15",
+          "title": "Hampson",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1775051556801",
+          "date": "2026-04-01",
+          "startTime": "12:45",
+          "endTime": "13:00",
+          "title": "Meeting - NF",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774945548434",
+          "date": "2026-04-01",
+          "startTime": "10:00",
+          "endTime": "12:45",
+          "title": "Hampson",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1775054374548",
+          "date": "2026-04-01",
+          "startTime": "15:00",
+          "endTime": "15:15",
+          "title": "Meeting - AE",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774945701027",
+          "date": "2026-04-01",
+          "startTime": "15:15",
+          "endTime": "18:30",
+          "title": "Lee-Smith",
+          "color": "na-shift-color-rose"
         }
       ]
     }

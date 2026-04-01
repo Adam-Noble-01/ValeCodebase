@@ -307,6 +307,15 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
                     bounds,
                     setState
                 });
+
+                Na__Schedule__SetupDragHandlers({
+                    getState,
+                    gridElement,
+                    columns,
+                    bounds,
+                    setState,
+                    applyWorkers: setWorkers
+                });
             });
         });
 
@@ -336,6 +345,15 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
                     columns,
                     bounds,
                     setState
+                });
+
+                Na__Schedule__SetupDragHandlers({
+                    getState,
+                    gridElement,
+                    columns,
+                    bounds,
+                    setState,
+                    applyWorkers: setWorkers
                 });
             });
 
@@ -370,6 +388,7 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
         panelElement.querySelectorAll('[data-action="resize-shift"]').forEach((resizeElement) => {
             resizeElement.addEventListener('mousedown', (mouseEvent) => {
                 mouseEvent.stopPropagation();
+                mouseEvent.preventDefault();
                 const shiftId  = resizeElement.getAttribute('data-shift-id');
                 const columnId = resizeElement.getAttribute('data-column-id');
                 if (!shiftId || !columnId) return;
@@ -387,6 +406,15 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
                     columns,
                     bounds,
                     setState
+                });
+
+                Na__Schedule__SetupDragHandlers({
+                    getState,
+                    gridElement,
+                    columns,
+                    bounds,
+                    setState,
+                    applyWorkers: setWorkers
                 });
             });
         });

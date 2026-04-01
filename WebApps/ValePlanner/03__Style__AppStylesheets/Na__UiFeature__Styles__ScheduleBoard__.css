@@ -250,7 +250,8 @@
     color          : transparent;
     opacity        : 0;
     transition     : opacity 120ms ease, background 120ms ease, border-color 120ms ease, color 120ms ease;
-    z-index        : 2;
+    pointer-events : auto;
+    z-index        : 6;
 }
 
 .na-shift-card__resize::before {
@@ -260,7 +261,8 @@
     left           : 0;
     right          : 0;
     bottom         : 0;
-    z-index        : 2;
+    pointer-events : auto;
+    z-index        : 6;
 }
 
 .na-shift-card:hover .na-shift-card__resize,

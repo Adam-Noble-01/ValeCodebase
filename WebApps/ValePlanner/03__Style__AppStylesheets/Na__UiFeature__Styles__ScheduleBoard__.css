@@ -216,11 +216,22 @@
 }
 
 .na-shift-card__resize {
-    height         : 11px;
+    position       : relative;
+    height         : 16px;
+    line-height    : 16px;
     border-top     : 1px solid rgba(15, 23, 42, 0.16);
     cursor         : ns-resize;
     text-align     : center;
     font-size      : 10px;
+}
+
+.na-shift-card__resize::before {
+    content        : '';
+    position       : absolute;
+    top            : -6px;
+    left           : 0;
+    right          : 0;
+    bottom         : 0;
 }
 
 .na-current-time-line {
@@ -259,6 +270,36 @@
     background : #fff1f2;
     border-color : #fecdd3;
     color : #be123c;
+}
+
+.na-shift-color-cyan {
+    background : #ecfeff;
+    border-color : #a5f3fc;
+    color : #0e7490;
+}
+
+.na-shift-color-lime {
+    background : #f7fee7;
+    border-color : #d9f99d;
+    color : #4d7c0f;
+}
+
+.na-shift-color-orange {
+    background : #fff7ed;
+    border-color : #fed7aa;
+    color : #c2410c;
+}
+
+.na-shift-color-indigo {
+    background : #eef2ff;
+    border-color : #c7d2fe;
+    color : #4338ca;
+}
+
+.na-shift-color-slate {
+    background : #f8fafc;
+    border-color : #cbd5e1;
+    color : #334155;
 }
 
 /* endregion -------------------------------------------------------- */

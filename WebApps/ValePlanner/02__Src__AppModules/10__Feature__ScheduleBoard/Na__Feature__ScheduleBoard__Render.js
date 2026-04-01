@@ -16,7 +16,12 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
             2: 'na-shift-color-emerald',
             3: 'na-shift-color-amber',
             4: 'na-shift-color-purple',
-            5: 'na-shift-color-rose'
+            5: 'na-shift-color-rose',
+            6: 'na-shift-color-cyan',
+            7: 'na-shift-color-lime',
+            8: 'na-shift-color-orange',
+            9: 'na-shift-color-indigo',
+            10: 'na-shift-color-slate'
         };
         return colourMap[colorPromptValue] || '';
     }
@@ -31,7 +36,12 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
             'na-shift-color-emerald': '2',
             'na-shift-color-amber':   '3',
             'na-shift-color-purple':  '4',
-            'na-shift-color-rose':    '5'
+            'na-shift-color-rose':    '5',
+            'na-shift-color-cyan':    '6',
+            'na-shift-color-lime':    '7',
+            'na-shift-color-orange':  '8',
+            'na-shift-color-indigo':  '9',
+            'na-shift-color-slate':   '10'
         };
         return promptMap[colourClassValue] || '1';
     }
@@ -175,7 +185,12 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
             '2 = emerald',
             '3 = amber',
             '4 = purple',
-            '5 = rose'
+            '5 = rose',
+            '6 = cyan',
+            '7 = lime',
+            '8 = orange',
+            '9 = indigo',
+            '10 = slate'
         ].join('\n');
         const colorInput = window.prompt(colorPrompt, Na__Schedule__MapColourClassToPromptNumber(sourceShift.color));
         if (colorInput === null) return;

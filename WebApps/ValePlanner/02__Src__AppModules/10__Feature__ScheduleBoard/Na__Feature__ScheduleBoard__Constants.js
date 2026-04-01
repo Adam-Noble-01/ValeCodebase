@@ -11,7 +11,12 @@ export const Na__Schedule__ShiftColourClasses = [
     'na-shift-color-emerald',
     'na-shift-color-amber',
     'na-shift-color-purple',
-    'na-shift-color-rose'
+    'na-shift-color-rose',
+    'na-shift-color-cyan',
+    'na-shift-color-lime',
+    'na-shift-color-orange',
+    'na-shift-color-indigo',
+    'na-shift-color-slate'
 ];
 
 // endregion ----------------------------------------------------

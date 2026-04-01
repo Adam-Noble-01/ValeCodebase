@@ -80,16 +80,25 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
 
      if (!sourceShift) return;
 
-     setState({
-         pendingDrag: {
-             action: actionType,
-             columnId,
-             shift: sourceShift,
-             startX: mouseEvent.clientX,
-             startY: mouseEvent.clientY,
-             mins: hoveredMinutes
-         }
-     });
+    if (actionType === 'resize') {
+        setState({
+            selectedShiftId: sourceShift.id,
+            pendingDrag: null,
+            draftShift: { ...sourceShift, action: 'resize' }
+        });
+        return;
+    }
+
+    setState({
+        pendingDrag: {
+            action: actionType,
+            columnId,
+            shift: sourceShift,
+            startX: mouseEvent.clientX,
+            startY: mouseEvent.clientY,
+            mins: hoveredMinutes
+        }
+    });
  }
  // ------------------------------------------------------------
 
@@ -123,9 +132,10 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
         const nextState = { ...getState() };
 
          if (nextState.pendingDrag) {
-             const hasMovedEnough =
-                 Math.abs(moveEvent.clientX - nextState.pendingDrag.startX) > 3 ||
-                 Math.abs(moveEvent.clientY - nextState.pendingDrag.startY) > 3;
+            const dragActivationPx = nextState.pendingDrag.action === 'resize' ? 0 : 3;
+            const hasMovedEnough =
+                Math.abs(moveEvent.clientX - nextState.pendingDrag.startX) > dragActivationPx ||
+                Math.abs(moveEvent.clientY - nextState.pendingDrag.startY) > dragActivationPx;
 
              if (!hasMovedEnough) return;
 

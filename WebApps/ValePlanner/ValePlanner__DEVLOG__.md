@@ -3,6 +3,20 @@
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
+## ValePlanner v0.5.2 - 01-Apr-2026
+### Analytics Task Collation (Case-Insensitive) + All-Time Default Range
+
+**Overview**
+- Updated analytics aggregation so repeated job names collate into one task bucket across all matching stints.
+- Task-name grouping is now case-insensitive and whitespace-normalised, so `king`, `KING`, and `King` all aggregate together.
+- Pie chart task labels now render in Title Case for consistent naming.
+- Analytics initial load now defaults to all available shift dates (min->max) instead of current-month-first, so historical hours are included immediately.
+- Existing range handles remain active, so users can still narrow the time window after load.
+
+**Files Changed**
+- `02__Src__AppModules/11__Feature__Analytics/Na__Feature__Analytics__Render.js`
+
+# ---------------------------------------------------------
 ## ValePlanner v0.4.4 - 26-Mar-2026
 ### Analytics Time Range (Levels Bar) + Muted Palette + Current-Month Default
 

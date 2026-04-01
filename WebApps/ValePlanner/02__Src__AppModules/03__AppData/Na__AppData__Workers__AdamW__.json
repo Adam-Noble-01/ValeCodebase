@@ -119,14 +119,6 @@
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1774945548434",
-          "date": "2026-04-01",
-          "startTime": "08:00",
-          "endTime": "13:00",
-          "title": "Hampson",
-          "color": "na-shift-color-emerald"
-        },
-        {
           "id": "new-1774945758810",
           "date": "2026-04-02",
           "startTime": "13:00",
@@ -175,11 +167,51 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774964426089",
+          "id": "new-1775030620454",
           "date": "2026-03-31",
           "startTime": "14:45",
-          "endTime": "18:30",
+          "endTime": "15:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1774964426089",
+          "date": "2026-03-31",
+          "startTime": "15:00",
+          "endTime": "18:00",
           "title": "King",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1775031013056",
+          "date": "2026-04-01",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "King",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1775031422720",
+          "date": "2026-04-01",
+          "startTime": "09:00",
+          "endTime": "09:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775031441276",
+          "date": "2026-04-01",
+          "startTime": "09:15",
+          "endTime": "09:30",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1774945548434",
+          "date": "2026-04-01",
+          "startTime": "09:30",
+          "endTime": "13:00",
+          "title": "Hampson",
           "color": "na-shift-color-amber"
         }
       ]

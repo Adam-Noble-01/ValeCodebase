@@ -54,6 +54,25 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Normalize Task Title Into Case-Insensitive Group Key
+    // ------------------------------------------------------------
+    function Na__Analytics__NormalizeTaskTitle(taskTitleValue) {
+        const titleValue = String(taskTitleValue || '').replace(/\s+/g, ' ').trim();
+        if (!titleValue) return 'untitled task';
+        return titleValue.toLowerCase();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Format Normalized Task Key Into Title-Case Label
+    // ------------------------------------------------------------
+    function Na__Analytics__FormatTaskDisplayName(taskKeyValue) {
+        if (!taskKeyValue || taskKeyValue === 'untitled task') return 'Untitled Task';
+        return taskKeyValue.replace(/\b[a-z]/g, (charValue) => charValue.toUpperCase());
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Generate All Calendar Dates Between Start and End
     // ------------------------------------------------------------
     function Na__Analytics__GenerateCalendarDates(startISO, endISO) {
@@ -89,23 +108,31 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     // FUNCTION | Build Aggregate Analytics Data (Filtered by Date Range)
     // ------------------------------------------------------------
     function Na__Analytics__BuildAnalyticsData(worker, rangeStart, rangeEnd) {
-        const taskHoursMap = {};
-        const dateHoursMap = {};
+        const taskHoursMap   = {};
+        const taskLabelsMap  = {};
+        const dateHoursMap   = {};
 
         const filteredShifts = worker.shifts.filter((shiftValue) => {
             return shiftValue.date >= rangeStart && shiftValue.date <= rangeEnd;
         });
 
         filteredShifts.forEach((shiftValue) => {
-            const durationHours = (Na__Utils__TimeToMinutes(shiftValue.endTime) - Na__Utils__TimeToMinutes(shiftValue.startTime)) / 60;
-            const taskTitle     = shiftValue.title || 'Untitled Task';
+            const durationHours      = (Na__Utils__TimeToMinutes(shiftValue.endTime) - Na__Utils__TimeToMinutes(shiftValue.startTime)) / 60;
+            const normalizedTaskKey  = Na__Analytics__NormalizeTaskTitle(shiftValue.title);
 
-            taskHoursMap[taskTitle]        = (taskHoursMap[taskTitle] || 0) + durationHours;
-            dateHoursMap[shiftValue.date]  = (dateHoursMap[shiftValue.date] || 0) + durationHours;
+            if (!taskLabelsMap[normalizedTaskKey]) {
+                taskLabelsMap[normalizedTaskKey] = Na__Analytics__FormatTaskDisplayName(normalizedTaskKey);
+            }
+
+            taskHoursMap[normalizedTaskKey]  = (taskHoursMap[normalizedTaskKey] || 0) + durationHours;
+            dateHoursMap[shiftValue.date]    = (dateHoursMap[shiftValue.date] || 0) + durationHours;
         });
 
         const taskData = Object.entries(taskHoursMap)
-            .map(([name, value]) => ({ name, value: Number(value.toFixed(1)) }))
+            .map(([keyValue, value]) => ({
+                name  : taskLabelsMap[keyValue] || Na__Analytics__FormatTaskDisplayName(keyValue),
+                value : Number(value.toFixed(1))
+            }))
             .sort((a, b) => b.value - a.value);
 
         const dayData = Object.entries(dateHoursMap)
@@ -142,12 +169,8 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
             Na__Analytics__AllCalendarDates = [];
         }
 
-        const monthRange          = Na__Analytics__GetCurrentMonthRange();
-        const hasCurrentMonthData = worker.shifts.some((s) => s.date >= monthRange.rangeStart && s.date <= monthRange.rangeEnd);
-
-        if (hasCurrentMonthData) {
-            Na__Analytics__CurrentRange = monthRange;
-        } else if (shiftDatesSorted.length > 0) {
+        const monthRange = Na__Analytics__GetCurrentMonthRange();
+        if (shiftDatesSorted.length > 0) {
             Na__Analytics__CurrentRange = {
                 rangeStart : shiftDatesSorted[0],
                 rangeEnd   : shiftDatesSorted[shiftDatesSorted.length - 1]

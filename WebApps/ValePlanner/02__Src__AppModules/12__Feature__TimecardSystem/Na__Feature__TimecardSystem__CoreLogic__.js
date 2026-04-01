@@ -14,6 +14,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
     let Na__Timecard__DataStore                = null; // <-- Live mutable data store (loaded on demand)
     let Na__Timecard__CachedViewModel          = null; // <-- Cached view model (cleared on each mutation)
     const Na__Timecard__ClockInGracePeriodMins = 6;    // <-- Minutes within the hour that snap clock-in to :00
+    const Na__Timecard__ClockOutCeilingMins    = 5;    // <-- Round clock-out up to this minute interval
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -155,6 +156,27 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
         const minuteValue           = clockInMins % 60;
         const normalizedMinuteValue = minuteValue <= Na__Timecard__ClockInGracePeriodMins ? 0 : minuteValue;
         return `${String(hourValue).padStart(2, '0')}:${String(normalizedMinuteValue).padStart(2, '0')}`;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Clock-Out Rounding - Ceiling to Next 5 Minutes
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Apply Ceiling To Clock Out Timestamp
+    // ------------------------------------------------------------
+    function Na__Timecard__ApplyClockOutCeilingToFiveMins(dateValue) {
+        const normalizedDate = new Date(dateValue);
+        const minuteValue    = normalizedDate.getMinutes();
+        const minuteRemainder = minuteValue % Na__Timecard__ClockOutCeilingMins;
+        if (minuteRemainder === 0) return normalizedDate;
+
+        const minutesToAdd = Na__Timecard__ClockOutCeilingMins - minuteRemainder;
+        normalizedDate.setMinutes(minuteValue + minutesToAdd, 0, 0);
+        return normalizedDate;
     }
     // ------------------------------------------------------------
 
@@ -323,9 +345,10 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
     // FUNCTION | Close Most Recent Open Clock In Entry
     // ------------------------------------------------------------
     export async function Na__Timecard__ClockOutNow() {
-        const nowValue   = new Date();
-        const sourceData = await Na__Timecard__GetDataStore();
-        const monthKeys  = Object.keys(sourceData).sort((monthA, monthB) => Na__Timecard__ParseMonthKeyToSortValue(monthB) - Na__Timecard__ParseMonthKeyToSortValue(monthA));
+        const nowValue               = new Date();
+        const normalizedClockOutDate = Na__Timecard__ApplyClockOutCeilingToFiveMins(nowValue);
+        const sourceData             = await Na__Timecard__GetDataStore();
+        const monthKeys              = Object.keys(sourceData).sort((monthA, monthB) => Na__Timecard__ParseMonthKeyToSortValue(monthB) - Na__Timecard__ParseMonthKeyToSortValue(monthA));
 
         for (const monthKey of monthKeys) {
             const monthEntries = Array.isArray(sourceData[monthKey]) ? sourceData[monthKey] : [];
@@ -335,7 +358,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                 const hasClockOut = Boolean(String(entryValue?.['Timcard__Clock-Out__'] || '').trim());
                 if (!hasClockIn || hasClockOut) continue;
 
-                const timeLabel = Na__Timecard__FormatTimeLabel(nowValue);
+                const timeLabel = Na__Timecard__FormatTimeLabel(normalizedClockOutDate);
                 sourceData[monthKey][rowIndex]['Timcard__Clock-Out__'] = timeLabel;
                 sourceData[monthKey][rowIndex].Timecard__AuthHash      = '';
                 await Na__Timecard__PersistDataStoreAsync();

@@ -2,7 +2,7 @@ import { Na__Utils__TimeToMinutes } from '../05__AppUtils/Na__Utils__Time.js';
 import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__FormatUkWeekdayShort, Na__Utils__CompareYyyyMmDd } from '../05__AppUtils/Na__Utils__Dates.js';
 
 // -----------------------------------------------------------------------------
-// REGION | Analytics Renderer
+// REGION | Analytics Renderer - Chart Palette & Module State
 // -----------------------------------------------------------------------------
 
     // MODULE CONSTANTS | Desaturated Chart Color Palette (25% Reduced Saturation)
@@ -30,6 +30,12 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     let Na__Analytics__FullDateHoursMap   = {};
     // ------------------------------------------------------------
 
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - Date Range & Calendar Helpers
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Get First-to-Last Day Range for Current Month
     // ------------------------------------------------------------
@@ -54,6 +60,29 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Generate All Calendar Dates Between Start and End
+    // ------------------------------------------------------------
+    function Na__Analytics__GenerateCalendarDates(startISO, endISO) {
+        const dates       = [];
+        const currentDate = Na__Utils__ParseYyyyMmDdToLocalDate(startISO);
+        const endDate     = Na__Utils__ParseYyyyMmDdToLocalDate(endISO);
+
+        while (currentDate <= endDate) {
+            dates.push(Na__Utils__FormatLocalDateAsYyyyMmDd(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        return dates;
+    }
+    // ------------------------------------------------------------
+
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - Task Title Normalization & Display Labels
+// -----------------------------------------------------------------------------
+
     // HELPER FUNCTION | Normalize Task Title Into Case-Insensitive Group Key
     // ------------------------------------------------------------
     function Na__Analytics__NormalizeTaskTitle(taskTitleValue) {
@@ -72,23 +101,12 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     }
     // ------------------------------------------------------------
 
+// endregion ----------------------------------------------------
 
-    // HELPER FUNCTION | Generate All Calendar Dates Between Start and End
-    // ------------------------------------------------------------
-    function Na__Analytics__GenerateCalendarDates(startISO, endISO) {
-        const dates       = [];
-        const currentDate = Na__Utils__ParseYyyyMmDdToLocalDate(startISO);
-        const endDate     = Na__Utils__ParseYyyyMmDdToLocalDate(endISO);
 
-        while (currentDate <= endDate) {
-            dates.push(Na__Utils__FormatLocalDateAsYyyyMmDd(currentDate));
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        return dates;
-    }
-    // ------------------------------------------------------------
-
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - Shift Aggregation & Analytics Datasets
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Build Full Date-Hours Map for All Shifts (Unfiltered)
     // ------------------------------------------------------------
@@ -147,6 +165,12 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     }
     // ------------------------------------------------------------
 
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - View Composition & Partial DOM Updates
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Render Analytics View (Entry Point)
     // ------------------------------------------------------------
@@ -273,6 +297,12 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     }
     // ------------------------------------------------------------
 
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - Time Range Levels (Canvas & Overlay Chrome)
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Draw Levels Histogram as Area Chart on Canvas
     // ------------------------------------------------------------
@@ -400,6 +430,12 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     }
     // ------------------------------------------------------------
 
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - Time Range Handle Drag Interaction
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Attach Drag Handlers to Level Handles
     // ------------------------------------------------------------
@@ -474,6 +510,12 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     }
     // ------------------------------------------------------------
 
+// endregion ----------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Analytics Renderer - Chart.js Doughnut & Bar Construction
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Create Analytics Chart Instances
     // ------------------------------------------------------------

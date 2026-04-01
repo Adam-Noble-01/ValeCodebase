@@ -13,8 +13,8 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
     // ------------------------------------------------------------
     let Na__Timecard__DataStore                = null; // <-- Live mutable data store (loaded on demand)
     let Na__Timecard__CachedViewModel          = null; // <-- Cached view model (cleared on each mutation)
-    const Na__Timecard__ClockInGracePeriodMins = 6;    // <-- Minutes within the hour that snap clock-in to :00
-    const Na__Timecard__ClockOutCeilingMins    = 5;    // <-- Round clock-out up to this minute interval
+    const Na__Timecard__ClockInFloorMins       = 5;    // <-- Round clock-in down to this minute interval
+    const Na__Timecard__ClockOutFloorMins      = 5;    // <-- Round clock-out down to this minute interval
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -130,32 +130,31 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
 
 
 // -----------------------------------------------------------------------------
-// REGION | Grace Period - Clock-In Rounding to Hour
+// REGION | Clock-In Rounding - Floor to Previous 5 Minutes
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Apply Grace Period to Clock In Timestamp
+    // HELPER FUNCTION | Apply Floor To Clock In Timestamp
     // ------------------------------------------------------------
-    function Na__Timecard__ApplyClockInGracePeriod(dateValue) {
+    function Na__Timecard__ApplyClockInFloorToFiveMins(dateValue) {
         const normalizedDate = new Date(dateValue);
         const minuteValue    = normalizedDate.getMinutes();
-        if (minuteValue <= Na__Timecard__ClockInGracePeriodMins) {
-            normalizedDate.setMinutes(0, 0, 0);
-        }
+        const minuteRemainder = minuteValue % Na__Timecard__ClockInFloorMins;
+        normalizedDate.setMinutes(minuteValue - minuteRemainder, 0, 0);
         return normalizedDate;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Normalize Clock-In Time Text With Grace Period
+    // HELPER FUNCTION | Normalize Clock-In Time Text With 5-Min Floor
     // ------------------------------------------------------------
-    function Na__Timecard__NormalizeClockInTextWithGracePeriod(clockInValue) {
+    function Na__Timecard__NormalizeClockInTextWithFiveMinFloor(clockInValue) {
         const clockInMins = Na__Timecard__ParseClockTimeToMinutes(clockInValue);
         if (clockInMins === null) return clockInValue;
 
-        const hourValue             = Math.floor(clockInMins / 60);
-        const minuteValue           = clockInMins % 60;
-        const normalizedMinuteValue = minuteValue <= Na__Timecard__ClockInGracePeriodMins ? 0 : minuteValue;
-        return `${String(hourValue).padStart(2, '0')}:${String(normalizedMinuteValue).padStart(2, '0')}`;
+        const normalizedMins = clockInMins - (clockInMins % Na__Timecard__ClockInFloorMins);
+        const hourValue      = Math.floor(normalizedMins / 60);
+        const minuteValue    = normalizedMins % 60;
+        return `${String(hourValue).padStart(2, '0')}:${String(minuteValue).padStart(2, '0')}`;
     }
     // ------------------------------------------------------------
 
@@ -163,20 +162,31 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
 
 
 // -----------------------------------------------------------------------------
-// REGION | Clock-Out Rounding - Ceiling to Next 5 Minutes
+// REGION | Clock-Out Rounding - Floor to Previous 5 Minutes
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Apply Ceiling To Clock Out Timestamp
+    // HELPER FUNCTION | Apply Floor To Clock Out Timestamp
     // ------------------------------------------------------------
-    function Na__Timecard__ApplyClockOutCeilingToFiveMins(dateValue) {
+    function Na__Timecard__ApplyClockOutFloorToFiveMins(dateValue) {
         const normalizedDate = new Date(dateValue);
         const minuteValue    = normalizedDate.getMinutes();
-        const minuteRemainder = minuteValue % Na__Timecard__ClockOutCeilingMins;
-        if (minuteRemainder === 0) return normalizedDate;
-
-        const minutesToAdd = Na__Timecard__ClockOutCeilingMins - minuteRemainder;
-        normalizedDate.setMinutes(minuteValue + minutesToAdd, 0, 0);
+        const minuteRemainder = minuteValue % Na__Timecard__ClockOutFloorMins;
+        normalizedDate.setMinutes(minuteValue - minuteRemainder, 0, 0);
         return normalizedDate;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Normalize Clock-Out Time Text With 5-Min Floor
+    // ------------------------------------------------------------
+    function Na__Timecard__NormalizeClockOutTextWithFiveMinFloor(clockOutValue) {
+        const clockOutMins = Na__Timecard__ParseClockTimeToMinutes(clockOutValue);
+        if (clockOutMins === null) return clockOutValue;
+
+        const normalizedMins = clockOutMins - (clockOutMins % Na__Timecard__ClockOutFloorMins);
+        const hourValue      = Math.floor(normalizedMins / 60);
+        const minuteValue    = normalizedMins % 60;
+        return `${String(hourValue).padStart(2, '0')}:${String(minuteValue).padStart(2, '0')}`;
     }
     // ------------------------------------------------------------
 
@@ -308,7 +318,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
     // ------------------------------------------------------------
     export async function Na__Timecard__ClockInNow() {
         const nowValue              = new Date();
-        const normalizedClockInDate = Na__Timecard__ApplyClockInGracePeriod(nowValue);
+        const normalizedClockInDate = Na__Timecard__ApplyClockInFloorToFiveMins(nowValue);
         const monthKey              = Na__Timecard__BuildMonthKey(normalizedClockInDate);
         const dateLabel             = Na__Timecard__FormatDateLabel(normalizedClockInDate);
         const timeLabel             = Na__Timecard__FormatTimeLabel(normalizedClockInDate);
@@ -346,7 +356,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
     // ------------------------------------------------------------
     export async function Na__Timecard__ClockOutNow() {
         const nowValue               = new Date();
-        const normalizedClockOutDate = Na__Timecard__ApplyClockOutCeilingToFiveMins(nowValue);
+        const normalizedClockOutDate = Na__Timecard__ApplyClockOutFloorToFiveMins(nowValue);
         const sourceData             = await Na__Timecard__GetDataStore();
         const monthKeys              = Object.keys(sourceData).sort((monthA, monthB) => Na__Timecard__ParseMonthKeyToSortValue(monthB) - Na__Timecard__ParseMonthKeyToSortValue(monthA));
 
@@ -411,7 +421,8 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                 const dateValue     = String(rawEntry?.Timecard__Date || '').trim();
                 const clockInValue  = String(rawEntry?.['Timcard__Clock-In__'] || '').trim();
                 const clockOutValue = String(rawEntry?.['Timcard__Clock-Out__'] || '').trim();
-                const normalizedClockInValue = Na__Timecard__NormalizeClockInTextWithGracePeriod(clockInValue);
+                const normalizedClockInValue  = Na__Timecard__NormalizeClockInTextWithFiveMinFloor(clockInValue);
+                const normalizedClockOutValue = Na__Timecard__NormalizeClockOutTextWithFiveMinFloor(clockOutValue);
 
                 const hashPayload = {
                     monthKey,
@@ -424,7 +435,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                 const expectedHash    = await Na__Timecard__CreateAuthHashAsync(hashPayload);
                 const storedHashValue = String(rawEntry?.Timecard__AuthHash || '').trim() || expectedHash;
                 const isHashValid     = await Na__Timecard__ValidateAuthHashAsync(hashPayload, storedHashValue);
-                const workedMinutesValue = Na__Timecard__CalculateWorkedMinutes(normalizedClockInValue, clockOutValue);
+                const workedMinutesValue = Na__Timecard__CalculateWorkedMinutes(normalizedClockInValue, normalizedClockOutValue);
                 const isOpenShift     = Boolean(clockInValue) && !clockOutValue;
 
                 if (sourceData[monthKey][rowIndex].Timecard__AuthHash !== storedHashValue) {
@@ -439,7 +450,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                 const normalizedEntry = {
                     Timecard__Date:             dateValue,
                     'Timcard__Clock-In__':      normalizedClockInValue,
-                    'Timcard__Clock-Out__':      clockOutValue || '--',
+                    'Timcard__Clock-Out__':      normalizedClockOutValue || '--',
                     Timecard__AuthHash:          storedHashValue,
                     Timecard__ExpectedAuthHash:  expectedHash,
                     Timecard__WorkedMinutes:     workedMinutesValue,

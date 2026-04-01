@@ -87,18 +87,23 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 
             const startMins      = Na__Utils__TimeToMinutes(shiftValue.startTime);
             const endMins        = Na__Utils__TimeToMinutes(shiftValue.endTime);
+            const durationMins   = endMins - startMins;
+            const isCompactShift = durationMins < 45;
             const topOffset      = (startMins - bounds.start) * Na__Schedule__PixelsPerMinute + pad; // <-- offset by top padding
             const heightValue    = (endMins - startMins) * Na__Schedule__PixelsPerMinute;
             const isSelected     = state.selectedShiftId === shiftValue.id;
             const showWorkerInfo = state.viewMode === 'week' && shiftValue.workerName;
+            const compactClass   = isCompactShift ? 'na-shift-card--compact' : '';
+            const workerMarkup   = (!isCompactShift && showWorkerInfo) ? `<span class="na-shift-card__worker">${shiftValue.workerName}</span>` : '';
+            const timeMarkup     = isCompactShift ? '' : `<div class="na-shift-card__time">${shiftValue.startTime} - ${shiftValue.endTime}</div>`;
 
             return `
-                <div class="na-shift-card ${shiftValue.color} ${isSelected ? 'na-shift-card--selected' : ''}" style="top:${topOffset}px;height:${heightValue}px;">
+                <div class="na-shift-card ${shiftValue.color} ${compactClass} ${isSelected ? 'na-shift-card--selected' : ''}" style="top:${topOffset}px;height:${heightValue}px;">
                     <div class="na-shift-card__main" data-action="move-shift" data-shift-id="${shiftValue.id}" data-column-id="${columnValue.id}">
                         <div class="na-shift-card__edit-target" data-action="edit-shift-meta" data-shift-id="${shiftValue.id}" title="Double-click to edit task and color">Edit</div>
-                        ${showWorkerInfo ? `<span class="na-shift-card__worker">${shiftValue.workerName}</span>` : ''}
+                        ${workerMarkup}
                         <div class="na-shift-card__title">${shiftValue.title}</div>
-                        <div class="na-shift-card__time">${shiftValue.startTime} - ${shiftValue.endTime}</div>
+                        ${timeMarkup}
                         <button class="na-shift-card__delete" data-action="delete-shift" data-shift-id="${shiftValue.id}" title="Delete shift">X</button>
                     </div>
                     <div class="na-shift-card__resize" data-action="resize-shift" data-shift-id="${shiftValue.id}" data-column-id="${columnValue.id}">:::</div>
@@ -112,17 +117,21 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 
         const draftStartMins    = Na__Utils__TimeToMinutes(draft.startTime);
         const draftEndMins      = Na__Utils__TimeToMinutes(draft.endTime);
+        const draftDurationMins = draftEndMins - draftStartMins;
+        const isCompactDraft    = draftDurationMins < 45;
         const draftTopOffset    = (draftStartMins - bounds.start) * Na__Schedule__PixelsPerMinute + pad; // <-- offset by top padding
         const draftHeight       = (draftEndMins - draftStartMins) * Na__Schedule__PixelsPerMinute;
-        const draftWorkerMarkup = state.viewMode === 'week' ? '<span class="na-shift-card__worker">Draft Shift</span>' : '';
+        const draftWorkerMarkup = (!isCompactDraft && state.viewMode === 'week') ? '<span class="na-shift-card__worker">Draft Shift</span>' : '';
+        const draftTimeMarkup   = isCompactDraft ? '' : `<div class="na-shift-card__time">${draft.startTime} - ${draft.endTime}</div>`;
+        const draftCompactClass = isCompactDraft ? 'na-shift-card--compact' : '';
 
         return `
             ${realShiftMarkup}
-            <div class="na-shift-card ${draft.color} na-shift-card--draft" style="top:${draftTopOffset}px;height:${draftHeight}px;">
+            <div class="na-shift-card ${draft.color} ${draftCompactClass} na-shift-card--draft" style="top:${draftTopOffset}px;height:${draftHeight}px;">
                 <div class="na-shift-card__main">
                     ${draftWorkerMarkup}
                     <div class="na-shift-card__title">${draft.title}</div>
-                    <div class="na-shift-card__time">${draft.startTime} - ${draft.endTime}</div>
+                    ${draftTimeMarkup}
                 </div>
                 <div class="na-shift-card__resize">:::</div>
             </div>

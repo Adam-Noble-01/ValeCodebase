@@ -3,7 +3,7 @@
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
-## ValePlanner v0.5.2 - 01-Apr-2026
+## ValePlanner v0.4.5 - 01-Apr-2026
 ### Analytics Task Collation (Case-Insensitive) + All-Time Default Range
 
 **Overview**

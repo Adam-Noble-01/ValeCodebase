@@ -5,7 +5,7 @@ import { Na__Timecard__DestroyTimecardSystem, Na__Timecard__RenderTimecardSystem
 import { Na__Schedule__DestroyScheduleBoard, Na__Schedule__RenderScheduleBoard } from '../10__Feature__ScheduleBoard/Na__Feature__ScheduleBoard__Render.js';
 import { Na__AppCore__GetState, Na__AppCore__InitializeStateStore, Na__AppCore__RedoWorkersChange, Na__AppCore__SetState, Na__AppCore__SetWorkers, Na__AppCore__SubscribeStateChange, Na__AppCore__UndoWorkersChange } from './Na__AppCore__StateStore.js';
 import { Na__AppCore__SetupHotkeysHandler } from './Na__AppCore__HotkeysHandler.js';
-import { Na__Utils__ShiftDateByDays } from '../05__AppUtils/Na__Utils__Dates.js';
+import { Na__Utils__GetTodayDateString, Na__Utils__ShiftDateByDays } from '../05__AppUtils/Na__Utils__Dates.js';
 import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__System__DevTools__LocalhostGuard.js';
 import { Na__Persistence__LoadWorkersAsync, Na__Persistence__SaveWorkersAsync } from '../70__System__DevTools/Na__System__PersistenceApi.js';
 
@@ -30,6 +30,7 @@ export async function Na__AppCore__InitializeValePlannerApp(rootElement) {
 
      const nowValue = new Date();
      const currentTimeMins = (nowValue.getHours() * 60) + nowValue.getMinutes();
+    const todayDateString = Na__Utils__GetTodayDateString();
     const seededWorkers = structuredClone(workersAdamWData.workers);
     const persistedWorkers = await Na__Persistence__LoadWorkersAsync();
     const initialWorkers = Array.isArray(persistedWorkers) ? persistedWorkers : seededWorkers;
@@ -39,7 +40,7 @@ export async function Na__AppCore__InitializeValePlannerApp(rootElement) {
         defaultWorkers: structuredClone(initialWorkers),
          mainTab: 'schedule',
          viewMode: 'week',
-         currentDate: '2026-03-23',
+         currentDate: todayDateString,
          selectedShiftId: null,
          draftShift: null,
          pendingDrag: null,

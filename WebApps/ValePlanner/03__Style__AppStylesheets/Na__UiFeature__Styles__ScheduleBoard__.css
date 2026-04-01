@@ -131,9 +131,12 @@
 
 .na-shift-card__main {
     flex       : 1;
+    min-height : 0;
+    overflow   : hidden;
     padding    : 7px 8px;
     cursor     : grab;
     position   : relative;
+    z-index    : 3;
 }
 
 .na-shift-card__main:active {
@@ -182,6 +185,22 @@
     white-space     : nowrap;
     overflow        : hidden;
     text-overflow   : ellipsis;
+    position        : relative;
+    z-index         : 4;
+}
+
+.na-shift-card--compact .na-shift-card__main {
+    padding         : 4px 8px;
+}
+
+.na-shift-card--compact .na-shift-card__title {
+    margin          : 0;
+    line-height     : 1.25;
+}
+
+.na-shift-card--compact .na-shift-card__worker,
+.na-shift-card--compact .na-shift-card__time {
+    display         : none;
 }
 
 .na-shift-card__time {
@@ -216,13 +235,22 @@
 }
 
 .na-shift-card__resize {
-    position       : relative;
+    position       : absolute;
+    left           : 0;
+    right          : 0;
+    bottom         : 0;
     height         : 16px;
     line-height    : 16px;
-    border-top     : 1px solid rgba(15, 23, 42, 0.16);
+    border-top     : 1px solid transparent;
+    background     : transparent;
     cursor         : ns-resize;
     text-align     : center;
     font-size      : 10px;
+    font-weight    : 700;
+    color          : transparent;
+    opacity        : 0;
+    transition     : opacity 120ms ease, background 120ms ease, border-color 120ms ease, color 120ms ease;
+    z-index        : 2;
 }
 
 .na-shift-card__resize::before {
@@ -232,6 +260,16 @@
     left           : 0;
     right          : 0;
     bottom         : 0;
+    z-index        : 2;
+}
+
+.na-shift-card:hover .na-shift-card__resize,
+.na-shift-card:focus-within .na-shift-card__resize,
+.na-shift-card__resize:hover {
+    border-top     : 1px solid rgba(15, 23, 42, 0.16);
+    background     : rgba(255, 255, 255, 0.45);
+    color          : inherit;
+    opacity        : 1;
 }
 
 .na-current-time-line {

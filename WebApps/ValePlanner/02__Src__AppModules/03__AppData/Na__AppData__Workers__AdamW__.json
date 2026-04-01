@@ -95,14 +95,6 @@
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1774961135431",
-          "date": "2026-03-31",
-          "startTime": "20:30",
-          "endTime": "21:00",
-          "title": "New Shift",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1774961198885",
           "date": "2026-03-31",
           "startTime": "13:00",
@@ -167,14 +159,6 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774964426089",
-          "date": "2026-03-31",
-          "startTime": "14:45",
-          "endTime": "18:00",
-          "title": "King",
-          "color": "na-shift-color-amber"
-        },
-        {
           "id": "new-1774964457928",
           "date": "2026-03-31",
           "startTime": "13:45",
@@ -189,6 +173,14 @@
           "endTime": "14:45",
           "title": "CatchUp - James",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1774964426089",
+          "date": "2026-03-31",
+          "startTime": "14:45",
+          "endTime": "18:30",
+          "title": "King",
+          "color": "na-shift-color-amber"
         }
       ]
     }

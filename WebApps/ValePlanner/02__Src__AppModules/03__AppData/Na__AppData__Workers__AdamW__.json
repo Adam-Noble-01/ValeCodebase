@@ -55,14 +55,6 @@
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "s3",
-          "date": "2026-03-25",
-          "startTime": "07:00",
-          "endTime": "14:00",
-          "title": "Whitecard |  Lister",
-          "color": "na-shift-color-blue"
-        },
-        {
           "id": "new-1774945927430",
           "date": "2026-03-31",
           "startTime": "09:30",
@@ -333,6 +325,30 @@
           "endTime": "19:00",
           "title": "Matharu",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1775154219853",
+          "date": "2026-03-25",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "s3",
+          "date": "2026-03-25",
+          "startTime": "07:00",
+          "endTime": "12:30",
+          "title": "Whitecard |  Lister",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775154236878",
+          "date": "2026-03-25",
+          "startTime": "12:30",
+          "endTime": "13:00",
+          "title": "Tea",
+          "color": "na-shift-color-amber"
         }
       ]
     }

@@ -135,6 +135,38 @@
 }
 
 /* ----------------------------------------------------------------- */
+/* Threshold Slider - Minimum Hours Filter                          */
+/* ----------------------------------------------------------------- */
+
+.na-analytics-threshold-row {
+    display       : flex;
+    align-items   : center;
+    gap           : 10px;
+    margin-bottom : 10px;
+    font-size     : 12px;
+    color         : #64748b;
+}
+
+.na-analytics-threshold-row label {
+    font-weight : 600;
+    white-space : nowrap;
+}
+
+.na-analytics-threshold-row input[type="range"] {
+    flex       : 1;
+    height     : 4px;
+    accent-color : #615ad1;
+    cursor     : pointer;
+}
+
+.na-analytics-threshold-row span {
+    min-width   : 48px;
+    text-align  : right;
+    font-weight : 600;
+    color       : #334155;
+}
+
+/* ----------------------------------------------------------------- */
 
 .na-analytics-chart-grid {
     display               : grid;

@@ -1,5 +1,5 @@
 import { Na__Utils__TimeToMinutes } from '../05__AppUtils/Na__Utils__Time.js';
-import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__FormatUkWeekdayShort, Na__Utils__CompareYyyyMmDd } from '../05__AppUtils/Na__Utils__Dates.js';
+import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMmDd, Na__Utils__FormatUkDateLong, Na__Utils__FormatUkDateCompact, Na__Utils__CompareYyyyMmDd } from '../05__AppUtils/Na__Utils__Dates.js';
 
 // -----------------------------------------------------------------------------
 // REGION | Analytics Renderer - Chart Palette & Module State
@@ -21,13 +21,14 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
 
     // MODULE VARIABLES | Chart Instance Handles & Render State
     // ------------------------------------------------------------
-    let Na__Analytics__PieChartInstance   = null;
-    let Na__Analytics__BarChartInstance   = null;
-    let Na__Analytics__CurrentWorker      = null;
-    let Na__Analytics__CurrentPanelEl     = null;
-    let Na__Analytics__CurrentRange       = null;
-    let Na__Analytics__AllCalendarDates   = [];
-    let Na__Analytics__FullDateHoursMap   = {};
+    let Na__Analytics__PieChartInstance     = null;
+    let Na__Analytics__BarChartInstance     = null;
+    let Na__Analytics__CurrentWorker        = null;
+    let Na__Analytics__CurrentPanelEl       = null;
+    let Na__Analytics__CurrentRange         = null;
+    let Na__Analytics__AllCalendarDates     = [];
+    let Na__Analytics__FullDateHoursMap     = {};
+    let Na__Analytics__TaskThresholdHours   = 0;                                // <-- Minimum hours for donut chart slices
     // ------------------------------------------------------------
 
 // endregion ----------------------------------------------------
@@ -146,17 +147,30 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
             dateHoursMap[shiftValue.date]    = (dateHoursMap[shiftValue.date] || 0) + durationHours;
         });
 
-        const taskData = Object.entries(taskHoursMap)
+        const allTaskData = Object.entries(taskHoursMap)
             .map(([keyValue, value]) => ({
                 name  : taskLabelsMap[keyValue] || Na__Analytics__FormatTaskDisplayName(keyValue),
                 value : Number(value.toFixed(1))
             }))
             .sort((a, b) => b.value - a.value);
 
+        const thresholdValue = Na__Analytics__TaskThresholdHours;
+        let taskData         = allTaskData;
+        if (thresholdValue > 0) {
+            const aboveThreshold = allTaskData.filter((item) => item.value >= thresholdValue);
+            const belowThreshold = allTaskData.filter((item) => item.value < thresholdValue);
+            const otherTotal     = belowThreshold.reduce((acc, item) => acc + item.value, 0);
+
+            taskData = aboveThreshold;
+            if (otherTotal > 0) {
+                taskData = [...aboveThreshold, { name: 'Other', value: Number(otherTotal.toFixed(1)) }];
+            }
+        }
+
         const dayData = Object.entries(dateHoursMap)
             .sort(([dateA], [dateB]) => Na__Utils__CompareYyyyMmDd(dateA, dateB))
             .map(([dateValue, value]) => ({
-                name  : Na__Utils__FormatUkWeekdayShort(dateValue),
+                name  : Na__Utils__FormatUkDateCompact(dateValue),
                 value : Number(value.toFixed(1))
             }));
 
@@ -249,6 +263,11 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
                    <div class="na-analytics-chart-grid">
                        <div class="na-analytics-card">
                            <div style="font-weight:700;margin-bottom:8px;">Time Distribution by Task</div>
+                           <div class="na-analytics-threshold-row">
+                               <label for="naThresholdSlider">Min Hours</label>
+                               <input type="range" id="naThresholdSlider" min="0" max="5" step="0.25" value="${Na__Analytics__TaskThresholdHours}">
+                               <span id="naThresholdLabel">${Na__Analytics__TaskThresholdHours > 0 ? Na__Analytics__TaskThresholdHours.toFixed(2) + ' hrs' : 'Off'}</span>
+                           </div>
                            <div class="na-analytics-chart-wrap"><canvas id="naAnalyticsPieChart"></canvas></div>
                        </div>
                        <div class="na-analytics-card">
@@ -262,9 +281,31 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
 
         Na__Analytics__DestroyCharts();
         Na__Analytics__BuildCharts(analyticsData);
+        Na__Analytics__AttachThresholdSlider();
         requestAnimationFrame(() => {
             Na__Analytics__DrawLevelsHistogram();
             Na__Analytics__AttachLevelsDragHandlers();
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Attach Threshold Slider Change Handler
+    // ------------------------------------------------------------
+    function Na__Analytics__AttachThresholdSlider() {
+        const sliderEl = document.getElementById('naThresholdSlider');
+        const labelEl  = document.getElementById('naThresholdLabel');
+        if (!sliderEl) return;
+
+        sliderEl.addEventListener('input', (eventValue) => {
+            const newValue = parseFloat(eventValue.target.value);
+            Na__Analytics__TaskThresholdHours = newValue;
+
+            if (labelEl) {
+                labelEl.textContent = newValue > 0 ? newValue.toFixed(2) + ' hrs' : 'Off';
+            }
+
+            Na__Analytics__UpdateStatsAndCharts();
         });
     }
     // ------------------------------------------------------------

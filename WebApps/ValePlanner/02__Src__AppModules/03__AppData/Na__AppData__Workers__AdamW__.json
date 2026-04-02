@@ -295,14 +295,6 @@
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1774945758810",
-          "date": "2026-04-02",
-          "startTime": "14:30",
-          "endTime": "18:00",
-          "title": "Matharu",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1775131598268",
           "date": "2026-04-02",
           "startTime": "13:00",
@@ -325,6 +317,22 @@
           "endTime": "14:15",
           "title": "Tea",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775138447274",
+          "date": "2026-04-02",
+          "startTime": "14:30",
+          "endTime": "15:15",
+          "title": "Meeting - NF & SE",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1774945758810",
+          "date": "2026-04-02",
+          "startTime": "15:15",
+          "endTime": "19:00",
+          "title": "Matharu",
+          "color": "na-shift-color-purple"
         }
       ]
     }

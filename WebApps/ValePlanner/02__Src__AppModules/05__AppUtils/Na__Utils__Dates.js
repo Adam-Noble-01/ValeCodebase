@@ -107,6 +107,21 @@
  // ------------------------------------------------------------
 
 
+ // HELPER FUNCTION | Format UK Compact Date for Chart Labels (e.g. "Mon 31 Mar")
+ // ------------------------------------------------------------
+ export function Na__Utils__FormatUkDateCompact(yyyyMmDd) {
+     const dateValue = Na__Utils__ParseYyyyMmDdToLocalDate(yyyyMmDd);
+     if (Number.isNaN(dateValue.getTime())) {
+         return String(yyyyMmDd || '').trim();
+     }
+     const weekdayPart = dateValue.toLocaleDateString('en-GB', { weekday: 'short' });
+     const dayPart     = dateValue.getDate();
+     const monthPart   = dateValue.toLocaleDateString('en-GB', { month: 'short' });
+     return `${weekdayPart} ${dayPart} ${monthPart}`;
+ }
+ // ------------------------------------------------------------
+
+
  // HELPER FUNCTION | Compare Two YYYY-MM-DD Strings (Sort)
  // ------------------------------------------------------------
  export function Na__Utils__CompareYyyyMmDd(dateA, dateB) {

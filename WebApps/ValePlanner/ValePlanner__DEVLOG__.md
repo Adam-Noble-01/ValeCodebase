@@ -3,6 +3,22 @@
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
+## ValePlanner v0.4.6 - 02-Apr-2026
+### Analytics — Min-Hours Threshold (Donut) + Calendar Bar Labels
+
+**Overview**
+- Added a **Min Hours** range slider on the **Time Distribution by Task** card (0–5 hrs, 0.25 step). Tasks whose **aggregated hours in the selected range** fall **below** the threshold no longer get individual donut slices; their hours roll into a single **Other** slice so totals stay honest while the legend stays readable.
+- **Hours per Day** bar chart x-axis labels now use **real calendar days** (`Na__Utils__FormatUkDateCompact`, e.g. **Tue 31 Mar**) instead of weekday-only labels, so multiple weeks in one range no longer look like duplicate Mon/Tue/Wed bars.
+
+**Date Utilities**
+- Added **`Na__Utils__FormatUkDateCompact`** in shared dates helpers for compact UK-style chart labels (weekday + day + short month).
+
+**Files Changed**
+- `02__Src__AppModules/05__AppUtils/Na__Utils__Dates.js`
+- `02__Src__AppModules/11__Feature__Analytics/Na__Feature__Analytics__Render.js`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Analytics__.css`
+
+# ---------------------------------------------------------
 ## ValePlanner v0.4.5 - 01-Apr-2026
 ### Analytics Task Collation (Case-Insensitive) + All-Time Default Range
 

@@ -4,17 +4,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "A typical hand-drawn to Whitecard conversion job, tiny scheme, but had no site reference photos so had to use mapping data and street-view etc to figure out roof pitches etc which took extra time",
+        "conceptArtist": "Steph",
+        "input": "Early Stage Sketch"
     },
     "projectCode": "63086",
     "projectName": "Matharu",
     "scheduleData": {
         "dateFulfilled": "02-Apr-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "31-Mar-2025",
+        "timeAllocated": 3,
+        "timeTaken": 3
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -49,5 +49,13 @@
         "OrbitHelperCube__Position__PosX": 5264,
         "OrbitHelperCube__Position__PosY": 2038,
         "OrbitHelperCube__Position__PosZ": -11678
-    }
+    },
+    "folderId": "2026/63086__Matharu",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ]
 }

@@ -1,0 +1,53 @@
+{
+    "basePath": "Projects/2026/63086__Matharu",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "63086",
+    "projectName": "Matharu",
+    "scheduleData": {
+        "dateFulfilled": "02-Apr-2026",
+        "dateReceived": "10-Oct-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63086__Matharu/Matharu__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -1409,
+            "Camera__DefaultPos__PosY": 2641,
+            "Camera__DefaultPos__PosZ": 8772
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0295,
+            "Camera__DefaultRotation__RotY": -0.3153,
+            "Camera__DefaultRotation__RotZ": -0.0091
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 35.9383
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 5264,
+        "OrbitHelperCube__Position__PosY": 2038,
+        "OrbitHelperCube__Position__PosZ": -11678
+    }
+}

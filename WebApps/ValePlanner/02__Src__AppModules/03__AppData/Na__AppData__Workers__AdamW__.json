@@ -247,22 +247,6 @@
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1774945758810",
-          "date": "2026-04-02",
-          "startTime": "14:00",
-          "endTime": "19:00",
-          "title": "Matharu",
-          "color": "na-shift-color-purple"
-        },
-        {
-          "id": "new-1774945722352",
-          "date": "2026-04-02",
-          "startTime": "10:00",
-          "endTime": "14:00",
-          "title": "McLaughlin",
-          "color": "na-shift-color-blue"
-        },
-        {
           "id": "new-1774945701027",
           "date": "2026-04-01",
           "startTime": "15:15",
@@ -293,6 +277,38 @@
           "endTime": "10:00",
           "title": "Tea",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1774945722352",
+          "date": "2026-04-02",
+          "startTime": "10:00",
+          "endTime": "12:00",
+          "title": "McLaughlin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775131598268",
+          "date": "2026-04-02",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "McLaughlin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775131607568",
+          "date": "2026-04-02",
+          "startTime": "12:00",
+          "endTime": "13:00",
+          "title": "Amend Lee-Smtih",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1774945758810",
+          "date": "2026-04-02",
+          "startTime": "14:00",
+          "endTime": "19:00",
+          "title": "Matharu",
+          "color": "na-shift-color-purple"
         }
       ]
     }

@@ -111,22 +111,6 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1774945758810",
-          "date": "2026-04-02",
-          "startTime": "13:00",
-          "endTime": "18:00",
-          "title": "Matharu",
-          "color": "na-shift-color-purple"
-        },
-        {
-          "id": "new-1774945722352",
-          "date": "2026-04-02",
-          "startTime": "08:00",
-          "endTime": "13:00",
-          "title": "McLaughlin",
-          "color": "na-shift-color-blue"
-        },
-        {
           "id": "new-1774945086272",
           "date": "2026-03-31",
           "startTime": "10:00",
@@ -263,12 +247,52 @@
           "color": "na-shift-color-amber"
         },
         {
+          "id": "new-1774945758810",
+          "date": "2026-04-02",
+          "startTime": "14:00",
+          "endTime": "19:00",
+          "title": "Matharu",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1774945722352",
+          "date": "2026-04-02",
+          "startTime": "10:00",
+          "endTime": "14:00",
+          "title": "McLaughlin",
+          "color": "na-shift-color-blue"
+        },
+        {
           "id": "new-1774945701027",
           "date": "2026-04-01",
           "startTime": "15:15",
-          "endTime": "18:30",
+          "endTime": "18:00",
           "title": "Lee-Smith",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1775120074393",
+          "date": "2026-04-02",
+          "startTime": "08:00",
+          "endTime": "09:30",
+          "title": "Lee-Smith",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1775120093040",
+          "date": "2026-04-02",
+          "startTime": "09:30",
+          "endTime": "09:45",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1775120111953",
+          "date": "2026-04-02",
+          "startTime": "09:45",
+          "endTime": "10:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
         }
       ]
     }

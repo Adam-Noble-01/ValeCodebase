@@ -4,15 +4,15 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "A absolute breeze, a simple job, Anna's CAD File was very high quality and complete, I had to figure nothing out.",
+        "conceptArtist": "Anna",
+        "input": "CAD File"
     },
     "projectCode": "62902",
     "projectName": "McLoughlin",
     "scheduleData": {
         "dateFulfilled": "02-Apr-2026",
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "31-Mar-2025",
         "timeAllocated": 2,
         "timeTaken": 2
     },
@@ -48,5 +48,13 @@
         "OrbitHelperCube__Position__PosX": 12889,
         "OrbitHelperCube__Position__PosY": 2109,
         "OrbitHelperCube__Position__PosZ": -12196
-    }
+    },
+    "folderId": "2026/62902__McLoughlin",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ]
 }

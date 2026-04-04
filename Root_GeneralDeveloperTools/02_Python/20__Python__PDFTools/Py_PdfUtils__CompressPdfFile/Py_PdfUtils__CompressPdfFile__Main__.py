@@ -262,7 +262,7 @@ class PdfCompressionApp:
         # Action button
         tk.Button(
             self.root,
-            text="Select PDF to Compress",
+            text="Select PDF(s) to Compress",
             command=self._select_and_compress,                                # <-- Trigger compression
             width=25,
             font=("Arial", 10, "bold"),
@@ -327,12 +327,12 @@ class PdfCompressionApp:
         # Open file dialog and initiate compression with user-configured settings
         
         # Open file selection dialog
-        input_path = filedialog.askopenfilename(
-            title="Select PDF to compress",
+        input_paths = filedialog.askopenfilenames(
+            title="Select PDF file(s) to compress",
             filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")],
         )
         
-        if not input_path:                                                    # <-- User cancelled
+        if not input_paths:                                                   # <-- User cancelled
             return
         
         # Get values from GUI controls (NO HARDCODING)
@@ -340,35 +340,63 @@ class PdfCompressionApp:
         use_jpeg = self.use_jpeg_var.get()                                    # <-- Read JPEG option from checkbox
         jpeg_quality = self.jpeg_quality_var.get()                            # <-- Read quality from slider
         
-        logging.info(f"Starting compression: {input_path}")                   # <-- Log compression start
+        total_files = len(input_paths)                                        # <-- Total files selected
+        logging.info(f"Starting batch compression for {total_files} file(s)") # <-- Log batch start
         logging.info(f"Settings: DPI={dpi}, JPEG={use_jpeg}, Quality={jpeg_quality}")  # <-- Log settings
         
-        # Update UI to show processing
-        self.status_label.config(text="Processing...", fg="blue")             # <-- Update status
+        # Update UI to show processing start
+        self.status_label.config(text=f"Processing 1 of {total_files}...", fg="blue")  # <-- Update status
         self.root.update_idletasks()                                          # <-- Force UI update
         
+        output_paths = []                                                      # <-- Track successful output files
+        failures = []                                                          # <-- Track failed files and errors
+        
         try:
-            # Call compression function with user's chosen values
-            output_path = self._compress_pdf(input_path, dpi, use_jpeg, jpeg_quality)
+            for file_index, input_path in enumerate(input_paths, start=1):
+                current_name = os.path.basename(input_path)                    # <-- Current file name for status
+                logging.info(f"Compressing file {file_index}/{total_files}: {input_path}")
+                self.status_label.config(
+                    text=f"File {file_index}/{total_files}: {current_name}",
+                    fg="blue"
+                )
+                self.root.update_idletasks()                                   # <-- Force UI update
+                
+                try:
+                    output_path = self._compress_pdf(input_path, dpi, use_jpeg, jpeg_quality)
+                    output_paths.append(output_path)                           # <-- Record success
+                    logging.info(f"Compression successful: {output_path}")
+                except Exception as e:
+                    failures.append((input_path, e))                           # <-- Record failure and continue
+                    logging.error(f"Compression failed for {input_path}: {e}", exc_info=True)
             
-            # Success
-            self.status_label.config(text="Complete!", fg="green")            # <-- Update status to complete
-            logging.info(f"Compression successful: {output_path}")            # <-- Log success
-            
-            messagebox.showinfo(
-                "Compression Complete",
-                f"Compressed PDF saved as:\n\n{output_path}"
-            )
-            
-        except Exception as e:
-            # Error handling
-            self.status_label.config(text="Error occurred", fg="red")         # <-- Update status to error
-            logging.error(f"Compression failed: {e}", exc_info=True)          # <-- Log error with traceback
-            
-            messagebox.showerror(
-                "Compression Error",
-                f"Failed to compress PDF:\n\n{type(e).__name__}: {e}"
-            )
+            # Final status and result dialog
+            if failures:
+                success_count = len(output_paths)
+                fail_count = len(failures)
+                self.status_label.config(text=f"Done with issues ({success_count} ok, {fail_count} failed)", fg="orange")
+                
+                failed_lines = []
+                for failed_path, err in failures:
+                    failed_lines.append(f"- {os.path.basename(failed_path)}: {type(err).__name__}")
+                
+                messagebox.showwarning(
+                    "Batch Compression Complete (with errors)",
+                    (
+                        f"Processed {total_files} file(s).\n"
+                        f"Successful: {success_count}\n"
+                        f"Failed: {fail_count}\n\n"
+                        f"Failed files:\n" + "\n".join(failed_lines)
+                    )
+                )
+            else:
+                self.status_label.config(text=f"Complete! {len(output_paths)} file(s) processed", fg="green")
+                messagebox.showinfo(
+                    "Batch Compression Complete",
+                    (
+                        f"Successfully compressed {len(output_paths)} file(s).\n\n"
+                        f"Last output:\n{output_paths[-1]}"
+                    )
+                )
         finally:
             self.progress["value"] = 0                                        # <-- Reset progress bar
             self.root.update_idletasks()                                      # <-- Force UI update

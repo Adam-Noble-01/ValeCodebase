@@ -281,3 +281,11 @@
 2026-04-04 17:08:33,390 | INFO | Compressing file 9/9: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/NP03__AshnessClose__DrNagendra/10__ContentDelivered/03__PlanningPack__Rev-C__31-Mar-2026/02__IndividualDocs__Compressed/NP03_T02_D09__LocationAndBlockPlans__IsoA2__RevC__.pdf
 2026-04-04 17:08:33,391 | INFO | Output path: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/NP03__AshnessClose__DrNagendra/10__ContentDelivered/03__PlanningPack__Rev-C__31-Mar-2026/02__IndividualDocs__Compressed/NP03_T02_D09__LocationAndBlockPlans__IsoA2__RevC____Compressed__DPI-300__JPEG-90.pdf
 2026-04-04 17:08:34,934 | INFO | Compression successful: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/NP03__AshnessClose__DrNagendra/10__ContentDelivered/03__PlanningPack__Rev-C__31-Mar-2026/02__IndividualDocs__Compressed/NP03_T02_D09__LocationAndBlockPlans__IsoA2__RevC____Compressed__DPI-300__JPEG-90.pdf
+2026-04-04 18:11:26,427 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-04-04 18:11:26,600 | INFO | Successfully imported Noble Architecture icon loader
+2026-04-04 18:11:26,715 | INFO | PDF Compression App initialized
+2026-04-04 18:11:37,008 | INFO | Starting batch compression for 1 file(s)
+2026-04-04 18:11:37,008 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-04-04 18:11:37,010 | INFO | Compressing file 1/1: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/NP03__AshnessClose__DrNagendra/10__ContentDelivered/03__PlanningPack__Rev-C__31-Mar-2026/NP03__PlanningForm__Complete__30-Mar-2026__.pdf
+2026-04-04 18:11:37,011 | INFO | Output path: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/NP03__AshnessClose__DrNagendra/10__ContentDelivered/03__PlanningPack__Rev-C__31-Mar-2026/NP03__PlanningForm__Complete__30-Mar-2026____Compressed__DPI-300__JPEG-90.pdf
+2026-04-04 18:11:41,755 | INFO | Compression successful: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/NP03__AshnessClose__DrNagendra/10__ContentDelivered/03__PlanningPack__Rev-C__31-Mar-2026/NP03__PlanningForm__Complete__30-Mar-2026____Compressed__DPI-300__JPEG-90.pdf

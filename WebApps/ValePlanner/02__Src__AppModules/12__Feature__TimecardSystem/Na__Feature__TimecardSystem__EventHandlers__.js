@@ -241,10 +241,10 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
      const balanceStatusLabel = balanceData.TimeBalance__IsCredit
          ? 'Time Credit'
          : 'Time Debt';
-     const sectionTintClassName = balanceData.TimeBalance__BalanceMinutes > 0
-         ? 'na-timecard-balance--credit'
+     const heroTintClassName = balanceData.TimeBalance__BalanceMinutes > 0
+         ? 'na-timecard-balance__hero-item--credit'
          : balanceData.TimeBalance__BalanceMinutes < 0
-             ? 'na-timecard-balance--debt'
+             ? 'na-timecard-balance__hero-item--debt'
              : '';
 
      const monthRows = balanceData.TimeBalance__MonthBreakdowns
@@ -265,7 +265,7 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
          .join('');
 
      return `
-        <section class="na-timecard-balance ${sectionTintClassName}">
+        <section class="na-timecard-balance">
             <div class="na-timecard-balance__header">
                 <h3 class="na-timecard-balance__title">Time Balance</h3>
                 <span class="na-timecard-balance__contracted-label">${balanceData.TimeBalance__ContractedHoursPerDay}h contracted per day</span>
@@ -284,7 +284,7 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
                     <span class="na-timecard-balance__hero-label">Worked Hours</span>
                     <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__WorkedLabel}</span>
                 </div>
-                <div class="na-timecard-balance__hero-item">
+                <div class="na-timecard-balance__hero-item ${heroTintClassName}">
                     <span class="na-timecard-balance__hero-label">${balanceStatusLabel}</span>
                     <span class="na-timecard-balance__hero-value ${balanceClassName}">${balanceData.TimeBalance__BalanceLabel}</span>
                 </div>

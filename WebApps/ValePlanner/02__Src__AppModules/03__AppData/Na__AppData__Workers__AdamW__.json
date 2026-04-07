@@ -432,12 +432,12 @@
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1775569343811",
-          "date": "2026-04-08",
-          "startTime": "17:15",
-          "endTime": "21:00",
-          "title": "New Shift",
-          "color": "na-shift-color-rose"
+          "id": "new-1775580497173",
+          "date": "2026-04-07",
+          "startTime": "17:00",
+          "endTime": "18:00",
+          "title": "Dev - Time Balance Calculator",
+          "color": "na-shift-color-slate"
         }
       ]
     }

@@ -184,14 +184,12 @@
     gap            : 12px;
 }
 
-.na-timecard-balance--credit {
-    background   : #f0f7f0;
-    border-color : #d4e6d4;
+.na-timecard-balance__hero-item--credit {
+    background : #e8f2e8;
 }
 
-.na-timecard-balance--debt {
-    background   : #f7f0f0;
-    border-color : #e6d4d4;
+.na-timecard-balance__hero-item--debt {
+    background : #f2e8e8;
 }
 
 .na-timecard-balance__header {

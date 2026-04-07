@@ -1,0 +1,52 @@
+{
+    "projectName": "Berry",
+    "projectCode": "62737",
+    "productionData": {
+        "input": "Default Input Type",
+        "conceptArtist": "Default Concept Artist",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "10-Oct-2025",
+        "dateFulfilled": "07-Apr-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026.png"
+    ],
+    "ProjectType": "Blockout",
+    "basePath": "Projects/2026/62737__Berry",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62737__Berry/Berry__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62737__Berry/Berry__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62737__Berry/Berry__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62737__Berry/Berry__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62737__Berry/Berry__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62737__Berry/Berry__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    }
+}

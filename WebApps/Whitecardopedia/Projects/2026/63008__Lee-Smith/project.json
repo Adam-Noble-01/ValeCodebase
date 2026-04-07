@@ -1,18 +1,18 @@
 {
     "Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
         "Camera__DefaultPos": {
             "Camera__DefaultPos__PosX": 41377,
             "Camera__DefaultPos__PosY": 2111,
             "Camera__DefaultPos__PosZ": 5245
         },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultRotation": {
             "Camera__DefaultRotation__RotX": -0.0457,
             "Camera__DefaultRotation__RotY": 0.7911,
             "Camera__DefaultRotation__RotZ": 0.0325
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
         }
     },
     "OrbitHelperCube__Position": {
@@ -21,7 +21,15 @@
         "OrbitHelperCube__Position__PosY": 1132,
         "OrbitHelperCube__Position__PosZ": -16185
     },
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/63008__Lee-Smith",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
+    ],
+    "folderId": "2026/63008__Lee-Smith",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
     ],
@@ -50,12 +58,21 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63008__Lee-Smith/Lee-Smith__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63008__Lee-Smith/Lee-Smith__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "folderId": "2026/63008__Lee-Smith",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png"
-    ]
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -30494,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -3763,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
+        }
+    }
 }

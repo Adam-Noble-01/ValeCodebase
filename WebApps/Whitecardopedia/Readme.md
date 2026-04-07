@@ -58,38 +58,37 @@ Whitecardopedia/
 ├── README.md                           # This file
 ├── CHANGELOG.md                        # Version history and release notes
 │
-├── assets/
-│   ├── AppLogo__Whitecardopedia__.png  # Application logo
-│   └── AppIcons/
-│       └── Tempt__Icon__DownloadButtonSymbol__.svg  # Download button icon
+├── 01__AppAssets__Whitecardopedia/
 │
-├── src/
-│   ├── components/
-│   │   ├── App.jsx                     # Root component with routing
-│   │   ├── Header.jsx                  # Dual logo persistent header
-│   │   ├── HomePage.jsx                # Landing page with logo
-│   │   ├── PinEntry.jsx                # PIN authentication modal
-│   │   ├── ProjectGallery.jsx          # Project grid view
-│   │   ├── ProjectViewer.jsx           # Individual project viewer (with download)
-│   │   ├── StarRating.jsx              # Star rating component
-│   │   └── ImageCarousel.jsx           # Image navigation component
-│   │
-│   ├── data/
-│   │   ├── masterConfig.json           # Master project index
-│   │   └── projectLoader.js            # Project loading utility
-│   │
-│   ├── utils/
-│   │   └── dateFormatter.js            # Date formatting with ordinals
-│   │
-│   ├── styles/
-│   │   ├── variables.css               # CSS variables (Vale Design Suite)
-│   │   └── app.css                     # Main application styles
-│   │
-│   └── ThirdParty__VersionLockedDependencies/
-│       └── jszip.min.js                # JSZip library v3.10.1 (version-locked)
+├── 02__Src__AppModules/
+│   ├── 01__AppDependencies__VersionLocked/
+│   │   └── client-zip.2.4.4.min.js
+│   ├── 02__AppCore/
+│   │   ├── Na__AppCore__WhitecardopediaApp.jsx
+│   │   ├── Na__AppCore__Header.jsx
+│   │   └── Na__AppCore__HomePage.jsx
+│   ├── 03__AppData/
+│   │   ├── Na__AppData__MasterConfig__Main.json
+│   │   └── Na__AppData__ProjectLoader.js
+│   ├── 05__AppUtils/
+│   │   ├── Na__AppUtils__DateFormatter.js
+│   │   ├── Na__AppUtils__SearchFilter.js
+│   │   ├── Na__AppUtils__SortProjects.js
+│   │   └── Na__AppUtils__UrlQueryHandler.js
+│   ├── 10__Feature__ProjectGallery/
+│   ├── 11__Feature__ProjectViewer/
+│   ├── 12__Feature__ProjectEditor/
+│   ├── 13__Feature__TimeAnalysis/
+│   ├── 14__Feature__Authentication/
+│   ├── 61__Feature__PwaAppHelpers/
+│   ├── 62__Feature__AppInstallability/
+│   └── 70__System__DevTools/
 │
-├── DevUtils/
-│   └── AutomationUtil__UpdateProjectImages__BasedOnImgPrefix__Main__.py  # Image discovery utility
+├── 03__Style__AppStylesheets/
+│   └── Na__CoreUi__Styles__Index__.css
+│
+├── 70__System__DevTools/
+├── 04__Docs/
 │
 └── Projects/
     └── 2025/
@@ -97,6 +96,8 @@ Whitecardopedia/
             ├── project.json            # Project metadata
             └── *.jpg/*.png             # Project images
 ```
+
+**Critical Guardrail**: Do not rename, move, or refactor anything inside `Projects/`. This folder is intentionally treated as immutable project payload data.
 
 ---
 
@@ -143,7 +144,7 @@ The application will automatically redirect from `index.html` to `app.html`.
 5. Navigate images using arrow buttons or thumbnails
 6. Click **"Back to Gallery"** to return
 
-**Note**: The PIN is currently set to `1234` for testing. To change it, edit `src/components/PinEntry.jsx`.
+**Note**: The PIN is currently set to `1234` for testing. To change it, edit `02__Src__AppModules/14__Feature__Authentication/Na__Feature__Authentication__PinEntry.jsx`.
 
 ---
 
@@ -255,7 +256,7 @@ If you prefer manual control, you can still manually specify images in `project.
 
 ### Step 4: Update Master Config
 
-Edit `src/data/masterConfig.json` to include the new project:
+Edit `02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json` to include the new project:
 
 ```json
 {
@@ -351,11 +352,11 @@ Follows **Adam Noble Vale Design Suite** coding conventions:
 
 To add new features, follow these steps:
 
-1. Create new component in `src/components/`
-2. Follow Vale Design Suite conventions for code structure
-3. Add corresponding CSS in `src/styles/app.css`
-4. Import component in `app.html`
-5. Integrate into `App.jsx` routing logic
+1. Create feature modules in `02__Src__AppModules/10__Feature__...` (or next appropriate numbered feature band)
+2. Follow Vale Design Suite conventions and `Na__` naming
+3. Add corresponding stylesheet in `03__Style__AppStylesheets/`
+4. Import stylesheet via `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`
+5. Register feature scripts in `app.html` and integrate into `02__Src__AppModules/02__AppCore/Na__AppCore__WhitecardopediaApp.jsx`
 
 ---
 

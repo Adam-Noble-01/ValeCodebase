@@ -60,7 +60,7 @@ from flask_cors import CORS
 SERVER_PORT             = 8000                                           # <-- Development server port
 SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
 PROJECTS_BASE_FOLDER    = 'Projects'                                     # <-- Projects base folder (contains year subfolders)
-MASTER_CONFIG_PATH      = 'src/data/masterConfig.json'                   # <-- Master config file path
+MASTER_CONFIG_PATH      = '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json'  # <-- Master config file path
 REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
 # ------------------------------------------------------------
 

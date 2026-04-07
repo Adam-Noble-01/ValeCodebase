@@ -24,7 +24,7 @@
     // MODULE VARIABLES | Project Loading State
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
-        masterConfigPath    : 'src/data/masterConfig.json',              // <-- Master configuration file path
+        masterConfigPath    : '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json', // <-- Master configuration file path
         projectBasePath     : 'Projects',                                // <-- Base path for projects (year comes from folderId)
     };
     // ------------------------------------------------------------

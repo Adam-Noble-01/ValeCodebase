@@ -16,7 +16,20 @@
 #
 # =============================================================================
 
----
+# -----------------------------------------------------------------------------
+
+## Whitecardopedia v0.3.0 - 07-Apr-2026 - Structural Realignment (ValeVision/ValePlanner Pattern)
+### Major Refactor
+- Restructured runtime code into numbered app bands and feature folders aligned with newer project conventions
+- Added `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css` as the single stylesheet index entry point
+- Migrated active runtime scripts to `02__Src__AppModules/*` with `Na__` naming and updated `app.html` references
+- Moved master config source-of-truth to `02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json`
+- Updated localhost/dev tooling scripts and `server.py` to read the new master config path
+
+### Scope Guardrail
+- `Projects/` remained untouched (no folder renames, no file moves, no payload edits)
+
+# -----------------------------------------------------------------------------
 
 ## Whitecardopedia v0.2.11 - 20-Mar-2026 - PWA App Installability (Edge & Chrome)
 ### Features Added
@@ -30,7 +43,7 @@
 - Added `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png` and `Na__AppInstallability__Icon__512x512.png`
 - Updated `app.html` — `<link rel="manifest" ...>` in head; delegate script included with other utilities
 
----
+# -----------------------------------------------------------------------------
 
 ## Whitecardopedia v0.2.10 - 11-Mar-2026 - ValeVision Project Actions Exemption
 ### Minor Update
@@ -39,7 +52,7 @@
   - Projects without Vale Vision 3D continue to display the section as before
 - Updated `src/components/ProjectViewer.jsx` — wrapped Project Actions block in `!checkValeVisionModelUrl(project)` conditional
 
----
+# -----------------------------------------------------------------------------
 
 ## Whitecardopedia v0.2.9 - 24-Feb-2026 - Right-Click Image Protection
 ### Features Added
@@ -57,7 +70,7 @@
 - Updated `src/styles/app.css` — added `user-select: none` and `-webkit-user-drag: none` to `.image-carousel__image`, `.image-carousel__thumbnail`, and `.project-card__image`
 - All existing click handlers (thumbnail navigation, ValeVision overlay, ART comparison drag slider) remain fully unaffected
 
----
+# --------------------------------------------------------------------------    ---
 
 ## 11-Dec-2025 - Major Update - Version 0.2.8 - Project Sharing URLs
 ### Features Added
@@ -87,14 +100,14 @@
 - Modified `Header.jsx` to include share link button
 - Enhanced `ProjectViewer.jsx` to pass project data to header
 
----
+# -----------------------------------------------------------------------------
 
 ## 10-Oct-2025 - Version 0.0.7 - Download Images Feature
 ### Features Added
 - Download all project images as ZIP file
 - Python utility to automatically update project images
 
----
+# -----------------------------------------------------------------------------
 
 ## Previous Versions
 
@@ -122,7 +135,7 @@
 - Initial Release
 - Basic project structure
 
----
+# -----------------------------------------------------------------------------
 
-**Last Updated**: 20-Mar-2026
+**Last Updated**: 07-Apr-2026
 

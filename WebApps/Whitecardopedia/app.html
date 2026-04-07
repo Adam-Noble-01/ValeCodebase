@@ -64,11 +64,7 @@
     <!-- ----------------------------------------------------------------- -->
     <!-- STYLES | Application Stylesheets                                  -->
     <!-- ----------------------------------------------------------------- -->
-    <link rel="stylesheet" href="src/styles/variables.css">
-    <link rel="stylesheet" href="src/styles/app.css">
-    <link rel="stylesheet" href="src/styles/imageCarouselOverlay.css">
-    <link rel="stylesheet" href="src/styles/tools.css">
-    <link rel="stylesheet" href="src/styles/timeAnalysis.css">
+    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
     <!-- ----------------------------------------------------------------- -->
     
     <!-- ----------------------------------------------------------------- -->
@@ -89,7 +85,7 @@
     <!-- CLIENT-ZIP | Modern ZIP File Generation Library                   -->
     <!-- ----------------------------------------------------------------- -->
     <script type="module">
-        import { downloadZip } from './src/ThirdParty__VersionLockedDependencies/client-zip.js';
+        import { downloadZip } from './02__Src__AppModules/01__AppDependencies__VersionLocked/client-zip.2.4.4.min.js';
         window.downloadZip = downloadZip;  // <-- Make available globally
     </script>
     <!-- ----------------------------------------------------------------- -->
@@ -105,32 +101,32 @@
     <!-- ----------------------------------------------------------------- -->
     <!-- COMPONENTS | React Component Scripts                              -->
     <!-- ----------------------------------------------------------------- -->
-    <script type="text/babel" src="src/data/projectLoader.js"></script>
-    <script type="text/babel" src="src/utils/dateFormatter.js"></script>
-    <script type="text/babel" src="src/utils/searchFilter.js"></script>
-    <script type="text/babel" src="src/utils/sortProjects.js"></script>
-    <script type="text/babel" src="src/utils/GalleryView__ImageEffects.js"></script>
-    <script type="text/babel" src="src/utils/projectContentDetector.js"></script>
-    <script type="text/babel" src="src/utils/localhostDetector.js"></script>
-    <script type="text/babel" src="src/utils/urlQueryHandler.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__DateFormatter.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__SearchFilter.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__SortProjects.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ImageEffects.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ContentDetector.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/70__System__DevTools/Na__System__LocalhostDetector.js"></script>
+    <script type="text/babel" src="02__Src__AppModules/05__AppUtils/Na__AppUtils__UrlQueryHandler.js"></script>
     <script src="02__Src__AppModules/61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__AppScopeNavigation__Logic__.js"></script>
     <script src="02__Src__AppModules/61__Feature__PwaAppHelpers/Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js"></script>
     <script src="02__Src__AppModules/62__Feature__AppInstallability/Na__UiFeature__AppInstallability__BrowserDelegate.js"></script>
-    <script type="text/babel" src="src/components/StarRating.jsx"></script>
-    <script type="text/babel" src="src/components/EfficiencyScale.jsx"></script>
-    <script type="text/babel" src="src/components/ImageCarousel.jsx"></script>
-    <script type="text/babel" src="src/components/PinEntry.jsx"></script>
-    <script type="text/babel" src="src/components/SearchBox.jsx"></script>
-    <script type="text/babel" src="src/components/SortControls.jsx"></script>
-    <script type="text/babel" src="src/components/HamburgerMenu.jsx"></script>
-    <script type="text/babel" src="src/components/Header.jsx"></script>
-    <script type="text/babel" src="src/components/HomePage.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectGallery.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectViewer.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectEditorForm.jsx"></script>
-    <script type="text/babel" src="src/components/ProjectEditor.jsx"></script>
-    <script type="text/babel" src="src/components/TimeAnalysisTool.jsx"></script>
-    <script type="text/babel" src="src/components/App.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__StarRating.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__EfficiencyScale.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__ImageCarousel.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/14__Feature__Authentication/Na__Feature__Authentication__PinEntry.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__SearchBox.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__SortControls.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__HamburgerMenu.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__Header.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__HomePage.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx"></script>
+    <script type="text/babel" src="02__Src__AppModules/02__AppCore/Na__AppCore__WhitecardopediaApp.jsx"></script>
     <!-- ----------------------------------------------------------------- -->
     
 </body>

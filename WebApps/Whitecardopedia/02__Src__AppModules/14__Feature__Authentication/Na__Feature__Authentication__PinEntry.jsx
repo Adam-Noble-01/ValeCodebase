@@ -137,7 +137,7 @@
         // ---------------------------------------------------------------
         const loadPasswordFromConfig = async () => {
             try {
-                const response = await fetch('src/data/masterConfig.json'); // <-- Fetch master config
+                const response = await fetch('02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json'); // <-- Fetch master config
                 
                 if (!response.ok) {
                     console.warn('Failed to load config, using Dev password'); // <-- Log warning

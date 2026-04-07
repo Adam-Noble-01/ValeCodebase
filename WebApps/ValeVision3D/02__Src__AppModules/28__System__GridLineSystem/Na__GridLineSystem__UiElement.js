@@ -39,7 +39,8 @@
     // ------------------------------------------------------------
     import {
         Na__AppUtils__IsRunningOnLocalhost,
-        Na__AppUtils__GetProjectCodeFromUrl
+        Na__AppUtils__GetProjectCodeFromUrl,
+        Na__AppUtils__FetchProjectJson
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
@@ -160,11 +161,7 @@
             const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
             if (!projectCode) return;
 
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-            const response = await fetch(fetchUrl);
-            if (!response.ok) return;
-
-            const projectData   = await response.json();
+            const projectData   = await Na__AppUtils__FetchProjectJson(projectCode);
             const savedOffsets  = projectData.GridLine__Grid__Offset__Config;
             if (!savedOffsets) return;
 

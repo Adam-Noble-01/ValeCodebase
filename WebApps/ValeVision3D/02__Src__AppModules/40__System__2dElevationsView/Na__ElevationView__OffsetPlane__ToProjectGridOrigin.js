@@ -46,7 +46,10 @@
 
     // MODULE IMPORTS | Project Code URL Utility
     // ------------------------------------------------------------
-    import { Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import {
+        Na__AppUtils__GetProjectCodeFromUrl,
+        Na__AppUtils__FetchProjectJson
+    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -75,11 +78,7 @@
             const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
             if (!projectCode) return null;                                              // <-- No project code in URL
 
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-            const response = await fetch(fetchUrl);
-            if (!response.ok) return null;                                              // <-- API not reachable or project missing
-
-            const projectData  = await response.json();
+            const projectData  = await Na__AppUtils__FetchProjectJson(projectCode);     // <-- Uses GH Pages URL on production, Flask API on localhost
             const offsetConfig = projectData.GridLine__Grid__Offset__Config;
             if (!offsetConfig) return null;                                             // <-- Project has no saved grid offset
 

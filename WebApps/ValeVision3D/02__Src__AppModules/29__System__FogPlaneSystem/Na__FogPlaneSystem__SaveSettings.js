@@ -25,7 +25,8 @@
     // ------------------------------------------------------------
     import {
         Na__AppUtils__IsRunningOnLocalhost,
-        Na__AppUtils__GetProjectCodeFromUrl
+        Na__AppUtils__GetProjectCodeFromUrl,
+        Na__AppUtils__FetchProjectJson
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
@@ -108,11 +109,7 @@
             const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
             if (!projectCode) return null;
 
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-            const response = await fetch(fetchUrl);
-            if (!response.ok) return null;
-
-            const projectData = await response.json();
+            const projectData = await Na__AppUtils__FetchProjectJson(projectCode); // <-- Uses GH Pages URL on production, Flask API on localhost
             return projectData.FogPlane__Config || null;
         } catch (err) {
             console.warn('[ValeVision3D] Could not load fog settings from project:', err);

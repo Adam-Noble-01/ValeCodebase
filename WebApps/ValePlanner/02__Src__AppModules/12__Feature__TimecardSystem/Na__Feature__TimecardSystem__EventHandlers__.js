@@ -167,6 +167,8 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
                 </div>
             </div>
 
+            ${Na__Timecard__BuildTimeBalanceMarkup(viewModel.Timecard__TimeBalance)}
+
             <div class="na-timecard-month-grid">
                 ${monthCardsMarkup || '<div class="na-timecard-empty-state">No timecard entries yet. Use Clock In to start a new day.</div>'}
             </div>
@@ -223,6 +225,83 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
                 </table>
             </div>
         </article>
+     `;
+ }
+ // ------------------------------------------------------------
+
+
+ // HELPER FUNCTION | Build Time Balance Section Markup
+ // ------------------------------------------------------------
+ function Na__Timecard__BuildTimeBalanceMarkup(balanceData) {
+     if (!balanceData) return '';
+
+     const balanceClassName = balanceData.TimeBalance__IsCredit
+         ? 'na-timecard-balance__value--credit'
+         : 'na-timecard-balance__value--debt';
+     const balanceStatusLabel = balanceData.TimeBalance__IsCredit
+         ? 'Time Credit'
+         : 'Time Debt';
+
+     const monthRows = balanceData.TimeBalance__MonthBreakdowns
+         .map((monthValue) => {
+             const monthBalanceClassName = monthValue.isCredit
+                 ? 'na-timecard-balance__month-value--credit'
+                 : 'na-timecard-balance__month-value--debt';
+             return `
+                <tr>
+                    <td>${monthValue.monthKey}</td>
+                    <td class="na-timecard-balance__cell-number">${monthValue.completedDays}</td>
+                    <td class="na-timecard-balance__cell-number">${monthValue.expectedMins / 60}h</td>
+                    <td class="na-timecard-balance__cell-number">${Math.floor(monthValue.workedMins / 60)}h ${String(monthValue.workedMins % 60).padStart(2, '0')}m</td>
+                    <td class="na-timecard-balance__cell-number"><span class="${monthBalanceClassName}">${monthValue.balanceLabel}</span></td>
+                </tr>
+             `;
+         })
+         .join('');
+
+     return `
+        <section class="na-timecard-balance">
+            <div class="na-timecard-balance__header">
+                <h3 class="na-timecard-balance__title">Time Balance</h3>
+                <span class="na-timecard-balance__contracted-label">${balanceData.TimeBalance__ContractedHoursPerDay}h contracted per day</span>
+            </div>
+
+            <div class="na-timecard-balance__hero">
+                <div class="na-timecard-balance__hero-item">
+                    <span class="na-timecard-balance__hero-label">${balanceStatusLabel}</span>
+                    <span class="na-timecard-balance__hero-value ${balanceClassName}">${balanceData.TimeBalance__BalanceLabel}</span>
+                </div>
+                <div class="na-timecard-balance__hero-item">
+                    <span class="na-timecard-balance__hero-label">Days Worked</span>
+                    <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__CompletedDayCount}</span>
+                </div>
+                <div class="na-timecard-balance__hero-item">
+                    <span class="na-timecard-balance__hero-label">Expected</span>
+                    <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__ExpectedLabel}</span>
+                </div>
+                <div class="na-timecard-balance__hero-item">
+                    <span class="na-timecard-balance__hero-label">Worked</span>
+                    <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__WorkedLabel}</span>
+                </div>
+            </div>
+
+            <div class="na-timecard-balance__breakdown">
+                <table class="na-timecard-balance__table">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th class="na-timecard-balance__cell-number">Days</th>
+                            <th class="na-timecard-balance__cell-number">Expected</th>
+                            <th class="na-timecard-balance__cell-number">Worked</th>
+                            <th class="na-timecard-balance__cell-number">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${monthRows}
+                    </tbody>
+                </table>
+            </div>
+        </section>
      `;
  }
  // ------------------------------------------------------------

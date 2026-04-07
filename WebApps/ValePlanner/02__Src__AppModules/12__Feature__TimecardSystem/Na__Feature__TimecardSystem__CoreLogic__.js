@@ -1,5 +1,7 @@
 import Na__Timecard__DataSeed from './Na__Feature__Data__TimecardData__.json' with { type: 'json' };
+import Na__Workers__AdamW from '../03__AppData/Na__AppData__Workers__AdamW__.json' with { type: 'json' };
 import { Na__Timecard__CreateAuthHashAsync, Na__Timecard__ValidateAuthHashAsync } from './Na__Feature__TimecardSystem__UniqueHashGenerator__.js';
+import { Na__TimeBalance__CalculateBalanceFromViewModel } from './Na__Feature__TimecardSystem__TimeBalanceCalculator__.js';
 import { Na__Persistence__LoadTimecardAsync, Na__Persistence__SaveTimecardAsync } from '../70__System__DevTools/Na__System__PersistenceApi.js';
 import { Na__System__IsRunningOnLocalhost } from '../70__System__DevTools/Na__System__DevTools__LocalhostGuard.js';
 import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils__Dates.js';
@@ -15,6 +17,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
     let Na__Timecard__CachedViewModel          = null; // <-- Cached view model (cleared on each mutation)
     const Na__Timecard__ClockInFloorMins       = 5;    // <-- Round clock-in down to this minute interval
     const Na__Timecard__ClockOutFloorMins      = 5;    // <-- Round clock-out down to this minute interval
+    const Na__Timecard__ContractedHoursPerDay  = Na__Workers__AdamW?.workers?.[0]?.contractedHoursPerDay ?? 10; // <-- Contracted hours from worker config
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -486,6 +489,11 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                 Timecard__OpenShiftCount:        openShiftCount
             }
         };
+
+        Na__Timecard__CachedViewModel.Timecard__TimeBalance = Na__TimeBalance__CalculateBalanceFromViewModel(
+            Na__Timecard__CachedViewModel,
+            Na__Timecard__ContractedHoursPerDay
+        );
 
         return Na__Timecard__CachedViewModel;
     }

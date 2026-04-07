@@ -5,6 +5,7 @@
       "name": "Adam Noble",
       "role": "3D Visualiser & Chief Nerd",
       "avatar": "https://i.pravatar.cc/150?u=adam",
+      "contractedHoursPerDay": 10,
       "shifts": [
         {
           "id": "new-1774547690418",

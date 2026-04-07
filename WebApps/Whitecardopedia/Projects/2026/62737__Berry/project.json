@@ -28,15 +28,15 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Second test of the new Blockout system, will seek feedback from Rachael.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File"
     },
     "projectCode": "62737",
     "projectName": "Berry",
     "scheduleData": {
         "dateFulfilled": "07-Apr-2026",
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "06-Apr-2026",
         "timeAllocated": 2,
         "timeTaken": 2
     },
@@ -72,5 +72,13 @@
         "OrbitHelperCube__Position__PosX": 12187,
         "OrbitHelperCube__Position__PosY": 1949,
         "OrbitHelperCube__Position__PosZ": -20029
-    }
+    },
+    "folderId": "2026/62737__Berry",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026.png"
+    ]
 }

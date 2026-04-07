@@ -38,6 +38,7 @@
     function App() {
         const [currentView, setCurrentView] = React.useState(APP_VIEWS.HOME);  // <-- Current view state
         const [selectedProject, setSelectedProject] = React.useState(null);    // <-- Selected project state
+        const [lastSelectedProject, setLastSelectedProject] = React.useState(null);  // <-- Last viewed project for forward navigation
         const [urlProjectId, setUrlProjectId] = React.useState(null);          // <-- URL-based project ID state
         const [isLoadingUrlProject, setIsLoadingUrlProject] = React.useState(false);  // <-- URL project loading state
         const [isAuthenticated, setIsAuthenticated] = React.useState(false);    // <-- PIN authentication status
@@ -105,6 +106,7 @@
         // ---------------------------------------------------------------
         const handleSelectProject = (project) => {
             setSelectedProject(project);                                 // <-- Set selected project
+            setLastSelectedProject(project);                             // <-- Track for forward navigation hotkey
             setCurrentView(APP_VIEWS.VIEWER);                            // <-- Navigate to viewer
             updateUrlWithProjectId(project.projectCode);                 // <-- Update URL with project ID
         };
@@ -190,6 +192,25 @@
             
             setCurrentView(APP_VIEWS.TIME_ANALYSIS);                     // <-- Navigate to time analysis tool
         };
+        // ---------------------------------------------------------------
+        
+        // EFFECT | Register Global Keyboard Hotkeys
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            initHotkeys({
+                NAVIGATE_BACK: () => {
+                    if (currentView !== APP_VIEWS.GALLERY && currentView !== APP_VIEWS.HOME) {
+                        handleBackToGallery();                           // <-- Go back to gallery from any project view
+                    }
+                },
+                NAVIGATE_FORWARD: () => {
+                    if (currentView === APP_VIEWS.GALLERY && lastSelectedProject) {
+                        handleSelectProject(lastSelectedProject);        // <-- Re-open last viewed project from gallery
+                    }
+                },
+            });
+            return () => destroyHotkeys();                               // <-- Remove listener on unmount or re-run
+        }, [currentView, lastSelectedProject]);                          // <-- Re-register when view or last project changes
         // ---------------------------------------------------------------
         
         // RENDER | Conditional View Rendering

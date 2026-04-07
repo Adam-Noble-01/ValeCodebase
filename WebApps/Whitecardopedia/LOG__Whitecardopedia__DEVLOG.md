@@ -18,6 +18,22 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.2 - 07-Apr-2026 - Keyboard Navigation Hotkeys
+### Features Added
+- **Global Hotkey System**: App-wide keyboard shortcut handler with bindings loaded from a JSON data file
+  - `Alt + Left Arrow` or `Alt + Backspace` — navigate back to the gallery from any project view (Viewer, Editor, Time Analysis)
+  - `Alt + Right Arrow` — navigate forward into the last viewed project from the gallery
+  - Hotkeys are suppressed when focus is on any input, textarea, or select element to prevent typing conflicts
+  - Designed as a pageless SPA workaround — browser native back/forward do not work in this app as there is no `popstate` listener
+
+### Technical Implementation
+- Created `02__Src__AppModules/03__AppData/Na__AppData__Hotkeys__Main.json` — data file defining all hotkey bindings (key, modifiers, action name, description); extend by adding entries here without touching handler logic
+- Created `02__Src__AppModules/05__AppUtils/Na__AppUtils__HotkeyHandler.js` — fetches bindings JSON, attaches a single `window keydown` listener, dispatches to registered action callbacks; exposes `initHotkeys(callbacks)` and `destroyHotkeys()` for React lifecycle wiring
+- Modified `Na__AppCore__WhitecardopediaApp.jsx` — added `lastSelectedProject` state (persists across back navigations for forward hotkey), updated `handleSelectProject` to track it, added `useEffect` to register/destroy hotkeys on `currentView` and `lastSelectedProject` changes
+- Updated `app.html` with new `HotkeyHandler.js` script tag
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.3.1 - 07-Apr-2026 - Blockoutopedia (Dual Gallery Mode)
 ### Features Added
 - **Gallery Mode Toggle**: Two toggle buttons ("Whitecard Models" / "Blockout Models") in the gallery controls bar allow switching between Whitecard and Blockout gallery views

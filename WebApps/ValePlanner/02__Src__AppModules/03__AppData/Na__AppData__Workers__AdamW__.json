@@ -405,6 +405,38 @@
           "endTime": "14:00",
           "title": "Thorpe - Blockout",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1775568981187",
+          "date": "2026-04-07",
+          "startTime": "14:15",
+          "endTime": "14:45",
+          "title": "Dev - Blockout Bugfixes",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775569190116",
+          "date": "2026-04-07",
+          "startTime": "14:00",
+          "endTime": "14:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775569315078",
+          "date": "2026-04-07",
+          "startTime": "14:45",
+          "endTime": "17:00",
+          "title": "Berry - Blockout",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1775569343811",
+          "date": "2026-04-08",
+          "startTime": "17:15",
+          "endTime": "21:00",
+          "title": "New Shift",
+          "color": "na-shift-color-rose"
         }
       ]
     }

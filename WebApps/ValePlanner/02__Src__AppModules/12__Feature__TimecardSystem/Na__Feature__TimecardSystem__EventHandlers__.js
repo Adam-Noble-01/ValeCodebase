@@ -241,6 +241,11 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
      const balanceStatusLabel = balanceData.TimeBalance__IsCredit
          ? 'Time Credit'
          : 'Time Debt';
+     const sectionTintClassName = balanceData.TimeBalance__BalanceMinutes > 0
+         ? 'na-timecard-balance--credit'
+         : balanceData.TimeBalance__BalanceMinutes < 0
+             ? 'na-timecard-balance--debt'
+             : '';
 
      const monthRows = balanceData.TimeBalance__MonthBreakdowns
          .map((monthValue) => {
@@ -260,7 +265,7 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
          .join('');
 
      return `
-        <section class="na-timecard-balance">
+        <section class="na-timecard-balance ${sectionTintClassName}">
             <div class="na-timecard-balance__header">
                 <h3 class="na-timecard-balance__title">Time Balance</h3>
                 <span class="na-timecard-balance__contracted-label">${balanceData.TimeBalance__ContractedHoursPerDay}h contracted per day</span>
@@ -268,20 +273,20 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
 
             <div class="na-timecard-balance__hero">
                 <div class="na-timecard-balance__hero-item">
-                    <span class="na-timecard-balance__hero-label">${balanceStatusLabel}</span>
-                    <span class="na-timecard-balance__hero-value ${balanceClassName}">${balanceData.TimeBalance__BalanceLabel}</span>
-                </div>
-                <div class="na-timecard-balance__hero-item">
                     <span class="na-timecard-balance__hero-label">Days Worked</span>
                     <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__CompletedDayCount}</span>
                 </div>
                 <div class="na-timecard-balance__hero-item">
-                    <span class="na-timecard-balance__hero-label">Expected</span>
+                    <span class="na-timecard-balance__hero-label">Expected Hours</span>
                     <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__ExpectedLabel}</span>
                 </div>
                 <div class="na-timecard-balance__hero-item">
-                    <span class="na-timecard-balance__hero-label">Worked</span>
+                    <span class="na-timecard-balance__hero-label">Worked Hours</span>
                     <span class="na-timecard-balance__hero-value">${balanceData.TimeBalance__WorkedLabel}</span>
+                </div>
+                <div class="na-timecard-balance__hero-item">
+                    <span class="na-timecard-balance__hero-label">${balanceStatusLabel}</span>
+                    <span class="na-timecard-balance__hero-value ${balanceClassName}">${balanceData.TimeBalance__BalanceLabel}</span>
                 </div>
             </div>
 

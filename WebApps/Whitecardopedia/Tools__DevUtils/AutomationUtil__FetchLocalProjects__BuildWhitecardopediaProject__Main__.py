@@ -11,7 +11,7 @@
 # CREATED    : 2025
 #
 # DESCRIPTION:
-# - Scans local disc for projects with __Whitecard suffix
+# - Scans local disc for projects with __Whitecard or __Blockout suffix
 # - Discovers latest content delivery folders with date stamps
 # - Copies IMG## prefixed images to Whitecardopedia project structure
 # - Generates project.json files from template with extracted metadata
@@ -87,6 +87,8 @@ VALEVISION_CAMERA_DEFAULTS         = {
 # ------------------------------------------------------------
 WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
+BLOCKOUT_FOLDER_PATTERN_OLD        = r'^([A-Z]{2}-\d+)__(.+?)__Blockout$'   # <-- Legacy pattern: EX-12345__Example__Blockout
+BLOCKOUT_FOLDER_PATTERN_NEW        = r'^(\d+)__(.+?)__Blockout$'   # <-- New pattern: 12345__Example__Blockout
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 GLB_ARCHIVE_SUBFOLDER              = "01__Archive"                           # <-- Archive subfolder to skip
@@ -277,49 +279,55 @@ def discover_vale_year_folders() -> List[Tuple[str, Path]]:
 
 # FUNCTION | Extract Project Metadata from Folder Name
 # ------------------------------------------------------------
-def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
-    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
-    
-    if match_old:
-        full_code = match_old.group(1)                               # <-- Extract full code (e.g., "VN-61445")
-        project_name = match_old.group(2)                             # <-- Extract project name (e.g., "Vaughan")
-        project_code = full_code.split('-')[1] if '-' in full_code else full_code  # <-- Extract numeric code only
-        return full_code, project_code, project_name                  # <-- Return extracted metadata
-    
-    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
-    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
-    
-    if match_new:
-        project_code = match_new.group(1)                              # <-- Extract numeric code (e.g., "12345")
-        project_name = match_new.group(2)                              # <-- Extract project name (e.g., "Example")
-        full_code = project_code                                       # <-- Use numeric code as full code for new format
-        return full_code, project_code, project_name                  # <-- Return extracted metadata
-    
-    return None, None, None                                          # <-- Return None if pattern doesn't match
+def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
+    # DEFINE ALL PATTERNS WITH THEIR PROJECT TYPES
+    patterns_with_types = [
+        (WHITECARD_FOLDER_PATTERN_OLD, "Whitecard"),                 # <-- Legacy Whitecard: EX-12345__Example__Whitecard
+        (WHITECARD_FOLDER_PATTERN_NEW, "Whitecard"),                 # <-- New Whitecard: 12345__Example__Whitecard
+        (BLOCKOUT_FOLDER_PATTERN_OLD,  "Blockout"),                  # <-- Legacy Blockout: EX-12345__Example__Blockout
+        (BLOCKOUT_FOLDER_PATTERN_NEW,  "Blockout"),                  # <-- New Blockout: 12345__Example__Blockout
+    ]
+
+    for pattern, project_type in patterns_with_types:
+        match = re.match(pattern, folder_name)                       # <-- Try pattern match
+
+        if match:
+            group1 = match.group(1)                                  # <-- Extract first group (code)
+            project_name = match.group(2)                            # <-- Extract project name
+
+            if '-' in group1:
+                full_code = group1                                   # <-- Legacy format: full code with prefix
+                project_code = full_code.split('-')[1]               # <-- Extract numeric code only
+            else:
+                full_code = group1                                   # <-- New format: numeric code only
+                project_code = group1                                # <-- Same as full code
+
+            return full_code, project_code, project_name, project_type  # <-- Return metadata with type
+
+    return None, None, None, None                                    # <-- Return None if no pattern matches
 # ---------------------------------------------------------------
 
 
 # FUNCTION | Generate Destination Folder Name
 # ------------------------------------------------------------
 def generate_destination_folder_name(folder_name: str) -> Optional[str]:
-    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
-    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
-    
-    if match_old:
-        full_code = match_old.group(1)                                # <-- Extract full code
-        project_name = match_old.group(2)                             # <-- Extract project name
-        return f"{full_code}__{project_name}"                         # <-- Return name without __Whitecard suffix
-    
-    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
-    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
-    
-    if match_new:
-        project_code = match_new.group(1)                             # <-- Extract numeric code
-        project_name = match_new.group(2)                             # <-- Extract project name
-        return f"{project_code}__{project_name}"                      # <-- Return name without suffix
-    
-    return None                                                       # <-- Return None if pattern doesn't match
+    # TRY ALL PATTERNS (Whitecard and Blockout, legacy and new)
+    all_patterns = [
+        WHITECARD_FOLDER_PATTERN_OLD,                                # <-- Legacy Whitecard
+        WHITECARD_FOLDER_PATTERN_NEW,                                # <-- New Whitecard
+        BLOCKOUT_FOLDER_PATTERN_OLD,                                 # <-- Legacy Blockout
+        BLOCKOUT_FOLDER_PATTERN_NEW,                                 # <-- New Blockout
+    ]
+
+    for pattern in all_patterns:
+        match = re.match(pattern, folder_name)                       # <-- Try pattern match
+
+        if match:
+            code_part = match.group(1)                               # <-- Extract code portion
+            name_part = match.group(2)                               # <-- Extract project name
+            return f"{code_part}__{name_part}"                       # <-- Return name without type suffix
+
+    return None                                                      # <-- Return None if no pattern matches
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -507,7 +515,7 @@ def get_project_blacklist() -> List[str]:
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Discover All Whitecard Projects in Source Path
+# FUNCTION | Discover All Whitecard and Blockout Projects in Source Path
 # ------------------------------------------------------------
 def discover_whitecard_projects(source_base: Path, blacklist: List[str] = None) -> List[Dict]:
     projects = []                                                     # <-- Initialize projects list
@@ -523,9 +531,9 @@ def discover_whitecard_projects(source_base: Path, blacklist: List[str] = None) 
         if not item.is_dir() or item.name.startswith('.'):
             continue                                                  # <-- Skip non-directories and hidden
         
-        full_code, project_code, project_name = extract_project_metadata(item.name)  # <-- Extract metadata
+        full_code, project_code, project_name, project_type = extract_project_metadata(item.name)  # <-- Extract metadata with type
         
-        if full_code and project_code and project_name:               # <-- Check if valid Whitecard project
+        if full_code and project_code and project_name:               # <-- Check if valid project
             dest_folder_name = generate_destination_folder_name(item.name)  # <-- Generate destination name
             
             # CHECK IF PROJECT IS BLACKLISTED
@@ -539,7 +547,8 @@ def discover_whitecard_projects(source_base: Path, blacklist: List[str] = None) 
                 'dest_folder_name': dest_folder_name,
                 'full_code': full_code,
                 'project_code': project_code,
-                'project_name': project_name
+                'project_name': project_name,
+                'project_type': project_type                           # <-- Include detected project type
             })
     
     # LOG BLACKLISTED PROJECTS IF ANY
@@ -677,11 +686,12 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 
 # FUNCTION | Create Project JSON File with Year-Aware basePath
 # ------------------------------------------------------------
-def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, model_urls: List[str], dest_folder_name: str, year: str) -> bool:
+def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, model_urls: List[str], dest_folder_name: str, year: str, project_type: str = "Whitecard") -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
     
     project_data = template.copy()                                    # <-- Copy template data
     project_data['projectName'] = project_name                        # <-- Set project name
+    project_data['ProjectType'] = project_type                        # <-- Set project type (Whitecard or Blockout)
     project_data['projectCode'] = project_code                        # <-- Set project code
     project_data['images'] = images                                   # <-- Set images array
     
@@ -770,6 +780,7 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         'dest_name': project_info['dest_folder_name'],
         'project_name': project_info['project_name'],
         'project_code': project_info['project_code'],
+        'project_type': project_info.get('project_type', 'Whitecard'),  # <-- Track project type
         'success': False,
         'skipped': False,
         'model_urls_updated': False,
@@ -853,7 +864,8 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         project_date,
         model_urls,
         project_info['dest_folder_name'],
-        year
+        year,
+        project_info.get('project_type', 'Whitecard')               # <-- Pass detected project type
     )
     
     if not json_success:
@@ -1039,7 +1051,7 @@ def main():
         '--project',
         type=str,
         metavar='FOLDER_NAME',
-        help='Process only a specific project folder (e.g., "VN-61445__Vaughan__Whitecard"). By default, all Whitecard projects are processed.'
+        help='Process only a specific project folder (e.g., "VN-61445__Vaughan__Whitecard" or "12345__Example__Blockout"). By default, all Whitecard and Blockout projects are processed.'
     )
     
     args = parser.parse_args()                                        # <-- Parse command line arguments

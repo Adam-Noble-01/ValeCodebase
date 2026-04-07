@@ -1,5 +1,6 @@
 {
     "projectName": "Clough",
+    "ProjectType": "Whitecard",
     "projectCode": "60834",
     "productionData": {
         "input": "CAD File",

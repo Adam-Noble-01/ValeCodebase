@@ -18,6 +18,31 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.1 - 07-Apr-2026 - Blockoutopedia (Dual Gallery Mode)
+### Features Added
+- **Gallery Mode Toggle**: Two toggle buttons ("Whitecard Models" / "Blockout Models") in the gallery controls bar allow switching between Whitecard and Blockout gallery views
+- **Blockoutopedia Logo Swap**: Header right-side logo dynamically swaps to the Blockoutopedia title image when Blockout mode is active, and back to Whitecardopedia when Whitecard mode is active
+- **Blockout Warning Banner**: Amber warning banner displayed above cards in Blockout mode explaining what blockout models are, their limitations as bullet points, a red confidentiality notice restricting use to Concept Artists only, and a placeholder "Request Full Whitecard Model" button for future use
+- **ProjectType Data Field**: New `"ProjectType"` field added to all project.json files ("Whitecard" or "Blockout") used to filter projects into the correct gallery view
+- **Backward Compatibility**: Projects without a ProjectType field default to the Whitecard gallery
+
+### Build Tooling Updates
+- **Migration Script**: One-time `MigrationUtil__AddProjectTypeField__OneTimeUse__.py` script added `"ProjectType": "Whitecard"` to all 93 existing project.json files across 2025 and 2026
+- **Auto-Cloner Updated**: `AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py` now recognises `__Blockout` suffix folders alongside `__Whitecard`, and embeds the detected `ProjectType` into generated project.json files
+- **Vale Project Structure Builder Updated**: "Blockout" added to the Project Type dropdown (2nd position after Whitecard) with `__Blockout` folder suffix in `Py_WinUtil__BuildValeProjectStructure__Main__.py`
+
+### Technical Implementation
+- Created `02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__GalleryModeToggle.jsx`
+- Created `02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__WarningBanner.jsx`
+- Created `03__Style__AppStylesheets/Na__UiFeature__Styles__Blockoutopedia__.css`
+- Modified `Na__AppCore__Header.jsx` with `galleryMode` prop and `HEADER_LOGO_CONFIG` constant for dynamic logo URLs
+- Modified `Na__Feature__ProjectGallery__Main.jsx` with `galleryMode` state, `filterProjectsByGalleryMode()` helper, toggle and banner wiring
+- Updated `app.html` with two new Blockoutopedia script tags
+- Updated `Na__CoreUi__Styles__Index__.css` with Blockoutopedia stylesheet import
+- Created test blockout project at `Projects/2026/00__TestBlockoutProject/`
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.3.0 - 07-Apr-2026 - Structural Realignment (ValeVision/ValePlanner Pattern)
 ### Major Refactor
 - Restructured runtime code into numbered app bands and feature folders aligned with newer project conventions

@@ -1,5 +1,6 @@
 {
     "projectName": "Conyers",
+    "ProjectType": "Whitecard",
     "projectCode": "61737",
     "productionData": {
         "input": "CAD File",

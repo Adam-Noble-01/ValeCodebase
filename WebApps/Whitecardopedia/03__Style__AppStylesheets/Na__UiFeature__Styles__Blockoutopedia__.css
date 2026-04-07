@@ -1,0 +1,234 @@
+/* =============================================================================
+ * WHITECARDOPEDIA - BLOCKOUTOPEDIA FEATURE STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__Blockoutopedia__.css
+ * NAMESPACE  : Whitecardopedia
+ * MODULE     : Blockoutopedia Feature Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styles for Blockoutopedia gallery mode toggle and warning banner
+ * CREATED    : 07-Apr-2026
+ *
+ * DESCRIPTION:
+ * - Gallery mode toggle button styles (active/inactive states)
+ * - Blockout warning banner with confidentiality notices
+ * - Request button placeholder styling
+ * - Responsive adjustments for smaller viewports
+ *
+ * =============================================================================
+ */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Gallery Mode Toggle Button Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* GALLERY MODE TOGGLE | Container */
+    /* ------------------------------------------------------------ */
+    .gallery-mode-toggle {
+        display                            : flex;                          /* <-- Flexbox layout */
+        gap                                : 0;                             /* <-- No gap between buttons */
+        flex-shrink                        : 0;                             /* <-- Prevent shrinking */
+        margin-right                       : var(--Vale_Spacing_Medium);    /* <-- Space between toggle and search bar */
+    }
+
+    /* GALLERY MODE TOGGLE | Button Base */
+    /* ------------------------------------------------------------ */
+    .gallery-mode-toggle__button {
+        padding                            : 7px 18px;                      /* <-- Button padding */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Vale font family */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small font size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold); /* <-- Semi-bold weight */
+        border                             : 1px solid var(--Vale_BorderLight); /* <-- Light border */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast); /* <-- Fast transition */
+        background                         : var(--Vale_BackgroundWhite);   /* <-- White background (inactive) */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color (inactive) */
+        white-space                        : nowrap;                        /* <-- Prevent text wrap */
+    }
+
+    .gallery-mode-toggle__button:first-child {
+        border-radius                      : var(--Vale_BorderRadius) 0 0 var(--Vale_BorderRadius); /* <-- Rounded left corners */
+        border-right                       : none;                          /* <-- Remove inner border */
+    }
+
+    .gallery-mode-toggle__button:last-child {
+        border-radius                      : 0 var(--Vale_BorderRadius) var(--Vale_BorderRadius) 0; /* <-- Rounded right corners */
+    }
+
+    /* GALLERY MODE TOGGLE | Active State */
+    /* ------------------------------------------------------------ */
+    .gallery-mode-toggle__button--active {
+        background                         : var(--Vale_PrimaryBrand);      /* <-- Vale blue background (active) */
+        color                              : var(--Vale_TextLight);         /* <-- White text (active) */
+        border-color                       : var(--Vale_PrimaryBrand);      /* <-- Matching border (active) */
+    }
+
+    .gallery-mode-toggle__button--active + .gallery-mode-toggle__button {
+        border-left-color                  : var(--Vale_PrimaryBrand);      /* <-- Match adjacent border */
+    }
+
+    /* GALLERY MODE TOGGLE | Hover State */
+    /* ------------------------------------------------------------ */
+    .gallery-mode-toggle__button:not(.gallery-mode-toggle__button--active):hover {
+        background                         : var(--Vale_HoverBackground);  /* <-- Hover background */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text on hover */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Blockout Warning Banner Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* WARNING BANNER | Container */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner {
+        background                         : #fefce8;                       /* <-- Warm off-white background */
+        border                             : 1px solid #e5d48b;             /* <-- Amber-tinted border */
+        border-left                        : 4px solid #ca8a04;             /* <-- Thick amber left accent */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Standard border radius */
+        padding                            : var(--Vale_Spacing_Large);     /* <-- Large padding */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below banner */
+    }
+
+    /* WARNING BANNER | Header Row */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__header {
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Gap between icon and titles */
+        margin-bottom                      : var(--Vale_Spacing_Medium);    /* <-- Space below header */
+    }
+
+    /* WARNING BANNER | Warning Icon */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__icon {
+        font-size                          : 28px;                          /* <-- Large warning icon */
+        line-height                        : 1;                             /* <-- Tight line height */
+        flex-shrink                        : 0;                             /* <-- Prevent shrinking */
+        color                              : #ca8a04;                       /* <-- Amber icon color */
+    }
+
+    /* WARNING BANNER | Title Group */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__title-group {
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : baseline;                      /* <-- Baseline alignment */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Gap between title and subtitle */
+    }
+
+    .blockout-warning-banner__title {
+        margin                             : 0;                             /* <-- Remove default margin */
+        font-size                          : var(--Vale_FontSize_SubHeading); /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold); /* <-- Semi-bold weight */
+        color                              : #854d0e;                       /* <-- Dark amber title */
+    }
+
+    .blockout-warning-banner__subtitle {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small size */
+        color                              : #a16207;                       /* <-- Medium amber subtitle */
+        font-weight                        : var(--Vale_FontWeight_Regular); /* <-- Regular weight */
+    }
+
+    /* WARNING BANNER | Body Text */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__text {
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0; /* <-- Bottom margin only */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text */
+        line-height                        : 1.6;                           /* <-- Comfortable line height */
+        color                              : #713f12;                       /* <-- Dark amber body text */
+    }
+
+    /* WARNING BANNER | Limitations List */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__limitations-list {
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0; /* <-- Bottom margin only */
+        padding-left                       : var(--Vale_Spacing_Large);     /* <-- Indent for bullet points */
+        list-style-type                    : disc;                          /* <-- Standard bullet points */
+    }
+
+    .blockout-warning-banner__limitations-item {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text */
+        line-height                        : 1.6;                           /* <-- Comfortable line height */
+        color                              : #713f12;                       /* <-- Dark amber body text */
+        margin-bottom                      : 2px;                           /* <-- Slight gap between items */
+    }
+
+    /* WARNING BANNER | Confidential Section */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__confidential {
+        background                         : #fef2f2;                       /* <-- Light red background */
+        border                             : 1px solid #fca5a5;             /* <-- Red border */
+        border-radius                      : calc(var(--Vale_BorderRadius) / 2); /* <-- Smaller radius */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium); /* <-- Compact padding */
+        margin-top                         : var(--Vale_Spacing_Medium);    /* <-- Space above */
+        margin-bottom                      : var(--Vale_Spacing_Medium);    /* <-- Space below */
+    }
+
+    .blockout-warning-banner__confidential strong {
+        display                            : block;                         /* <-- Block display for heading */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small heading */
+        color                              : #991b1b;                       /* <-- Dark red heading */
+        margin-bottom                      : 4px;                           /* <-- Small gap below heading */
+    }
+
+    .blockout-warning-banner__confidential p {
+        margin                             : 0;                             /* <-- Remove default margin */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text */
+        line-height                        : 1.5;                           /* <-- Comfortable line height */
+        color                              : #7f1d1d;                       /* <-- Dark red body text */
+    }
+
+    /* WARNING BANNER | Request Button */
+    /* ------------------------------------------------------------ */
+    .blockout-warning-banner__request-button {
+        display                            : inline-flex;                   /* <-- Inline flex */
+        align-items                        : center;                        /* <-- Vertical centering */
+        padding                            : 8px 20px;                      /* <-- Button padding */
+        background                         : var(--Vale_PrimaryBrand);      /* <-- Vale blue background */
+        color                              : var(--Vale_TextLight);         /* <-- White text */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Vale font */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small font */
+        font-weight                        : var(--Vale_FontWeight_SemiBold); /* <-- Semi-bold */
+        border                             : none;                          /* <-- No border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Standard radius */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : background var(--Vale_Transition_Fast); /* <-- Fast transition */
+    }
+
+    .blockout-warning-banner__request-button:hover {
+        background                         : #0f1e28;                       /* <-- Darker blue on hover */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive Design Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 768px) {
+
+        /* GALLERY MODE TOGGLE | Mobile Adjustments */
+        /* ------------------------------------------------------------ */
+        .gallery-mode-toggle__button {
+            padding                        : 6px 12px;                      /* <-- Smaller padding on mobile */
+            font-size                      : 11px;                          /* <-- Smaller font on mobile */
+        }
+        /* ------------------------------------------------------------ */
+
+        /* WARNING BANNER | Mobile Adjustments */
+        /* ------------------------------------------------------------ */
+        .blockout-warning-banner {
+            padding                        : var(--Vale_Spacing_Medium);    /* <-- Reduced padding on mobile */
+        }
+
+        .blockout-warning-banner__title-group {
+            flex-direction                 : column;                        /* <-- Stack title and subtitle */
+            gap                            : 2px;                           /* <-- Minimal gap */
+        }
+        /* ------------------------------------------------------------ */
+    }
+
+/* endregion ------------------------------------------------------------------- */

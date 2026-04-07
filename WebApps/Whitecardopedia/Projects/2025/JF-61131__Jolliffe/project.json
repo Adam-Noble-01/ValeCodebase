@@ -1,5 +1,6 @@
 {
     "projectName": "Jolliffe",
+    "ProjectType": "Whitecard",
     "projectCode": "61131",
     "productionData": {
         "input": "CAD File",

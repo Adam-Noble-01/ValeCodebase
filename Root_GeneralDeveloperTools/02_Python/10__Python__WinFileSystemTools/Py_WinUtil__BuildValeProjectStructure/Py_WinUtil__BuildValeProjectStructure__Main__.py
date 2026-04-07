@@ -107,6 +107,7 @@ PROJECT_NUMBER_PATTERN   =   r'^(.+?)(\d{5,6})'                              # <
     # ------------------------------------------------------------
 PROJECT_TYPE_SUFFIXES    =   {                                               # <-- Suffix appended to folder name by type
     "Whitecard"      : "__Whitecard",
+    "Blockout"       : "__Blockout",
     "DigitalConcept" : "__DigitalConcept"
 }
     # ---------------------------------------------------------------
@@ -124,6 +125,7 @@ LOGO_ASSETS_FOLDER       =   "ImageAssets"                                    # 
     # ------------------------------------------------------------
 PROJECT_TYPES            =   [                                               # <-- Available project types for dropdown
     "Whitecard",
+    "Blockout",
     "DigitalConcept",
     "DesignDevelopment",
     "Marketing",

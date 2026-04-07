@@ -1,5 +1,6 @@
 {
     "projectName": "De Lisle",
+    "ProjectType": "Whitecard",
     "projectCode": "59964",
     "productionData": {
         "input": "CAD File",

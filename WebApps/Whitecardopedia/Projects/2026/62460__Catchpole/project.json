@@ -1,5 +1,6 @@
 {
     "projectName": "Catchpole",
+    "ProjectType": "Whitecard",
     "projectCode": "62460",
     "productionData": {
         "input": "CAD File",

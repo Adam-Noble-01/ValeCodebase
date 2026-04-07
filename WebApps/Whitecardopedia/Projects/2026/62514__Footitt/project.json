@@ -1,5 +1,6 @@
 {
     "projectName": "Footitt",
+    "ProjectType": "Whitecard",
     "projectCode": "62514",
     "productionData": {
         "input": "CAD File",

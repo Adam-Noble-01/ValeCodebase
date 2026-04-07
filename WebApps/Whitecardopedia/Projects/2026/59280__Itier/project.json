@@ -1,5 +1,6 @@
 {
     "projectName": "Itier",
+    "ProjectType": "Whitecard",
     "projectCode": "59280",
     "productionData": {
         "input": "CAD File",

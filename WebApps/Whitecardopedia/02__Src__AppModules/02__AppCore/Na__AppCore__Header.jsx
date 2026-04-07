@@ -12,9 +12,10 @@
 // DESCRIPTION:
 // - Persistent header component displayed across all pages
 // - Features Vale Garden Houses logo on left
-// - Features Whitecardopedia title logo on right
+// - Features Whitecardopedia or Blockoutopedia title logo on right
 // - Optional back button for navigation
 // - White background with subtle shadow and Vale blue bottom border
+// - Swaps right logo based on galleryMode prop (whitecard/blockout)
 //
 // =============================================================================
 
@@ -22,9 +23,23 @@
 // REGION | Header Component
 // -----------------------------------------------------------------------------
 
+    // MODULE CONSTANTS | Header Logo URLs by Gallery Mode
+    // ------------------------------------------------------------
+    const HEADER_LOGO_CONFIG = {
+        whitecard : {
+            src : 'https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png',
+            alt : 'Whitecardopedia',
+        },
+        blockout  : {
+            src : 'https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__Blockoutopedia__.png',
+            alt : 'Blockoutopedia',
+        },
+    };
+    // ------------------------------------------------------------
+
     // COMPONENT | Application Header Bar with Dual Logo Layout
     // ------------------------------------------------------------
-    function Header({ showBackButton = false, onBack = null, showShareButton = false, currentProject = null }) {
+    function Header({ showBackButton = false, onBack = null, showShareButton = false, currentProject = null, galleryMode = 'whitecard' }) {
         const [showCopiedMessage, setShowCopiedMessage] = React.useState(false);  // <-- Copied confirmation state
         
         // SUB FUNCTION | Handle Share Link Generation
@@ -90,8 +105,8 @@
                 
                 <div className="app-header__logo-container app-header__logo-container--right">
                     <img 
-                        src="../assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
-                        alt="Whitecardopedia"
+                        src={HEADER_LOGO_CONFIG[galleryMode]?.src || HEADER_LOGO_CONFIG.whitecard.src}
+                        alt={HEADER_LOGO_CONFIG[galleryMode]?.alt || HEADER_LOGO_CONFIG.whitecard.alt}
                         className="app-header__logo-right"
                     />
                 </div>

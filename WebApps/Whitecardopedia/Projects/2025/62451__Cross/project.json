@@ -1,5 +1,6 @@
 {
     "projectName": "Cross",
+    "ProjectType": "Whitecard",
     "projectCode": "62451",
     "productionData": {
         "input": "CAD File",

@@ -1,5 +1,6 @@
 {
     "projectName": "Hurst-Cox",
+    "ProjectType": "Whitecard",
     "projectCode": "53948",
     "productionData": {
         "input": "CAD File",

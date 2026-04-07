@@ -1,5 +1,6 @@
 {
     "projectName": "Weeks",
+    "ProjectType": "Whitecard",
     "projectCode": "59494",
     "productionData": {
         "input": "CAD File",

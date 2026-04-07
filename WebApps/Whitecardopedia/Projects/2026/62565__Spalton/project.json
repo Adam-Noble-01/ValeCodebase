@@ -1,5 +1,6 @@
 {
     "projectName": "Spalton",
+    "ProjectType": "Whitecard",
     "projectCode": "62565",
     "productionData": {
         "input": "CAD File",

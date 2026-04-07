@@ -6,7 +6,7 @@
 // NAMESPACE  : Whitecardopedia
 // MODULE     : ProjectGallery Component
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Grid view of all available projects
+// PURPOSE    : Grid view of all available projects with Whitecard/Blockout mode toggle
 // CREATED    : 2025
 //
 // DESCRIPTION:
@@ -14,12 +14,26 @@
 // - Shows project name, code, and star ratings
 // - Handles project selection and navigation to project viewer
 // - Loads all projects dynamically from configuration
+// - Supports gallery mode toggle between Whitecard and Blockout views
+// - Filters projects by ProjectType field in project.json
+// - Shows warning banner when in Blockout mode
 //
 // =============================================================================
 
 // -----------------------------------------------------------------------------
 // REGION | ProjectGallery Component
 // -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Filter Projects by Gallery Mode
+    // ------------------------------------------------------------
+    function filterProjectsByGalleryMode(projects, galleryMode) {
+        if (galleryMode === 'blockout') {
+            return projects.filter(p => p.ProjectType === 'Blockout');        // <-- Show only Blockout projects
+        }
+        return projects.filter(p => p.ProjectType === 'Whitecard' || !p.ProjectType);  // <-- Show Whitecard or untagged projects
+    }
+    // ---------------------------------------------------------------
+
 
     // COMPONENT | Project Gallery Grid View
     // ------------------------------------------------------------
@@ -28,6 +42,7 @@
         const [loading, setLoading] = React.useState(true);              // <-- Loading state
         const [sortBy, setSortBy] = React.useState('date-newest');       // <-- Sort option state
         const [searchTerm, setSearchTerm] = React.useState('');          // <-- Search term state
+        const [galleryMode, setGalleryMode] = React.useState('whitecard');  // <-- Gallery mode state (whitecard or blockout)
         
         // EFFECT | Load Projects on Mount
         // ---------------------------------------------------------------
@@ -57,6 +72,15 @@
             setSearchTerm(newSearchTerm);                                // <-- Update search term state
         };
         // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Handle Gallery Mode Change
+        // ---------------------------------------------------------------
+        const handleModeChange = (newMode) => {
+            setGalleryMode(newMode);                                     // <-- Update gallery mode state
+            setSearchTerm('');                                           // <-- Clear search when switching modes
+        };
+        // ---------------------------------------------------------------
         
         if (loading) {
             return (
@@ -74,12 +98,13 @@
             );
         }
         
-        const sortedProjects = sortProjects(projects, sortBy);           // <-- Apply sorting to projects
-        const filteredProjects = filterProjects(sortedProjects, searchTerm);  // <-- Apply search filtering
+        const modeFilteredProjects = filterProjectsByGalleryMode(projects, galleryMode);  // <-- Filter by gallery mode
+        const sortedProjects = sortProjects(modeFilteredProjects, sortBy);                // <-- Apply sorting
+        const filteredProjects = filterProjects(sortedProjects, searchTerm);              // <-- Apply search filtering
         
         return (
             <>
-                <Header />
+                <Header galleryMode={galleryMode} />
                 
                 <div className="project-gallery">
                     <div className="project-gallery__controls">
@@ -87,6 +112,10 @@
                             <HamburgerMenu 
                                 onProjectEditorClick={onOpenProjectEditor}
                                 onTimeAnalysisClick={onOpenTimeAnalysis}
+                            />
+                            <GalleryModeToggle
+                                galleryMode={galleryMode}
+                                onModeChange={handleModeChange}
                             />
                             <SearchBox 
                                 searchTerm={searchTerm}
@@ -98,11 +127,17 @@
                             onSortChange={handleSortChange}
                         />
                     </div>
+
+                    {galleryMode === 'blockout' && (
+                        <BlockoutWarningBanner />
+                    )}
                     
                     <div className="project-gallery__grid">
                         {filteredProjects.length === 0 ? (
                             <p style={{ gridColumn: '1 / -1', textAlign: 'center', fontSize: '18px', color: 'var(--Vale_TextSecondary)' }}>
-                                No projects match your search
+                                {galleryMode === 'blockout'
+                                    ? 'No blockout models available'
+                                    : 'No projects match your search'}
                             </p>
                         ) : (
                             filteredProjects.map((project) => (
@@ -128,9 +163,6 @@
                                     <div className="project-card__text-content">
                                         <h3 className="project-card__name">{project.projectName}</h3>
                                         <p className="project-card__code">{project.projectCode}</p>
-                                        {project.scheduleData?.dateFulfilled && (
-                                            <p className="project-card__date">{formatProjectDate(project.scheduleData.dateFulfilled)}</p>
-                                        )}
                                     </div>
                                     <ContentIndicatorIcons project={project} />
                                 </div>
@@ -185,4 +217,3 @@
     // ---------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
-

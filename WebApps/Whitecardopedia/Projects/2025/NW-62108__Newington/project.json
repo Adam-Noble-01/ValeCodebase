@@ -1,5 +1,6 @@
 {
     "projectName": "Newington",
+    "ProjectType": "Whitecard",
     "projectCode": "62108",
     "productionData": {
         "input": "CAD File",

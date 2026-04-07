@@ -1,5 +1,6 @@
 {
     "projectName": "Acton",
+    "ProjectType": "Whitecard",
     "projectCode": "61960",
     "productionData": {
         "input": "CAD File",

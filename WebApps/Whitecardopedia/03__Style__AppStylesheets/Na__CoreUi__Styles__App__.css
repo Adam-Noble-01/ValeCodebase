@@ -434,13 +434,13 @@
     }
     
     .project-card__name {
-        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-size                          : calc(var(--Vale_FontSize_SubHeading) * 1.1);  /* <-- Sub-heading size +10% */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         margin-bottom                      : var(--Vale_Spacing_Small);    /* <-- Space below name */
     }
     
     .project-card__code {
-        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+        font-size                          : calc(var(--Vale_FontSize_Standard) * 1.1);  /* <-- Standard font size +10% */
         color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
         margin-bottom                      : var(--Vale_Spacing_XSmall);   /* <-- Reduced space below code */
     }

@@ -1,5 +1,6 @@
 {
     "projectName": "Napthine",
+    "ProjectType": "Whitecard",
     "projectCode": "43822",
     "productionData": {
         "input": "CAD File",

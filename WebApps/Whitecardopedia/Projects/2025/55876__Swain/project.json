@@ -1,5 +1,6 @@
 {
     "projectName": "Swain",
+    "ProjectType": "Whitecard",
     "projectCode": "55876",
     "productionData": {
         "input": "CAD File",

@@ -1,5 +1,6 @@
 {
     "projectName": "Leuenberger",
+    "ProjectType": "Whitecard",
     "projectCode": "62388",
     "productionData": {
         "input": "CAD File",

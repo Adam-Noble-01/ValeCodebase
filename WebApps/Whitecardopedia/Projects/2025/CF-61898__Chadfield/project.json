@@ -1,5 +1,6 @@
 {
     "projectName": "Chadfield",
+    "ProjectType": "Whitecard",
     "projectCode": "61898",
     "productionData": {
         "input": "CAD File",

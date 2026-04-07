@@ -1,5 +1,6 @@
 {
     "projectName": "Foreman",
+    "ProjectType": "Whitecard",
     "projectCode": "56662",
     "productionData": {
         "input": "CAD File",

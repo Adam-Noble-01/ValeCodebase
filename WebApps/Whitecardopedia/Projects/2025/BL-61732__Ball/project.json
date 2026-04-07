@@ -1,5 +1,6 @@
 {
     "projectName": "Ball",
+    "ProjectType": "Whitecard",
     "projectCode": "61732",
     "productionData": {
         "input": "CAD File",

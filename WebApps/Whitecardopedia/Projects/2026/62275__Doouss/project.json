@@ -1,5 +1,6 @@
 {
     "projectName": "Doouss",
+    "ProjectType": "Whitecard",
     "projectCode": "62275",
     "productionData": {
         "input": "CAD File",

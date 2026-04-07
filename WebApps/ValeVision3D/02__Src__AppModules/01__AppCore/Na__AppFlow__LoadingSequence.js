@@ -17,11 +17,11 @@
 // - Loads all scene models via the multi-model loader.
 // - Runs the PBR materials second-pass if the materials system is enabled.
 // - Initialises door animations and walk-mode collision meshes.
-// - Starts the RAF render loop (including walk mode, door proximity, fog updates).
+// - Starts the RAF render loop (including walk mode, door proximity updates).
 // - Attaches the window resize handler.
 //
 // Context Object (Na__AppFlow__StartLoadingSequence argument):
-// - scene, camera, renderer, controls, modelRoot, fogPass, lineResolution
+// - scene, camera, renderer, controls, modelRoot, lineResolution, showToast
 // - updateNavigation  : orbit controls update function from nav bundle
 // - pipelineRef       : { current: null } mutable ref - module writes pipeline state here
 // - configs           : lightingConfig, groundPlane, profileLines, models,
@@ -69,14 +69,6 @@
     // MODULE IMPORTS | Scene Lighting
     // ------------------------------------------------------------
     import { Na__Scene__SetupDefaultSceneLighting } from '../06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
-    // ------------------------------------------------------------
-
-    // MODULE IMPORTS | Fog Effect
-    // ------------------------------------------------------------
-    import {
-        Na__Scene__SetFogOrbitReference,
-        Na__Scene__UpdateFogPassUniforms
-    } from '../07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Math Utils
@@ -145,6 +137,16 @@
         NA__REQUEST_ACTIVE_RENDER_EVENT,
         NA__STOP_ACTIVE_RENDER_EVENT
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Fog Plane System
+    // @delegate: ../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js
+    // ------------------------------------------------------------
+    import {
+        Na__FogPlaneSystem__Initialize,
+        Na__FogPlaneSystem__UpdatePerFrame,
+        Na__FogPlaneSystem__GetFogPass
+    } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -218,10 +220,10 @@
             renderer   : Na__Renderer__Main,
             controls   : Na__Controls__Orbit,
             modelRoot  : Na__ModelGroup__Root,
-            fogPass    : Na__SceneEffect__FogPass,
             lineResolution   : Na__LineResolution__Screen,
             updateNavigation : Na__Navmode__UpdateNavigation,
             pipelineRef,
+            showToast        : Na__ShowToast__Callback,
             configs
         } = context;
         // ---------------------------------------------------------------
@@ -243,7 +245,7 @@
         Na__UiFeature__UpdateStatus('Creating scene...');
         Na__Scene__SetupDefaultSceneLighting(Na__Scene__Main, Na__Config__LightingConfig, Na__Config__GroundPlane);
 
-        const Na__RenderPipeline__State = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines, Na__SceneEffect__FogPass, Na__Controls__Orbit.target);
+        const Na__RenderPipeline__State = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines, null, Na__Controls__Orbit.target);
         const Na__RenderComposer__Main  = Na__RenderPipeline__State.composer;
         pipelineRef.current = Na__RenderPipeline__State;                     // <-- Write back to index.html ref for ImageExport
 
@@ -297,8 +299,6 @@
                     Na__OrbitHelperCube__Mesh.visible = Na__OrbitHelperCube__Debug__Visible;  // <-- Hide unless debug enabled
 
                     Na__Scene__Main.add(Na__OrbitHelperCube__Mesh);          // <-- Add to scene
-                    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, orbitCubeResult.centerPosition); // <-- Fog anchor now follows orbit cube center
-
                     console.log('[ValeVision3D] OrbitHelperCube loaded. Center resolved:', orbitCubeResult.centerPosition);
                 } else {
                     console.warn('[ValeVision3D] OrbitHelperCube loaded but center position could not be resolved.');
@@ -420,6 +420,25 @@
             Na__RenderPipeline__State.invalidateProfileLinesCache();
         }
 
+        // INITIALIZE FOG PLANE SYSTEM (async: loads config, restores saved planes, creates shader pass)
+        try {
+            await Na__FogPlaneSystem__Initialize({
+                scene      : Na__Scene__Main,
+                camera     : Na__Camera__Main,
+                renderer   : Na__Renderer__Main,
+                controls   : Na__Controls__Orbit,
+                modelRoot  : Na__ModelGroup__Root,
+                showToast  : Na__ShowToast__Callback || null
+            });
+
+            const Na__FogPlane__Pass = Na__FogPlaneSystem__GetFogPass();
+            if (Na__FogPlane__Pass && Na__RenderPipeline__State.insertFogPass) {
+                Na__RenderPipeline__State.insertFogPass(Na__FogPlane__Pass);
+            }
+        } catch (fogError) {
+            console.error('[ValeVision3D] Fog plane system init error:', fogError);
+        }
+
         // RENDER LOOP | Invalidation-Based Rendering
         let Na__RenderLoop__PrevTimestamp = performance.now();               // <-- Previous frame timestamp for delta
         let Na__RenderLoop__FrameHandle = null;                              // <-- Active RAF handle (or null when idle)
@@ -450,24 +469,14 @@
         let Na__RenderLoop__ActiveCamera       = Na__Camera__Main;              // <-- Tracks which camera the render pipeline is using
         let Na__RenderLoop__ElevationActive    = false;                          // <-- True when ortho elevation camera is active
         let Na__RenderLoop__2dProfileNormals   = null;                           // <-- 2D profile lines render function (set via event)
-        let Na__RenderLoop__FogEnabledCache    = Na__SceneEffect__FogPass       // <-- Cache original fog enabled state
-            ? Na__SceneEffect__FogPass.uniforms['uFogEnabled'].value
-            : 1.0;
 
         window.addEventListener('na-elevation-camera-changed', (event) => {
             if (event.detail && event.detail.camera) {
-                Na__RenderLoop__ActiveCamera = event.detail.camera;             // <-- Swap active camera for fog/effects
+                Na__RenderLoop__ActiveCamera = event.detail.camera;             // <-- Swap active camera for effects
             }
             Na__RenderLoop__ElevationActive = !!(event.detail && event.detail.isOrtho); // <-- Track elevation mode
             if (event.detail && event.detail.render2dProfileNormals) {
                 Na__RenderLoop__2dProfileNormals = event.detail.render2dProfileNormals; // <-- Store 2D profile lines renderer
-            }
-            if (Na__SceneEffect__FogPass) {
-                if (event.detail && event.detail.isOrtho) {
-                    Na__SceneEffect__FogPass.uniforms['uFogEnabled'].value = 0.0;   // <-- Disable 3D fog in elevation mode
-                } else {
-                    Na__SceneEffect__FogPass.uniforms['uFogEnabled'].value = Na__RenderLoop__FogEnabledCache; // <-- Restore fog
-                }
             }
         });
 
@@ -482,7 +491,8 @@
             Na__VerticalCorrection__ApplyFrame();                            // <-- Apply vertical perspective correction (no-ops when disabled)
 
             Na__DoorAnimation__Update(deltaMs);                              // <-- Update door animations
-            Na__Scene__UpdateFogPassUniforms(Na__SceneEffect__FogPass, Na__RenderLoop__ActiveCamera); // <-- Update fog with active camera
+
+            Na__FogPlaneSystem__UpdatePerFrame(Na__RenderLoop__ActiveCamera, Na__Controls__Orbit); // <-- Fog shader uniforms + camera constraint
 
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
                 if (Na__RenderLoop__ElevationActive && Na__RenderLoop__2dProfileNormals) {

@@ -465,6 +465,44 @@
                 </li>
                 <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naFogPlaneToggle" aria-expanded="false">
+                        Fog Effect
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naFogPlanePanel">
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Enable Fog</span>
+                            <input type="checkbox" id="naFogPlaneEnableToggle" class="na-dropdown-menu__checkbox" />
+                        </div>
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Show Planes</span>
+                            <input type="checkbox" id="naFogPlanePlaneVisibleToggle" class="na-dropdown-menu__checkbox" />
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-dropdown-menu__panel-title">Fall-off Distance</div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <input
+                                type="range"
+                                id="naFogPlaneFalloffSlider"
+                                class="na-dropdown-menu__slider"
+                                min="0"
+                                max="7"
+                                step="1"
+                                value="2"
+                            />
+                            <span class="na-dropdown-menu__value" id="naFogPlaneFalloffValue">1 m</span>
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <button class="na-dropdown-menu__action" id="naFogPlaneSelectA">Place Fog Plane A</button>
+                        <button class="na-dropdown-menu__action" id="naFogPlaneSelectB">Place Fog Plane B</button>
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naFogPlaneRemoveA" style="display:none;">Remove Plane A</button>
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naFogPlaneRemoveB" style="display:none;">Remove Plane B</button>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naFogPlaneSaveSettings">Save Fog Settings</button>
+                    </div>
+                </li>
+                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
+                <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naSceneInspectorToggle" aria-expanded="false">
                         Scene Inspector
                         <span class="na-dropdown-menu__subarrow">▾</span>
@@ -477,6 +515,7 @@
                                 <button class="na-scene-inspector__toolbar-btn" id="naSceneInspectorHideAll">Hide All</button>
                                 <button class="na-scene-inspector__toolbar-btn" id="naSceneInspectorRestoreAll">Restore All</button>
                                 <button class="na-scene-inspector__toolbar-btn na-scene-inspector__toolbar-btn--toggle" id="naSceneInspectorIsolatePair" aria-pressed="false">Isolate Pair</button>
+                                <button class="na-scene-inspector__toolbar-btn" id="naSceneInspectorCopyTree">Copy Tree</button>
                             </div>
                             <button class="na-scene-inspector__scan-btn" id="naSceneInspectorScanBtn">Scan Scene</button>
                         </div>
@@ -517,11 +556,6 @@
     import { Na__UiFeature__InitializeProfileLinesControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js';
     import { Na__UiFeature__InitializeSceneInspector } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
-    import {
-        Na__Scene__CreateFogPass,
-        Na__Scene__SetFogOrbitReference,
-        Na__Scene__ApplyFogBackground
-    } from './02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js';
     import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
     import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
@@ -530,6 +564,7 @@
     import { Na__UiFeature__InitializeGridLineControls } from './02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js';
     import { Na__Feature__ShareProjectLink__Initialize } from './02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
+    import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -561,7 +596,6 @@
     const Na__Config__ModelDefaults = Na__AppConfig__Data.modelDefaults;            // <-- Model defaults
     const Na__Config__CameraConfig = Na__AppConfig__Data.Scene__Default__CameraConfig;      // <-- Camera settings
     const Na__Config__LightingConfig = Na__AppConfig__Data.Scene__Default__LightingConfig;  // <-- Lighting settings
-    const Na__Config__FogConfig = Na__AppConfig__Data.Scene__Default__FogConfig;            // <-- Fog settings
     const Na__Config__ControlsConfig = Na__AppConfig__Data.Scene__Default__ControlsConfig;  // <-- Controls settings
     const Na__Config__GroundPlane = Na__AppConfig__Data.Scene__GroundPlane;         // <-- Ground plane settings
     const Na__Config__Models = Na__AppConfig__Data.models;                          // <-- Model-specific settings
@@ -664,7 +698,6 @@
     // MODULE VARIABLES | Scene Objects
     // ------------------------------------------------------------
     const Na__Scene__Main = new THREE.Scene();
-    // @delegate: ./02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
     
     const Na__Camera__Main = new THREE.PerspectiveCamera(
         Na__Config__CameraConfig.Scene__Default__CameraConfig__Fov,
@@ -786,7 +819,7 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Dev Default Cube, Orbit Pivot and Fog Setup
+// REGION | Dev Default Cube and Orbit Pivot Setup
 // -----------------------------------------------------------------------------
 
     // MODULE INITIALIZATION | Default Dev Cube (Scale + Pivot)
@@ -817,10 +850,7 @@
     Na__Controls__Orbit.target.copy(Na__Camera__InitialTarget);                 // <-- Initial fallback uses camera forward direction (not Dev cube)
     Na__Controls__Orbit.update();
     
-    // @delegate: ./02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js
-    Na__Scene__ApplyFogBackground(Na__Scene__Main, Na__Config__FogConfig);
-    const Na__SceneEffect__FogPass = Na__Scene__CreateFogPass(Na__Config__FogConfig);
-    Na__Scene__SetFogOrbitReference(Na__SceneEffect__FogPass, Na__Controls__Orbit.target);
+    Na__Scene__Main.background = new THREE.Color(0xffffff);                    // <-- White background (fog plane system handles masking)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -928,10 +958,10 @@
         renderer         : Na__Renderer__Main,
         controls         : Na__Controls__Orbit,
         modelRoot        : Na__ModelGroup__Root,
-        fogPass          : Na__SceneEffect__FogPass,
         lineResolution   : Na__LineResolution__Screen,
         updateNavigation : Na__Navmode__UpdateNavigation,
         pipelineRef      : Na__AppFlow__PipelineRef,                      // <-- Mutable ref for pipeline state
+        showToast        : Na__UiFeature__ShowToast,                        // <-- Toast notification callback for sub-systems
         configs: {
             lightingConfig              : Na__Config__LightingConfig,
             groundPlane                 : Na__Config__GroundPlane,
@@ -947,6 +977,7 @@
     Na__UiFeature__InitializeLocalhostDevMenu();
     Na__UiFeature__InitializeSaveCameraButton(Na__Camera__Main, Na__Controls__Orbit, Na__UiFeature__ShowToast);
     Na__UiFeature__InitializeProfileLinesControls(Na__AppFlow__PipelineRef, Na__Config__ProfileLines);
+    Na__UiFeature__InitializeFogPlaneControls(null);
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
     Na__UiFeature__InitializeGridLineControls(Na__Scene__Main, Na__UiFeature__ShowToast, Na__AppFlow__PipelineRef);
     Na__UiFeature__InitializeElevationViewControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root, Na__Device__UseTouchControls);

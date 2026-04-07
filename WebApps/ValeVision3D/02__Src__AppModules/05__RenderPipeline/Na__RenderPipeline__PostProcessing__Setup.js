@@ -63,11 +63,33 @@
         const depthTexture = profileLinesDepthTexture || depthTextureFallback;
 
         // FOG PASS | Inserted after profile lines, before FXAA
+        let fogPassRef = null;
         if (fogPass) {
             fogPass.material.depthWrite = false;
             fogPass.material.depthTest  = false;
-            fogPass.uniforms['tDepth'].value = depthTexture; // <-- Wire depth texture into fog shader
+            fogPass.uniforms['tDepth'].value = depthTexture;
             composer.addPass(fogPass);
+            fogPassRef = fogPass;
+        }
+
+        // LATE FOG PASS INSERTION | Wire a fog pass after async system init
+        function insertFogPass(lateFogPass) {
+            if (!lateFogPass || fogPassRef) return;
+            try {
+                lateFogPass.material.depthWrite = false;
+                lateFogPass.material.depthTest  = false;
+                lateFogPass.uniforms['tDepth'].value = depthTexture;
+
+                const fxaaIdx = composer.passes.indexOf(fxaaPass);
+                if (fxaaIdx >= 0) {
+                    composer.passes.splice(fxaaIdx, 0, lateFogPass);
+                } else {
+                    composer.addPass(lateFogPass);
+                }
+                fogPassRef = lateFogPass;
+            } catch (err) {
+                console.error('[ValeVision3D] Failed to insert fog pass:', err);
+            }
         }
 
         // Runtime toggle — profile lines ON/OFF; returns new state
@@ -106,6 +128,7 @@
             invalidateProfileLinesCache,
             setFxaaSize,
             toggleProfileLines,
+            insertFogPass,
             depthTexture,
             profileNormalTarget,
             profileColorTarget,

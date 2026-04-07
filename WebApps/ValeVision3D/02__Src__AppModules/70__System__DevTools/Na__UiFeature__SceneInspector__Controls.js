@@ -63,6 +63,7 @@
     const Na__SceneInspector__HideAllBtnId    = 'naSceneInspectorHideAll';            // <-- Hide all nodes button
     const Na__SceneInspector__RestoreAllBtnId = 'naSceneInspectorRestoreAll';         // <-- Restore all nodes button
     const Na__SceneInspector__IsolatePairBtnId    = 'naSceneInspectorIsolatePair';    // <-- Isolate Pair mode toggle
+    const Na__SceneInspector__CopyTreeBtnId       = 'naSceneInspectorCopyTree';       // <-- Copy tree to clipboard button
     // ------------------------------------------------------------
 
 
@@ -111,6 +112,7 @@
     let Na__SceneInspector__NodeRegistry       = [];                            // <-- Flat list: { uuid, nodeRef, dotEl, wrapperEl, name }
     let Na__SceneInspector__VisibilitySnapshot = {};                            // <-- uuid -> initial visible (bool) taken at scan time
     let Na__SceneInspector__IsolatePairActive  = false;                         // <-- Isolate Pair mode flag
+    let Na__SceneInspector__LastScannedTree    = null;                          // <-- Record tree from most recent scan (for copy)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -531,6 +533,94 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Copy Tree to Clipboard
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Build Concise Text Line for a Single Node (name only)
+    // ------------------------------------------------------------
+    function Na__SceneInspector__BuildNodeTextLineConcise(record, depth) {
+        const indent = '    '.repeat(Math.max(0, depth - 1));                  // <-- Offset by 1 so Scene children start flush; 4-space increment
+        return `${indent}${record.type} ${record.name}`;                       // <-- Type and name only, no stats
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Full Text Line for a Single Node (stats + visibility)
+    // ------------------------------------------------------------
+    function Na__SceneInspector__BuildNodeTextLineFull(record, depth) {
+        const indent      = '  '.repeat(depth);                                 // <-- Two-space indent per depth level
+        const visibleStr  = `Visible = ${record.visible ? 'True' : 'False'}`;  // <-- Capitalised boolean state
+        const triSegment  = record.meshStats
+            ? `  |  ${Na__SceneInspector__FormatNumber(record.meshStats.triCount)} triangles`
+            : '';                                                                // <-- Triangle count segment for mesh nodes only
+        return `${indent}${record.type} ${record.name}${triSegment}  |  ${visibleStr}`; // <-- Pipe-separated fields
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Recursively Build Plain-Text Tree Lines with Provided Line Builder
+    // ------------------------------------------------------------
+    function Na__SceneInspector__WalkTreeToText(record, depth, lines, lineBuilder) {
+        lines.push(lineBuilder(record, depth));                                 // <-- Append this node's line via builder
+        for (const child of record.children) {
+            Na__SceneInspector__WalkTreeToText(child, depth + 1, lines, lineBuilder); // <-- Recurse into children
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Copy Scene Tree to Clipboard
+    // ------------------------------------------------------------
+    function Na__SceneInspector__CopyTreeToClipboard(copyBtn) {
+        if (!Na__SceneInspector__LastScannedTree) {
+            copyBtn.textContent = 'No scan yet';                                // <-- Guard: nothing to copy before first scan
+            setTimeout(() => { copyBtn.textContent = 'Copy Tree'; }, 1500);    // <-- Restore label after delay
+            return;
+        }
+
+        const divider = '=======================================';               // <-- Section divider line
+
+        // BUILD CONCISE REPORT (names only, 8-space indent)
+        const conciseLines = [];
+        Na__SceneInspector__WalkTreeToText(
+            Na__SceneInspector__LastScannedTree, 0, conciseLines,
+            Na__SceneInspector__BuildNodeTextLineConcise                        // <-- Name-only line builder
+        );
+
+        // BUILD FULL REPORT (stats + visibility, 2-space indent)
+        const fullLines = [];
+        Na__SceneInspector__WalkTreeToText(
+            Na__SceneInspector__LastScannedTree, 0, fullLines,
+            Na__SceneInspector__BuildNodeTextLineFull                           // <-- Stats + visibility line builder
+        );
+
+        const text = [
+            '1. CONCISE REPORT',
+            divider,
+            conciseLines.join('\n'),
+            divider,
+            '',
+            '2. FULL REPORT WITH STATES & STATISTICS',
+            divider,
+            fullLines.join('\n'),
+            divider,
+            'END'
+        ].join('\n');                                                            // <-- Combine both reports into single output
+
+        navigator.clipboard.writeText(text).then(() => {
+            copyBtn.textContent = 'Copied!';                                    // <-- Visual confirmation on success
+            setTimeout(() => { copyBtn.textContent = 'Copy Tree'; }, 1500);    // <-- Restore label after delay
+        }).catch(() => {
+            copyBtn.textContent = 'Failed';                                     // <-- Indicate clipboard access failure
+            setTimeout(() => { copyBtn.textContent = 'Copy Tree'; }, 1500);    // <-- Restore label after delay
+        });
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Panel Toggle
 // -----------------------------------------------------------------------------
 
@@ -568,6 +658,7 @@
         const hideAllBtn      = document.getElementById(Na__SceneInspector__HideAllBtnId);
         const restoreAllBtn   = document.getElementById(Na__SceneInspector__RestoreAllBtnId);
         const isolatePairBtn  = document.getElementById(Na__SceneInspector__IsolatePairBtnId);
+        const copyTreeBtn     = document.getElementById(Na__SceneInspector__CopyTreeBtnId);
 
         if (!scanBtn || !statsEl || !treeEl) return;                           // <-- Exit if markup is unavailable
 
@@ -585,6 +676,7 @@
 
             Na__SceneInspector__RenderStats(statsEl, stats);                   // <-- Update summary header
             Na__SceneInspector__RenderTree(treeEl, tree);                      // <-- Render collapsible node tree + snapshot
+            Na__SceneInspector__LastScannedTree = tree;                        // <-- Cache tree for copy feature
 
             if (filterEl) filterEl.value = '';                                 // <-- Clear stale filter after rescan
 
@@ -620,6 +712,13 @@
 
                 isolatePairBtn.classList.toggle('na-scene-inspector__toolbar-btn--active', Na__SceneInspector__IsolatePairActive); // <-- Apply active style
                 isolatePairBtn.setAttribute('aria-pressed', String(Na__SceneInspector__IsolatePairActive)); // <-- Sync accessibility state
+            });
+        }
+
+        // COPY TREE - serialize last scanned tree to plain text and write to clipboard
+        if (copyTreeBtn) {
+            copyTreeBtn.addEventListener('click', () => {
+                Na__SceneInspector__CopyTreeToClipboard(copyTreeBtn);           // <-- Trigger clipboard copy with feedback
             });
         }
     }

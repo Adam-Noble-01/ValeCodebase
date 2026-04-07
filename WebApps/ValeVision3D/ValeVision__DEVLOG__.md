@@ -1,5 +1,73 @@
 # ValeVision3D Development Log
 # =========================================================
+
+# ---------------------------------------------------------
+## ValeVision3D v2.2.0 - 07-Apr-2026
+### Fog Plane System — Planar Fog with Camera Force Field
+
+**Overview**
+- Complete replacement of the old orbit-anchored radial fog system (which never rendered correctly) with a new planar fog system that lets users place up to two configurable fog planes to mask off sections of a building model.
+- Each fog plane acts as both a visual fog boundary and a camera force field, preventing navigation into the fogged zone.
+
+**New System: `29__System__FogPlaneSystem`**
+- `Na__FogPlaneSystem__Config.json` — default fall-off distance, slider step values (250mm–20000mm), plane visual style (blue semi-transparent), camera constraint padding, fog colour.
+- `Na__FogPlaneSystem__FogShaderEffect.js` — custom post-processing `ShaderPass` with GLSL fragment shader that reconstructs world position from the logarithmic depth buffer and computes signed distance from up to two world-space planes. Fall-off uses `smoothstep` between the plane surface and the configured distance. Background pixels are projected to `cameraFar` so linework and profile-line edges at geometry silhouettes are fogged correctly.
+- `Na__FogPlaneSystem__PlaneCreation.js` — click-to-place system modelled on the Elevation View tool. Raycasts against model meshes, snaps the face normal to the nearest cardinal axis (X or Z), builds a blue semi-transparent `PlaneGeometry` group with a draggable inner handle. Drag moves the plane along its normal via screen-Y delta.
+- `Na__FogPlaneSystem__CameraConstraint.js` — per-frame camera position clamping with configurable padding. Pushes camera and orbit target back to the plane surface if they cross to the fog side. Active even when planes are visually hidden.
+- `Na__FogPlaneSystem__SaveSettings.js` — per-project save/load using the same GET-merge-POST pattern as the camera and grid save systems. Data stored under `FogPlane__Config` in `project.json`.
+- `Na__FogPlaneSystem__SystemLogic.js` — main orchestrator: async config load, sub-module initialisation, fog pass creation, saved-state restoration, per-frame update dispatch, clipping-plane helpers.
+- `Na__FogPlaneSystem__UiControls.js` — Dev Tools panel wiring: fog enable toggle (off by default), plane visibility toggle, discrete-step fall-off slider, Place Plane A/B buttons, Remove buttons, Save button.
+
+**Dev Tools UI**
+- New "Fog Effect" dropdown added to the Dev Tools menu with: Enable Fog toggle, Show Planes toggle, Fall-off Distance slider (250mm, 500mm, 1m, 2m, 2.5m, 5m, 10m, 20m), Place Fog Plane A/B buttons, Remove Plane buttons (appear after placement), Save Fog Settings button.
+
+**Render Pipeline Changes**
+- Fog `ShaderPass` is late-inserted into the `EffectComposer` chain (after Profile Lines, before FXAA) via a new `insertFogPass` method on the pipeline state object. This handles the async system initialisation that completes after the composer is already built.
+- Fog shader correctly covers profile-line Sobel edges and linework at geometry silhouettes by projecting background-depth pixels (depth = 1.0) to `cameraFar` distance instead of skipping them. The normal prepass hides `LineSegments2` so the depth buffer has no linework data; the far-distance projection ensures those pixels still go through the fog calculation.
+
+**Old System Removed**
+- Deleted `Na__Scene__DefaultFogEffect.js` (orbit-anchored radial fog shader that never worked).
+- Removed `Scene__Default__FogConfig` from `Na__AppConfig__Main.json`.
+- Stripped all old fog imports, calls, state caching, and elevation-mode fog toggling from `index.html` and `Na__AppFlow__LoadingSequence.js`.
+- Scene background set directly to white (`0xffffff`) instead of via the old fog helper.
+
+**Files Added**
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__Config.json`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__PlaneCreation.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__CameraConstraint.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js`
+
+**Files Deleted**
+- `02__Src__AppModules/07__Scene__EnvironmentEffects/Na__Scene__DefaultFogEffect.js`
+
+**Files Changed**
+- `index.html` — removed old fog imports/config/setup; added white background; added fog UI HTML to Dev Tools; added fog UI import and init call; added `showToast` passthrough to loading sequence context
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — removed old fog imports/state/per-frame update/elevation fog toggle; added fog system import and async init after model load; added fog pass pipeline insertion; added fog per-frame update in render loop
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — removed `Scene__Default__FogConfig` block
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` — added `insertFogPass` method for late fog pass insertion into the composer chain; exposed in return object
+
+# ---------------------------------------------------------
+## ValeVision3D v2.1.5 - 07-Apr-2026
+### Scene Inspector — Copy Tree to Clipboard
+
+**Overview**
+- Added a Copy Tree button to the Scene Inspector toolbar that serialises the last scanned node tree to plain text and writes it to the clipboard in two report formats.
+
+**Feature Details**
+- Copy Tree button added to the Scene Inspector toolbar row alongside Hide All, Restore All, and Isolate Pair.
+- Button provides inline visual feedback: label changes briefly to `Copied!`, `Failed`, or `No scan yet` before restoring.
+- Output contains two sections separated by dividers:
+  1. **Concise Report** — type and node name only, indented with 4 spaces per level offset by 1 (Scene's direct children start flush; indentation begins at depth 2).
+  2. **Full Report With States & Statistics** — pipe-separated fields: `Type Name  |  N triangles  |  Visible = True/False`. Triangle count segment only shown for Mesh nodes.
+- Last scanned tree is cached in module state (`Na__SceneInspector__LastScannedTree`) after each Rescan so the copy operation does not require re-traversal.
+
+**Files Changed**
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js` — new `REGION | Copy Tree to Clipboard` with `BuildNodeTextLineConcise`, `BuildNodeTextLineFull`, updated `WalkTreeToText` (lineBuilder callback), `CopyTreeToClipboard`; new DOM ID constant; new state variable; tree cache in scan handler; copy button wired in init
+- `index.html` — Copy Tree button added to Scene Inspector toolbar
+
 # ---------------------------------------------------------
 ## ValeVision3D v2.1.4 - 20-Mar-2026
 ### Tools Menu — Share Link + Full Screen Icon Update

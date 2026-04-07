@@ -14,13 +14,6 @@
         "Scene__Default__LightingConfig__AmbientIntensity": 2.8,
         "Scene__Default__LightingConfig__DirectionalIntensity": 0.5
     },
-    "Scene__Default__FogConfig": {
-        "Scene__Default__FogConfig__Description"     : "Default orbit-cube anchored fog envelope. Distances are integer millimeters and must be converted to 3D units in code.",
-        "Scene__Default__FogConfig__Enabled"         : true,
-        "Scene__Default__FogConfig__Color"           : 16777215,
-        "Scene__Default__FogConfig__StartDistanceMm" : 65000,
-        "Scene__Default__FogConfig__EndDistanceMm"   : 95000
-    },
     "Scene__Default__ControlsConfig": {
         "Scene__Default__ControlsConfig__MovementSpeed"   : 0.5,
         "Scene__Default__ControlsConfig__ElevationSpeed"  : 0.5,
@@ -61,9 +54,9 @@
         "RenderEffect__ProfileLines__EdgeColor"            : 4210752,
         "RenderEffect__ProfileLines__EdgeThresholdNormal"  : 0.2,
         "RenderEffect__ProfileLines__EdgeThresholdDepth"   : 0.002,
-        "RenderEffect__ProfileLines__EdgeWidth"            : 0.25,
-        "RenderEffect__ProfileLines__EdgeWidthMin"         : 0.20,
-        "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.50,
+        "RenderEffect__ProfileLines__EdgeWidth"            : 0.20,
+        "RenderEffect__ProfileLines__EdgeWidthMin"         : 0.15,
+        "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.40,
         "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
         "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0
     },

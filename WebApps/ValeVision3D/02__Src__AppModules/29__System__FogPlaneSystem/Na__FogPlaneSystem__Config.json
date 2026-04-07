@@ -1,0 +1,42 @@
+{
+    "FogPlane__System__Config": {
+        "FogPlane__System__Config__Description"          : "Default configuration for the Fog Plane System. All distance values are integer millimeters; convert to 3D units in code.",
+
+        "FogPlane__Falloff__Config": {
+            "FogPlane__Falloff__Config__Description"     : "Configurable fog fall-off distance from the plane surface to full white. Slider uses discrete step values.",
+            "FogPlane__Falloff__Config__DefaultMm"       : 1000,
+            "FogPlane__Falloff__Config__StepsMm"         : [250, 500, 1000, 2000, 2500, 5000, 10000, 20000],
+            "FogPlane__Falloff__Config__DefaultIndex"    : 2
+        },
+
+        "FogPlane__Visual__Config": {
+            "FogPlane__Visual__Config__Description"      : "Visual appearance of the draggable fog planes in the viewport. Planes are MeshBasicMaterial (unlit, Layer 1 overlay).",
+            "FogPlane__Visual__Config__PlaneColor"       : 3381759,
+            "FogPlane__Visual__Config__PlaneOpacity"     : 0.18,
+            "FogPlane__Visual__Config__EdgeColor"        : 2258175,
+            "FogPlane__Visual__Config__HandleColor"      : 4495359,
+            "FogPlane__Visual__Config__HandleOpacity"    : 0.35,
+            "FogPlane__Visual__Config__PlaneSizeMm"      : 60000,
+            "FogPlane__Visual__Config__HandleSizeMm"     : 4000,
+            "FogPlane__Visual__Config__HandleOffsetZ"    : 0.01
+        },
+
+        "FogPlane__Interaction__Config": {
+            "FogPlane__Interaction__Config__Description"  : "Interaction settings for click-to-place and drag behaviour.",
+            "FogPlane__Interaction__Config__ClickThresholdPx" : 4,
+            "FogPlane__Interaction__Config__DragScale"        : 0.02,
+            "FogPlane__Interaction__Config__LiftYMm"          : 0
+        },
+
+        "FogPlane__Camera__Config": {
+            "FogPlane__Camera__Config__Description"       : "Camera constraint padding so the camera does not clip exactly onto the fog plane surface.",
+            "FogPlane__Camera__Config__PaddingMm"         : 200
+        },
+
+        "FogPlane__Effect__Config": {
+            "FogPlane__Effect__Config__Description"       : "Default fog effect rendering settings.",
+            "FogPlane__Effect__Config__Color"             : 16777215,
+            "FogPlane__Effect__Config__EnabledByDefault"  : false
+        }
+    }
+}

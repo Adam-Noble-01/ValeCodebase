@@ -349,6 +349,62 @@
           "endTime": "13:00",
           "title": "Tea",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1775560722068",
+          "date": "2026-04-07",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775560745088",
+          "date": "2026-04-07",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "title": "Dev - Blockout System",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775560751254",
+          "date": "2026-04-07",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Dev - Refactor Fog Sytem To Vale",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775560694491",
+          "date": "2026-04-07",
+          "startTime": "10:15",
+          "endTime": "12:00",
+          "title": "Dev - Blockout System",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775560791396",
+          "date": "2026-04-07",
+          "startTime": "12:00",
+          "endTime": "12:30",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1775563677899",
+          "date": "2026-04-07",
+          "startTime": "12:30",
+          "endTime": "13:00",
+          "title": "Dev - Fix Vale Builder Bug",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775560813349",
+          "date": "2026-04-07",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Thorpe - Blockout",
+          "color": "na-shift-color-amber"
         }
       ]
     }

@@ -25,9 +25,32 @@
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
         masterConfigPath    : '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json', // <-- Master configuration file path
+        designersListPath   : '02__Src__AppModules/03__AppData/Na__AppData__ValeDesignersList__Main.json', // <-- Dedicated designers options file
+        artistsListPath     : '02__Src__AppModules/03__AppData/Na__AppData__ValeConceptArtistsList__Main.json', // <-- Dedicated concept artists options file
         projectBasePath     : 'Projects',                                // <-- Base path for projects (year comes from folderId)
     };
     // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Load Option List from Dedicated Data File
+    // ---------------------------------------------------------------
+    async function loadOptionsListFromFile(filePath, keyName) {
+        try {
+            const response = await fetch(filePath);                      // <-- Fetch dedicated options file
+
+            if (!response.ok) {
+                return null;                                             // <-- Return null if file missing/unreadable
+            }
+
+            const data = await response.json();                          // <-- Parse JSON response
+            const optionsList = data[keyName];                           // <-- Read expected list key
+
+            return Array.isArray(optionsList) ? optionsList : null;      // <-- Return list or null if invalid shape
+        } catch (error) {
+            console.warn(`Warning loading ${keyName} from ${filePath}:`, error); // <-- Log non-blocking warning
+            return null;                                                 // <-- Return null on any fetch/parse error
+        }
+    }
+    // ---------------------------------------------------------------
 
 
     // FUNCTION | Load Master Configuration
@@ -41,6 +64,25 @@
             }
             
             const config = await response.json();                        // <-- Parse JSON response
+
+            // LOAD DEDICATED LIST FILES | Canonical source with masterConfig fallback
+            const designersList = await loadOptionsListFromFile(
+                PROJECT_LOADER_CONFIG.designersListPath,
+                'vale__Designer__OptionsList'
+            );
+            const artistsList = await loadOptionsListFromFile(
+                PROJECT_LOADER_CONFIG.artistsListPath,
+                'vale__ConceptArtist__OptionsList'
+            );
+
+            if (designersList !== null) {
+                config.vale__Designer__OptionsList = designersList;      // <-- Prefer dedicated designers list when available
+            }
+
+            if (artistsList !== null) {
+                config.vale__ConceptArtist__OptionsList = artistsList;    // <-- Prefer dedicated concept artists list when available
+            }
+
             return config;                                               // <-- Return configuration object
             
         } catch (error) {

@@ -53,6 +53,8 @@ ENV_FILE_PATH                      = "API__Cloudflare/Token__CloudflareAPI.env" 
 # ------------------------------------------------------------
 WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-- Legacy pattern: EX-12345__Example__Whitecard
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'           # <-- New pattern: 12345__Example__Whitecard
+BLOCKOUT_FOLDER_PATTERN_OLD        = r'^([A-Z]{2}-\d+)__(.+?)__Blockout$'   # <-- Legacy pattern: EX-12345__Example__Blockout
+BLOCKOUT_FOLDER_PATTERN_NEW        = r'^(\d+)__(.+?)__Blockout$'            # <-- New pattern: 12345__Example__Blockout
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 GLB_ARCHIVE_SUBFOLDER              = "01__Archive"                           # <-- Archive subfolder to skip
 GLB_NAMODEL_NAMESPACE              = "__NaModel__"                           # <-- SketchUp export namespace marker
@@ -227,7 +229,7 @@ def discover_vale_year_folders() -> List[Tuple[str, Path]]:
             if year_part.isdigit() and len(year_part) == 4:              # <-- Validate 4-digit year
                 year_folders.append((year_part, item))                    # <-- Add (year, path) tuple
     
-    return sorted(year_folders, key=lambda x: x[0], reverse=True)        # <-- Sort by year (newest first)
+    return sorted(year_folders, key=lambda x: x[0])                       # <-- Sort by year (oldest first, e.g. 2025 then 2026)
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -304,75 +306,101 @@ def upload_file_to_r2(s3_client: boto3.client, bucket_name: str, local_path: Pat
 # FUNCTION | Extract Project Metadata from Folder Name
 # ------------------------------------------------------------
 def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    """Extract project code and name from Whitecard folder name"""
-    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
-    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
-    
-    if match_old:
-        full_code = match_old.group(1)                                 # <-- Extract full code (e.g., "VE-61058")
-        project_name = match_old.group(2)                              # <-- Extract project name (e.g., "Staley")
-        project_code = full_code.split('-')[1] if '-' in full_code else full_code  # <-- Extract numeric code
-        return full_code, project_code, project_name                   # <-- Return extracted metadata
-    
-    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
-    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
-    
-    if match_new:
-        project_code = match_new.group(1)                              # <-- Extract numeric code (e.g., "12345")
-        project_name = match_new.group(2)                              # <-- Extract project name (e.g., "Example")
-        full_code = project_code                                       # <-- Use numeric code as full code for new format
-        return full_code, project_code, project_name                    # <-- Return extracted metadata
-    
-    return None, None, None                                           # <-- Return None if pattern doesn't match
+    """Extract project code and name from Whitecard or Blockout folder name"""
+    # TRY ALL PATTERNS (Whitecard and Blockout, legacy and new)
+    all_patterns = [
+        WHITECARD_FOLDER_PATTERN_OLD,                                # <-- Legacy Whitecard
+        WHITECARD_FOLDER_PATTERN_NEW,                                # <-- New Whitecard
+        BLOCKOUT_FOLDER_PATTERN_OLD,                                 # <-- Legacy Blockout
+        BLOCKOUT_FOLDER_PATTERN_NEW,                                 # <-- New Blockout
+    ]
+
+    for pattern in all_patterns:
+        match = re.match(pattern, folder_name)                       # <-- Try pattern match
+
+        if match:
+            group1 = match.group(1)                                  # <-- Extract first group (code)
+            project_name = match.group(2)                            # <-- Extract project name
+
+            if '-' in group1:
+                full_code = group1                                   # <-- Legacy format: full code with prefix
+                project_code = full_code.split('-')[1]               # <-- Extract numeric code only
+            else:
+                full_code = group1                                   # <-- New format: numeric code only
+                project_code = group1                                # <-- Same as full code
+
+            return full_code, project_code, project_name             # <-- Return extracted metadata
+
+    return None, None, None                                          # <-- Return None if no pattern matches
 # ---------------------------------------------------------------
 
 
 # FUNCTION | Generate Destination Folder Name
 # ------------------------------------------------------------
 def generate_destination_folder_name(folder_name: str) -> Optional[str]:
-    """Generate R2 folder name by stripping __Whitecard suffix"""
-    # TRY LEGACY PATTERN FIRST (e.g., EX-12345__Example__Whitecard)
-    match_old = re.match(WHITECARD_FOLDER_PATTERN_OLD, folder_name)  # <-- Match legacy folder pattern
-    
-    if match_old:
-        full_code = match_old.group(1)                                # <-- Extract full code
-        project_name = match_old.group(2)                             # <-- Extract project name
-        return f"{full_code}__{project_name}"                         # <-- Return name without __Whitecard suffix
-    
-    # TRY NEW PATTERN (e.g., 12345__Example__Whitecard)
-    match_new = re.match(WHITECARD_FOLDER_PATTERN_NEW, folder_name)  # <-- Match new folder pattern
-    
-    if match_new:
-        project_code = match_new.group(1)                             # <-- Extract numeric code
-        project_name = match_new.group(2)                             # <-- Extract project name
-        return f"{project_code}__{project_name}"                      # <-- Return name without suffix
-    
-    return None                                                       # <-- Return None if pattern doesn't match
+    """Generate R2 folder name by stripping __Whitecard or __Blockout suffix"""
+    # TRY ALL PATTERNS (Whitecard and Blockout, legacy and new)
+    all_patterns = [
+        WHITECARD_FOLDER_PATTERN_OLD,                                # <-- Legacy Whitecard
+        WHITECARD_FOLDER_PATTERN_NEW,                                # <-- New Whitecard
+        BLOCKOUT_FOLDER_PATTERN_OLD,                                 # <-- Legacy Blockout
+        BLOCKOUT_FOLDER_PATTERN_NEW,                                 # <-- New Blockout
+    ]
+
+    for pattern in all_patterns:
+        match = re.match(pattern, folder_name)                       # <-- Try pattern match
+
+        if match:
+            code_part = match.group(1)                               # <-- Extract code portion
+            name_part = match.group(2)                               # <-- Extract project name
+            return f"{code_part}__{name_part}"                       # <-- Return name without type suffix
+
+    return None                                                      # <-- Return None if no pattern matches
 # ---------------------------------------------------------------
 
 
-# FUNCTION | Discover All Whitecard Projects in Source Path
+# HELPER FUNCTION | Get Latest File Modification Time from GLB Sync Folder
+# ---------------------------------------------------------------
+def get_latest_glb_mtime(glb_sync_path: Path) -> float:
+    """Return the most recent modification time of any .glb file in the folder"""
+    latest_mtime = 0.0                                                # <-- Default to epoch start
+    
+    if not glb_sync_path.exists():
+        return latest_mtime                                           # <-- Return 0 if path missing
+    
+    for item in glb_sync_path.iterdir():
+        if item.is_file() and item.suffix.lower() == '.glb':
+            mtime = item.stat().st_mtime                             # <-- Get file modification time
+            if mtime > latest_mtime:
+                latest_mtime = mtime                                 # <-- Track the newest file
+    
+    return latest_mtime                                              # <-- Return newest mtime found
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Discover All Whitecard and Blockout Projects in Source Path
 # ------------------------------------------------------------
 def discover_whitecard_projects(source_base: Path) -> List[Dict]:
-    """Discover all Whitecard projects with GLB sync folders"""
+    """Discover all Whitecard and Blockout projects with GLB sync folders, sorted oldest-first"""
     projects = []                                                     # <-- Initialize projects list
     
     if not source_base.exists() or not source_base.is_dir():
         return projects                                               # <-- Return empty if path invalid
     
-    for item in sorted(source_base.iterdir()):
+    for item in source_base.iterdir():
         if not item.is_dir() or item.name.startswith('.'):
             continue                                                  # <-- Skip non-directories and hidden
         
         full_code, project_code, project_name = extract_project_metadata(item.name)  # <-- Extract metadata
         
-        if full_code and project_code and project_name:               # <-- Check if valid Whitecard project
+        if full_code and project_code and project_name:               # <-- Check if valid project
             dest_folder_name = generate_destination_folder_name(item.name)  # <-- Generate destination name
             
             # CHECK IF GLB SYNC FOLDER EXISTS
             glb_sync_path = item / CONTENT_DELIVERED_SUBFOLDER / GLB_SYNC_SUBFOLDER  # <-- Construct GLB sync path
             
             if glb_sync_path.exists() and glb_sync_path.is_dir():     # <-- Check if path exists
+                latest_mtime = get_latest_glb_mtime(glb_sync_path)   # <-- Get newest file date
                 projects.append({
                     'source_path': item,
                     'source_folder_name': item.name,
@@ -380,10 +408,12 @@ def discover_whitecard_projects(source_base: Path) -> List[Dict]:
                     'full_code': full_code,
                     'project_code': project_code,
                     'project_name': project_name,
-                    'glb_sync_path': glb_sync_path
+                    'glb_sync_path': glb_sync_path,
+                    'latest_glb_mtime': latest_mtime                  # <-- Store for sort key
                 })
     
-    return projects                                                   # <-- Return discovered projects list
+    projects.sort(key=lambda p: p['latest_glb_mtime'])               # <-- Sort oldest first, newest last
+    return projects                                                   # <-- Return sorted projects list
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -491,17 +521,21 @@ def process_glb_file(s3_client: boto3.client, bucket_name: str, project_info: Di
     
     if action == 'skip':
         result['success'] = True                                      # <-- Skip is successful
-        return result                                                 # <-- Return skip result
+        return result                                                 # <-- Return skip result (silent)
     
     if dry_run:
         result['success'] = True                                      # <-- Dry-run is successful
         return result                                                 # <-- Return dry-run result
     
     # PERFORM ACTUAL UPLOAD
+    print(f"      {COLOR_YELLOW}[>>] Uploading{COLOR_RESET} {dest_filename} ({format_file_size(result['size'])})...", end='', flush=True)  # <-- Log upload start
     upload_success = upload_file_to_r2(s3_client, bucket_name, local_path, r2_key)  # <-- Upload file
     result['success'] = upload_success                                # <-- Store upload result
     
-    if not upload_success:
+    if upload_success:
+        print(f" {COLOR_GREEN}OK{COLOR_RESET}")                      # <-- Log upload success on same line
+    else:
+        print(f" {COLOR_RED}FAILED{COLOR_RESET}")                    # <-- Log upload failure on same line
         result['error'] = "Upload failed"                             # <-- Set error message
     
     return result                                                     # <-- Return upload result
@@ -534,6 +568,9 @@ def process_project(s3_client: boto3.client, bucket_name: str, project_info: Dic
         result['error'] = "No .glb files found in sync folder"        # <-- Set warning message
         result['success'] = True                                      # <-- Not an error condition
         return result                                                 # <-- Return warning result
+    
+    if not dry_run:
+        print(f"    {COLOR_CYAN}[PROJECT]{COLOR_RESET} {project_info['dest_folder_name']} ({len(glb_files)} file{'s' if len(glb_files) != 1 else ''})")  # <-- Log project start
     
     # PROCESS EACH GLB FILE
     for filename in glb_files:
@@ -587,7 +624,7 @@ def print_discovery_summary(source_base: Path, projects: List[Dict]):
     print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")                    # <-- Print header divider
     
     print(f"{COLOR_BLUE}Source Path: {source_base}{COLOR_RESET}")    # <-- Print source path
-    print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} Whitecard project(s) with GLB sync folders{COLOR_RESET}\n")  # <-- Print count
+    print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} project(s) with GLB sync folders{COLOR_RESET}\n")  # <-- Print count
 # ---------------------------------------------------------------
 
 
@@ -764,10 +801,10 @@ def main():
         projects = discover_whitecard_projects(source_base)           # <-- Discover projects for this year
         
         if not projects:
-            print(f"{COLOR_YELLOW}No Whitecard projects with GLB sync folders found in {year}. Skipping.{COLOR_RESET}\n")
+            print(f"{COLOR_YELLOW}No projects with GLB sync folders found in {year}. Skipping.{COLOR_RESET}\n")
             continue                                                  # <-- Skip this year
         
-        print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} Whitecard project(s) with GLB sync folders in {year}{COLOR_RESET}\n")
+        print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} project(s) with GLB sync folders in {year} (sorted oldest to newest){COLOR_RESET}\n")
         
         # STEP 5: Run dry-run for this year
         print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")

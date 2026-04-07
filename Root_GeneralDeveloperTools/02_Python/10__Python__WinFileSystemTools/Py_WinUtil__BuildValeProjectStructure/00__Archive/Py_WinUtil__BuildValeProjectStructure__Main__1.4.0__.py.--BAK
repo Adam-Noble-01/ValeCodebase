@@ -441,29 +441,9 @@ def create_project_folder_structure(project_number, project_name, year, project_
 # REGION | SketchUp Template File Handling
 # -----------------------------------------------------------------------------
 
-    # HELPER FUNCTION | Build Primary SketchUp Model Label from Project Type
-    # ---------------------------------------------------------------
-def build_primary_model_label(project_type):
-    """Build model label for primary SketchUp file based on selected project type"""
-    model_label_overrides = {
-        "Whitecard"      : "WhiteCardModel",                                  # <-- Preserve existing Whitecard naming
-        "Blockout"       : "BlockoutModel",                                   # <-- Use Blockout label for Blockout projects
-        "DigitalConcept" : "DigitalConceptModel"                              # <-- Use DigitalConcept label for DigitalConcept projects
-    }
-
-    if project_type in model_label_overrides:
-        return model_label_overrides[project_type]                            # <-- Return known mapped label
-
-    project_type_clean = re.sub(r'[^A-Za-z0-9]', '', str(project_type or ''))  # <-- Strip non-alphanumeric chars
-    if not project_type_clean:
-        return "WhiteCardModel"                                               # <-- Safe fallback label
-
-    return f"{project_type_clean}Model"                                       # <-- Build generic type-based label
-    # ---------------------------------------------------------------
-
     # FUNCTION | Copy SketchUp Template Files to Project
     # ------------------------------------------------------------
-def copy_sketchup_templates(project_root_path, project_name, project_type):
+def copy_sketchup_templates(project_root_path, project_name):
     """
     Copy the SketchUp template file to the project's SketchUp subfolders.
     Creates renamed copies for MainModel and CadConversionModel.
@@ -478,8 +458,7 @@ def copy_sketchup_templates(project_root_path, project_name, project_type):
     try:
         # Copy template to 01__MainModel folder
         main_model_folder = os.path.join(sketchup_folder, "01__MainModel")    # <-- MainModel folder path
-        primary_model_label = build_primary_model_label(project_type)          # <-- Build model label from project type
-        main_model_filename = f"{project_name}__{primary_model_label}__0.0.1__.skp"  # <-- Build filename
+        main_model_filename = f"{project_name}__WhiteCardModel__0.0.1__.skp"  # <-- Build filename
         main_model_path = os.path.join(main_model_folder, main_model_filename)  # <-- Full destination path
         shutil.copy2(SKETCHUP_TEMPLATE_PATH, main_model_path)                 # <-- Copy with metadata
         
@@ -1064,7 +1043,7 @@ class ValeProjectBuilderApp:
             return                                                             # <-- Exit function
         
         # Copy SketchUp template files
-        success, error = copy_sketchup_templates(project_root, project_name, project_type)  # <-- Copy template files
+        success, error = copy_sketchup_templates(project_root, project_name)  # <-- Copy template files
         
         if not success:                                                        # <-- Check for template copy error
             messagebox.showwarning("Warning", 

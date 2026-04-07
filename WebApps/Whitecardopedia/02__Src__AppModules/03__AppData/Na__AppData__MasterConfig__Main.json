@@ -19,17 +19,6 @@
         "VizDpt SketchUp Model",
         "Designers SketchUp Model"
     ],
-    "vale__ConceptArtist__OptionsList": [
-        "James",
-        "Amy",
-        "Anna",
-        "Rachael",
-        "Steph",
-        "Dan",
-        "Jo",
-        "Martin",
-        "Tom"
-    ],
     "projects": [
         {
             "folderId": "2025/00__ExampleProject",
@@ -413,6 +402,10 @@
         },
         {
             "folderId": "2026/00__TestBlockoutProject",
+            "enabled": true
+        },
+        {
+            "folderId": "2026/63002__Thorpe",
             "enabled": true
         }
     ]

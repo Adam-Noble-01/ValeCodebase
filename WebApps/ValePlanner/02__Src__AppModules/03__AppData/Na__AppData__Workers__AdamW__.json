@@ -12,7 +12,7 @@
           "date": "2026-03-24",
           "startTime": "10:00",
           "endTime": "11:00",
-          "title": "Organise Standards Library",
+          "title": "Admin |  Organise Standards Library",
           "color": "na-shift-color-emerald"
         },
         {
@@ -52,7 +52,7 @@
           "date": "2026-03-26",
           "startTime": "15:00",
           "endTime": "18:00",
-          "title": "Dev Work |  Time Management System",
+          "title": "Dev |  Time Management System",
           "color": "na-shift-color-emerald"
         },
         {
@@ -76,7 +76,7 @@
           "date": "2026-03-31",
           "startTime": "09:00",
           "endTime": "09:30",
-          "title": "Time Planning",
+          "title": "Admin |  Time Planning",
           "color": "na-shift-color-amber"
         },
         {
@@ -92,7 +92,7 @@
           "date": "2026-03-31",
           "startTime": "13:00",
           "endTime": "13:30",
-          "title": "Fix Server Port Issue",
+          "title": "Dev |  Fix Server Port Issue",
           "color": "na-shift-color-rose"
         },
         {
@@ -108,7 +108,7 @@
           "date": "2026-03-31",
           "startTime": "10:00",
           "endTime": "13:00",
-          "title": "Lorriman",
+          "title": "Whitecard |  Lorriman",
           "color": "na-shift-color-purple"
         },
         {
@@ -124,7 +124,7 @@
           "date": "2026-03-31",
           "startTime": "13:45",
           "endTime": "14:30",
-          "title": "King",
+          "title": "Whitecard |  King",
           "color": "na-shift-color-amber"
         },
         {
@@ -148,7 +148,7 @@
           "date": "2026-04-01",
           "startTime": "08:00",
           "endTime": "09:00",
-          "title": "King",
+          "title": "Whitecard |  King",
           "color": "na-shift-color-amber"
         },
         {
@@ -172,7 +172,7 @@
           "date": "2026-04-01",
           "startTime": "09:30",
           "endTime": "10:00",
-          "title": "Dev - Fixed Anaylitics Not Aggregating Time",
+          "title": "Dev |   Fixed Anaylitics Not Aggregating Time",
           "color": "na-shift-color-emerald"
         },
         {
@@ -180,7 +180,7 @@
           "date": "2026-03-31",
           "startTime": "15:00",
           "endTime": "18:00",
-          "title": "King",
+          "title": "Whitecard |  King",
           "color": "na-shift-color-amber"
         },
         {
@@ -212,7 +212,7 @@
           "date": "2026-04-01",
           "startTime": "13:00",
           "endTime": "14:15",
-          "title": "Hampson",
+          "title": "Whitecard |  Hampson",
           "color": "na-shift-color-orange"
         },
         {
@@ -228,7 +228,7 @@
           "date": "2026-04-01",
           "startTime": "10:00",
           "endTime": "12:45",
-          "title": "Hampson",
+          "title": "Whitecard |  Hampson",
           "color": "na-shift-color-orange"
         },
         {
@@ -244,7 +244,7 @@
           "date": "2026-04-01",
           "startTime": "15:15",
           "endTime": "18:00",
-          "title": "Lee-Smith",
+          "title": "Whitecard |  Lee-Smith",
           "color": "na-shift-color-rose"
         },
         {
@@ -252,7 +252,7 @@
           "date": "2026-04-02",
           "startTime": "08:00",
           "endTime": "09:30",
-          "title": "Lee-Smith",
+          "title": "Whitecard |  Lee-Smith",
           "color": "na-shift-color-rose"
         },
         {
@@ -276,7 +276,7 @@
           "date": "2026-04-02",
           "startTime": "10:00",
           "endTime": "12:00",
-          "title": "McLaughlin",
+          "title": "Whitecard |  McLaughlin",
           "color": "na-shift-color-blue"
         },
         {
@@ -284,7 +284,7 @@
           "date": "2026-04-02",
           "startTime": "12:00",
           "endTime": "13:00",
-          "title": "Amend Lee-Smtih",
+          "title": "Amendment |  Lee-Smtih",
           "color": "na-shift-color-amber"
         },
         {
@@ -292,7 +292,7 @@
           "date": "2026-04-02",
           "startTime": "13:00",
           "endTime": "14:00",
-          "title": "McLaughlin",
+          "title": "Whitecard |  McLaughlin",
           "color": "na-shift-color-blue"
         },
         {
@@ -324,7 +324,7 @@
           "date": "2026-04-02",
           "startTime": "15:15",
           "endTime": "19:00",
-          "title": "Matharu",
+          "title": "Whitecard |  Matharu",
           "color": "na-shift-color-purple"
         },
         {
@@ -364,7 +364,7 @@
           "date": "2026-04-07",
           "startTime": "09:00",
           "endTime": "10:00",
-          "title": "Dev - Blockout System",
+          "title": "Dev |  Blockout System",
           "color": "na-shift-color-slate"
         },
         {
@@ -372,7 +372,7 @@
           "date": "2026-04-07",
           "startTime": "08:00",
           "endTime": "09:00",
-          "title": "Dev - Refactor Fog Sytem To Vale",
+          "title": "Dev |  Refactor Fog Sytem To Vale",
           "color": "na-shift-color-slate"
         },
         {
@@ -380,7 +380,7 @@
           "date": "2026-04-07",
           "startTime": "10:15",
           "endTime": "12:00",
-          "title": "Dev - Blockout System",
+          "title": "Dev |  Blockout System",
           "color": "na-shift-color-slate"
         },
         {
@@ -396,7 +396,7 @@
           "date": "2026-04-07",
           "startTime": "12:30",
           "endTime": "13:00",
-          "title": "Dev - Fix Vale Builder Bug",
+          "title": "Dev |  Fix Vale Builder Bug",
           "color": "na-shift-color-slate"
         },
         {
@@ -404,7 +404,7 @@
           "date": "2026-04-07",
           "startTime": "13:00",
           "endTime": "14:00",
-          "title": "Thorpe - Blockout",
+          "title": "Blockout |  Thorpe",
           "color": "na-shift-color-amber"
         },
         {
@@ -412,7 +412,7 @@
           "date": "2026-04-07",
           "startTime": "14:15",
           "endTime": "14:45",
-          "title": "Dev - Blockout Bugfixes",
+          "title": "Dev |  Blockout Bugfixes",
           "color": "na-shift-color-slate"
         },
         {
@@ -428,7 +428,7 @@
           "date": "2026-04-07",
           "startTime": "14:45",
           "endTime": "17:00",
-          "title": "Berry - Blockout",
+          "title": "Blockout |  Berry",
           "color": "na-shift-color-rose"
         },
         {
@@ -436,8 +436,56 @@
           "date": "2026-04-07",
           "startTime": "17:00",
           "endTime": "18:00",
-          "title": "Dev - Time Balance Calculator",
+          "title": "Dev |  Time Balance Calculator",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775635204749",
+          "date": "2026-04-08",
+          "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Dev |  ValePlanner",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775635251246",
+          "date": "2026-04-08",
+          "startTime": "08:30",
+          "endTime": "09:00",
+          "title": "Meeting |  NF & SE",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775641365971",
+          "date": "2026-04-08",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775641420138",
+          "date": "2026-04-08",
+          "startTime": "10:15",
+          "endTime": "10:45",
+          "title": "Email |  System Proposal",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1775641450535",
+          "date": "2026-04-08",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1775641771232",
+          "date": "2026-04-08",
+          "startTime": "10:45",
+          "endTime": "13:00",
+          "title": "Appleton |  Interior Whitecard",
+          "color": "na-shift-color-amber"
         }
       ]
     }

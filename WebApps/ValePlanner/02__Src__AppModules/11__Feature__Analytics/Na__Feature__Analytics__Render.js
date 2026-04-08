@@ -8,14 +8,23 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     // MODULE CONSTANTS | Desaturated Chart Color Palette (25% Reduced Saturation)
     // ------------------------------------------------------------
     const Na__Analytics__ChartPalette  = [
-        '#5288df',                                                      // <-- Blue (desaturated from #3b82f6)
-        '#926fe3',                                                      // <-- Violet (desaturated from #8b5cf6)
-        '#25a47a',                                                      // <-- Green (desaturated from #10b981)
-        '#d89628',                                                      // <-- Amber (desaturated from #f59e0b)
-        '#dd566d',                                                      // <-- Rose (desaturated from #f43f5e)
-        '#7577df',                                                      // <-- Indigo (desaturated from #6366f1)
-        '#29a496'                                                       // <-- Teal (desaturated from #14b8a6)
+        '#5288df',                                                  // <-- Blue (desaturated from #3b82f6)
+        '#926fe3',                                                  // <-- Violet (desaturated from #8b5cf6)
+        '#25a47a',                                                  // <-- Green (desaturated from #10b981)
+        '#d89628',                                                  // <-- Amber (desaturated from #f59e0b)
+        '#dd566d',                                                  // <-- Rose (desaturated from #f43f5e)
+        '#7577df',                                                  // <-- Indigo (desaturated from #6366f1)
+        '#29a496'                                                   // <-- Teal (desaturated from #14b8a6)
     ];
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Donut Chart Task Exclusions
+    // ------------------------------------------------------------
+    const Na__Analytics__DonutChartExcludedTaskKeys = new Set([     // <-- These are hidden from donut chart slices
+        'tea',
+        'admin',
+        'lunch'
+    ]); 
     // ------------------------------------------------------------
 
 
@@ -77,6 +86,53 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | Check if ISO Date Falls on Weekday (Mon-Fri)
+    // ------------------------------------------------------------
+    function Na__Analytics__IsWeekday(isoDateString) {
+        const dateValue = Na__Utils__ParseYyyyMmDdToLocalDate(isoDateString);
+        const dayValue  = dateValue.getDay();
+        return dayValue !== 0 && dayValue !== 6;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Generate Weekday-Only Calendar Dates in Range
+    // ------------------------------------------------------------
+    function Na__Analytics__GenerateWeekdayCalendarDates(startISO, endISO) {
+        return Na__Analytics__GenerateCalendarDates(startISO, endISO)
+            .filter((dateValue) => Na__Analytics__IsWeekday(dateValue));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Clamp Range to Visible Date List Bounds
+    // ------------------------------------------------------------
+    function Na__Analytics__ClampRangeToVisibleDates(rangeStart, rangeEnd, visibleDates) {
+        if (!visibleDates || visibleDates.length === 0) {
+            return { rangeStart, rangeEnd };
+        }
+
+        let clampedStart = visibleDates.find((dateValue) => dateValue >= rangeStart) || visibleDates[0];
+        let clampedEnd   = visibleDates[visibleDates.length - 1];
+
+        for (let i = visibleDates.length - 1; i >= 0; i -= 1) {
+            if (visibleDates[i] <= rangeEnd) {
+                clampedEnd = visibleDates[i];
+                break;
+            }
+        }
+
+        if (Na__Utils__CompareYyyyMmDd(clampedStart, clampedEnd) > 0) {
+            clampedStart = clampedEnd;
+        }
+
+        return {
+            rangeStart : clampedStart,
+            rangeEnd   : clampedEnd
+        };
+    }
+    // ------------------------------------------------------------
+
 // endregion ----------------------------------------------------
 
 
@@ -99,6 +155,14 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
     function Na__Analytics__FormatTaskDisplayName(taskKeyValue) {
         if (!taskKeyValue || taskKeyValue === 'untitled task') return 'Untitled Task';
         return taskKeyValue.replace(/\b[a-z]/g, (charValue) => charValue.toUpperCase());
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Check If Task Key Should Be Excluded From Donut Chart
+    // ------------------------------------------------------------
+    function Na__Analytics__IsExcludedFromDonutChart(taskKeyValue) {
+        return Na__Analytics__DonutChartExcludedTaskKeys.has(taskKeyValue);
     }
     // ------------------------------------------------------------
 
@@ -148,6 +212,7 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
         });
 
         const allTaskData = Object.entries(taskHoursMap)
+            .filter(([keyValue]) => !Na__Analytics__IsExcludedFromDonutChart(keyValue))
             .map(([keyValue, value]) => ({
                 name  : taskLabelsMap[keyValue] || Na__Analytics__FormatTaskDisplayName(keyValue),
                 value : Number(value.toFixed(1))
@@ -202,17 +267,24 @@ import { Na__Utils__ParseYyyyMmDdToLocalDate, Na__Utils__FormatLocalDateAsYyyyMm
 
         const shiftDatesSorted = Object.keys(Na__Analytics__FullDateHoursMap).sort();
         if (shiftDatesSorted.length > 0) {
-            Na__Analytics__AllCalendarDates = Na__Analytics__GenerateCalendarDates(shiftDatesSorted[0], shiftDatesSorted[shiftDatesSorted.length - 1]);
+            const startDateValue      = shiftDatesSorted[0];
+            const endDateValue        = shiftDatesSorted[shiftDatesSorted.length - 1];
+            const weekdayCalendarDays = Na__Analytics__GenerateWeekdayCalendarDates(startDateValue, endDateValue);
+
+            Na__Analytics__AllCalendarDates = weekdayCalendarDays.length > 0
+                ? weekdayCalendarDays
+                : Na__Analytics__GenerateCalendarDates(startDateValue, endDateValue);
         } else {
             Na__Analytics__AllCalendarDates = [];
         }
 
         const monthRange = Na__Analytics__GetCurrentMonthRange();
         if (shiftDatesSorted.length > 0) {
-            Na__Analytics__CurrentRange = {
-                rangeStart : shiftDatesSorted[0],
-                rangeEnd   : shiftDatesSorted[shiftDatesSorted.length - 1]
-            };
+            Na__Analytics__CurrentRange = Na__Analytics__ClampRangeToVisibleDates(
+                shiftDatesSorted[0],
+                shiftDatesSorted[shiftDatesSorted.length - 1],
+                Na__Analytics__AllCalendarDates
+            );
         } else {
             Na__Analytics__CurrentRange = monthRange;
         }

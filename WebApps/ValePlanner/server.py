@@ -30,9 +30,43 @@ if hasattr(sys.stdout, "reconfigure"):
 
 NA__SERVER__WORKERS_JSON_PATH = Path("02__Src__AppModules/03__AppData/Na__AppData__Workers__AdamW__.json")
 NA__SERVER__TIMECARD_JSON_PATH = Path("02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json")
+NA__SERVER__APP_ROOT_PATH = Path(__file__).resolve().parent
+NA__SERVER__SHARED_ASSETS_ROOT_PATH = (NA__SERVER__APP_ROOT_PATH.parent / "assets__CommonApplicationAssets").resolve()
 
 
 class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
+    # SUB FUNCTION | Serve shared app assets from parent WebApps folder
+    # ------------------------------------------------------------
+    def Na__Server__TryHandleSharedAssetRead(self) -> bool:
+        parsed_path = urlparse(self.path).path
+        shared_assets_prefix = "/assets__CommonApplicationAssets/"
+        if not parsed_path.startswith(shared_assets_prefix):
+            return False
+
+        shared_relative_path = parsed_path[len(shared_assets_prefix):]
+        shared_target_path = (NA__SERVER__SHARED_ASSETS_ROOT_PATH / shared_relative_path).resolve()
+        try:
+            shared_target_path.relative_to(NA__SERVER__SHARED_ASSETS_ROOT_PATH)
+        except ValueError:
+            self.send_error(403, "Forbidden")
+            return True
+
+        if not shared_target_path.is_file():
+            self.send_error(404, "File not found")
+            return True
+
+        content_type = self.guess_type(str(shared_target_path))
+        file_size = shared_target_path.stat().st_size
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(file_size))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        with shared_target_path.open("rb") as shared_file:
+            self.copyfile(shared_file, self.wfile)
+        return True
+    # ------------------------------------------------------------
+
     # SUB FUNCTION | Resolve API route key from request path
     # ------------------------------------------------------------
     def Na__Server__GetApiRouteKey(self) -> str | None:
@@ -47,6 +81,8 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Handle API data reads on GET requests
     # ------------------------------------------------------------
     def do_GET(self) -> None:
+        if self.Na__Server__TryHandleSharedAssetRead():
+            return
         api_route_key = self.Na__Server__GetApiRouteKey()
         if api_route_key == "workers":
             self.Na__Server__HandleApiRead(NA__SERVER__WORKERS_JSON_PATH)
@@ -208,7 +244,7 @@ def main() -> int:
     args = parser.parse_args()
     # ------------------------------------------------------------
 
-    root_path = Path(__file__).resolve().parent
+    root_path = NA__SERVER__APP_ROOT_PATH
     os.chdir(root_path)
 
     is_valid, validation_message = Na__Server__ValidateRoot(root_path)

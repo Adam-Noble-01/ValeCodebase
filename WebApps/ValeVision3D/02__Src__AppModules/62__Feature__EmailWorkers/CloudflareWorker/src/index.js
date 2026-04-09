@@ -460,7 +460,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 
         const bccAdminEmail = await Na__EmailApi__FetchBccAdminEmail(env);
         const bccRecipients = [];
-        if (bccAdminEmail && !rawRecipientEmails.includes(bccAdminEmail)) {
+        if (bccAdminEmail) {
             bccRecipients.push({ emailAddress: { address: bccAdminEmail } });
         }
 

@@ -413,19 +413,19 @@
                         <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naElevationReselect" style="display:none;">Reselect Elevation Plane</button>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__item na-dropdown-menu__item--share-link" id="naShareProjectLinkMenuItem">
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--send-email" id="naSendEmailMenuItem">
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
                         type="button"
-                        id="naShareProjectLinkMenuButton"
+                        id="naSendEmailMenuButton"
                         aria-expanded="false"
-                        aria-controls="naShareProjectLinkPanel"
+                        aria-controls="naSendEmailPanel"
                     >
                         <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ShareLink__540p__.png" alt="" />
-                        <span class="na-dropdown-menu__btn-label">Share project link</span>
+                        <span class="na-dropdown-menu__btn-label">Share Project Link</span>
                         <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
                     </button>
-                    <div class="na-dropdown-menu__panel" id="naShareProjectLinkPanel" aria-hidden="true"></div>
+                    <div class="na-dropdown-menu__panel" id="naSendEmailPanel" aria-hidden="true"></div>
                 </li>
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--full-screen" id="naFullScreenMenuItem">
                     <button
@@ -562,7 +562,7 @@
     import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
     import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js';
     import { Na__UiFeature__InitializeGridLineControls } from './02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js';
-    import { Na__Feature__ShareProjectLink__Initialize } from './02__Src__AppModules/61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UiInteractionLogic__.js';
+    import { Na__Feature__EmailWorkers__Initialize } from './02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
     // ------------------------------------------------------------
@@ -981,7 +981,7 @@
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
     Na__UiFeature__InitializeGridLineControls(Na__Scene__Main, Na__UiFeature__ShowToast, Na__AppFlow__PipelineRef);
     Na__UiFeature__InitializeElevationViewControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root, Na__Device__UseTouchControls);
-    Na__Feature__ShareProjectLink__Initialize({
+    Na__Feature__EmailWorkers__Initialize({
         showToast   : Na__UiFeature__ShowToast,
         rootElement : document.getElementById('root')
     });

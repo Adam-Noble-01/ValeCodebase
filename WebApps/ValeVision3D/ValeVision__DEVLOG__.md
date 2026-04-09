@@ -2,6 +2,67 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.3.0 - 09-Apr-2026
+### Email Workers — Internal Send-Email System via Microsoft Graph
+
+**Overview**
+- New "Send project email" feature in the Tools menu allowing users to send the ValeVision3D project share email directly to colleagues from within the app, without leaving the browser or using an external mail client.
+- Uses a Cloudflare Worker backend that authenticates via Cloudflare Access JWT, decrypts an AES-256-GCM-encrypted internal address book, and sends HTML email through Microsoft Graph (client-credentials OAuth2 flow).
+- Autocomplete recipient input with chip-based selection (Outlook-style) driven by the encrypted address book.
+- Per-IP rate limiting (10 emails per hour, configurable).
+
+**New Module: `62__Feature__EmailWorkers`**
+- `Na__Feature__EmailWorkers__Config.json` — API routing config with localhost override for local dev.
+- `Na__Feature__EmailWorkers__ApiClient__.js` — fetch wrapper with AbortController timeout, config-driven endpoint resolution, contacts and send methods.
+- `Na__Feature__EmailWorkers__FormOverlay__.js` — programmatic modal DOM builder with recipients chip container, greeting names input, notes textarea, Cancel / Generate & download / Send email buttons.
+- `Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css` — modal overlay CSS with chip, suggestion dropdown, and button styles matching the Vale Design Suite palette.
+- `Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js` — chip-input controller with address-book filtering, freeform email entry, keyboard shortcuts (Enter, comma, semicolon), and click-to-remove chips.
+- `Na__Feature__EmailWorkers__PayloadBuilder__.js` — assembles send payload by combining selected recipients with the existing Share Project Link email template (reuses `BuildEmailHtml` from `61__Feature__ShareProjectLink`).
+- `Na__Feature__EmailWorkers__UiInteractionLogic__.js` — wires Tools menu button, overlay show/hide with chevron sync, non-blocking background contacts load, generate-download flow, and send-email flow with loading state and toast feedback.
+
+**Cloudflare Worker: `62__Feature__EmailWorkers/CloudflareWorker`**
+- `src/index.js` — Worker entry with CORS preflight, Cloudflare Access JWT verification (auto-bypassed in dev when team domain is unconfigured), AES-GCM address book decryption, Microsoft Graph `sendMail` via client-credentials token, per-IP sliding-window rate limiter, and health endpoint.
+- `wrangler.jsonc` — Worker config with non-secret env vars (tenant ID, client ID, sender user, allowed origin, rate limit).
+- `package.json` — dependencies: `jose` for JWT verification, `wrangler` for dev/deploy.
+- `assets/Na__Email__AddressBook__Encrypted__.json` — AES-256-GCM encrypted address book (committed to git, safe to be public).
+- `.env.template` — reference file listing all required env vars with placeholder values.
+- `.dev.vars` — local dev secrets loaded automatically by `wrangler dev` (gitignored).
+
+**Address Book Encryption Tooling**
+- `Na__Email__AddressBook__Source__.json.--HIDDEN` — plaintext contact list (14 contacts, gitignored via `*.--HIDDEN` pattern).
+- `Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN` — Python script using `cryptography` library for AES-256-GCM encryption. Generates a random 256-bit key, encrypts the contacts, writes the encrypted JSON to the Worker assets folder, and auto-patches the key into `.dev.vars` and `.env.template`. Single-command workflow for adding new contacts.
+
+**Tools Menu Integration**
+- New "Send project email" menu item added between "Share project link" and "Enter Full Screen" in the Tools & Settings dropdown.
+- Reuses the Share Link icon asset.
+
+**`.gitignore` Updates**
+- Added `*.--HIDDEN` pattern to hide plaintext address book source and encryption tooling from git.
+- Added `.dev.vars` pattern to hide wrangler local dev secrets.
+
+**Files Added**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__Config.json`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__ApiClient__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__PayloadBuilder__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__Source__.json.--HIDDEN`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/src/index.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/wrangler.jsonc`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/package.json`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/assets/Na__Email__AddressBook__Encrypted__.json`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.env.template`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.dev.vars`
+
+**Files Changed**
+- `index.html` — added Send Email menu item HTML, module import, and initialisation call
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css` — added CSS import for email overlay stylesheet
+- `.gitignore` — added `*.--HIDDEN` and `.dev.vars` patterns
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.2.0 - 07-Apr-2026
 ### Fog Plane System — Planar Fog with Camera Force Field
 

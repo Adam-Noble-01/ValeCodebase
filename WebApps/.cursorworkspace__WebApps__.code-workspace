@@ -21,9 +21,19 @@
         "description"  : "This folder contains general developer tools that are used across the Vale project. These are miscellaneous utilities and tools that are not specific to any one project but are useful for the development process. The auto Vale Email generator tool can be found here and my Python version of AutoHotkey which is optimised for Vale Projects etc."
 	  },
 	  {
-		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D/ValePlanner",
+		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValePlanner",
         "name"         : "ValePlanner - Sister Project Folder",
         "description"  : "This is the main project for the ValePlanner Web Application. ValePlanner is a planning tool for Vale projects and time management. It allows users to plan and manage their projects in a easy to use and navigate manner."
+	  },
+	  {
+		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValeSpec",
+        "name"         : "ValeSpec - Sister Project Folder",
+        "description"  : "This is the main project for the ValePlanner Web Application. ValePlanner is a configuration tool for VGH Doors, Bifold doors, windows, hardware etc and serves as a catalogue of products and their specifications build into a dynamic configuration tool and hosted as a intuitive and user friendly web application."
+	  },
+	  {
+		"path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins",
+        "name"         : "SketchUp Plugins - Reference Project Folder",
+        "description"  : "Some of the WebApps rely on exporters such as the SketchUp to GLB Exporter, some other helpful code is contained here such as SketchUp HTML Window UI code which is helpful for the ValeVision3D and other projects that utilise the HTML Window UI for the user interface, there is also a SVG Generator which in the SketchUp Window Configuration plugin and this can be studied and utilised for other projects."
 	  }
 	],
 	"settings": {

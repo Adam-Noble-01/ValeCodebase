@@ -1,0 +1,10 @@
+{
+    "EmailWorkers__Config": {
+        "EmailWorkers__Config__Description"           : "API routing config for Send Email feature. Base URL can target same-origin proxy or Cloudflare Worker route.",
+        "EmailWorkers__Config__ApiBaseUrl"            : "/api/email",
+        "EmailWorkers__Config__ApiBaseUrl__Localhost" : "http://127.0.0.1:8787/api/email",
+        "EmailWorkers__Config__ContactsEndpoint"      : "/contacts",
+        "EmailWorkers__Config__SendEndpoint"          : "/send",
+        "EmailWorkers__Config__RequestTimeoutMs"      : 15000
+    }
+}

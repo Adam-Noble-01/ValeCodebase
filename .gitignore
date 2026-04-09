@@ -4,6 +4,10 @@
 
 # Critical Environment Variables
 *.env
+.dev.vars
+
+# Wrangler Build Artifacts
+.wrangler/
 
 # Compiled Object files
 *.slo
@@ -109,3 +113,11 @@ Archive__ArchivedFiles/
 
 WebApps/ValeVision3D/3dAssets/*
 WebApps/Prototypes__ToolTesting__EarlyStage/Prototype__WindowConfigurator__MakerJs/01__ExternalDependencies/*
+
+# --------------------------------------------------------------
+
+# Hidden Files — Sensitive Data & Tooling (custom extension flag)
+#  - *.--HIDDEN files contain plaintext secrets, encryption keys, or
+#    tooling that should never appear on the public web.
+#  - Encrypted counterparts (without --HIDDEN) are safe to commit.
+*.--HIDDEN

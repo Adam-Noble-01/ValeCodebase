@@ -1,0 +1,246 @@
+/* ================================================================= */
+/* REGION  |  Send Email - Tools Menu Chevron (overlay sync)         */
+/* ================================================================= */
+
+#naSendEmailPanel {
+    display                            : none !important;
+}
+
+.na-dropdown-menu__item--send-email .na-dropdown-menu__subarrow {
+    display                            : inline-block;
+    transition                         : transform 0.18s ease;
+    transform                          : rotate(-90deg);
+}
+
+.na-dropdown-menu__item--send-email.is-email-overlay-open .na-dropdown-menu__subarrow {
+    transform                          : rotate(0deg);
+}
+
+/* endregion -------------------------------------------------------- */
+
+
+/* ================================================================= */
+/* REGION  |  Send Email - Modal Overlay                             */
+/* ================================================================= */
+
+.na-email-workers-overlay {
+    position                           : fixed;
+    inset                              : 0;
+    z-index                            : 3100;
+    display                            : none;
+    align-items                        : center;
+    justify-content                    : center;
+    padding                            : 24px;
+    box-sizing                         : border-box;
+    font-family                        : 'Open Sans', sans-serif;
+}
+
+.na-email-workers-overlay.is-visible {
+    display                            : flex;
+}
+
+.na-email-workers-overlay__backdrop {
+    position                           : absolute;
+    inset                              : 0;
+    background                         : rgba(23, 43, 58, 0.45);
+    cursor                             : pointer;
+}
+
+.na-email-workers-overlay__panel {
+    position                           : relative;
+    z-index                            : 3101;
+    width                              : 100%;
+    max-width                          : 520px;
+    max-height                         : min(90vh, 700px);
+    overflow-y                         : auto;
+    background                         : #ffffff;
+    border                             : 1px solid rgba(0, 0, 0, 0.12);
+    border-radius                      : 8px;
+    box-shadow                         : 0 12px 40px rgba(23, 43, 58, 0.25);
+    padding                            : 22px 24px 20px;
+    color                              : #172b3a;
+}
+
+.na-email-workers-overlay__title {
+    margin                             : 0 0 6px;
+    font-size                          : 1.05rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+.na-email-workers-overlay__hint {
+    margin                             : 0 0 18px;
+    font-size                          : 0.78rem;
+    font-weight                        : 400;
+    color                              : #656565;
+    line-height                        : 1.45;
+}
+
+.na-email-workers-overlay__field {
+    margin-bottom                      : 16px;
+}
+
+.na-email-workers-overlay__label {
+    display                            : block;
+    margin-bottom                      : 6px;
+    font-size                          : 0.82rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+.na-email-workers-overlay__input {
+    width                              : 100%;
+    box-sizing                         : border-box;
+    padding                            : 8px 10px;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.85rem;
+    color                              : #1e1e1e;
+    background                         : #fafbfc;
+}
+
+.na-email-workers-overlay__recipients-container {
+    position                           : relative;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-radius                      : 6px;
+    padding                            : 8px;
+    background                         : #fafbfc;
+}
+
+.na-email-workers-overlay__chips {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    gap                                : 6px;
+    margin-bottom                      : 8px;
+}
+
+.na-email-workers-overlay__recipient-chip {
+    display                            : inline-flex;
+    align-items                        : center;
+    gap                                : 6px;
+    border                             : 1px solid rgba(23, 43, 58, 0.25);
+    background                         : #ffffff;
+    border-radius                      : 16px;
+    padding                            : 4px 8px;
+    cursor                             : pointer;
+    max-width                          : 100%;
+}
+
+.na-email-workers-overlay__recipient-chip-text {
+    font-size                          : 0.74rem;
+    color                              : #172b3a;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+}
+
+.na-email-workers-overlay__recipient-chip-remove {
+    font-size                          : 0.85rem;
+    color                              : #656565;
+    line-height                        : 1;
+}
+
+.na-email-workers-overlay__recipient-input {
+    width                              : 100%;
+    box-sizing                         : border-box;
+    padding                            : 8px 10px;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.85rem;
+    color                              : #1e1e1e;
+    background                         : #ffffff;
+}
+
+.na-email-workers-overlay__suggestions {
+    margin-top                         : 8px;
+    border                             : 1px solid rgba(23, 43, 58, 0.18);
+    border-radius                      : 5px;
+    max-height                         : 188px;
+    overflow-y                         : auto;
+    background                         : #ffffff;
+}
+
+.na-email-workers-overlay__suggestion {
+    width                              : 100%;
+    text-align                         : left;
+    border                             : 0;
+    padding                            : 8px 10px;
+    background                         : #ffffff;
+    cursor                             : pointer;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.78rem;
+    color                              : #172b3a;
+}
+
+.na-email-workers-overlay__suggestion:hover {
+    background                         : #f3f5f7;
+}
+
+.na-email-workers-overlay__textarea {
+    width                              : 100%;
+    min-height                         : 88px;
+    resize                             : vertical;
+    box-sizing                         : border-box;
+    padding                            : 8px 10px;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.85rem;
+    color                              : #1e1e1e;
+    background                         : #fafbfc;
+}
+
+.na-email-workers-overlay__input:focus,
+.na-email-workers-overlay__recipient-input:focus,
+.na-email-workers-overlay__textarea:focus {
+    outline                            : none;
+    border-color                       : #172b3a;
+    box-shadow                         : 0 0 0 2px rgba(23, 43, 58, 0.12);
+}
+
+.na-email-workers-overlay__actions {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    gap                                : 10px;
+    margin-top                         : 6px;
+    justify-content                    : flex-end;
+}
+
+.na-email-workers-overlay__btn {
+    padding                            : 9px 18px;
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.82rem;
+    font-weight                        : 600;
+    cursor                             : pointer;
+    border                             : 1px solid transparent;
+}
+
+.na-email-workers-overlay__btn--primary {
+    background                         : #172b3a;
+    color                              : #ffffff;
+    border-color                       : #172b3a;
+}
+
+.na-email-workers-overlay__btn--primary:hover {
+    background                         : #213d52;
+}
+
+.na-email-workers-overlay__btn--primary:disabled {
+    opacity                            : 0.72;
+    cursor                             : wait;
+}
+
+.na-email-workers-overlay__btn--secondary {
+    background                         : #ffffff;
+    color                              : #172b3a;
+    border-color                       : rgba(23, 43, 58, 0.35);
+}
+
+.na-email-workers-overlay__btn--secondary:hover {
+    background                         : #f3f5f7;
+}
+
+/* endregion -------------------------------------------------------- */

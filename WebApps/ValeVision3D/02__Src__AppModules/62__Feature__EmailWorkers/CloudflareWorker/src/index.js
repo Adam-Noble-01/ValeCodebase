@@ -259,6 +259,12 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
             emailAddress: { address: emailValue }
         }));
 
+        const bccAdminEmail = String(env.BCC_ADMIN_EMAIL || '').trim().toLowerCase();
+        const bccRecipients = [];
+        if (bccAdminEmail && !rawRecipientEmails.includes(bccAdminEmail)) {
+            bccRecipients.push({ emailAddress: { address: bccAdminEmail } });
+        }
+
         const accessToken  = await Na__EmailApi__FetchGraphAccessToken(env);
         const sendEndpoint = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(senderUser)}/sendMail`;
 
@@ -269,7 +275,8 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
                     contentType : 'HTML',
                     content     : String(payload?.htmlBody || '')
                 },
-                toRecipients
+                toRecipients,
+                bccRecipients
             },
             saveToSentItems: false
         };

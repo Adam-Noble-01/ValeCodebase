@@ -15,7 +15,8 @@
         "MICROSOFT_TENANT_ID": "79d00d8e-27e4-4a08-a3db-8c1b2aa4f31d",
         "MICROSOFT_CLIENT_ID": "7734a526-78fb-4cdd-8c96-3b11fc242483",
         "MICROSOFT_SENDER_USER": "no-reply-apps@valegardenhouses.com",
-        "RATE_LIMIT_MAX_PER_HOUR": "10"
+        "RATE_LIMIT_MAX_PER_HOUR": "10",
+        "BCC_ADMIN_EMAIL": "a.widdowson@valegardenhouses.com"
     }
     // Secrets (set via `wrangler secret put`):
     //   MICROSOFT_CLIENT_SECRET

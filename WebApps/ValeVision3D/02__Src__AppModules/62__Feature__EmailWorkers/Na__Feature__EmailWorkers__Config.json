@@ -4,6 +4,7 @@
         "EmailWorkers__Config__ApiBaseUrl"               : "https://valevision3d-email-worker.adam-fb3.workers.dev/api/email",
         "EmailWorkers__Config__ApiBaseUrl__Localhost"    : "http://127.0.0.1:8787/api/email",
         "EmailWorkers__Config__SendEndpoint"             : "/send",
+        "EmailWorkers__Config__VerifyAuthEndpoint"       : "/verify-auth",
         "EmailWorkers__Config__RequestTimeoutMs"         : 15000,
         "EmailWorkers__Config__ContactsCdnUrl"           : "https://cdn.noble-architecture.com/VaApps/ValeVision3D/data/Na__Email__AddressBook__Encrypted__.json",
         "EmailWorkers__Config__ContactsDecryptKeyB64"    : "dIbLrMWOWaFEvV6hFmgAuHb+U1Qh6T4ERCXj4Z83JZs="

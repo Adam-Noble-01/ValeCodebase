@@ -23,14 +23,16 @@
         const localhostOverride = String(sourceConfig.EmailWorkers__Config__ApiBaseUrl__Localhost || '').trim();
         const apiBaseUrlDefault = String(sourceConfig.EmailWorkers__Config__ApiBaseUrl || '/api/email').trim();
         const apiBaseUrl = (isLocalhost && localhostOverride) ? localhostOverride : apiBaseUrlDefault;
-        const contactsPath = String(sourceConfig.EmailWorkers__Config__ContactsEndpoint || '/contacts').trim();
-        const sendPath = String(sourceConfig.EmailWorkers__Config__SendEndpoint || '/send').trim();
+        const contactsPath    = String(sourceConfig.EmailWorkers__Config__ContactsEndpoint || '/contacts').trim();
+        const sendPath        = String(sourceConfig.EmailWorkers__Config__SendEndpoint || '/send').trim();
+        const verifyAuthPath  = String(sourceConfig.EmailWorkers__Config__VerifyAuthEndpoint || '/verify-auth').trim();
         const requestTimeoutMs = Number(sourceConfig.EmailWorkers__Config__RequestTimeoutMs || 15000);
 
         return {
             apiBaseUrl,
             contactsPath,
             sendPath,
+            verifyAuthPath,
             requestTimeoutMs
         };
     }
@@ -91,9 +93,10 @@
     // FUNCTION | Create Email Workers API Client
     // ------------------------------------------------------------
     function Na__Feature__EmailWorkers__CreateApiClient(appConfig) {
-        const resolvedConfig = Na__Feature__EmailWorkers__ResolveApiConfig(appConfig);
-        const contactsEndpoint = Na__Feature__EmailWorkers__BuildEndpoint(resolvedConfig.apiBaseUrl, resolvedConfig.contactsPath);
-        const sendEndpoint = Na__Feature__EmailWorkers__BuildEndpoint(resolvedConfig.apiBaseUrl, resolvedConfig.sendPath);
+        const resolvedConfig    = Na__Feature__EmailWorkers__ResolveApiConfig(appConfig);
+        const contactsEndpoint  = Na__Feature__EmailWorkers__BuildEndpoint(resolvedConfig.apiBaseUrl, resolvedConfig.contactsPath);
+        const sendEndpoint      = Na__Feature__EmailWorkers__BuildEndpoint(resolvedConfig.apiBaseUrl, resolvedConfig.sendPath);
+        const verifyAuthEndpoint = Na__Feature__EmailWorkers__BuildEndpoint(resolvedConfig.apiBaseUrl, resolvedConfig.verifyAuthPath);
 
         return {
             async fetchContacts() {
@@ -103,11 +106,24 @@
                 });
             },
 
-            async sendEmail(payload) {
-                return Na__Feature__EmailWorkers__FetchJson(sendEndpoint, {
+            async verifyAuth(password) {
+                return Na__Feature__EmailWorkers__FetchJson(verifyAuthEndpoint, {
                     method    : 'POST',
                     timeoutMs : resolvedConfig.requestTimeoutMs,
                     headers   : { 'Content-Type': 'application/json' },
+                    body      : JSON.stringify({ password })
+                });
+            },
+
+            async sendEmail(payload, authToken) {
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+                return Na__Feature__EmailWorkers__FetchJson(sendEndpoint, {
+                    method    : 'POST',
+                    timeoutMs : resolvedConfig.requestTimeoutMs,
+                    headers,
                     body      : JSON.stringify(payload || {})
                 });
             },
@@ -115,7 +131,8 @@
             getResolvedEndpoints() {
                 return {
                     contactsEndpoint,
-                    sendEndpoint
+                    sendEndpoint,
+                    verifyAuthEndpoint
                 };
             }
         };

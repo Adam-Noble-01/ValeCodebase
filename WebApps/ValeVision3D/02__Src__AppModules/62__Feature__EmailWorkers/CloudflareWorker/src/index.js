@@ -97,7 +97,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
         return {
             'Access-Control-Allow-Origin'  : allowedOrigin,
             'Access-Control-Allow-Methods' : 'POST,OPTIONS',
-            'Access-Control-Allow-Headers' : 'Content-Type, Cf-Access-Jwt-Assertion',
+            'Access-Control-Allow-Headers' : 'Content-Type, Authorization, Cf-Access-Jwt-Assertion',
             'Access-Control-Max-Age'       : '86400',
             'Vary'                         : 'Origin'
         };
@@ -185,6 +185,151 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
             issuer   : `https://${teamDomain}`,
             audience : audiences
         });
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Email Auth - HMAC Token Utilities
+// -----------------------------------------------------------------------------
+
+    const Na__EmailApi__AuthRateLimitBuckets     = new Map();
+    const Na__EmailApi__AuthRateLimitMaxPerHour  = 5;                            // <-- Stricter limit for password attempts
+    const Na__EmailApi__TokenValidityMs          = 30 * 24 * 60 * 60 * 1000;    // <-- 30-day token validity
+
+    // HELPER FUNCTION | Check Auth-Specific Rate Limit for IP
+    // ------------------------------------------------------------
+    function Na__EmailApi__CheckAuthRateLimit(clientIp) {
+        const nowMs     = Date.now();
+        const oneHourMs = 3600000;
+        const limit     = Na__EmailApi__AuthRateLimitMaxPerHour;
+
+        for (const [key, bucket] of Na__EmailApi__AuthRateLimitBuckets) {
+            if (nowMs - bucket.windowStart > oneHourMs) {
+                Na__EmailApi__AuthRateLimitBuckets.delete(key);
+            }
+        }
+
+        const bucket = Na__EmailApi__AuthRateLimitBuckets.get(clientIp);
+
+        if (!bucket || (nowMs - bucket.windowStart > oneHourMs)) {
+            Na__EmailApi__AuthRateLimitBuckets.set(clientIp, { count: 1, windowStart: nowMs });
+            return { allowed: true };
+        }
+
+        if (bucket.count >= limit) {
+            const retryAfterSec = Math.ceil((bucket.windowStart + oneHourMs - nowMs) / 1000);
+            return { allowed: false, retryAfterSec };
+        }
+
+        bucket.count += 1;
+        return { allowed: true };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Encode Uint8Array to Base64-URL String
+    // ------------------------------------------------------------
+    function Na__EmailApi__BytesToBase64Url(bytes) {
+        const binary = Array.from(bytes, (b) => String.fromCharCode(b)).join('');
+        return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Decode Base64-URL String to Uint8Array
+    // ------------------------------------------------------------
+    function Na__EmailApi__Base64UrlToBytes(base64Url) {
+        let padded = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        while (padded.length % 4 !== 0) padded += '=';
+        const binary = atob(padded);
+        return Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Import HMAC-SHA256 Signing Key from Secret
+    // ------------------------------------------------------------
+    async function Na__EmailApi__GetHmacKey(env) {
+        const secret = String(env.EMAIL_AUTH_TOKEN_SECRET || '').trim();
+        if (!secret) {
+            throw new Error('EMAIL_AUTH_TOKEN_SECRET is not configured.');
+        }
+        const keyBytes = new TextEncoder().encode(secret);
+        return crypto.subtle.importKey(
+            'raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Create a Signed HMAC Auth Token with 30-Day Expiry
+    // ------------------------------------------------------------
+    async function Na__EmailApi__CreateHmacToken(env) {
+        const nowMs     = Date.now();
+        const expiresAt = nowMs + Na__EmailApi__TokenValidityMs;
+
+        const payload      = JSON.stringify({ iat: nowMs, exp: expiresAt });
+        const payloadB64   = Na__EmailApi__BytesToBase64Url(new TextEncoder().encode(payload));
+
+        const hmacKey      = await Na__EmailApi__GetHmacKey(env);
+        const signatureRaw = await crypto.subtle.sign('HMAC', hmacKey, new TextEncoder().encode(payloadB64));
+        const signatureB64 = Na__EmailApi__BytesToBase64Url(new Uint8Array(signatureRaw));
+
+        return {
+            token     : `${payloadB64}.${signatureB64}`,
+            expiresAt
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Verify an HMAC Auth Token Signature and Expiry
+    // ------------------------------------------------------------
+    async function Na__EmailApi__VerifyHmacToken(tokenString, env) {
+        const parts = String(tokenString || '').split('.');
+        if (parts.length !== 2) {
+            throw new Error('Malformed auth token.');
+        }
+
+        const [payloadB64, signatureB64] = parts;
+        const hmacKey      = await Na__EmailApi__GetHmacKey(env);
+        const signatureRaw = Na__EmailApi__Base64UrlToBytes(signatureB64);
+
+        const isValid = await crypto.subtle.verify(
+            'HMAC', hmacKey, signatureRaw, new TextEncoder().encode(payloadB64)
+        );
+        if (!isValid) {
+            throw new Error('Invalid auth token signature.');
+        }
+
+        const payloadJson = new TextDecoder().decode(Na__EmailApi__Base64UrlToBytes(payloadB64));
+        const payload     = JSON.parse(payloadJson);
+
+        if (!payload.exp || Date.now() > payload.exp) {
+            throw new Error('Auth token has expired.');
+        }
+
+        return payload;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Timing-Safe Password Comparison
+    // ------------------------------------------------------------
+    function Na__EmailApi__TimingSafePasswordCompare(submitted, expected) {
+        const submittedBytes = new TextEncoder().encode(submitted);
+        const expectedBytes  = new TextEncoder().encode(expected);
+
+        if (submittedBytes.length !== expectedBytes.length) {
+            const dummyBytes = new Uint8Array(expectedBytes.length);
+            crypto.subtle.timingSafeEqual(dummyBytes, expectedBytes);
+            return false;
+        }
+
+        return crypto.subtle.timingSafeEqual(submittedBytes, expectedBytes);
     }
     // ------------------------------------------------------------
 
@@ -360,10 +505,67 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 // REGION | Route Handlers
 // -----------------------------------------------------------------------------
 
+    // FUNCTION | Handle POST /api/email/verify-auth
+    // ------------------------------------------------------------
+    async function Na__EmailApi__HandleVerifyAuth(request, env) {
+        const clientIp   = request.headers.get('CF-Connecting-IP') || 'unknown';
+        const rateResult = Na__EmailApi__CheckAuthRateLimit(clientIp);
+
+        if (!rateResult.allowed) {
+            return Na__EmailApi__JsonResponse(
+                {
+                    error         : 'Too many password attempts. Try again later.',
+                    retryAfterSec : rateResult.retryAfterSec
+                },
+                {
+                    status  : 429,
+                    headers : { 'Retry-After': String(rateResult.retryAfterSec) }
+                },
+                env
+            );
+        }
+
+        const expectedPassword = String(env.EMAIL_AUTH_PASSWORD || '').trim();
+        if (!expectedPassword) {
+            throw new Error('EMAIL_AUTH_PASSWORD is not configured.');
+        }
+
+        const requestJson      = await request.json().catch(() => ({}));
+        const submittedPassword = String(requestJson?.password || '');
+        const isMatch          = Na__EmailApi__TimingSafePasswordCompare(submittedPassword, expectedPassword);
+
+        if (!isMatch) {
+            return Na__EmailApi__JsonResponse(
+                { ok: false, error: 'Incorrect password.' },
+                { status: 401 },
+                env
+            );
+        }
+
+        const tokenResult = await Na__EmailApi__CreateHmacToken(env);
+        return Na__EmailApi__JsonResponse(
+            {
+                ok        : true,
+                token     : tokenResult.token,
+                expiresAt : tokenResult.expiresAt
+            },
+            { status: 200 },
+            env
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Handle POST /api/email/send
     // ------------------------------------------------------------
     async function Na__EmailApi__HandleSend(request, env) {
         await Na__EmailApi__VerifyCloudflareAccessJwt(request, env);
+
+        const authHeader = String(request.headers.get('Authorization') || '').trim();
+        if (!authHeader.startsWith('Bearer ')) {
+            throw new Error('Missing email auth token.');
+        }
+        await Na__EmailApi__VerifyHmacToken(authHeader.slice(7), env);
 
         const clientIp    = request.headers.get('CF-Connecting-IP') || 'unknown';
         const maxPerHour  = Number(env.RATE_LIMIT_MAX_PER_HOUR) || 10;
@@ -422,6 +624,10 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
             }
 
             try {
+                if (request.method === 'POST' && pathName === '/api/email/verify-auth') {
+                    return await Na__EmailApi__HandleVerifyAuth(request, env);
+                }
+
                 if (request.method === 'POST' && pathName === '/api/email/send') {
                     return await Na__EmailApi__HandleSend(request, env);
                 }
@@ -441,7 +647,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
                 );
             } catch (error) {
                 const errorMessage  = String(error?.message || 'Unknown API error');
-                const isAuthError   = /jwt|access|Missing.*JWT/i.test(errorMessage);
+                const isAuthError   = /jwt|access|Missing.*JWT|auth token|Incorrect password/i.test(errorMessage);
                 const statusCode    = isAuthError ? 401 : 500;
                 const publicMessage = isAuthError
                     ? 'Unauthorized request.'

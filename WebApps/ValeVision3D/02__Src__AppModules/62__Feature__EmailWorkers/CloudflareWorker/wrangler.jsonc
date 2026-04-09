@@ -8,7 +8,6 @@
         "enabled": true
     },
     "vars": {
-        "ALLOWED_ORIGIN": "https://adam-noble-01.github.io",
         "ALLOWED_SEND_DOMAINS": "valegardenhouses.com",
         "CLOUDFLARE_ACCESS_TEAM_DOMAIN": "",
         "CLOUDFLARE_ACCESS_AUDIENCE": "",
@@ -22,4 +21,7 @@
     //   MICROSOFT_CLIENT_SECRET
     //   EMAIL_ADDRESSBOOK_KEY_B64
     //   R2_SECRET_ACCESS_KEY
+    //   ALLOWED_ORIGIN               — origin for CORS (production: https://adam-noble-01.github.io)
+    //   EMAIL_AUTH_PASSWORD          — password required to send emails (verified via /api/email/verify-auth)
+    //   EMAIL_AUTH_TOKEN_SECRET      — random 32+ char key for HMAC-SHA256 signing of auth tokens
 }

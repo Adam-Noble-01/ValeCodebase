@@ -20,6 +20,7 @@
     import { Na__Feature__EmailWorkers__CreateApiClient } from './Na__Feature__EmailWorkers__ApiClient__.js';
     import { Na__Feature__EmailWorkers__BuildSendPayload } from './Na__Feature__EmailWorkers__PayloadBuilder__.js';
     import { Na__Feature__EmailWorkers__FetchAndDecryptContacts } from './Na__Feature__EmailWorkers__AddressBook__Decryptor__.js';
+    import { Na__Feature__EmailWorkers__EnsureAuthorized } from './Na__Feature__EmailWorkers__AuthManager__.js';
     import { Na__Feature__ShareProjectLink__DownloadHtmlFile } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__DownloadEmail__Logic__.js';
 
 // endregion -------------------------------------------------------------------
@@ -172,6 +173,15 @@
                 return;
             }
 
+            let authToken;
+            try {
+                authToken = await Na__Feature__EmailWorkers__EnsureAuthorized(apiClient, rootElement, showToast);
+            } catch (authError) {
+                if (authError?.message === 'Authorization cancelled.') return;
+                showToast(authError?.message || 'Authorization failed.', true);
+                return;
+            }
+
             try {
                 form.btnSend.disabled = true;
                 form.btnSend.textContent = 'Sending...';
@@ -182,7 +192,7 @@
                     recipientNamesRawOverride : form.getGreetingNamesValue()
                 });
 
-                const sendResult = await apiClient.sendEmail(payload);
+                const sendResult = await apiClient.sendEmail(payload, authToken);
                 const sentCount = Number(sendResult?.sentCount || selectedRecipients.length);
                 showToast(`Email sent to ${sentCount} recipient${sentCount === 1 ? '' : 's'}.`);
                 autocomplete.clear();

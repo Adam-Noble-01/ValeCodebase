@@ -244,3 +244,193 @@
 }
 
 /* endregion -------------------------------------------------------- */
+
+
+/* ================================================================= */
+/* REGION  |  Email Auth - Password Overlay                          */
+/* ================================================================= */
+
+.na-email-auth-overlay {
+    position                           : fixed;
+    inset                              : 0;
+    z-index                            : 3200;
+    display                            : none;
+    align-items                        : center;
+    justify-content                    : center;
+    padding                            : 24px;
+    box-sizing                         : border-box;
+    font-family                        : 'Open Sans', sans-serif;
+}
+
+.na-email-auth-overlay.is-visible {
+    display                            : flex;
+    animation                          : naEmailAuthFadeIn 0.18s ease;
+}
+
+.na-email-auth-overlay__backdrop {
+    position                           : absolute;
+    inset                              : 0;
+    background                         : rgba(23, 43, 58, 0.55);
+    cursor                             : pointer;
+}
+
+.na-email-auth-overlay__panel {
+    position                           : relative;
+    z-index                            : 3201;
+    width                              : 100%;
+    max-width                          : 400px;
+    background                         : #ffffff;
+    border                             : 1px solid rgba(0, 0, 0, 0.12);
+    border-radius                      : 8px;
+    box-shadow                         : 0 12px 40px rgba(23, 43, 58, 0.3);
+    padding                            : 28px 28px 24px;
+    color                              : #172b3a;
+    animation                          : naEmailAuthSlideUp 0.22s ease;
+}
+
+.na-email-auth-overlay__title {
+    margin                             : 0 0 8px;
+    font-size                          : 1.05rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+.na-email-auth-overlay__subtitle {
+    margin                             : 0 0 20px;
+    font-size                          : 0.78rem;
+    font-weight                        : 400;
+    color                              : #656565;
+    line-height                        : 1.45;
+}
+
+.na-email-auth-overlay__form {
+    display                            : flex;
+    flex-direction                     : column;
+    gap                                : 14px;
+}
+
+.na-email-auth-overlay__input-wrapper {
+    position                           : relative;
+    width                              : 100%;
+}
+
+.na-email-auth-overlay__input {
+    width                              : 100%;
+    box-sizing                         : border-box;
+    padding                            : 10px 42px 10px 12px;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.9rem;
+    color                              : #1e1e1e;
+    background                         : #fafbfc;
+    letter-spacing                     : 0.04em;
+}
+
+.na-email-auth-overlay__input:focus {
+    outline                            : none;
+    border-color                       : #172b3a;
+    box-shadow                         : 0 0 0 2px rgba(23, 43, 58, 0.12);
+}
+
+.na-email-auth-overlay__input::placeholder {
+    color                              : #999999;
+    letter-spacing                     : 0.06em;
+}
+
+.na-email-auth-overlay__toggle-btn {
+    position                           : absolute;
+    right                              : 8px;
+    top                                : 50%;
+    transform                          : translateY(-50%);
+    background                         : transparent;
+    border                             : none;
+    padding                            : 4px;
+    cursor                             : pointer;
+    color                              : #656565;
+    line-height                        : 1;
+    border-radius                      : 3px;
+}
+
+.na-email-auth-overlay__toggle-btn:hover {
+    color                              : #172b3a;
+    background                         : rgba(23, 43, 58, 0.06);
+}
+
+.na-email-auth-overlay__error {
+    background                         : #fff0f0;
+    color                              : #cc0000;
+    border                             : 1px solid rgba(204, 0, 0, 0.2);
+    border-radius                      : 5px;
+    padding                            : 8px 12px;
+    font-size                          : 0.78rem;
+    font-weight                        : 500;
+    line-height                        : 1.4;
+}
+
+.na-email-auth-overlay__error.is-shaking {
+    animation                          : naEmailAuthShake 0.4s ease;
+}
+
+.na-email-auth-overlay__actions {
+    display                            : flex;
+    gap                                : 10px;
+    justify-content                    : flex-end;
+    margin-top                         : 4px;
+}
+
+.na-email-auth-overlay__btn {
+    padding                            : 9px 18px;
+    border-radius                      : 5px;
+    font-family                        : 'Open Sans', sans-serif;
+    font-size                          : 0.82rem;
+    font-weight                        : 600;
+    cursor                             : pointer;
+    border                             : 1px solid transparent;
+    transition                         : background 0.15s ease, transform 0.1s ease;
+}
+
+.na-email-auth-overlay__btn--primary {
+    background                         : #172b3a;
+    color                              : #ffffff;
+    border-color                       : #172b3a;
+}
+
+.na-email-auth-overlay__btn--primary:hover:not(:disabled) {
+    background                         : #213d52;
+}
+
+.na-email-auth-overlay__btn--primary:disabled {
+    opacity                            : 0.72;
+    cursor                             : wait;
+}
+
+.na-email-auth-overlay__btn--secondary {
+    background                         : #ffffff;
+    color                              : #172b3a;
+    border-color                       : rgba(23, 43, 58, 0.35);
+}
+
+.na-email-auth-overlay__btn--secondary:hover {
+    background                         : #f3f5f7;
+}
+
+@keyframes naEmailAuthFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes naEmailAuthSlideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes naEmailAuthShake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+}
+
+/* endregion -------------------------------------------------------- */

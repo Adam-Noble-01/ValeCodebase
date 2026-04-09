@@ -19,6 +19,7 @@
     import { Na__Feature__EmailWorkers__CreateAutocompleteController } from './Na__Feature__EmailWorkers__AddressBook__Autocomplete__.js';
     import { Na__Feature__EmailWorkers__CreateApiClient } from './Na__Feature__EmailWorkers__ApiClient__.js';
     import { Na__Feature__EmailWorkers__BuildSendPayload } from './Na__Feature__EmailWorkers__PayloadBuilder__.js';
+    import { Na__Feature__EmailWorkers__FetchAndDecryptContacts } from './Na__Feature__EmailWorkers__AddressBook__Decryptor__.js';
     import { Na__Feature__ShareProjectLink__DownloadHtmlFile } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__DownloadEmail__Logic__.js';
 
 // endregion -------------------------------------------------------------------
@@ -61,10 +62,12 @@
             return;
         }
 
-        const featureConfig = await Na__Feature__EmailWorkers__LoadFeatureConfig();
-        const apiClient = Na__Feature__EmailWorkers__CreateApiClient(featureConfig);
-        const resolvedEndpoints = apiClient.getResolvedEndpoints();
-        const form = Na__Feature__EmailWorkers__CreateFormOverlay(rootElement);
+        const featureConfig   = await Na__Feature__EmailWorkers__LoadFeatureConfig();
+        const apiClient       = Na__Feature__EmailWorkers__CreateApiClient(featureConfig);
+        const form            = Na__Feature__EmailWorkers__CreateFormOverlay(rootElement);
+        const sourceConfig    = featureConfig?.EmailWorkers__Config || {};
+        const contactsCdnUrl  = String(sourceConfig.EmailWorkers__Config__ContactsCdnUrl || '').trim();
+        const contactsKeyB64  = String(sourceConfig.EmailWorkers__Config__ContactsDecryptKeyB64 || '').trim();
 
         const autocomplete = Na__Feature__EmailWorkers__CreateAutocompleteController({
             hostContainer    : form.panel,
@@ -84,20 +87,22 @@
         // ------------------------------------------------------------
 
 
-        // SUB FUNCTION | Load Address Book Contacts Once (Non-Blocking)
+        // SUB FUNCTION | Load Address Book from CDN (Non-Blocking)
         // ------------------------------------------------------------
         const ensureContactsLoaded = async () => {
             if (contactsLoadState === 'loaded' || contactsLoadState === 'loading') return;
             contactsLoadState = 'loading';
 
             try {
-                const responsePayload = await apiClient.fetchContacts();
-                const contactsArray = Array.isArray(responsePayload?.contacts) ? responsePayload.contacts : [];
+                if (!contactsCdnUrl || !contactsKeyB64) {
+                    throw new Error('Contacts CDN URL or decrypt key not configured.');
+                }
+                const contactsArray = await Na__Feature__EmailWorkers__FetchAndDecryptContacts(contactsCdnUrl, contactsKeyB64);
                 autocomplete.setAddressBook(contactsArray);
                 contactsLoadState = 'loaded';
             } catch (error) {
                 contactsLoadState = 'failed';
-                console.warn('[ValeVision3D] Contacts load failed (Worker may not be running):', error?.message);
+                console.warn('[ValeVision3D] Contacts load failed:', error?.message);
                 showToast(
                     'Address book unavailable — type email addresses manually.',
                     true

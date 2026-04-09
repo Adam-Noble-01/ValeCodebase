@@ -1,25 +1,24 @@
 // =============================================================================
-// VALEVISION3D - CLOUDFLARE WORKER - EMAIL API
+// VALEVISION3D - CLOUDFLARE WORKER - EMAIL SEND API
 // =============================================================================
 //
 // FILE       : src/index.js
 // NAMESPACE  : ValeVision3D
 // MODULE     : Cloudflare Worker Email API
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Protected contacts lookup and Microsoft Graph send-mail endpoint
+// PURPOSE    : Microsoft Graph send-mail endpoint with rate limiting
 // CREATED    : 09-Apr-2026
 //
 // DESCRIPTION:
-// - Decrypts AES-GCM-encrypted address book for contacts lookup.
 // - Sends HTML email via Microsoft Graph client-credentials flow.
 // - Verifies Cloudflare Access JWT on every request.
 // - Enforces per-IP rate limiting (configurable, default 10 emails/hour).
-// - Validates recipient addresses against address book + domain allowlist.
+// - Validates recipient addresses against domain allowlist.
+// - Contacts lookup is handled client-side via R2 CDN (not this Worker).
 //
 // =============================================================================
 
 import { createRemoteJWKSet, jwtVerify } from 'jose';
-import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook__Encrypted__.json';
 
 
 // -----------------------------------------------------------------------------
@@ -40,7 +39,7 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
 // REGION | Rate Limiter (In-Memory Per-IP)
 // -----------------------------------------------------------------------------
 
-    const Na__EmailApi__RateLimitBuckets = new Map();              // <-- Map<ip, { count, windowStart }>
+    const Na__EmailApi__RateLimitBuckets = new Map();
 
     // HELPER FUNCTION | Purge Expired Rate Limit Entries
     // ------------------------------------------------------------
@@ -97,7 +96,7 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
         }
         return {
             'Access-Control-Allow-Origin'  : allowedOrigin,
-            'Access-Control-Allow-Methods' : 'GET,POST,OPTIONS',
+            'Access-Control-Allow-Methods' : 'POST,OPTIONS',
             'Access-Control-Allow-Headers' : 'Content-Type, Cf-Access-Jwt-Assertion',
             'Access-Control-Max-Age'       : '86400',
             'Vary'                         : 'Origin'
@@ -124,45 +123,6 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Decode Base64 to Uint8Array
-    // ------------------------------------------------------------
-    function Na__EmailApi__Base64ToBytes(base64Value) {
-        const binary = atob(String(base64Value || ''));
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i += 1) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-        return bytes;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Normalize Contacts Array
-    // ------------------------------------------------------------
-    function Na__EmailApi__NormalizeContacts(rawContacts) {
-        return (Array.isArray(rawContacts) ? rawContacts : [])
-            .map((contactItem, index) => ({
-                id    : String(index + 1),
-                name  : String(contactItem?.name || '').trim(),
-                email : String(contactItem?.email || '').trim().toLowerCase()
-            }))
-            .filter((contactItem) => Boolean(contactItem.email));
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Build Allowlist Set from Contacts
-    // ------------------------------------------------------------
-    function Na__EmailApi__BuildContactAllowlistSet(contactsArray) {
-        return new Set(
-            (Array.isArray(contactsArray) ? contactsArray : [])
-                .map((item) => String(item?.email || '').trim().toLowerCase())
-                .filter(Boolean)
-        );
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | Parse Allowed Send Domains from Env
     // ------------------------------------------------------------
     function Na__EmailApi__ParseAllowedDomains(env) {
@@ -175,13 +135,11 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Check if Recipient is Allowed
+    // HELPER FUNCTION | Check if Recipient Domain is Allowed
     // ------------------------------------------------------------
-    function Na__EmailApi__IsRecipientAllowed(emailAddress, allowlistSet, allowedDomainsSet) {
+    function Na__EmailApi__IsRecipientDomainAllowed(emailAddress, allowedDomainsSet) {
         const email = String(emailAddress || '').trim().toLowerCase();
         if (!email) return false;
-        if (allowlistSet.has(email)) return true;
-
         const atIndex = email.lastIndexOf('@');
         if (atIndex === -1) return false;
         const domain = email.slice(atIndex + 1);
@@ -234,45 +192,6 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
 
 
 // -----------------------------------------------------------------------------
-// REGION | Address Book Decryption
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Decrypt AES-GCM Encrypted Address Book
-    // ------------------------------------------------------------
-    async function Na__EmailApi__DecryptAddressBook(env) {
-        const keyB64 = String(env.EMAIL_ADDRESSBOOK_KEY_B64 || '').trim();
-        if (!keyB64) {
-            throw new Error('EMAIL_ADDRESSBOOK_KEY_B64 is missing.');
-        }
-
-        const keyBytes    = Na__EmailApi__Base64ToBytes(keyB64);
-        const ivBytes     = Na__EmailApi__Base64ToBytes(Na__Email__AddressBook__Encrypted.iv);
-        const cipherBytes = Na__EmailApi__Base64ToBytes(Na__Email__AddressBook__Encrypted.ciphertext);
-
-        const cryptoKey = await crypto.subtle.importKey(
-            'raw',
-            keyBytes,
-            { name: 'AES-GCM' },
-            false,
-            ['decrypt']
-        );
-
-        const decryptedBuffer = await crypto.subtle.decrypt(
-            { name: 'AES-GCM', iv: ivBytes },
-            cryptoKey,
-            cipherBytes
-        );
-
-        const decodedText = new TextDecoder().decode(new Uint8Array(decryptedBuffer));
-        const parsedJson  = JSON.parse(decodedText);
-        return Na__EmailApi__NormalizeContacts(parsedJson?.contacts || []);
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
 // REGION | Microsoft Graph Mail Sender
 // -----------------------------------------------------------------------------
 
@@ -287,7 +206,7 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
             throw new Error('Microsoft Graph credentials are incomplete.');
         }
 
-        const tokenUrl  = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+        const tokenUrl   = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
         const bodyParams = new URLSearchParams();
         bodyParams.set('client_id', clientId);
         bodyParams.set('scope', 'https://graph.microsoft.com/.default');
@@ -314,14 +233,12 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
     // FUNCTION | Send Email via Microsoft Graph API
     // ------------------------------------------------------------
     async function Na__EmailApi__SendMailWithGraph(payload, env) {
-        const senderUser = String(env.MICROSOFT_SENDER_USER || '').trim();
+        const senderUser      = String(env.MICROSOFT_SENDER_USER || '').trim();
         if (!senderUser) {
             throw new Error('MICROSOFT_SENDER_USER is missing.');
         }
 
-        const decryptedContacts   = await Na__EmailApi__DecryptAddressBook(env);
-        const contactAllowlistSet = Na__EmailApi__BuildContactAllowlistSet(decryptedContacts);
-        const allowedDomainsSet   = Na__EmailApi__ParseAllowedDomains(env);
+        const allowedDomainsSet = Na__EmailApi__ParseAllowedDomains(env);
 
         const rawRecipientEmails = (Array.isArray(payload?.to) ? payload.to : [])
             .map((emailValue) => String(emailValue || '').trim().toLowerCase())
@@ -332,10 +249,10 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
         }
 
         const disallowedRecipients = rawRecipientEmails.filter(
-            (emailValue) => !Na__EmailApi__IsRecipientAllowed(emailValue, contactAllowlistSet, allowedDomainsSet)
+            (emailValue) => !Na__EmailApi__IsRecipientDomainAllowed(emailValue, allowedDomainsSet)
         );
         if (disallowedRecipients.length > 0) {
-            throw new Error('One or more recipients are not allowed by send policy.');
+            throw new Error('One or more recipients are not in an allowed domain.');
         }
 
         const toRecipients = rawRecipientEmails.map((emailValue) => ({
@@ -371,9 +288,7 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
             throw new Error(`Graph sendMail failed (${sendResponse.status}).`);
         }
 
-        return {
-            sentCount: toRecipients.length
-        };
+        return { sentCount: toRecipients.length };
     }
     // ------------------------------------------------------------
 
@@ -383,27 +298,6 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
 // -----------------------------------------------------------------------------
 // REGION | Route Handlers
 // -----------------------------------------------------------------------------
-
-    // FUNCTION | Handle GET /api/email/contacts
-    // ------------------------------------------------------------
-    async function Na__EmailApi__HandleContacts(request, env) {
-        console.log('[Email Worker] /contacts — verifying access...');
-        await Na__EmailApi__VerifyCloudflareAccessJwt(request, env);
-        console.log('[Email Worker] /contacts — decrypting address book...');
-        console.log('[Email Worker] Encrypted iv length:', String(Na__Email__AddressBook__Encrypted.iv || '').length);
-        console.log('[Email Worker] Encrypted ct length:', String(Na__Email__AddressBook__Encrypted.ciphertext || '').length);
-        console.log('[Email Worker] Key present:', Boolean(String(env.EMAIL_ADDRESSBOOK_KEY_B64 || '').trim()));
-        const contacts = await Na__EmailApi__DecryptAddressBook(env);
-        console.log('[Email Worker] /contacts — success, returning', contacts.length, 'contacts');
-
-        return Na__EmailApi__JsonResponse(
-            { contacts, count: contacts.length },
-            { status: 200 },
-            env
-        );
-    }
-    // ------------------------------------------------------------
-
 
     // FUNCTION | Handle POST /api/email/send
     // ------------------------------------------------------------
@@ -467,17 +361,13 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
             }
 
             try {
-                if (request.method === 'GET' && pathName === '/api/email/contacts') {
-                    return await Na__EmailApi__HandleContacts(request, env);
-                }
-
                 if (request.method === 'POST' && pathName === '/api/email/send') {
                     return await Na__EmailApi__HandleSend(request, env);
                 }
 
                 if (request.method === 'GET' && pathName === '/api/email/health') {
                     return Na__EmailApi__JsonResponse(
-                        { ok: true, service: 'ValeVision3D Email Worker' },
+                        { ok: true, service: 'ValeVision3D Email Worker (send-only)' },
                         { status: 200 },
                         env
                     );
@@ -489,10 +379,9 @@ import Na__Email__AddressBook__Encrypted from '../assets/Na__Email__AddressBook_
                     env
                 );
             } catch (error) {
-                const errorMessage = String(error?.message || 'Unknown API error');
-                const isDecryptError = /decrypt|ciphertext|AES|GCM/i.test(errorMessage);
-                const isAuthError    = !isDecryptError && /jwt|access|auth/i.test(errorMessage);
-                const statusCode   = isAuthError ? 401 : 500;
+                const errorMessage  = String(error?.message || 'Unknown API error');
+                const isAuthError   = /jwt|access|Missing.*JWT/i.test(errorMessage);
+                const statusCode    = isAuthError ? 401 : 500;
                 const publicMessage = isAuthError
                     ? 'Unauthorized request.'
                     : 'Email API request failed.';

@@ -2,6 +2,100 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.3.2 - 09-Apr-2026
+### Email Workers — R2 CDN Contacts, BCC Admin Copy, Deployment Tooling
+
+**Overview**
+- Moved encrypted address book from Cloudflare Worker bundle to Cloudflare R2 CDN, enabling contact list updates without Worker redeployment.
+- Frontend now fetches and decrypts the address book client-side using Web Crypto API (AES-256-GCM).
+- Python encryption tool updated to upload directly to R2 via boto3 and auto-patch the decryption key into both `.dev.vars` and the frontend config JSON.
+- Every outbound email is now BCC'd to the first contact in the encrypted address book (admin record-keeping). The BCC address is resolved at send time by the Worker fetching and decrypting the R2 address book — no email addresses are hardcoded or visible in committed code.
+- Worker simplified to send-only (`/send` + `/verify-auth` + `/health`); contacts route removed.
+- Added one-click deployment and local dev batch scripts.
+
+**R2 CDN Contacts (replaces Worker /contacts route)**
+- Encrypted address book uploaded to `cdn.noble-architecture.com/VaApps/ValeVision3D/data/Na__Email__AddressBook__Encrypted__.json`.
+- New `Na__Feature__EmailWorkers__AddressBook__Decryptor__.js` — fetches encrypted JSON from CDN, decrypts with AES-256-GCM using key from config, returns normalised contact list.
+- Config JSON now includes `ContactsCdnUrl` and `ContactsDecryptKeyB64` fields.
+- Python encryption tool (`Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN`) now: encrypts → writes local copy → uploads to R2 → patches `.dev.vars` → patches config JSON. Single-command workflow.
+
+**BCC Admin Copy**
+- Worker reads `CONTACTS_CDN_URL` and `EMAIL_ADDRESSBOOK_KEY_B64` at send time, decrypts the address book, and uses the first entry's email as `bccRecipients` in the Microsoft Graph payload.
+- BCC always fires, even when the admin is in the To list (enables self-test sends).
+- If decryption fails, BCC is silently skipped — send still proceeds.
+
+**Deployment Tooling**
+- `CloudflareWorker/Deploy__Worker.bat` — loads API token from shared env file, deploys Worker, sets all Wrangler secrets.
+- `CloudflareWorker/Dev__Worker.bat` — starts local dev server on port 8787 with `.dev.vars` secrets.
+- Worker deployed to `https://valevision3d-email-worker.adam-fb3.workers.dev`.
+- New `CLOUDFLARE_WORKERS_API_TOKEN` added to `Token__CloudflareAPI.env` (separate from R2 token, with Workers Scripts/KV/R2/Routes/D1 permissions).
+
+**Security Fixes**
+- Scrubbed leaked credentials from `.env.template` (all values replaced with `{{REDACTED}}`).
+- Encryption tool no longer patches `.env.template` (only `.dev.vars` and config JSON).
+- Removed hardcoded `BCC_ADMIN_EMAIL` from `wrangler.jsonc` — BCC address now derived from encrypted address book at runtime.
+- Added `.wrangler/` to `.gitignore` to prevent build artifact commits.
+- Force-pushed to erase intermediate commits containing leaked values from git history.
+
+**Files Added**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AddressBook__Decryptor__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Deploy__Worker.bat`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Dev__Worker.bat`
+
+**Files Changed**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Email__AddressBook__EncryptionTool__.py.--HIDDEN` — added boto3 R2 upload, config JSON patching, removed `.env.template` patching
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__Config.json` — added CDN URL, decrypt key, verify-auth endpoint; changed API base URL to deployed Worker
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js` — contacts load via client-side decryptor instead of Worker API
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/src/index.js` — removed /contacts route and bundled JSON import; added BCC from R2 decrypt; simplified to send-only
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/wrangler.jsonc` — added account_id, CONTACTS_CDN_URL; removed BCC_ADMIN_EMAIL, ALLOWED_ORIGIN (moved to secret)
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/.env.template` — all values replaced with `{{REDACTED}}`
+- `.gitignore` — added `.wrangler/`, `.dev.vars`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.1 - 09-Apr-2026
+### Email Auth Overlay — Password-Gated Email Send Authorization
+
+**Overview**
+- Added a password authentication gate to the email send flow, preventing unauthorized use of the email system from publicly shared project links.
+- When "Send email" is clicked, a password overlay appears requesting a shared internal password before the email is dispatched.
+- Password is verified server-side by the Cloudflare Worker using timing-safe comparison against a Wrangler secret, returning an HMAC-SHA256 signed token valid for 30 days.
+- The signed token is stored in `localStorage` and automatically included with subsequent send requests, so the password only needs to be entered once per month.
+
+**New Frontend Modules**
+- `Na__Feature__EmailWorkers__AuthOverlay__.js` — vanilla JS modal DOM builder with password input, show/hide toggle (eye icon), error display with shake animation, Submit/Cancel buttons, Enter/Escape keyboard support, and loading state during verification.
+- `Na__Feature__EmailWorkers__AuthManager__.js` — `localStorage` token persistence (`valevision3d_email_auth_token` + `valevision3d_email_auth_expiry`) with `hasValidAuthToken()`, `saveAuthToken()`, `clearAuthToken()`, and `ensureAuthorized()` orchestrator that creates the overlay, calls the verify endpoint, and resolves with the token on success.
+
+**Cloudflare Worker Changes (`src/index.js`)**
+- New `POST /api/email/verify-auth` route — rate-limited to 5 password attempts per hour per IP (separate bucket from send), compares submitted password to `EMAIL_AUTH_PASSWORD` Wrangler secret using `crypto.subtle.timingSafeEqual`, returns an HMAC-SHA256 signed token with 30-day expiry on success.
+- HMAC token utilities — `Na__EmailApi__CreateHmacToken` creates `base64url(payload).base64url(signature)` tokens, `Na__EmailApi__VerifyHmacToken` verifies signature and expiry.
+- `POST /api/email/send` now requires `Authorization: Bearer <token>` header — validates the HMAC token signature and expiry before processing.
+- CORS `Access-Control-Allow-Headers` updated to include `Authorization`.
+- `ALLOWED_ORIGIN` moved from `wrangler.jsonc` `vars` to a Wrangler secret, eliminating `.dev.vars` override conflicts during local development.
+
+**New Wrangler Secrets**
+- `EMAIL_AUTH_PASSWORD` — the shared password for email send authorization.
+- `EMAIL_AUTH_TOKEN_SECRET` — random 32+ character HMAC-SHA256 signing key for auth tokens.
+- `ALLOWED_ORIGIN` — moved from plaintext vars to encrypted secret.
+
+**Deployment Tooling**
+- `CloudflareWorker/Deploy__Worker.bat` — one-click deploy script that loads the Cloudflare API token from `Token__CloudflareAPI.env`, deploys the Worker, and sets all Wrangler secrets.
+- `CloudflareWorker/Dev__Worker.bat` — one-click local dev server launcher (`wrangler dev` on port 8787).
+
+**Files Modified**
+- `Na__Feature__EmailWorkers__ApiClient__.js` — added `verifyAuth(password)` method and `Authorization: Bearer` header on `sendEmail()`.
+- `Na__Feature__EmailWorkers__UiInteractionLogic__.js` — `btnSend` handler now calls `ensureAuthorized()` before building payload; aborts silently on cancel.
+- `Na__Feature__EmailWorkers__Config.json` — added `EmailWorkers__Config__VerifyAuthEndpoint: "/verify-auth"`.
+- `Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css` — added auth overlay CSS region (z-index 3200, fade/slide-up animations, error shake animation).
+- `CloudflareWorker/wrangler.jsonc` — removed `ALLOWED_ORIGIN` from vars, documented new secrets in comments.
+- `CloudflareWorker/.dev.vars` — added `ALLOWED_ORIGIN`, `EMAIL_AUTH_PASSWORD`, and `EMAIL_AUTH_TOKEN_SECRET` for local dev.
+
+**Files Added**
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AuthOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__AuthManager__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Deploy__Worker.bat`
+- `02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/Dev__Worker.bat`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.3.0 - 09-Apr-2026
 ### Email Workers — Internal Send-Email System via Microsoft Graph
 

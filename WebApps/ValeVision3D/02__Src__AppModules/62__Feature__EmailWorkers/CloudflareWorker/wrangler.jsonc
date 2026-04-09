@@ -1,5 +1,6 @@
 {
     "name": "valevision3d-email-worker",
+    "account_id": "fb32e89aeb7dce82f8391f6496ec8b34",
     "main": "src/index.js",
     "compatibility_date": "2026-04-09",
     "workers_dev": true,
@@ -7,7 +8,7 @@
         "enabled": true
     },
     "vars": {
-        "ALLOWED_ORIGIN": "http://127.0.0.1:8000",
+        "ALLOWED_ORIGIN": "https://adam-noble-01.github.io",
         "ALLOWED_SEND_DOMAINS": "valegardenhouses.com",
         "CLOUDFLARE_ACCESS_TEAM_DOMAIN": "",
         "CLOUDFLARE_ACCESS_AUDIENCE": "",

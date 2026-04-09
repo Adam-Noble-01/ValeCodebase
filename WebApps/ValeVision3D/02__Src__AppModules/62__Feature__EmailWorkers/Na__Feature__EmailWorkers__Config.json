@@ -1,7 +1,7 @@
 {
     "EmailWorkers__Config": {
         "EmailWorkers__Config__Description"              : "API routing and contacts CDN config for Send Email feature.",
-        "EmailWorkers__Config__ApiBaseUrl"               : "/api/email",
+        "EmailWorkers__Config__ApiBaseUrl"               : "https://valevision3d-email-worker.adam-fb3.workers.dev/api/email",
         "EmailWorkers__Config__ApiBaseUrl__Localhost"    : "http://127.0.0.1:8787/api/email",
         "EmailWorkers__Config__SendEndpoint"             : "/send",
         "EmailWorkers__Config__RequestTimeoutMs"         : 15000,

@@ -16,7 +16,7 @@
         "MICROSOFT_CLIENT_ID": "7734a526-78fb-4cdd-8c96-3b11fc242483",
         "MICROSOFT_SENDER_USER": "no-reply-apps@valegardenhouses.com",
         "RATE_LIMIT_MAX_PER_HOUR": "10",
-        "BCC_ADMIN_EMAIL": "a.widdowson@valegardenhouses.com"
+        "CONTACTS_CDN_URL": "https://cdn.noble-architecture.com/VaApps/ValeVision3D/data/Na__Email__AddressBook__Encrypted__.json"
     }
     // Secrets (set via `wrangler secret put`):
     //   MICROSOFT_CLIENT_SECRET

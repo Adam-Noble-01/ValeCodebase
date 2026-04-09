@@ -192,6 +192,60 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 
 // -----------------------------------------------------------------------------
+// REGION | BCC Admin Lookup (Decrypt First Contact from R2 CDN)
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Decode Base64 to Uint8Array
+    // ------------------------------------------------------------
+    function Na__EmailApi__Base64ToBytes(base64Value) {
+        const binary = atob(String(base64Value || ''));
+        const bytes  = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fetch First Contact Email from Encrypted CDN Address Book
+    // ------------------------------------------------------------
+    async function Na__EmailApi__FetchBccAdminEmail(env) {
+        const cdnUrl = String(env.CONTACTS_CDN_URL || '').trim();
+        const keyB64 = String(env.EMAIL_ADDRESSBOOK_KEY_B64 || '').trim();
+        if (!cdnUrl || !keyB64) return '';
+
+        try {
+            const response = await fetch(cdnUrl);
+            if (!response.ok) return '';
+
+            const encrypted   = await response.json();
+            const keyBytes    = Na__EmailApi__Base64ToBytes(keyB64);
+            const ivBytes     = Na__EmailApi__Base64ToBytes(encrypted.iv);
+            const cipherBytes = Na__EmailApi__Base64ToBytes(encrypted.ciphertext);
+
+            const cryptoKey = await crypto.subtle.importKey(
+                'raw', keyBytes, { name: 'AES-GCM' }, false, ['decrypt']
+            );
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: ivBytes }, cryptoKey, cipherBytes
+            );
+
+            const parsed   = JSON.parse(new TextDecoder().decode(new Uint8Array(decrypted)));
+            const contacts = Array.isArray(parsed?.contacts) ? parsed.contacts : [];
+            const first    = contacts[0];
+            return String(first?.email || '').trim().toLowerCase();
+        } catch (error) {
+            console.warn('[Email Worker] BCC lookup failed, skipping:', error?.message);
+            return '';
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Microsoft Graph Mail Sender
 // -----------------------------------------------------------------------------
 
@@ -259,7 +313,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
             emailAddress: { address: emailValue }
         }));
 
-        const bccAdminEmail = String(env.BCC_ADMIN_EMAIL || '').trim().toLowerCase();
+        const bccAdminEmail = await Na__EmailApi__FetchBccAdminEmail(env);
         const bccRecipients = [];
         if (bccAdminEmail && !rawRecipientEmails.includes(bccAdminEmail)) {
             bccRecipients.push({ emailAddress: { address: bccAdminEmail } });

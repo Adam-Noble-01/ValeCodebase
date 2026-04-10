@@ -47,10 +47,10 @@ if errorlevel 1 (
 )
 echo.
 
-:: Step 2: Set EMAIL_AUTH_PASSWORD secret
+:: Step 2: Set EMAIL_AUTH_PASSWORD secret (you will be prompted to enter the value)
 echo [2/3] Setting EMAIL_AUTH_PASSWORD secret...
 echo.
-echo REDACTED_AUTH_PASSWORD| npx wrangler secret put EMAIL_AUTH_PASSWORD
+npx wrangler secret put EMAIL_AUTH_PASSWORD
 if errorlevel 1 (
     echo.
     echo [WARN] Secret EMAIL_AUTH_PASSWORD may not have been set. Set manually:
@@ -58,10 +58,10 @@ if errorlevel 1 (
 )
 echo.
 
-:: Step 3: Set EMAIL_AUTH_TOKEN_SECRET secret
+:: Step 3: Set EMAIL_AUTH_TOKEN_SECRET secret (you will be prompted to enter the value)
 echo [3/3] Setting EMAIL_AUTH_TOKEN_SECRET secret...
 echo.
-echo REDACTED_HMAC_SECRET| npx wrangler secret put EMAIL_AUTH_TOKEN_SECRET
+npx wrangler secret put EMAIL_AUTH_TOKEN_SECRET
 if errorlevel 1 (
     echo.
     echo [WARN] Secret EMAIL_AUTH_TOKEN_SECRET may not have been set. Set manually:

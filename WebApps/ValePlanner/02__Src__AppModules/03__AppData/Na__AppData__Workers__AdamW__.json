@@ -525,15 +525,119 @@
           "startTime": "16:15",
           "endTime": "18:00",
           "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775811583185",
+          "date": "2026-04-09",
+          "startTime": "11:30",
+          "endTime": "12:15",
+          "title": "Meeting |  Summmary Email",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1775811611214",
+          "date": "2026-04-09",
+          "startTime": "12:15",
+          "endTime": "13:00",
+          "title": "Lunch",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775811659462",
+          "date": "2026-04-09",
+          "startTime": "10:15",
+          "endTime": "10:30",
+          "title": "Desktop |  Tidy Up",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1775811690896",
+          "date": "2026-04-09",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775811695275",
+          "date": "2026-04-09",
+          "startTime": "14:00",
+          "endTime": "14:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775811713688",
+          "date": "2026-04-09",
+          "startTime": "14:15",
+          "endTime": "18:00",
+          "title": "Dev |  Email API System",
           "color": "na-shift-color-slate"
         },
         {
           "id": "new-1775721417275",
           "date": "2026-04-09",
           "startTime": "08:00",
-          "endTime": "09:00",
+          "endTime": "09:15",
           "title": "Meeting |  IT",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775811641244",
+          "date": "2026-04-09",
+          "startTime": "09:15",
+          "endTime": "10:15",
+          "title": "Standards |  Tidy Up",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1775811832963",
+          "date": "2026-04-10",
+          "startTime": "10:15",
+          "endTime": "10:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775811548311",
+          "date": "2026-04-10",
+          "startTime": "08:00",
+          "endTime": "10:15",
+          "title": "Dev |  Penetration Testing",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1775812203728",
+          "date": "2026-04-10",
+          "startTime": "10:30",
+          "endTime": "12:00",
+          "title": "Blockout |  James",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1775819257383",
+          "date": "2026-04-10",
+          "startTime": "12:00",
+          "endTime": "12:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775821671927",
+          "date": "2026-04-10",
+          "startTime": "12:15",
+          "endTime": "13:00",
+          "title": "Assets |  Model Furniture",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1775819269399",
+          "date": "2026-04-10",
+          "startTime": "13:00",
+          "endTime": "13:30",
+          "title": "Blockout |  James",
+          "color": "na-shift-color-cyan"
         }
       ]
     }

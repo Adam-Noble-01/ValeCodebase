@@ -536,28 +536,12 @@
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1775811611214",
-          "date": "2026-04-09",
-          "startTime": "12:15",
-          "endTime": "13:00",
-          "title": "Lunch",
-          "color": "na-shift-color-blue"
-        },
-        {
           "id": "new-1775811659462",
           "date": "2026-04-09",
           "startTime": "10:15",
           "endTime": "10:30",
           "title": "Desktop |  Tidy Up",
           "color": "na-shift-color-indigo"
-        },
-        {
-          "id": "new-1775811690896",
-          "date": "2026-04-09",
-          "startTime": "13:00",
-          "endTime": "14:00",
-          "title": "Dev |  ValeSpec",
-          "color": "na-shift-color-lime"
         },
         {
           "id": "new-1775811695275",
@@ -608,14 +592,6 @@
           "color": "na-shift-color-slate"
         },
         {
-          "id": "new-1775812203728",
-          "date": "2026-04-10",
-          "startTime": "10:30",
-          "endTime": "12:00",
-          "title": "Blockout |  James",
-          "color": "na-shift-color-cyan"
-        },
-        {
           "id": "new-1775819257383",
           "date": "2026-04-10",
           "startTime": "12:00",
@@ -638,6 +614,70 @@
           "endTime": "13:30",
           "title": "Blockout |  James",
           "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1775812203728",
+          "date": "2026-04-10",
+          "startTime": "10:30",
+          "endTime": "12:00",
+          "title": "Blockout |  James",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1775828728977",
+          "date": "2026-04-10",
+          "startTime": "14:15",
+          "endTime": "14:45",
+          "title": "Amendment |  James",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1775828748755",
+          "date": "2026-04-10",
+          "startTime": "14:00",
+          "endTime": "14:15",
+          "title": "Meeting |  TR",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775828787320",
+          "date": "2026-04-10",
+          "startTime": "13:30",
+          "endTime": "14:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1775811611214",
+          "date": "2026-04-09",
+          "startTime": "12:15",
+          "endTime": "12:45",
+          "title": "Lunch",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1775811690896",
+          "date": "2026-04-09",
+          "startTime": "12:45",
+          "endTime": "14:00",
+          "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1775835351249",
+          "date": "2026-04-10",
+          "startTime": "14:45",
+          "endTime": "16:30",
+          "title": "Content |  Videos For Marketing",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1775828858273",
+          "date": "2026-04-10",
+          "startTime": "16:30",
+          "endTime": "17:15",
+          "title": "Dev |  Vale Data Structure Buildout",
+          "color": "na-shift-color-slate"
         }
       ]
     }

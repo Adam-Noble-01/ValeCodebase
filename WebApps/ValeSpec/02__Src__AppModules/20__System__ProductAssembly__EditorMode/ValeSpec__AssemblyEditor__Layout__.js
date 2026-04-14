@@ -62,9 +62,9 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
         _containerEl.innerHTML  =  '';
 
         var layoutCfg       =  (_configData && _configData['AssemblyEditor__Layout__Config']) || {};
-        var previewPct      =  (layoutCfg['PreviewPanelWidthPct']  || 55) + '%';
-        var controlsPct     =  (layoutCfg['ControlsPanelWidthPct'] || 45) + '%';
-        var minPreviewPx    =  (layoutCfg['MinPreviewWidthPx']     || 400) + 'px';
+        var previewPct      =  (layoutCfg['PreviewPanelWidthPct']  || 62) + '%';
+        var controlsPct     =  (layoutCfg['ControlsPanelWidthPct'] || 38) + '%';
+        var minPreviewPx    =  (layoutCfg['MinPreviewWidthPx']     || 480) + 'px';
 
         _previewPanelEl  =  document.createElement('div');
         _previewPanelEl.className  =  'ValeSpec__AssemblyEditor__PreviewPanel';
@@ -128,25 +128,51 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
     // FUNCTION | Initialise Layout
     // ------------------------------------------------------------
     async function init() {
-        if (_initialised) return;
-
         _containerEl  =  document.getElementById('ValeSpec__AssemblyEditor__Container');
         if (!_containerEl) {
             console.error('[ValeSpec__AssemblyEditor__Layout] Container not found.');
             return;
         }
 
-        await _loadConfig();
-        _buildPanels();
-        _initSubModules();
+        if (!_initialised) {
+            await _loadConfig();
+            _buildPanels();
+            _initSubModules();
 
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (StateManager) {
-            StateManager.on('assemblySelected', _onAssemblySelected);
+            var StateManager  =  window.ValeSpec__AppCore__StateManager;
+            if (StateManager) {
+                StateManager.on('assemblySelected', _onAssemblySelected);
+            }
+
+            _initialised  =  true;
+            console.log('[ValeSpec__AssemblyEditor__Layout] Initialised.');
         }
 
-        _initialised  =  true;
-        console.log('[ValeSpec__AssemblyEditor__Layout] Initialised.');
+        _triggerRender();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Trigger Render on Mode Entry
+    // ------------------------------------------------------------
+    function _triggerRender() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+
+        var assemblyData  =  StateManager.getCurrentAssembly();
+
+        var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
+        if (SvgPreview && SvgPreview.render) {
+            SvgPreview.render(assemblyData || {
+                'Assembly__Dimensions__Config': {
+                    'Assembly__Dimensions__Config__WidthMm'  : 1800,
+                    'Assembly__Dimensions__Config__HeightMm' : 2100
+                },
+                'Assembly__DoorType__Config': {
+                    'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
+                }
+            });
+        }
     }
     // ------------------------------------------------------------
 

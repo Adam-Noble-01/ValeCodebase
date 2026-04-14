@@ -6,14 +6,14 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - Styles
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Layout, form controls, and component styles for Assembly Editor
+   PURPOSE    : Layout, step wizard controls, and component styles for Assembly Editor
    CREATED    : 2026
 
    DESCRIPTION:
    - Two-panel editor layout with configurable split
    - SVG preview panel with centered viewport
-   - 7-column configurator form controls
-   - Warning badges, handing prompt, global settings bar
+   - Sequential step progress bar and collapsible step cards
+   - Form group controls, sliders, warnings, and modals
 
    ============================================================================= */
 
@@ -23,9 +23,9 @@
 /* ----------------------------------------------------------------- */
 
 :root {
-    --Vale_EditorPreviewPct              : 55%;
-    --Vale_EditorControlsPct             : 45%;
-    --Vale_EditorMinPreviewWidth         : 400px;
+    --Vale_EditorPreviewPct              : 62%;
+    --Vale_EditorControlsPct             : 38%;
+    --Vale_EditorMinPreviewWidth         : 480px;
     --Vale_EditorPreviewBg               : #f5f7f9;
     --Vale_EditorPreviewBorder           : #d0d5dc;
     --Vale_EditorControlsBg              : #ffffff;
@@ -48,6 +48,17 @@
     --Vale_EditorRadioAccent             : #336699;
     --Vale_EditorToastBg                 : #172b3a;
     --Vale_EditorToastColour             : #ffffff;
+    --Vale_EditorStepActiveBg            : #f0f6fc;
+    --Vale_EditorStepActiveBorder        : #336699;
+    --Vale_EditorStepCompletedBg         : #f0faf0;
+    --Vale_EditorStepCompletedBorder     : #4a9a4a;
+    --Vale_EditorStepCompletedAccent     : #4a9a4a;
+    --Vale_EditorStepPillBg              : #e2e6ea;
+    --Vale_EditorStepPillActiveBg        : #336699;
+    --Vale_EditorStepPillCompletedBg     : #4a9a4a;
+    --Vale_EditorStepPillTextColour      : #ffffff;
+    --Vale_EditorNextBtnBg               : #336699;
+    --Vale_EditorNextBtnHover            : #2a5580;
 }
 
 /* endregion ----------------------------------------------------------------- */
@@ -75,7 +86,7 @@
     background-color                     : var(--Vale_EditorPreviewBg);
     border-right                         : 1px solid var(--Vale_EditorPreviewBorder);
     overflow                             : auto;
-    padding                              : 16px;
+    padding                              : 24px 32px;
 }
 
 .ValeSpec__AssemblyEditor__ControlsPanel {
@@ -96,7 +107,7 @@
 
 .ValeSpec__AssemblyEditor__SvgViewport {
     width                                : 100%;
-    max-width                            : 600px;
+    max-width                            : 800px;
     aspect-ratio                         : 3 / 4;
     background-color                     : #ffffff;
     border                               : 1px solid var(--Vale_EditorPreviewBorder);
@@ -104,7 +115,9 @@
     display                              : flex;
     align-items                          : center;
     justify-content                      : center;
-    overflow                             : hidden;
+    overflow                             : visible;
+    padding                              : 20px;
+    box-sizing                           : border-box;
 }
 
 .ValeSpec__AssemblyEditor__SvgViewport svg {
@@ -117,11 +130,25 @@
     gap                                  : 24px;
     margin-top                           : 12px;
     width                                : 100%;
-    max-width                            : 600px;
+    max-width                            : 800px;
 }
 
 .ValeSpec__AssemblyEditor__PreviewSliders .ValeSpec__AssemblyEditor__SliderGroup {
     flex                                 : 1;
+}
+
+.ValeSpec__AssemblyEditor__DimEditInput {
+    padding                              : 6px 8px;
+    border                               : 2px solid var(--Vale_EditorInputFocusBorder);
+    border-radius                        : 4px;
+    font-size                            : 0.92rem;
+    font-weight                          : 600;
+    color                                : #cc3333;
+    text-align                           : center;
+    background-color                     : #ffffff;
+    box-shadow                           : 0 2px 8px rgba(0, 0, 0, 0.15);
+    outline                              : none;
+    box-sizing                           : border-box;
 }
 
 /* endregion ----------------------------------------------------------------- */
@@ -135,11 +162,12 @@
     display                              : flex;
     align-items                          : center;
     gap                                  : 16px;
-    padding                              : 10px 16px;
-    margin-bottom                        : 12px;
+    padding                              : 12px 18px;
+    margin-bottom                        : 16px;
     background-color                     : var(--Vale_EditorGlobalBarBg);
     border                               : 1px solid var(--Vale_EditorGlobalBarBorder);
-    border-radius                        : 4px;
+    border-radius                        : 6px;
+    flex-shrink                          : 0;
 }
 
 .ValeSpec__AssemblyEditor__GlobalBar label {
@@ -161,26 +189,222 @@
 
 
 /* ----------------------------------------------------------------- */
-/* REGION | 7-Column Configurator Grid                               */
+/* REGION | Step Progress Bar                                        */
 /* ----------------------------------------------------------------- */
 
-.ValeSpec__AssemblyEditor__ConfigGrid {
-    display                              : grid;
-    grid-template-columns                : repeat(7, 1fr);
-    gap                                  : 12px;
-    width                                : 100%;
+.ValeSpec__AssemblyEditor__StepProgressBar {
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    gap                                  : 0;
+    padding                              : 12px 8px 16px 8px;
+    margin-bottom                        : 12px;
+    flex-shrink                          : 0;
 }
 
-@media (max-width: 960px) {
-    .ValeSpec__AssemblyEditor__ConfigGrid {
-        grid-template-columns            : repeat(4, 1fr);
-    }
+.ValeSpec__AssemblyEditor__StepPill {
+    display                              : flex;
+    flex-direction                       : column;
+    align-items                          : center;
+    gap                                  : 4px;
+    cursor                               : pointer;
+    flex-shrink                          : 0;
 }
 
-@media (max-width: 640px) {
-    .ValeSpec__AssemblyEditor__ConfigGrid {
-        grid-template-columns            : repeat(2, 1fr);
-    }
+.ValeSpec__AssemblyEditor__StepPill__Number {
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    width                                : 30px;
+    height                               : 30px;
+    border-radius                        : 50%;
+    background-color                     : var(--Vale_EditorStepPillBg);
+    color                                : var(--Vale_EditorLabelColour);
+    font-size                            : 0.82rem;
+    font-weight                          : 700;
+    transition                           : background-color 0.2s ease, color 0.2s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepPill__Label {
+    font-size                            : 0.68rem;
+    font-weight                          : 600;
+    color                                : var(--Vale_EditorLabelColour);
+    text-align                           : center;
+    white-space                          : nowrap;
+    transition                           : color 0.2s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepPill--active .ValeSpec__AssemblyEditor__StepPill__Number {
+    background-color                     : var(--Vale_EditorStepPillActiveBg);
+    color                                : var(--Vale_EditorStepPillTextColour);
+}
+
+.ValeSpec__AssemblyEditor__StepPill--active .ValeSpec__AssemblyEditor__StepPill__Label {
+    color                                : var(--Vale_EditorStepPillActiveBg);
+}
+
+.ValeSpec__AssemblyEditor__StepPill--completed .ValeSpec__AssemblyEditor__StepPill__Number {
+    background-color                     : var(--Vale_EditorStepPillCompletedBg);
+    color                                : var(--Vale_EditorStepPillTextColour);
+}
+
+.ValeSpec__AssemblyEditor__StepPill--completed .ValeSpec__AssemblyEditor__StepPill__Label {
+    color                                : var(--Vale_EditorStepCompletedAccent);
+}
+
+.ValeSpec__AssemblyEditor__StepConnector {
+    flex                                 : 1;
+    height                               : 2px;
+    background-color                     : var(--Vale_EditorStepPillBg);
+    margin                               : 0 4px;
+    margin-bottom                        : 18px;
+    transition                           : background-color 0.2s ease;
+    min-width                            : 16px;
+}
+
+.ValeSpec__AssemblyEditor__StepConnector--filled {
+    background-color                     : var(--Vale_EditorStepCompletedAccent);
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Steps Wrapper and Step Cards                             */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__StepsWrapper {
+    display                              : flex;
+    flex-direction                       : column;
+    gap                                  : 8px;
+    flex                                 : 1 1 auto;
+    overflow-y                           : auto;
+    padding-bottom                       : 24px;
+}
+
+.ValeSpec__AssemblyEditor__StepCard {
+    border                               : 1px solid var(--Vale_EditorFormGroupBorder);
+    border-radius                        : 6px;
+    overflow                             : hidden;
+    transition                           : border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepCard--active {
+    border-color                         : var(--Vale_EditorStepActiveBorder);
+    box-shadow                           : 0 1px 6px rgba(51, 102, 153, 0.12);
+}
+
+.ValeSpec__AssemblyEditor__StepCard--completed {
+    border-color                         : var(--Vale_EditorStepCompletedBorder);
+}
+
+.ValeSpec__AssemblyEditor__StepCard--completed.ValeSpec__AssemblyEditor__StepCard--collapsed
+.ValeSpec__AssemblyEditor__StepCard__Header {
+    background-color                     : var(--Vale_EditorStepCompletedBg);
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Header {
+    display                              : flex;
+    align-items                          : center;
+    gap                                  : 10px;
+    padding                              : 10px 14px;
+    background-color                     : var(--Vale_EditorFormGroupBg);
+    cursor                               : pointer;
+    user-select                          : none;
+    transition                           : background-color 0.15s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Header:hover {
+    background-color                     : var(--Vale_EditorGlobalBarBg);
+}
+
+.ValeSpec__AssemblyEditor__StepCard--active .ValeSpec__AssemblyEditor__StepCard__Header {
+    background-color                     : var(--Vale_EditorStepActiveBg);
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Number {
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    width                                : 24px;
+    height                               : 24px;
+    border-radius                        : 50%;
+    background-color                     : var(--Vale_EditorStepPillBg);
+    color                                : var(--Vale_EditorLabelColour);
+    font-size                            : 0.75rem;
+    font-weight                          : 700;
+    flex-shrink                          : 0;
+}
+
+.ValeSpec__AssemblyEditor__StepCard--active .ValeSpec__AssemblyEditor__StepCard__Number {
+    background-color                     : var(--Vale_EditorStepPillActiveBg);
+    color                                : var(--Vale_EditorStepPillTextColour);
+}
+
+.ValeSpec__AssemblyEditor__StepCard--completed .ValeSpec__AssemblyEditor__StepCard__Number {
+    background-color                     : var(--Vale_EditorStepPillCompletedBg);
+    color                                : var(--Vale_EditorStepPillTextColour);
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Title {
+    font-size                            : 0.88rem;
+    font-weight                          : 600;
+    color                                : var(--Vale_EditorLabelColour);
+    white-space                          : nowrap;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Summary {
+    flex                                 : 1;
+    text-align                           : right;
+    font-size                            : 0.78rem;
+    color                                : #6b7a8d;
+    white-space                          : nowrap;
+    overflow                             : hidden;
+    text-overflow                        : ellipsis;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Chevron {
+    font-size                            : 0.65rem;
+    color                                : #8a95a3;
+    flex-shrink                          : 0;
+    transition                           : transform 0.2s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Body {
+    max-height                           : 0;
+    overflow                             : hidden;
+    transition                           : max-height 0.3s ease, padding 0.3s ease;
+    padding                              : 0 16px;
+}
+
+.ValeSpec__AssemblyEditor__StepCard--active .ValeSpec__AssemblyEditor__StepCard__Body {
+    max-height                           : 600px;
+    padding                              : 16px;
+    overflow                             : visible;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__Footer {
+    display                              : flex;
+    justify-content                      : flex-end;
+    margin-top                           : 14px;
+    padding-top                          : 10px;
+    border-top                           : 1px solid var(--Vale_EditorFormGroupBorder);
+}
+
+.ValeSpec__AssemblyEditor__StepCard__NextBtn {
+    padding                              : 7px 22px;
+    background-color                     : var(--Vale_EditorNextBtnBg);
+    color                                : #ffffff;
+    border                               : none;
+    border-radius                        : 4px;
+    font-size                            : 0.82rem;
+    font-weight                          : 600;
+    cursor                               : pointer;
+    transition                           : background-color 0.15s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__NextBtn:hover {
+    background-color                     : var(--Vale_EditorNextBtnHover);
 }
 
 /* endregion ----------------------------------------------------------------- */
@@ -193,17 +417,13 @@
 .ValeSpec__AssemblyEditor__FormGroup {
     display                              : flex;
     flex-direction                       : column;
-    padding                              : 10px;
-    background-color                     : var(--Vale_EditorFormGroupBg);
-    border                               : 1px solid var(--Vale_EditorFormGroupBorder);
-    border-radius                        : 4px;
+    gap                                  : 6px;
 }
 
 .ValeSpec__AssemblyEditor__FormGroup label {
     font-size                            : 0.78rem;
     font-weight                          : 600;
     color                                : var(--Vale_EditorLabelColour);
-    margin-bottom                        : 4px;
     text-transform                       : uppercase;
     letter-spacing                       : 0.4px;
 }
@@ -212,10 +432,10 @@
 .ValeSpec__AssemblyEditor__FormGroup input[type="number"],
 .ValeSpec__AssemblyEditor__FormGroup input[type="text"] {
     width                                : 100%;
-    padding                              : 6px 8px;
+    padding                              : 8px 10px;
     border                               : 1px solid var(--Vale_EditorInputBorder);
-    border-radius                        : 3px;
-    font-size                            : 0.85rem;
+    border-radius                        : 4px;
+    font-size                            : 0.88rem;
     box-sizing                           : border-box;
     background-color                     : #ffffff;
     transition                           : border-color 0.15s ease;
@@ -233,6 +453,16 @@
     background-color                     : var(--Vale_EditorDisabledBg);
     color                                : var(--Vale_EditorDisabledColour);
     cursor                               : not-allowed;
+}
+
+.ValeSpec__AssemblyEditor__FormRow {
+    display                              : flex;
+    gap                                  : 16px;
+    align-items                          : flex-start;
+}
+
+.ValeSpec__AssemblyEditor__FormRow > .ValeSpec__AssemblyEditor__FormGroup {
+    flex                                 : 1;
 }
 
 /* endregion ----------------------------------------------------------------- */
@@ -379,6 +609,30 @@
 .ValeSpec__AssemblyEditor__HandingPrompt input[type="radio"] {
     accent-color                         : var(--Vale_EditorRadioAccent);
     cursor                               : pointer;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Checkbox Controls in Step Cards                          */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__CheckboxRow {
+    display                              : flex;
+    align-items                          : center;
+    gap                                  : 8px;
+    font-size                            : 0.85rem;
+    font-weight                          : 400;
+    cursor                               : pointer;
+    padding                              : 3px 0;
+}
+
+.ValeSpec__AssemblyEditor__CheckboxRow input[type="checkbox"] {
+    accent-color                         : var(--Vale_EditorRadioAccent);
+    cursor                               : pointer;
+    width                                : 16px;
+    height                               : 16px;
 }
 
 /* endregion ----------------------------------------------------------------- */

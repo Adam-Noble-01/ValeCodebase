@@ -193,6 +193,7 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
             try {
                 var svgMarkup  =  RenderPipeline.renderAssembly(assemblyData, hwIndex);
                 _viewportEl.innerHTML  =  svgMarkup || '';
+                _bindDimensionClicks();
             } catch (e) {
                 _viewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">SVG render error: ' + e.message + '</p>';
                 console.error('[ValeSpec__SvgPreview] Render error:', e);
@@ -200,6 +201,99 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         } else {
             _viewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">Select an assembly to preview</p>';
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Bind Click Handlers to SVG Dimension Text
+    // ------------------------------------------------------------
+    function _bindDimensionClicks() {
+        if (!_viewportEl) return;
+
+        var dimTexts  =  _viewportEl.querySelectorAll('text[data-dimension]');
+        for (var i = 0; i < dimTexts.length; i++) {
+            dimTexts[i].addEventListener('click', _onDimensionTextClick);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Click on SVG Dimension Text
+    // ------------------------------------------------------------
+    function _onDimensionTextClick(e) {
+        e.stopPropagation();
+
+        var textEl     =  e.currentTarget;
+        var dimType    =  textEl.getAttribute('data-dimension');
+        var curValue   =  textEl.getAttribute('data-value');
+
+        var rect  =  textEl.getBoundingClientRect();
+
+        var existingInput  =  _viewportEl.parentElement.querySelector('.ValeSpec__AssemblyEditor__DimEditInput');
+        if (existingInput) existingInput.remove();
+
+        var input  =  document.createElement('input');
+        input.type       =  'number';
+        input.className  =  'ValeSpec__AssemblyEditor__DimEditInput';
+        input.value      =  curValue;
+        input.step       =  1;
+
+        if (dimType === 'width') {
+            input.min  =  600;
+            input.max  =  4000;
+        } else {
+            input.min  =  1800;
+            input.max  =  3000;
+        }
+
+        var containerRect  =  _viewportEl.parentElement.getBoundingClientRect();
+        input.style.position  =  'absolute';
+        input.style.left      =  (rect.left - containerRect.left + rect.width / 2 - 50) + 'px';
+        input.style.top       =  (rect.top  - containerRect.top  + rect.height / 2 - 14) + 'px';
+        input.style.width     =  '100px';
+        input.style.zIndex    =  '100';
+
+        _viewportEl.parentElement.style.position  =  'relative';
+        _viewportEl.parentElement.appendChild(input);
+
+        input.focus();
+        input.select();
+
+        function _commitValue() {
+            var newVal  =  parseInt(input.value, 10);
+            if (isNaN(newVal)) { input.remove(); return; }
+
+            if (dimType === 'width') {
+                newVal  =  Math.max(600, Math.min(4000, newVal));
+            } else {
+                newVal  =  Math.max(1800, Math.min(3000, newVal));
+            }
+
+            var StateManager  =  window.ValeSpec__AppCore__StateManager;
+            if (!StateManager) { input.remove(); return; }
+
+            var assembly  =  StateManager.getCurrentAssembly();
+            if (!assembly) { input.remove(); return; }
+
+            if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
+
+            if (dimType === 'width') {
+                assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']  =  newVal;
+                if (_widthSliderEl) { _widthSliderEl.value = newVal; _widthValueEl.textContent = newVal + ' mm'; }
+            } else {
+                assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  newVal;
+                if (_heightSliderEl) { _heightSliderEl.value = newVal; _heightValueEl.textContent = newVal + ' mm'; }
+            }
+
+            StateManager.updateCurrentAssembly(assembly);
+            input.remove();
+        }
+
+        input.addEventListener('blur', _commitValue);
+        input.addEventListener('keydown', function(ev) {
+            if (ev.key === 'Enter')  { ev.preventDefault(); _commitValue(); }
+            if (ev.key === 'Escape') { input.remove(); }
+        });
     }
     // ------------------------------------------------------------
 
@@ -236,7 +330,34 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
             StateManager.on('assemblyUpdated', _onAssemblyUpdated);
         }
 
+        _doInitialRender();
+
         console.log('[ValeSpec__SvgPreview] Initialised.');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Perform Initial Render on First Load
+    // ------------------------------------------------------------
+    function _doInitialRender() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var assembly      =  StateManager ? StateManager.getCurrentAssembly() : null;
+
+        if (assembly) {
+            render(assembly);
+            return;
+        }
+
+        var defaultAssembly  =  {
+            'Assembly__Dimensions__Config': {
+                'Assembly__Dimensions__Config__WidthMm'  : parseInt(_widthSliderEl.value, 10)  || 1800,
+                'Assembly__Dimensions__Config__HeightMm' : parseInt(_heightSliderEl.value, 10) || 2100
+            },
+            'Assembly__DoorType__Config': {
+                'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
+            }
+        };
+        render(defaultAssembly);
     }
     // ------------------------------------------------------------
 

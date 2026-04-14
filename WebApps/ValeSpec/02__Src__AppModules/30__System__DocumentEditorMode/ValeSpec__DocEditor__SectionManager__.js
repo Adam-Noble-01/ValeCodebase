@@ -32,6 +32,12 @@ const ValeSpec__DocEditor__SectionManager = (function() {
     // ------------------------------------------------------------
 
 
+    // MODULE VARIABLES | Binding Guard
+    // ------------------------------------------------------------
+    let _delegationBound  =  false;                                               // <-- Prevents duplicate click listeners on re-renders
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Get Current Assemblies Array
     // ------------------------------------------------------------
     function _getAssemblies() {
@@ -41,6 +47,21 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         var project  =  state.currentProject;
         if (!project) return [];
         return project['ValeSpec__ProjectFile__Assemblies'] || [];                // <-- Assembly array from project data
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Persist Current Project to Disk After Structural Changes
+    // ------------------------------------------------------------
+    function _saveCurrentProject() {
+        var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
+        var StateManager        =  window.ValeSpec__AppCore__StateManager;
+        if (!ProjectFileManager || !StateManager) return;
+
+        var state  =  StateManager.getState();
+        if (state.currentProject) {
+            ProjectFileManager.saveProject(state.currentProject);               // <-- Persist full project JSON to localStorage + disk
+        }
     }
     // ------------------------------------------------------------
 
@@ -161,9 +182,10 @@ const ValeSpec__DocEditor__SectionManager = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Bind Section Block Event Listeners
+    // SUB FUNCTION | Bind Click Delegation — called once only
     // ------------------------------------------------------------
-    function _bindEvents(container) {
+    function _bindClickDelegation(container) {
+        if (_delegationBound) return;                                             // <-- Guard: container persists across renders, listeners accumulate
         container.addEventListener('click', function(e) {
             var btn  =  e.target.closest('[data-action]');
             if (!btn) return;
@@ -178,8 +200,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
             if (action === 'move-down')  _handleReorder(index, 1);
             if (action === 'add-new')    _handleAddNewAssembly();
         });
-
-        _bindTitleEditing(container);
+        _delegationBound  =  true;
     }
     // ------------------------------------------------------------
 
@@ -227,6 +248,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         assemblies[index]['Assembly__Identity__Config']   =  identity;
 
         StateManager.markDirty();
+        _saveCurrentProject();                                                    // <-- Persist title change to disk
     }
     // ------------------------------------------------------------
 
@@ -260,7 +282,8 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         assemblies.push(clone);
         StateManager.markDirty();
-        render();                                                                 // <-- Re-render with new entry
+        _saveCurrentProject();                                                    // <-- Persist duplicated assembly to disk
+        render();
     }
     // ------------------------------------------------------------
 
@@ -279,6 +302,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         StateManager.markDirty();
+        _saveCurrentProject();                                                    // <-- Persist deletion to disk
         render();
     }
     // ------------------------------------------------------------
@@ -299,6 +323,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         StateManager.markDirty();
+        _saveCurrentProject();                                                    // <-- Persist reordered assembly list to disk
         render();
     }
     // ------------------------------------------------------------
@@ -362,6 +387,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         assemblies.push(newAssembly);
         StateManager.markDirty();
+        _saveCurrentProject();                                                    // <-- Persist new assembly to disk
         render();
     }
     // ------------------------------------------------------------
@@ -387,7 +413,8 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         container.innerHTML  =  html;
 
         _renderThumbnails(assemblies);
-        _bindEvents(container);
+        _bindClickDelegation(container);                                          // <-- Bound once only — guard prevents duplicate listeners
+        _bindTitleEditing(container);                                             // <-- Rebound each render — title elements are recreated by innerHTML
     }
     // ------------------------------------------------------------
 

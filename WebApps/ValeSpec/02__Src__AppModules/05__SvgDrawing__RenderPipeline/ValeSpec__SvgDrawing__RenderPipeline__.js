@@ -100,6 +100,11 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         if (!leverType || !hardwareIndex) return { hardwareData: null, leverHeight_mm: 1000 };
 
         var leverHeight  =  leverSection['Assembly__Lever__Config__HeightMm'] || 1000;
+
+        if (hardwareIndex[leverType]) {
+            return { hardwareData: hardwareIndex[leverType], leverHeight_mm: leverHeight };
+        }
+
         var handleName  =  leverType + ' Lever Handle';
         if (hardwareIndex[handleName]) {
             return { hardwareData: hardwareIndex[handleName], leverHeight_mm: leverHeight };

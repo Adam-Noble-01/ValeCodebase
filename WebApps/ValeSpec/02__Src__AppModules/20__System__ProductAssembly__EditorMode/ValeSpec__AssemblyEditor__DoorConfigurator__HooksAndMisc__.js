@@ -6,13 +6,14 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - DoorConfigurator - HooksAndMisc
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Columns 6-7: Cabin hooks, counts, and miscellaneous checkboxes
+   PURPOSE    : Step 5 (Cabin Hooks) and Step 6 (Miscellaneous)
    CREATED    : 2026
 
    DESCRIPTION:
-   - Column 6: Cabin Hook size dropdown, hook count, eye count
-   - Column 7: Miscellaneous checkboxes (N/A, Overhead Restrictors, etc.)
+   - Step 5: Cabin Hook size dropdown, hook count, eye count
+   - Step 6: Miscellaneous checkboxes (N/A, Overhead Restrictors, etc.)
    - Hook size options loaded from AppConfig
+   - Registers summary callbacks with StepManager
    - Updates assembly via StateManager on change
 
    ============================================================================= */
@@ -36,7 +37,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _gridEl            =  null;                                         // <-- Parent grid element
+    let _step5BodyEl       =  null;                                         // <-- Step 5 card body (Hooks)
+    let _step6BodyEl       =  null;                                         // <-- Step 6 card body (Misc)
     let _cabinHookSelect   =  null;                                         // <-- Cabin hook size dropdown
     let _hookCountInput    =  null;                                         // <-- Hook count numeric input
     let _eyeCountInput     =  null;                                         // <-- Eye count numeric input
@@ -63,11 +65,11 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Cabin Hook Column (Column 6)
+    // HELPER FUNCTION | Build Step 5 - Cabin Hooks
     // ------------------------------------------------------------
-    function _buildCabinHookColumn() {
-        var group  =  document.createElement('div');
-        group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+    function _buildHooksStep() {
+        var hookGroup  =  document.createElement('div');
+        hookGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
         var hookLabel  =  document.createElement('label');
         hookLabel.textContent  =  'Cabin Hook Size';
@@ -91,10 +93,19 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
         _cabinHookSelect.addEventListener('change', _onCabinHookChange);
 
+        hookGroup.appendChild(hookLabel);
+        hookGroup.appendChild(_cabinHookSelect);
+
+        var countsRow  =  document.createElement('div');
+        countsRow.className  =  'ValeSpec__AssemblyEditor__FormRow';
+        countsRow.style.marginTop  =  '12px';
+
+        var hookCountGroup  =  document.createElement('div');
+        hookCountGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+
         var hookCountLabel  =  document.createElement('label');
         hookCountLabel.textContent  =  'Hook Count';
         hookCountLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__HookCount');
-        hookCountLabel.style.marginTop  =  '8px';
 
         _hookCountInput       =  document.createElement('input');
         _hookCountInput.type  =  'number';
@@ -105,10 +116,15 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
         _hookCountInput.addEventListener('change', _onHookCountChange);
 
+        hookCountGroup.appendChild(hookCountLabel);
+        hookCountGroup.appendChild(_hookCountInput);
+
+        var eyeCountGroup  =  document.createElement('div');
+        eyeCountGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+
         var eyeCountLabel  =  document.createElement('label');
         eyeCountLabel.textContent  =  'Eye Count';
         eyeCountLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__EyeCount');
-        eyeCountLabel.style.marginTop  =  '8px';
 
         _eyeCountInput       =  document.createElement('input');
         _eyeCountInput.type  =  'number';
@@ -119,37 +135,33 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
         _eyeCountInput.addEventListener('change', _onEyeCountChange);
 
-        group.appendChild(hookLabel);
-        group.appendChild(_cabinHookSelect);
-        group.appendChild(hookCountLabel);
-        group.appendChild(_hookCountInput);
-        group.appendChild(eyeCountLabel);
-        group.appendChild(_eyeCountInput);
-        _gridEl.appendChild(group);
+        eyeCountGroup.appendChild(eyeCountLabel);
+        eyeCountGroup.appendChild(_eyeCountInput);
+
+        countsRow.appendChild(hookCountGroup);
+        countsRow.appendChild(eyeCountGroup);
+
+        var footerEl  =  _step5BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        _step5BodyEl.insertBefore(hookGroup, footerEl);
+        _step5BodyEl.insertBefore(countsRow, footerEl);
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Miscellaneous Column (Column 7)
+    // HELPER FUNCTION | Build Step 6 - Miscellaneous
     // ------------------------------------------------------------
-    function _buildMiscColumn() {
-        var group  =  document.createElement('div');
-        group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+    function _buildMiscStep() {
+        var miscGroup  =  document.createElement('div');
+        miscGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
         var miscLabel  =  document.createElement('label');
-        miscLabel.textContent  =  'Miscellaneous';
+        miscLabel.textContent  =  'Select Applicable Items';
 
-        group.appendChild(miscLabel);
+        miscGroup.appendChild(miscLabel);
 
         for (var i = 0; i < MISC_OPTIONS.length; i++) {
             var wrapper  =  document.createElement('label');
-            wrapper.style.display    =  'flex';
-            wrapper.style.alignItems =  'center';
-            wrapper.style.gap        =  '6px';
-            wrapper.style.fontSize   =  '0.82rem';
-            wrapper.style.fontWeight =  '400';
-            wrapper.style.cursor     =  'pointer';
-            wrapper.style.marginTop  =  '4px';
+            wrapper.className  =  'ValeSpec__AssemblyEditor__CheckboxRow';
 
             var checkbox       =  document.createElement('input');
             checkbox.type      =  'checkbox';
@@ -162,12 +174,13 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
             wrapper.appendChild(checkbox);
             wrapper.appendChild(text);
-            group.appendChild(wrapper);
+            miscGroup.appendChild(wrapper);
 
             _miscCheckboxes[MISC_OPTIONS[i].Key]  =  checkbox;
         }
 
-        _gridEl.appendChild(group);
+        var footerEl  =  _step6BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        _step6BodyEl.insertBefore(miscGroup, footerEl);
     }
     // ------------------------------------------------------------
 
@@ -241,6 +254,37 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Summary Callback for Step 5 (Hooks)
+    // ------------------------------------------------------------
+    function _hooksSummary() {
+        var size   =  _cabinHookSelect ? _cabinHookSelect.value : '';
+        var hooks  =  _hookCountInput  ? _hookCountInput.value  : '0';
+        var eyes   =  _eyeCountInput   ? _eyeCountInput.value   : '0';
+        if (!size) return 'None';
+        return size + ' mm  |  ' + hooks + ' hooks, ' + eyes + ' eyes';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Summary Callback for Step 6 (Misc)
+    // ------------------------------------------------------------
+    function _miscSummary() {
+        var selected  =  [];
+        for (var key in _miscCheckboxes) {
+            if (_miscCheckboxes[key].checked) {
+                for (var j = 0; j < MISC_OPTIONS.length; j++) {
+                    if (MISC_OPTIONS[j].Key === key) {
+                        selected.push(MISC_OPTIONS[j].Label);
+                        break;
+                    }
+                }
+            }
+        }
+        return selected.length > 0 ? selected.join(', ') : 'N/A';
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Refresh Controls from Assembly Data
     // ------------------------------------------------------------
     function refreshFromAssembly(assemblyData) {
@@ -267,14 +311,28 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Initialise Hooks and Miscellaneous Section
+    // FUNCTION | Register Summaries with StepManager
     // ------------------------------------------------------------
-    function init(gridEl) {
-        _gridEl  =  gridEl;
-        if (!_gridEl) return;
+    function _registerSummaries() {
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager) return;
 
-        _buildCabinHookColumn();
-        _buildMiscColumn();
+        StepManager.registerSummary('hooks', _hooksSummary);
+        StepManager.registerSummary('misc',  _miscSummary);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialise Hooks and Miscellaneous Steps
+    // ------------------------------------------------------------
+    function init(step5BodyEl, step6BodyEl) {
+        _step5BodyEl  =  step5BodyEl;
+        _step6BodyEl  =  step6BodyEl;
+        if (!_step5BodyEl || !_step6BodyEl) return;
+
+        _buildHooksStep();
+        _buildMiscStep();
+        _registerSummaries();
 
         console.log('[ValeSpec__HooksAndMisc] Initialised.');
     }

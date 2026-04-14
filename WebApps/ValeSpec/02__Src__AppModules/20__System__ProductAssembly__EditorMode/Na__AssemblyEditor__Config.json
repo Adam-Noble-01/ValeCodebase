@@ -1,9 +1,9 @@
 {
     "AssemblyEditor__Layout__Config": {
         "AssemblyEditor__Layout__Config__Description"            : "Two-panel layout configuration for the product assembly editor.",
-        "AssemblyEditor__Layout__Config__PreviewPanelWidthPct"   : 55,
-        "AssemblyEditor__Layout__Config__ControlsPanelWidthPct"  : 45,
-        "AssemblyEditor__Layout__Config__MinPreviewWidthPx"      : 400
+        "AssemblyEditor__Layout__Config__PreviewPanelWidthPct"   : 62,
+        "AssemblyEditor__Layout__Config__ControlsPanelWidthPct"  : 38,
+        "AssemblyEditor__Layout__Config__MinPreviewWidthPx"      : 480
     },
 
     "AssemblyEditor__Slider__Config": {
@@ -16,6 +16,19 @@
         "AssemblyEditor__Slider__Config__HeightMaxMm"            : 3000,
         "AssemblyEditor__Slider__Config__HeightStepMm"           : 1,
         "AssemblyEditor__Slider__Config__HeightDefaultMm"        : 2100
+    },
+
+    "AssemblyEditor__Steps__Config": {
+        "AssemblyEditor__Steps__Config__Description"             : "Step wizard configuration for the sequential door configurator.",
+        "AssemblyEditor__Steps__Config__AutoAdvanceOnSelection"  : true,
+        "AssemblyEditor__Steps__Config__Steps": [
+            { "Id": "doorType",   "Number": 1, "Title": "Door Type",            "ShortTitle": "Door Type"  },
+            { "Id": "dimensions", "Number": 2, "Title": "Quantity & Dimensions", "ShortTitle": "Qty & Dims" },
+            { "Id": "hinges",     "Number": 3, "Title": "Hinge Projection",      "ShortTitle": "Hinges"     },
+            { "Id": "levers",     "Number": 4, "Title": "Lever Specification",   "ShortTitle": "Levers"     },
+            { "Id": "hooks",      "Number": 5, "Title": "Cabin Hooks",           "ShortTitle": "Hooks"      },
+            { "Id": "misc",       "Number": 6, "Title": "Miscellaneous",         "ShortTitle": "Misc"       }
+        ]
     },
 
     "AssemblyEditor__Warnings__Config": {

@@ -111,6 +111,9 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
             + ' fill="'            + textColor + '"'
             + ' text-anchor="middle"'
             + ' dominant-baseline="middle"'
+            + ' data-dimension="width"'
+            + ' data-value="'      + Math.round(width_mm) + '"'
+            + ' style="cursor:pointer;"'
             + '>' + Math.round(width_mm) + ' mm</text>';
 
         return svg;
@@ -157,6 +160,9 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
             + ' text-anchor="middle"'
             + ' dominant-baseline="middle"'
             + ' transform="rotate(' + rotation + ' ' + labelX + ' ' + labelY + ')"'
+            + ' data-dimension="height"'
+            + ' data-value="'      + Math.round(height_mm) + '"'
+            + ' style="cursor:pointer;"'
             + '>' + Math.round(height_mm) + ' mm</text>';
 
         return svg;

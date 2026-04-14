@@ -6,12 +6,13 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - DoorConfigurator - Main
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Orchestrates 7-column configurator form and sub-module rendering
+   PURPOSE    : Orchestrates stepped wizard form and sub-module rendering
    CREATED    : 2026
 
    DESCRIPTION:
-   - Renders the overall configurator form layout into controls panel
-   - Calls three sub-modules for their respective column sections
+   - Renders the global settings bar and step-based wizard layout
+   - Uses StepManager to create sequential collapsible step cards
+   - Calls three sub-modules to render into their respective step cards
    - Coordinates saving changes back to assembly via StateManager
    - Provides refreshFromAssembly() for external re-population
 
@@ -27,7 +28,6 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // ------------------------------------------------------------
     let _containerEl   =  null;                                             // <-- Controls panel container
     let _globalBarEl   =  null;                                             // <-- Global settings bar element
-    let _gridEl        =  null;                                             // <-- 7-column grid element
     let _initialised   =  false;                                            // <-- Prevents double-init
     // ------------------------------------------------------------
 
@@ -47,27 +47,41 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build 7-Column Grid
+    // HELPER FUNCTION | Build Step Wizard via StepManager
     // ------------------------------------------------------------
-    function _buildGrid() {
-        _gridEl  =  document.createElement('div');
-        _gridEl.className  =  'ValeSpec__AssemblyEditor__ConfigGrid';
-        _gridEl.id         =  'ValeSpec__AssemblyEditor__ConfigGrid';
-        _containerEl.appendChild(_gridEl);
+    function _buildStepWizard() {
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager) {
+            console.error('[ValeSpec__DoorConfigurator__Main] StepManager not available.');
+            return;
+        }
+
+        StepManager.init(_containerEl);
+
+        var step1Body  =  StepManager.createStep('doorType');
+        var step2Body  =  StepManager.createStep('dimensions');
+        var step3Body  =  StepManager.createStep('hinges');
+        var step4Body  =  StepManager.createStep('levers');
+        var step5Body  =  StepManager.createStep('hooks');
+        var step6Body  =  StepManager.createStep('misc');
+
+        _initColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body);
+
+        StepManager.goToStep('doorType');
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Initialise Column Sub-Modules
+    // HELPER FUNCTION | Initialise Column Sub-Modules into Step Cards
     // ------------------------------------------------------------
-    function _initColumnModules() {
+    function _initColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body) {
         var DoorTypeDims    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
         var HingesLevers    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
         var HooksMisc       =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
 
-        if (DoorTypeDims) DoorTypeDims.init(_gridEl);                       // <-- Columns 1-3
-        if (HingesLevers) HingesLevers.init(_gridEl);                       // <-- Columns 4-5
-        if (HooksMisc)    HooksMisc.init(_gridEl);                          // <-- Columns 6-7
+        if (DoorTypeDims) DoorTypeDims.init(step1Body, step2Body);
+        if (HingesLevers) HingesLevers.init(step3Body, step4Body);
+        if (HooksMisc)    HooksMisc.init(step5Body, step6Body);
     }
     // ------------------------------------------------------------
 
@@ -80,8 +94,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         if (!_containerEl) return;
 
         _buildGlobalBar();
-        _buildGrid();
-        _initColumnModules();
+        _buildStepWizard();
 
         _initialised  =  true;
         console.log('[ValeSpec__DoorConfigurator__Main] Initialised.');
@@ -101,6 +114,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         if (DoorTypeDims) DoorTypeDims.refreshFromAssembly(assemblyData);
         if (HingesLevers) HingesLevers.refreshFromAssembly(assemblyData);
         if (HooksMisc)    HooksMisc.refreshFromAssembly(assemblyData);
+
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) StepManager.refreshAllSummaries();
     }
     // ------------------------------------------------------------
 

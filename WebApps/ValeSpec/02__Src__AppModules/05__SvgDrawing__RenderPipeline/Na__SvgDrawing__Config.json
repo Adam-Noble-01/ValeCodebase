@@ -32,6 +32,6 @@
 
     "SvgDrawing__Viewport__Config": {
         "SvgDrawing__Viewport__Config__Description"            : "Padding around the assembled drawing within the SVG viewBox.",
-        "SvgDrawing__Viewport__Config__PaddingMm"              : 120
+        "SvgDrawing__Viewport__Config__PaddingMm"              : 200
     }
 }

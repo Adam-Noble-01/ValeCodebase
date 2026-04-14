@@ -103,12 +103,12 @@
 
     // FUNCTION | Handle Mode Entry - Trigger System Renders
     // ------------------------------------------------------------
-    function _onModeEntered(modeId) {
+    async function _onModeEntered(modeId) {
         if (modeId === 'DocumentEditor') {
             _renderDocumentEditor();
         }
         if (modeId === 'AssemblyEditor') {
-            _renderAssemblyEditor();
+            await _renderAssemblyEditor();                                     // <-- Must await: Layout.init() is async
         }
         if (modeId === 'DocumentPreview') {
             _renderDocumentPreview();
@@ -133,20 +133,32 @@
 
     // SUB FUNCTION | Render Assembly Editor Mode
     // ------------------------------------------------------------
-    function _renderAssemblyEditor() {
+    async function _renderAssemblyEditor() {
         var Layout  =  window.ValeSpec__AssemblyEditor__Layout;
         if (!Layout) return;
 
-        if (Layout.init) Layout.init();
+        await Layout.init();                                                   // <-- Await config fetch + panel build on first visit
 
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-        var assembly  =  StateManager.getCurrentAssembly();
+        var StateManager      =  window.ValeSpec__AppCore__StateManager;
+        var DoorConfigurator  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Main;
+        var SvgPreview        =  window.ValeSpec__AssemblyEditor__SvgPreview;
+
+        var assembly  =  StateManager ? StateManager.getCurrentAssembly() : null;
+
         if (assembly) {
-            var DoorConfigurator  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Main;
-            var SvgPreview        =  window.ValeSpec__AssemblyEditor__SvgPreview;
             if (DoorConfigurator && DoorConfigurator.refreshFromAssembly) DoorConfigurator.refreshFromAssembly(assembly);
             if (SvgPreview && SvgPreview.render) SvgPreview.render(assembly);
+        } else {
+            var defaultAssembly  =  {
+                'Assembly__Dimensions__Config': {
+                    'Assembly__Dimensions__Config__WidthMm'  : 1800,
+                    'Assembly__Dimensions__Config__HeightMm' : 2100
+                },
+                'Assembly__DoorType__Config': {
+                    'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
+                }
+            };
+            if (SvgPreview && SvgPreview.render) SvgPreview.render(defaultAssembly);
         }
     }
     // ------------------------------------------------------------
@@ -161,7 +173,22 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Initialize Project Lifecycle - Enable/Disable Nav Tabs
+    // HELPER FUNCTION | Persist Current Project to Disk
+    // ------------------------------------------------------------
+    function _autosaveCurrentProject() {
+        var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
+        var StateManager        =  window.ValeSpec__AppCore__StateManager;
+        if (!ProjectFileManager || !StateManager) return;
+
+        var state  =  StateManager.getState();
+        if (state.currentProject) {
+            ProjectFileManager.saveProject(state.currentProject);              // <-- Write full project JSON to localStorage + disk
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialize Project Lifecycle - Enable/Disable Nav Tabs, Auto-Save Hooks
     // ------------------------------------------------------------
     function _initProjectLifecycle() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
@@ -169,6 +196,10 @@
 
         StateManager.on('projectChanged', function(projectData) {
             _updateNavTabStates(projectData);
+        });
+
+        StateManager.on('assemblyUpdated', function() {
+            _autosaveCurrentProject();                                         // <-- Persist whenever an assembly field is changed
         });
     }
     // ------------------------------------------------------------

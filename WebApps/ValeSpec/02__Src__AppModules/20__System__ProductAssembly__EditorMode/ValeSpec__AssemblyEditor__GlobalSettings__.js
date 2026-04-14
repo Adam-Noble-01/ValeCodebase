@@ -6,14 +6,15 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - GlobalSettings
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Global ironmongery finish dropdown at top of configurator
+   PURPOSE    : Persistent global context bar pinned above the step wizard
    CREATED    : 2026
 
    DESCRIPTION:
-   - Renders global finish selector in the settings bar
+   - Renders global finish selector as a persistent header bar
    - Options: Unlacquered Brass, Satin Nickel, Bronze, Other (free text)
    - On change calls StateManager.setGlobalFinish()
    - Cascades finish to all assemblies in the project
+   - Styled as a prominent context bar above the step progression
 
    ============================================================================= */
 
@@ -42,10 +43,14 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Finish Dropdown
+    // HELPER FUNCTION | Build Global Context Bar
     // ------------------------------------------------------------
     function _buildFinishDropdown() {
         _containerEl.classList.add('ValeSpec__AssemblyEditor__GlobalBar');
+
+        var icon  =  document.createElement('span');
+        icon.textContent    =  '\u2699';
+        icon.style.fontSize =  '1.1rem';
 
         var label  =  document.createElement('label');
         label.textContent  =  'Ironmongery Finish';
@@ -91,6 +96,7 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         _finishSelect.addEventListener('change', _onFinishChange);
         _otherInput.addEventListener('change', _onOtherInputChange);
 
+        _containerEl.appendChild(icon);
         _containerEl.appendChild(label);
         _containerEl.appendChild(_finishSelect);
         _containerEl.appendChild(_otherInput);

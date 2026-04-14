@@ -6,15 +6,15 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - DoorConfigurator - DoorTypeAndDimensions
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Columns 1-3: Door type, quantity, and dimension controls
+   PURPOSE    : Step 1 (Door Type) and Step 2 (Quantity & Dimensions)
    CREATED    : 2026
 
    DESCRIPTION:
-   - Column 1: Door Type dropdown (Bi Fold disabled with tooltip)
-   - Column 2: Quantity numeric input
-   - Column 3: Width + Height inputs with linked range sliders
+   - Step 1: Door Type dropdown with full-width layout
+   - Step 2: Quantity input, Width + Height inputs with linked range sliders
    - On dimension change: calls HingeCalculator and LockingCalculator
-   - Updates assembly via StateManager
+   - Registers summary callbacks with StepManager for collapsed display
+   - Auto-advances to next step on primary selection change
 
    ============================================================================= */
 
@@ -32,7 +32,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _gridEl            =  null;                                         // <-- Parent grid element
+    let _step1BodyEl       =  null;                                         // <-- Step 1 card body (Door Type)
+    let _step2BodyEl       =  null;                                         // <-- Step 2 card body (Qty & Dims)
     let _doorTypeSelect    =  null;                                         // <-- Door type dropdown
     let _quantityInput     =  null;                                         // <-- Quantity numeric input
     let _widthInput        =  null;                                         // <-- Width numeric input
@@ -98,9 +99,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Door Type Column (Column 1)
+    // HELPER FUNCTION | Build Step 1 - Door Type
     // ------------------------------------------------------------
-    function _buildDoorTypeColumn() {
+    function _buildDoorTypeStep() {
         var group  =  document.createElement('div');
         group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
@@ -127,20 +128,22 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
         group.appendChild(label);
         group.appendChild(_doorTypeSelect);
-        _gridEl.appendChild(group);
+
+        var footerEl  =  _step1BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        _step1BodyEl.insertBefore(group, footerEl);
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Quantity Column (Column 2)
+    // HELPER FUNCTION | Build Step 2 - Quantity and Dimensions
     // ------------------------------------------------------------
-    function _buildQuantityColumn() {
-        var group  =  document.createElement('div');
-        group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+    function _buildDimensionsStep() {
+        var qtyGroup  =  document.createElement('div');
+        qtyGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
-        var label  =  document.createElement('label');
-        label.textContent  =  'Quantity';
-        label.setAttribute('for', 'ValeSpec__AssemblyEditor__Quantity');
+        var qtyLabel  =  document.createElement('label');
+        qtyLabel.textContent  =  'Quantity';
+        qtyLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__Quantity');
 
         _quantityInput       =  document.createElement('input');
         _quantityInput.type  =  'number';
@@ -151,19 +154,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
         _quantityInput.addEventListener('change', _onQuantityChange);
 
-        group.appendChild(label);
-        group.appendChild(_quantityInput);
-        _gridEl.appendChild(group);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Build Dimension Column with Linked Slider (Column 3)
-    // ------------------------------------------------------------
-    function _buildDimensionColumn() {
-        var group  =  document.createElement('div');
-        group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
-        group.style.gridColumn  =  'span 1';
+        qtyGroup.appendChild(qtyLabel);
+        qtyGroup.appendChild(_quantityInput);
 
         var widthCfg   =  _sliderConfig ? {
             Min: _sliderConfig['AssemblyEditor__Slider__Config__WidthMinMm']  || 600,
@@ -187,6 +179,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         var hStep =  (heightCfg && heightCfg['Step'])    || 1;
         var hDef  =  (heightCfg && heightCfg['Default']) || 2100;
 
+        var dimsRow  =  document.createElement('div');
+        dimsRow.className  =  'ValeSpec__AssemblyEditor__FormRow';
+
+        var widthGroup  =  document.createElement('div');
+        widthGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+
         var widthLabel  =  document.createElement('label');
         widthLabel.textContent  =  'Width (mm)';
 
@@ -205,6 +203,13 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         _widthSlider.max   =  wMax;
         _widthSlider.step  =  wStep;
         _widthSlider.value =  wDef;
+
+        widthGroup.appendChild(widthLabel);
+        widthGroup.appendChild(_widthInput);
+        widthGroup.appendChild(_widthSlider);
+
+        var heightGroup  =  document.createElement('div');
+        heightGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
         var heightLabel  =  document.createElement('label');
         heightLabel.textContent  =  'Height (mm)';
@@ -225,6 +230,13 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         _heightSlider.step  =  hStep;
         _heightSlider.value =  hDef;
 
+        heightGroup.appendChild(heightLabel);
+        heightGroup.appendChild(_heightInput);
+        heightGroup.appendChild(_heightSlider);
+
+        dimsRow.appendChild(widthGroup);
+        dimsRow.appendChild(heightGroup);
+
         _widthInput.addEventListener('input', function() {
             _widthSlider.value  =  _widthInput.value;
             _onDimensionChange();
@@ -242,13 +254,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
             _onDimensionChange();
         });
 
-        group.appendChild(widthLabel);
-        group.appendChild(_widthInput);
-        group.appendChild(_widthSlider);
-        group.appendChild(heightLabel);
-        group.appendChild(_heightInput);
-        group.appendChild(_heightSlider);
-        _gridEl.appendChild(group);
+        var footerEl  =  _step2BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        _step2BodyEl.insertBefore(qtyGroup, footerEl);
+        _step2BodyEl.insertBefore(dimsRow, footerEl);
     }
     // ------------------------------------------------------------
 
@@ -257,6 +265,11 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
     function _onDoorTypeChange() {
         _onDimensionChange();
+
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) {
+            StepManager.advanceFromStep('doorType');
+        }
     }
     // ------------------------------------------------------------
 
@@ -319,6 +332,26 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Summary Callback for Step 1 (Door Type)
+    // ------------------------------------------------------------
+    function _doorTypeSummary() {
+        var val  =  _doorTypeSelect ? _doorTypeSelect.value : '';
+        return val || 'Not selected';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Summary Callback for Step 2 (Qty & Dims)
+    // ------------------------------------------------------------
+    function _dimensionsSummary() {
+        var qty  =  _quantityInput ? _quantityInput.value : '1';
+        var w    =  _widthInput    ? _widthInput.value    : '1800';
+        var h    =  _heightInput   ? _heightInput.value   : '2100';
+        return qty + 'x  |  ' + w + ' x ' + h + ' mm';
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Refresh Controls from Assembly Data
     // ------------------------------------------------------------
     function refreshFromAssembly(assemblyData) {
@@ -340,16 +373,29 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Initialise Door Type and Dimensions Section
+    // FUNCTION | Register Summaries with StepManager
     // ------------------------------------------------------------
-    async function init(gridEl) {
-        _gridEl  =  gridEl;
-        if (!_gridEl) return;
+    function _registerSummaries() {
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager) return;
+
+        StepManager.registerSummary('doorType',   _doorTypeSummary);
+        StepManager.registerSummary('dimensions', _dimensionsSummary);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialise Door Type and Dimensions Steps
+    // ------------------------------------------------------------
+    async function init(step1BodyEl, step2BodyEl) {
+        _step1BodyEl  =  step1BodyEl;
+        _step2BodyEl  =  step2BodyEl;
+        if (!_step1BodyEl || !_step2BodyEl) return;
 
         await _loadConfig();
-        _buildDoorTypeColumn();
-        _buildQuantityColumn();
-        _buildDimensionColumn();
+        _buildDoorTypeStep();
+        _buildDimensionsStep();
+        _registerSummaries();
 
         console.log('[ValeSpec__DoorTypeAndDimensions] Initialised.');
     }

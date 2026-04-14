@@ -8,5 +8,25 @@
         "Hotstring"  : ";wcc",
         "Action"     : "TypeOutText",
         "Text"       : "✅ Complete | Whitecard Delivery - "
+    },
+    {
+        "Hotstring"  : "Heic2png",
+        "Action"     : "TypeOutText",
+        "Text"       : "D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\30__Python__ImageTools\\Py_ImgUtils__HeicToPngConverter\\Py_ImgUtils__HeicToPngConverter__Main__.py"
+    },
+    {
+        "Hotstring"  : "heic2png",
+        "Action"     : "TypeOutText",
+        "Text"       : "D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\30__Python__ImageTools\\Py_ImgUtils__HeicToPngConverter\\Py_ImgUtils__HeicToPngConverter__Main__.py"
+    },
+    {
+        "Hotstring"  : "Heictopng",
+        "Action"     : "TypeOutText",
+        "Text"       : "D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\30__Python__ImageTools\\Py_ImgUtils__HeicToPngConverter\\Py_ImgUtils__HeicToPngConverter__Main__.py"
+    },
+    {
+        "Hotstring"  : "heictopng",
+        "Action"     : "TypeOutText",
+        "Text"       : "D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\30__Python__ImageTools\\Py_ImgUtils__HeicToPngConverter\\Py_ImgUtils__HeicToPngConverter__Main__.py"
     }
 ]

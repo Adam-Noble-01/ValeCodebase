@@ -680,12 +680,68 @@
           "color": "na-shift-color-slate"
         },
         {
-          "id": "new-1776157689432",
+          "id": "new-1776159660373",
           "date": "2026-04-14",
           "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Amend |  Cgi For Tom",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1776159691470",
+          "date": "2026-04-14",
+          "startTime": "08:30",
           "endTime": "09:00",
+          "title": "Admin",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1776159766010",
+          "date": "2026-04-14",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776157689432",
+          "date": "2026-04-14",
+          "startTime": "09:00",
+          "endTime": "10:00",
           "title": "Dev |  ValePlanner PWA",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776159802470",
+          "date": "2026-04-14",
+          "startTime": "10:15",
+          "endTime": "10:45",
+          "title": "Dev |  ValePlanner AutoStart",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776163757173",
+          "date": "2026-04-14",
+          "startTime": "10:45",
+          "endTime": "12:00",
+          "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776169512253",
+          "date": "2026-04-14",
+          "startTime": "15:30",
+          "endTime": "16:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776163809682",
+          "date": "2026-04-14",
+          "startTime": "12:15",
+          "endTime": "14:00",
+          "title": "Blockout |  Marsh",
+          "color": "na-shift-color-rose"
         }
       ]
     }

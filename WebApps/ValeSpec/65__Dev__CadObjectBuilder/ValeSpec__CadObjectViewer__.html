@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles                      -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ValeSpec | CAD Object Viewer</title>
+
+    <style>
+
+        /* CSS Variables - ValeSpec CAD Viewer */
+        :root {
+            --bg-app                 : #141416;
+            --bg-panel               : #1e1e22;
+            --bg-surface             : #28282e;
+            --bg-surface-hover       : #32323a;
+            --bg-input               : #1a1a20;
+            --border                 : #3a3a44;
+            --border-subtle          : #2a2a32;
+
+            --text-primary           : #e2e2e8;
+            --text-secondary         : #8888a0;
+            --text-dim               : #55556a;
+            --text-accent            : #a78bfa;
+
+            --col-line               : #4dabf7;
+            --col-arc                : #ffa94d;
+            --col-circle             : #69db7c;
+            --col-origin             : #ff6b6b;
+            --col-bbox               : rgba(255,255,255,0.12);
+            --col-grid-minor         : rgba(255,255,255,0.04);
+            --col-grid-major         : rgba(255,255,255,0.10);
+            --col-grid-axis          : rgba(255,255,255,0.22);
+            --col-highlight          : #fff176;
+            --col-selected           : #ffffff;
+
+            --btn-bg                 : #2e2e38;
+            --btn-bg-hover           : #3c3c48;
+            --btn-bg-active          : #a78bfa;
+
+            font-size                : 16px;
+        }
+
+        /* Base Reset */
+        *, *::before, *::after { box-sizing : border-box; margin : 0; padding : 0; }
+
+        html, body {
+            width                    : 100%;
+            height                   : 100%;
+            overflow                 : hidden;
+            background               : var(--bg-app);
+            color                    : var(--text-primary);
+            font-family              : 'Segoe UI', system-ui, sans-serif;
+            font-size                : var(--font-size);
+        }
+
+        /* App Layout */
+        #app {
+            display                  : grid;
+            grid-template-rows       : 54px 1fr 34px;
+            grid-template-columns    : 1fr 350px;
+            grid-template-areas      : "header  header"
+                                       "viewer  inspector"
+                                       "status  inspector";
+            width                    : 100%;
+            height                   : 100%;
+        }
+
+
+        /* ---------------------------------------------------------------- */
+        /* Header Bar                                                       */
+        /* ---------------------------------------------------------------- */
+        #header {
+            grid-area                : header;
+            display                  : flex;
+            align-items              : center;
+            gap                      : 10px;
+            padding                  : 0 17px;
+            background               : var(--bg-panel);
+            border-bottom            : 1px solid var(--border);
+            user-select              : none;
+        }
+
+        #header .brand {
+            font-size                : 0.85rem;
+            font-weight              : 600;
+            color                    : var(--text-accent);
+            letter-spacing           : 0.06em;
+            margin-right             : 6px;
+            white-space              : nowrap;
+        }
+
+        #header .divider {
+            width                    : 1px;
+            height                   : 20px;
+            background               : var(--border);
+            flex-shrink              : 0;
+        }
+
+        .toolbar-btn {
+            display                  : flex;
+            align-items              : center;
+            gap                      : 5px;
+            padding                  : 6px 13px;
+            background               : var(--btn-bg);
+            border                   : 1px solid var(--border);
+            border-radius            : 5px;
+            color                    : var(--text-primary);
+            font-size                : 0.78rem;
+            cursor                   : pointer;
+            white-space              : nowrap;
+            transition               : background 0.12s, border-color 0.12s;
+        }
+        .toolbar-btn:hover           { background : var(--btn-bg-hover); border-color : #555560; }
+        .toolbar-btn.active          { background : var(--btn-bg-active); color : #fff; border-color : var(--btn-bg-active); }
+        .toolbar-btn svg             { width : 13px; height : 13px; flex-shrink : 0; }
+
+        #load-btn                    { background : #2d2050; border-color : #5a3ea0; color : #c4b5fd; }
+        #load-btn:hover              { background : #3d2c70; }
+
+        #file-input                  { display : none; }
+
+        #header .spacer              { flex : 1; }
+
+        #legend {
+            display                  : flex;
+            align-items              : center;
+            gap                      : 12px;
+            padding-right            : 4px;
+        }
+        .legend-item {
+            display                  : flex;
+            align-items              : center;
+            gap                      : 5px;
+            font-size                : 0.72rem;
+            color                    : var(--text-secondary);
+        }
+        .legend-dot {
+            width                    : 8px;
+            height                   : 2px;
+            border-radius            : 1px;
+        }
+
+
+        /* ---------------------------------------------------------------- */
+        /* SVG Viewport                                                     */
+        /* ---------------------------------------------------------------- */
+        #viewer {
+            grid-area                : viewer;
+            position                 : relative;
+            overflow                 : hidden;
+            background               : var(--bg-app);
+            cursor                   : grab;
+        }
+        #viewer.dragging             { cursor : grabbing; }
+
+        #svg-canvas {
+            width                    : 100%;
+            height                   : 100%;
+            display                  : block;
+        }
+
+        /* Drop Zone Overlay */
+        #drop-zone {
+            position                 : absolute;
+            inset                    : 0;
+            display                  : flex;
+            flex-direction           : column;
+            align-items              : center;
+            justify-content          : center;
+            gap                      : 12px;
+            background               : rgba(20,20,22,0.96);
+            pointer-events           : none;
+            transition               : opacity 0.2s;
+        }
+        #drop-zone.hidden            { opacity : 0; pointer-events : none; }
+        #drop-zone.drag-over         { background : rgba(40,28,70,0.97); }
+
+        #drop-zone .drop-icon        { font-size : 2.4rem; opacity : 0.3; }
+        #drop-zone .drop-title       { font-size : 1.1rem; color : var(--text-secondary); }
+        #drop-zone .drop-sub         { font-size : 0.78rem; color : var(--text-dim); }
+
+
+        /* ---------------------------------------------------------------- */
+        /* Status Bar                                                       */
+        /* ---------------------------------------------------------------- */
+        #statusbar {
+            grid-area                : status;
+            display                  : flex;
+            align-items              : center;
+            gap                      : 16px;
+            padding                  : 0 15px;
+            background               : var(--bg-panel);
+            border-top               : 1px solid var(--border);
+            font-size                : 0.72rem;
+            color                    : var(--text-secondary);
+            user-select              : none;
+        }
+        #statusbar span              { display : flex; align-items : center; gap : 5px; }
+        #statusbar .label            { color : var(--text-dim); }
+        #coord-readout               { font-variant-numeric : tabular-nums; min-width : 140px; }
+        #zoom-readout                { font-variant-numeric : tabular-nums; min-width : 50px; }
+
+
+        /* ---------------------------------------------------------------- */
+        /* Inspector Panel                                                  */
+        /* ---------------------------------------------------------------- */
+        #inspector {
+            grid-area                : inspector;
+            display                  : flex;
+            flex-direction           : column;
+            background               : var(--bg-panel);
+            border-left              : 1px solid var(--border);
+            overflow                 : hidden;
+        }
+
+        .panel-section {
+            border-bottom            : 1px solid var(--border-subtle);
+            flex-shrink              : 0;
+        }
+
+        .panel-heading {
+            padding                  : 9px 12px 7px;
+            font-size                : 0.68rem;
+            font-weight              : 600;
+            letter-spacing           : 0.1em;
+            color                    : var(--text-dim);
+            text-transform           : uppercase;
+            background               : var(--bg-panel);
+        }
+
+        /* File Info */
+        #info-grid {
+            display                  : grid;
+            grid-template-columns    : 1fr 1fr;
+            gap                      : 1px;
+            background               : var(--border-subtle);
+            margin                   : 0 12px 10px;
+            border-radius            : 5px;
+            overflow                 : hidden;
+        }
+        .info-cell {
+            background               : var(--bg-surface);
+            padding                  : 7px 9px;
+        }
+        .info-cell .label            { font-size : 0.65rem; color : var(--text-dim); margin-bottom : 2px; }
+        .info-cell .value            { font-size : 0.82rem; color : var(--text-primary); font-variant-numeric : tabular-nums; }
+
+        /* Bbox Row */
+        #bbox-row {
+            display                  : grid;
+            grid-template-columns    : 1fr 1fr;
+            gap                      : 1px;
+            background               : var(--border-subtle);
+            margin                   : 0 12px 10px;
+            border-radius            : 5px;
+            overflow                 : hidden;
+        }
+
+        /* Path List */
+        #path-list-wrap {
+            flex                     : 1;
+            overflow-y               : auto;
+            min-height               : 0;
+        }
+
+        #path-list {
+            list-style               : none;
+        }
+        #path-list li {
+            display                  : flex;
+            align-items              : center;
+            gap                      : 8px;
+            padding                  : 6px 12px;
+            cursor                   : pointer;
+            font-size                : 0.76rem;
+            color                    : var(--text-secondary);
+            border-bottom            : 1px solid var(--border-subtle);
+            transition               : background 0.1s;
+        }
+        #path-list li:hover          { background : var(--bg-surface-hover); color : var(--text-primary); }
+        #path-list li.selected       { background : var(--bg-surface); color : var(--text-primary); }
+        #path-list li.highlighted    { color : var(--col-highlight); }
+
+        .path-type-dot {
+            width                    : 7px;
+            height                   : 7px;
+            border-radius            : 50%;
+            flex-shrink              : 0;
+        }
+        .path-type-label             { flex : 1; }
+        .path-detail-text            { font-size : 0.68rem; color : var(--text-dim); }
+
+        /* Detail Panel */
+        #detail-panel {
+            flex-shrink              : 0;
+            border-top               : 1px solid var(--border);
+        }
+
+        #detail-content {
+            padding                  : 8px 12px 10px;
+            font-size                : 0.72rem;
+            color                    : var(--text-secondary);
+            min-height               : 60px;
+        }
+        #detail-content .detail-row {
+            display                  : flex;
+            justify-content          : space-between;
+            padding                  : 2px 0;
+            border-bottom            : 1px solid var(--border-subtle);
+        }
+        #detail-content .detail-key  { color : var(--text-dim); }
+        #detail-content .detail-val  { color : var(--text-primary); font-variant-numeric : tabular-nums; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar          { width : 5px; }
+        ::-webkit-scrollbar-track    { background : transparent; }
+        ::-webkit-scrollbar-thumb    { background : #3a3a44; border-radius : 3px; }
+
+        /* SVG Geometry Classes */
+        .geo-line    { stroke : var(--col-line);   stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; }
+        .geo-arc     { stroke : var(--col-arc);    stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; }
+        .geo-circle  { stroke : var(--col-circle); stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; }
+
+        .geo-line:hover, .geo-arc:hover, .geo-circle:hover {
+            stroke-width             : 2;
+            cursor                   : pointer;
+        }
+        .geo-highlighted {
+            stroke                   : var(--col-highlight) !important;
+            stroke-width             : 2 !important;
+        }
+        .geo-selected {
+            stroke                   : var(--col-selected) !important;
+            stroke-width             : 2.5 !important;
+        }
+        .geo-dimmed  { opacity : 0.2; }
+
+        .grid-minor  { stroke : var(--col-grid-minor); stroke-width : 0.3; vector-effect : non-scaling-stroke; }
+        .grid-major  { stroke : var(--col-grid-major); stroke-width : 0.7; vector-effect : non-scaling-stroke; }
+        .grid-axis   { stroke : var(--col-grid-axis);  stroke-width : 1.2; vector-effect : non-scaling-stroke; }
+        .origin-ring { stroke : var(--col-origin); stroke-width : 1; fill : none; vector-effect : non-scaling-stroke; }
+        .origin-cross { stroke : var(--col-origin); stroke-width : 0.7; vector-effect : non-scaling-stroke; opacity : 0.7; }
+        .bbox-rect   { stroke : var(--col-bbox); stroke-width : 0.5; fill : none; stroke-dasharray : 3 3; vector-effect : non-scaling-stroke; }
+
+    </style>
+
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | User Interface HTML Layout & Elements                    -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+
+<div id="app">
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- UI MENU | Header Toolbar                                         -->
+    <!-- ---------------------------------------------------------------- -->
+    <header id="header">
+
+        <span class="brand">VALESPEC / CAD VIEWER</span>
+        <div class="divider"></div>
+
+        <button class="toolbar-btn" id="load-btn" title="Load exported JSON file">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2 10v3h12v-3M8 2v8M5 5l3-3 3 3"/>
+            </svg>
+            Load JSON
+        </button>
+        <input type="file" id="file-input" accept=".json">
+
+        <div class="divider"></div>
+
+        <button class="toolbar-btn" id="fit-btn" title="Fit geometry to viewport (F)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4"/>
+            </svg>
+            Fit
+        </button>
+
+        <button class="toolbar-btn" id="grid-btn" title="Toggle grid (G)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M1 5h14M1 11h14M5 1v14M11 1v14"/>
+            </svg>
+            Grid
+        </button>
+
+        <button class="toolbar-btn" id="bbox-btn" title="Toggle bounding box (B)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="12" height="12" stroke-dasharray="3 2"/>
+            </svg>
+            BBox
+        </button>
+
+        <div class="spacer"></div>
+
+        <div id="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--col-line)"></span> Line</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--col-arc)"></span> Arc</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--col-circle)"></span> Circle</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--col-origin)"></span> Origin</div>
+        </div>
+
+    </header>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- UI MENU | SVG Viewport & Drop Zone                              -->
+    <!-- ---------------------------------------------------------------- -->
+    <main id="viewer">
+
+        <svg id="svg-canvas" xmlns="http://www.w3.org/2000/svg">
+            <g id="g-grid"></g>
+            <g id="g-bbox"></g>
+            <g id="g-geometry"></g>
+            <g id="g-origin"></g>
+        </svg>
+
+        <div id="drop-zone">
+            <div class="drop-icon">⬡</div>
+            <div class="drop-title">Load a ValeSpec Vector Data JSON</div>
+            <div class="drop-sub">Click "Load JSON" above &nbsp;·&nbsp; or drag &amp; drop a file here</div>
+        </div>
+
+    </main>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- UI MENU | Status Bar                                             -->
+    <!-- ---------------------------------------------------------------- -->
+    <footer id="statusbar">
+        <span><span class="label">CURSOR</span> <span id="coord-readout">— mm, — mm</span></span>
+        <span><span class="label">ZOOM</span> <span id="zoom-readout">—</span></span>
+        <span id="status-msg"></span>
+    </footer>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ---------------------------------------------------------------- -->
+    <!-- UI MENU | Inspector Panel                                        -->
+    <!-- ---------------------------------------------------------------- -->
+    <aside id="inspector">
+
+        <div class="panel-section">
+            <div class="panel-heading">File Info</div>
+            <div id="info-grid">
+                <div class="info-cell"><div class="label">ARCS</div><div class="value" id="inf-arcs">—</div></div>
+                <div class="info-cell"><div class="label">CIRCLES</div><div class="value" id="inf-circles">—</div></div>
+                <div class="info-cell"><div class="label">LINES</div><div class="value" id="inf-lines">—</div></div>
+                <div class="info-cell"><div class="label">EDGES</div><div class="value" id="inf-edges">—</div></div>
+            </div>
+            <div id="bbox-row">
+                <div class="info-cell"><div class="label">WIDTH</div><div class="value" id="inf-w">—</div></div>
+                <div class="info-cell"><div class="label">HEIGHT</div><div class="value" id="inf-h">—</div></div>
+                <div class="info-cell"><div class="label">MIN X</div><div class="value" id="inf-minx">—</div></div>
+                <div class="info-cell"><div class="label">MIN Y</div><div class="value" id="inf-miny">—</div></div>
+            </div>
+        </div>
+
+        <div class="panel-section" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+            <div class="panel-heading">Paths  <span id="path-count" style="font-weight:400; text-transform:none; letter-spacing:0"></span></div>
+            <div id="path-list-wrap">
+                <ul id="path-list"></ul>
+            </div>
+        </div>
+
+        <div id="detail-panel" class="panel-section">
+            <div class="panel-heading">Selection</div>
+            <div id="detail-content">
+                <div style="color:var(--text-dim); font-size:0.72rem; padding:4px 0;">Click a path to inspect</div>
+            </div>
+        </div>
+
+    </aside>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+</div>
+
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Front End Javascript                                      -->
+<!-- ----------------------------------------------------------------- -->
+<script>
+
+// -----------------------------------------------------------------------------
+// REGION | Module Variables - Application State
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | Viewer State
+    // ------------------------------------------------------------
+    let jsonData       = null;       // <-- Parsed HardwareItem__VectorData object
+    let viewBox        = { x: -50, y: -50, w: 200, h: 200 };  // SVG viewBox (mm)
+    let isDragging     = false;      // <-- Pan drag active flag
+    let dragStart      = { x: 0, y: 0, vbx: 0, vby: 0 };     // <-- Drag start state
+    let selectedIndex  = -1;         // <-- Currently selected path index
+    let hoveredIndex   = -1;         // <-- Currently hovered path index
+    let showGrid       = true;       // <-- Grid visibility toggle
+    let showBbox       = true;       // <-- Bounding box visibility toggle
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | DOM Element References
+    // ------------------------------------------------------------
+    const svgEl        = document.getElementById('svg-canvas');
+    const gGrid        = document.getElementById('g-grid');
+    const gBbox        = document.getElementById('g-bbox');
+    const gGeom        = document.getElementById('g-geometry');
+    const gOrigin      = document.getElementById('g-origin');
+    const dropZone     = document.getElementById('drop-zone');
+    const pathList     = document.getElementById('path-list');
+    const detailPanel  = document.getElementById('detail-content');
+    const coordReadout = document.getElementById('coord-readout');
+    const zoomReadout  = document.getElementById('zoom-readout');
+    const statusMsg    = document.getElementById('status-msg');
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Coordinate Utilities
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Convert Client Mouse Position to SVG ViewBox mm Coordinates
+    // ---------------------------------------------------------------
+    function clientToSvg(clientX, clientY) {
+        const rect  =  svgEl.getBoundingClientRect();
+        return {
+            x  :  viewBox.x + (clientX - rect.left)  / rect.width  * viewBox.w,
+            y  :  viewBox.y + (clientY - rect.top)    / rect.height * viewBox.h
+        };
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Convert SVG Coordinate to Data Space (flip Y)
+    // ---------------------------------------------------------------
+    // SVG uses Y-down; our data uses Y-up. SVG_y = -data_y.
+    function svgToData(svgX, svgY) {
+        return { x : svgX, y : -svgY };
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Apply Current ViewBox to SVG Element
+    // ---------------------------------------------------------------
+    function applyViewBox() {
+        svgEl.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
+        const mmPerPx  =  viewBox.w / svgEl.clientWidth;
+        zoomReadout.textContent  =  `${(1 / mmPerPx).toFixed(2)}x`;
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | SVG Geometry Generation
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Build SVG Path String for an Arc or Circle
+    // ---------------------------------------------------------------
+    // Arcs in data are CCW (Y-up). After Y-flip for SVG (Y-down), CCW becomes CW.
+    // CW in SVG = sweepFlag 1. largeArcFlag from |sweep_deg| > 180.
+    function buildArcPath(path) {
+        const cx  =  path.Center_mm.X;
+        const cy  =  -path.Center_mm.Y;   // <-- Y-flip to SVG space
+        const r   =  path.Radius_mm;
+
+        if (path.IsCircle) {
+            // SVG cannot describe a full circle with a single arc command; use two semicircles
+            return `M ${cx} ${cy - r} A ${r} ${r} 0 1 0 ${cx} ${cy + r} A ${r} ${r} 0 1 0 ${cx} ${cy - r} Z`;
+        }
+
+        const x1  =  path.StartPoint_mm.X;
+        const y1  =  -path.StartPoint_mm.Y;   // <-- Y-flip
+        const x2  =  path.EndPoint_mm.X;
+        const y2  =  -path.EndPoint_mm.Y;     // <-- Y-flip
+
+        const sweep         =  path.Sweep_deg;
+        const largeArcFlag  =  Math.abs(sweep) > 180 ? 1 : 0;
+        const sweepFlag     =  sweep > 0 ? 1 : 0;   // <-- CCW data (positive) = CW SVG = flag 1
+
+        return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} ${sweepFlag} ${x2} ${y2}`;
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render the Grid Lines into the Grid Group
+    // ---------------------------------------------------------------
+    function renderGrid(bbox, padding) {
+        if (!showGrid) { gGrid.innerHTML = ''; return; }
+
+        const minorStep  =  10;    // <-- 10mm minor grid spacing
+        const majorStep  =  100;   // <-- 100mm major grid spacing
+
+        const xMin  =  Math.floor((bbox.MinX_mm - padding) / minorStep) * minorStep;
+        const xMax  =  Math.ceil( (bbox.MaxX_mm + padding) / minorStep) * minorStep;
+        const yMin  =  Math.floor((bbox.MinY_mm - padding) / minorStep) * minorStep;
+        const yMax  =  Math.ceil( (bbox.MaxY_mm + padding) / minorStep) * minorStep;
+
+        // Y values are flipped for SVG: SVG y = -data y
+        const svgYMin  =  -(yMax + padding);
+        const svgYMax  =  -(yMin - padding);
+
+        let html  =  '';
+
+        // Vertical grid lines (constant X)
+        for (let x = xMin; x <= xMax; x += minorStep) {
+            const cls  =  x === 0 ? 'grid-axis' : (x % majorStep === 0 ? 'grid-major' : 'grid-minor');
+            html  +=  `<line class="${cls}" x1="${x}" y1="${svgYMin}" x2="${x}" y2="${svgYMax}"/>`;
+        }
+
+        // Horizontal grid lines (constant data Y → constant SVG -Y)
+        for (let y = yMin; y <= yMax; y += minorStep) {
+            const svgY  =  -y;
+            const cls   =  y === 0 ? 'grid-axis' : (y % majorStep === 0 ? 'grid-major' : 'grid-minor');
+            html  +=  `<line class="${cls}" x1="${xMin - padding}" y1="${svgY}" x2="${xMax + padding}" y2="${svgY}"/>`;
+        }
+
+        gGrid.innerHTML  =  html;
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Origin Crosshair and Ring Marker
+    // ---------------------------------------------------------------
+    function renderOrigin(armLen) {
+        const a  =  armLen;
+        gOrigin.innerHTML  =
+            `<line class="origin-cross" x1="${-a}" y1="0" x2="${a}" y2="0"/>` +
+            `<line class="origin-cross" x1="0" y1="${-a}" x2="0" y2="${a}"/>` +
+            `<circle class="origin-ring" cx="0" cy="0" r="${a * 0.18}"/>`;
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Bounding Box Outline
+    // ---------------------------------------------------------------
+    function renderBbox(bbox) {
+        if (!showBbox) { gBbox.innerHTML = ''; return; }
+
+        const x  =  bbox.MinX_mm;
+        const y  =  -(bbox.MaxY_mm);   // <-- Y-flip: data maxY → SVG minY
+        const w  =  bbox.Width_mm;
+        const h  =  bbox.Height_mm;
+
+        gBbox.innerHTML  =  `<rect class="bbox-rect" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Render All Geometry Paths into the Geometry Group
+    // ---------------------------------------------------------------
+    function renderGeometry(paths) {
+        let html  =  '';
+
+        paths.forEach((path, i) => {
+            const pt    =  path.PathType;
+            let   cls   =  '';
+            let   el    =  '';
+
+            if (pt === 'Circle') {
+                cls  =  'geo-circle';
+                el   =  `<path class="${cls}" data-idx="${i}" d="${buildArcPath(path)}"/>`;
+
+            } else if (pt === 'Arc') {
+                cls  =  'geo-arc';
+                el   =  `<path class="${cls}" data-idx="${i}" d="${buildArcPath(path)}"/>`;
+
+            } else if (pt === 'Line') {
+                cls  =  'geo-line';
+                const x1  =  path.Start_mm.X;
+                const y1  =  -path.Start_mm.Y;   // <-- Y-flip
+                const x2  =  path.End_mm.X;
+                const y2  =  -path.End_mm.Y;      // <-- Y-flip
+                el   =  `<line class="${cls}" data-idx="${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+            }
+
+            html  +=  el;
+        });
+
+        gGeom.innerHTML  =  html;
+
+        // Attach hover and click listeners to each rendered element
+        gGeom.querySelectorAll('[data-idx]').forEach(el => {
+            el.addEventListener('mouseenter', () => onPathHover(parseInt(el.dataset.idx)));
+            el.addEventListener('mouseleave', () => onPathHoverEnd());
+            el.addEventListener('click',      (e) => { e.stopPropagation(); onPathClick(parseInt(el.dataset.idx)); });
+        });
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Inspector Panel Population
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Populate File Info Stats Strip
+    // ---------------------------------------------------------------
+    function populateInfo(data) {
+        const arcCount     =  data.Paths.filter(p => p.PathType === 'Arc').length;
+        const circleCount  =  data.Paths.filter(p => p.PathType === 'Circle').length;
+        const lineCount    =  data.Paths.filter(p => p.PathType === 'Line').length;
+        const bb           =  data.BoundingBox;
+
+        document.getElementById('inf-arcs').textContent     =  arcCount;
+        document.getElementById('inf-circles').textContent  =  circleCount;
+        document.getElementById('inf-lines').textContent    =  lineCount;
+        document.getElementById('inf-edges').textContent    =  data.EdgeCount || '—';
+        document.getElementById('inf-w').textContent        =  bb.Width_mm  ? `${bb.Width_mm.toFixed(1)} mm`  : '—';
+        document.getElementById('inf-h').textContent        =  bb.Height_mm ? `${bb.Height_mm.toFixed(1)} mm` : '—';
+        document.getElementById('inf-minx').textContent     =  bb.MinX_mm   !== undefined ? `${bb.MinX_mm.toFixed(1)} mm` : '—';
+        document.getElementById('inf-miny').textContent     =  bb.MinY_mm   !== undefined ? `${bb.MinY_mm.toFixed(1)} mm` : '—';
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Populate the Scrollable Path List
+    // ---------------------------------------------------------------
+    const TYPE_COLORS  =  { Line: 'var(--col-line)', Arc: 'var(--col-arc)', Circle: 'var(--col-circle)' };
+
+    function populatePathList(paths) {
+        document.getElementById('path-count').textContent  =  `(${paths.length})`;
+        pathList.innerHTML  =  '';
+
+        paths.forEach((path, i) => {
+            const li    =  document.createElement('li');
+            li.dataset.idx  =  i;
+
+            let detail  =  '';
+            if (path.PathType === 'Line') {
+                detail  =  `(${path.Start_mm.X.toFixed(1)}, ${path.Start_mm.Y.toFixed(1)}) → (${path.End_mm.X.toFixed(1)}, ${path.End_mm.Y.toFixed(1)})`;
+            } else if (path.PathType === 'Arc') {
+                detail  =  `r ${path.Radius_mm.toFixed(1)}mm  ${path.Sweep_deg.toFixed(0)}°`;
+            } else if (path.PathType === 'Circle') {
+                detail  =  `r ${path.Radius_mm.toFixed(1)}mm  @ (${path.Center_mm.X.toFixed(1)}, ${path.Center_mm.Y.toFixed(1)})`;
+            }
+
+            li.innerHTML  =
+                `<span class="path-type-dot" style="background:${TYPE_COLORS[path.PathType] || '#888'}"></span>` +
+                `<span class="path-type-label">${path.PathType} <span style="color:var(--text-dim)">#${i + 1}</span></span>` +
+                `<span class="path-detail-text">${detail}</span>`;
+
+            li.addEventListener('mouseenter', () => onPathHover(i));
+            li.addEventListener('mouseleave', () => onPathHoverEnd());
+            li.addEventListener('click',      () => onPathClick(i));
+
+            pathList.appendChild(li);
+        });
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Populate the Detail Panel for a Selected Path
+    // ---------------------------------------------------------------
+    function populateDetail(path) {
+        if (!path) { detailPanel.innerHTML = '<div style="color:var(--text-dim);font-size:0.72rem;padding:4px 0">Click a path to inspect</div>'; return; }
+
+        const rows  =  [];
+        rows.push(['Type', path.PathType]);
+
+        if (path.PathType === 'Line') {
+            rows.push(['Start X',  `${path.Start_mm.X.toFixed(3)} mm`]);
+            rows.push(['Start Y',  `${path.Start_mm.Y.toFixed(3)} mm`]);
+            rows.push(['End X',    `${path.End_mm.X.toFixed(3)} mm`]);
+            rows.push(['End Y',    `${path.End_mm.Y.toFixed(3)} mm`]);
+            const dx   =  path.End_mm.X - path.Start_mm.X;
+            const dy   =  path.End_mm.Y - path.Start_mm.Y;
+            rows.push(['Length',   `${Math.sqrt(dx*dx + dy*dy).toFixed(3)} mm`]);
+        } else {
+            rows.push(['Center X',     `${path.Center_mm.X.toFixed(3)} mm`]);
+            rows.push(['Center Y',     `${path.Center_mm.Y.toFixed(3)} mm`]);
+            rows.push(['Radius',       `${path.Radius_mm.toFixed(3)} mm`]);
+            if (!path.IsCircle) {
+                rows.push(['Start Angle',  `${path.StartAngle_deg.toFixed(2)}°`]);
+                rows.push(['End Angle',    `${path.EndAngle_deg.toFixed(2)}°`]);
+                rows.push(['Sweep',        `${path.Sweep_deg.toFixed(2)}°`]);
+            }
+        }
+
+        detailPanel.innerHTML  =  rows.map(([k, v]) =>
+            `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`
+        ).join('');
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Interaction - Hover, Select, Pan, Zoom
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Sync Highlight State Between SVG Elements and Path List Items
+    // ---------------------------------------------------------------
+    function syncHighlight(hoverIdx, selectIdx) {
+        gGeom.querySelectorAll('[data-idx]').forEach(el => {
+            const idx  =  parseInt(el.dataset.idx);
+            el.classList.remove('geo-highlighted', 'geo-selected', 'geo-dimmed');
+            if      (idx === selectIdx)  el.classList.add('geo-selected');
+            else if (idx === hoverIdx)   el.classList.add('geo-highlighted');
+            else if (selectIdx !== -1)   el.classList.add('geo-dimmed');
+        });
+
+        pathList.querySelectorAll('li').forEach(li => {
+            const idx  =  parseInt(li.dataset.idx);
+            li.classList.remove('selected', 'highlighted');
+            if      (idx === selectIdx)  li.classList.add('selected');
+            else if (idx === hoverIdx)   li.classList.add('highlighted');
+        });
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Path Hover Enter
+    // ---------------------------------------------------------------
+    function onPathHover(idx) {
+        hoveredIndex  =  idx;
+        syncHighlight(hoveredIndex, selectedIndex);
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Path Hover Leave
+    // ---------------------------------------------------------------
+    function onPathHoverEnd() {
+        hoveredIndex  =  -1;
+        syncHighlight(-1, selectedIndex);
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Path Click - Toggle Selection
+    // ---------------------------------------------------------------
+    function onPathClick(idx) {
+        selectedIndex  =  (selectedIndex === idx) ? -1 : idx;   // <-- Toggle selection on re-click
+        syncHighlight(hoveredIndex, selectedIndex);
+        populateDetail(selectedIndex >= 0 ? jsonData.Paths[selectedIndex] : null);
+
+        // Scroll path list item into view
+        const li  =  pathList.querySelector(`[data-idx="${selectedIndex}"]`);
+        if (li) li.scrollIntoView({ block: 'nearest' });
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB FUNCTION | Handle Mouse Wheel Zoom (zoom centred on cursor position)
+    // ---------------------------------------------------------------
+    function onWheel(e) {
+        e.preventDefault();
+        const factor  =  e.deltaY > 0 ? 1.12 : 0.89;   // <-- Zoom out / zoom in
+        const mouse   =  clientToSvg(e.clientX, e.clientY);
+
+        viewBox.x  =  mouse.x - (mouse.x - viewBox.x) * factor;
+        viewBox.y  =  mouse.y - (mouse.y - viewBox.y) * factor;
+        viewBox.w  *=  factor;
+        viewBox.h  *=  factor;
+
+        applyViewBox();
+        if (showGrid && jsonData) renderGrid(jsonData.BoundingBox, getPadding());
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB FUNCTION | Handle Mouse Drag Pan
+    // ---------------------------------------------------------------
+    function onMouseDown(e) {
+        if (e.button !== 0) return;
+        isDragging    =  true;
+        dragStart     =  { x: e.clientX, y: e.clientY, vbx: viewBox.x, vby: viewBox.y };
+        document.getElementById('viewer').classList.add('dragging');
+    }
+
+    function onMouseMove(e) {
+        // Update coordinate readout
+        const svgCoord  =  clientToSvg(e.clientX, e.clientY);
+        const dataMm    =  svgToData(svgCoord.x, svgCoord.y);
+        coordReadout.textContent  =  `${dataMm.x.toFixed(1)} mm,  ${dataMm.y.toFixed(1)} mm`;
+
+        if (!isDragging) return;
+
+        const rect   =  svgEl.getBoundingClientRect();
+        const scaleX =  viewBox.w / rect.width;
+        const scaleY =  viewBox.h / rect.height;
+
+        viewBox.x  =  dragStart.vbx - (e.clientX - dragStart.x) * scaleX;
+        viewBox.y  =  dragStart.vby - (e.clientY - dragStart.y) * scaleY;
+        applyViewBox();
+    }
+
+    function onMouseUp() {
+        isDragging  =  false;
+        document.getElementById('viewer').classList.remove('dragging');
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | File Loading & JSON Parsing
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Calculate Viewport Padding from Bounding Box Size
+    // ---------------------------------------------------------------
+    function getPadding() {
+        if (!jsonData) return 50;
+        return Math.max(jsonData.BoundingBox.Width_mm, jsonData.BoundingBox.Height_mm, 20) * 0.15;
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fit the ViewBox to the Geometry with Padding
+    // ---------------------------------------------------------------
+    function fitToGeometry() {
+        if (!jsonData) return;
+
+        const bb       =  jsonData.BoundingBox;
+        const padding  =  getPadding();
+
+        // Account for viewport aspect ratio to avoid distortion
+        const vwRatio  =  svgEl.clientWidth / svgEl.clientHeight;
+        const dataW    =  bb.Width_mm  + padding * 2;
+        const dataH    =  bb.Height_mm + padding * 2;
+        const dataRatio  =  dataW / dataH;
+
+        let w, h;
+        if (vwRatio > dataRatio) {
+            h  =  dataH;
+            w  =  dataH * vwRatio;
+        } else {
+            w  =  dataW;
+            h  =  dataW / vwRatio;
+        }
+
+        viewBox.x  =  bb.MinX_mm - (w - bb.Width_mm)  / 2;
+        viewBox.y  =  -(bb.MaxY_mm + (h - bb.Height_mm) / 2);   // <-- Y-flip: data maxY → SVG minY
+        viewBox.w  =  w;
+        viewBox.h  =  h;
+
+        applyViewBox();
+        renderGrid(bb, padding);
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Load and Render a ValeSpec Vector Data JSON Object
+    // ---------------------------------------------------------------
+    function loadVectorData(data) {
+        // Unwrap the root key if present
+        const vd  =  data.HardwareItem__VectorData || data;
+
+        if (!vd.Paths || !vd.BoundingBox) {
+            setStatus('!! Invalid JSON structure. Expected HardwareItem__VectorData with Paths and BoundingBox.', true);
+            return;
+        }
+
+        jsonData       =  vd;
+        selectedIndex  =  -1;
+        hoveredIndex   =  -1;
+
+        const padding  =  getPadding();
+
+        renderBbox(vd.BoundingBox);
+        renderOrigin(padding * 0.4);
+        renderGeometry(vd.Paths);
+        populateInfo(vd);
+        populatePathList(vd.Paths);
+        populateDetail(null);
+        fitToGeometry();
+
+        dropZone.classList.add('hidden');
+        setStatus(`Loaded  ·  ${vd.Paths.length} paths  ·  ${vd.BoundingBox.Width_mm?.toFixed(1)} × ${vd.BoundingBox.Height_mm?.toFixed(1)} mm`);
+    }
+    // ---------------------------------------------------------------
+
+
+    // SUB FUNCTION | Read a File Object and Parse as JSON
+    // ---------------------------------------------------------------
+    function readFile(file) {
+        if (!file || !file.name.endsWith('.json')) {
+            setStatus('!! Please load a .json file.', true);
+            return;
+        }
+        const reader  =  new FileReader();
+        reader.onload  =  (e) => {
+            try {
+                const parsed  =  JSON.parse(e.target.result);
+                loadVectorData(parsed);
+            } catch (err) {
+                setStatus(`!! JSON parse error : ${err.message}`, true);
+            }
+        };
+        reader.readAsText(file);
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Set Status Bar Message
+    // ---------------------------------------------------------------
+    function setStatus(msg, isError = false) {
+        statusMsg.textContent  =  msg;
+        statusMsg.style.color  =  isError ? '#ff6b6b' : 'var(--text-secondary)';
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Toolbar Button Handlers & Keyboard Shortcuts
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Initialise All Event Listeners
+    // ---------------------------------------------------------------
+    function init() {
+
+        // Load button and file input
+        document.getElementById('load-btn').addEventListener('click', () => {
+            document.getElementById('file-input').click();
+        });
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            readFile(e.target.files[0]);
+            e.target.value = '';   // <-- Reset so same file can be re-loaded
+        });
+
+        // Toolbar toggles
+        document.getElementById('fit-btn').addEventListener('click', fitToGeometry);
+
+        document.getElementById('grid-btn').addEventListener('click', function() {
+            showGrid  =  !showGrid;
+            this.classList.toggle('active', showGrid);
+            if (jsonData) renderGrid(jsonData.BoundingBox, getPadding());
+            else gGrid.innerHTML = '';
+        });
+        document.getElementById('grid-btn').classList.add('active');   // <-- Grid on by default
+
+        document.getElementById('bbox-btn').addEventListener('click', function() {
+            showBbox  =  !showBbox;
+            this.classList.toggle('active', showBbox);
+            if (jsonData) renderBbox(jsonData.BoundingBox);
+            else gBbox.innerHTML = '';
+        });
+        document.getElementById('bbox-btn').classList.add('active');   // <-- BBox on by default
+
+        // SVG viewport interactions
+        svgEl.addEventListener('wheel',     onWheel,     { passive: false });
+        svgEl.addEventListener('mousedown', onMouseDown);
+        svgEl.addEventListener('mousemove', onMouseMove);
+        svgEl.addEventListener('mouseup',   onMouseUp);
+        svgEl.addEventListener('mouseleave', onMouseUp);
+
+        // Deselect on background click
+        svgEl.addEventListener('click', () => {
+            selectedIndex  =  -1;
+            syncHighlight(-1, -1);
+            populateDetail(null);
+        });
+
+        // Drag and drop onto the viewer
+        const viewer  =  document.getElementById('viewer');
+        viewer.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+        viewer.addEventListener('dragleave', ()  => { dropZone.classList.remove('drag-over'); });
+        viewer.addEventListener('drop',      (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            readFile(e.dataTransfer.files[0]);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'f' || e.key === 'F') fitToGeometry();
+            if (e.key === 'g' || e.key === 'G') document.getElementById('grid-btn').click();
+            if (e.key === 'b' || e.key === 'B') document.getElementById('bbox-btn').click();
+            if (e.key === 'Escape') {
+                selectedIndex  =  -1;
+                syncHighlight(-1, -1);
+                populateDetail(null);
+            }
+        });
+
+        // Initial empty viewBox
+        applyViewBox();
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// Run on DOM ready
+init();
+
+</script>
+<!-- endregion ----------------------------------------------------------------- -->
+
+</html>

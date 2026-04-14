@@ -306,27 +306,6 @@
         .ValeSpec__CadObjectViewer__PathListTypeLabel             { flex : 1; }
         .ValeSpec__CadObjectViewer__PathListDetail            { font-size : 0.68rem; color : var(--text-dim); }
 
-        /* Detail Panel */
-        #ValeSpec__CadObjectViewer__DetailPanel {
-            flex-shrink              : 0;
-            border-top               : 1px solid var(--border);
-        }
-
-        #ValeSpec__CadObjectViewer__DetailContent {
-            padding                  : 8px 12px 10px;
-            font-size                : 0.72rem;
-            color                    : var(--text-secondary);
-            min-height               : 60px;
-        }
-        #ValeSpec__CadObjectViewer__DetailContent .ValeSpec__CadObjectViewer__DetailRow {
-            display                  : flex;
-            justify-content          : space-between;
-            padding                  : 2px 0;
-            border-bottom            : 1px solid var(--border-subtle);
-        }
-        #ValeSpec__CadObjectViewer__DetailContent .ValeSpec__CadObjectViewer__DetailKey  { color : var(--text-dim); }
-        #ValeSpec__CadObjectViewer__DetailContent .ValeSpec__CadObjectViewer__DetailValue  { color : var(--text-primary); font-variant-numeric : tabular-nums; }
-
         /* Scrollbar */
         ::-webkit-scrollbar          { width : 5px; }
         ::-webkit-scrollbar-track    { background : transparent; }
@@ -373,6 +352,81 @@
         /* Single stroke + color for all dimension geometry (ext, dimension line, 45° ticks) */
         .ValeSpec__CadObjectViewer__BboxDim       { stroke : var(--col-bbox); stroke-width : 0.6; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
         .ValeSpec__CadObjectViewer__BboxDimText  { fill : var(--col-bbox); font-family : 'Segoe UI', system-ui, sans-serif; font-weight : 300; vector-effect : non-scaling-stroke; pointer-events : none; }
+
+
+        /* ---------------------------------------------------------------- */
+        /* Floating Selection Panel                                         */
+        /* ---------------------------------------------------------------- */
+        #ValeSpec__CadObjectViewer__FloatingSelectionPanel {
+            position                 : absolute;
+            top                      : 10px;
+            left                     : 10px;
+            z-index                  : 10;
+            width                    : 240px;
+            background               : var(--bg-panel);
+            border                   : 1px solid var(--border);
+            border-radius            : 6px;
+            overflow                 : hidden;
+            box-shadow               : 0 4px 18px rgba(0,0,0,0.45);
+            transition               : max-height 0.22s ease, opacity 0.18s ease;
+            max-height               : 400px;
+            opacity                  : 1;
+            pointer-events           : all;
+        }
+
+        #ValeSpec__CadObjectViewer__FloatingSelectionPanel.ValeSpec__CadObjectViewer__StateCollapsed {
+            max-height               : 0;
+            opacity                  : 0;
+            pointer-events           : none;
+            border-color             : transparent;
+            box-shadow               : none;
+        }
+
+        .ValeSpec__CadObjectViewer__FloatingPanelHeader {
+            display                  : flex;
+            align-items              : center;
+            justify-content          : space-between;
+            padding                  : 7px 10px 6px;
+            background               : var(--bg-surface);
+            border-bottom            : 1px solid var(--border-subtle);
+            user-select              : none;
+        }
+
+        .ValeSpec__CadObjectViewer__FloatingPanelTitle {
+            font-size                : 0.68rem;
+            font-weight              : 600;
+            letter-spacing           : 0.1em;
+            color                    : var(--text-dim);
+            text-transform           : uppercase;
+        }
+
+        .ValeSpec__CadObjectViewer__FloatingPanelClose {
+            font-size                : 0.72rem;
+            color                    : var(--text-dim);
+            cursor                   : pointer;
+            line-height              : 1;
+            padding                  : 1px 3px;
+            border-radius            : 3px;
+            transition               : color 0.12s, background 0.12s;
+        }
+        .ValeSpec__CadObjectViewer__FloatingPanelClose:hover {
+            color                    : var(--text-primary);
+            background               : var(--bg-surface-hover);
+        }
+
+        #ValeSpec__CadObjectViewer__FloatingDetailContent {
+            padding                  : 8px 10px 10px;
+            font-size                : 0.72rem;
+            color                    : var(--text-secondary);
+        }
+        #ValeSpec__CadObjectViewer__FloatingDetailContent .ValeSpec__CadObjectViewer__DetailRow {
+            display                  : flex;
+            justify-content          : space-between;
+            padding                  : 3px 0;
+            border-bottom            : 1px solid var(--border-subtle);
+        }
+        #ValeSpec__CadObjectViewer__FloatingDetailContent .ValeSpec__CadObjectViewer__DetailKey   { color : var(--text-dim); }
+        #ValeSpec__CadObjectViewer__FloatingDetailContent .ValeSpec__CadObjectViewer__DetailValue { color : var(--text-primary); font-variant-numeric : tabular-nums; }
 
     </style>
 
@@ -457,6 +511,18 @@
             <div class="ValeSpec__CadObjectViewer__DropZoneSubtitle">Click "Load JSON" above &nbsp;·&nbsp; or drop a .json file on the viewport anytime</div>
         </div>
 
+        <!-- ---------------------------------------------------------------- -->
+        <!-- UI MENU | Floating Selection Detail Panel                        -->
+        <!-- ---------------------------------------------------------------- -->
+        <div id="ValeSpec__CadObjectViewer__FloatingSelectionPanel" class="ValeSpec__CadObjectViewer__StateCollapsed">
+            <div class="ValeSpec__CadObjectViewer__FloatingPanelHeader">
+                <span class="ValeSpec__CadObjectViewer__FloatingPanelTitle">Selection</span>
+                <span class="ValeSpec__CadObjectViewer__FloatingPanelClose" id="ValeSpec__CadObjectViewer__FloatingPanelCloseBtn" title="Dismiss (Esc)">✕</span>
+            </div>
+            <div id="ValeSpec__CadObjectViewer__FloatingDetailContent"></div>
+        </div>
+        <!-- endregion ----------------------------------------------------------------- -->
+
     </main>
     <!-- endregion ----------------------------------------------------------------- -->
 
@@ -504,13 +570,6 @@
             </div>
         </div>
 
-        <div id="ValeSpec__CadObjectViewer__DetailPanel" class="ValeSpec__CadObjectViewer__PanelSection">
-            <div class="ValeSpec__CadObjectViewer__PanelHeading">Selection</div>
-            <div id="ValeSpec__CadObjectViewer__DetailContent">
-                <div style="color:var(--text-dim); font-size:0.72rem; padding:4px 0;">Click a path to inspect</div>
-            </div>
-        </div>
-
     </aside>
     <!-- endregion ----------------------------------------------------------------- -->
 
@@ -554,12 +613,13 @@
     const ValeSpec__CadObjectViewer__DomSvgLayerBbox         =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerBbox');
     const ValeSpec__CadObjectViewer__DomSvgLayerGeometry     =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerGeometry');
     const ValeSpec__CadObjectViewer__DomSvgLayerOrigin       =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerOrigin');
-    const ValeSpec__CadObjectViewer__DomDropZoneOverlay      =  document.getElementById('ValeSpec__CadObjectViewer__DropZoneOverlay');
-    const ValeSpec__CadObjectViewer__DomPathListUl           =  document.getElementById('ValeSpec__CadObjectViewer__PathList');
-    const ValeSpec__CadObjectViewer__DomDetailContent        =  document.getElementById('ValeSpec__CadObjectViewer__DetailContent');
-    const ValeSpec__CadObjectViewer__DomReadoutCursor        =  document.getElementById('ValeSpec__CadObjectViewer__ReadoutCursor');
-    const ValeSpec__CadObjectViewer__DomReadoutZoom          =  document.getElementById('ValeSpec__CadObjectViewer__ReadoutZoom');
-    const ValeSpec__CadObjectViewer__DomStatusMessage        =  document.getElementById('ValeSpec__CadObjectViewer__StatusMessage');
+    const ValeSpec__CadObjectViewer__DomDropZoneOverlay          =  document.getElementById('ValeSpec__CadObjectViewer__DropZoneOverlay');
+    const ValeSpec__CadObjectViewer__DomPathListUl               =  document.getElementById('ValeSpec__CadObjectViewer__PathList');
+    const ValeSpec__CadObjectViewer__DomReadoutCursor            =  document.getElementById('ValeSpec__CadObjectViewer__ReadoutCursor');
+    const ValeSpec__CadObjectViewer__DomReadoutZoom              =  document.getElementById('ValeSpec__CadObjectViewer__ReadoutZoom');
+    const ValeSpec__CadObjectViewer__DomStatusMessage            =  document.getElementById('ValeSpec__CadObjectViewer__StatusMessage');
+    const ValeSpec__CadObjectViewer__DomFloatingPanel            =  document.getElementById('ValeSpec__CadObjectViewer__FloatingSelectionPanel');   // <-- Floating selection panel
+    const ValeSpec__CadObjectViewer__DomFloatingDetailContent    =  document.getElementById('ValeSpec__CadObjectViewer__FloatingDetailContent');     // <-- Floating panel content area
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -886,10 +946,10 @@
     // ---------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Populate the Detail Panel for a Selected Path
+    // HELPER FUNCTION | Populate the Floating Detail Panel for a Selected Path
     // ---------------------------------------------------------------
     function populateDetail(path) {
-        if (!path) { ValeSpec__CadObjectViewer__DomDetailContent.innerHTML = '<div style="color:var(--text-dim);font-size:0.72rem;padding:4px 0">Click a path to inspect</div>'; return; }
+        if (!path) { ValeSpec__CadObjectViewer__DomFloatingDetailContent.innerHTML = ''; return; }
 
         const rows  =  [];
         rows.push(['Type', path.PathType]);
@@ -913,9 +973,25 @@
             }
         }
 
-        ValeSpec__CadObjectViewer__DomDetailContent.innerHTML  =  rows.map(([k, v]) =>
+        ValeSpec__CadObjectViewer__DomFloatingDetailContent.innerHTML  =  rows.map(([k, v]) =>
             `<div class="ValeSpec__CadObjectViewer__DetailRow"><span class="ValeSpec__CadObjectViewer__DetailKey">${k}</span><span class="ValeSpec__CadObjectViewer__DetailValue">${v}</span></div>`
         ).join('');
+    }
+    // ---------------------------------------------------------------
+
+    // HELPER FUNCTION | Show Floating Selection Panel
+    // ---------------------------------------------------------------
+    function showSelectionPanel() {
+        ValeSpec__CadObjectViewer__DomFloatingPanel.classList.remove('ValeSpec__CadObjectViewer__StateCollapsed');   // <-- Expand the panel
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Hide and Reset Floating Selection Panel
+    // ---------------------------------------------------------------
+    function hideSelectionPanel() {
+        ValeSpec__CadObjectViewer__DomFloatingPanel.classList.add('ValeSpec__CadObjectViewer__StateCollapsed');   // <-- Collapse the panel
+        populateDetail(null);                                                                                       // <-- Clear content
     }
     // ---------------------------------------------------------------
 
@@ -970,7 +1046,13 @@
     function onPathClick(idx) {
         ValeSpec__CadObjectViewer__PathSelectedIndex  =  (ValeSpec__CadObjectViewer__PathSelectedIndex === idx) ? -1 : idx;   // <-- Toggle selection on re-click
         syncHighlight(ValeSpec__CadObjectViewer__PathHoveredIndex, ValeSpec__CadObjectViewer__PathSelectedIndex);
-        populateDetail(ValeSpec__CadObjectViewer__PathSelectedIndex >= 0 ? ValeSpec__CadObjectViewer__StateVectorData.Paths[ValeSpec__CadObjectViewer__PathSelectedIndex] : null);
+
+        if (ValeSpec__CadObjectViewer__PathSelectedIndex >= 0) {
+            populateDetail(ValeSpec__CadObjectViewer__StateVectorData.Paths[ValeSpec__CadObjectViewer__PathSelectedIndex]);   // <-- Populate with selected path data
+            showSelectionPanel();                                                                                               // <-- Expand floating panel
+        } else {
+            hideSelectionPanel();   // <-- Collapse when toggled off
+        }
 
         // Scroll path list item into view
         const li  =  ValeSpec__CadObjectViewer__DomPathListUl.querySelector(`[data-idx="${ValeSpec__CadObjectViewer__PathSelectedIndex}"]`);
@@ -1193,7 +1275,7 @@
         ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('click', () => {
             ValeSpec__CadObjectViewer__PathSelectedIndex  =  -1;
             syncHighlight(-1, -1);
-            populateDetail(null);
+            hideSelectionPanel();   // <-- Collapse floating panel on empty click
         });
 
         // Drag and drop onto the viewport
@@ -1213,8 +1295,16 @@
             if (e.key === 'Escape') {
                 ValeSpec__CadObjectViewer__PathSelectedIndex  =  -1;
                 syncHighlight(-1, -1);
-                populateDetail(null);
+                hideSelectionPanel();   // <-- Collapse floating panel on Escape
             }
+        });
+
+        // Floating panel close button
+        document.getElementById('ValeSpec__CadObjectViewer__FloatingPanelCloseBtn').addEventListener('click', (e) => {
+            e.stopPropagation();   // <-- Prevent SVG background click from firing
+            ValeSpec__CadObjectViewer__PathSelectedIndex  =  -1;
+            syncHighlight(-1, -1);
+            hideSelectionPanel();   // <-- Collapse panel on ✕ click
         });
 
         // Initial empty SvgViewBoxState

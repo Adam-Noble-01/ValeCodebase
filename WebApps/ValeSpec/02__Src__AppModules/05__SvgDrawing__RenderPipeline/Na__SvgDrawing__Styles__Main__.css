@@ -1,0 +1,156 @@
+/* =============================================================================
+   VALESPEC - SVG DRAWING STYLES
+   =============================================================================
+
+   FILE       : Na__SvgDrawing__Styles__Main__.css
+   NAMESPACE  : ValeSpec
+   MODULE     : SvgDrawing - Styles
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Visual styling for the SVG drawing viewport and layers
+   CREATED    : 2026
+
+   DESCRIPTION:
+   - CSS variables for SVG drawing colour palette and stroke widths
+   - Viewport container layout and overflow handling
+   - Door frame stroke and shadow classes
+   - Panel fill and outline classes
+   - Dimension annotation line and text styling
+   - Ironmongery hardware vector layer styling
+
+   ============================================================================= */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | CSS Variables - SVG Drawing Design Tokens                 */
+/* ----------------------------------------------------------------- */
+
+:root {
+    --ValeSpec_SvgFrameStrokeColor               : #172b3a;
+    --ValeSpec_SvgFrameStrokeWidth               : 4;
+    --ValeSpec_SvgFrameShadowColor               : rgba(0, 0, 0, 0.20);
+    --ValeSpec_SvgFrameShadowBlur                : 8;
+    --ValeSpec_SvgFrameShadowOffset              : 3;
+
+    --ValeSpec_SvgPanelFillColor                 : #e8e4df;
+    --ValeSpec_SvgPanelStrokeColor               : #172b3a;
+    --ValeSpec_SvgPanelStrokeWidth               : 2;
+
+    --ValeSpec_SvgDimensionLineColor             : #cc3333;
+    --ValeSpec_SvgDimensionTextColor             : #cc3333;
+    --ValeSpec_SvgDimensionFontSizeScaleFactor   : 0.04;
+    --ValeSpec_SvgDimensionTickSize              : 15;
+    --ValeSpec_SvgDimensionOffsetFromFrame        : 60;
+
+    --ValeSpec_SvgIronmongeryStrokeColor         : #172b3a;
+    --ValeSpec_SvgIronmongeryStrokeWidth         : 1.2;
+
+    --ValeSpec_SvgViewportPadding                : 120;
+    --ValeSpec_SvgViewportBackground             : #ffffff;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | SVG Viewport Container                                    */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__SvgDrawing__ViewportContainer {
+    width                        : 100%;
+    height                       : 100%;
+    display                      : flex;
+    align-items                  : center;
+    justify-content              : center;
+    overflow                     : hidden;
+    background-color             : var(--ValeSpec_SvgViewportBackground);
+}
+
+.ValeSpec__SvgDrawing__ViewportContainer svg {
+    max-width                    : 100%;
+    max-height                   : 100%;
+    display                      : block;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Door Frame Stroke and Shadow                              */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__SvgDrawing__FrameRect {
+    fill                         : none;
+    stroke                       : var(--ValeSpec_SvgFrameStrokeColor);
+    stroke-linejoin              : miter;
+}
+
+.ValeSpec__SvgDrawing__FrameRect--shadow {
+    filter                       : url(#ValeSpec__SvgDrawing__DropShadow);
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Door Panel Fill and Outline                               */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__SvgDrawing__PanelRect {
+    fill                         : var(--ValeSpec_SvgPanelFillColor);
+    stroke                       : var(--ValeSpec_SvgPanelStrokeColor);
+    stroke-linejoin              : miter;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Dimension Annotation Lines and Text                       */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__SvgDrawing__DimensionLine {
+    stroke                       : var(--ValeSpec_SvgDimensionLineColor);
+    stroke-linecap               : butt;
+}
+
+.ValeSpec__SvgDrawing__DimensionTick {
+    stroke                       : var(--ValeSpec_SvgDimensionLineColor);
+    stroke-linecap               : butt;
+}
+
+.ValeSpec__SvgDrawing__DimensionText {
+    fill                         : var(--ValeSpec_SvgDimensionTextColor);
+    font-family                  : 'Segoe UI', Arial, sans-serif;
+    text-anchor                  : middle;
+    dominant-baseline            : middle;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Ironmongery Hardware Vector Layer                         */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__SvgDrawing__IronmongeryPath {
+    fill                         : none;
+    stroke                       : var(--ValeSpec_SvgIronmongeryStrokeColor);
+    stroke-linecap               : round;
+    stroke-linejoin              : round;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | SVG Drop Shadow Filter Definition Reference               */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__SvgDrawing__FilterDefs {
+    position                     : absolute;
+    width                        : 0;
+    height                       : 0;
+    overflow                     : hidden;
+}
+
+/* endregion ----------------------------------------------------------------- */

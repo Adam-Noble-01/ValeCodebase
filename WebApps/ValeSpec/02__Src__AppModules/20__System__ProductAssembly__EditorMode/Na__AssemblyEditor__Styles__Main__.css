@@ -1,0 +1,465 @@
+/* =============================================================================
+   VALESPEC - ASSEMBLY EDITOR STYLES
+   =============================================================================
+
+   FILE       : Na__AssemblyEditor__Styles__Main__.css
+   NAMESPACE  : ValeSpec
+   MODULE     : AssemblyEditor - Styles
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Layout, form controls, and component styles for Assembly Editor
+   CREATED    : 2026
+
+   DESCRIPTION:
+   - Two-panel editor layout with configurable split
+   - SVG preview panel with centered viewport
+   - 7-column configurator form controls
+   - Warning badges, handing prompt, global settings bar
+
+   ============================================================================= */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | CSS Variables - Assembly Editor                          */
+/* ----------------------------------------------------------------- */
+
+:root {
+    --Vale_EditorPreviewPct              : 55%;
+    --Vale_EditorControlsPct             : 45%;
+    --Vale_EditorMinPreviewWidth         : 400px;
+    --Vale_EditorPreviewBg               : #f5f7f9;
+    --Vale_EditorPreviewBorder           : #d0d5dc;
+    --Vale_EditorControlsBg              : #ffffff;
+    --Vale_EditorFormGroupBg             : #fafbfc;
+    --Vale_EditorFormGroupBorder         : #e2e6ea;
+    --Vale_EditorLabelColour             : #3a4a5c;
+    --Vale_EditorInputBorder             : #c4cad2;
+    --Vale_EditorInputFocusBorder        : #336699;
+    --Vale_EditorSliderTrackBg           : #d0d5dc;
+    --Vale_EditorSliderTrackFill         : #336699;
+    --Vale_EditorSliderThumbBg           : #336699;
+    --Vale_EditorSliderThumbHover        : #2a5580;
+    --Vale_EditorWarningBg               : #fff3cd;
+    --Vale_EditorWarningBorder           : #ffc107;
+    --Vale_EditorWarningColour           : #856404;
+    --Vale_EditorGlobalBarBg             : #eef1f5;
+    --Vale_EditorGlobalBarBorder         : #d0d5dc;
+    --Vale_EditorDisabledBg              : #e9ecef;
+    --Vale_EditorDisabledColour          : #999999;
+    --Vale_EditorRadioAccent             : #336699;
+    --Vale_EditorToastBg                 : #172b3a;
+    --Vale_EditorToastColour             : #ffffff;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Two-Panel Editor Layout                                  */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__Container {
+    display                              : flex;
+    flex-direction                       : row;
+    width                                : 100%;
+    height                               : 100%;
+    overflow                             : hidden;
+}
+
+.ValeSpec__AssemblyEditor__PreviewPanel {
+    flex                                 : 0 0 var(--Vale_EditorPreviewPct);
+    min-width                            : var(--Vale_EditorMinPreviewWidth);
+    display                              : flex;
+    flex-direction                       : column;
+    align-items                          : center;
+    justify-content                      : center;
+    background-color                     : var(--Vale_EditorPreviewBg);
+    border-right                         : 1px solid var(--Vale_EditorPreviewBorder);
+    overflow                             : auto;
+    padding                              : 16px;
+}
+
+.ValeSpec__AssemblyEditor__ControlsPanel {
+    flex                                 : 1 1 var(--Vale_EditorControlsPct);
+    display                              : flex;
+    flex-direction                       : column;
+    background-color                     : var(--Vale_EditorControlsBg);
+    overflow-y                           : auto;
+    padding                              : 16px;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | SVG Preview Viewport                                     */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__SvgViewport {
+    width                                : 100%;
+    max-width                            : 600px;
+    aspect-ratio                         : 3 / 4;
+    background-color                     : #ffffff;
+    border                               : 1px solid var(--Vale_EditorPreviewBorder);
+    border-radius                        : 4px;
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    overflow                             : hidden;
+}
+
+.ValeSpec__AssemblyEditor__SvgViewport svg {
+    width                                : 100%;
+    height                               : 100%;
+}
+
+.ValeSpec__AssemblyEditor__PreviewSliders {
+    display                              : flex;
+    gap                                  : 24px;
+    margin-top                           : 12px;
+    width                                : 100%;
+    max-width                            : 600px;
+}
+
+.ValeSpec__AssemblyEditor__PreviewSliders .ValeSpec__AssemblyEditor__SliderGroup {
+    flex                                 : 1;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Global Settings Bar                                      */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__GlobalBar {
+    display                              : flex;
+    align-items                          : center;
+    gap                                  : 16px;
+    padding                              : 10px 16px;
+    margin-bottom                        : 12px;
+    background-color                     : var(--Vale_EditorGlobalBarBg);
+    border                               : 1px solid var(--Vale_EditorGlobalBarBorder);
+    border-radius                        : 4px;
+}
+
+.ValeSpec__AssemblyEditor__GlobalBar label {
+    font-weight                          : 600;
+    font-size                            : 0.85rem;
+    color                                : var(--Vale_EditorLabelColour);
+    white-space                          : nowrap;
+}
+
+.ValeSpec__AssemblyEditor__GlobalBar select,
+.ValeSpec__AssemblyEditor__GlobalBar input[type="text"] {
+    padding                              : 4px 8px;
+    border                               : 1px solid var(--Vale_EditorInputBorder);
+    border-radius                        : 3px;
+    font-size                            : 0.85rem;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | 7-Column Configurator Grid                               */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__ConfigGrid {
+    display                              : grid;
+    grid-template-columns                : repeat(7, 1fr);
+    gap                                  : 12px;
+    width                                : 100%;
+}
+
+@media (max-width: 960px) {
+    .ValeSpec__AssemblyEditor__ConfigGrid {
+        grid-template-columns            : repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ValeSpec__AssemblyEditor__ConfigGrid {
+        grid-template-columns            : repeat(2, 1fr);
+    }
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Form Group Controls                                      */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__FormGroup {
+    display                              : flex;
+    flex-direction                       : column;
+    padding                              : 10px;
+    background-color                     : var(--Vale_EditorFormGroupBg);
+    border                               : 1px solid var(--Vale_EditorFormGroupBorder);
+    border-radius                        : 4px;
+}
+
+.ValeSpec__AssemblyEditor__FormGroup label {
+    font-size                            : 0.78rem;
+    font-weight                          : 600;
+    color                                : var(--Vale_EditorLabelColour);
+    margin-bottom                        : 4px;
+    text-transform                       : uppercase;
+    letter-spacing                       : 0.4px;
+}
+
+.ValeSpec__AssemblyEditor__FormGroup select,
+.ValeSpec__AssemblyEditor__FormGroup input[type="number"],
+.ValeSpec__AssemblyEditor__FormGroup input[type="text"] {
+    width                                : 100%;
+    padding                              : 6px 8px;
+    border                               : 1px solid var(--Vale_EditorInputBorder);
+    border-radius                        : 3px;
+    font-size                            : 0.85rem;
+    box-sizing                           : border-box;
+    background-color                     : #ffffff;
+    transition                           : border-color 0.15s ease;
+}
+
+.ValeSpec__AssemblyEditor__FormGroup select:focus,
+.ValeSpec__AssemblyEditor__FormGroup input:focus {
+    outline                              : none;
+    border-color                         : var(--Vale_EditorInputFocusBorder);
+    box-shadow                           : 0 0 0 2px rgba(51, 102, 153, 0.15);
+}
+
+.ValeSpec__AssemblyEditor__FormGroup select:disabled,
+.ValeSpec__AssemblyEditor__FormGroup input:disabled {
+    background-color                     : var(--Vale_EditorDisabledBg);
+    color                                : var(--Vale_EditorDisabledColour);
+    cursor                               : not-allowed;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Range Slider Controls                                    */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__SliderGroup {
+    display                              : flex;
+    flex-direction                       : column;
+    gap                                  : 4px;
+}
+
+.ValeSpec__AssemblyEditor__SliderGroup label {
+    font-size                            : 0.75rem;
+    font-weight                          : 600;
+    color                                : var(--Vale_EditorLabelColour);
+}
+
+.ValeSpec__AssemblyEditor__SliderGroup input[type="range"] {
+    -webkit-appearance                   : none;
+    appearance                           : none;
+    width                                : 100%;
+    height                               : 6px;
+    border-radius                        : 3px;
+    background                           : var(--Vale_EditorSliderTrackBg);
+    outline                              : none;
+    cursor                               : pointer;
+}
+
+.ValeSpec__AssemblyEditor__SliderGroup input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance                   : none;
+    appearance                           : none;
+    width                                : 16px;
+    height                               : 16px;
+    border-radius                        : 50%;
+    background                           : var(--Vale_EditorSliderThumbBg);
+    cursor                               : pointer;
+    transition                           : background 0.15s ease;
+}
+
+.ValeSpec__AssemblyEditor__SliderGroup input[type="range"]::-webkit-slider-thumb:hover {
+    background                           : var(--Vale_EditorSliderThumbHover);
+}
+
+.ValeSpec__AssemblyEditor__SliderGroup input[type="range"]::-moz-range-thumb {
+    width                                : 16px;
+    height                               : 16px;
+    border                               : none;
+    border-radius                        : 50%;
+    background                           : var(--Vale_EditorSliderThumbBg);
+    cursor                               : pointer;
+}
+
+.ValeSpec__AssemblyEditor__SliderValue {
+    font-size                            : 0.78rem;
+    color                                : var(--Vale_EditorLabelColour);
+    text-align                           : right;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Warning Badges and Toasts                                */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__WarningBadge {
+    display                              : inline-flex;
+    align-items                          : center;
+    gap                                  : 6px;
+    padding                              : 6px 12px;
+    margin-top                           : 8px;
+    background-color                     : var(--Vale_EditorWarningBg);
+    border                               : 1px solid var(--Vale_EditorWarningBorder);
+    border-radius                        : 4px;
+    color                                : var(--Vale_EditorWarningColour);
+    font-size                            : 0.8rem;
+    font-weight                          : 600;
+}
+
+.ValeSpec__AssemblyEditor__WarningBadge::before {
+    content                              : '\26A0';
+    font-size                            : 1rem;
+}
+
+.ValeSpec__AssemblyEditor__Toast {
+    position                             : fixed;
+    bottom                               : 24px;
+    right                                : 24px;
+    padding                              : 12px 20px;
+    background-color                     : var(--Vale_EditorToastBg);
+    color                                : var(--Vale_EditorToastColour);
+    border-radius                        : 4px;
+    font-size                            : 0.85rem;
+    box-shadow                           : 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index                              : 9000;
+    opacity                              : 0;
+    transform                            : translateY(12px);
+    transition                           : opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ValeSpec__AssemblyEditor__Toast--visible {
+    opacity                              : 1;
+    transform                            : translateY(0);
+}
+
+.ValeSpec__AssemblyEditor__Toast--warning {
+    background-color                     : var(--Vale_EditorWarningBg);
+    color                                : var(--Vale_EditorWarningColour);
+    border                               : 1px solid var(--Vale_EditorWarningBorder);
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Handing Prompt Radio Buttons                             */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__HandingPrompt {
+    display                              : none;
+    flex-direction                       : row;
+    gap                                  : 12px;
+    margin-top                           : 8px;
+}
+
+.ValeSpec__AssemblyEditor__HandingPrompt--visible {
+    display                              : flex;
+}
+
+.ValeSpec__AssemblyEditor__HandingPrompt label {
+    display                              : flex;
+    align-items                          : center;
+    gap                                  : 4px;
+    font-size                            : 0.82rem;
+    font-weight                          : 400;
+    text-transform                       : none;
+    cursor                               : pointer;
+}
+
+.ValeSpec__AssemblyEditor__HandingPrompt input[type="radio"] {
+    accent-color                         : var(--Vale_EditorRadioAccent);
+    cursor                               : pointer;
+}
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Modal Dialog Overlay                                     */
+/* ----------------------------------------------------------------- */
+
+.ValeSpec__Modal__Overlay {
+    position                             : fixed;
+    inset                                : 0;
+    background-color                     : rgba(0, 0, 0, 0.45);
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    z-index                              : 10000;
+    opacity                              : 0;
+    pointer-events                       : none;
+    transition                           : opacity 0.2s ease;
+}
+
+.ValeSpec__Modal__Overlay--visible {
+    opacity                              : 1;
+    pointer-events                       : auto;
+}
+
+.ValeSpec__Modal__Dialog {
+    background-color                     : #ffffff;
+    border-radius                        : 6px;
+    padding                              : 24px;
+    max-width                            : 480px;
+    width                                : 90%;
+    box-shadow                           : 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.ValeSpec__Modal__Dialog h3 {
+    margin                               : 0 0 12px 0;
+    font-size                            : 1.05rem;
+    color                                : var(--Vale_EditorLabelColour);
+}
+
+.ValeSpec__Modal__Dialog p {
+    margin                               : 0 0 20px 0;
+    font-size                            : 0.88rem;
+    line-height                          : 1.5;
+    color                                : #444444;
+}
+
+.ValeSpec__Modal__Actions {
+    display                              : flex;
+    justify-content                      : flex-end;
+    gap                                  : 10px;
+}
+
+.ValeSpec__Modal__Actions button {
+    padding                              : 8px 18px;
+    border                               : 1px solid var(--Vale_EditorInputBorder);
+    border-radius                        : 4px;
+    font-size                            : 0.85rem;
+    cursor                               : pointer;
+    transition                           : background-color 0.15s ease;
+}
+
+.ValeSpec__Modal__BtnConfirm {
+    background-color                     : var(--Vale_EditorSliderThumbBg);
+    color                                : #ffffff;
+    border-color                         : var(--Vale_EditorSliderThumbBg) !important;
+}
+
+.ValeSpec__Modal__BtnConfirm:hover {
+    background-color                     : var(--Vale_EditorSliderThumbHover);
+}
+
+.ValeSpec__Modal__BtnCancel {
+    background-color                     : #ffffff;
+    color                                : var(--Vale_EditorLabelColour);
+}
+
+.ValeSpec__Modal__BtnCancel:hover {
+    background-color                     : #f0f0f0;
+}
+
+/* endregion ----------------------------------------------------------------- */

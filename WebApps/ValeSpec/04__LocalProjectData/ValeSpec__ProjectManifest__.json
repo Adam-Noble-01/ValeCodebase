@@ -1,0 +1,4 @@
+{
+    "ValeSpec__ProjectManifest__Description"  : "Static project manifest for browser-based project listing. In v0.1.0 this file is a placeholder; projects are managed via localStorage at runtime.",
+    "ValeSpec__ProjectManifest__Projects"     : []
+}

@@ -1,0 +1,353 @@
+/* =============================================================================
+ * VALESPEC - DOCUMENT PREVIEW MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__DocPreview__Styles__Main__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : Document Preview Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Preview canvas, paper layout, spec tables, toolbar, and print styles
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - Preview canvas with grey background and centred paper container
+ * - A4-width white paper with drop shadow
+ * - Assembly blocks with SVG drawing and spec table side by side
+ * - Branding header on the paper with Vale logo
+ * - Table styles with brand blue header and alternating row backgrounds
+ * - Toolbar with Back to Editor and disabled PDF Export buttons
+ * - Print-friendly @media print overrides
+ * - Uses --Vale_* and --ValeSpec_* CSS variables from global Variables CSS
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Preview Canvas and Paper Container
+ * ----------------------------------------------------------------------------- */
+
+    /* CANVAS | Grey Background Scroll Area */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocPreview__Container {
+        background                         : #b0b5ba;
+        min-height                         : 100%;
+        padding                            : var(--Vale_Spacing_Large);
+        overflow-y                         : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PAPER | A4-Width White Paper */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__Paper {
+        max-width                          : 794px;
+        margin                             : 0 auto;
+        background                         : var(--Vale_BackgroundWhite);
+        padding                            : 56px;
+        box-shadow                         : 0 12px 40px rgba(0, 0, 0, 0.25);
+        border-radius                      : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Preview Toolbar
+ * ----------------------------------------------------------------------------- */
+
+    /* TOOLBAR | Fixed Action Bar */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__Toolbar {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+        max-width                          : 794px;
+        margin-left                        : auto;
+        margin-right                       : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Back to Editor Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BtnBack {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocPreview__BtnBack:hover {
+        background                         : #0f1e28;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Disabled PDF Export Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BtnExport {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundLight);
+        color                              : var(--Vale_TextMuted);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        cursor                             : not-allowed;
+        opacity                            : 0.6;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Branding Header on Paper
+ * ----------------------------------------------------------------------------- */
+
+    /* BRANDING | Header Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BrandingHeader {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Large);
+        padding-bottom                     : var(--Vale_Spacing_Large);
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);
+        margin-bottom                      : var(--Vale_Spacing_XLarge);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BRANDING | Logo Image */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BrandingLogo {
+        height                             : 48px;
+        width                              : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BRANDING | Meta Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BrandingMeta {
+        flex                               : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BRANDING | Project Name */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BrandingProjectName {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BRANDING | Document Name */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__BrandingDocName {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Assembly Block Layout
+ * ----------------------------------------------------------------------------- */
+
+    /* ASSEMBLY | Block Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__AssemblyBlock {
+        margin-bottom                      : var(--Vale_Spacing_XLarge);
+        page-break-inside                  : avoid;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ASSEMBLY | Title */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__AssemblyTitle {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ASSEMBLY | Drawing Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__DrawingContainer {
+        width                              : 100%;
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        display                            : flex;
+        justify-content                    : center;
+        background                         : var(--Vale_BackgroundLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : var(--Vale_Spacing_Medium);
+    }
+
+    .ValeSpec__DocPreview__DrawingContainer svg {
+        max-width                          : 100%;
+        height                             : auto;
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Spec Table Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TABLE | Wrapper */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__SpecTable {
+        width                              : 100%;
+        border-collapse                    : collapse;
+        font-size                          : var(--Vale_FontSize_Standard);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Header Row */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__SpecTable thead th {
+        text-align                         : left;
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        background                         : #172b3a;
+        color                              : #ffffff;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Body Rows */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__SpecTable tbody td {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        color                              : var(--Vale_TextPrimary);
+        vertical-align                     : top;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Alternating Row Background */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__SpecTable tbody tr:nth-child(even) {
+        background                         : #f5f5f5;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Label Column */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__SpecTable .ValeSpec__DocPreview__SpecLabel {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSecondary);
+        width                              : 40%;
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Job Notes Preview Section
+ * ----------------------------------------------------------------------------- */
+
+    /* NOTES | Preview Block */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__JobNotes {
+        margin-top                         : var(--Vale_Spacing_XLarge);
+        padding-top                        : var(--Vale_Spacing_Large);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NOTES | Title */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__JobNotesTitle {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NOTES | Content Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__JobNotesContent {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        line-height                        : 1.6;
+        white-space                        : pre-wrap;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Print-Friendly Overrides
+ * ----------------------------------------------------------------------------- */
+
+    @media print {
+
+        #ValeSpec__DocPreview__Container {
+            background                     : none;
+            padding                        : 0;
+        }
+
+        .ValeSpec__DocPreview__Toolbar {
+            display                        : none;
+        }
+
+        .ValeSpec__DocPreview__Paper {
+            box-shadow                     : none;
+            margin                         : 0;
+            padding                        : 20mm;
+            max-width                      : none;
+        }
+
+        .ValeSpec__DocPreview__AssemblyBlock {
+            page-break-inside              : avoid;
+        }
+
+        .ValeSpec__DocPreview__SpecTable thead th {
+            background                     : #172b3a !important;
+            color                          : #ffffff !important;
+            -webkit-print-color-adjust     : exact;
+            print-color-adjust             : exact;
+        }
+
+        .ValeSpec__DocPreview__SpecTable tbody tr:nth-child(even) {
+            background                     : #f5f5f5 !important;
+            -webkit-print-color-adjust     : exact;
+            print-color-adjust             : exact;
+        }
+    }
+
+/* endregion ------------------------------------------------------------------- */

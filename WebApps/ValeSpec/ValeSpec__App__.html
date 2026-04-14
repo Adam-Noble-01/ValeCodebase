@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles                      -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#172b3a">
+    <title>ValeSpec | Ironmongery Configurator</title>
+
+    <!-- Favicon - Shared Vale Icon -->
+    <link rel="icon" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+
+    <!-- Single Stylesheet (hub @imports all other CSS including system-local sheets) -->
+    <link rel="stylesheet" href="03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css">
+
+</head>
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Body - Application Shell                        -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Application Header - Vale Branding                       -->
+    <!-- ----------------------------------------------------------------- -->
+    <header class="app-header">
+        <div class="app-header__logo-container app-header__logo-container--left">
+            <img src="../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                 class="app-header__logo-left"
+                 alt="Vale Garden Houses">
+        </div>
+        <div class="app-header__logo-container app-header__logo-container--right">
+            <h1 class="app-header__title">ValeSpec</h1>
+        </div>
+    </header>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Navigation Bar - Mode Switching Tabs                      -->
+    <!-- ----------------------------------------------------------------- -->
+    <nav id="ValeSpec__App__NavigationBar">
+        <button class="ValeSpec__App__NavTab" data-mode="DocManagement">Projects</button>
+        <span class="ValeSpec__App__NavSeparator">/</span>
+        <button class="ValeSpec__App__NavTab ValeSpec__App__NavTab--disabled" data-mode="DocumentEditor">Document Editor</button>
+        <span class="ValeSpec__App__NavSeparator">/</span>
+        <button class="ValeSpec__App__NavTab ValeSpec__App__NavTab--disabled" data-mode="AssemblyEditor">Assembly Editor</button>
+        <span class="ValeSpec__App__NavSeparator">/</span>
+        <button class="ValeSpec__App__NavTab ValeSpec__App__NavTab--disabled" data-mode="DocumentPreview">Preview</button>
+    </nav>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Main Content Area - Mode Panels                          -->
+    <!-- ----------------------------------------------------------------- -->
+    <main id="ValeSpec__App__ContentArea">
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Document Management Mode                             -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="ValeSpec__App__ModeDocManagement" class="ValeSpec__App__ModePanel">
+            <div id="ValeSpec__DocManagement__Container">
+                <div id="ValeSpec__DocManagement__Header">
+                    <h2 id="ValeSpec__DocManagement__Title">Project Documents</h2>
+                    <div id="ValeSpec__DocManagement__Actions"></div>
+                </div>
+                <div id="ValeSpec__DocManagement__TableContainer"></div>
+            </div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Product Assembly Editor Mode                          -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="ValeSpec__App__ModeAssemblyEditor" class="ValeSpec__App__ModePanel">
+            <div id="ValeSpec__AssemblyEditor__Container">
+                <div id="ValeSpec__AssemblyEditor__GlobalBar"></div>
+                <div id="ValeSpec__AssemblyEditor__SplitLayout">
+                    <div id="ValeSpec__AssemblyEditor__PreviewPanel"></div>
+                    <div id="ValeSpec__AssemblyEditor__ControlsPanel"></div>
+                </div>
+            </div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Document Editor Mode                                 -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="ValeSpec__App__ModeDocEditor" class="ValeSpec__App__ModePanel">
+            <div id="ValeSpec__DocEditor__Container">
+                <div id="ValeSpec__DocEditor__HeaderBlock"></div>
+                <div id="ValeSpec__DocEditor__SectionsContainer"></div>
+                <div id="ValeSpec__DocEditor__JobNotesContainer"></div>
+            </div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Document Preview Mode                                -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="ValeSpec__App__ModeDocPreview" class="ValeSpec__App__ModePanel">
+            <div id="ValeSpec__DocPreview__Container">
+                <div id="ValeSpec__DocPreview__Toolbar"></div>
+                <div id="ValeSpec__DocPreview__PageArea"></div>
+            </div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+    </main>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Modal Overlay Container                                   -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="ValeSpec__Modal__Root" class="ValeSpec__Modal__Overlay">
+        <div class="ValeSpec__Modal__Dialog">
+            <h3 id="ValeSpec__Modal__TitleEl" class="ValeSpec__Modal__Title"></h3>
+            <div id="ValeSpec__Modal__BodyEl" class="ValeSpec__Modal__Body"></div>
+            <div id="ValeSpec__Modal__ActionsEl" class="ValeSpec__Modal__Actions"></div>
+        </div>
+    </div>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Toast Notification Container                              -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="ValeSpec__Toast__Root" class="ValeSpec__Toast__Container"></div>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ================================================================= -->
+    <!-- REGION | JavaScript Module Loading                                 -->
+    <!-- ================================================================= -->
+
+    <!-- Utilities (no dependencies) -->
+    <script src="02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__DateFormatter__.js"></script>
+
+    <!-- Math Engines (no dependencies) -->
+    <script src="02__Src__AppModules/04__MathUtils/ValeSpec__MathUtils__HingeCalculator__.js"></script>
+    <script src="02__Src__AppModules/04__MathUtils/ValeSpec__MathUtils__LockingCalculator__.js"></script>
+
+    <!-- SVG Renderers (no dependencies) -->
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__CoordHelpers__.js"></script>
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DoorFrameRenderer__.js"></script>
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DoorPanelRenderer__.js"></script>
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__IronmongeryRenderer__.js"></script>
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DimensionRenderer__.js"></script>
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__RenderPipeline__.js"></script>
+
+    <!-- Data Layer (depends on utils) -->
+    <script src="02__Src__AppModules/02__AppData/ValeSpec__AppData__HardwareIndexLoader__.js"></script>
+    <script src="02__Src__AppModules/02__AppData/ValeSpec__AppData__ProjectFileManager__.js"></script>
+
+    <!-- App Core (depends on data layer) -->
+    <script src="02__Src__AppModules/01__AppCore/ValeSpec__AppCore__StateManager__.js"></script>
+    <script src="02__Src__AppModules/01__AppCore/ValeSpec__AppCore__ModeManager__.js"></script>
+    <script src="02__Src__AppModules/01__AppCore/ValeSpec__AppCore__ConfigLoader__.js"></script>
+
+    <!-- System: Document Management Mode -->
+    <script src="02__Src__AppModules/10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectList__.js"></script>
+    <script src="02__Src__AppModules/10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectActions__.js"></script>
+
+    <!-- System: Product Assembly Editor Mode -->
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__GlobalSettings__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__WarningSystem__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__SvgPreview__.js"></script>
+    <script src="02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__Layout__.js"></script>
+
+    <!-- System: Document Editor Mode -->
+    <script src="02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__DocumentHeader__.js"></script>
+    <script src="02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__JobNotes__.js"></script>
+    <script src="02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__SectionManager__.js"></script>
+
+    <!-- System: Document Preview Mode -->
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__SpecTableRenderer__.js"></script>
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js"></script>
+
+    <!-- Init (last - boots the app) -->
+    <script src="02__Src__AppModules/01__AppCore/ValeSpec__AppCore__Init__.js"></script>
+
+    <!-- endregion --------------------------------------------------------- -->
+
+
+</body>
+</html>

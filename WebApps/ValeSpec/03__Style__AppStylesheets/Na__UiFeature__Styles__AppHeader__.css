@@ -1,0 +1,92 @@
+/* =============================================================================
+ * VALESPEC - HEADER COMPONENT STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__AppHeader__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : Header Component Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Header bar with Vale branding matching ValeVision3D / Whitecardopedia
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - Persistent header component matching Vale ecosystem design
+ * - Features Vale Garden Houses logo on left
+ * - Features ValeSpec title text on right
+ * - White background with subtle shadow and Vale blue bottom border
+ * - Fixed positioning at top of viewport
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Header Component Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* HEADER | Application Header Bar */
+    /* ------------------------------------------------------------ */
+    .app-header {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        right                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        height                             : var(--Vale_HeaderHeight);
+        padding                            : 0 var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        color                              : var(--Vale_TextPrimary);
+        box-shadow                         : 0 2px 8px rgba(0,0,0,0.08);
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand);
+        z-index                            : var(--Vale_ZIndex_Header);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Logo Container Base Styles */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-container {
+        display                            : flex;
+        align-items                        : center;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Left Logo Container */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-container--left {
+        justify-content                    : flex-start;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Right Logo Container */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-container--right {
+        justify-content                    : flex-end;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Vale Logo (Left Side) */
+    /* ------------------------------------------------------------ */
+    .app-header__logo-left {
+        height                             : 42px;
+        width                              : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | ValeSpec Title Text (Right Side) */
+    /* ------------------------------------------------------------ */
+    .app-header__title {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        font-family                        : var(--Vale_FontFamily);
+        color                              : var(--Vale_PrimaryBrand);
+        margin                             : 0;
+        padding                            : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

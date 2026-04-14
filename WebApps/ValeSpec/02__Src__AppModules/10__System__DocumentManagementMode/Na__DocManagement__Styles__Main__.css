@@ -1,0 +1,334 @@
+/* =============================================================================
+ * VALESPEC - DOCUMENT MANAGEMENT MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__DocManagement__Styles__Main__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : Document Management Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Project table, status badges, action bar, and empty state styles
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - Project table layout with header, rows, hover, and alternating row colours
+ * - Status badge pill styles with colour coding from CSS variables
+ * - Action button bar for New Project and Import operations
+ * - Empty state placeholder when no projects exist
+ * - Uses --Vale_* and --ValeSpec_* CSS variables from the global Variables CSS
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Document Management Container and Header
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTAINER | Main Wrapper */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocManagement__Container {
+        max-width                          : var(--Vale_MaxContentWidth);
+        margin                             : 0 auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Title and Actions Row */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocManagement__Header {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        margin-bottom                      : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Section Title */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocManagement__Title {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Action Button Bar
+ * ----------------------------------------------------------------------------- */
+
+    /* ACTIONS | Button Container */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocManagement__Actions {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Primary Action Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__BtnPrimary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocManagement__BtnPrimary:hover {
+        background                         : #0f1e28;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Secondary Action Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__BtnSecondary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--Vale_TextSecondary);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocManagement__BtnSecondary:hover {
+        background                         : var(--Vale_HoverBackground);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Project Table Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TABLE | Wrapper */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__Table {
+        width                              : 100%;
+        border-collapse                    : collapse;
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        overflow                           : hidden;
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Header Row */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__Table thead th {
+        text-align                         : left;
+        padding                            : var(--Vale_Spacing_Medium);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Body Rows */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__Table tbody td {
+        padding                            : var(--Vale_Spacing_Medium);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        vertical-align                     : middle;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Alternating Row Background */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__Table tbody tr:nth-child(even) {
+        background                         : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Row Hover Effect */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__Table tbody tr:hover {
+        background                         : var(--Vale_HoverBackground);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Actions Cell */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__RowActions {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Small);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Row Action Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__RowBtn {
+        padding                            : 4px var(--Vale_Spacing_Small);
+        background                         : transparent;
+        color                              : var(--ValeSpec_AccentBlue);
+        border                             : 1px solid var(--ValeSpec_AccentBlue);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocManagement__RowBtn:hover {
+        background                         : var(--ValeSpec_AccentBlue);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Delete Row Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__RowBtn--delete {
+        color                              : var(--ValeSpec_ErrorRed);
+        border-color                       : var(--ValeSpec_ErrorRed);
+    }
+
+    .ValeSpec__DocManagement__RowBtn--delete:hover {
+        background                         : var(--ValeSpec_ErrorRed);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Status Badge Pill Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* BADGE | Base Status Pill */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__StatusBadge {
+        display                            : inline-block;
+        padding                            : 3px var(--Vale_Spacing_Small);
+        border-radius                      : 999px;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        white-space                        : nowrap;
+        line-height                        : 1.4;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Draft Status */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__StatusBadge--draft {
+        background                         : var(--ValeSpec_StatusDraft);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | In Progress Status */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__StatusBadge--inProgress {
+        background                         : var(--ValeSpec_StatusInProgress);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Pending Approval Status */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__StatusBadge--pending {
+        background                         : var(--ValeSpec_StatusPending);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Approved Status */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__StatusBadge--approved {
+        background                         : var(--ValeSpec_StatusApproved);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Completed Status */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__StatusBadge--completed {
+        background                         : var(--ValeSpec_StatusCompleted);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Empty State Placeholder
+ * ----------------------------------------------------------------------------- */
+
+    /* EMPTY | Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__EmptyState {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : var(--Vale_Spacing_XXLarge) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Icon Placeholder */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__EmptyState__Icon {
+        font-size                          : 48px;
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        opacity                            : 0.4;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Title Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__EmptyState__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Description Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__EmptyState__Text {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        text-align                         : center;
+        max-width                          : 400px;
+        line-height                        : 1.6;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

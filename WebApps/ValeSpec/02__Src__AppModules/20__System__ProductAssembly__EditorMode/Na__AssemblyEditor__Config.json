@@ -1,0 +1,26 @@
+{
+    "AssemblyEditor__Layout__Config": {
+        "AssemblyEditor__Layout__Config__Description"            : "Two-panel layout configuration for the product assembly editor.",
+        "AssemblyEditor__Layout__Config__PreviewPanelWidthPct"   : 55,
+        "AssemblyEditor__Layout__Config__ControlsPanelWidthPct"  : 45,
+        "AssemblyEditor__Layout__Config__MinPreviewWidthPx"      : 400
+    },
+
+    "AssemblyEditor__Slider__Config": {
+        "AssemblyEditor__Slider__Config__Description"            : "Dimension slider range limits for door width and height inputs.",
+        "AssemblyEditor__Slider__Config__WidthMinMm"             : 600,
+        "AssemblyEditor__Slider__Config__WidthMaxMm"             : 4000,
+        "AssemblyEditor__Slider__Config__WidthStepMm"            : 1,
+        "AssemblyEditor__Slider__Config__WidthDefaultMm"         : 1800,
+        "AssemblyEditor__Slider__Config__HeightMinMm"            : 1800,
+        "AssemblyEditor__Slider__Config__HeightMaxMm"            : 3000,
+        "AssemblyEditor__Slider__Config__HeightStepMm"           : 1,
+        "AssemblyEditor__Slider__Config__HeightDefaultMm"        : 2100
+    },
+
+    "AssemblyEditor__Warnings__Config": {
+        "AssemblyEditor__Warnings__Config__Description"              : "Warning thresholds and messages for the assembly editor.",
+        "AssemblyEditor__Warnings__Config__HingeProjection8Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification. Confirm to proceed or cancel to select a different projection.",
+        "AssemblyEditor__Warnings__Config__HeightMismatchMessage"    : "Assembly heights differ by more than 15 mm. Mismatched door heights on the same elevation may cause visual inconsistency. Review before finalising."
+    }
+}

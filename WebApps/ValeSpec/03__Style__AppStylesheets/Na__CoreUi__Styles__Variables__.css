@@ -1,0 +1,122 @@
+/* =============================================================================
+ * VALESPEC - CSS VARIABLES
+ * =============================================================================
+ *
+ * FILE       : Na__CoreUi__Styles__Variables__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : CSS Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : CSS variables following Vale Design Suite standards
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - Defines the visual design system for ValeSpec application
+ * - Ported from Whitecardopedia to maintain Vale ecosystem consistency
+ * - Implements Noble Architecture brand colors and typography
+ * - Extended with ValeSpec-specific tokens for SVG drawing and configurator UI
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | CSS Variables - Vale Design Suite Standards
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Color Palette and Design Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Global Scale Macro */
+        --Vale_UIScale                     : 0.9;                          /* <-- Global UI scale macro (1 = 100%, 0.9 = 90%) */
+
+        /* Color Palette Variables */
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Vale Garden Houses brand blue */
+        --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Light background */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
+        --Vale_BackgroundDark              : #3a3a3a;                      /* <-- Dark background for contrast */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
+        --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
+        --Vale_TextSubtle                  : #5a6d7a;                      /* <-- Subtle text (adjusted for blue) */
+        --Vale_TextLight                   : #ffffff;                      /* <-- Light text on dark backgrounds */
+        --Vale_BorderPrimary               : #172b3a;                      /* <-- Primary border color */
+        --Vale_BorderLight                 : #cccccc;                      /* <-- Light border color */
+        --Vale_HoverBackground             : #e8e8e8;                      /* <-- Hover state background */
+        --Vale_ActiveBackground            : #d0d0d0;                      /* <-- Active state background */
+        --Vale_StarGold                    : #ffd700;                      /* <-- Star rating color */
+        --Vale_StarEmpty                   : #cccccc;                      /* <-- Empty star color */
+
+        /* Layout Dimension Variables */
+        --Vale_HeaderHeight                : calc(60px * var(--Vale_UIScale));   /* <-- Fixed header height */
+        --Vale_FooterHeight                : calc(50px * var(--Vale_UIScale));   /* <-- Fixed footer height */
+        --Vale_MaxContentWidth             : 1800px;                             /* <-- Maximum content width */
+        --Vale_BorderWidth                 : 2px;                                /* <-- Standard border thickness */
+        --Vale_BorderRadius                : calc(8px * var(--Vale_UIScale));    /* <-- Standard border radius */
+        --Vale_Spacing_Small               : calc(8px * var(--Vale_UIScale));    /* <-- Small spacing unit */
+        --Vale_Spacing_Medium              : calc(16px * var(--Vale_UIScale));   /* <-- Medium spacing unit */
+        --Vale_Spacing_Large               : calc(24px * var(--Vale_UIScale));   /* <-- Large spacing unit */
+        --Vale_Spacing_XLarge              : calc(32px * var(--Vale_UIScale));   /* <-- Extra large spacing unit */
+        --Vale_Spacing_XXLarge             : calc(50px * var(--Vale_UIScale));   /* <-- Extra extra large spacing unit */
+
+        /* Typography Variables */
+        --Vale_FontFamily                  : 'Open Sans', sans-serif;            /* <-- Primary font */
+        --Vale_FontSize_Title              : calc(26px * var(--Vale_UIScale));   /* <-- Application title size */
+        --Vale_FontSize_Heading            : calc(24px * var(--Vale_UIScale));   /* <-- Heading text size */
+        --Vale_FontSize_SubHeading         : calc(18px * var(--Vale_UIScale));   /* <-- Sub-heading text size */
+        --Vale_FontSize_Standard           : calc(14px * var(--Vale_UIScale));   /* <-- Standard interface text */
+        --Vale_FontSize_Small              : calc(12px * var(--Vale_UIScale));   /* <-- Small text size */
+        --Vale_FontWeight_Light            : 300;                          /* <-- Light font weight */
+        --Vale_FontWeight_Regular          : 400;                          /* <-- Regular font weight */
+        --Vale_FontWeight_SemiBold         : 600;                          /* <-- Semi-bold font weight */
+
+        /* Z-Index Layer Management */
+        --Vale_ZIndex_Header               : 1000;                         /* <-- Header layer */
+        --Vale_ZIndex_Modal                : 2000;                         /* <-- Modal overlay layer */
+        --Vale_ZIndex_Tooltip              : 3000;                         /* <-- Tooltip layer */
+
+        /* Animation Variables */
+        --Vale_Transition_Fast             : 0.15s ease;                   /* <-- Fast transition */
+        --Vale_Transition_Standard         : 0.3s ease;                    /* <-- Standard transition */
+        --Vale_Transition_Slow             : 0.5s ease;                    /* <-- Slow transition */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | ValeSpec-Specific Extension Tokens
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | ValeSpec Application Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Status Badge Colors */
+        --ValeSpec_StatusDraft              : #888888;                      /* <-- Draft status grey */
+        --ValeSpec_StatusInProgress         : #e6a817;                      /* <-- In Progress status amber */
+        --ValeSpec_StatusPending            : #d67e28;                      /* <-- Pending Approval status orange */
+        --ValeSpec_StatusApproved           : #2a7d4f;                      /* <-- Approved status green */
+        --ValeSpec_StatusCompleted          : #2a7d4f;                      /* <-- Completed status green */
+
+        /* SVG Drawing Colors */
+        --ValeSpec_SvgFrameStroke           : #172b3a;                      /* <-- Door frame outline colour */
+        --ValeSpec_SvgPanelFill             : #e8e4df;                      /* <-- Door panel fill colour */
+        --ValeSpec_SvgDimensionLine         : #cc3333;                      /* <-- Red dimension line colour */
+        --ValeSpec_SvgDimensionText         : #cc3333;                      /* <-- Red dimension text colour */
+        --ValeSpec_SvgIronmongeryStroke     : #172b3a;                      /* <-- Hardware vector stroke colour */
+
+        /* Configurator UI Accents */
+        --ValeSpec_AccentBlue              : #336699;                      /* <-- Accent blue for links and highlights */
+        --ValeSpec_WarningOrange            : #d67e28;                      /* <-- Warning flag colour */
+        --ValeSpec_ErrorRed                : #d32f2f;                      /* <-- Error state colour */
+        --ValeSpec_SuccessGreen            : #2a7d4f;                      /* <-- Success state colour */
+
+        /* Navigation Bar */
+        --ValeSpec_NavHeight               : calc(44px * var(--Vale_UIScale));   /* <-- Secondary nav height */
+        --ValeSpec_NavBackground           : var(--Vale_BackgroundLight);        /* <-- Nav bar background */
+        --ValeSpec_NavActiveTab            : var(--Vale_PrimaryBrand);           /* <-- Active tab indicator */
+
+        /* Document Preview */
+        --ValeSpec_PreviewBackground       : #b0b5ba;                      /* <-- Preview canvas background */
+        --ValeSpec_PreviewPaperShadow      : rgba(0, 0, 0, 0.25);         /* <-- Paper drop shadow */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

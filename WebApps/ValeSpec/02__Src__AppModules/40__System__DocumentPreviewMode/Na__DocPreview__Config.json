@@ -1,0 +1,17 @@
+{
+    "DocPreview__Page__Config": {
+        "DocPreview__Page__Config__Description"        : "Page layout and visual styling for the document preview canvas and paper container.",
+        "DocPreview__Page__Config__PageWidthMm"        : 210,
+        "DocPreview__Page__Config__PagePaddingMm"      : 15,
+        "DocPreview__Page__Config__BackgroundColor"    : "#b0b5ba",
+        "DocPreview__Page__Config__PaperShadowBlur"    : 12,
+        "DocPreview__Page__Config__PaperShadowColor"   : "rgba(0,0,0,0.25)"
+    },
+
+    "DocPreview__SpecTable__Config": {
+        "DocPreview__SpecTable__Config__Description"       : "Table styling for hardware schedule spec tables within the preview.",
+        "DocPreview__SpecTable__Config__HeaderBackground"   : "#172b3a",
+        "DocPreview__SpecTable__Config__HeaderTextColor"    : "#ffffff",
+        "DocPreview__SpecTable__Config__AltRowBackground"   : "#f5f5f5"
+    }
+}

@@ -1,0 +1,89 @@
+/* =============================================================================
+ * VALESPEC - BASE LAYOUT STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__CoreUi__Styles__BaseLayout__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : Base Layout
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Reset, body styles, mode panel show/hide, content area grid
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - Global CSS reset and base element styles
+ * - Layout grid for header + nav + content area
+ * - Mode panel visibility toggling
+ * - Scrolling and overflow management
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Global Reset and Base Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* RESET | Box Sizing and Margin Reset */
+    /* ------------------------------------------------------------ */
+    *, *::before, *::after {
+        box-sizing                         : border-box;
+        margin                             : 0;
+        padding                            : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BASE | HTML and Body */
+    /* ------------------------------------------------------------ */
+    html, body {
+        width                              : 100%;
+        height                             : 100%;
+        overflow                           : hidden;
+        background                         : var(--Vale_BackgroundLight);
+        color                              : var(--Vale_TextPrimary);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_Regular);
+        -webkit-font-smoothing             : antialiased;
+        -moz-osx-font-smoothing            : grayscale;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Application Layout Grid
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT | Content Area Below Header and Nav */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__App__ContentArea {
+        position                           : absolute;
+        top                                : calc(var(--Vale_HeaderHeight) + var(--ValeSpec_NavHeight));
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        overflow-y                         : auto;
+        overflow-x                         : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Mode Panels - Hidden by Default */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__App__ModePanel {
+        display                            : none;
+        width                              : 100%;
+        min-height                         : 100%;
+        padding                            : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Active Mode Panel */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__App__ModePanel--active {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

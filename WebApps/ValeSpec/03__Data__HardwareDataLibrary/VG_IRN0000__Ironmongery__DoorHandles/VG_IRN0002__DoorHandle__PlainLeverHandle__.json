@@ -1,0 +1,1137 @@
+{
+  "ValeSpec__HardwareItemData": {
+    "HardwareItem__Name"                 : "Plain Lever Handle",
+    "HardwareItem__Code"                 : "VG_IRN0002",
+    "HardwareItem__Type"                 : "Door Handle",
+    "HardwareItem__Description"          : "Simple Form Lever Handle",
+    "HardwareItem__Notes"                : "",
+    "HardwareItem__DataFile"             : "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0002__DoorHandle__PlainLeverHandle__.json",
+    "HardwareItem__IsComplementary"      : true,
+    "HardwareItem__Supplier"             : "Croft",
+    "HardwareItem__SupplierProductCode"  : "",
+    "HardwareItem__SupplierPrice__GBP"   : "NULL",
+    "HardwareItem__PanelPlacement"       : {
+        "DefaultHeightFromOrigin_mm"     : 1000,
+        "RightHand__Transform"           : {
+            "OffsetX_mm"                 : 32,
+            "OffsetY_mm"                 : 1000,
+            "ScaleX"                     : 1
+        },
+        "LeftHand__Transform"            : {
+            "OffsetX_mm"                 : -64,
+            "OffsetY_mm"                 : 1000,
+            "ScaleX"                     : 1
+        }
+    },
+    "HardwareItem__AvailableFinishes"    : ["Unlacquered Brass", "Satin Nickel", "Bronze"]
+  },
+  "HardwareItem__VectorData"   : {
+    "OriginNote"  : "Local 0,0 = centre of 00__OriginPoint group (e.g. handle spindle). Right-hand orientation.",
+    "CoordSystem" : "XY plane | X=right, Y=up | Units=mm | Z discarded",
+    "BoundingBox" : {
+        "MinX_mm"   : -14.0,
+        "MaxX_mm"   : 105.026,
+        "MinY_mm"   : -149.25,
+        "MaxY_mm"   : 55.75,
+        "Width_mm"  : 119.026,
+        "Height_mm" : 205.0
+    },
+    "EdgeCount"   : 91,
+    "ArcCount"    : 0,
+    "LineCount"   : 91,
+    "Paths"       : [
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 6.776,
+                "Y" : -6.658
+            },
+            "End_mm"     : {
+                "X" : -0.451,
+                "Y" : -6.887
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -8.465,
+                "Y" : -89.784
+            },
+            "End_mm"     : {
+                "X" : -7.598,
+                "Y" : -87.66
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 3.886,
+                "Y" : -84.16
+            },
+            "End_mm"     : {
+                "X" : 5.79,
+                "Y" : -85.44
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.889,
+                "Y" : -97.395
+            },
+            "End_mm"     : {
+                "X" : -7.813,
+                "Y" : -95.94
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 7.296,
+                "Y" : -87.17
+            },
+            "End_mm"     : {
+                "X" : 8.301,
+                "Y" : -89.233
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 1.688,
+                "Y" : -116.971
+            },
+            "End_mm"     : {
+                "X" : 0.0,
+                "Y" : -117.25
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.739,
+                "Y" : -3.835
+            },
+            "End_mm"     : {
+                "X" : -6.536,
+                "Y" : -2.219
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.902,
+                "Y" : 0.0
+            },
+            "End_mm"     : {
+                "X" : -6.536,
+                "Y" : 2.219
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -0.451,
+                "Y" : 6.887
+            },
+            "End_mm"     : {
+                "X" : 6.776,
+                "Y" : 6.658
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -1.688,
+                "Y" : -116.971
+            },
+            "End_mm"     : {
+                "X" : -3.196,
+                "Y" : -116.165
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 0.0,
+                "Y" : -117.25
+            },
+            "End_mm"     : {
+                "X" : -1.688,
+                "Y" : -116.971
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -3.196,
+                "Y" : -116.165
+            },
+            "End_mm"     : {
+                "X" : -4.365,
+                "Y" : -114.917
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -0.575,
+                "Y" : -83.269
+            },
+            "End_mm"     : {
+                "X" : 1.714,
+                "Y" : -83.42
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 104.51,
+                "Y" : -2.848
+            },
+            "End_mm"     : {
+                "X" : 103.728,
+                "Y" : -3.167
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 5.25,
+                "Y" : -112.0
+            },
+            "End_mm"     : {
+                "X" : 4.971,
+                "Y" : -113.688
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -14.0,
+                "Y" : -149.25
+            },
+            "End_mm"     : {
+                "X" : 14.0,
+                "Y" : -149.25
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.551,
+                "Y" : 5.189
+            },
+            "End_mm"     : {
+                "X" : -3.053,
+                "Y" : 6.19
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.393,
+                "Y" : -84.432
+            },
+            "End_mm"     : {
+                "X" : -2.274,
+                "Y" : -83.551
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -0.451,
+                "Y" : -6.887
+            },
+            "End_mm"     : {
+                "X" : -1.786,
+                "Y" : -6.667
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.739,
+                "Y" : 3.835
+            },
+            "End_mm"     : {
+                "X" : -4.551,
+                "Y" : 5.189
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 103.728,
+                "Y" : -3.167
+            },
+            "End_mm"     : {
+                "X" : 20.204,
+                "Y" : -6.175
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -7.813,
+                "Y" : -95.94
+            },
+            "End_mm"     : {
+                "X" : -8.433,
+                "Y" : -94.333
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 20.204,
+                "Y" : 6.175
+            },
+            "End_mm"     : {
+                "X" : 103.728,
+                "Y" : 3.167
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 103.728,
+                "Y" : 3.167
+            },
+            "End_mm"     : {
+                "X" : 104.649,
+                "Y" : 2.717
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 4.165,
+                "Y" : -115.196
+            },
+            "End_mm"     : {
+                "X" : 3.196,
+                "Y" : -116.165
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -3.053,
+                "Y" : 6.19
+            },
+            "End_mm"     : {
+                "X" : -1.786,
+                "Y" : 6.667
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -8.433,
+                "Y" : -94.333
+            },
+            "End_mm"     : {
+                "X" : -8.75,
+                "Y" : -92.061
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -2.274,
+                "Y" : -83.551
+            },
+            "End_mm"     : {
+                "X" : -0.575,
+                "Y" : -83.269
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 4.971,
+                "Y" : -113.688
+            },
+            "End_mm"     : {
+                "X" : 4.165,
+                "Y" : -115.196
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -1.786,
+                "Y" : -6.667
+            },
+            "End_mm"     : {
+                "X" : -3.053,
+                "Y" : -6.19
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -14.0,
+                "Y" : 55.75
+            },
+            "End_mm"     : {
+                "X" : -14.0,
+                "Y" : -149.25
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.551,
+                "Y" : -5.189
+            },
+            "End_mm"     : {
+                "X" : -5.739,
+                "Y" : -3.835
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.971,
+                "Y" : -113.688
+            },
+            "End_mm"     : {
+                "X" : -5.239,
+                "Y" : -112.343
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 14.0,
+                "Y" : 6.398
+            },
+            "End_mm"     : {
+                "X" : 14.0,
+                "Y" : 55.75
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 5.79,
+                "Y" : -85.44
+            },
+            "End_mm"     : {
+                "X" : 7.296,
+                "Y" : -87.17
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -8.75,
+                "Y" : -92.061
+            },
+            "End_mm"     : {
+                "X" : -8.465,
+                "Y" : -89.784
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.25,
+                "Y" : -99.0
+            },
+            "End_mm"     : {
+                "X" : -6.889,
+                "Y" : -97.395
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 8.301,
+                "Y" : -89.233
+            },
+            "End_mm"     : {
+                "X" : 8.735,
+                "Y" : -91.486
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 8.735,
+                "Y" : -91.486
+            },
+            "End_mm"     : {
+                "X" : 8.666,
+                "Y" : -93.207
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 104.972,
+                "Y" : -2.141
+            },
+            "End_mm"     : {
+                "X" : 104.51,
+                "Y" : -2.848
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 3.196,
+                "Y" : -116.165
+            },
+            "End_mm"     : {
+                "X" : 1.688,
+                "Y" : -116.971
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 14.0,
+                "Y" : -149.25
+            },
+            "End_mm"     : {
+                "X" : 14.0,
+                "Y" : -6.398
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.365,
+                "Y" : -114.917
+            },
+            "End_mm"     : {
+                "X" : -4.971,
+                "Y" : -113.688
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -1.786,
+                "Y" : 6.667
+            },
+            "End_mm"     : {
+                "X" : -0.451,
+                "Y" : 6.887
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -3.053,
+                "Y" : -6.19
+            },
+            "End_mm"     : {
+                "X" : -4.551,
+                "Y" : -5.189
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.536,
+                "Y" : -2.219
+            },
+            "End_mm"     : {
+                "X" : -6.902,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.536,
+                "Y" : 2.219
+            },
+            "End_mm"     : {
+                "X" : -5.739,
+                "Y" : 3.835
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.239,
+                "Y" : -112.343
+            },
+            "End_mm"     : {
+                "X" : -5.25,
+                "Y" : -99.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 104.649,
+                "Y" : 2.717
+            },
+            "End_mm"     : {
+                "X" : 105.026,
+                "Y" : 1.765
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 105.026,
+                "Y" : 1.765
+            },
+            "End_mm"     : {
+                "X" : 104.972,
+                "Y" : -2.141
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -7.598,
+                "Y" : -87.66
+            },
+            "End_mm"     : {
+                "X" : -6.209,
+                "Y" : -85.834
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.209,
+                "Y" : -85.834
+            },
+            "End_mm"     : {
+                "X" : -4.393,
+                "Y" : -84.432
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 14.0,
+                "Y" : 55.75
+            },
+            "End_mm"     : {
+                "X" : -14.0,
+                "Y" : 55.75
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 1.714,
+                "Y" : -83.42
+            },
+            "End_mm"     : {
+                "X" : 3.886,
+                "Y" : -84.16
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 6.889,
+                "Y" : -97.395
+            },
+            "End_mm"     : {
+                "X" : 5.25,
+                "Y" : -99.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 3.747,
+                "Y" : 8.73
+            },
+            "End_mm"     : {
+                "X" : 1.99,
+                "Y" : 9.289
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 8.055,
+                "Y" : -95.419
+            },
+            "End_mm"     : {
+                "X" : 6.889,
+                "Y" : -97.395
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 4.844,
+                "Y" : 8.172
+            },
+            "End_mm"     : {
+                "X" : 3.747,
+                "Y" : 8.73
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -7.756,
+                "Y" : 5.485
+            },
+            "End_mm"     : {
+                "X" : -8.903,
+                "Y" : 3.314
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -9.495,
+                "Y" : 0.308
+            },
+            "End_mm"     : {
+                "X" : -9.376,
+                "Y" : -1.532
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.098,
+                "Y" : -8.016
+            },
+            "End_mm"     : {
+                "X" : -3.454,
+                "Y" : -8.85
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 1.99,
+                "Y" : -9.289
+            },
+            "End_mm"     : {
+                "X" : 4.304,
+                "Y" : -8.469
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -8.095,
+                "Y" : -4.972
+            },
+            "End_mm"     : {
+                "X" : -6.982,
+                "Y" : -6.442
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 4.304,
+                "Y" : -8.469
+            },
+            "End_mm"     : {
+                "X" : 5.363,
+                "Y" : -7.842
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 0.773,
+                "Y" : 9.469
+            },
+            "End_mm"     : {
+                "X" : -1.071,
+                "Y" : 9.439
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 21.136,
+                "Y" : -3.15
+            },
+            "End_mm"     : {
+                "X" : 20.204,
+                "Y" : -6.175
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 14.0,
+                "Y" : -6.398
+            },
+            "End_mm"     : {
+                "X" : 6.776,
+                "Y" : -6.658
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -9.376,
+                "Y" : 1.532
+            },
+            "End_mm"     : {
+                "X" : -9.495,
+                "Y" : 0.308
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 21.45,
+                "Y" : 0.0
+            },
+            "End_mm"     : {
+                "X" : 21.136,
+                "Y" : -3.15
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -8.903,
+                "Y" : 3.314
+            },
+            "End_mm"     : {
+                "X" : -9.376,
+                "Y" : 1.532
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 1.99,
+                "Y" : 9.289
+            },
+            "End_mm"     : {
+                "X" : 0.773,
+                "Y" : 9.469
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -3.454,
+                "Y" : 8.85
+            },
+            "End_mm"     : {
+                "X" : -4.569,
+                "Y" : 8.329
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -9.099,
+                "Y" : -2.731
+            },
+            "End_mm"     : {
+                "X" : -8.095,
+                "Y" : -4.972
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 5.25,
+                "Y" : -99.0
+            },
+            "End_mm"     : {
+                "X" : 5.25,
+                "Y" : -112.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.569,
+                "Y" : 8.329
+            },
+            "End_mm"     : {
+                "X" : -6.092,
+                "Y" : 7.29
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 6.776,
+                "Y" : 6.658
+            },
+            "End_mm"     : {
+                "X" : 4.844,
+                "Y" : 8.172
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -1.071,
+                "Y" : 9.439
+            },
+            "End_mm"     : {
+                "X" : -3.454,
+                "Y" : 8.85
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.092,
+                "Y" : 7.29
+            },
+            "End_mm"     : {
+                "X" : -7.756,
+                "Y" : 5.485
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -9.376,
+                "Y" : -1.532
+            },
+            "End_mm"     : {
+                "X" : -9.099,
+                "Y" : -2.731
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.092,
+                "Y" : -7.29
+            },
+            "End_mm"     : {
+                "X" : -5.098,
+                "Y" : -8.016
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -1.071,
+                "Y" : -9.439
+            },
+            "End_mm"     : {
+                "X" : 0.773,
+                "Y" : -9.469
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 0.773,
+                "Y" : -9.469
+            },
+            "End_mm"     : {
+                "X" : 1.99,
+                "Y" : -9.289
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 5.363,
+                "Y" : -7.842
+            },
+            "End_mm"     : {
+                "X" : 6.776,
+                "Y" : -6.658
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 21.136,
+                "Y" : 3.15
+            },
+            "End_mm"     : {
+                "X" : 21.45,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 20.204,
+                "Y" : -6.175
+            },
+            "End_mm"     : {
+                "X" : 14.0,
+                "Y" : -6.398
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 20.204,
+                "Y" : 6.175
+            },
+            "End_mm"     : {
+                "X" : 21.136,
+                "Y" : 3.15
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 20.204,
+                "Y" : 6.175
+            },
+            "End_mm"     : {
+                "X" : 14.0,
+                "Y" : 6.398
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 14.0,
+                "Y" : 6.398
+            },
+            "End_mm"     : {
+                "X" : 6.776,
+                "Y" : 6.658
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 8.666,
+                "Y" : -93.207
+            },
+            "End_mm"     : {
+                "X" : 8.055,
+                "Y" : -95.419
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -6.982,
+                "Y" : -6.442
+            },
+            "End_mm"     : {
+                "X" : -6.092,
+                "Y" : -7.29
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -3.454,
+                "Y" : -8.85
+            },
+            "End_mm"     : {
+                "X" : -1.071,
+                "Y" : -9.439
+            }
+        }
+    ]
+  }
+}

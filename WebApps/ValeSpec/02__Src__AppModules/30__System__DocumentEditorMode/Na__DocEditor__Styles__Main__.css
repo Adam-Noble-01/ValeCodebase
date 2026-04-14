@@ -1,0 +1,456 @@
+/* =============================================================================
+ * VALESPEC - DOCUMENT EDITOR MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__DocEditor__Styles__Main__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : Document Editor Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : A4 document layout, section blocks, thumbnails, and action buttons
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - A4-width document container centred within the editor panel
+ * - Section block cards with white background, shadow, and accent border-left
+ * - Assembly thumbnail SVG containers at fixed height
+ * - Editable title fields with double-click-to-rename interaction
+ * - Reorder handle arrows for section sorting
+ * - Action buttons per block (Edit, Duplicate, Delete)
+ * - Document header block and job notes textarea
+ * - Uses --Vale_* and --ValeSpec_* CSS variables from global Variables CSS
+ *
+ * ============================================================================= */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Document Editor Container and A4 Layout
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTAINER | Main Document Editor Wrapper */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocEditor__Container {
+        max-width                          : 794px;
+        margin                             : 0 auto;
+        padding                            : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Document Header Block
+ * ----------------------------------------------------------------------------- */
+
+    /* HEADER | Branding and Meta Container */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocEditor__HeaderBlock {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Large);
+        padding                            : var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Vale Logo Image */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__HeaderLogo {
+        height                             : 48px;
+        width                              : auto;
+        flex-shrink                        : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Meta Information Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__HeaderMeta {
+        flex                               : 1;
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_XSmall);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Project Name Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__HeaderProjectName {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Document Name Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__HeaderDocName {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Date Authored Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__HeaderDate {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextMuted);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Revision Code Input */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__RevisionInput {
+        width                              : 80px;
+        padding                            : 4px var(--Vale_Spacing_Small);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Status Dropdown Select */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__StatusSelect {
+        padding                            : 4px var(--Vale_Spacing_Small);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_BackgroundWhite);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Status Colour Badge */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__StatusBadge {
+        display                            : inline-block;
+        padding                            : 2px var(--Vale_Spacing_Small);
+        border-radius                      : 999px;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Assembly Section Blocks
+ * ----------------------------------------------------------------------------- */
+
+    /* SECTIONS | Scroll Container */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocEditor__SectionsContainer {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 24px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Individual Block Card */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__SectionBlock {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Large);
+        padding                            : var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.06);
+        border-left                        : 4px solid var(--Vale_PrimaryBrand);
+        position                           : relative;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Thumbnail SVG Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__Thumbnail {
+        width                              : auto;
+        height                             : 280px;
+        flex-shrink                        : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        background                         : var(--Vale_BackgroundLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        overflow                           : hidden;
+    }
+
+    .ValeSpec__DocEditor__Thumbnail svg {
+        max-width                          : 100%;
+        max-height                         : 100%;
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Content Area (Title + Spec + Actions) */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__SectionContent {
+        flex                               : 1;
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Editable Title Field */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__SectionTitle {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        border                             : 1px solid transparent;
+        padding                            : 2px 4px;
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : default;
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__SectionTitle--editing {
+        border-color                       : var(--ValeSpec_AccentBlue);
+        cursor                             : text;
+        outline                            : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Spec Summary Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__SpecSummary {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        line-height                        : 1.6;
+    }
+
+    .ValeSpec__DocEditor__SpecSummary span {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Section Action Buttons and Reorder Handles
+ * ----------------------------------------------------------------------------- */
+
+    /* ACTIONS | Button Row */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__SectionActions {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Small);
+        margin-top                         : auto;
+        flex-wrap                          : wrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Edit Assembly Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__BtnEdit {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__BtnEdit:hover {
+        background                         : #0f1e28;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Duplicate Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__BtnDuplicate {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--ValeSpec_AccentBlue);
+        border                             : 1px solid var(--ValeSpec_AccentBlue);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__BtnDuplicate:hover {
+        background                         : var(--ValeSpec_AccentBlue);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Delete Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__BtnDelete {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--ValeSpec_ErrorRed);
+        border                             : 1px solid var(--ValeSpec_ErrorRed);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__BtnDelete:hover {
+        background                         : var(--ValeSpec_ErrorRed);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* REORDER | Arrow Handle Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__ReorderHandles {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 2px;
+        position                           : absolute;
+        top                                : var(--Vale_Spacing_Small);
+        right                              : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* REORDER | Arrow Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__ReorderBtn {
+        width                              : 28px;
+        height                             : 28px;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        background                         : var(--Vale_BackgroundLight);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-size                          : 14px;
+        cursor                             : pointer;
+        color                              : var(--Vale_TextSecondary);
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__ReorderBtn:hover {
+        background                         : var(--Vale_HoverBackground);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .ValeSpec__DocEditor__ReorderBtn:disabled {
+        opacity                            : 0.3;
+        cursor                             : not-allowed;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Add New Assembly Button
+ * ----------------------------------------------------------------------------- */
+
+    /* ADD | Full-Width New Assembly Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__BtnAddAssembly {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : var(--Vale_Spacing_Small);
+        width                              : 100%;
+        padding                            : var(--Vale_Spacing_Medium);
+        background                         : transparent;
+        color                              : var(--ValeSpec_AccentBlue);
+        border                             : 2px dashed var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__BtnAddAssembly:hover {
+        background                         : var(--Vale_HoverBackground);
+        border-color                       : var(--ValeSpec_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Job Notes Textarea
+ * ----------------------------------------------------------------------------- */
+
+    /* NOTES | Container */
+    /* ------------------------------------------------------------ */
+    #ValeSpec__DocEditor__JobNotesContainer {
+        margin-top                         : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NOTES | Label */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__JobNotesLabel {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NOTES | Textarea Field */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__JobNotesTextarea {
+        width                              : 100%;
+        min-height                         : 120px;
+        padding                            : var(--Vale_Spacing_Medium);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_BackgroundWhite);
+        resize                             : vertical;
+        line-height                        : 1.6;
+        box-sizing                         : border-box;
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocEditor__JobNotesTextarea:focus {
+        border-color                       : var(--ValeSpec_AccentBlue);
+        outline                            : none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

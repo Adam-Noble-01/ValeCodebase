@@ -1,0 +1,50 @@
+{
+    "ValeSpec__Application__Config": {
+        "ValeSpec__Application__Config__Description"             : "Core application identity, version, and global feature flags for ValeSpec Ironmongery Configurator.",
+        "ValeSpec__Application__Config__AppName"                 : "ValeSpec Ironmongery Configurator",
+        "ValeSpec__Application__Config__AppVersion"              : "0.1.0",
+        "ValeSpec__Application__Config__HardwareIndexPath"       : "03__Data__HardwareDataLibrary/ValeSpec__HardwareDataIndex__.json",
+        "ValeSpec__Application__Config__ProjectDataFolder"       : "04__LocalProjectData"
+    },
+
+    "ValeSpec__Ironmongery__GlobalDefaults__Config": {
+        "ValeSpec__Ironmongery__GlobalDefaults__Config__Description"              : "Default selections applied globally across all assemblies in a new project document.",
+        "ValeSpec__Ironmongery__GlobalDefaults__Config__DefaultFinish"            : "Unlacquered Brass",
+        "ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes"        : ["Unlacquered Brass", "Satin Nickel", "Bronze"],
+        "ValeSpec__Ironmongery__GlobalDefaults__Config__DefaultLeverHeightMm"    : 1000
+    },
+
+    "ValeSpec__DoorType__Options__Config": {
+        "ValeSpec__DoorType__Options__Config__Description"       : "Available door type selections for the assembly editor. Bi Fold Doors is listed but disabled until v0.2.0.",
+        "ValeSpec__DoorType__Options__Config__DoorTypes"         : [
+            "None",
+            "Outward Opening Double Doors",
+            "Inward Opening Double Doors",
+            "Outward Opening Single Doors",
+            "Inward Opening Single Doors",
+            "Bi Fold Doors",
+            "Other"
+        ]
+    },
+
+    "ValeSpec__LeverType__Options__Config": {
+        "ValeSpec__LeverType__Options__Config__Description"      : "Available lever handle types. One selection applies globally to all assemblies in the document.",
+        "ValeSpec__LeverType__Options__Config__LeverTypes"       : ["Plan", "Scroll", "Newton", "Fitzroy", "Empire", "Lindum", "Griffin", "Aspen", "Lipsham"]
+    },
+
+    "ValeSpec__HingeProjection__Options__Config": {
+        "ValeSpec__HingeProjection__Options__Config__Description"         : "Available hinge projection sizes in inches. Selecting 8-inch triggers a senior management approval warning.",
+        "ValeSpec__HingeProjection__Options__Config__Projections"         : [4, 5, 6, 8],
+        "ValeSpec__HingeProjection__Options__Config__WarningProjection"   : 8
+    },
+
+    "ValeSpec__CabinHook__Options__Config": {
+        "ValeSpec__CabinHook__Options__Config__Description"      : "Available cabin hook sizes.",
+        "ValeSpec__CabinHook__Options__Config__Sizes"            : ["4\"", "6\"", "10\"", "12\"", "18\""]
+    },
+
+    "ValeSpec__Validation__Config": {
+        "ValeSpec__Validation__Config__Description"              : "Validation thresholds and tolerance values for cross-assembly checks.",
+        "ValeSpec__Validation__Config__HeightMismatchToleranceMm": 15
+    }
+}

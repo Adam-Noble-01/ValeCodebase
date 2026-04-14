@@ -1,0 +1,88 @@
+{
+    "Scroll Lever Handle": {
+        "HardwareItem__Name": "Scroll Lever Handle",
+        "HardwareItem__Code": "VG_IRN0001",
+        "HardwareItem__Type": "Door Handle",
+        "HardwareItem__Description": "Traditional Lever Handle",
+        "HardwareItem__Notes": "",
+        "HardwareItem__DataFile": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0001__DoorHandle__ScrollLeverHandle__.json",
+        "HardwareItem__IsComplementary": true,
+        "HardwareItem__Supplier": "Croft",
+        "HardwareItem__SupplierProductCode": "",
+        "HardwareItem__SupplierPrice__GBP": "NULL",
+        "HardwareItem__PanelPlacement": {
+            "DefaultHeightFromOrigin_mm": 1000,
+            "RightHand__Transform": {
+                "OffsetX_mm": 32,
+                "OffsetY_mm": 1000,
+                "ScaleX": 1
+            },
+            "LeftHand__Transform": {
+                "OffsetX_mm": -64,
+                "OffsetY_mm": 1000,
+                "ScaleX": 1
+            }
+        },
+        "HardwareItem__AvailableFinishes": [
+            "Unlacquered Brass",
+            "Satin Nickel",
+            "Bronze"
+        ]
+    },
+    "Plain Lever Handle": {
+        "HardwareItem__Name": "Plain Lever Handle",
+        "HardwareItem__Code": "VG_IRN0002",
+        "HardwareItem__Type": "Door Handle",
+        "HardwareItem__Description": "Simple Form Lever Handle",
+        "HardwareItem__Notes": "",
+        "HardwareItem__DataFile": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0002__DoorHandle__PlainLeverHandle__.json",
+        "HardwareItem__IsComplementary": true,
+        "HardwareItem__Supplier": "Croft",
+        "HardwareItem__SupplierProductCode": "",
+        "HardwareItem__SupplierPrice__GBP": "NULL",
+        "HardwareItem__PanelPlacement": {
+            "DefaultHeightFromOrigin_mm": 1000,
+            "RightHand__Transform": {
+                "OffsetX_mm": 32,
+                "OffsetY_mm": 1000,
+                "ScaleX": 1
+            },
+            "LeftHand__Transform": {
+                "OffsetX_mm": -64,
+                "OffsetY_mm": 1000,
+                "ScaleX": 1
+            }
+        },
+        "HardwareItem__AvailableFinishes": [
+            "Unlacquered Brass",
+            "Satin Nickel",
+            "Bronze"
+        ]
+    },
+    "Newton Lever Handle": {
+        "HardwareItem__Name": "Newton Lever Handle",
+        "HardwareItem__Code": "VG_IRN0003",
+        "HardwareItem__Type": "Door Handle",
+        "HardwareItem__Description": "Contemporary Styled Lever Handle",
+        "HardwareItem__Notes": "",
+        "HardwareItem__DataFile": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0003__DoorHandle__NewtonLeverHandle__.json",
+        "HardwareItem__IsComplementary": true,
+        "HardwareItem__Supplier": "Croft",
+        "HardwareItem__SupplierProductCode": "",
+        "HardwareItem__SupplierPrice__GBP": "NULL",
+        "HardwareItem__PanelPlacement": {
+            "DefaultHeightFromOrigin_mm": 1000,
+            "RightHand__Transform": {
+                "OffsetX_mm": 32,
+                "OffsetY_mm": 1000,
+                "ScaleX": 1
+            },
+            "LeftHand__Transform": {
+                "OffsetX_mm": -64,
+                "OffsetY_mm": 1000,
+                "ScaleX": 1
+            }
+        },
+        "HardwareItem__AvailableFinishes": []
+    }
+}

@@ -219,13 +219,26 @@ Document may contain multiple door sets.
  This is a small tolerance of 15 mm or below, so only values entered over 15 mm should raise the flag and the warning message to the user.
 
 
-### Data File Example
+--------------------------------------
+### Hardward Data Files
+- Each hardware item has a data file that contains the data for the hardware item. 
+- This is an example showing where the object data is stored on my local machine and the web URL path to the data file.
+- We will need a Json index and a builder tool to build the hardware items from the data files.
+  - Scans local system for all data files in the `03__Data__HardwareDataLibrary` folder.
+  - Builds a Json index of all the hardware items.
+  - This should be a Python Script which is triggered using a .bat file in
+    - `ValeSpec\60__Dev__WebBuildUtils\ValeSpec__Build__HardwareDataIndex__.bat`
+- The Json index will be stored in the `ValeSpec\03__Data__HardwareDataLibrary\ValeSpec__HardwareDataIndex__.json` file.
+
 
 #### Hardware Data Files Path Local
-D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\03__Data__HardwareDataLibrary
+`D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\03__Data__HardwareDataLibrary\VG_IRN0000__Ironmongery__DoorHandles\`
 
+#### Hardware Data File Example
+`VG_IRN0001__DoorHandle__ScrollLeverHandle__.json`
 
-D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\03__Data__HardwareDataLibrary\VG_IRN0001__DoorHandle__ScrollLeverHandle__.json
+#### Web URL Path Example
+`https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0001__DoorHandle__ScrollLeverHandle__.json`
 
 --------------------------------------
 ## 3. Project Technologies

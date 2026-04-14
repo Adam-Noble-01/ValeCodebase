@@ -42,6 +42,10 @@ alwaysApply: false
 - **Local URL:** `http://127.0.0.1:5500`
 - **Source:** `ValeVision3D/80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py` (intentionally separate from **8000**)
 
+**ValeSpec**
+- **Local URL:** `http://127.0.0.1:8002/ValeSpec__App__.html`
+- **Source:** `ValeSpec/server.py` — `--port` default **8002**
+
 **Prototypes (e.g. Babylon test harness)**
 - **Typical:** `http://localhost:8001`
 - **Source:** That prototype’s own `server.py`

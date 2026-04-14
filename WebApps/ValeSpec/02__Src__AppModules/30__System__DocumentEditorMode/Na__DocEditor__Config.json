@@ -1,0 +1,15 @@
+{
+    "DocEditor__Document__Config": {
+        "DocEditor__Document__Config__Description"     : "Page dimensions and spacing for the document editor layout.",
+        "DocEditor__Document__Config__PageWidthMm"     : 210,
+        "DocEditor__Document__Config__PagePaddingMm"   : 15,
+        "DocEditor__Document__Config__SectionSpacingPx" : 24,
+        "DocEditor__Document__Config__ThumbnailHeightPx": 280
+    },
+
+    "DocEditor__Header__Config": {
+        "DocEditor__Header__Config__Description"       : "Branding and layout for the document header block.",
+        "DocEditor__Header__Config__LogoPath"          : "01__Src__SharedAssets/ValeDesignSuite__Logo__Main__.svg",
+        "DocEditor__Header__Config__LogoHeightPx"      : 48
+    }
+}

@@ -1,0 +1,234 @@
+/* =============================================================================
+ * VALESPEC - MODALS AND TOASTS STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__UiFeature__Styles__ModalsAndToasts__.css
+ * NAMESPACE  : ValeSpec
+ * MODULE     : Modal and Toast Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Modal dialogs, confirmation prompts, toast notifications
+ * CREATED    : 2026
+ *
+ * DESCRIPTION:
+ * - Modal overlay and dialog box styles
+ * - Confirmation and warning dialog variants
+ * - Toast notification slide-in animations
+ * - Warning badge styles for hinge projection and height mismatch flags
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Modal Overlay and Dialog Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* MODAL | Overlay Backdrop */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__Overlay {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        background                         : rgba(23, 43, 58, 0.5);
+        display                            : none;
+        align-items                        : center;
+        justify-content                    : center;
+        z-index                            : var(--Vale_ZIndex_Modal);
+    }
+
+    .ValeSpec__Modal__Overlay--visible {
+        display                            : flex;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Dialog Box */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__Dialog {
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 8px 32px rgba(0,0,0,0.18);
+        padding                            : var(--Vale_Spacing_XLarge);
+        min-width                          : 400px;
+        max-width                          : 560px;
+        width                              : 90%;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Dialog Title */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Dialog Body Text */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__Body {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+        line-height                        : 1.6;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Input Field */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__Input {
+        width                              : 100%;
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__Modal__Input:focus {
+        outline                            : none;
+        border-color                       : var(--ValeSpec_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Button Row */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__Actions {
+        display                            : flex;
+        justify-content                    : flex-end;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Primary Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__BtnPrimary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__Modal__BtnPrimary:hover {
+        background                         : #0f1e28;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Secondary Button */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Modal__BtnSecondary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--Vale_TextSecondary);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__Modal__BtnSecondary:hover {
+        background                         : var(--Vale_HoverBackground);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Toast Notification Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* TOAST | Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Toast__Container {
+        position                           : fixed;
+        bottom                             : var(--Vale_Spacing_Large);
+        right                              : var(--Vale_Spacing_Large);
+        z-index                            : var(--Vale_ZIndex_Tooltip);
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOAST | Notification Item */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Toast__Item {
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Large);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        box-shadow                         : 0 4px 16px rgba(0,0,0,0.15);
+        animation                          : ValeSpec__Toast__SlideIn 0.3s ease;
+        max-width                          : 400px;
+    }
+
+    .ValeSpec__Toast__Item--success  { background : var(--ValeSpec_SuccessGreen); }
+    .ValeSpec__Toast__Item--warning  { background : var(--ValeSpec_WarningOrange); }
+    .ValeSpec__Toast__Item--error    { background : var(--ValeSpec_ErrorRed); }
+    .ValeSpec__Toast__Item--info     { background : var(--ValeSpec_AccentBlue); }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOAST | Slide-In Animation */
+    /* ------------------------------------------------------------ */
+    @keyframes ValeSpec__Toast__SlideIn {
+        from { transform : translateX(100%); opacity : 0; }
+        to   { transform : translateX(0);    opacity : 1; }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Warning Badge Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* WARNING | Inline Warning Badge */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__Warning__Badge {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : 4px var(--Vale_Spacing_Small);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .ValeSpec__Warning__Badge--orange {
+        background                         : rgba(214, 126, 40, 0.12);
+        color                              : var(--ValeSpec_WarningOrange);
+        border                             : 1px solid rgba(214, 126, 40, 0.3);
+    }
+
+    .ValeSpec__Warning__Badge--red {
+        background                         : rgba(211, 47, 47, 0.10);
+        color                              : var(--ValeSpec_ErrorRed);
+        border                             : 1px solid rgba(211, 47, 47, 0.3);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

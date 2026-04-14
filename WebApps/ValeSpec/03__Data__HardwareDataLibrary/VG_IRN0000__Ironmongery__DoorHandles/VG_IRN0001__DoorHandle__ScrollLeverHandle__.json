@@ -5,7 +5,7 @@
     "HardwareItem__Type"                 : "Door Handle",
     "HardwareItem__Description"          : "Traditional Lever Handle",
     "HardwareItem__Notes"                : "",
-    "HardwareItem__DataFile"             : "https://www.valegardenhouses.com/Objects/HardwareLibrary/VG_IRN0001__ScrollLeverHandle.svg",
+    "HardwareItem__DataFile"             : "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0001__DoorHandle__ScrollLeverHandle__.json",
     "HardwareItem__IsComplementary"      : true,
     "HardwareItem__Supplier"             : "Croft",
     "HardwareItem__SupplierProductCode"  : "",

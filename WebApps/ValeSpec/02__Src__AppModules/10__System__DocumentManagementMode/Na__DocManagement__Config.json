@@ -1,0 +1,25 @@
+{
+    "DocManagement__Table__Config": {
+
+        "DocManagement__Table__Config__Description": "System configuration for the Document Management Mode project table, including status workflow options, color coding, and default sort behaviour.",
+
+        "DocManagement__Table__Config__StatusOptions": [
+            "Draft",
+            "In Progress",
+            "Pending Approval",
+            "Approved",
+            "Completed"
+        ],
+
+        "DocManagement__Table__Config__StatusColors": {
+            "Draft"              : "#888888",
+            "In Progress"        : "#e6a817",
+            "Pending Approval"   : "#d67e28",
+            "Approved"           : "#2a7d4f",
+            "Completed"          : "#2a7d4f"
+        },
+
+        "DocManagement__Table__Config__DefaultSortField"     : "DateModified",
+        "DocManagement__Table__Config__DefaultSortDirection"  : "desc"
+    }
+}

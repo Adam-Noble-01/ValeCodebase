@@ -6,14 +6,15 @@
    NAMESPACE  : ValeSpec
    MODULE     : AppData - ProjectFileManager
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Project CRUD operations using localStorage persistence
+   PURPOSE    : Project CRUD operations with server-backed disk persistence
    CREATED    : 2026
 
    DESCRIPTION:
    - Creates, loads, saves, and deletes project files
-   - Uses localStorage for persistence in v0.1.0 (static site)
+   - Primary storage: server API writing JSON files to 04__LocalProjectData/
+   - Fast read cache: localStorage mirrors server data for synchronous access
+   - syncFromServer() fetches all projects from disk and rebuilds the cache
    - Provides import/export for manual JSON file management
-   - Maintains a project manifest for listing available projects
 
    ============================================================================= */
 
@@ -23,10 +24,11 @@
 
 const ValeSpec__AppData__ProjectFileManager = (function() {
 
-    // MODULE CONSTANTS | Storage Keys
+    // MODULE CONSTANTS | Storage Keys and API Base
     // ------------------------------------------------------------
-    const STORAGE_PREFIX     =  'ValeSpec__Project__';
-    const MANIFEST_KEY       =  'ValeSpec__ProjectManifest';
+    const STORAGE_PREFIX  =  'ValeSpec__Project__';
+    const MANIFEST_KEY    =  'ValeSpec__ProjectManifest';
+    const API_BASE        =  '/api/projects';          // <-- Server project API root
     // ------------------------------------------------------------
 
 
@@ -39,12 +41,30 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | POST or DELETE to server API, fire-and-forget with fallback logging
+    // ------------------------------------------------------------
+    function _serverWrite(method, projectCode, bodyData) {
+        var url  =  API_BASE + '/' + encodeURIComponent(projectCode);
+        var opts =  { method: method, headers: { 'Content-Type': 'application/json' } };
+        if (bodyData) opts.body  =  JSON.stringify(bodyData);
+
+        fetch(url, opts)
+            .then(function(res) { return res.json(); })
+            .then(function(json) {
+                if (!json.ok) console.error('[ValeSpec__ProjectFileManager] Server ' + method + ' failed for ' + projectCode + ':', json.error);
+            })
+            .catch(function(err) {
+                console.warn('[ValeSpec__ProjectFileManager] Server ' + method + ' unreachable for ' + projectCode + ' (localStorage-only fallback):', err.message);
+            });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Create New Project
     // ------------------------------------------------------------
     function createProject(projectCode, projectName, documentName) {
         var storageKey  =  STORAGE_PREFIX + projectCode;
-
-        var now  =  new Date().toISOString().split('T')[0];
+        var now         =  new Date().toISOString().split('T')[0];
 
         var projectData  =  {
             'ValeSpec__ProjectFile__Metadata': {
@@ -66,8 +86,10 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
             'ValeSpec__ProjectFile__Assemblies': []
         };
 
-        localStorage.setItem(storageKey, JSON.stringify(projectData));
+        localStorage.setItem(storageKey, JSON.stringify(projectData));                              // <-- Write to local cache
         _addToManifest(projectCode, projectName, documentName || projectName + ' Doors', now);
+
+        _serverWrite('POST', projectCode, projectData);                                             // <-- Persist to disk async
 
         console.log('[ValeSpec__ProjectFileManager] Project created: ' + projectCode + ' - ' + projectName);
         return projectData;
@@ -81,26 +103,26 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         var storageKey  =  STORAGE_PREFIX + projectCode;
         var raw         =  localStorage.getItem(storageKey);
         if (!raw) {
-            console.warn('[ValeSpec__ProjectFileManager] Project not found: ' + projectCode);
+            console.warn('[ValeSpec__ProjectFileManager] Project not found in cache: ' + projectCode);
             return null;
         }
 
         try {
             var projectData  =  JSON.parse(raw);
-            console.log('[ValeSpec__ProjectFileManager] Project loaded: ' + projectCode);
+            console.log('[ValeSpec__ProjectFileManager] Project loaded from cache: ' + projectCode);
             return projectData;
         } catch (e) {
-            console.error('[ValeSpec__ProjectFileManager] Failed to parse project: ' + projectCode, e);
+            console.error('[ValeSpec__ProjectFileManager] Failed to parse cached project: ' + projectCode, e);
             return null;
         }
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Save Project
+    // FUNCTION | Save Project — write to localStorage cache and persist to disk
     // ------------------------------------------------------------
     function saveProject(projectData) {
-        var metadata     =  projectData['ValeSpec__ProjectFile__Metadata'];
+        var metadata  =  projectData['ValeSpec__ProjectFile__Metadata'];
         if (!metadata) return false;
 
         var projectCode  =  metadata['ValeSpec__ProjectFile__Metadata__ProjectCode'];
@@ -108,8 +130,10 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
 
         metadata['ValeSpec__ProjectFile__Metadata__DateModified']  =  new Date().toISOString().split('T')[0];
 
-        localStorage.setItem(storageKey, JSON.stringify(projectData));
+        localStorage.setItem(storageKey, JSON.stringify(projectData));                              // <-- Update local cache
         _updateManifestEntry(projectCode, metadata);
+
+        _serverWrite('POST', projectCode, projectData);                                             // <-- Persist to disk async
 
         console.log('[ValeSpec__ProjectFileManager] Project saved: ' + projectCode);
         return true;
@@ -117,14 +141,57 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Delete Project
+    // FUNCTION | Delete Project — remove from cache and disk
     // ------------------------------------------------------------
     function deleteProject(projectCode) {
         var storageKey  =  STORAGE_PREFIX + projectCode;
-        localStorage.removeItem(storageKey);
+        localStorage.removeItem(storageKey);                                                        // <-- Remove from local cache
         _removeFromManifest(projectCode);
 
+        _serverWrite('DELETE', projectCode, null);                                                  // <-- Delete from disk async
+
         console.log('[ValeSpec__ProjectFileManager] Project deleted: ' + projectCode);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Sync All Projects from Disk into localStorage Cache
+    // ------------------------------------------------------------
+    function syncFromServer() {
+        return fetch(API_BASE)
+            .then(function(res) { return res.json(); })
+            .then(function(json) {
+                if (!json.ok) throw new Error(json.error || 'Unknown error');
+
+                var projects  =  json.data;
+
+                var freshManifest  =  [];
+                var loadPromises   =  [];
+
+                for (var i = 0; i < projects.length; i++) {
+                    (function(entry) {
+                        var promise  =  fetch(API_BASE + '/' + encodeURIComponent(entry.projectCode))
+                            .then(function(r) { return r.json(); })
+                            .then(function(pJson) {
+                                if (!pJson.ok) return;
+                                var storageKey  =  STORAGE_PREFIX + entry.projectCode;
+                                localStorage.setItem(storageKey, JSON.stringify(pJson.data));       // <-- Populate cache from disk
+                                freshManifest.push(entry);
+                            });
+                        loadPromises.push(promise);
+                    })(projects[i]);
+                }
+
+                return Promise.all(loadPromises).then(function() {
+                    localStorage.setItem(MANIFEST_KEY, JSON.stringify(freshManifest));              // <-- Rebuild manifest from disk
+                    console.log('[ValeSpec__ProjectFileManager] Synced ' + freshManifest.length + ' project(s) from server.');
+                    return freshManifest;
+                });
+            })
+            .catch(function(err) {
+                console.warn('[ValeSpec__ProjectFileManager] Server sync unavailable — using localStorage cache:', err.message);
+                return _getManifest();                                                              // <-- Fall back to existing cache
+            });
     }
     // ------------------------------------------------------------
 
@@ -261,6 +328,7 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         loadProject             : loadProject,
         saveProject             : saveProject,
         deleteProject           : deleteProject,
+        syncFromServer          : syncFromServer,
         exportProjectAsJson     : exportProjectAsJson,
         importProjectFromJson   : importProjectFromJson
     };

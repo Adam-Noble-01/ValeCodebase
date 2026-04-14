@@ -11,7 +11,7 @@
 
    DESCRIPTION:
    - Renders document header into #ValeSpec__DocEditor__HeaderBlock
-   - Shows Vale logo, project name, document name
+   - Shows project name and document name
    - Date authored formatted via DateFormatter.formatShort
    - Editable revision code text input
    - Status dropdown with colour-coded badge
@@ -56,15 +56,6 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
         return project['ValeSpec__ProjectFile__Metadata'] || null;
     }
     // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Get Logo Path from Shared Assets
-    // ------------------------------------------------------------
-    function _getLogoPath() {
-        return '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png';
-    }
-    // ------------------------------------------------------------
-
 
     // HELPER FUNCTION | Format Date via DateFormatter
     // ------------------------------------------------------------
@@ -114,7 +105,6 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
     // HELPER FUNCTION | Build Header HTML
     // ------------------------------------------------------------
     function _buildHeaderHtml(meta) {
-        var logoPath     =  _getLogoPath();
         var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName']     || 'Untitled Project';
         var docName      =  meta['ValeSpec__ProjectFile__Metadata__DocumentName']    || 'Untitled Document';
         var authorName   =  meta['ValeSpec__ProjectFile__Metadata__Author']          || '';
@@ -126,11 +116,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
         var docNameStyle      =  'font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSecondary);';
         var authorStyle       =  'font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextSubtle);';
 
-        var html  =  '<div style="display:flex; align-items:center; gap:var(--Vale_Spacing_Large); padding:var(--Vale_Spacing_Medium); background:var(--Vale_BackgroundWhite); border:1px solid var(--Vale_BorderLight); border-radius:var(--Vale_BorderRadius);">';
-
-        if (logoPath) {
-            html  +=  '<img style="height:48px; width:auto;" src="' + logoPath + '" alt="Vale Logo" />';
-        }
+        var html  =  '<div style="display:flex; align-items:center; gap:var(--Vale_Spacing_Large); width:100%; box-sizing:border-box; padding:var(--Vale_Spacing_Medium); background:var(--Vale_BackgroundWhite); border:1px solid var(--Vale_BorderLight); border-radius:var(--Vale_BorderRadius);">';
 
         html  +=  '<div style="flex:1;">';
         html  +=      '<div>' + _buildEditableSpan('ValeSpec__DocEditor__ProjectNameField', projectName, projectNameStyle) + '</div>';

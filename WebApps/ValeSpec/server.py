@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
 =============================================================================
- VALESPEC - STATIC DEVELOPMENT SERVER
+ VALESPEC - DEVELOPMENT SERVER
 =============================================================================
 Purpose:
 - Serve ValeSpec over HTTP for module loading (no file:// CORS issues)
 - Provide clear startup feedback and request logging
 - Serve shared assets from ../assets__CommonApplicationAssets/
+- Provide project CRUD API backed by 04__LocalProjectData/ on disk
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import socket
 import sys
 from datetime import datetime, timezone
@@ -26,9 +28,12 @@ from typing import Tuple
 # REGION | Server Constants
 # -----------------------------------------------------------------------------
 
-NA__SERVER__APP_ROOT_PATH = Path(__file__).resolve().parent
+NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
 NA__SERVER__SHARED_ASSETS_ROOT_PATH = (NA__SERVER__APP_ROOT_PATH.parent / "assets__CommonApplicationAssets").resolve()
-NA__SERVER__OUTPUT_LOG_HANDLE = None
+NA__SERVER__PROJECT_DATA_PATH     = (NA__SERVER__APP_ROOT_PATH / "04__LocalProjectData").resolve()
+NA__SERVER__OUTPUT_LOG_HANDLE     = None
+
+NA__SERVER__PROJECT_CODE_PATTERN  = re.compile(r'^[A-Za-z0-9_\-]{1,64}$')   # Allowlist for safe project codes
 
 # endregion ----------------------------------------------------
 
@@ -72,23 +77,35 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         return True
     # ------------------------------------------------------------
 
-    # SUB FUNCTION | Resolve API route key from request path
+    # SUB FUNCTION | Resolve project code from an /api/projects/{code} path
     # ------------------------------------------------------------
-    def Na__Server__GetApiRouteKey(self) -> str | None:
-        from urllib.parse import urlparse
-        request_path = urlparse(self.path).path.rstrip("/")
-        if request_path.endswith("/api/system/health"):
-            return "health"
-        return None
+    def Na__Server__ParseProjectCode(self, request_path: str) -> str | None:
+        prefix = "/api/projects/"
+        if not request_path.startswith(prefix):
+            return None
+        code = request_path[len(prefix):].rstrip("/")
+        if not code or not NA__SERVER__PROJECT_CODE_PATTERN.match(code):
+            return None
+        return code
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Resolve path for a project data file
+    # ------------------------------------------------------------
+    def Na__Server__GetProjectFilePath(self, project_code: str) -> Path:
+        filename = f"ValeSpec__ProjectFile__{project_code}__.json"
+        return NA__SERVER__PROJECT_DATA_PATH / filename
     # ------------------------------------------------------------
 
     # SUB FUNCTION | Handle GET requests
     # ------------------------------------------------------------
     def do_GET(self) -> None:
+        from urllib.parse import urlparse
         if self.Na__Server__TryHandleSharedAssetRead():
             return
-        api_route_key = self.Na__Server__GetApiRouteKey()
-        if api_route_key == "health":
+
+        request_path = urlparse(self.path).path.rstrip("/")
+
+        if request_path == "/api/system/health":
             self.Na__Server__WriteJsonResponse(200, {
                 "ok": True,
                 "data": {
@@ -97,7 +114,129 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
                 }
             })
             return
+
+        if request_path == "/api/projects":
+            self.Na__Server__HandleProjectList()
+            return
+
+        project_code = self.Na__Server__ParseProjectCode(request_path)
+        if project_code:
+            self.Na__Server__HandleProjectLoad(project_code)
+            return
+
         super().do_GET()
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Handle POST requests
+    # ------------------------------------------------------------
+    def do_POST(self) -> None:
+        from urllib.parse import urlparse
+        request_path = urlparse(self.path).path.rstrip("/")
+
+        project_code = self.Na__Server__ParseProjectCode(request_path)
+        if project_code:
+            self.Na__Server__HandleProjectSave(project_code)
+            return
+
+        self.send_error(404, "Not Found")
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Handle DELETE requests
+    # ------------------------------------------------------------
+    def do_DELETE(self) -> None:
+        from urllib.parse import urlparse
+        request_path = urlparse(self.path).path.rstrip("/")
+
+        project_code = self.Na__Server__ParseProjectCode(request_path)
+        if project_code:
+            self.Na__Server__HandleProjectDelete(project_code)
+            return
+
+        self.send_error(404, "Not Found")
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | List all project files from 04__LocalProjectData/
+    # ------------------------------------------------------------
+    def Na__Server__HandleProjectList(self) -> None:
+        NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
+        projects = []
+
+        for file_path in sorted(NA__SERVER__PROJECT_DATA_PATH.glob("ValeSpec__ProjectFile__*__.json")):
+            try:
+                raw_data    = json.loads(file_path.read_text(encoding="utf-8"))
+                metadata    = raw_data.get("ValeSpec__ProjectFile__Metadata", {})
+                projects.append({
+                    "projectCode"  : metadata.get("ValeSpec__ProjectFile__Metadata__ProjectCode", ""),
+                    "projectName"  : metadata.get("ValeSpec__ProjectFile__Metadata__ProjectName", ""),
+                    "documentName" : metadata.get("ValeSpec__ProjectFile__Metadata__DocumentName", ""),
+                    "status"       : metadata.get("ValeSpec__ProjectFile__Metadata__DocumentStatus", "Draft"),
+                    "dateCreated"  : metadata.get("ValeSpec__ProjectFile__Metadata__DateCreated", ""),
+                    "dateModified" : metadata.get("ValeSpec__ProjectFile__Metadata__DateModified", ""),
+                })
+            except Exception as read_error:
+                print(f"[WARN] Could not read project file {file_path.name}: {read_error}")
+
+        self.Na__Server__WriteJsonResponse(200, {"ok": True, "data": projects})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Load a single project file from disk
+    # ------------------------------------------------------------
+    def Na__Server__HandleProjectLoad(self, project_code: str) -> None:
+        file_path = self.Na__Server__GetProjectFilePath(project_code)
+        if not file_path.is_file():
+            self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
+            return
+        try:
+            project_data = json.loads(file_path.read_text(encoding="utf-8"))
+            self.Na__Server__WriteJsonResponse(200, {"ok": True, "data": project_data})
+        except Exception as load_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(load_error)})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Save project JSON body to disk
+    # ------------------------------------------------------------
+    def Na__Server__HandleProjectSave(self, project_code: str) -> None:
+        content_length = int(self.headers.get("Content-Length", 0))
+        if content_length <= 0:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Empty body"})
+            return
+
+        try:
+            raw_body     = self.rfile.read(content_length)
+            project_data = json.loads(raw_body.decode("utf-8"))
+        except Exception as parse_error:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": f"Invalid JSON: {parse_error}"})
+            return
+
+        metadata = project_data.get("ValeSpec__ProjectFile__Metadata", {})
+        code_in_body = metadata.get("ValeSpec__ProjectFile__Metadata__ProjectCode", "")
+        if code_in_body != project_code:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Project code mismatch"})
+            return
+
+        NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
+        file_path = self.Na__Server__GetProjectFilePath(project_code)
+        try:
+            file_path.write_text(json.dumps(project_data, indent=4, ensure_ascii=False), encoding="utf-8")
+            print(f"[PROJECT] Saved: {file_path.name}")
+            self.Na__Server__WriteJsonResponse(200, {"ok": True})
+        except Exception as write_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(write_error)})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Delete a project file from disk
+    # ------------------------------------------------------------
+    def Na__Server__HandleProjectDelete(self, project_code: str) -> None:
+        file_path = self.Na__Server__GetProjectFilePath(project_code)
+        if not file_path.is_file():
+            self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
+            return
+        try:
+            file_path.unlink()
+            print(f"[PROJECT] Deleted: {file_path.name}")
+            self.Na__Server__WriteJsonResponse(200, {"ok": True})
+        except Exception as delete_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(delete_error)})
     # ------------------------------------------------------------
 
     # SUB FUNCTION | Write JSON HTTP response body
@@ -107,9 +246,20 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body_bytes)))
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(body_bytes)
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Handle OPTIONS preflight (CORS)
+    # ------------------------------------------------------------
+    def do_OPTIONS(self) -> None:
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
     # ------------------------------------------------------------
 
     # SUB FUNCTION | Reduce noisy default formatting

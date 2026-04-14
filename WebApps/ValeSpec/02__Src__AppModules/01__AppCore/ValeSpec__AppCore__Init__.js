@@ -31,10 +31,11 @@
     async function _initApp() {
         console.log('[ValeSpec__Init] Starting ValeSpec application...');
 
-        var ConfigLoader   =  window.ValeSpec__AppCore__ConfigLoader;
-        var ModeManager    =  window.ValeSpec__AppCore__ModeManager;
-        var StateManager   =  window.ValeSpec__AppCore__StateManager;
-        var HwLoader       =  window.ValeSpec__AppData__HardwareIndexLoader;
+        var ConfigLoader       =  window.ValeSpec__AppCore__ConfigLoader;
+        var ModeManager        =  window.ValeSpec__AppCore__ModeManager;
+        var StateManager       =  window.ValeSpec__AppCore__StateManager;
+        var HwLoader           =  window.ValeSpec__AppData__HardwareIndexLoader;
+        var ProjectFileManager =  window.ValeSpec__AppData__ProjectFileManager;
 
         var configData  =  await ConfigLoader.loadConfig();
         if (!configData) {
@@ -46,11 +47,16 @@
         var hwIndexPath   =  appSection['ValeSpec__Application__Config__HardwareIndexPath'];
         if (hwIndexPath) {
             await HwLoader.loadIndex(hwIndexPath);
+            await HwLoader.loadVectorData();
         }
 
         var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
         if (RenderPipeline && RenderPipeline.ensureConfigLoaded) {
             await RenderPipeline.ensureConfigLoaded();
+        }
+
+        if (ProjectFileManager && ProjectFileManager.syncFromServer) {
+            await ProjectFileManager.syncFromServer();                         // <-- Pull disk project files into localStorage cache before first render
         }
 
         _initNavigationBar();

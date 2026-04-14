@@ -34,14 +34,15 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // HELPER FUNCTION | Get Logo Path from Config
     // ------------------------------------------------------------
     function _getLogoPath() {
+        var fallbackLogoPath  =  '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png';
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return '';
+        if (!StateManager) return fallbackLogoPath;
         var state   =  StateManager.getState();
         var config  =  state.appConfig;
-        if (!config) return '';
+        if (!config) return fallbackLogoPath;
         var headerConfig  =  config['DocEditor__Header__Config'];
-        if (!headerConfig) return '';
-        return headerConfig['DocEditor__Header__Config__LogoPath'] || '';          // <-- Shared logo asset path
+        if (!headerConfig) return fallbackLogoPath;
+        return headerConfig['DocEditor__Header__Config__LogoPath'] || fallbackLogoPath;          // <-- Shared logo asset path
     }
     // ------------------------------------------------------------
 
@@ -54,7 +55,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         var state    =  StateManager.getState();
         var project  =  state.currentProject;
         if (!project) return {};
-        return project['ValeSpec__ProjectFile__Meta'] || {};
+        return project['ValeSpec__ProjectFile__Metadata'] || {};
     }
     // ------------------------------------------------------------
 
@@ -130,10 +131,10 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
     function _buildBrandingHeader(meta) {
         var logoPath     =  _getLogoPath();
-        var projectName  =  meta['ValeSpec__ProjectFile__Meta__ProjectName']  || 'Untitled Project';
-        var docName      =  meta['ValeSpec__ProjectFile__Meta__DocumentName'] || 'Untitled Document';
-        var revision     =  meta['ValeSpec__ProjectFile__Meta__RevisionCode'] || '';
-        var dateAuthored =  _formatDate(meta['ValeSpec__ProjectFile__Meta__DateCreated']);
+        var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName']  || 'Untitled Project';
+        var docName      =  meta['ValeSpec__ProjectFile__Metadata__DocumentName'] || 'Untitled Document';
+        var revision     =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode'] || '';
+        var dateAuthored =  _formatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
 
         var html  =  '<div class="ValeSpec__DocPreview__BrandingHeader">';
 

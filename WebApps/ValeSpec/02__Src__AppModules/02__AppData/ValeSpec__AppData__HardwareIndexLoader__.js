@@ -57,6 +57,51 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Load Full Vector Data for All Index Entries
+    // ------------------------------------------------------------
+    async function loadVectorData() {
+        var root  =  _getRoot();
+        if (!root) return;
+
+        var keys  =  Object.keys(root);
+        var loaded  =  0;
+
+        for (var i = 0; i < keys.length; i++) {
+            var item  =  root[keys[i]];
+            if (!item || item['HardwareItem__VectorData']) continue;
+
+            var dataFileUrl  =  item['HardwareItem__DataFile'];
+            if (!dataFileUrl) continue;
+
+            try {
+                var localPath  =  dataFileUrl;
+                var ghPrefix   =  'https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/';
+                if (dataFileUrl.indexOf(ghPrefix) === 0) {
+                    localPath  =  dataFileUrl.substring(ghPrefix.length);
+                }
+
+                var resp  =  await fetch(localPath);
+                if (!resp.ok) continue;
+
+                var fullData  =  await resp.json();
+                if (fullData['HardwareItem__VectorData']) {
+                    item['HardwareItem__VectorData']  =  fullData['HardwareItem__VectorData'];
+                    loaded++;
+                }
+            } catch (e) {
+                console.warn('[ValeSpec__HardwareIndexLoader] Could not load vector data for ' + keys[i] + ':', e.message);
+            }
+        }
+
+        if (window.ValeSpec__AppCore__StateManager) {
+            window.ValeSpec__AppCore__StateManager.setHardwareIndex(root);
+        }
+
+        console.log('[ValeSpec__HardwareIndexLoader] Vector data loaded for ' + loaded + ' of ' + keys.length + ' items');
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Get Hardware Item by Code
     // ------------------------------------------------------------
     function getHardwareByCode(code) {
@@ -119,6 +164,7 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
     // ------------------------------------------------------------
     return {
         loadIndex           : loadIndex,
+        loadVectorData      : loadVectorData,
         getHardwareByCode   : getHardwareByCode,
         getHardwareByType   : getHardwareByType,
         getHardwareByName   : getHardwareByName,

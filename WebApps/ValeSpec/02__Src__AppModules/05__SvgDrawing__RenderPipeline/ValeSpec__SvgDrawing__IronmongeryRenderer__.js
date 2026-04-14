@@ -10,12 +10,13 @@
    CREATED    : 2026
 
    DESCRIPTION:
-   - Reads HardwareItem__VectorData Paths array from hardware JSON data
-   - Creates translated and optionally mirrored <g> groups per panel
-   - Right-hand handle: offset x+32mm from panel origin at lever height
-   - Left-hand handle: offset x + panelWidth - 64mm, ScaleX=-1 mirror
-   - Iterates Line paths and renders each via CoordHelpers svgLine
-   - Applies ironmongery stroke colour and width from config
+   - Reads HardwareItem__VectorData Paths array from the full hardware data
+   - Uses HardwareItem__PanelPlacement transforms from the data file
+   - Right-hand handle: placed using RightHand__Transform offsets
+   - Left-hand handle: placed using LeftHand__Transform with horizontal mirror
+   - All handles are modelled as right-handed; left is mirrored via scale(-1,1)
+   - Each handle rendered into a translated <g> group on the panel
+   - For double doors: both panels get a handle (dual by default)
 
    ============================================================================= */
 
@@ -25,42 +26,28 @@
 
 const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
 
-    // MODULE VARIABLES | Module Dependencies
-    // ------------------------------------------------------------
-    var Coords  =  null;
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Lazy-Load CoordHelpers Reference
-    // ------------------------------------------------------------
-    function _coords() {
-        if (!Coords) Coords  =  window.ValeSpec__SvgDrawing__CoordHelpers;
-        return Coords;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Render Vector Paths for a Single Hardware Item
+    // HELPER FUNCTION | Render Vector Line Paths as SVG Markup
     // ------------------------------------------------------------
     function _renderPaths(paths, strokeColor, strokeWidth) {
         var svg  =  '';
 
         for (var i = 0; i < paths.length; i++) {
             var path  =  paths[i];
-            if (path.PathType !== 'Line') continue;    // <-- Only line segments supported
+            if (path.PathType !== 'Line') continue;
 
-            var sx  =  path.Start_mm.X;                // <-- Start X in local coords
-            var sy  =  path.Start_mm.Y;                // <-- Start Y in local coords
-            var ex  =  path.End_mm.X;                  // <-- End X in local coords
-            var ey  =  path.End_mm.Y;                  // <-- End Y in local coords
+            var sx  =  path.Start_mm.X;
+            var sy  =  -path.Start_mm.Y;               // <-- Y-flip: data Y-up to SVG Y-down
+            var ex  =  path.End_mm.X;
+            var ey  =  -path.End_mm.Y;                 // <-- Y-flip
 
             svg += '<line'
                 + ' x1="' + sx + '"'
-                + ' y1="' + (-sy) + '"'
+                + ' y1="' + sy + '"'
                 + ' x2="' + ex + '"'
-                + ' y2="' + (-ey) + '"'
+                + ' y2="' + ey + '"'
                 + ' stroke="'       + strokeColor  + '"'
                 + ' stroke-width="' + strokeWidth  + '"'
+                + ' stroke-linecap="round"'
                 + ' />';
         }
 
@@ -69,28 +56,29 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Calculate Handle Transform for a Panel
+    // HELPER FUNCTION | Build SVG Transform for Handle Placement on a Panel
     // ------------------------------------------------------------
-    function _calcHandleTransform(panel, leverHeight_mm) {
-        var panelSvgY  =  -panel.y - panel.height;    // <-- Y-flip for panel origin
+    function _buildHandleTransform(panel, placement, leverHeight_mm) {
+        var isLeftPanel  =  (panel.hand === 'left');
 
-        if (panel.hand === 'left') {
-            var offsetX  =  panel.x + panel.width - 64;   // <-- Left-hand: inset 64mm from right edge
-            var offsetY  =  panelSvgY + (panel.height - leverHeight_mm);  // <-- Y position from top of panel
-            return {
-                translate  : 'translate(' + offsetX + ',' + offsetY + ')',
-                scale      : ' scale(-1,1)',           // <-- Mirror horizontally for left-hand
-                transform  : 'translate(' + offsetX + ',' + offsetY + ') scale(-1,1)'
-            };
+        var transform  =  isLeftPanel
+            ? placement['LeftHand__Transform']  || {}
+            : placement['RightHand__Transform'] || {};
+
+        var offsetX_mm  =  transform['OffsetX_mm'] || 0;
+        var offsetY_mm  =  leverHeight_mm || transform['OffsetY_mm'] || 1000;
+
+        var panelOriginSvgY  =  -panel.y - panel.height;
+
+        if (isLeftPanel) {
+            var anchorX  =  panel.x + panel.width + offsetX_mm;
+            var anchorY  =  panelOriginSvgY + (panel.height - offsetY_mm);
+            return 'translate(' + anchorX + ',' + anchorY + ') scale(-1,1)';
         }
 
-        var offsetX  =  panel.x + 32;                 // <-- Right-hand: offset 32mm from panel origin
-        var offsetY  =  panelSvgY + (panel.height - leverHeight_mm);
-        return {
-            translate  : 'translate(' + offsetX + ',' + offsetY + ')',
-            scale      : '',
-            transform  : 'translate(' + offsetX + ',' + offsetY + ')'
-        };
+        var anchorX  =  panel.x + offsetX_mm;
+        var anchorY  =  panelOriginSvgY + (panel.height - offsetY_mm);
+        return 'translate(' + anchorX + ',' + anchorY + ')';
     }
     // ------------------------------------------------------------
 
@@ -102,21 +90,27 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
         if (!hardwareData) return '';
 
         var vectorData  =  hardwareData['HardwareItem__VectorData'];
-        if (!vectorData || !vectorData.Paths || !vectorData.Paths.length) return '';
+        if (!vectorData || !vectorData['Paths'] || !vectorData['Paths'].length) return '';
+
+        var placement    =  hardwareData['HardwareItem__PanelPlacement']
+                         || (hardwareData['ValeSpec__HardwareItemData'] || {})['HardwareItem__PanelPlacement']
+                         || {};
 
         var ironConfig   =  config || {};
         var strokeColor  =  ironConfig['SvgDrawing__Ironmongery__Config__StrokeColor']   || '#172b3a';
         var strokeWidth  =  ironConfig['SvgDrawing__Ironmongery__Config__StrokeWidthMm'] || 1.2;
-        var paths        =  vectorData.Paths;
+        var paths        =  vectorData['Paths'];
+
+        var pathsSvg  =  _renderPaths(paths, strokeColor, strokeWidth);
 
         var svg  =  '';
 
         for (var p = 0; p < panels.length; p++) {
             var panel      =  panels[p];
-            var handleTfm  =  _calcHandleTransform(panel, leverHeight_mm);
+            var transform  =  _buildHandleTransform(panel, placement, leverHeight_mm);
 
-            svg += '<g transform="' + handleTfm.transform + '">';
-            svg += _renderPaths(paths, strokeColor, strokeWidth);
+            svg += '<g transform="' + transform + '">';
+            svg += pathsSvg;
             svg += '</g>';
         }
 

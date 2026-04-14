@@ -678,6 +678,14 @@
           "endTime": "17:15",
           "title": "Dev |  Vale Data Structure Buildout",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776157689432",
+          "date": "2026-04-14",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Dev |  ValePlanner PWA",
+          "color": "na-shift-color-slate"
         }
       ]
     }

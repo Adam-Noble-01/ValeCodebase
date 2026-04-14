@@ -1,4 +1,5 @@
 import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__LocalhostGuard.js';
+import { Na__ServerConnection__ReportApiFailure, Na__ServerConnection__ReportApiSuccess } from './Na__System__ServerConnectionStatus__Monitor.js';
 
 // -----------------------------------------------------------------------------
 // REGION | Localhost Persistence API Client
@@ -56,11 +57,19 @@ async function Na__Persistence__FetchDataAsync(urlPath) {
             cache: 'no-store'
         });
 
-        if (!responseValue.ok) return null;
+        if (!responseValue.ok) {
+            Na__ServerConnection__ReportApiFailure(`GET ${urlPath}`);
+            return null;
+        }
         const bodyValue = await responseValue.json();
-        if (!bodyValue?.ok) return null;
+        if (!bodyValue?.ok) {
+            Na__ServerConnection__ReportApiFailure(`GET ${urlPath}`);
+            return null;
+        }
+        Na__ServerConnection__ReportApiSuccess(`GET ${urlPath}`);
         return bodyValue.data || null;
     } catch (errorValue) {
+        Na__ServerConnection__ReportApiFailure(`GET ${urlPath}`);
         console.warn('ValePlanner persistence load failed:', errorValue);
         return null;
     }
@@ -82,10 +91,19 @@ async function Na__Persistence__PutDataAsync(urlPath, payload) {
             },
             body: JSON.stringify(payload)
         });
-        if (!responseValue.ok) return false;
+        if (!responseValue.ok) {
+            Na__ServerConnection__ReportApiFailure(`PUT ${urlPath}`);
+            return false;
+        }
         const bodyValue = await responseValue.json();
-        return Boolean(bodyValue?.ok);
+        if (!bodyValue?.ok) {
+            Na__ServerConnection__ReportApiFailure(`PUT ${urlPath}`);
+            return false;
+        }
+        Na__ServerConnection__ReportApiSuccess(`PUT ${urlPath}`);
+        return true;
     } catch (errorValue) {
+        Na__ServerConnection__ReportApiFailure(`PUT ${urlPath}`);
         console.warn('ValePlanner persistence save failed:', errorValue);
         return false;
     }

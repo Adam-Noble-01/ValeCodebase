@@ -15,13 +15,11 @@ import json
 import os
 import socket
 import sys
+from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 from typing import Tuple
-
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(line_buffering=True)
 
 
 # -----------------------------------------------------------------------------
@@ -32,9 +30,15 @@ NA__SERVER__WORKERS_JSON_PATH = Path("02__Src__AppModules/03__AppData/Na__AppDat
 NA__SERVER__TIMECARD_JSON_PATH = Path("02__Src__AppModules/12__Feature__TimecardSystem/Na__Feature__Data__TimecardData__.json")
 NA__SERVER__APP_ROOT_PATH = Path(__file__).resolve().parent
 NA__SERVER__SHARED_ASSETS_ROOT_PATH = (NA__SERVER__APP_ROOT_PATH.parent / "assets__CommonApplicationAssets").resolve()
+NA__SERVER__OUTPUT_LOG_HANDLE = None
 
 
 class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
+    extensions_map = {
+        **SimpleHTTPRequestHandler.extensions_map,
+        ".webmanifest": "application/manifest+json",
+    }
+
     # SUB FUNCTION | Serve shared app assets from parent WebApps folder
     # ------------------------------------------------------------
     def Na__Server__TryHandleSharedAssetRead(self) -> bool:
@@ -75,6 +79,8 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
             return "workers"
         if request_path.endswith("/api/data/timecard"):
             return "timecard"
+        if request_path.endswith("/api/system/health"):
+            return "health"
         return None
     # ------------------------------------------------------------
 
@@ -89,6 +95,15 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
             return
         if api_route_key == "timecard":
             self.Na__Server__HandleApiRead(NA__SERVER__TIMECARD_JSON_PATH)
+            return
+        if api_route_key == "health":
+            self.Na__Server__WriteJsonResponse(200, {
+                "ok": True,
+                "data": {
+                    "status": "healthy",
+                    "utcIsoTimestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            })
             return
         super().do_GET()
     # ------------------------------------------------------------
@@ -227,6 +242,33 @@ def Na__Server__ValidateRoot(root_path: Path) -> Tuple[bool, str]:
     # ------------------------------------------------------------
 
 
+def Na__Server__ConfigureOutputStreams(silent_mode: bool, log_file_name: str) -> None:
+    # HELPER FUNCTION | Configure Output Streams for Visible or Silent Runtime
+    # ------------------------------------------------------------
+    global NA__SERVER__OUTPUT_LOG_HANDLE
+
+    should_redirect_to_log = silent_mode or sys.stdout is None or sys.stderr is None
+    if not should_redirect_to_log:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(line_buffering=True)
+        return
+
+    log_file_path = (NA__SERVER__APP_ROOT_PATH / log_file_name).resolve()
+    log_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        NA__SERVER__OUTPUT_LOG_HANDLE = log_file_path.open("a", encoding="utf-8", buffering=1)
+    except OSError:
+        NA__SERVER__OUTPUT_LOG_HANDLE = open(os.devnull, "w", encoding="utf-8")
+
+    sys.stdout = NA__SERVER__OUTPUT_LOG_HANDLE
+    sys.stderr = NA__SERVER__OUTPUT_LOG_HANDLE
+    print("=============================================================================")
+    print(f" VALEPLANNER - SILENT SERVER OUTPUT REDIRECT ACTIVE -> {log_file_path}")
+    print("=============================================================================")
+    # ------------------------------------------------------------
+
+
 # endregion ----------------------------------------------------
 
 
@@ -241,8 +283,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="ValePlanner local static server")
     parser.add_argument("--port", type=int, default=8001, help="Port number (default: 8001)")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
+    parser.add_argument("--silent", action="store_true", help="Redirect output to log file for no-console launches")
+    parser.add_argument("--log-file", type=str, default="Na__ValePlannerServer__Runtime.log", help="Log file path relative to app root")
     args = parser.parse_args()
     # ------------------------------------------------------------
+
+    Na__Server__ConfigureOutputStreams(args.silent, args.log_file)
 
     root_path = NA__SERVER__APP_ROOT_PATH
     os.chdir(root_path)

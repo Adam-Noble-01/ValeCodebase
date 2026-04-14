@@ -3,6 +3,68 @@
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
+## ValePlanner v0.5.2 - 14-Apr-2026
+### Server Connection Warning Banner + PWA Enablement + Silent Startup
+
+**Overview**
+- Added modular server connection monitoring with a top-center warning banner that appears only after a previously stable localhost connection is lost, warning that edits are no longer being persisted.
+- Enabled ValePlanner installability metadata with a dedicated web manifest, planner-specific app icons, and service worker registration.
+- Added Windows `8001` launchers including a silent startup launcher designed for `shell:startup` workflows.
+
+**Connection Reliability**
+- Added monitor module:
+  - `02__Src__AppModules/70__System__DevTools/Na__System__ServerConnectionStatus__Monitor.js`
+- Added banner UI module:
+  - `02__Src__AppModules/70__System__DevTools/Na__System__ServerConnectionStatus__Banner.js`
+- Added banner stylesheet:
+  - `03__Style__AppStylesheets/Na__UiSystem__Styles__ServerConnectionStatusBanner__.css`
+- Wired monitor + banner initialization from app bootstrap.
+- Updated persistence API module to report GET/PUT success/failure signals into the connection monitor.
+- Added health endpoint in `server.py`:
+  - `GET api/system/health`
+
+**PWA and Branding**
+- Updated `index.html` icon URLs to use:
+  - `01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__192x192.png`
+  - `01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__512x512.png`
+- Added manifest:
+  - `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest`
+- Added service worker registration module:
+  - `02__Src__AppModules/62__Feature__AppInstallability/Na__Feature__AppInstallability__ServiceWorkerRegistration__.js`
+- Added app-root service worker:
+  - `Na__ServiceWorker__ValePlanner.js`
+
+**Startup and Server Runtime**
+- Added `8001` launchers:
+  - `Start__ValePlanner__Localhost__8001__.bat`
+  - `Start__ValePlanner__Localhost__8001__.ps1`
+- Added silent startup launcher:
+  - `Start__ValePlanner__WindowsStartUp__Silent__8001__.bat`
+- Hardened launchers to avoid force-killing other apps on shared localhost ports (warn-and-exit when `8001` is occupied).
+- Updated `server.py` with:
+  - `--silent` mode for no-console launches
+  - `--log-file` output redirection for silent runtime logs
+  - `.webmanifest` MIME mapping for installability metadata
+
+**Files Changed**
+- `index.html`
+- `server.py`
+- `ValePlanner__README__.md`
+- `02__Src__AppModules/02__AppCore/Na__AppCore__Bootstrap.js`
+- `02__Src__AppModules/70__System__DevTools/Na__System__PersistenceApi.js`
+- `02__Src__AppModules/70__System__DevTools/Na__System__DevTools__LocalhostGuard.js`
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`
+- `02__Src__AppModules/70__System__DevTools/Na__System__ServerConnectionStatus__Monitor.js`
+- `02__Src__AppModules/70__System__DevTools/Na__System__ServerConnectionStatus__Banner.js`
+- `03__Style__AppStylesheets/Na__UiSystem__Styles__ServerConnectionStatusBanner__.css`
+- `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest`
+- `02__Src__AppModules/62__Feature__AppInstallability/Na__Feature__AppInstallability__ServiceWorkerRegistration__.js`
+- `Na__ServiceWorker__ValePlanner.js`
+- `Start__ValePlanner__Localhost__8001__.bat`
+- `Start__ValePlanner__Localhost__8001__.ps1`
+- `Start__ValePlanner__WindowsStartUp__Silent__8001__.bat`
+
+# ---------------------------------------------------------
 ## ValePlanner v0.4.6 - 02-Apr-2026
 ### Analytics — Min-Hours Threshold (Donut) + Calendar Bar Labels
 

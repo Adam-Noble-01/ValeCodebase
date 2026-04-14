@@ -1,0 +1,58 @@
+---
+description: Local dev servers, localhost URLs, ports, wrangler, Python static/Flask servers, launch scripts, or CORS/API base URLs for local development across Vale WebApps.
+globs:
+  - "**/server.py"
+  - "**/*wrangler*.jsonc"
+  - "**/Dev__Worker.bat"
+  - "**/TestEnv__FlaskLocalServer.py"
+  - "**/Start__*Localhost*"
+  - "**/*Localhost*.md"
+  - "**/Na__Feature__EmailWorkers__Config.json"
+alwaysApply: false
+---
+# Localhost & Dev Server Ports
+
+**Context:**
+- This monorepo has **multiple** local dev entrypoints; port **8000** is **not** universal.
+- Tools often default to `localhost:8000`; that habit breaks ValePlanner, Wrangler, and the VV3D test Flask server unless you check context first.
+
+**Core rule:** Infer the **app or folder** in scope, then use **that** app’s port from its `server.py`, README, launcher, or config — never a generic guess.
+
+## Mandatory sequence (before suggesting a URL, command, or config change)
+
+1. **Identify scope:** Whitecardopedia, ValePlanner, ValeVision3D (main vs email worker vs test env), a prototype folder, etc.
+2. **Confirm the port:** Read the relevant `server.py`, Wrangler/email config, or `Start__*Localhost*` script for the active workflow.
+3. **Align dependents:** CORS origins, redirect URIs, and API base URLs must use the **same** host/port as the server you are actually running.
+
+## Canonical ports (verify in-repo; this list can drift)
+
+**Whitecardopedia**
+- **Local URL:** `http://localhost:8000`
+- **Source:** `Whitecardopedia/server.py` — `SERVER_PORT`
+
+**ValePlanner**
+- **Default (`python server.py`):** `http://127.0.0.1:8001` — `ValePlanner/server.py` (`--port` default **8001**)
+- **Alternate:** Some launchers and docs use **8000** — match whichever script the user (or task) is using; do not mix them blindly.
+
+**ValeVision3D — Email Worker (Wrangler dev)**
+- **Local URL:** `http://127.0.0.1:8787`
+- **Source:** Wrangler / `Na__Feature__EmailWorkers__Config.json` (local API base)
+
+**ValeVision3D — Test / Flask prototype environment**
+- **Local URL:** `http://127.0.0.1:5500`
+- **Source:** `ValeVision3D/80__Testing__PrototypeEnvironment/TestEnv__FlaskLocalServer.py` (intentionally separate from **8000**)
+
+**Prototypes (e.g. Babylon test harness)**
+- **Typical:** `http://localhost:8001`
+- **Source:** That prototype’s own `server.py`
+
+## Do
+
+- Prefer reading the **actual** server file or launcher over memorised ports.
+- When adding a **new** local server, pick a **free** port, document it beside the entrypoint, and avoid collisions with the canonical list above.
+- When editing **CORS**, **redirect URIs**, or **API base URLs** for local dev, tie the port to the **same** app’s server.
+
+## Don't
+
+- Default every workflow to `localhost:8000` unless the work is **Whitecardopedia** (or another path that explicitly binds **8000**).
+- Assume README examples are always current — confirm against `server.py` or launch scripts when ports matter.

@@ -12,12 +12,12 @@ Write-Host "====================================================================
 
 $PortInUseConnections = Get-NetTCPConnection -LocalPort 8001 -State Listen -ErrorAction SilentlyContinue
 if ($PortInUseConnections) {
-    $PortInUsePids = $PortInUseConnections | Select-Object -ExpandProperty OwningProcess -Unique
-    foreach ($PidValue in $PortInUsePids) {
-        Write-Host " Port 8001 already in use. Stopping PID $PidValue..." -ForegroundColor Yellow
-        Stop-Process -Id $PidValue -Force -ErrorAction SilentlyContinue
-    }
-    Start-Sleep -Milliseconds 350
+    Write-Host "" -ForegroundColor Yellow
+    Write-Host " [WARNING] Port 8001 is already in use by another process." -ForegroundColor Yellow
+    Write-Host " [WARNING] ValePlanner will not force-stop it to avoid impacting other apps." -ForegroundColor Yellow
+    Write-Host " [WARNING] Stop the existing process manually or run ValePlanner on another port." -ForegroundColor Yellow
+    Write-Host "" -ForegroundColor Yellow
+    exit 1
 }
 
 try {

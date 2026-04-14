@@ -7,9 +7,19 @@ echo ===========================================================================
 echo  Launching python server.py on http://127.0.0.1:8001/index.html
 echo =============================================================================
 
+set "Na__PortInUse="
 for /f "tokens=5" %%p in ('netstat -ano ^| findstr /R /C:":8001 .*LISTENING"') do (
-    echo Port 8001 already in use. Stopping PID %%p...
-    taskkill /PID %%p /F >nul 2>&1
+    set "Na__PortInUse=1"
+)
+
+if defined Na__PortInUse (
+    echo.
+    echo [WARNING] Port 8001 is already in use by another process.
+    echo [WARNING] ValePlanner will not force-stop it to avoid impacting other apps.
+    echo [WARNING] Stop the existing process manually or run ValePlanner on another port.
+    echo.
+    endlocal
+    exit /b 1
 )
 
 python -u server.py --host 127.0.0.1 --port 8001

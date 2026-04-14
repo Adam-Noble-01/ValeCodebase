@@ -82,6 +82,10 @@ All of these should be listed from version 0.1.0 but will require their own logi
 
 
 ### 2.4 |  Document Preview Mode
+- This is the mode that allows the user to preview the document.
+- This will be a preview of the document in the form of a PDF Document.
+- It shows everything as though its a endless scroll A4 Document with the Vale Branding in the header.
+- It is a view of what the fully rendered item will look like designed as a final review tool.
 
 
 --------------------------------------

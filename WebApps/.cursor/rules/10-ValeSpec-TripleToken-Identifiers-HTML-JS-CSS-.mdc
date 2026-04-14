@@ -1,0 +1,96 @@
+---
+description: ValeSpec web apps — mandatory System__Thing__Specifics identifiers (double-underscore segments) for HTML/CSS/JS DOM hooks.
+globs:
+  - "**/ValeSpec/**/*.html"
+  - "**/ValeSpec/**/*.js"
+  - "**/ValeSpec/**/*.css"
+  - "**/ValeSpec/**/*.mjs"
+alwaysApply: false
+---
+# ValeSpec Triple-Token Identifiers
+
+**Context:**
+- ValeSpec UI code lives under `**/ValeSpec/` (e.g. `WebApps/ValeSpec/`): static HTML viewers, bundled JS/CSS, inline scripts/styles.
+- Naming is **additive** to workspace-wide rules (`Na__` / Noble Architecture prefixes in other trees).
+- If the Cursor workspace root **is** the `ValeSpec` folder (no `ValeSpec` segment in paths), globs may not auto-attach — still apply this convention for ValeSpec UI tasks.
+
+**Core rule:** Every **DOM-facing** `id` and `class` (and matching JS strings) uses **exactly three** segments separated by **`__`**:
+
+```
+<System>__<Thing>__<Specifics>
+```
+
+**Segments:**
+- **System** — Always **`ValeSpec`** for files in this tree.
+- **Thing** — App or surface in PascalCase: `CadObjectViewer`, `CadObjectBuilder`, `EarlyStagePlan`, etc.
+- **Specifics** — Role or state in PascalCase: `GeometryLine`, `ButtonLoadJson`, `StateActive`, `FieldLabel`.
+
+**No** new single- or two-segment hooks (e.g. not `geo-line`, `load-btn`, `#viewer`). Rename legacy names when editing those areas.
+
+## Where it applies
+
+- **`id`** — Layout regions, SVG layers, buttons, inputs, readouts, inspector fields (e.g. `id="ValeSpec__CadObjectViewer__SvgCanvas"`).
+- **`class`** — Geometry strokes, toolbar, panels, path list rows, state modifiers.
+- **JavaScript** — `getElementById`, `querySelector`, `classList`, and template HTML strings must match CSS/HTML **verbatim**.
+
+### Module-level JS names (same triple-token root)
+
+Use **`ValeSpec__CadObjectViewer__`** (or the relevant `Thing`) as the prefix for bindings that are not DOM hook strings:
+
+- **`Const…`** — `ValeSpec__CadObjectViewer__ConstPathTypeToCssColorVar` (maps, literals reused across functions).
+- **`State…`** — `ValeSpec__CadObjectViewer__StateVectorData`, `ValeSpec__CadObjectViewer__SvgViewBoxState`.
+- **`Ui…`** — toggles such as `ValeSpec__CadObjectViewer__UiShowGrid`.
+- **`Pan…`** — interaction scratch state such as `ValeSpec__CadObjectViewer__PanDragStart`.
+- **`Path…`** — indices such as `ValeSpec__CadObjectViewer__PathSelectedIndex`.
+- **`Dom…`** — cached elements: `ValeSpec__CadObjectViewer__DomSvgCanvas`, `ValeSpec__CadObjectViewer__DomViewport`, etc.
+
+Do **not** rename the SVG attribute name `viewBox="…"` on inline icons; only the JS **variable** holding the main canvas viewBox uses the verbose `SvgViewBoxState` name.
+- **SVG** — `<g id="...">` for layers referenced from JS; classes on `<line>`, `<path>`, `<text>` for drawn geometry.
+
+## Specifics naming (examples)
+
+**Geometry / drawing**
+- `GeometrySegment`, `GeometryLine`, `GeometryArc`, `GeometryCircle`, `GeometryHit`, `GridMinor`, `GridAxis`, `BboxRect`, `BboxDim`, `OriginCross`, …
+
+**Controls**
+- `ToolbarButton`, `ButtonLoadJson`, `ButtonFitView`, `ButtonToggleGrid`, `InputFileJson`, …
+
+**Regions**
+- `RootApp`, `HeaderBar`, `Viewport`, `InspectorPanel`, `DropZoneOverlay`, `StatusBar`, …
+
+**Inspector / fields**
+- `InfoCell`, `FieldLabel`, `InfoValue`, `FieldCountArcs`, `FieldBboxWidth`, …
+
+**State / selection (classes)**
+- Transient UI: `StateActive`, `StateHidden`, `StateDragOver`, `StateDragging`.
+- Path segments / lists: `Highlighted`, `Selected`, `Dimmed`, `PathListItemSelected`, …
+
+## CSS custom properties (`:root`)
+
+- **Theme tokens** (`--bg-app`, `--col-line`, `--col-grid-minor`, `--text-primary`, …) stay **short** — they are not DOM hooks.
+- **Never** run a blind find-replace that alters substrings inside `--col-*` names (e.g. `--col-grid-minor` must not become `--col-ValeSpec__...`).
+
+## Canonical file
+
+- **Source:** `WebApps/ValeSpec/65__Dev__CadObjectBuilder/ValeSpec__CadObjectViewer__.html`
+- Match new ValeSpec HTML/JS/CSS to that file’s `id` / `class` and script string style.
+
+## Do
+
+- Use the full `ValeSpec__<Thing>__<Specifics>` triple for every new or renamed DOM hook.
+- Change **CSS selectors**, **HTML**, and **JS** together so IDs/classes stay aligned.
+- Keep **`:root`** variable names stable unless tokens are intentionally redesigned.
+- Prefer one clear concept per *Specifics* token (e.g. `PathListTypeDot`, not `Dot` alone).
+
+## Don't
+
+- Introduce short cryptic `id`/`class` names for new ValeSpec UI.
+- Let JS strings drift from the HTML/CSS identifiers they reference.
+- Rewrite `--col-*` / `--bg-*` names when renaming classes unless you are deliberately changing the design-token layer.
+
+## Agent checklist (editing ValeSpec UI)
+
+1. **Identify surface:** Cad Object Viewer, future ValeSpec HTML, etc.
+2. **Name hooks:** Apply the triple-token pattern to all new `id` / `class` / JS literals.
+3. **Cross-check:** Grep or read matching CSS, HTML, and script blocks in the same edit.
+4. **Tokens:** Leave `:root` custom properties alone unless the task is theme work.

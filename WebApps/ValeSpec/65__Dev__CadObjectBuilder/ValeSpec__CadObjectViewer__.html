@@ -31,9 +31,8 @@
             --col-arc                : #ffa94d;
             --col-circle             : #69db7c;
             --col-origin             : #ff6b6b;
-            --col-bbox               : rgba(255,255,255,0.12);
+            --col-bbox               : rgba(200, 90, 90, 0.72);
             --col-grid-minor         : rgba(255,255,255,0.04);
-            --col-grid-major         : rgba(255,255,255,0.10);
             --col-grid-axis          : rgba(255,255,255,0.22);
             --col-highlight          : #fff176;
             --col-selected           : #ffffff;
@@ -59,7 +58,7 @@
         }
 
         /* App Layout */
-        #app {
+        #ValeSpec__CadObjectViewer__RootApp {
             display                  : grid;
             grid-template-rows       : 54px 1fr 34px;
             grid-template-columns    : 1fr 350px;
@@ -74,7 +73,7 @@
         /* ---------------------------------------------------------------- */
         /* Header Bar                                                       */
         /* ---------------------------------------------------------------- */
-        #header {
+        #ValeSpec__CadObjectViewer__HeaderBar {
             grid-area                : header;
             display                  : flex;
             align-items              : center;
@@ -85,7 +84,7 @@
             user-select              : none;
         }
 
-        #header .brand {
+        #ValeSpec__CadObjectViewer__HeaderBar .ValeSpec__CadObjectViewer__HeaderBrand {
             font-size                : 0.85rem;
             font-weight              : 600;
             color                    : var(--text-accent);
@@ -94,14 +93,14 @@
             white-space              : nowrap;
         }
 
-        #header .divider {
+        #ValeSpec__CadObjectViewer__HeaderBar .ValeSpec__CadObjectViewer__HeaderDivider {
             width                    : 1px;
             height                   : 20px;
             background               : var(--border);
             flex-shrink              : 0;
         }
 
-        .toolbar-btn {
+        .ValeSpec__CadObjectViewer__ToolbarButton {
             display                  : flex;
             align-items              : center;
             gap                      : 5px;
@@ -115,16 +114,16 @@
             white-space              : nowrap;
             transition               : background 0.12s, border-color 0.12s;
         }
-        .toolbar-btn:hover           { background : var(--btn-bg-hover); border-color : #555560; }
-        .toolbar-btn.active          { background : var(--btn-bg-active); color : #fff; border-color : var(--btn-bg-active); }
-        .toolbar-btn svg             { width : 13px; height : 13px; flex-shrink : 0; }
+        .ValeSpec__CadObjectViewer__ToolbarButton:hover           { background : var(--btn-bg-hover); border-color : #555560; }
+        .ValeSpec__CadObjectViewer__ToolbarButton.ValeSpec__CadObjectViewer__StateActive          { background : var(--btn-bg-active); color : #fff; border-color : var(--btn-bg-active); }
+        .ValeSpec__CadObjectViewer__ToolbarButton svg             { width : 13px; height : 13px; flex-shrink : 0; }
 
-        #load-btn                    { background : #2d2050; border-color : #5a3ea0; color : #c4b5fd; }
-        #load-btn:hover              { background : #3d2c70; }
+        #ValeSpec__CadObjectViewer__ButtonLoadJson                    { background : #2d2050; border-color : #5a3ea0; color : #c4b5fd; }
+        #ValeSpec__CadObjectViewer__ButtonLoadJson:hover              { background : #3d2c70; }
 
-        #file-input                  { display : none; }
+        #ValeSpec__CadObjectViewer__InputFileJson                  { display : none; }
 
-        #header .spacer              { flex : 1; }
+        #ValeSpec__CadObjectViewer__HeaderBar .ValeSpec__CadObjectViewer__HeaderSpacer              { flex : 1; }
 
         #legend {
             display                  : flex;
@@ -132,14 +131,14 @@
             gap                      : 12px;
             padding-right            : 4px;
         }
-        .legend-item {
+        .ValeSpec__CadObjectViewer__LegendItem {
             display                  : flex;
             align-items              : center;
             gap                      : 5px;
             font-size                : 0.72rem;
             color                    : var(--text-secondary);
         }
-        .legend-dot {
+        .ValeSpec__CadObjectViewer__LegendSwatch {
             width                    : 8px;
             height                   : 2px;
             border-radius            : 1px;
@@ -149,23 +148,23 @@
         /* ---------------------------------------------------------------- */
         /* SVG Viewport                                                     */
         /* ---------------------------------------------------------------- */
-        #viewer {
+        #ValeSpec__CadObjectViewer__Viewport {
             grid-area                : viewer;
             position                 : relative;
             overflow                 : hidden;
             background               : var(--bg-app);
             cursor                   : grab;
         }
-        #viewer.dragging             { cursor : grabbing; }
+        #ValeSpec__CadObjectViewer__Viewport.ValeSpec__CadObjectViewer__StateDragging             { cursor : grabbing; }
 
-        #svg-canvas {
+        #ValeSpec__CadObjectViewer__SvgCanvas {
             width                    : 100%;
             height                   : 100%;
             display                  : block;
         }
 
         /* Drop Zone Overlay */
-        #drop-zone {
+        #ValeSpec__CadObjectViewer__DropZoneOverlay {
             position                 : absolute;
             inset                    : 0;
             display                  : flex;
@@ -177,18 +176,18 @@
             pointer-events           : none;
             transition               : opacity 0.2s;
         }
-        #drop-zone.hidden            { opacity : 0; pointer-events : none; }
-        #drop-zone.drag-over         { background : rgba(40,28,70,0.97); }
+        #ValeSpec__CadObjectViewer__DropZoneOverlay.ValeSpec__CadObjectViewer__StateHidden            { opacity : 0; pointer-events : none; }
+        #ValeSpec__CadObjectViewer__DropZoneOverlay.ValeSpec__CadObjectViewer__StateDragOver         { background : rgba(40,28,70,0.97); }
 
-        #drop-zone .drop-icon        { font-size : 2.4rem; opacity : 0.3; }
-        #drop-zone .drop-title       { font-size : 1.1rem; color : var(--text-secondary); }
-        #drop-zone .drop-sub         { font-size : 0.78rem; color : var(--text-dim); }
+        #ValeSpec__CadObjectViewer__DropZoneOverlay .ValeSpec__CadObjectViewer__DropZoneIcon        { font-size : 2.4rem; opacity : 0.3; }
+        #ValeSpec__CadObjectViewer__DropZoneOverlay .ValeSpec__CadObjectViewer__DropZoneTitle       { font-size : 1.1rem; color : var(--text-secondary); }
+        #ValeSpec__CadObjectViewer__DropZoneOverlay .ValeSpec__CadObjectViewer__DropZoneSubtitle         { font-size : 0.78rem; color : var(--text-dim); }
 
 
         /* ---------------------------------------------------------------- */
         /* Status Bar                                                       */
         /* ---------------------------------------------------------------- */
-        #statusbar {
+        #ValeSpec__CadObjectViewer__StatusBar {
             grid-area                : status;
             display                  : flex;
             align-items              : center;
@@ -200,16 +199,16 @@
             color                    : var(--text-secondary);
             user-select              : none;
         }
-        #statusbar span              { display : flex; align-items : center; gap : 5px; }
-        #statusbar .label            { color : var(--text-dim); }
-        #coord-readout               { font-variant-numeric : tabular-nums; min-width : 140px; }
-        #zoom-readout                { font-variant-numeric : tabular-nums; min-width : 50px; }
+        #ValeSpec__CadObjectViewer__StatusBar span              { display : flex; align-items : center; gap : 5px; }
+        #ValeSpec__CadObjectViewer__StatusBar .ValeSpec__CadObjectViewer__FieldLabel            { color : var(--text-dim); }
+        #ValeSpec__CadObjectViewer__ReadoutCursor               { font-variant-numeric : tabular-nums; min-width : 140px; }
+        #ValeSpec__CadObjectViewer__ReadoutZoom                { font-variant-numeric : tabular-nums; min-width : 50px; }
 
 
         /* ---------------------------------------------------------------- */
         /* Inspector Panel                                                  */
         /* ---------------------------------------------------------------- */
-        #inspector {
+        #ValeSpec__CadObjectViewer__InspectorPanel {
             grid-area                : inspector;
             display                  : flex;
             flex-direction           : column;
@@ -218,12 +217,12 @@
             overflow                 : hidden;
         }
 
-        .panel-section {
+        .ValeSpec__CadObjectViewer__PanelSection {
             border-bottom            : 1px solid var(--border-subtle);
             flex-shrink              : 0;
         }
 
-        .panel-heading {
+        .ValeSpec__CadObjectViewer__PanelHeading {
             padding                  : 9px 12px 7px;
             font-size                : 0.68rem;
             font-weight              : 600;
@@ -234,7 +233,7 @@
         }
 
         /* File Info */
-        #info-grid {
+        #ValeSpec__CadObjectViewer__InfoGridStats {
             display                  : grid;
             grid-template-columns    : 1fr 1fr;
             gap                      : 1px;
@@ -243,15 +242,27 @@
             border-radius            : 5px;
             overflow                 : hidden;
         }
-        .info-cell {
+        .ValeSpec__CadObjectViewer__InfoCell {
             background               : var(--bg-surface);
             padding                  : 7px 9px;
         }
-        .info-cell .label            { font-size : 0.65rem; color : var(--text-dim); margin-bottom : 2px; }
-        .info-cell .value            { font-size : 0.82rem; color : var(--text-primary); font-variant-numeric : tabular-nums; }
+        .ValeSpec__CadObjectViewer__InfoCell .ValeSpec__CadObjectViewer__FieldLabel            { font-size : 0.65rem; color : var(--text-dim); margin-bottom : 2px; }
+        .ValeSpec__CadObjectViewer__InfoCell .ValeSpec__CadObjectViewer__InfoValue            { font-size : 0.82rem; color : var(--text-primary); font-variant-numeric : tabular-nums; }
+        .ValeSpec__CadObjectViewer__InfoCell .ValeSpec__CadObjectViewer__InfoValue.ValeSpec__CadObjectViewer__InfoValueHardwareName { font-variant-numeric : normal; word-break : break-word; }
+
+        /* Hardware meta row (ValeSpec__HardwareItemData or ValeSpec__Data__HardwareIndex__) */
+        #ValeSpec__CadObjectViewer__InfoRowHardware {
+            display                  : grid;
+            grid-template-columns    : 1fr 1fr;
+            gap                      : 1px;
+            background               : var(--border-subtle);
+            margin                   : 0 12px 10px;
+            border-radius            : 5px;
+            overflow                 : hidden;
+        }
 
         /* Bbox Row */
-        #bbox-row {
+        #ValeSpec__CadObjectViewer__InfoRowBbox {
             display                  : grid;
             grid-template-columns    : 1fr 1fr;
             gap                      : 1px;
@@ -262,16 +273,16 @@
         }
 
         /* Path List */
-        #path-list-wrap {
+        #ValeSpec__CadObjectViewer__PathListScrollArea {
             flex                     : 1;
             overflow-y               : auto;
             min-height               : 0;
         }
 
-        #path-list {
+        #ValeSpec__CadObjectViewer__PathList {
             list-style               : none;
         }
-        #path-list li {
+        #ValeSpec__CadObjectViewer__PathList li {
             display                  : flex;
             align-items              : center;
             gap                      : 8px;
@@ -282,70 +293,86 @@
             border-bottom            : 1px solid var(--border-subtle);
             transition               : background 0.1s;
         }
-        #path-list li:hover          { background : var(--bg-surface-hover); color : var(--text-primary); }
-        #path-list li.selected       { background : var(--bg-surface); color : var(--text-primary); }
-        #path-list li.highlighted    { color : var(--col-highlight); }
+        #ValeSpec__CadObjectViewer__PathList li:hover          { background : var(--bg-surface-hover); color : var(--text-primary); }
+        #ValeSpec__CadObjectViewer__PathList li.ValeSpec__CadObjectViewer__PathListItemSelected       { background : var(--bg-surface); color : var(--text-primary); }
+        #ValeSpec__CadObjectViewer__PathList li.ValeSpec__CadObjectViewer__PathListItemHighlighted    { color : var(--col-highlight); }
 
-        .path-type-dot {
+        .ValeSpec__CadObjectViewer__PathListTypeDot {
             width                    : 7px;
             height                   : 7px;
             border-radius            : 50%;
             flex-shrink              : 0;
         }
-        .path-type-label             { flex : 1; }
-        .path-detail-text            { font-size : 0.68rem; color : var(--text-dim); }
+        .ValeSpec__CadObjectViewer__PathListTypeLabel             { flex : 1; }
+        .ValeSpec__CadObjectViewer__PathListDetail            { font-size : 0.68rem; color : var(--text-dim); }
 
         /* Detail Panel */
-        #detail-panel {
+        #ValeSpec__CadObjectViewer__DetailPanel {
             flex-shrink              : 0;
             border-top               : 1px solid var(--border);
         }
 
-        #detail-content {
+        #ValeSpec__CadObjectViewer__DetailContent {
             padding                  : 8px 12px 10px;
             font-size                : 0.72rem;
             color                    : var(--text-secondary);
             min-height               : 60px;
         }
-        #detail-content .detail-row {
+        #ValeSpec__CadObjectViewer__DetailContent .ValeSpec__CadObjectViewer__DetailRow {
             display                  : flex;
             justify-content          : space-between;
             padding                  : 2px 0;
             border-bottom            : 1px solid var(--border-subtle);
         }
-        #detail-content .detail-key  { color : var(--text-dim); }
-        #detail-content .detail-val  { color : var(--text-primary); font-variant-numeric : tabular-nums; }
+        #ValeSpec__CadObjectViewer__DetailContent .ValeSpec__CadObjectViewer__DetailKey  { color : var(--text-dim); }
+        #ValeSpec__CadObjectViewer__DetailContent .ValeSpec__CadObjectViewer__DetailValue  { color : var(--text-primary); font-variant-numeric : tabular-nums; }
 
         /* Scrollbar */
         ::-webkit-scrollbar          { width : 5px; }
         ::-webkit-scrollbar-track    { background : transparent; }
         ::-webkit-scrollbar-thumb    { background : #3a3a44; border-radius : 3px; }
 
-        /* SVG Geometry Classes */
-        .geo-line    { stroke : var(--col-line);   stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; }
-        .geo-arc     { stroke : var(--col-arc);    stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; }
-        .geo-circle  { stroke : var(--col-circle); stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; }
+        /* SVG Geometry — visible strokes (pointer-events on wide .ValeSpec__CadObjectViewer__GeometryHit overlay) */
+        .ValeSpec__CadObjectViewer__GeometryLine    { stroke : var(--col-line);   stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+        .ValeSpec__CadObjectViewer__GeometryArc     { stroke : var(--col-arc);    stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+        .ValeSpec__CadObjectViewer__GeometryCircle  { stroke : var(--col-circle); stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
 
-        .geo-line:hover, .geo-arc:hover, .geo-circle:hover {
+        /* Invisible pick target — constant ~screen px thickness for easier hover/select */
+        .ValeSpec__CadObjectViewer__GeometryHit     { stroke : transparent; stroke-width : 18px; fill : none; vector-effect : non-scaling-stroke; pointer-events : stroke; }
+
+        .ValeSpec__CadObjectViewer__GeometrySegment:hover { cursor : pointer; }
+        .ValeSpec__CadObjectViewer__GeometrySegment:hover > .ValeSpec__CadObjectViewer__GeometryLine,
+        .ValeSpec__CadObjectViewer__GeometrySegment:hover > .ValeSpec__CadObjectViewer__GeometryArc,
+        .ValeSpec__CadObjectViewer__GeometrySegment:hover > .ValeSpec__CadObjectViewer__GeometryCircle {
             stroke-width             : 2;
-            cursor                   : pointer;
         }
-        .geo-highlighted {
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Highlighted > .ValeSpec__CadObjectViewer__GeometryLine,
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Highlighted > .ValeSpec__CadObjectViewer__GeometryArc,
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Highlighted > .ValeSpec__CadObjectViewer__GeometryCircle {
             stroke                   : var(--col-highlight) !important;
             stroke-width             : 2 !important;
         }
-        .geo-selected {
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Selected > .ValeSpec__CadObjectViewer__GeometryLine,
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Selected > .ValeSpec__CadObjectViewer__GeometryArc,
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Selected > .ValeSpec__CadObjectViewer__GeometryCircle {
             stroke                   : var(--col-selected) !important;
             stroke-width             : 2.5 !important;
         }
-        .geo-dimmed  { opacity : 0.2; }
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Dimmed > .ValeSpec__CadObjectViewer__GeometryLine,
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Dimmed > .ValeSpec__CadObjectViewer__GeometryArc,
+        .ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Dimmed > .ValeSpec__CadObjectViewer__GeometryCircle {
+            opacity                  : 0.2;
+        }
 
-        .grid-minor  { stroke : var(--col-grid-minor); stroke-width : 0.3; vector-effect : non-scaling-stroke; }
-        .grid-major  { stroke : var(--col-grid-major); stroke-width : 0.7; vector-effect : non-scaling-stroke; }
-        .grid-axis   { stroke : var(--col-grid-axis);  stroke-width : 1.2; vector-effect : non-scaling-stroke; }
-        .origin-ring { stroke : var(--col-origin); stroke-width : 1; fill : none; vector-effect : non-scaling-stroke; }
-        .origin-cross { stroke : var(--col-origin); stroke-width : 0.7; vector-effect : non-scaling-stroke; opacity : 0.7; }
-        .bbox-rect   { stroke : var(--col-bbox); stroke-width : 0.5; fill : none; stroke-dasharray : 3 3; vector-effect : non-scaling-stroke; }
+        .ValeSpec__CadObjectViewer__GridMinor  { stroke : var(--col-grid-minor); stroke-width : 0.3; vector-effect : non-scaling-stroke; }
+        .ValeSpec__CadObjectViewer__GridAxis   { stroke : var(--col-grid-axis);  stroke-width : 1.2; vector-effect : non-scaling-stroke; }
+        .ValeSpec__CadObjectViewer__OriginRing { stroke : var(--col-origin); stroke-width : 1; fill : none; vector-effect : non-scaling-stroke; }
+        .ValeSpec__CadObjectViewer__OriginCross { stroke : var(--col-origin); stroke-width : 0.7; vector-effect : non-scaling-stroke; opacity : 0.7; }
+        .ValeSpec__CadObjectViewer__BboxRect   { stroke : var(--col-bbox); stroke-width : 0.65; fill : none; stroke-dasharray : 6 5; vector-effect : non-scaling-stroke; }
+
+        /* Single stroke + color for all dimension geometry (ext, dimension line, 45° ticks) */
+        .ValeSpec__CadObjectViewer__BboxDim       { stroke : var(--col-bbox); stroke-width : 0.6; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+        .ValeSpec__CadObjectViewer__BboxDimText  { fill : var(--col-bbox); font-family : 'Segoe UI', system-ui, sans-serif; font-weight : 300; vector-effect : non-scaling-stroke; pointer-events : none; }
 
     </style>
 
@@ -358,54 +385,54 @@
 <!-- ----------------------------------------------------------------- -->
 <body>
 
-<div id="app">
+<div id="ValeSpec__CadObjectViewer__RootApp">
 
     <!-- ---------------------------------------------------------------- -->
     <!-- UI MENU | Header Toolbar                                         -->
     <!-- ---------------------------------------------------------------- -->
-    <header id="header">
+    <header id="ValeSpec__CadObjectViewer__HeaderBar">
 
-        <span class="brand">VALESPEC / CAD VIEWER</span>
-        <div class="divider"></div>
+        <span class="ValeSpec__CadObjectViewer__HeaderBrand">VALESPEC / CAD VIEWER</span>
+        <div class="ValeSpec__CadObjectViewer__HeaderDivider"></div>
 
-        <button class="toolbar-btn" id="load-btn" title="Load exported JSON file">
+        <button class="ValeSpec__CadObjectViewer__ToolbarButton" id="ValeSpec__CadObjectViewer__ButtonLoadJson" title="Load exported JSON file">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M2 10v3h12v-3M8 2v8M5 5l3-3 3 3"/>
             </svg>
             Load JSON
         </button>
-        <input type="file" id="file-input" accept=".json">
+        <input type="file" id="ValeSpec__CadObjectViewer__InputFileJson" accept=".json">
 
-        <div class="divider"></div>
+        <div class="ValeSpec__CadObjectViewer__HeaderDivider"></div>
 
-        <button class="toolbar-btn" id="fit-btn" title="Fit geometry to viewport (F)">
+        <button class="ValeSpec__CadObjectViewer__ToolbarButton" id="ValeSpec__CadObjectViewer__ButtonFitView" title="Fit geometry to viewport (F)">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4"/>
             </svg>
             Fit
         </button>
 
-        <button class="toolbar-btn" id="grid-btn" title="Toggle grid (G)">
+        <button class="ValeSpec__CadObjectViewer__ToolbarButton" id="ValeSpec__CadObjectViewer__ButtonToggleGrid" title="Toggle grid (G)">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M1 5h14M1 11h14M5 1v14M11 1v14"/>
             </svg>
             Grid
         </button>
 
-        <button class="toolbar-btn" id="bbox-btn" title="Toggle bounding box (B)">
+        <button class="ValeSpec__CadObjectViewer__ToolbarButton" id="ValeSpec__CadObjectViewer__ButtonToggleBbox" title="Toggle bounding box (B)">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="2" y="2" width="12" height="12" stroke-dasharray="3 2"/>
             </svg>
             BBox
         </button>
 
-        <div class="spacer"></div>
+        <div class="ValeSpec__CadObjectViewer__HeaderSpacer"></div>
 
-        <div id="legend">
-            <div class="legend-item"><span class="legend-dot" style="background:var(--col-line)"></span> Line</div>
-            <div class="legend-item"><span class="legend-dot" style="background:var(--col-arc)"></span> Arc</div>
-            <div class="legend-item"><span class="legend-dot" style="background:var(--col-circle)"></span> Circle</div>
-            <div class="legend-item"><span class="legend-dot" style="background:var(--col-origin)"></span> Origin</div>
+        <div id="ValeSpec__CadObjectViewer__LegendStrip">
+            <div class="ValeSpec__CadObjectViewer__LegendItem"><span class="ValeSpec__CadObjectViewer__LegendSwatch" style="background:var(--col-line)"></span> Line</div>
+            <div class="ValeSpec__CadObjectViewer__LegendItem"><span class="ValeSpec__CadObjectViewer__LegendSwatch" style="background:var(--col-arc)"></span> Arc</div>
+            <div class="ValeSpec__CadObjectViewer__LegendItem"><span class="ValeSpec__CadObjectViewer__LegendSwatch" style="background:var(--col-circle)"></span> Circle</div>
+            <div class="ValeSpec__CadObjectViewer__LegendItem"><span class="ValeSpec__CadObjectViewer__LegendSwatch" style="background:var(--col-origin)"></span> Origin</div>
         </div>
 
     </header>
@@ -415,19 +442,19 @@
     <!-- ---------------------------------------------------------------- -->
     <!-- UI MENU | SVG Viewport & Drop Zone                              -->
     <!-- ---------------------------------------------------------------- -->
-    <main id="viewer">
+    <main id="ValeSpec__CadObjectViewer__Viewport">
 
-        <svg id="svg-canvas" xmlns="http://www.w3.org/2000/svg">
-            <g id="g-grid"></g>
-            <g id="g-bbox"></g>
-            <g id="g-geometry"></g>
-            <g id="g-origin"></g>
+        <svg id="ValeSpec__CadObjectViewer__SvgCanvas" xmlns="http://www.w3.org/2000/svg">
+            <g id="ValeSpec__CadObjectViewer__SvgLayerGrid"></g>
+            <g id="ValeSpec__CadObjectViewer__SvgLayerBbox"></g>
+            <g id="ValeSpec__CadObjectViewer__SvgLayerGeometry"></g>
+            <g id="ValeSpec__CadObjectViewer__SvgLayerOrigin"></g>
         </svg>
 
-        <div id="drop-zone">
-            <div class="drop-icon">⬡</div>
-            <div class="drop-title">Load a ValeSpec Vector Data JSON</div>
-            <div class="drop-sub">Click "Load JSON" above &nbsp;·&nbsp; or drag &amp; drop a file here</div>
+        <div id="ValeSpec__CadObjectViewer__DropZoneOverlay">
+            <div class="ValeSpec__CadObjectViewer__DropZoneIcon">⬡</div>
+            <div class="ValeSpec__CadObjectViewer__DropZoneTitle">Load a ValeSpec Vector Data JSON</div>
+            <div class="ValeSpec__CadObjectViewer__DropZoneSubtitle">Click "Load JSON" above &nbsp;·&nbsp; or drop a .json file on the viewport anytime</div>
         </div>
 
     </main>
@@ -437,10 +464,10 @@
     <!-- ---------------------------------------------------------------- -->
     <!-- UI MENU | Status Bar                                             -->
     <!-- ---------------------------------------------------------------- -->
-    <footer id="statusbar">
-        <span><span class="label">CURSOR</span> <span id="coord-readout">— mm, — mm</span></span>
-        <span><span class="label">ZOOM</span> <span id="zoom-readout">—</span></span>
-        <span id="status-msg"></span>
+    <footer id="ValeSpec__CadObjectViewer__StatusBar">
+        <span><span class="ValeSpec__CadObjectViewer__FieldLabel">CURSOR</span> <span id="ValeSpec__CadObjectViewer__ReadoutCursor">— mm, — mm</span></span>
+        <span><span class="ValeSpec__CadObjectViewer__FieldLabel">ZOOM</span> <span id="ValeSpec__CadObjectViewer__ReadoutZoom">—</span></span>
+        <span id="ValeSpec__CadObjectViewer__StatusMessage"></span>
     </footer>
     <!-- endregion ----------------------------------------------------------------- -->
 
@@ -448,34 +475,38 @@
     <!-- ---------------------------------------------------------------- -->
     <!-- UI MENU | Inspector Panel                                        -->
     <!-- ---------------------------------------------------------------- -->
-    <aside id="inspector">
+    <aside id="ValeSpec__CadObjectViewer__InspectorPanel">
 
-        <div class="panel-section">
-            <div class="panel-heading">File Info</div>
-            <div id="info-grid">
-                <div class="info-cell"><div class="label">ARCS</div><div class="value" id="inf-arcs">—</div></div>
-                <div class="info-cell"><div class="label">CIRCLES</div><div class="value" id="inf-circles">—</div></div>
-                <div class="info-cell"><div class="label">LINES</div><div class="value" id="inf-lines">—</div></div>
-                <div class="info-cell"><div class="label">EDGES</div><div class="value" id="inf-edges">—</div></div>
+        <div class="ValeSpec__CadObjectViewer__PanelSection">
+            <div class="ValeSpec__CadObjectViewer__PanelHeading">File Info</div>
+            <div id="ValeSpec__CadObjectViewer__InfoRowHardware">
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">ITEM NAME</div><div class="ValeSpec__CadObjectViewer__InfoValue ValeSpec__CadObjectViewer__InfoValueHardwareName" id="ValeSpec__CadObjectViewer__FieldHardwareName">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">ITEM CODE</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldHardwareCode">—</div></div>
             </div>
-            <div id="bbox-row">
-                <div class="info-cell"><div class="label">WIDTH</div><div class="value" id="inf-w">—</div></div>
-                <div class="info-cell"><div class="label">HEIGHT</div><div class="value" id="inf-h">—</div></div>
-                <div class="info-cell"><div class="label">MIN X</div><div class="value" id="inf-minx">—</div></div>
-                <div class="info-cell"><div class="label">MIN Y</div><div class="value" id="inf-miny">—</div></div>
+            <div id="ValeSpec__CadObjectViewer__InfoGridStats">
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">ARCS</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldCountArcs">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">CIRCLES</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldCountCircles">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">LINES</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldCountLines">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">EDGES</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldCountEdges">—</div></div>
             </div>
-        </div>
-
-        <div class="panel-section" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-            <div class="panel-heading">Paths  <span id="path-count" style="font-weight:400; text-transform:none; letter-spacing:0"></span></div>
-            <div id="path-list-wrap">
-                <ul id="path-list"></ul>
+            <div id="ValeSpec__CadObjectViewer__InfoRowBbox">
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">WIDTH</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldBboxWidth">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">HEIGHT</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldBboxHeight">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">MIN X</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldBboxMinX">—</div></div>
+                <div class="ValeSpec__CadObjectViewer__InfoCell"><div class="ValeSpec__CadObjectViewer__FieldLabel">MIN Y</div><div class="ValeSpec__CadObjectViewer__InfoValue" id="ValeSpec__CadObjectViewer__FieldBboxMinY">—</div></div>
             </div>
         </div>
 
-        <div id="detail-panel" class="panel-section">
-            <div class="panel-heading">Selection</div>
-            <div id="detail-content">
+        <div class="ValeSpec__CadObjectViewer__PanelSection" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+            <div class="ValeSpec__CadObjectViewer__PanelHeading">Paths  <span id="ValeSpec__CadObjectViewer__PathListCount" style="font-weight:400; text-transform:none; letter-spacing:0"></span></div>
+            <div id="ValeSpec__CadObjectViewer__PathListScrollArea">
+                <ul id="ValeSpec__CadObjectViewer__PathList"></ul>
+            </div>
+        </div>
+
+        <div id="ValeSpec__CadObjectViewer__DetailPanel" class="ValeSpec__CadObjectViewer__PanelSection">
+            <div class="ValeSpec__CadObjectViewer__PanelHeading">Selection</div>
+            <div id="ValeSpec__CadObjectViewer__DetailContent">
                 <div style="color:var(--text-dim); font-size:0.72rem; padding:4px 0;">Click a path to inspect</div>
             </div>
         </div>
@@ -495,34 +526,40 @@
 <script>
 
 // -----------------------------------------------------------------------------
-// REGION | Module Variables - Application State
+// REGION | Module Constants, State & DOM References
 // -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Path Type → Legend Swatch CSS Variables
+    // ------------------------------------------------------------
+    const ValeSpec__CadObjectViewer__ConstPathTypeToCssColorVar  =  { Line: 'var(--col-line)', Arc: 'var(--col-arc)', Circle: 'var(--col-circle)' };  // <-- Path list dot colours
+    // ------------------------------------------------------------
 
     // MODULE VARIABLES | Viewer State
     // ------------------------------------------------------------
-    let jsonData       = null;       // <-- Parsed HardwareItem__VectorData object
-    let viewBox        = { x: -50, y: -50, w: 200, h: 200 };  // SVG viewBox (mm)
-    let isDragging     = false;      // <-- Pan drag active flag
-    let dragStart      = { x: 0, y: 0, vbx: 0, vby: 0 };     // <-- Drag start state
-    let selectedIndex  = -1;         // <-- Currently selected path index
-    let hoveredIndex   = -1;         // <-- Currently hovered path index
-    let showGrid       = true;       // <-- Grid visibility toggle
-    let showBbox       = true;       // <-- Bounding box visibility toggle
+    let ValeSpec__CadObjectViewer__StateVectorData       =  null;       // <-- Parsed HardwareItem__VectorData object
+    let ValeSpec__CadObjectViewer__SvgViewBoxState       =  { x: -50, y: -50, w: 200, h: 200 };  // <-- SVG viewBox (mm)
+    let ValeSpec__CadObjectViewer__PanIsDragging          =  false;      // <-- Pan drag active flag
+    let ValeSpec__CadObjectViewer__PanDragStart           =  { x: 0, y: 0, vbx: 0, vby: 0 };     // <-- Drag start state
+    let ValeSpec__CadObjectViewer__PathSelectedIndex      =  -1;         // <-- Currently selected path index
+    let ValeSpec__CadObjectViewer__PathHoveredIndex       =  -1;         // <-- Currently hovered path index
+    let ValeSpec__CadObjectViewer__UiShowGrid              =  false;    // <-- Grid visibility toggle (off by default)
+    let ValeSpec__CadObjectViewer__UiShowBbox              =  true;     // <-- Bounding box visibility toggle
     // ------------------------------------------------------------
 
-    // MODULE VARIABLES | DOM Element References
+    // MODULE VARIABLES | DOM Element References (cached getElementById)
     // ------------------------------------------------------------
-    const svgEl        = document.getElementById('svg-canvas');
-    const gGrid        = document.getElementById('g-grid');
-    const gBbox        = document.getElementById('g-bbox');
-    const gGeom        = document.getElementById('g-geometry');
-    const gOrigin      = document.getElementById('g-origin');
-    const dropZone     = document.getElementById('drop-zone');
-    const pathList     = document.getElementById('path-list');
-    const detailPanel  = document.getElementById('detail-content');
-    const coordReadout = document.getElementById('coord-readout');
-    const zoomReadout  = document.getElementById('zoom-readout');
-    const statusMsg    = document.getElementById('status-msg');
+    const ValeSpec__CadObjectViewer__DomViewport             =  document.getElementById('ValeSpec__CadObjectViewer__Viewport');
+    const ValeSpec__CadObjectViewer__DomSvgCanvas            =  document.getElementById('ValeSpec__CadObjectViewer__SvgCanvas');
+    const ValeSpec__CadObjectViewer__DomSvgLayerGrid         =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerGrid');
+    const ValeSpec__CadObjectViewer__DomSvgLayerBbox         =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerBbox');
+    const ValeSpec__CadObjectViewer__DomSvgLayerGeometry     =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerGeometry');
+    const ValeSpec__CadObjectViewer__DomSvgLayerOrigin       =  document.getElementById('ValeSpec__CadObjectViewer__SvgLayerOrigin');
+    const ValeSpec__CadObjectViewer__DomDropZoneOverlay      =  document.getElementById('ValeSpec__CadObjectViewer__DropZoneOverlay');
+    const ValeSpec__CadObjectViewer__DomPathListUl           =  document.getElementById('ValeSpec__CadObjectViewer__PathList');
+    const ValeSpec__CadObjectViewer__DomDetailContent        =  document.getElementById('ValeSpec__CadObjectViewer__DetailContent');
+    const ValeSpec__CadObjectViewer__DomReadoutCursor        =  document.getElementById('ValeSpec__CadObjectViewer__ReadoutCursor');
+    const ValeSpec__CadObjectViewer__DomReadoutZoom          =  document.getElementById('ValeSpec__CadObjectViewer__ReadoutZoom');
+    const ValeSpec__CadObjectViewer__DomStatusMessage        =  document.getElementById('ValeSpec__CadObjectViewer__StatusMessage');
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -535,10 +572,10 @@
     // HELPER FUNCTION | Convert Client Mouse Position to SVG ViewBox mm Coordinates
     // ---------------------------------------------------------------
     function clientToSvg(clientX, clientY) {
-        const rect  =  svgEl.getBoundingClientRect();
+        const rect  =  ValeSpec__CadObjectViewer__DomSvgCanvas.getBoundingClientRect();
         return {
-            x  :  viewBox.x + (clientX - rect.left)  / rect.width  * viewBox.w,
-            y  :  viewBox.y + (clientY - rect.top)    / rect.height * viewBox.h
+            x  :  ValeSpec__CadObjectViewer__SvgViewBoxState.x + (clientX - rect.left)  / rect.width  * ValeSpec__CadObjectViewer__SvgViewBoxState.w,
+            y  :  ValeSpec__CadObjectViewer__SvgViewBoxState.y + (clientY - rect.top)    / rect.height * ValeSpec__CadObjectViewer__SvgViewBoxState.h
         };
     }
     // ---------------------------------------------------------------
@@ -556,9 +593,9 @@
     // HELPER FUNCTION | Apply Current ViewBox to SVG Element
     // ---------------------------------------------------------------
     function applyViewBox() {
-        svgEl.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
-        const mmPerPx  =  viewBox.w / svgEl.clientWidth;
-        zoomReadout.textContent  =  `${(1 / mmPerPx).toFixed(2)}x`;
+        ValeSpec__CadObjectViewer__DomSvgCanvas.setAttribute('viewBox', `${ValeSpec__CadObjectViewer__SvgViewBoxState.x} ${ValeSpec__CadObjectViewer__SvgViewBoxState.y} ${ValeSpec__CadObjectViewer__SvgViewBoxState.w} ${ValeSpec__CadObjectViewer__SvgViewBoxState.h}`);
+        const mmPerPx  =  ValeSpec__CadObjectViewer__SvgViewBoxState.w / ValeSpec__CadObjectViewer__DomSvgCanvas.clientWidth;
+        ValeSpec__CadObjectViewer__DomReadoutZoom.textContent  =  `${(1 / mmPerPx).toFixed(2)}x`;
     }
     // ---------------------------------------------------------------
 
@@ -600,10 +637,9 @@
     // SUB FUNCTION | Render the Grid Lines into the Grid Group
     // ---------------------------------------------------------------
     function renderGrid(bbox, padding) {
-        if (!showGrid) { gGrid.innerHTML = ''; return; }
+        if (!ValeSpec__CadObjectViewer__UiShowGrid) { ValeSpec__CadObjectViewer__DomSvgLayerGrid.innerHTML = ''; return; }
 
-        const minorStep  =  10;    // <-- 10mm minor grid spacing
-        const majorStep  =  100;   // <-- 100mm major grid spacing
+        const minorStep  =  10;    // <-- 10mm grid spacing (minor only; no major emphasis)
 
         const xMin  =  Math.floor((bbox.MinX_mm - padding) / minorStep) * minorStep;
         const xMax  =  Math.ceil( (bbox.MaxX_mm + padding) / minorStep) * minorStep;
@@ -618,18 +654,18 @@
 
         // Vertical grid lines (constant X)
         for (let x = xMin; x <= xMax; x += minorStep) {
-            const cls  =  x === 0 ? 'grid-axis' : (x % majorStep === 0 ? 'grid-major' : 'grid-minor');
+            const cls  =  x === 0 ? 'ValeSpec__CadObjectViewer__GridAxis' : 'ValeSpec__CadObjectViewer__GridMinor';
             html  +=  `<line class="${cls}" x1="${x}" y1="${svgYMin}" x2="${x}" y2="${svgYMax}"/>`;
         }
 
         // Horizontal grid lines (constant data Y → constant SVG -Y)
         for (let y = yMin; y <= yMax; y += minorStep) {
             const svgY  =  -y;
-            const cls   =  y === 0 ? 'grid-axis' : (y % majorStep === 0 ? 'grid-major' : 'grid-minor');
+            const cls   =  y === 0 ? 'ValeSpec__CadObjectViewer__GridAxis' : 'ValeSpec__CadObjectViewer__GridMinor';
             html  +=  `<line class="${cls}" x1="${xMin - padding}" y1="${svgY}" x2="${xMax + padding}" y2="${svgY}"/>`;
         }
 
-        gGrid.innerHTML  =  html;
+        ValeSpec__CadObjectViewer__DomSvgLayerGrid.innerHTML  =  html;
     }
     // ---------------------------------------------------------------
 
@@ -638,10 +674,10 @@
     // ---------------------------------------------------------------
     function renderOrigin(armLen) {
         const a  =  armLen;
-        gOrigin.innerHTML  =
-            `<line class="origin-cross" x1="${-a}" y1="0" x2="${a}" y2="0"/>` +
-            `<line class="origin-cross" x1="0" y1="${-a}" x2="0" y2="${a}"/>` +
-            `<circle class="origin-ring" cx="0" cy="0" r="${a * 0.18}"/>`;
+        ValeSpec__CadObjectViewer__DomSvgLayerOrigin.innerHTML  =
+            `<line class="ValeSpec__CadObjectViewer__OriginCross" x1="${-a}" y1="0" x2="${a}" y2="0"/>` +
+            `<line class="ValeSpec__CadObjectViewer__OriginCross" x1="0" y1="${-a}" x2="0" y2="${a}"/>` +
+            `<circle class="ValeSpec__CadObjectViewer__OriginRing" cx="0" cy="0" r="${a * 0.18}"/>`;
     }
     // ---------------------------------------------------------------
 
@@ -649,14 +685,57 @@
     // SUB FUNCTION | Render Bounding Box Outline
     // ---------------------------------------------------------------
     function renderBbox(bbox) {
-        if (!showBbox) { gBbox.innerHTML = ''; return; }
+        if (!ValeSpec__CadObjectViewer__UiShowBbox) { ValeSpec__CadObjectViewer__DomSvgLayerBbox.innerHTML = ''; return; }
 
         const x  =  bbox.MinX_mm;
         const y  =  -(bbox.MaxY_mm);   // <-- Y-flip: data maxY → SVG minY
         const w  =  bbox.Width_mm;
         const h  =  bbox.Height_mm;
 
-        gBbox.innerHTML  =  `<rect class="bbox-rect" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+        const dimInset_mm    =  2;   // <-- Clear gap (mm) between bbox edge and start of extension lines
+        const dimOvershoot_mm  =  2;   // <-- Extension lines continue past dimension line (mm), drafting overshoot
+        const innerGap       =  Math.max(12, Math.min(w, h) * 0.055);   // <-- Extension run before dimension line (mm)
+        const tickLen      =  Math.max(2.5, Math.min(w, h) * 0.018);   // <-- Layout gap for label vs dim line (mm)
+        const archK        =  Math.max(2.2, Math.min(w, h) * 0.016);    // <-- 45° architectural tick half-extent (mm)
+        const dimFont      =  Math.max(3, Math.min(w, h) * 0.028);    // <-- Label size in SVG user units (mm)
+
+        const yBottom      =  y + h;
+        const xRight       =  x + w;
+        const yExtStartW   =  yBottom + dimInset_mm;                      // <-- Width dims: extensions begin below bbox
+        const yDimH        =  yExtStartW + innerGap;                    // <-- Horizontal dimension line (width)
+        const yExtEndW     =  yDimH + dimOvershoot_mm;                    // <-- Vertical extensions overshoot below dim line
+        const xExtStartH   =  xRight + dimInset_mm;                       // <-- Height dims: extensions begin past bbox
+        const xDimV        =  xExtStartH + innerGap;                    // <-- Vertical dimension line (height)
+        const xExtEndH     =  xDimV + dimOvershoot_mm;                    // <-- Horizontal extensions overshoot past dim line
+
+        const wLbl     =  `${w.toFixed(1)} mm`;
+        const hLbl     =  `${h.toFixed(1)} mm`;
+
+        // Width: extensions, dimension line, 45° architectural ticks at junctions, label below
+        const dimWidthSvg  =
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${x}" y1="${yExtStartW}" x2="${x}" y2="${yExtEndW}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xRight}" y1="${yExtStartW}" x2="${xRight}" y2="${yExtEndW}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${x}" y1="${yDimH}" x2="${xRight}" y2="${yDimH}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${x - archK}" y1="${yDimH + archK}" x2="${x + archK}" y2="${yDimH - archK}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xRight - archK}" y1="${yDimH - archK}" x2="${xRight + archK}" y2="${yDimH + archK}"/>` +
+            `<text class="ValeSpec__CadObjectViewer__BboxDimText" x="${x + w / 2}" y="${yDimH + tickLen + dimFont * 1.05}" text-anchor="middle" font-size="${dimFont}">${wLbl}</text>`;
+
+        // Height: extension lines, dimension line, ticks, label to the right (rotated)
+        const textOffsetV    =  tickLen * 2 + dimFont * 1.15;
+        const vLabelCx       =  xDimV + textOffsetV;
+        const vLabelCy       =  y + h / 2;
+        const dimHeightSvg   =
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xExtStartH}" y1="${y}" x2="${xExtEndH}" y2="${y}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xExtStartH}" y1="${yBottom}" x2="${xExtEndH}" y2="${yBottom}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xDimV}" y1="${y}" x2="${xDimV}" y2="${yBottom}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xDimV - archK}" y1="${y - archK}" x2="${xDimV + archK}" y2="${y + archK}"/>` +
+            `<line class="ValeSpec__CadObjectViewer__BboxDim" x1="${xDimV - archK}" y1="${yBottom + archK}" x2="${xDimV + archK}" y2="${yBottom - archK}"/>` +
+            `<text class="ValeSpec__CadObjectViewer__BboxDimText" x="${vLabelCx}" y="${vLabelCy}" transform="rotate(-90, ${vLabelCx}, ${vLabelCy})" text-anchor="middle" dominant-baseline="middle" font-size="${dimFont}">${hLbl}</text>`;
+
+        ValeSpec__CadObjectViewer__DomSvgLayerBbox.innerHTML  =
+            `<rect class="ValeSpec__CadObjectViewer__BboxRect" x="${x}" y="${y}" width="${w}" height="${h}"/>` +
+            `<g class="ValeSpec__CadObjectViewer__BboxDimWidth" aria-hidden="true">${dimWidthSvg}</g>` +
+            `<g class="ValeSpec__CadObjectViewer__BboxDimHeight" aria-hidden="true">${dimHeightSvg}</g>`;
     }
     // ---------------------------------------------------------------
 
@@ -667,37 +746,45 @@
         let html  =  '';
 
         paths.forEach((path, i) => {
-            const pt    =  path.PathType;
-            let   cls   =  '';
-            let   el    =  '';
+            const pt  =  path.PathType;
+            let   el  =  '';
 
             if (pt === 'Circle') {
-                cls  =  'geo-circle';
-                el   =  `<path class="${cls}" data-idx="${i}" d="${buildArcPath(path)}"/>`;
+                const d  =  buildArcPath(path);
+                el   =  `<g class="ValeSpec__CadObjectViewer__GeometrySegment" data-idx="${i}">` +
+                    `<path class="ValeSpec__CadObjectViewer__GeometryCircle" d="${d}"/>` +
+                    `<path class="ValeSpec__CadObjectViewer__GeometryHit" d="${d}"/>` +
+                    `</g>`;
 
             } else if (pt === 'Arc') {
-                cls  =  'geo-arc';
-                el   =  `<path class="${cls}" data-idx="${i}" d="${buildArcPath(path)}"/>`;
+                const d  =  buildArcPath(path);
+                el   =  `<g class="ValeSpec__CadObjectViewer__GeometrySegment" data-idx="${i}">` +
+                    `<path class="ValeSpec__CadObjectViewer__GeometryArc" d="${d}"/>` +
+                    `<path class="ValeSpec__CadObjectViewer__GeometryHit" d="${d}"/>` +
+                    `</g>`;
 
             } else if (pt === 'Line') {
-                cls  =  'geo-line';
                 const x1  =  path.Start_mm.X;
                 const y1  =  -path.Start_mm.Y;   // <-- Y-flip
                 const x2  =  path.End_mm.X;
                 const y2  =  -path.End_mm.Y;      // <-- Y-flip
-                el   =  `<line class="${cls}" data-idx="${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+                el   =  `<g class="ValeSpec__CadObjectViewer__GeometrySegment" data-idx="${i}">` +
+                    `<line class="ValeSpec__CadObjectViewer__GeometryLine" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>` +
+                    `<line class="ValeSpec__CadObjectViewer__GeometryHit" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>` +
+                    `</g>`;
             }
 
             html  +=  el;
         });
 
-        gGeom.innerHTML  =  html;
+        ValeSpec__CadObjectViewer__DomSvgLayerGeometry.innerHTML  =  html;
 
-        // Attach hover and click listeners to each rendered element
-        gGeom.querySelectorAll('[data-idx]').forEach(el => {
-            el.addEventListener('mouseenter', () => onPathHover(parseInt(el.dataset.idx)));
-            el.addEventListener('mouseleave', () => onPathHoverEnd());
-            el.addEventListener('click',      (e) => { e.stopPropagation(); onPathClick(parseInt(el.dataset.idx)); });
+        // Attach hover and click to segment groups (hit layer gives wide pick radius)
+        ValeSpec__CadObjectViewer__DomSvgLayerGeometry.querySelectorAll('.ValeSpec__CadObjectViewer__GeometrySegment').forEach(g => {
+            const idx  =  parseInt(g.dataset.idx, 10);
+            g.addEventListener('mouseenter', () => onPathHover(idx));
+            g.addEventListener('mouseleave', () => onPathHoverEnd());
+            g.addEventListener('click',      (e) => { e.stopPropagation(); onPathClick(idx); });
         });
     }
     // ---------------------------------------------------------------
@@ -709,33 +796,67 @@
 // REGION | Inspector Panel Population
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Read Hardware Name and Code from Root JSON
+    // ---------------------------------------------------------------
+    function metaFromHardwareItemObject(item) {
+        if (!item || typeof item !== 'object') return null;
+        const name  =  item.HardwareItem__Name;
+        const code  =  item.HardwareItem__Code;
+        if (name == null && code == null) return null;
+        return {
+            name  :  name != null ? String(name) : '—',
+            code  :  code != null ? String(code) : '—'
+        };
+    }
+
+
+    function extractHardwareItemMeta(rootData) {
+        if (!rootData || typeof rootData !== 'object') return null;
+
+        // Single-item block next to vector data (e.g. ValeSpec__Example__HardwareObject__.json)
+        const direct  =  rootData.ValeSpec__HardwareItemData
+            || rootData.ValeSpec__Data__HardwareItemData;
+        const fromDirect  =  metaFromHardwareItemObject(direct);
+        if (fromDirect) return fromDirect;
+
+        // Catalog map: { "Scroll Lever Handle": { HardwareItem__Name, ... }, ... }
+        const idx  =  rootData.ValeSpec__Data__HardwareIndex__;
+        if (!idx || typeof idx !== 'object') return null;
+        const keys  =  Object.keys(idx);
+        if (keys.length === 0) return null;
+        return metaFromHardwareItemObject(idx[keys[0]]);
+    }
+    // ---------------------------------------------------------------
+
+
     // HELPER FUNCTION | Populate File Info Stats Strip
     // ---------------------------------------------------------------
-    function populateInfo(data) {
+    function populateInfo(data, hwMeta) {
         const arcCount     =  data.Paths.filter(p => p.PathType === 'Arc').length;
         const circleCount  =  data.Paths.filter(p => p.PathType === 'Circle').length;
         const lineCount    =  data.Paths.filter(p => p.PathType === 'Line').length;
         const bb           =  data.BoundingBox;
 
-        document.getElementById('inf-arcs').textContent     =  arcCount;
-        document.getElementById('inf-circles').textContent  =  circleCount;
-        document.getElementById('inf-lines').textContent    =  lineCount;
-        document.getElementById('inf-edges').textContent    =  data.EdgeCount || '—';
-        document.getElementById('inf-w').textContent        =  bb.Width_mm  ? `${bb.Width_mm.toFixed(1)} mm`  : '—';
-        document.getElementById('inf-h').textContent        =  bb.Height_mm ? `${bb.Height_mm.toFixed(1)} mm` : '—';
-        document.getElementById('inf-minx').textContent     =  bb.MinX_mm   !== undefined ? `${bb.MinX_mm.toFixed(1)} mm` : '—';
-        document.getElementById('inf-miny').textContent     =  bb.MinY_mm   !== undefined ? `${bb.MinY_mm.toFixed(1)} mm` : '—';
+        document.getElementById('ValeSpec__CadObjectViewer__FieldHardwareName').textContent  =  hwMeta ? hwMeta.name : '—';
+        document.getElementById('ValeSpec__CadObjectViewer__FieldHardwareCode').textContent  =  hwMeta ? hwMeta.code : '—';
+
+        document.getElementById('ValeSpec__CadObjectViewer__FieldCountArcs').textContent     =  arcCount;
+        document.getElementById('ValeSpec__CadObjectViewer__FieldCountCircles').textContent  =  circleCount;
+        document.getElementById('ValeSpec__CadObjectViewer__FieldCountLines').textContent    =  lineCount;
+        document.getElementById('ValeSpec__CadObjectViewer__FieldCountEdges').textContent    =  data.EdgeCount || '—';
+        document.getElementById('ValeSpec__CadObjectViewer__FieldBboxWidth').textContent     =  bb.Width_mm  ? `${bb.Width_mm.toFixed(1)} mm`  : '—';
+        document.getElementById('ValeSpec__CadObjectViewer__FieldBboxHeight').textContent    =  bb.Height_mm ? `${bb.Height_mm.toFixed(1)} mm` : '—';
+        document.getElementById('ValeSpec__CadObjectViewer__FieldBboxMinX').textContent      =  bb.MinX_mm   !== undefined ? `${bb.MinX_mm.toFixed(1)} mm` : '—';
+        document.getElementById('ValeSpec__CadObjectViewer__FieldBboxMinY').textContent      =  bb.MinY_mm   !== undefined ? `${bb.MinY_mm.toFixed(1)} mm` : '—';
     }
     // ---------------------------------------------------------------
 
 
     // HELPER FUNCTION | Populate the Scrollable Path List
     // ---------------------------------------------------------------
-    const TYPE_COLORS  =  { Line: 'var(--col-line)', Arc: 'var(--col-arc)', Circle: 'var(--col-circle)' };
-
     function populatePathList(paths) {
-        document.getElementById('path-count').textContent  =  `(${paths.length})`;
-        pathList.innerHTML  =  '';
+        document.getElementById('ValeSpec__CadObjectViewer__PathListCount').textContent  =  `(${paths.length})`;
+        ValeSpec__CadObjectViewer__DomPathListUl.innerHTML  =  '';
 
         paths.forEach((path, i) => {
             const li    =  document.createElement('li');
@@ -751,15 +872,15 @@
             }
 
             li.innerHTML  =
-                `<span class="path-type-dot" style="background:${TYPE_COLORS[path.PathType] || '#888'}"></span>` +
-                `<span class="path-type-label">${path.PathType} <span style="color:var(--text-dim)">#${i + 1}</span></span>` +
-                `<span class="path-detail-text">${detail}</span>`;
+                `<span class="ValeSpec__CadObjectViewer__PathListTypeDot" style="background:${ValeSpec__CadObjectViewer__ConstPathTypeToCssColorVar[path.PathType] || '#888'}"></span>` +
+                `<span class="ValeSpec__CadObjectViewer__PathListTypeLabel">${path.PathType} <span style="color:var(--text-dim)">#${i + 1}</span></span>` +
+                `<span class="ValeSpec__CadObjectViewer__PathListDetail">${detail}</span>`;
 
             li.addEventListener('mouseenter', () => onPathHover(i));
             li.addEventListener('mouseleave', () => onPathHoverEnd());
             li.addEventListener('click',      () => onPathClick(i));
 
-            pathList.appendChild(li);
+            ValeSpec__CadObjectViewer__DomPathListUl.appendChild(li);
         });
     }
     // ---------------------------------------------------------------
@@ -768,7 +889,7 @@
     // HELPER FUNCTION | Populate the Detail Panel for a Selected Path
     // ---------------------------------------------------------------
     function populateDetail(path) {
-        if (!path) { detailPanel.innerHTML = '<div style="color:var(--text-dim);font-size:0.72rem;padding:4px 0">Click a path to inspect</div>'; return; }
+        if (!path) { ValeSpec__CadObjectViewer__DomDetailContent.innerHTML = '<div style="color:var(--text-dim);font-size:0.72rem;padding:4px 0">Click a path to inspect</div>'; return; }
 
         const rows  =  [];
         rows.push(['Type', path.PathType]);
@@ -792,8 +913,8 @@
             }
         }
 
-        detailPanel.innerHTML  =  rows.map(([k, v]) =>
-            `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`
+        ValeSpec__CadObjectViewer__DomDetailContent.innerHTML  =  rows.map(([k, v]) =>
+            `<div class="ValeSpec__CadObjectViewer__DetailRow"><span class="ValeSpec__CadObjectViewer__DetailKey">${k}</span><span class="ValeSpec__CadObjectViewer__DetailValue">${v}</span></div>`
         ).join('');
     }
     // ---------------------------------------------------------------
@@ -808,19 +929,19 @@
     // HELPER FUNCTION | Sync Highlight State Between SVG Elements and Path List Items
     // ---------------------------------------------------------------
     function syncHighlight(hoverIdx, selectIdx) {
-        gGeom.querySelectorAll('[data-idx]').forEach(el => {
-            const idx  =  parseInt(el.dataset.idx);
-            el.classList.remove('geo-highlighted', 'geo-selected', 'geo-dimmed');
-            if      (idx === selectIdx)  el.classList.add('geo-selected');
-            else if (idx === hoverIdx)   el.classList.add('geo-highlighted');
-            else if (selectIdx !== -1)   el.classList.add('geo-dimmed');
+        ValeSpec__CadObjectViewer__DomSvgLayerGeometry.querySelectorAll('.ValeSpec__CadObjectViewer__GeometrySegment').forEach(el => {
+            const idx  =  parseInt(el.dataset.idx, 10);
+            el.classList.remove('ValeSpec__CadObjectViewer__Highlighted', 'ValeSpec__CadObjectViewer__Selected', 'ValeSpec__CadObjectViewer__Dimmed');
+            if      (idx === selectIdx)  el.classList.add('ValeSpec__CadObjectViewer__Selected');
+            else if (idx === hoverIdx)   el.classList.add('ValeSpec__CadObjectViewer__Highlighted');
+            else if (selectIdx !== -1)   el.classList.add('ValeSpec__CadObjectViewer__Dimmed');
         });
 
-        pathList.querySelectorAll('li').forEach(li => {
+        ValeSpec__CadObjectViewer__DomPathListUl.querySelectorAll('li').forEach(li => {
             const idx  =  parseInt(li.dataset.idx);
-            li.classList.remove('selected', 'highlighted');
-            if      (idx === selectIdx)  li.classList.add('selected');
-            else if (idx === hoverIdx)   li.classList.add('highlighted');
+            li.classList.remove('ValeSpec__CadObjectViewer__PathListItemSelected', 'ValeSpec__CadObjectViewer__PathListItemHighlighted');
+            if      (idx === selectIdx)  li.classList.add('ValeSpec__CadObjectViewer__PathListItemSelected');
+            else if (idx === hoverIdx)   li.classList.add('ValeSpec__CadObjectViewer__PathListItemHighlighted');
         });
     }
     // ---------------------------------------------------------------
@@ -829,8 +950,8 @@
     // HELPER FUNCTION | Handle Path Hover Enter
     // ---------------------------------------------------------------
     function onPathHover(idx) {
-        hoveredIndex  =  idx;
-        syncHighlight(hoveredIndex, selectedIndex);
+        ValeSpec__CadObjectViewer__PathHoveredIndex  =  idx;
+        syncHighlight(ValeSpec__CadObjectViewer__PathHoveredIndex, ValeSpec__CadObjectViewer__PathSelectedIndex);
     }
     // ---------------------------------------------------------------
 
@@ -838,8 +959,8 @@
     // HELPER FUNCTION | Handle Path Hover Leave
     // ---------------------------------------------------------------
     function onPathHoverEnd() {
-        hoveredIndex  =  -1;
-        syncHighlight(-1, selectedIndex);
+        ValeSpec__CadObjectViewer__PathHoveredIndex  =  -1;
+        syncHighlight(-1, ValeSpec__CadObjectViewer__PathSelectedIndex);
     }
     // ---------------------------------------------------------------
 
@@ -847,12 +968,12 @@
     // HELPER FUNCTION | Handle Path Click - Toggle Selection
     // ---------------------------------------------------------------
     function onPathClick(idx) {
-        selectedIndex  =  (selectedIndex === idx) ? -1 : idx;   // <-- Toggle selection on re-click
-        syncHighlight(hoveredIndex, selectedIndex);
-        populateDetail(selectedIndex >= 0 ? jsonData.Paths[selectedIndex] : null);
+        ValeSpec__CadObjectViewer__PathSelectedIndex  =  (ValeSpec__CadObjectViewer__PathSelectedIndex === idx) ? -1 : idx;   // <-- Toggle selection on re-click
+        syncHighlight(ValeSpec__CadObjectViewer__PathHoveredIndex, ValeSpec__CadObjectViewer__PathSelectedIndex);
+        populateDetail(ValeSpec__CadObjectViewer__PathSelectedIndex >= 0 ? ValeSpec__CadObjectViewer__StateVectorData.Paths[ValeSpec__CadObjectViewer__PathSelectedIndex] : null);
 
         // Scroll path list item into view
-        const li  =  pathList.querySelector(`[data-idx="${selectedIndex}"]`);
+        const li  =  ValeSpec__CadObjectViewer__DomPathListUl.querySelector(`[data-idx="${ValeSpec__CadObjectViewer__PathSelectedIndex}"]`);
         if (li) li.scrollIntoView({ block: 'nearest' });
     }
     // ---------------------------------------------------------------
@@ -865,13 +986,13 @@
         const factor  =  e.deltaY > 0 ? 1.12 : 0.89;   // <-- Zoom out / zoom in
         const mouse   =  clientToSvg(e.clientX, e.clientY);
 
-        viewBox.x  =  mouse.x - (mouse.x - viewBox.x) * factor;
-        viewBox.y  =  mouse.y - (mouse.y - viewBox.y) * factor;
-        viewBox.w  *=  factor;
-        viewBox.h  *=  factor;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.x  =  mouse.x - (mouse.x - ValeSpec__CadObjectViewer__SvgViewBoxState.x) * factor;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.y  =  mouse.y - (mouse.y - ValeSpec__CadObjectViewer__SvgViewBoxState.y) * factor;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.w  *=  factor;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.h  *=  factor;
 
         applyViewBox();
-        if (showGrid && jsonData) renderGrid(jsonData.BoundingBox, getPadding());
+        if (ValeSpec__CadObjectViewer__UiShowGrid && ValeSpec__CadObjectViewer__StateVectorData) renderGrid(ValeSpec__CadObjectViewer__StateVectorData.BoundingBox, getPadding());
     }
     // ---------------------------------------------------------------
 
@@ -880,31 +1001,31 @@
     // ---------------------------------------------------------------
     function onMouseDown(e) {
         if (e.button !== 0) return;
-        isDragging    =  true;
-        dragStart     =  { x: e.clientX, y: e.clientY, vbx: viewBox.x, vby: viewBox.y };
-        document.getElementById('viewer').classList.add('dragging');
+        ValeSpec__CadObjectViewer__PanIsDragging    =  true;
+        ValeSpec__CadObjectViewer__PanDragStart     =  { x: e.clientX, y: e.clientY, vbx: ValeSpec__CadObjectViewer__SvgViewBoxState.x, vby: ValeSpec__CadObjectViewer__SvgViewBoxState.y };
+        ValeSpec__CadObjectViewer__DomViewport.classList.add('ValeSpec__CadObjectViewer__StateDragging');
     }
 
     function onMouseMove(e) {
         // Update coordinate readout
         const svgCoord  =  clientToSvg(e.clientX, e.clientY);
         const dataMm    =  svgToData(svgCoord.x, svgCoord.y);
-        coordReadout.textContent  =  `${dataMm.x.toFixed(1)} mm,  ${dataMm.y.toFixed(1)} mm`;
+        ValeSpec__CadObjectViewer__DomReadoutCursor.textContent  =  `${dataMm.x.toFixed(1)} mm,  ${dataMm.y.toFixed(1)} mm`;
 
-        if (!isDragging) return;
+        if (!ValeSpec__CadObjectViewer__PanIsDragging) return;
 
-        const rect   =  svgEl.getBoundingClientRect();
-        const scaleX =  viewBox.w / rect.width;
-        const scaleY =  viewBox.h / rect.height;
+        const rect   =  ValeSpec__CadObjectViewer__DomSvgCanvas.getBoundingClientRect();
+        const scaleX =  ValeSpec__CadObjectViewer__SvgViewBoxState.w / rect.width;
+        const scaleY =  ValeSpec__CadObjectViewer__SvgViewBoxState.h / rect.height;
 
-        viewBox.x  =  dragStart.vbx - (e.clientX - dragStart.x) * scaleX;
-        viewBox.y  =  dragStart.vby - (e.clientY - dragStart.y) * scaleY;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.x  =  ValeSpec__CadObjectViewer__PanDragStart.vbx - (e.clientX - ValeSpec__CadObjectViewer__PanDragStart.x) * scaleX;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.y  =  ValeSpec__CadObjectViewer__PanDragStart.vby - (e.clientY - ValeSpec__CadObjectViewer__PanDragStart.y) * scaleY;
         applyViewBox();
     }
 
     function onMouseUp() {
-        isDragging  =  false;
-        document.getElementById('viewer').classList.remove('dragging');
+        ValeSpec__CadObjectViewer__PanIsDragging  =  false;
+        ValeSpec__CadObjectViewer__DomViewport.classList.remove('ValeSpec__CadObjectViewer__StateDragging');
     }
     // ---------------------------------------------------------------
 
@@ -918,8 +1039,8 @@
     // HELPER FUNCTION | Calculate Viewport Padding from Bounding Box Size
     // ---------------------------------------------------------------
     function getPadding() {
-        if (!jsonData) return 50;
-        return Math.max(jsonData.BoundingBox.Width_mm, jsonData.BoundingBox.Height_mm, 20) * 0.15;
+        if (!ValeSpec__CadObjectViewer__StateVectorData) return 50;
+        return Math.max(ValeSpec__CadObjectViewer__StateVectorData.BoundingBox.Width_mm, ValeSpec__CadObjectViewer__StateVectorData.BoundingBox.Height_mm, 20) * 0.15;
     }
     // ---------------------------------------------------------------
 
@@ -927,13 +1048,13 @@
     // HELPER FUNCTION | Fit the ViewBox to the Geometry with Padding
     // ---------------------------------------------------------------
     function fitToGeometry() {
-        if (!jsonData) return;
+        if (!ValeSpec__CadObjectViewer__StateVectorData) return;
 
-        const bb       =  jsonData.BoundingBox;
+        const bb       =  ValeSpec__CadObjectViewer__StateVectorData.BoundingBox;
         const padding  =  getPadding();
 
         // Account for viewport aspect ratio to avoid distortion
-        const vwRatio  =  svgEl.clientWidth / svgEl.clientHeight;
+        const vwRatio  =  ValeSpec__CadObjectViewer__DomSvgCanvas.clientWidth / ValeSpec__CadObjectViewer__DomSvgCanvas.clientHeight;
         const dataW    =  bb.Width_mm  + padding * 2;
         const dataH    =  bb.Height_mm + padding * 2;
         const dataRatio  =  dataW / dataH;
@@ -947,10 +1068,10 @@
             h  =  dataW / vwRatio;
         }
 
-        viewBox.x  =  bb.MinX_mm - (w - bb.Width_mm)  / 2;
-        viewBox.y  =  -(bb.MaxY_mm + (h - bb.Height_mm) / 2);   // <-- Y-flip: data maxY → SVG minY
-        viewBox.w  =  w;
-        viewBox.h  =  h;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.x  =  bb.MinX_mm - (w - bb.Width_mm)  / 2;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.y  =  -(bb.MaxY_mm + (h - bb.Height_mm) / 2);   // <-- Y-flip: data maxY → SVG minY
+        ValeSpec__CadObjectViewer__SvgViewBoxState.w  =  w;
+        ValeSpec__CadObjectViewer__SvgViewBoxState.h  =  h;
 
         applyViewBox();
         renderGrid(bb, padding);
@@ -969,22 +1090,27 @@
             return;
         }
 
-        jsonData       =  vd;
-        selectedIndex  =  -1;
-        hoveredIndex   =  -1;
+        ValeSpec__CadObjectViewer__StateVectorData       =  vd;
+        ValeSpec__CadObjectViewer__PathSelectedIndex  =  -1;
+        ValeSpec__CadObjectViewer__PathHoveredIndex   =  -1;
 
         const padding  =  getPadding();
+        const hwMeta   =  extractHardwareItemMeta(data);
 
         renderBbox(vd.BoundingBox);
         renderOrigin(padding * 0.4);
         renderGeometry(vd.Paths);
-        populateInfo(vd);
+        populateInfo(vd, hwMeta);
         populatePathList(vd.Paths);
         populateDetail(null);
         fitToGeometry();
 
-        dropZone.classList.add('hidden');
-        setStatus(`Loaded  ·  ${vd.Paths.length} paths  ·  ${vd.BoundingBox.Width_mm?.toFixed(1)} × ${vd.BoundingBox.Height_mm?.toFixed(1)} mm`);
+        ValeSpec__CadObjectViewer__DomDropZoneOverlay.classList.add('ValeSpec__CadObjectViewer__StateHidden');
+        document.title  =  hwMeta
+            ? `ValeSpec | ${hwMeta.name} · ${hwMeta.code}`
+            : 'ValeSpec | CAD Object Viewer';
+        const hwBit  =  hwMeta ? `  ·  ${hwMeta.name} (${hwMeta.code})` : '';
+        setStatus(`Loaded  ·  ${vd.Paths.length} paths  ·  ${vd.BoundingBox.Width_mm?.toFixed(1)} × ${vd.BoundingBox.Height_mm?.toFixed(1)} mm${hwBit}`);
     }
     // ---------------------------------------------------------------
 
@@ -1013,8 +1139,8 @@
     // HELPER FUNCTION | Set Status Bar Message
     // ---------------------------------------------------------------
     function setStatus(msg, isError = false) {
-        statusMsg.textContent  =  msg;
-        statusMsg.style.color  =  isError ? '#ff6b6b' : 'var(--text-secondary)';
+        ValeSpec__CadObjectViewer__DomStatusMessage.textContent  =  msg;
+        ValeSpec__CadObjectViewer__DomStatusMessage.style.color  =  isError ? '#ff6b6b' : 'var(--text-secondary)';
     }
     // ---------------------------------------------------------------
 
@@ -1030,70 +1156,68 @@
     function init() {
 
         // Load button and file input
-        document.getElementById('load-btn').addEventListener('click', () => {
-            document.getElementById('file-input').click();
+        document.getElementById('ValeSpec__CadObjectViewer__ButtonLoadJson').addEventListener('click', () => {
+            document.getElementById('ValeSpec__CadObjectViewer__InputFileJson').click();
         });
-        document.getElementById('file-input').addEventListener('change', (e) => {
+        document.getElementById('ValeSpec__CadObjectViewer__InputFileJson').addEventListener('change', (e) => {
             readFile(e.target.files[0]);
             e.target.value = '';   // <-- Reset so same file can be re-loaded
         });
 
         // Toolbar toggles
-        document.getElementById('fit-btn').addEventListener('click', fitToGeometry);
+        document.getElementById('ValeSpec__CadObjectViewer__ButtonFitView').addEventListener('click', fitToGeometry);
 
-        document.getElementById('grid-btn').addEventListener('click', function() {
-            showGrid  =  !showGrid;
-            this.classList.toggle('active', showGrid);
-            if (jsonData) renderGrid(jsonData.BoundingBox, getPadding());
-            else gGrid.innerHTML = '';
+        document.getElementById('ValeSpec__CadObjectViewer__ButtonToggleGrid').addEventListener('click', function() {
+            ValeSpec__CadObjectViewer__UiShowGrid  =  !ValeSpec__CadObjectViewer__UiShowGrid;
+            this.classList.toggle('ValeSpec__CadObjectViewer__StateActive', ValeSpec__CadObjectViewer__UiShowGrid);
+            if (ValeSpec__CadObjectViewer__StateVectorData) renderGrid(ValeSpec__CadObjectViewer__StateVectorData.BoundingBox, getPadding());
+            else ValeSpec__CadObjectViewer__DomSvgLayerGrid.innerHTML = '';
         });
-        document.getElementById('grid-btn').classList.add('active');   // <-- Grid on by default
 
-        document.getElementById('bbox-btn').addEventListener('click', function() {
-            showBbox  =  !showBbox;
-            this.classList.toggle('active', showBbox);
-            if (jsonData) renderBbox(jsonData.BoundingBox);
-            else gBbox.innerHTML = '';
+        document.getElementById('ValeSpec__CadObjectViewer__ButtonToggleBbox').addEventListener('click', function() {
+            ValeSpec__CadObjectViewer__UiShowBbox  =  !ValeSpec__CadObjectViewer__UiShowBbox;
+            this.classList.toggle('ValeSpec__CadObjectViewer__StateActive', ValeSpec__CadObjectViewer__UiShowBbox);
+            if (ValeSpec__CadObjectViewer__StateVectorData) renderBbox(ValeSpec__CadObjectViewer__StateVectorData.BoundingBox);
+            else ValeSpec__CadObjectViewer__DomSvgLayerBbox.innerHTML = '';
         });
-        document.getElementById('bbox-btn').classList.add('active');   // <-- BBox on by default
+        document.getElementById('ValeSpec__CadObjectViewer__ButtonToggleBbox').classList.add('ValeSpec__CadObjectViewer__StateActive');   // <-- BBox on by default
 
         // SVG viewport interactions
-        svgEl.addEventListener('wheel',     onWheel,     { passive: false });
-        svgEl.addEventListener('mousedown', onMouseDown);
-        svgEl.addEventListener('mousemove', onMouseMove);
-        svgEl.addEventListener('mouseup',   onMouseUp);
-        svgEl.addEventListener('mouseleave', onMouseUp);
+        ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('wheel',     onWheel,     { passive: false });
+        ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('mousedown', onMouseDown);
+        ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('mousemove', onMouseMove);
+        ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('mouseup',   onMouseUp);
+        ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('mouseleave', onMouseUp);
 
         // Deselect on background click
-        svgEl.addEventListener('click', () => {
-            selectedIndex  =  -1;
+        ValeSpec__CadObjectViewer__DomSvgCanvas.addEventListener('click', () => {
+            ValeSpec__CadObjectViewer__PathSelectedIndex  =  -1;
             syncHighlight(-1, -1);
             populateDetail(null);
         });
 
-        // Drag and drop onto the viewer
-        const viewer  =  document.getElementById('viewer');
-        viewer.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-        viewer.addEventListener('dragleave', ()  => { dropZone.classList.remove('drag-over'); });
-        viewer.addEventListener('drop',      (e) => {
+        // Drag and drop onto the viewport
+        ValeSpec__CadObjectViewer__DomViewport.addEventListener('dragover',  (e) => { e.preventDefault(); ValeSpec__CadObjectViewer__DomDropZoneOverlay.classList.add('ValeSpec__CadObjectViewer__StateDragOver'); });
+        ValeSpec__CadObjectViewer__DomViewport.addEventListener('dragleave', ()  => { ValeSpec__CadObjectViewer__DomDropZoneOverlay.classList.remove('ValeSpec__CadObjectViewer__StateDragOver'); });
+        ValeSpec__CadObjectViewer__DomViewport.addEventListener('drop',      (e) => {
             e.preventDefault();
-            dropZone.classList.remove('drag-over');
+            ValeSpec__CadObjectViewer__DomDropZoneOverlay.classList.remove('ValeSpec__CadObjectViewer__StateDragOver');
             readFile(e.dataTransfer.files[0]);
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'f' || e.key === 'F') fitToGeometry();
-            if (e.key === 'g' || e.key === 'G') document.getElementById('grid-btn').click();
-            if (e.key === 'b' || e.key === 'B') document.getElementById('bbox-btn').click();
+            if (e.key === 'g' || e.key === 'G') document.getElementById('ValeSpec__CadObjectViewer__ButtonToggleGrid').click();
+            if (e.key === 'b' || e.key === 'B') document.getElementById('ValeSpec__CadObjectViewer__ButtonToggleBbox').click();
             if (e.key === 'Escape') {
-                selectedIndex  =  -1;
+                ValeSpec__CadObjectViewer__PathSelectedIndex  =  -1;
                 syncHighlight(-1, -1);
                 populateDetail(null);
             }
         });
 
-        // Initial empty viewBox
+        // Initial empty SvgViewBoxState
         applyViewBox();
     }
     // ---------------------------------------------------------------

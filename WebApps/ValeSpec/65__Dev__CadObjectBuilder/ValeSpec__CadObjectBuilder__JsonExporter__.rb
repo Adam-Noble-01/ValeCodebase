@@ -5,8 +5,9 @@
 # FILE    : ValeSpec__CadObjectBuilder__JsonExporter__.rb
 # AUTHOR  : Adam Noble - Noble Architecture
 # PURPOSE : Export selected SketchUp 2D geometry to structured JSON for the
-#           ValeSpec HardwareIndex. Produces a HardwareItem__VectorData block
-#           ready to paste into ValeSpec__Data__HardwareIndex__.json.
+#           ValeSpec hardware library. Writes a full hardware-object file:
+#           ValeSpec__HardwareItemData (empty placeholders, keys retained) plus
+#           HardwareItem__VectorData from the model, ValeSpec-style indentation.
 # CREATED : Apr-2026
 #
 # DESCRIPTION:
@@ -14,6 +15,8 @@
 # - Paste this script into the SketchUp Ruby Console and press Enter.
 # - A Save dialog appears. Default filename is pre-filled; edit if needed.
 # - The JSON is printed to the console AND written to the chosen file path.
+# - Top-level metadata keys are present with empty / null placeholders for you
+#   to fill or merge from another tool; vector paths and bbox come from SketchUp.
 # - Arcs and circles export as arc primitives (center, radius, angles).
 # - Straight edges export as individual line segments.
 #
@@ -38,6 +41,20 @@
 # 14-Apr-2026 - Version 1.1.0
 # - Replaced hardcoded output path with UI.savepanel file dialog.
 # - Switched constants to local variables to fix SketchUp eval context error.
+#
+# 14-Apr-2026 - Version 1.2.0
+# - Full-document export with ValeSpec__HardwareItemData placeholders (keys only).
+# - Custom JSON pretty-print to match ValeSpec file indentation (not 2-space-only).
+#
+# 14-Apr-2026 - Version 1.3.0
+# - HardwareItem schema: removed HardwareItem__Image; SvgUrl renamed to HardwareItem__DataFile.
+# - Placeholders added: HardwareItem__Notes, HardwareItem__SupplierProductCode.
+#
+# 14-Apr-2026 - Version 1.4.0
+# - Each Paths[] entry includes VertexName (default empty) for future dynamic dimensions.
+#
+# 14-Apr-2026 - Version 1.5.0
+# - JSON output uses space-before-colon + per-object key column width (legible layout).
 #
 # =============================================================================
 
@@ -133,6 +150,7 @@
 
             arcs << {
                 "PathType"        =>  is_circle ? "Circle" : "Arc",
+                "VertexName"      =>  "",
                 "Center_mm"       =>  ctr_mm,
                 "Radius_mm"       =>  radius_mm,
                 "StartAngle_deg"  =>  start_deg,
@@ -162,9 +180,10 @@
             next if curve.is_a?(Sketchup::ArcCurve) && arc_curve_ids[curve.object_id]  # <-- Skip arc edges
 
             lines << {
-                "PathType"  =>  "Line",
-                "Start_mm"  =>  vale_pt_mm(edge.start.position, origin_pt),
-                "End_mm"    =>  vale_pt_mm(edge.end.position,   origin_pt)
+                "PathType"      =>  "Line",
+                "VertexName"    =>  "",
+                "Start_mm"      =>  vale_pt_mm(edge.start.position, origin_pt),
+                "End_mm"        =>  vale_pt_mm(edge.end.position,   origin_pt)
             }
         end
 
@@ -220,6 +239,157 @@
 # REGION | JSON Assembly & File Export
 # -----------------------------------------------------------------------------
 
+    # NOTE | Key lines use padded keys + " : " for column alignment (see Example JSON).
+    # -----------------------------------------------------------------------------
+
+    # HELPER FUNCTION | Line Indent for ValeSpec JSON (matches example file)
+    # ---------------------------------------------------------------
+    # Depth 1 => 2 spaces; depth 2 => 4; depth >= 3 => 4 * (depth - 1).
+    def vale_spec_indent_line(line_depth)
+        return  ''  if line_depth < 1
+        return  '  '  if line_depth == 1
+        ' ' * (4 * (line_depth - 1))
+    end
+    # ---------------------------------------------------------------
+
+
+    # HELPER FUNCTION | JSON Scalar Fragment (null, bool, number, string)
+    # ---------------------------------------------------------------
+    def vale_spec_json_scalar_fragment(value)
+        case value
+        when NilClass   then 'null'
+        when TrueClass  then 'true'
+        when FalseClass then 'false'
+        when String     then value.to_json
+        when Integer    then value.to_json
+        when Float
+            value.nan? || value.infinite? ? 'null' : value.to_json
+        else
+            value.to_json
+        end
+    end
+    # ---------------------------------------------------------------
+
+
+    # HELPER FUNCTION | Padded JSON Key + Space-Colon (column-aligned, legible)
+    # ---------------------------------------------------------------
+    def vale_spec_key_colon_padded(key, key_column_width)
+        kjs  =  key.to_json
+        pad  =  [0, key_column_width - kjs.length].max
+        "#{kjs}#{' ' * pad} : "
+    end
+    # ---------------------------------------------------------------
+
+
+    # SUB FUNCTION | Format One Key-Value Pair at a Given Line Depth
+    # ---------------------------------------------------------------
+    def vale_spec_format_key_value_pair(key, value, key_line_depth, key_column_width)
+        ind  =  vale_spec_indent_line(key_line_depth)
+        kcol =  vale_spec_key_colon_padded(key, key_column_width)
+
+        case value
+        when Hash
+            return  "#{ind}#{kcol}{}"  if value.empty?
+            body  =  vale_spec_format_object_body(value, key_line_depth + 1)
+            close =  vale_spec_indent_line(key_line_depth)
+            "#{ind}#{kcol}{\n#{body}\n#{close}}"
+        when Array
+            return  "#{ind}#{kcol}[]"  if value.empty?
+            inner  =  vale_spec_format_array_body(value, key_line_depth)
+            "#{ind}#{kcol}[\n#{inner}\n#{ind}]"
+        else
+            "#{ind}#{kcol}#{vale_spec_json_scalar_fragment(value)}"
+        end
+    end
+    # ---------------------------------------------------------------
+
+
+    # SUB FUNCTION | Format Object Interior (comma-separated key lines)
+    # ---------------------------------------------------------------
+    def vale_spec_format_object_body(hash, inner_key_line_depth)
+        return  ''  if hash.empty?
+        width  =  hash.keys.map { |k| k.to_json.length }.max
+        pairs  =  []
+        hash.each do |k, v|
+            pairs << vale_spec_format_key_value_pair(k, v, inner_key_line_depth, width)
+        end
+        pairs.join(",\n")
+    end
+    # ---------------------------------------------------------------
+
+
+    # SUB FUNCTION | Format Array Body (objects / scalars)
+    # ---------------------------------------------------------------
+    def vale_spec_format_array_body(arr, parent_key_line_depth)
+        elem_open_depth  =  parent_key_line_depth + 1
+        chunks           =  arr.map { |el| vale_spec_format_array_element(el, elem_open_depth) }
+        chunks.join(",\n")
+    end
+    # ---------------------------------------------------------------
+
+
+    # SUB FUNCTION | Format One Array Element
+    # ---------------------------------------------------------------
+    def vale_spec_format_array_element(element, elem_line_depth)
+        case element
+        when Hash
+            return  "#{vale_spec_indent_line(elem_line_depth)}{}"  if element.empty?
+            body  =  vale_spec_format_object_body(element, elem_line_depth + 1)
+            open  =  vale_spec_indent_line(elem_line_depth)
+            "#{open}{\n#{body}\n#{open}}"
+        else
+            "#{vale_spec_indent_line(elem_line_depth)}#{vale_spec_json_scalar_fragment(element)}"
+        end
+    end
+    # ---------------------------------------------------------------
+
+
+    # FUNCTION | Build Placeholder ValeSpec__HardwareItemData Hash (keys retained)
+    # ---------------------------------------------------------------
+    def vale_spec_empty_hardware_item_data_hash
+        {
+            "HardwareItem__Name"                   =>  "",
+            "HardwareItem__Code"                   =>  "",
+            "HardwareItem__Type"                   =>  "",
+            "HardwareItem__Description"            =>  "",
+            "HardwareItem__Notes"                  =>  "",
+            "HardwareItem__DataFile"               =>  "",
+            "HardwareItem__IsComplementary"        =>  false,
+            "HardwareItem__Supplier"               =>  "",
+            "HardwareItem__SupplierProductCode"    =>  "",
+            "HardwareItem__SupplierPrice__GBP"     =>  "",
+            "HardwareItem__PanelPlacement"         =>  {
+                "DefaultHeightFromOrigin_mm"  =>  nil,
+                "RightHand__Transform"        =>  {
+                    "OffsetX_mm"  =>  nil,
+                    "OffsetY_mm"  =>  nil,
+                    "ScaleX"      =>  nil
+                },
+                "LeftHand__Transform"         =>  {
+                    "OffsetX_mm"  =>  nil,
+                    "OffsetY_mm"  =>  nil,
+                    "ScaleX"      =>  nil
+                }
+            },
+            "HardwareItem__AvailableFinishes"    =>  []
+        }
+    end
+    # ---------------------------------------------------------------
+
+
+    # FUNCTION | Serialize Full Root Hash to ValeSpec-Indented JSON String
+    # ---------------------------------------------------------------
+    def vale_spec_generate_full_document_json(root_hash)
+        width  =  root_hash.keys.map { |k| k.to_json.length }.max
+        parts  =  []
+        root_hash.each do |k, v|
+            parts << vale_spec_format_key_value_pair(k, v, 1, width)
+        end
+        "{\n#{parts.join(",\n")}\n}\n"
+    end
+    # ---------------------------------------------------------------
+
+
     # FUNCTION | ValeSpec CAD Object JSON Exporter - Main Entry Point
     # ---------------------------------------------------------------
     def vale_export_cad_object
@@ -253,23 +423,25 @@
         puts ">> Arcs/Circles  : #{arcs.size}  (from #{arc_edge_count} arc edges)"
         puts ">> Line segments : #{lines.size} (from #{straight_edge_count} straight edges)"
 
-        # Assemble the HardwareItem__VectorData output block
-        all_paths    =  arcs + lines
-        vector_data  =  {
-            "HardwareItem__VectorData"  =>  {
-                "OriginNote"    =>  "Local 0,0 = centre of 00__OriginPoint group (e.g. handle spindle). Right-hand orientation.",
-                "CoordSystem"   =>  "XY plane | X=right, Y=up | Units=mm | Z discarded",
-                "BoundingBox"   =>  bbox,
-                "EdgeCount"     =>  loose_edges.size,
-                "ArcCount"      =>  arcs.size,
-                "LineCount"     =>  lines.size,
-                "Paths"         =>  all_paths
-            }
+        # Assemble full document: placeholder metadata + vector data from the model
+        all_paths     =  arcs + lines
+        vector_block  =  {
+            "OriginNote"    =>  "Local 0,0 = centre of 00__OriginPoint group (e.g. handle spindle). Right-hand orientation.",
+            "CoordSystem"   =>  "XY plane | X=right, Y=up | Units=mm | Z discarded",
+            "BoundingBox"   =>  bbox,
+            "EdgeCount"     =>  loose_edges.size,
+            "ArcCount"      =>  arcs.size,
+            "LineCount"     =>  lines.size,
+            "Paths"         =>  all_paths
         }
 
-        # Serialize to formatted JSON
+        full_document  =  {
+            "ValeSpec__HardwareItemData"  =>  vale_spec_empty_hardware_item_data_hash(),
+            "HardwareItem__VectorData"    =>  vector_block
+        }
+
         require 'json'
-        json_str  =  JSON.pretty_generate(vector_data)
+        json_str  =  vale_spec_generate_full_document_json(full_document)
 
         # Print to Ruby Console
         puts "\n" + ("=" * 70)
@@ -280,9 +452,9 @@
 
         # Open OS Save dialog - default filename pre-filled, user can rename
         output_path  =  UI.savepanel(
-            "Save ValeSpec Vector Data",
+            "Save ValeSpec Hardware Object JSON",
             "",
-            "ValeSpec__CadObject__VectorData__.json"
+            "ValeSpec__HardwareObject__.json"
         )
 
         if output_path.nil?
@@ -307,5 +479,5 @@
 # endregion -------------------------------------------------------------------
 
 
-# Run immediately on paste
-vale_export_cad_object
+# Run immediately when pasted into the SketchUp Ruby Console (not plain ruby)
+vale_export_cad_object if defined?(Sketchup)

@@ -51,18 +51,53 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build Normalized Manifest Entry Object
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectFileManager__BuildManifestEntry(code, name, docName, status, dateCreated, dateModified) {
+        var safeStatus       =  (typeof status === 'string' && status.trim()) ? status.trim() : 'Draft';
+        var safeDateCreated  =  dateCreated || '';
+        var safeDateModified =  dateModified || safeDateCreated || new Date().toISOString().split('T')[0];
+
+        return {
+            projectCode    : code || '',
+            projectName    : name || '',
+            documentName   : docName || '',
+            status         : safeStatus,
+            dateCreated    : safeDateCreated,
+            dateModified   : safeDateModified
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Manifest Entry from Project Metadata
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectFileManager__BuildManifestEntryFromMetadata(code, metadata, fallbackEntry) {
+        var fallback       =  fallbackEntry || {};
+        var projectName    =  metadata['ValeSpec__ProjectFile__Metadata__ProjectName']    || fallback.projectName;
+        var documentName   =  metadata['ValeSpec__ProjectFile__Metadata__DocumentName']   || fallback.documentName;
+        var status         =  metadata['ValeSpec__ProjectFile__Metadata__DocumentStatus'] || fallback.status;
+        var dateCreated    =  metadata['ValeSpec__ProjectFile__Metadata__DateCreated']    || fallback.dateCreated;
+        var dateModified   =  metadata['ValeSpec__ProjectFile__Metadata__DateModified']   || fallback.dateModified;
+
+        return ValeSpec__ProjectFileManager__BuildManifestEntry(code, projectName, documentName, status, dateCreated, dateModified);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Add Entry to Manifest
     // ------------------------------------------------------------
-    function ValeSpec__ProjectFileManager__AddToManifest(code, name, docName, dateCreated) {
+    function ValeSpec__ProjectFileManager__AddToManifest(code, name, docName, status, dateCreated, dateModified) {
         var manifest  =  ValeSpec__ProjectFileManager__GetManifest();
         var existing  =  manifest.findIndex(function(p) { return p.projectCode === code; });
-        var entry     =  {
-            projectCode    : code,
-            projectName    : name,
-            documentName   : docName,
-            dateCreated    : dateCreated,
-            dateModified   : new Date().toISOString().split('T')[0]
-        };
+        var previous  =  existing >= 0 ? manifest[existing] : null;
+        var entry     =  ValeSpec__ProjectFileManager__BuildManifestEntry(code, name, docName, status, dateCreated, dateModified);
+
+        if (previous) {
+            if (!entry.projectName)  entry.projectName   =  previous.projectName   || '';
+            if (!entry.documentName) entry.documentName  =  previous.documentName  || '';
+            if (!entry.dateCreated)  entry.dateCreated   =  previous.dateCreated   || '';
+        }
 
         if (existing >= 0) {
             manifest[existing]  =  entry;
@@ -81,10 +116,67 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         var idx       =  manifest.findIndex(function(p) { return p.projectCode === code; });
         if (idx < 0) return;
 
-        manifest[idx].projectName   =  metadata['ValeSpec__ProjectFile__Metadata__ProjectName'];
-        manifest[idx].documentName  =  metadata['ValeSpec__ProjectFile__Metadata__DocumentName'];
-        manifest[idx].dateModified  =  metadata['ValeSpec__ProjectFile__Metadata__DateModified'];
+        manifest[idx]  =  ValeSpec__ProjectFileManager__BuildManifestEntryFromMetadata(code, metadata || {}, manifest[idx]);
         ValeSpec__ProjectFileManager__SaveManifest(manifest);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Hydrate Manifest Entry from Cached Project Metadata
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectFileManager__HydrateManifestEntryFromCache(entry) {
+        var source      =  entry || {};
+        var projectCode =  source.projectCode || '';
+        if (!projectCode) {
+            return ValeSpec__ProjectFileManager__BuildManifestEntry(
+                '',
+                source.projectName,
+                source.documentName,
+                source.status,
+                source.dateCreated,
+                source.dateModified
+            );
+        }
+
+        var storageKey    =  STORAGE_PREFIX + projectCode;
+        var cachedProject =  null;
+        var metadata      =  null;
+        try {
+            cachedProject  =  JSON.parse(localStorage.getItem(storageKey) || 'null');
+            metadata       =  cachedProject ? cachedProject['ValeSpec__ProjectFile__Metadata'] : null;
+        } catch (e) {
+            metadata  =  null;
+        }
+
+        if (metadata) {
+            return ValeSpec__ProjectFileManager__BuildManifestEntryFromMetadata(projectCode, metadata, source);
+        }
+
+        return ValeSpec__ProjectFileManager__BuildManifestEntry(
+            projectCode,
+            source.projectName,
+            source.documentName,
+            source.status,
+            source.dateCreated,
+            source.dateModified
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Compare Two Manifest Entries
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectFileManager__ManifestEntriesMatch(a, b) {
+        var left   =  a || {};
+        var right  =  b || {};
+        return (
+            (left.projectCode || '')  === (right.projectCode || '')  &&
+            (left.projectName || '')  === (right.projectName || '')  &&
+            (left.documentName || '') === (right.documentName || '') &&
+            (left.status || 'Draft')  === (right.status || 'Draft')  &&
+            (left.dateCreated || '')  === (right.dateCreated || '')  &&
+            (left.dateModified || '') === (right.dateModified || '')
+        );
     }
     // ------------------------------------------------------------
 
@@ -101,9 +193,15 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
 
     // HELPER FUNCTION | POST or DELETE to Server API and Return Result
     // ------------------------------------------------------------
-    function ValeSpec__ProjectFileManager__ServerWrite(method, projectCode, bodyData) {
+    function ValeSpec__ProjectFileManager__ServerWrite(method, projectCode, bodyData, updateSource) {
         var url   =  API_BASE + '/' + encodeURIComponent(projectCode);
-        var opts  =  { method: method, headers: { 'Content-Type': 'application/json' } };
+        var opts  =  {
+            method  :  method,
+            headers :  {
+                'Content-Type'            : 'application/json',
+                'X-ValeSpec-UpdateSource' : updateSource || 'unspecified'
+            }
+        };
         if (bodyData) opts.body  =  JSON.stringify(bodyData);
 
         return fetch(url, opts)
@@ -134,7 +232,25 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // FUNCTION | List All Projects
     // ------------------------------------------------------------
     function ValeSpec__ProjectFileManager__ListProjects() {
-        return ValeSpec__ProjectFileManager__GetManifest();
+        var manifest        =  ValeSpec__ProjectFileManager__GetManifest();
+        var repaired        =  [];
+        var needsWriteback  =  false;
+
+        for (var i = 0; i < manifest.length; i++) {
+            var sourceEntry  =  manifest[i] || {};
+            var hydrated     =  ValeSpec__ProjectFileManager__HydrateManifestEntryFromCache(sourceEntry);
+            repaired.push(hydrated);
+
+            if (!ValeSpec__ProjectFileManager__ManifestEntriesMatch(sourceEntry, hydrated)) {
+                needsWriteback  =  true;                                         // <-- Repair stale/missing manifest fields (status/date/name) in-place
+            }
+        }
+
+        if (needsWriteback) {
+            ValeSpec__ProjectFileManager__SaveManifest(repaired);
+        }
+
+        return repaired;
     }
     // ------------------------------------------------------------
 
@@ -166,9 +282,16 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         };
 
         localStorage.setItem(storageKey, JSON.stringify(projectData));                              // <-- Write to local cache
-        ValeSpec__ProjectFileManager__AddToManifest(projectCode, projectName, documentName || projectName + ' Doors', now);
+        ValeSpec__ProjectFileManager__AddToManifest(
+            projectCode,
+            projectName,
+            documentName || projectName + ' Doors',
+            'Draft',
+            now,
+            now
+        );
 
-        ValeSpec__ProjectFileManager__ServerWrite('POST', projectCode, projectData);                // <-- Persist to disk async
+        ValeSpec__ProjectFileManager__ServerWrite('POST', projectCode, projectData, 'manual:createProject'); // <-- Persist to disk async
 
         console.log('[ValeSpec__ProjectFileManager] Project created: ' + projectCode + ' - ' + projectName);
         return projectData;
@@ -200,7 +323,7 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
 
     // FUNCTION | Save Project — write to localStorage cache and persist to disk
     // ------------------------------------------------------------
-    function ValeSpec__ProjectFileManager__SaveProject(projectData) {
+    function ValeSpec__ProjectFileManager__SaveProject(projectData, updateSource) {
         var metadata  =  projectData['ValeSpec__ProjectFile__Metadata'];
         if (!metadata) return Promise.resolve({ ok: false, error: 'Missing project metadata' });
 
@@ -212,7 +335,7 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         localStorage.setItem(storageKey, JSON.stringify(projectData));                              // <-- Update local cache
         ValeSpec__ProjectFileManager__UpdateManifestEntry(projectCode, metadata);
 
-        return ValeSpec__ProjectFileManager__ServerWrite('POST', projectCode, projectData)          // <-- Persist to disk async
+        return ValeSpec__ProjectFileManager__ServerWrite('POST', projectCode, projectData, updateSource || 'manual:save') // <-- Persist to disk async
             .then(function(serverResult) {
                 if (serverResult && serverResult.ok) {
                     console.log('[ValeSpec__ProjectFileManager] Project saved: ' + projectCode);
@@ -230,7 +353,7 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         localStorage.removeItem(storageKey);                                                        // <-- Remove from local cache
         ValeSpec__ProjectFileManager__RemoveFromManifest(projectCode);
 
-        ValeSpec__ProjectFileManager__ServerWrite('DELETE', projectCode, null);                     // <-- Delete from disk async
+        ValeSpec__ProjectFileManager__ServerWrite('DELETE', projectCode, null, 'manual:deleteProject'); // <-- Delete from disk async
 
         console.log('[ValeSpec__ProjectFileManager] Project deleted: ' + projectCode);
     }
@@ -258,14 +381,30 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
                                 if (!pJson.ok) return;
                                 var storageKey  =  STORAGE_PREFIX + entry.projectCode;
                                 localStorage.setItem(storageKey, JSON.stringify(pJson.data));       // <-- Populate cache from disk
-                                freshManifest.push(entry);
+                                var metadata  =  pJson.data ? pJson.data['ValeSpec__ProjectFile__Metadata'] : null;
+                                if (metadata) {
+                                    freshManifest.push(
+                                        ValeSpec__ProjectFileManager__BuildManifestEntryFromMetadata(entry.projectCode, metadata, entry)
+                                    );
+                                } else {
+                                    freshManifest.push(
+                                        ValeSpec__ProjectFileManager__BuildManifestEntry(
+                                            entry.projectCode,
+                                            entry.projectName,
+                                            entry.documentName,
+                                            entry.status,
+                                            entry.dateCreated,
+                                            entry.dateModified
+                                        )
+                                    );
+                                }
                             });
                         loadPromises.push(promise);
                     })(projects[i]);
                 }
 
                 return Promise.all(loadPromises).then(function() {
-                    localStorage.setItem(MANIFEST_KEY, JSON.stringify(freshManifest));              // <-- Rebuild manifest from disk
+                    ValeSpec__ProjectFileManager__SaveManifest(freshManifest);                      // <-- Rebuild manifest from disk
                     console.log('[ValeSpec__ProjectFileManager] Synced ' + freshManifest.length + ' project(s) from server.');
                     return freshManifest;
                 });
@@ -320,7 +459,9 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
                         projectCode,
                         metadata['ValeSpec__ProjectFile__Metadata__ProjectName'],
                         metadata['ValeSpec__ProjectFile__Metadata__DocumentName'],
-                        metadata['ValeSpec__ProjectFile__Metadata__DateCreated']
+                        metadata['ValeSpec__ProjectFile__Metadata__DocumentStatus'],
+                        metadata['ValeSpec__ProjectFile__Metadata__DateCreated'],
+                        metadata['ValeSpec__ProjectFile__Metadata__DateModified']
                     );
 
                     resolve(projectData);

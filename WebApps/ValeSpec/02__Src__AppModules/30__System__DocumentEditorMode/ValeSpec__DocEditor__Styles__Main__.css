@@ -29,7 +29,8 @@
     /* CONTAINER | Main Document Editor Wrapper */
     /* ------------------------------------------------------------ */
     #ValeSpec__DocEditor__Container {
-        max-width                          : 794px;
+        min-width                          : 900px;
+        max-width                          : 1200px;
         margin                             : 0 auto;
         padding                            : var(--Vale_Spacing_Large);
     }
@@ -169,7 +170,8 @@
     /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__SectionBlock {
         display                            : flex;
-        gap                                : var(--Vale_Spacing_Large);
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_Medium);
         padding                            : var(--Vale_Spacing_Large);
         background                         : var(--Vale_BackgroundWhite);
         border-radius                      : var(--Vale_BorderRadius);
@@ -180,11 +182,21 @@
     /* ------------------------------------------------------------ */
 
 
+    /* SECTION | Body Row — SVG Thumbnail + Spec Table Side by Side */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocEditor__SectionBodyRow {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Large);
+        align-items                        : flex-start;
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* SECTION | Thumbnail SVG Container */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__Thumbnail {
-        width                              : auto;
-        height                             : 280px;
+        width                              : 350px;
+        height                             : 200px;
         flex-shrink                        : 0;
         display                            : flex;
         align-items                        : center;
@@ -202,13 +214,11 @@
     /* ------------------------------------------------------------ */
 
 
-    /* SECTION | Content Area (Title + Spec + Actions) */
+    /* SECTION | Content Area (Spec Table) */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__SectionContent {
         flex                               : 1;
-        display                            : flex;
-        flex-direction                     : column;
-        gap                                : var(--Vale_Spacing_Small);
+        min-width                          : 0;
     }
     /* ------------------------------------------------------------ */
 
@@ -234,26 +244,49 @@
     /* ------------------------------------------------------------ */
 
 
-    /* SECTION | Spec Summary Text */
+    /* SECTION | Spec Table Scoped Overrides (compact within editor cards) */
     /* ------------------------------------------------------------ */
-    .ValeSpec__DocEditor__SpecSummary {
-        font-size                          : var(--Vale_FontSize_Standard);
-        color                              : var(--Vale_TextSecondary);
-        line-height                        : 1.6;
+    .ValeSpec__DocEditor__SectionBlock .ValeSpec__DocPreview__SpecTable {
+        font-size                          : var(--Vale_FontSize_Small);
+        margin-bottom                      : 0;
     }
 
-    .ValeSpec__DocEditor__SpecSummary span {
-        display                            : block;
+    .ValeSpec__DocEditor__SectionBlock .ValeSpec__DocPreview__SpecTable thead th {
+        padding                            : 6px var(--Vale_Spacing_Small);
+        font-size                          : 0.75rem;
     }
 
+    .ValeSpec__DocEditor__SectionBlock .ValeSpec__DocPreview__SpecTable tbody td {
+        padding                            : 5px var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+
+    .ValeSpec__DocEditor__SectionBlock .ValeSpec__DocPreview__SpecLabel {
+        width                              : 38%;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Unconfigured Spec Summary Fallback */
+    /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__SpecSummary--unconfigured {
         padding                            : 8px 10px;
         border                             : 1px dashed var(--Vale_BorderLight);
         border-radius                      : var(--Vale_BorderRadius);
         background                         : #f9fbfd;
         color                              : var(--Vale_TextMuted);
+        font-size                          : var(--Vale_FontSize_Standard);
+        line-height                        : 1.6;
     }
 
+    .ValeSpec__DocEditor__SpecSummary--unconfigured span {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Thumbnail Placeholder (unconfigured assembly) */
+    /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__ThumbPlaceholder {
         display                            : flex;
         flex-direction                     : column;
@@ -262,7 +295,6 @@
         gap                                : var(--Vale_Spacing_Small);
         width                              : 100%;
         height                             : 100%;
-        min-width                          : 220px;
         padding                            : var(--Vale_Spacing_Medium);
         border                             : 1px dashed var(--Vale_BorderLight);
         border-radius                      : var(--Vale_BorderRadius);
@@ -272,7 +304,7 @@
     }
 
     .ValeSpec__DocEditor__ThumbPlaceholderTitle {
-        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-size                          : var(--Vale_FontSize_Small);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextSecondary);
     }
@@ -280,8 +312,8 @@
     .ValeSpec__DocEditor__ThumbPlaceholderText {
         font-size                          : var(--Vale_FontSize_Small);
         color                              : var(--Vale_TextMuted);
-        line-height                        : 1.5;
-        max-width                          : 220px;
+        line-height                        : 1.4;
+        max-width                          : 180px;
     }
     /* ------------------------------------------------------------ */
 
@@ -297,7 +329,6 @@
     .ValeSpec__DocEditor__SectionActions {
         display                            : flex;
         gap                                : var(--Vale_Spacing_Small);
-        margin-top                         : auto;
         flex-wrap                          : wrap;
     }
     /* ------------------------------------------------------------ */

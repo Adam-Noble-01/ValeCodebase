@@ -26,10 +26,28 @@
 
 (function() {
 
+    // MODULE CONSTANTS | Autosave Debounce
+    // ------------------------------------------------------------
+    const VALESPEC__AUTOSAVE_DEBOUNCE_MS  =  2000;                                // <-- Delay server autosave until edits pause
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Autosave Debounce State
+    // ------------------------------------------------------------
+    let ValeSpec__AppCore__AutosaveTimerId      =  null;                          // <-- Pending autosave timeout handle
+    let ValeSpec__AppCore__LastAutosaveSource   =  'autosave:unknown';            // <-- Most recent update source label
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Initialize Application
     // ------------------------------------------------------------
     async function ValeSpec__AppCore__InitApp() {
         console.log('[ValeSpec__Init] Starting ValeSpec application...');
+
+        var ServerConnectionMonitor  =  window.ValeSpec__AppNotifications__ServerConnectionMonitor;
+        var ServerStatusBanner       =  window.ValeSpec__AppNotifications__ServerConnectionBanner;
+        if (ServerConnectionMonitor) ServerConnectionMonitor.ValeSpec__ServerConnection__InitializeMonitor();
+        if (ServerStatusBanner)      ServerStatusBanner.ValeSpec__ServerStatusBanner__Initialize();
 
         var ConfigLoader       =  window.ValeSpec__AppCore__ConfigLoader;
         var ModeManager        =  window.ValeSpec__AppCore__ModeManager;
@@ -80,6 +98,7 @@
             tabs[i].addEventListener('click', function(e) {
                 var tab  =  e.currentTarget;
                 if (tab.classList.contains('ValeSpec__App__NavTab--disabled')) return;
+                if (tab.classList.contains('ValeSpec__App__NavTab--entryViaButtonOnly')) return;  // <-- Assembly Editor entry is controlled via Edit Assembly buttons
                 var mode  =  tab.dataset.mode;
                 if (mode) ModeManager.ValeSpec__ModeManager__SwitchToMode(mode);
             });
@@ -104,6 +123,9 @@
     // FUNCTION | Handle Mode Entry - Trigger System Renders
     // ------------------------------------------------------------
     async function ValeSpec__AppCore__OnModeEntered(modeId) {
+        if (modeId === 'DocManagement') {
+            await ValeSpec__AppCore__RenderDocumentManagement();
+        }
         if (modeId === 'DocumentEditor') {
             ValeSpec__AppCore__RenderDocumentEditor();
         }
@@ -112,6 +134,28 @@
         }
         if (modeId === 'DocumentPreview') {
             ValeSpec__AppCore__RenderDocumentPreview();
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Document Management Mode
+    // ------------------------------------------------------------
+    async function ValeSpec__AppCore__RenderDocumentManagement() {
+        var ProjectActions     =  window.ValeSpec__DocManagement__ProjectActions;
+        var ProjectList        =  window.ValeSpec__DocManagement__ProjectList;
+        var ProjectFileManager =  window.ValeSpec__AppData__ProjectFileManager;
+
+        if (ProjectActions && ProjectActions.ValeSpec__ProjectActions__Render) {
+            ProjectActions.ValeSpec__ProjectActions__Render();                      // <-- Rebuild action buttons if mode DOM was refreshed
+        }
+
+        if (ProjectFileManager && ProjectFileManager.ValeSpec__ProjectFileManager__SyncFromServer) {
+            await ProjectFileManager.ValeSpec__ProjectFileManager__SyncFromServer(); // <-- Pull latest disk data before project table render
+        }
+
+        if (ProjectList && ProjectList.ValeSpec__ProjectList__Render) {
+            ProjectList.ValeSpec__ProjectList__Render();
         }
     }
     // ------------------------------------------------------------
@@ -166,15 +210,33 @@
 
     // HELPER FUNCTION | Persist Current Project to Disk
     // ------------------------------------------------------------
-    function ValeSpec__AppCore__AutosaveCurrentProject() {
+    function ValeSpec__AppCore__AutosaveCurrentProject(updateSource) {
         var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
         var StateManager        =  window.ValeSpec__AppCore__StateManager;
         if (!ProjectFileManager || !StateManager) return;
 
         var state  =  StateManager.ValeSpec__StateManager__GetState();
         if (state.currentProject) {
-            ProjectFileManager.ValeSpec__ProjectFileManager__SaveProject(state.currentProject); // <-- Write full project JSON to localStorage + disk
+            ProjectFileManager.ValeSpec__ProjectFileManager__SaveProject(state.currentProject, updateSource || 'autosave:unknown'); // <-- Write full project JSON to localStorage + disk
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Schedule Debounced Project Autosave
+    // ------------------------------------------------------------
+    function ValeSpec__AppCore__ScheduleAutosaveCurrentProject(updateSource) {
+        ValeSpec__AppCore__LastAutosaveSource  =  updateSource || 'autosave:unknown';
+
+        if (ValeSpec__AppCore__AutosaveTimerId) {
+            clearTimeout(ValeSpec__AppCore__AutosaveTimerId);
+        }
+
+        ValeSpec__AppCore__AutosaveTimerId  =  setTimeout(function() {
+            var sourceToPersist  =  ValeSpec__AppCore__LastAutosaveSource;
+            ValeSpec__AppCore__AutosaveTimerId  =  null;
+            ValeSpec__AppCore__AutosaveCurrentProject(sourceToPersist);
+        }, VALESPEC__AUTOSAVE_DEBOUNCE_MS);
     }
     // ------------------------------------------------------------
 
@@ -190,15 +252,15 @@
         });
 
         StateManager.ValeSpec__StateManager__On('assemblyUpdated', function() {
-            ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist whenever an assembly field is changed
+            ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:assemblyUpdated'); // <-- Batch rapid updates into a single autosave write
         });
 
         StateManager.ValeSpec__StateManager__On('globalFinishChanged', function() {
-            ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist global finish updates that do not emit assemblyUpdated
+            ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:globalFinishChanged'); // <-- Batch rapid updates into a single autosave write
         });
 
         StateManager.ValeSpec__StateManager__On('globalLeverTypeChanged', function() {
-            ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist global lever updates that do not emit assemblyUpdated
+            ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:globalLeverTypeChanged'); // <-- Batch rapid updates into a single autosave write
         });
     }
     // ------------------------------------------------------------
@@ -213,6 +275,13 @@
         for (var i = 0; i < tabs.length; i++) {
             var tab   =  tabs[i];
             var mode  =  tab.dataset.mode;
+            var isAssemblyEditorTab  =  (mode === 'AssemblyEditor');
+
+            if (isAssemblyEditorTab) {
+                tab.classList.add('ValeSpec__App__NavTab--entryViaButtonOnly');
+            } else {
+                tab.classList.remove('ValeSpec__App__NavTab--entryViaButtonOnly');
+            }
 
             if (mode === 'DocManagement') continue;
 

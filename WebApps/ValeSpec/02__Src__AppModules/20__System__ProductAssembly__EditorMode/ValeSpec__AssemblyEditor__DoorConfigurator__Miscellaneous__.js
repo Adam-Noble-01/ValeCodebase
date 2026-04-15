@@ -26,7 +26,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
 
     // MODULE CONSTANTS | Config Path and Fallbacks
     // ------------------------------------------------------------
-    const CONFIG_PATH  =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
+    const CONFIG_PATH                =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
+    const OTHER_TEXT_COMMIT_DELAY_MS =  2000;                                                    // <-- Wait after typing stops before persisting Other text
     const FALLBACK_CFG =  {
         NaOptionKey      : 'Misc_NA',
         OtherOptionKey   : 'Misc_Other',
@@ -46,11 +47,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
 
     // MODULE VARIABLES | DOM and Config State
     // ------------------------------------------------------------
-    let ValeSpec__Miscellaneous__StepBodyEl      =  null;   // <-- Step card body for misc section
-    let ValeSpec__Miscellaneous__Checkboxes      =  {};     // <-- Map of option key -> checkbox element
-    let ValeSpec__Miscellaneous__OtherInput      =  null;   // <-- Free text input shown when Other is checked
-    let ValeSpec__Miscellaneous__OtherGroupEl    =  null;   // <-- Form group wrapper for Other input
-    let ValeSpec__Miscellaneous__Config          =  null;   // <-- Miscellaneous config subsection
+    let ValeSpec__Miscellaneous__StepBodyEl              =  null;   // <-- Step card body for misc section
+    let ValeSpec__Miscellaneous__Checkboxes              =  {};     // <-- Map of option key -> checkbox element
+    let ValeSpec__Miscellaneous__OtherInput              =  null;   // <-- Free text input shown when Other is checked
+    let ValeSpec__Miscellaneous__OtherGroupEl            =  null;   // <-- Form group wrapper for Other input
+    let ValeSpec__Miscellaneous__Config                  =  null;   // <-- Miscellaneous config subsection
+    let ValeSpec__Miscellaneous__OtherTextCommitTimer    =  null;   // <-- Pending delayed commit timer for Other text
     // ------------------------------------------------------------
 
 
@@ -100,6 +102,49 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Clear Pending Delayed Other Text Commit
+    // ------------------------------------------------------------
+    function ValeSpec__Miscellaneous__ClearPendingOtherTextCommit() {
+        if (ValeSpec__Miscellaneous__OtherTextCommitTimer) {
+            clearTimeout(ValeSpec__Miscellaneous__OtherTextCommitTimer);
+            ValeSpec__Miscellaneous__OtherTextCommitTimer  =  null;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Commit Other Text Immediately
+    // ------------------------------------------------------------
+    function ValeSpec__Miscellaneous__CommitOtherTextNow() {
+        ValeSpec__Miscellaneous__ClearPendingOtherTextCommit();
+        ValeSpec__Miscellaneous__PushUpdate();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Schedule Delayed Other Text Commit
+    // ------------------------------------------------------------
+    function ValeSpec__Miscellaneous__ScheduleOtherTextCommit() {
+        ValeSpec__Miscellaneous__ClearPendingOtherTextCommit();
+        ValeSpec__Miscellaneous__OtherTextCommitTimer  =  setTimeout(function() {
+            ValeSpec__Miscellaneous__OtherTextCommitTimer  =  null;
+            ValeSpec__Miscellaneous__PushUpdate();
+        }, OTHER_TEXT_COMMIT_DELAY_MS);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Determine If Other Text Input Is Being Edited
+    // ------------------------------------------------------------
+    function ValeSpec__Miscellaneous__IsOtherTextBeingEdited() {
+        var activeEl      =  document.activeElement;
+        var isFocused     =  !!ValeSpec__Miscellaneous__OtherInput && activeEl === ValeSpec__Miscellaneous__OtherInput;
+        var hasPendingCommit  =  !!ValeSpec__Miscellaneous__OtherTextCommitTimer;
+        return isFocused || hasPendingCommit;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Get Label by Misc Option Key
     // ------------------------------------------------------------
     function ValeSpec__Miscellaneous__ResolveLabelForKey(key) {
@@ -138,7 +183,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
         assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__Items']  =  miscItems;
 
         if (ValeSpec__Miscellaneous__Checkboxes[otherOptionKey] && ValeSpec__Miscellaneous__Checkboxes[otherOptionKey].checked) {
-            assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__OtherText']  =  ValeSpec__Miscellaneous__OtherInput ? ValeSpec__Miscellaneous__OtherInput.value.trim() : '';
+            assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__OtherText']  =  ValeSpec__Miscellaneous__OtherInput ? ValeSpec__Miscellaneous__OtherInput.value : '';
         } else {
             delete assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__OtherText'];
         }
@@ -151,6 +196,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
     // HELPER FUNCTION | Handle Misc Checkbox Change
     // ------------------------------------------------------------
     function ValeSpec__Miscellaneous__OnCheckboxChanged(event) {
+        ValeSpec__Miscellaneous__ClearPendingOtherTextCommit();
+
         var uiCfg         =  ValeSpec__Miscellaneous__GetResolvedUiConfig();
         var naOptionKey   =  uiCfg.NaOptionKey;
         var selectedKey   =  event.target.dataset.miscKey;
@@ -212,11 +259,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
         otherLabel.textContent  =  uiCfg.OtherLabel;
         otherLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__MiscOtherText');
 
-        ValeSpec__Miscellaneous__OtherInput       =  document.createElement('input');
-        ValeSpec__Miscellaneous__OtherInput.type  =  'text';
-        ValeSpec__Miscellaneous__OtherInput.id    =  'ValeSpec__AssemblyEditor__MiscOtherText';
+        ValeSpec__Miscellaneous__OtherInput              =  document.createElement('textarea');
+        ValeSpec__Miscellaneous__OtherInput.id           =  'ValeSpec__AssemblyEditor__MiscOtherText';
         ValeSpec__Miscellaneous__OtherInput.placeholder  =  uiCfg.OtherPlaceholder;
-        ValeSpec__Miscellaneous__OtherInput.addEventListener('input', ValeSpec__Miscellaneous__PushUpdate);
+        ValeSpec__Miscellaneous__OtherInput.rows         =  4;
+        ValeSpec__Miscellaneous__OtherInput.addEventListener('input', ValeSpec__Miscellaneous__ScheduleOtherTextCommit);
+        ValeSpec__Miscellaneous__OtherInput.addEventListener('blur', ValeSpec__Miscellaneous__CommitOtherTextNow);
 
         ValeSpec__Miscellaneous__OtherGroupEl.appendChild(otherLabel);
         ValeSpec__Miscellaneous__OtherGroupEl.appendChild(ValeSpec__Miscellaneous__OtherInput);
@@ -275,7 +323,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
             ValeSpec__Miscellaneous__Checkboxes[key].checked  =  isSelected;
         }
 
-        if (ValeSpec__Miscellaneous__OtherInput) {
+        if (ValeSpec__Miscellaneous__OtherInput && !ValeSpec__Miscellaneous__IsOtherTextBeingEdited()) {
             ValeSpec__Miscellaneous__OtherInput.value  =  miscCfg['Assembly__Miscellaneous__Config__OtherText'] || '';
         }
         ValeSpec__Miscellaneous__UpdateOtherVisibility();
@@ -296,7 +344,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
     // FUNCTION | Flush Current Misc Values to Assembly
     // ------------------------------------------------------------
     function ValeSpec__Miscellaneous__FlushToAssembly() {
-        ValeSpec__Miscellaneous__PushUpdate();
+        ValeSpec__Miscellaneous__CommitOtherTextNow();
     }
     // ------------------------------------------------------------
 

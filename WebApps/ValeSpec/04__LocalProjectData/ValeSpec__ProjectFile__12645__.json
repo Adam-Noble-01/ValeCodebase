@@ -4,7 +4,7 @@
         "ValeSpec__ProjectFile__Metadata__ProjectCode": "12645",
         "ValeSpec__ProjectFile__Metadata__ProjectName": "Ferguson Manor",
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery Project",
-        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Pending Approval",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
         "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
@@ -12,9 +12,107 @@
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
-        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Bronze",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Newton Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
-    "ValeSpec__ProjectFile__Assemblies": []
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_707264",
+                "Assembly__Identity__Config__Title": "Front Elevation Main Doors",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1800,
+                "Assembly__Dimensions__Config__HeightMm": 2100
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__Hanging": "Standard",
+                "Assembly__Hinge__Config__Projection": 4
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_CatFlap",
+                    "Misc_Other"
+                ],
+                "Assembly__Miscellaneous__Config__OtherText": "Hello asfas\n\n\n"
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "4\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 2
+            }
+        },
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_919368",
+                "Assembly__Identity__Config__Title": "",
+                "Assembly__Identity__Config__SortOrder": 1
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Single Door",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1000,
+                "Assembly__Dimensions__Config__HeightMm": 2200
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__Hanging": "Standard",
+                "Assembly__Hinge__Config__Projection": 4
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 3,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_LetterPlate"
+                ]
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Handing": "Left",
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 2
+            }
+        }
+    ]
 }

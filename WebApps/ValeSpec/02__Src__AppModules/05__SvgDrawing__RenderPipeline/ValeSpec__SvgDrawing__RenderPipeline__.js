@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Fetches and caches Na__SvgDrawing__Config.json on first call
    - Extracts assembly dimensions, door type, and lever config from data
-   - Calls sub-renderers in z-order: panels, frame, ironmongery, dimensions
+   - Calls sub-renderers in z-order: panels, opening symbols, frame, ironmongery, dimensions
    - Wraps output in <svg> with computed viewBox including padding
    - Each layer wrapped in a named <g> group for DOM targeting
    - Provides RenderThumbnail for smaller document editor previews
@@ -33,11 +33,12 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
     // MODULE VARIABLES | Cached Config and Dependencies
     // ------------------------------------------------------------
-    let ValeSpec__RenderPipeline__CachedConfig      =  null;               // <-- Cached config after first fetch
-    var ValeSpec__RenderPipeline__PanelRenderer     =  null;               // <-- Lazy-loaded panel renderer
-    var ValeSpec__RenderPipeline__FrameRenderer     =  null;               // <-- Lazy-loaded frame renderer
-    var ValeSpec__RenderPipeline__IronmongeryRenderer  =  null;            // <-- Lazy-loaded ironmongery renderer
-    var ValeSpec__RenderPipeline__DimensionRenderer =  null;               // <-- Lazy-loaded dimension renderer
+    let ValeSpec__RenderPipeline__CachedConfig         =  null;               // <-- Cached config after first fetch
+    var ValeSpec__RenderPipeline__PanelRenderer        =  null;               // <-- Lazy-loaded panel renderer
+    var ValeSpec__RenderPipeline__OpeningRenderer       =  null;               // <-- Lazy-loaded opening symbol renderer
+    var ValeSpec__RenderPipeline__FrameRenderer        =  null;               // <-- Lazy-loaded frame renderer
+    var ValeSpec__RenderPipeline__IronmongeryRenderer   =  null;               // <-- Lazy-loaded ironmongery renderer
+    var ValeSpec__RenderPipeline__DimensionRenderer    =  null;               // <-- Lazy-loaded dimension renderer
     // ------------------------------------------------------------
 
 
@@ -45,6 +46,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     // ------------------------------------------------------------
     function ValeSpec__RenderPipeline__InitRenderers() {
         if (!ValeSpec__RenderPipeline__PanelRenderer)       ValeSpec__RenderPipeline__PanelRenderer        =  window.ValeSpec__SvgDrawing__DoorPanelRenderer;
+        if (!ValeSpec__RenderPipeline__OpeningRenderer)     ValeSpec__RenderPipeline__OpeningRenderer      =  window.ValeSpec__SvgDrawing__OpeningSymbolRenderer;
         if (!ValeSpec__RenderPipeline__FrameRenderer)       ValeSpec__RenderPipeline__FrameRenderer        =  window.ValeSpec__SvgDrawing__DoorFrameRenderer;
         if (!ValeSpec__RenderPipeline__IronmongeryRenderer) ValeSpec__RenderPipeline__IronmongeryRenderer  =  window.ValeSpec__SvgDrawing__IronmongeryRenderer;
         if (!ValeSpec__RenderPipeline__DimensionRenderer)   ValeSpec__RenderPipeline__DimensionRenderer    =  window.ValeSpec__SvgDrawing__DimensionRenderer;
@@ -95,7 +97,8 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     // ------------------------------------------------------------
     function ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType) {
         if (!doorType || typeof doorType !== 'string') return false;
-        return doorType.trim().toLowerCase() !== 'none';
+        var lower  =  doorType.trim().toLowerCase();
+        return lower !== 'none' && lower !== '';
     }
     // ------------------------------------------------------------
 
@@ -128,6 +131,14 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         }
 
         return { hardwareData: null, leverHeight_mm: leverHeight };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Opening Config from Assembly Data
+    // ------------------------------------------------------------
+    function ValeSpec__RenderPipeline__ExtractOpeningConfig(assemblyData) {
+        return assemblyData['Assembly__Opening__Config'] || {};
     }
     // ------------------------------------------------------------
 
@@ -188,12 +199,14 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
 
-        var frameConfig   =  config['SvgDrawing__Frame__Config']        || {};
-        var panelConfig   =  config['SvgDrawing__Panel__Config']        || {};
-        var ironConfig    =  config['SvgDrawing__Ironmongery__Config']  || {};
-        var dimConfig     =  config['SvgDrawing__Dimension__Config']    || {};
-        var vpConfig      =  config['SvgDrawing__Viewport__Config']     || {};
+        var frameConfig    =  config['SvgDrawing__Frame__Config']        || {};
+        var panelConfig    =  config['SvgDrawing__Panel__Config']        || {};
+        var openingCfg     =  config['SvgDrawing__Opening__Config']      || {};
+        var ironConfig     =  config['SvgDrawing__Ironmongery__Config']  || {};
+        var dimConfig      =  config['SvgDrawing__Dimension__Config']    || {};
+        var vpConfig       =  config['SvgDrawing__Viewport__Config']     || {};
 
+        var openingConfig    =  ValeSpec__RenderPipeline__ExtractOpeningConfig(assemblyData);
         var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
         var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
@@ -208,6 +221,12 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         svg += '<g id="ValeSpec__SvgDrawing__LayerPanels">';
         svg += panelResult.svg;
         svg += '</g>';
+
+        if (ValeSpec__RenderPipeline__OpeningRenderer) {
+            svg += '<g id="ValeSpec__SvgDrawing__LayerOpening">';
+            svg += ValeSpec__RenderPipeline__OpeningRenderer.ValeSpec__OpeningSymbolRenderer__RenderOpeningSymbols(panelResult.panels, openingConfig, openingCfg);
+            svg += '</g>';
+        }
 
         svg += '<g id="ValeSpec__SvgDrawing__LayerFrame">';
         svg += ValeSpec__RenderPipeline__FrameRenderer.ValeSpec__DoorFrameRenderer__RenderFrame(dims.width_mm, dims.height_mm, frameConfig);
@@ -240,11 +259,13 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
 
-        var frameConfig   =  config['SvgDrawing__Frame__Config']        || {};
-        var panelConfig   =  config['SvgDrawing__Panel__Config']        || {};
-        var ironConfig    =  config['SvgDrawing__Ironmongery__Config']  || {};
-        var vpConfig      =  config['SvgDrawing__Viewport__Config']     || {};
+        var frameConfig    =  config['SvgDrawing__Frame__Config']        || {};
+        var panelConfig    =  config['SvgDrawing__Panel__Config']        || {};
+        var openingCfg     =  config['SvgDrawing__Opening__Config']      || {};
+        var ironConfig     =  config['SvgDrawing__Ironmongery__Config']  || {};
+        var vpConfig       =  config['SvgDrawing__Viewport__Config']     || {};
 
+        var openingConfig    =  ValeSpec__RenderPipeline__ExtractOpeningConfig(assemblyData);
         var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
         var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
@@ -262,6 +283,12 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerPanels">';
         svg += panelResult.svg;
         svg += '</g>';
+
+        if (ValeSpec__RenderPipeline__OpeningRenderer) {
+            svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerOpening">';
+            svg += ValeSpec__RenderPipeline__OpeningRenderer.ValeSpec__OpeningSymbolRenderer__RenderOpeningSymbols(panelResult.panels, openingConfig, openingCfg);
+            svg += '</g>';
+        }
 
         svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerFrame">';
         svg += ValeSpec__RenderPipeline__FrameRenderer.ValeSpec__DoorFrameRenderer__RenderFrame(dims.width_mm, dims.height_mm, frameConfig);

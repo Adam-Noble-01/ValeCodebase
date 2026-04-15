@@ -1,0 +1,36 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "TEST-001",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Test Project",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Door Test",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A"
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_984673",
+                "Assembly__Identity__Config__Title": "",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 4000,
+                "Assembly__Dimensions__Config__HeightMm": 2500
+            }
+        }
+    ]
+}

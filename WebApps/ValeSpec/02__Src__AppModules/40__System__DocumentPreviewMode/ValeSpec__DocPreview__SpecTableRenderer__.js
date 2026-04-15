@@ -39,7 +39,10 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetDoorType(assembly) {
         var doorConfig  =  assembly['Assembly__DoorType__Config'] || {};
-        return doorConfig['Assembly__DoorType__Config__DoorType'] || '—';
+        var doorType    =  doorConfig['Assembly__DoorType__Config__Type']             || '';
+        var direction   =  doorConfig['Assembly__DoorType__Config__OpeningDirection'] || '';
+        if (!doorType) return '\u2014';
+        return direction ? (direction + ' Opening ' + doorType) : doorType;
     }
     // ------------------------------------------------------------
 
@@ -56,14 +59,14 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Multi-Point Requirement Description
+    // HELPER FUNCTION | Extract Multi-Point Locking Description
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetMultiPointDesc(assembly) {
-        var lockConfig  =  assembly['Assembly__MultiPointRequirement'] || {};
-        var lockType    =  lockConfig['Assembly__MultiPointRequirement__LockType'] || 'None';
+        var lockConfig  =  assembly['Assembly__Locking__Config'] || {};
+        var lockType    =  lockConfig['Assembly__Locking__Config__Type'] || 'None';
         if (lockType === 'None') return 'None';
 
-        var points  =  lockConfig['Assembly__MultiPointRequirement__Points'] || '';
+        var points  =  lockConfig['Assembly__Locking__Config__Points'] || '';
         var desc    =  lockType;
         if (points) desc  +=  ' (' + points + '-point)';
         return desc;
@@ -74,10 +77,10 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // HELPER FUNCTION | Extract Hinge Requirement Description
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetHingeDesc(assembly) {
-        var hingeConfig  =  assembly['Assembly__HingeRequirement'] || {};
-        var count        =  hingeConfig['Assembly__HingeRequirement__CountPerLeaf'] || '—';
-        var projection   =  hingeConfig['Assembly__HingeRequirement__Projection']   || '—';
-        var hanging      =  hingeConfig['Assembly__HingeRequirement__Hanging']      || '—';
+        var hingeConfig  =  assembly['Assembly__Hinge__Config'] || {};
+        var count        =  hingeConfig['Assembly__Hinge__Config__HingesPerLeaf'] || '—';
+        var projection   =  hingeConfig['Assembly__Hinge__Config__Projection']    || '—';
+        var hanging      =  hingeConfig['Assembly__Hinge__Config__Hanging']       || '—';
         return count + ' per leaf, ' + projection + '" projection, ' + hanging + ' hand';
     }
     // ------------------------------------------------------------
@@ -86,10 +89,12 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // HELPER FUNCTION | Extract Lever Type and Quantity
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetLeverDesc(assembly) {
-        var leverConfig  =  assembly['Assembly__LeverRequirement'] || {};
-        var leverType    =  leverConfig['Assembly__LeverRequirement__LeverType'] || '—';
-        var quantity     =  leverConfig['Assembly__LeverRequirement__Quantity']  || 1;
-        return leverType + ' x ' + quantity;
+        var leverConfig  =  assembly['Assembly__Lever__Config'] || {};
+        var leverType    =  leverConfig['Assembly__Lever__Config__Type']      || '—';
+        var leverHeight  =  leverConfig['Assembly__Lever__Config__HeightMm'] || '';
+        var desc         =  leverType;
+        if (leverHeight) desc  +=  ' @ ' + leverHeight + ' mm';
+        return desc;
     }
     // ------------------------------------------------------------
 
@@ -97,8 +102,8 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // HELPER FUNCTION | Extract Cylinder Requirement
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetCylinderDesc(assembly) {
-        var lockConfig  =  assembly['Assembly__MultiPointRequirement'] || {};
-        var lockType    =  lockConfig['Assembly__MultiPointRequirement__LockType'] || 'None';
+        var lockConfig  =  assembly['Assembly__Locking__Config'] || {};
+        var lockType    =  lockConfig['Assembly__Locking__Config__Type'] || 'None';
         if (lockType === 'None') return 'Not required';
         return '1 x Euro Cylinder (per multi-point track)';
     }
@@ -108,11 +113,12 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // HELPER FUNCTION | Extract Cabin Hooks Summary
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assembly) {
-        var hooksConfig  =  assembly['Assembly__CabinHookRequirement'] || {};
-        var quantity     =  hooksConfig['Assembly__CabinHookRequirement__Quantity'] || 0;
-        if (quantity === 0) return 'None';
-        var type  =  hooksConfig['Assembly__CabinHookRequirement__Type'] || 'Standard';
-        return type + ' x ' + quantity;
+        var hooksConfig  =  assembly['Assembly__CabinHooks__Config'] || {};
+        var hookCount    =  hooksConfig['Assembly__CabinHooks__Config__HookCount'] || 0;
+        var eyeCount     =  hooksConfig['Assembly__CabinHooks__Config__EyeCount']  || 0;
+        if (hookCount === 0 && eyeCount === 0) return 'None';
+        var size  =  hooksConfig['Assembly__CabinHooks__Config__Size'] || '';
+        return size + ' — ' + hookCount + ' hook(s), ' + eyeCount + ' eye(s)';
     }
     // ------------------------------------------------------------
 
@@ -120,8 +126,8 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // HELPER FUNCTION | Extract Miscellaneous Items
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetMiscDesc(assembly) {
-        var miscConfig  =  assembly['Assembly__MiscellaneousItems'] || {};
-        var items       =  miscConfig['Assembly__MiscellaneousItems__List'] || [];
+        var miscConfig  =  assembly['Assembly__Miscellaneous__Config'] || {};
+        var items       =  miscConfig['Assembly__Miscellaneous__Config__Items'] || [];
         if (!items.length) return 'None';
         return items.join(', ');
     }

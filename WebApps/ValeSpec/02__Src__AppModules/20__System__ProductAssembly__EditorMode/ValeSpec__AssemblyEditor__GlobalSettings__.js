@@ -57,6 +57,14 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         ValeSpec__GlobalSettings__FinishSelect     =  document.createElement('select');
         ValeSpec__GlobalSettings__FinishSelect.id  =  'ValeSpec__AssemblyEditor__GlobalFinish';
 
+        var finishPlaceholder          =  document.createElement('option');
+        finishPlaceholder.value        =  '';
+        finishPlaceholder.textContent  =  '\u2014 Please Select \u2014';
+        finishPlaceholder.disabled     =  true;
+        finishPlaceholder.selected     =  true;
+        finishPlaceholder.hidden       =  true;
+        ValeSpec__GlobalSettings__FinishSelect.appendChild(finishPlaceholder);
+
         for (var i = 0; i < FINISH_OPTIONS.length; i++) {
             var opt          =  document.createElement('option');
             opt.value        =  FINISH_OPTIONS[i].Value;

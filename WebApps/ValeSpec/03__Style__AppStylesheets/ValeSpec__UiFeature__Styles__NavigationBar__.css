@@ -95,6 +95,19 @@
     /* ------------------------------------------------------------ */
 
 
+    /* NAV | Entry Via Button Only Tab (Assembly Editor) */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__App__NavTab--entryViaButtonOnly {
+        cursor                             : default;
+        pointer-events                     : none;
+    }
+
+    .ValeSpec__App__NavTab--entryViaButtonOnly:hover {
+        background                         : transparent;
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* NAV | Breadcrumb Separator */
     /* ------------------------------------------------------------ */
     .ValeSpec__App__NavSeparator {

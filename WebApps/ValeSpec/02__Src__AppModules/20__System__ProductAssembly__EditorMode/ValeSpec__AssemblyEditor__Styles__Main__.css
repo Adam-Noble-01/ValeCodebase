@@ -417,6 +417,9 @@
     max-height                           : 600px;
     padding                              : 16px;
     overflow                             : visible;
+    display                              : flex;
+    flex-direction                       : column;
+    gap                                  : 16px;
 }
 
 .ValeSpec__AssemblyEditor__StepCard__Footer {
@@ -485,26 +488,36 @@
 
 .ValeSpec__AssemblyEditor__FormGroup select,
 .ValeSpec__AssemblyEditor__FormGroup input[type="number"],
-.ValeSpec__AssemblyEditor__FormGroup input[type="text"] {
+.ValeSpec__AssemblyEditor__FormGroup input[type="text"],
+.ValeSpec__AssemblyEditor__FormGroup textarea {
     width                                : 100%;
     padding                              : 8px 10px;
     border                               : 1px solid var(--Vale_EditorInputBorder);
     border-radius                        : 4px;
     font-size                            : 0.88rem;
+    font-family                          : inherit;
     box-sizing                           : border-box;
     background-color                     : #ffffff;
     transition                           : border-color 0.15s ease;
 }
 
+.ValeSpec__AssemblyEditor__FormGroup textarea {
+    resize                               : vertical;
+    line-height                          : 1.5;
+    min-height                           : 80px;
+}
+
 .ValeSpec__AssemblyEditor__FormGroup select:focus,
-.ValeSpec__AssemblyEditor__FormGroup input:focus {
+.ValeSpec__AssemblyEditor__FormGroup input:focus,
+.ValeSpec__AssemblyEditor__FormGroup textarea:focus {
     outline                              : none;
     border-color                         : var(--Vale_EditorInputFocusBorder);
     box-shadow                           : 0 0 0 2px rgba(51, 102, 153, 0.15);
 }
 
 .ValeSpec__AssemblyEditor__FormGroup select:disabled,
-.ValeSpec__AssemblyEditor__FormGroup input:disabled {
+.ValeSpec__AssemblyEditor__FormGroup input:disabled,
+.ValeSpec__AssemblyEditor__FormGroup textarea:disabled {
     background-color                     : var(--Vale_EditorDisabledBg);
     color                                : var(--Vale_EditorDisabledColour);
     cursor                               : not-allowed;
@@ -763,6 +776,73 @@
 
 .ValeSpec__Modal__BtnCancel:hover {
     background-color                     : #f0f0f0;
+}
+
+/* #endregion ----------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Opening Direction Toggle Button Group
+ * ----------------------------------------------------------------------------- */
+
+.ValeSpec__ToggleBtnGroup {
+    display                              : flex;
+    gap                                  : 0;
+    border                               : 1px solid var(--Vale_EditorInputBorder);
+    border-radius                        : 4px;
+    overflow                             : hidden;
+}
+
+.ValeSpec__ToggleBtn {
+    flex                                 : 1;
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    gap                                  : 4px;
+    padding                              : 9px 14px;
+    font-size                            : 0.85rem;
+    font-weight                          : 500;
+    color                                : var(--Vale_EditorLabelColour);
+    background-color                     : #ffffff;
+    border                               : none;
+    cursor                               : pointer;
+    transition                           : background-color 0.15s ease, color 0.15s ease;
+    text-transform                       : none;
+    letter-spacing                       : 0;
+    user-select                          : none;
+}
+
+.ValeSpec__ToggleBtn + .ValeSpec__ToggleBtn {
+    border-left                          : 1px solid var(--Vale_EditorInputBorder);
+}
+
+.ValeSpec__ToggleBtn input[type="radio"] {
+    position                             : absolute;
+    opacity                              : 0;
+    width                                : 0;
+    height                               : 0;
+    pointer-events                       : none;
+}
+
+.ValeSpec__ToggleBtn--active {
+    background-color                     : #e2e6ea;
+    color                                : var(--Vale_EditorLabelColour);
+}
+
+.ValeSpec__ToggleBtn:hover:not(.ValeSpec__ToggleBtn--active) {
+    background-color                     : var(--Vale_EditorFormGroupBg);
+}
+
+/* #endregion ----------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Disabled Future Door Type Options
+ * ----------------------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__FormGroup select option:disabled {
+    color                                : var(--Vale_EditorDisabledColour);
+    font-style                           : italic;
 }
 
 /* #endregion ----------------------------------------------------------------- */

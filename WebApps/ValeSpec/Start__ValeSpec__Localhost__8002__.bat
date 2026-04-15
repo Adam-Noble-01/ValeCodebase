@@ -2,30 +2,17 @@
 setlocal
 cd /d "%~dp0"
 echo =============================================================================
-echo  VALESPEC - LOCALHOST STARTER (BATCH)
+echo  VALESPEC - LOCALHOST STARTER (BATCH WRAPPER)
 echo =============================================================================
-echo  Launching python ValeSpec__FlaskServer__Localhost__.py on http://127.0.0.1:8002/ValeSpec__App__.html
+echo  Delegating to Start__ValeSpec__Localhost__8002__.ps1 for interactive logs
 echo =============================================================================
 
-set "Na__PortInUse="
-for /f "tokens=5" %%p in ('netstat -ano ^| findstr /R /C:":8002 .*LISTENING"') do (
-    set "Na__PortInUse=1"
-)
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\Start__ValeSpec__Localhost__8002__.ps1"
+set "Na__LauncherExitCode=%ERRORLEVEL%"
 
-if defined Na__PortInUse (
+if not "%Na__LauncherExitCode%"=="0" (
     echo.
-    echo [WARNING] Port 8002 is already in use by another process.
-    echo [WARNING] ValeSpec will not force-stop it to avoid impacting other apps.
-    echo [WARNING] Stop the existing process manually or run ValeSpec on another port.
-    echo.
-    endlocal
-    exit /b 1
+    echo [WARNING] ValeSpec PowerShell launcher exited with code %Na__LauncherExitCode%.
 )
 
-python -u ValeSpec__FlaskServer__Localhost__.py --host 127.0.0.1 --port 8002
-if errorlevel 1 (
-    echo python command failed, trying py launcher...
-    py -3 -u ValeSpec__FlaskServer__Localhost__.py --host 127.0.0.1 --port 8002
-)
-
-endlocal
+endlocal & exit /b %Na__LauncherExitCode%

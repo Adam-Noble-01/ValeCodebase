@@ -157,6 +157,7 @@
     <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__CoordHelpers__.js"></script>
     <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DoorFrameRenderer__.js"></script>
     <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DoorPanelRenderer__.js"></script>
+    <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__OpeningSymbolRenderer__.js"></script>
     <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__IronmongeryRenderer__.js"></script>
     <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DimensionRenderer__.js"></script>
     <script src="02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__RenderPipeline__.js"></script>
@@ -191,9 +192,17 @@
     <script src="02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__JobNotes__.js"></script>
     <script src="02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__SectionManager__.js"></script>
 
+    <!-- PDF Export Library (version-locked, CDN independent) -->
+    <script src="02__Src__AppModules/41__SystemHelper__PdfExportLibrary__VersionLocked/jspdf.umd.js"></script>
+
     <!-- System: Document Preview Mode -->
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__SpecTableRenderer__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js"></script>
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfExporter__.js"></script>
+
+    <!-- App Notifications (connection monitor must precede banner) -->
+    <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionMonitor__.js"></script>
+    <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionBanner__.js"></script>
 
     <!-- Init (last - boots the app) -->
     <script src="02__Src__AppModules/01__AppCore/ValeSpec__AppCore__Init__.js"></script>

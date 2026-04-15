@@ -69,7 +69,8 @@ const ValeSpec__DocEditor__SectionManager = (function() {
     function ValeSpec__SectionManager__IsAssemblyConfigured(assembly) {
         var doorType  =  ValeSpec__SectionManager__GetDoorTypeValue(assembly);
         if (!doorType) return false;
-        return doorType.toLowerCase() !== 'none';
+        var lower  =  doorType.toLowerCase();
+        return lower !== 'none' && lower !== '';
     }
     // ------------------------------------------------------------
 
@@ -144,41 +145,34 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         var custom    =  identity['Assembly__Identity__Config__Title'];
         if (custom) return custom;
         if (!ValeSpec__SectionManager__IsAssemblyConfigured(assembly)) {
-            return 'Assembly not configured — start in Edit Assembly';
+            return 'Assembly not configured \u2014 start in Edit Assembly';
         }
 
+        var doorCfg     =  assembly['Assembly__DoorType__Config'] || {};
         var doorType    =  ValeSpec__SectionManager__GetDoorTypeValue(assembly) || 'Door';
+        var direction   =  doorCfg['Assembly__DoorType__Config__OpeningDirection'] || '';
+        var fullLabel   =  direction ? (direction + ' Opening ' + doorType) : doorType;
         var dimensions  =  assembly['Assembly__Dimensions__Config'] || {};
         var width       =  dimensions['Assembly__Dimensions__Config__WidthMm']  || '\u2014';
         var height      =  dimensions['Assembly__Dimensions__Config__HeightMm'] || '\u2014';
-        return doorType + ' \u2014 ' + width + ' x ' + height + ' mm';
+        return fullLabel + ' \u2014 ' + width + ' x ' + height + ' mm';
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Spec Summary HTML
+    // HELPER FUNCTION | Build Spec Table HTML via Shared SpecTableRenderer
     // ------------------------------------------------------------
     function ValeSpec__SectionManager__BuildSpecSummary(assembly) {
         if (!ValeSpec__SectionManager__IsAssemblyConfigured(assembly)) {
             return '<div class="ValeSpec__DocEditor__SpecSummary ValeSpec__DocEditor__SpecSummary--unconfigured"><span>Configuration not started.</span><span>Click &quot;Edit Assembly&quot; and choose Door Type to begin.</span></div>';
         }
 
-        var doorConfig   =  assembly['Assembly__DoorType__Config']   || {};
-        var hingeConfig  =  assembly['Assembly__Hinge__Config']      || {};
-        var lockConfig   =  assembly['Assembly__Locking__Config']    || {};
+        var SpecTableRenderer  =  window.ValeSpec__DocPreview__SpecTableRenderer;
+        if (SpecTableRenderer) {
+            return SpecTableRenderer.ValeSpec__SpecTableRenderer__RenderSpecTable(assembly);  // <-- Reuse preview-mode spec table
+        }
 
-        var doorType    =  doorConfig['Assembly__DoorType__Config__Type']        || '\u2014';
-        var hingeCount  =  hingeConfig['Assembly__Hinge__Config__HingesPerLeaf'] || '\u2014';
-        var hingeProj   =  hingeConfig['Assembly__Hinge__Config__Projection']    || '\u2014';
-        var lockPoints  =  lockConfig['Assembly__Locking__Config__Points']        || '\u2014';
-        var lockType    =  lockConfig['Assembly__Locking__Config__Type']          || '\u2014';
-
-        var html  =  '<div class="ValeSpec__DocEditor__SpecSummary">';
-        html     +=      '<span>Door Type: ' + doorType + '</span>';
-        html     +=      '<span>Hinges: ' + hingeCount + ' per leaf, ' + hingeProj + '&quot;</span>';
-        html     +=      '<span>Locking: ' + lockPoints + '-Point ' + lockType + '</span>';
-        html     +=  '</div>';
-        return html;
+        return '<div class="ValeSpec__DocEditor__SpecSummary"><span>Spec table unavailable</span></div>';
     }
     // ------------------------------------------------------------
 
@@ -215,12 +209,14 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         var html  =  '<div class="ValeSpec__DocEditor__SectionBlock" data-index="' + index + '">';
         html     +=      ValeSpec__SectionManager__BuildReorderHandles(index, total);
-        html     +=      '<div class="ValeSpec__DocEditor__Thumbnail" id="ValeSpec__DocEditor__Thumb_' + index + '"></div>';
-        html     +=      '<div class="ValeSpec__DocEditor__SectionContent">';
-        html     +=          '<div class="ValeSpec__DocEditor__SectionTitle" data-index="' + index + '">' + title + '</div>';
-        html     +=          ValeSpec__SectionManager__BuildSpecSummary(assembly);
-        html     +=          ValeSpec__SectionManager__BuildActionButtons(index);
+        html     +=      '<div class="ValeSpec__DocEditor__SectionTitle" data-index="' + index + '">' + title + '</div>';
+        html     +=      '<div class="ValeSpec__DocEditor__SectionBodyRow">';
+        html     +=          '<div class="ValeSpec__DocEditor__Thumbnail" id="ValeSpec__DocEditor__Thumb_' + index + '"></div>';
+        html     +=          '<div class="ValeSpec__DocEditor__SectionContent">';
+        html     +=              ValeSpec__SectionManager__BuildSpecSummary(assembly);
+        html     +=          '</div>';
         html     +=      '</div>';
+        html     +=      ValeSpec__SectionManager__BuildActionButtons(index);
         html     +=  '</div>';
         return html;
     }
@@ -391,8 +387,9 @@ const ValeSpec__DocEditor__SectionManager = (function() {
                 'Assembly__Identity__Config__SortOrder'  : assemblies.length
             },
             'Assembly__DoorType__Config': {
-                'Assembly__DoorType__Config__Type'       : defaultDoor,
-                'Assembly__DoorType__Config__Quantity'   : 1
+                'Assembly__DoorType__Config__Type'              : defaultDoor,
+                'Assembly__DoorType__Config__OpeningDirection'  : 'Outward',
+                'Assembly__DoorType__Config__Quantity'          : 1
             },
             'Assembly__Dimensions__Config': {
                 'Assembly__Dimensions__Config__WidthMm'  : widthDefault,

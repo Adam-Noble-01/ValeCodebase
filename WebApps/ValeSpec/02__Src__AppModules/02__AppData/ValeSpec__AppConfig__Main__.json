@@ -15,16 +15,11 @@
     },
 
     "ValeSpec__DoorType__Options__Config": {
-        "ValeSpec__DoorType__Options__Config__Description"       : "Available door type selections for the assembly editor. Bi Fold Doors is listed but disabled until v0.2.0.",
-        "ValeSpec__DoorType__Options__Config__DoorTypes"         : [
-            "None",
-            "Outward Opening Double Doors",
-            "Inward Opening Double Doors",
-            "Outward Opening Single Doors",
-            "Inward Opening Single Doors",
-            "Bi Fold Doors",
-            "Other"
-        ]
+        "ValeSpec__DoorType__Options__Config__Description"              : "Available door type and opening direction selections for the assembly editor.",
+        "ValeSpec__DoorType__Options__Config__DoorTypes"               : ["Double Doors", "Bifold Doors", "Single Door", "Window Panel"],
+        "ValeSpec__DoorType__Options__Config__DisabledDoorTypes"       : ["Bifold Doors", "Window Panel"],
+        "ValeSpec__DoorType__Options__Config__OpeningDirections"       : ["Outward", "Inward"],
+        "ValeSpec__DoorType__Options__Config__DefaultOpeningDirection" : "Outward"
     },
 
     "ValeSpec__LeverType__Options__Config": {

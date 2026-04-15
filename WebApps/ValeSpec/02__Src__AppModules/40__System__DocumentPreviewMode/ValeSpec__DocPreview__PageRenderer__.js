@@ -103,14 +103,17 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BuildAssemblyTitle(assembly) {
         var identity  =  assembly['Assembly__Identity__Config'] || {};
-        var custom    =  identity['Assembly__Identity__Config__CustomTitle'];
+        var custom    =  identity['Assembly__Identity__Config__Title'];
         if (custom) return custom;
 
-        var doorType    =  (assembly['Assembly__DoorType__Config'] || {})['Assembly__DoorType__Config__DoorType'] || 'Door';
+        var doorCfg     =  assembly['Assembly__DoorType__Config'] || {};
+        var doorType    =  doorCfg['Assembly__DoorType__Config__Type']             || 'Door';
+        var direction   =  doorCfg['Assembly__DoorType__Config__OpeningDirection'] || '';
+        var fullLabel   =  direction ? (direction + ' Opening ' + doorType) : doorType;
         var dimensions  =  assembly['Assembly__Dimensions__Config'] || {};
-        var width       =  dimensions['Assembly__Dimensions__Config__WidthMm']  || '—';
-        var height      =  dimensions['Assembly__Dimensions__Config__HeightMm'] || '—';
-        return doorType + ' — ' + width + ' x ' + height + ' mm';
+        var width       =  dimensions['Assembly__Dimensions__Config__WidthMm']  || '\u2014';
+        var height      =  dimensions['Assembly__Dimensions__Config__HeightMm'] || '\u2014';
+        return fullLabel + ' \u2014 ' + width + ' x ' + height + ' mm';
     }
     // ------------------------------------------------------------
 
@@ -120,7 +123,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     function ValeSpec__PageRenderer__BuildToolbar() {
         var html  =  '<div class="ValeSpec__DocPreview__Toolbar">';
         html     +=      '<button class="ValeSpec__DocPreview__BtnBack" id="ValeSpec__DocPreview__BtnBack">&larr; Back to Editor</button>';
-        html     +=      '<button class="ValeSpec__DocPreview__BtnExport" disabled>PDF Export &mdash; Coming Soon</button>';
+        html     +=      '<button class="ValeSpec__DocPreview__BtnExport" id="ValeSpec__DocPreview__BtnExport">Export PDF</button>';
         html     +=  '</div>';
         return html;
     }
@@ -201,11 +204,14 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
         if (!RenderPipeline) return;
 
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var hwIndex       =  StateManager ? StateManager.ValeSpec__StateManager__GetState().hardwareIndex : null; // <-- Resolve hardware index for ironmongery rendering
+
         for (var i = 0; i < assemblies.length; i++) {
             var drawingContainer  =  document.getElementById('ValeSpec__DocPreview__Drawing_' + i);
             if (drawingContainer) {
                 try {
-                    var svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assemblies[i]);  // <-- Full SVG drawing
+                    var svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assemblies[i], hwIndex); // <-- Pass hwIndex for handle vector data
                     if (svgMarkup) drawingContainer.innerHTML  =  svgMarkup;
                 } catch (e) {
                     console.warn('[ValeSpec__PageRenderer] Drawing render error for index ' + i + ':', e);
@@ -224,6 +230,18 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
             backBtn.addEventListener('click', function() {
                 var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
                 if (ModeManager) ModeManager.ValeSpec__ModeManager__NavigateBack();  // <-- Return to previous mode
+            });
+        }
+
+        var exportBtn  =  document.getElementById('ValeSpec__DocPreview__BtnExport');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                var PdfExporter  =  window.ValeSpec__DocPreview__PdfExporter;
+                if (PdfExporter) {
+                    PdfExporter.ValeSpec__PdfExporter__Export();                     // <-- Launch async PDF export pipeline
+                } else {
+                    console.error('[ValeSpec__PageRenderer] PdfExporter module not loaded');
+                }
             });
         }
     }

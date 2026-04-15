@@ -30,6 +30,16 @@
         "SvgDrawing__Ironmongery__Config__StrokeWidthMm" : 1.75
     },
 
+    "SvgDrawing__Opening__Config": {
+        "SvgDrawing__Opening__Config__Description"           : "Stroke styling for door opening direction symbols overlaid on panels.",
+        "SvgDrawing__Opening__Config__SwingStrokeColor"      : "#888888",
+        "SvgDrawing__Opening__Config__SwingStrokeWidthMm"    : 2.5,
+        "SvgDrawing__Opening__Config__SwingDashArray"        : "18,10",
+        "SvgDrawing__Opening__Config__FixedStrokeColor"      : "#888888",
+        "SvgDrawing__Opening__Config__FixedStrokeWidthMm"    : 2.5,
+        "SvgDrawing__Opening__Config__FixedDashArray"        : "18,10"
+    },
+
     "SvgDrawing__Viewport__Config": {
         "SvgDrawing__Viewport__Config__Description"      : "Padding around the assembled drawing within the SVG viewBox.",
         "SvgDrawing__Viewport__Config__PaddingMm"        : 200,

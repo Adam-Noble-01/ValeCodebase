@@ -151,6 +151,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks = (function() {
         ValeSpec__CabinHooks__CabinHookSelect     =  document.createElement('select');
         ValeSpec__CabinHooks__CabinHookSelect.id  =  'ValeSpec__AssemblyEditor__CabinHookSize';
 
+        var hookPlaceholder          =  document.createElement('option');
+        hookPlaceholder.value        =  '';
+        hookPlaceholder.textContent  =  '\u2014 Please Select \u2014';
+        hookPlaceholder.disabled     =  true;
+        hookPlaceholder.selected     =  true;
+        hookPlaceholder.hidden       =  true;
+        ValeSpec__CabinHooks__CabinHookSelect.appendChild(hookPlaceholder);
+
         var sourceOptions  =  uiCfg.SizeOptions || [];
         for (var i = 0; i < sourceOptions.length; i++) {
             var optionValue  =  '';

@@ -21,7 +21,7 @@ import sys
 from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Tuple
+from typing import Any, Tuple
 
 
 # -----------------------------------------------------------------------------
@@ -214,8 +214,37 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Project code mismatch"})
             return
 
-        NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
+        update_source = self.headers.get("X-ValeSpec-UpdateSource", "unspecified")
         file_path = self.Na__Server__GetProjectFilePath(project_code)
+        existing_project_data = None
+
+        if file_path.is_file():
+            try:
+                existing_project_data = json.loads(file_path.read_text(encoding="utf-8"))
+            except Exception as read_error:
+                print(f"[WARN] Could not parse existing project file {file_path.name}: {read_error}")
+
+        baseline_project_data = existing_project_data if existing_project_data is not None else {}
+        change_entries = Na__Server__CollectJsonDiffEntries(baseline_project_data, project_data)
+
+        print(
+            f"[PROJECT_SAVE] code={project_code} source={update_source} "
+            f"payloadBytes={content_length} changedKeys={len(change_entries)}"
+        )
+        if not change_entries:
+            print(f"[PROJECT_SAVE] code={project_code} source={update_source} no key/value updates detected.")
+        else:
+            for change_entry in change_entries:
+                path_label = change_entry["path"]
+                change_type = change_entry["changeType"]
+                old_value = Na__Server__JsonValueToLogValue(change_entry["oldValue"])
+                new_value = Na__Server__JsonValueToLogValue(change_entry["newValue"])
+                print(
+                    f"[PROJECT_CHANGE] code={project_code} source={update_source} "
+                    f"path={path_label} change={change_type} old={old_value} new={new_value}"
+                )
+
+        NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
         try:
             file_path.write_text(json.dumps(project_data, indent=4, ensure_ascii=False), encoding="utf-8")
             print(f"[PROJECT] Saved: {file_path.name}")
@@ -258,7 +287,7 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-ValeSpec-UpdateSource")
         self.end_headers()
     # ------------------------------------------------------------
 
@@ -277,6 +306,98 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
 # -----------------------------------------------------------------------------
 # REGION | Helper Functions
 # -----------------------------------------------------------------------------
+
+
+# HELPER FUNCTION | Build Dot/Index JSON Path Segment
+# ------------------------------------------------------------
+def Na__Server__BuildJsonPath(parent_path: str, key_or_index: str) -> str:
+    if not parent_path:
+        return key_or_index
+    if key_or_index.startswith("["):
+        return parent_path + key_or_index
+    return f"{parent_path}.{key_or_index}"
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Format JSON Value for Log Output
+# ------------------------------------------------------------
+def Na__Server__JsonValueToLogValue(value: Any) -> str:
+    if value is None:
+        return "null"
+    try:
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    except TypeError:
+        return json.dumps(str(value), ensure_ascii=False, separators=(",", ":"))
+# ------------------------------------------------------------
+
+
+# HELPER FUNCTION | Collect JSON Key/Value Diff Entries
+# ------------------------------------------------------------
+def Na__Server__CollectJsonDiffEntries(old_value: Any, new_value: Any, path: str = "") -> list[dict]:
+    diff_entries: list[dict] = []
+
+    if isinstance(old_value, dict) and isinstance(new_value, dict):
+        all_keys = sorted(set(old_value.keys()) | set(new_value.keys()))
+        for key in all_keys:
+            child_path = Na__Server__BuildJsonPath(path, key)
+            old_has_key = key in old_value
+            new_has_key = key in new_value
+
+            if not old_has_key:
+                diff_entries.append({
+                    "path": child_path,
+                    "changeType": "added",
+                    "oldValue": None,
+                    "newValue": new_value[key],
+                })
+                continue
+
+            if not new_has_key:
+                diff_entries.append({
+                    "path": child_path,
+                    "changeType": "removed",
+                    "oldValue": old_value[key],
+                    "newValue": None,
+                })
+                continue
+
+            diff_entries.extend(Na__Server__CollectJsonDiffEntries(old_value[key], new_value[key], child_path))
+        return diff_entries
+
+    if isinstance(old_value, list) and isinstance(new_value, list):
+        max_len = max(len(old_value), len(new_value))
+        for index in range(max_len):
+            child_path = Na__Server__BuildJsonPath(path, f"[{index}]")
+            if index >= len(old_value):
+                diff_entries.append({
+                    "path": child_path,
+                    "changeType": "added",
+                    "oldValue": None,
+                    "newValue": new_value[index],
+                })
+                continue
+
+            if index >= len(new_value):
+                diff_entries.append({
+                    "path": child_path,
+                    "changeType": "removed",
+                    "oldValue": old_value[index],
+                    "newValue": None,
+                })
+                continue
+
+            diff_entries.extend(Na__Server__CollectJsonDiffEntries(old_value[index], new_value[index], child_path))
+        return diff_entries
+
+    if old_value != new_value:
+        diff_entries.append({
+            "path": path if path else "<root>",
+            "changeType": "updated",
+            "oldValue": old_value,
+            "newValue": new_value,
+        })
+    return diff_entries
+# ------------------------------------------------------------
 
 
 def Na__Server__GetLocalIp() -> str:

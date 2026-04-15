@@ -113,18 +113,17 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
         var revision     =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode']    || 'A';
         var status       =  meta['ValeSpec__ProjectFile__Metadata__DocumentStatus']  || 'Draft';
 
-        var projectNameStyle  =  'font-size:var(--Vale_FontSize_SubHeading); font-weight:var(--Vale_FontWeight_SemiBold); color:var(--Vale_TextPrimary);';
-        var docNameStyle      =  'font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSecondary);';
-        var authorStyle       =  'font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextSubtle);';
+        var projectNameStyle  =  'font-size:var(--Vale_FontSize_Heading); font-weight:var(--Vale_FontWeight_SemiBold); color:var(--Vale_TextPrimary);';
+        var docNameStyle      =  'font-size:var(--Vale_FontSize_SubHeading); color:var(--Vale_TextSecondary);';
+        var authorStyle       =  'font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSubtle);';
 
         var html  =  '<div style="display:flex; align-items:center; gap:var(--Vale_Spacing_Large); width:100%; box-sizing:border-box; padding:var(--Vale_Spacing_Medium); background:var(--Vale_BackgroundWhite); border:1px solid var(--Vale_BorderLight); border-radius:var(--Vale_BorderRadius);">';
 
         html  +=  '<div style="flex:1;">';
         html  +=      '<div>' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__ProjectNameField', projectName, projectNameStyle) + '</div>';
-        html  +=      '<div style="margin-top:2px;">' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__DocNameField', docName, docNameStyle);
-        if (projectCode) html  +=  '<span style="font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSecondary);"> &mdash; Code: ' + projectCode + '</span>'; // <-- Read-only: project code is the localStorage key
-        html  +=      '</div>';
-        html  +=      '<div style="margin-top:4px;"><span style="font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextSubtle);">Author: </span>' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__AuthorField', authorName || '\u2014', authorStyle) + '</div>';
+        html  +=      '<div style="margin-top:6px;">' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__DocNameField', docName, docNameStyle) + '</div>';
+        if (projectCode) html  +=  '<div style="margin-top:5px;"><span style="font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSubtle);">Project Code : </span><span style="font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSubtle);">' + projectCode + '</span></div>'; // <-- Read-only: project code is the localStorage key
+        html  +=      '<div style="margin-top:5px;"><span style="font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSubtle);">Author : </span>' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__AuthorField', authorName || '\u2014', authorStyle) + '</div>';
         html  +=  '</div>';
 
         html  +=  '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">';

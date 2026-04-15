@@ -111,7 +111,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
         if (!StateManager) return;
         var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
         if (!assembly) return;
-        assembly['HingeProjection']  =  parseInt(ValeSpec__HingesAndLevers__HingeProjectionSel.value, 10);
+        if (!assembly['Assembly__Hinge__Config']) assembly['Assembly__Hinge__Config'] = {};
+        assembly['Assembly__Hinge__Config']['Assembly__Hinge__Config__Projection']  =  parseInt(ValeSpec__HingesAndLevers__HingeProjectionSel.value, 10);
         StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }
     // ------------------------------------------------------------
@@ -222,6 +223,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
         ValeSpec__HingesAndLevers__HingeProjectionSel     =  document.createElement('select');
         ValeSpec__HingesAndLevers__HingeProjectionSel.id  =  'ValeSpec__AssemblyEditor__HingeProjection';
 
+        var hingePlaceholder          =  document.createElement('option');
+        hingePlaceholder.value        =  '';
+        hingePlaceholder.textContent  =  '\u2014 Please Select \u2014';
+        hingePlaceholder.disabled     =  true;
+        hingePlaceholder.selected     =  true;
+        hingePlaceholder.hidden       =  true;
+        ValeSpec__HingesAndLevers__HingeProjectionSel.appendChild(hingePlaceholder);
+
         for (var i = 0; i < HINGE_PROJECTIONS.length; i++) {
             var opt          =  document.createElement('option');
             opt.value        =  HINGE_PROJECTIONS[i].Value;
@@ -252,6 +261,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
 
         ValeSpec__HingesAndLevers__LeverTypeSelect     =  document.createElement('select');
         ValeSpec__HingesAndLevers__LeverTypeSelect.id  =  'ValeSpec__AssemblyEditor__LeverType';
+
+        var leverPlaceholder          =  document.createElement('option');
+        leverPlaceholder.value        =  '';
+        leverPlaceholder.textContent  =  '\u2014 Please Select \u2014';
+        leverPlaceholder.disabled     =  true;
+        leverPlaceholder.selected     =  true;
+        leverPlaceholder.hidden       =  true;
+        ValeSpec__HingesAndLevers__LeverTypeSelect.appendChild(leverPlaceholder);
 
         var leverOptions  =  ValeSpec__HingesAndLevers__GetLeverTypeOptions();
         for (var i = 0; i < leverOptions.length; i++) {

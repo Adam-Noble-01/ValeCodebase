@@ -15,21 +15,21 @@
         "AssemblyEditor__Slider__Config__HeightMinMm"            : 1600,
         "AssemblyEditor__Slider__Config__HeightMaxMm"            : 3000,
         "AssemblyEditor__Slider__Config__HeightStepMm"           : 1,
-        "AssemblyEditor__Slider__Config__HeightDefaultMm"        : 2100
+        "AssemblyEditor__Slider__Config__HeightDefaultMm"        : 2100,
+        "AssemblyEditor__Slider__Config__DimensionInputCommitDelayMs" : 450
     },
 
     "AssemblyEditor__DoorPanelDefaults__Config": {
         "AssemblyEditor__DoorPanelDefaults__Config__Description"                  : "Door-type specific defaults and min/max constraints used by the assembly manager and door dimension controls.",
         "AssemblyEditor__DoorPanelDefaults__Config__DefaultDoorTypeForNewAssembly": "None",
-        "AssemblyEditor__DoorPanelDefaults__Config__FallbackProfileKey"           : "DoubleDoors",
+        "AssemblyEditor__DoorPanelDefaults__Config__DefaultOpeningDirection"     : "Outward",
+        "AssemblyEditor__DoorPanelDefaults__Config__FallbackProfileKey"          : "DoubleDoors",
         "AssemblyEditor__DoorPanelDefaults__Config__DoorTypeProfileMap": {
-            "None"                           : "DoubleDoors",
-            "Outward Opening Double Doors"   : "DoubleDoors",
-            "Inward Opening Double Doors"    : "DoubleDoors",
-            "Outward Opening Single Doors"   : "SingleDoors",
-            "Inward Opening Single Doors"    : "SingleDoors",
-            "Bi Fold Doors"                  : "DoubleDoors",
-            "Other"                          : "DoubleDoors"
+            "None"           : "DoubleDoors",
+            "Double Doors"   : "DoubleDoors",
+            "Bifold Doors"   : "DoubleDoors",
+            "Single Door"    : "SingleDoors",
+            "Window Panel"   : "SingleDoors"
         },
         "AssemblyEditor__DoorPanelDefaults__Config__Profiles": {
             "DoubleDoors": {
@@ -91,6 +91,15 @@
             { "Label": "Letter Plate",         "Key": "Misc_LetterPlate" },
             { "Label": "Cat Flap",             "Key": "Misc_CatFlap" },
             { "Label": "Other",                "Key": "Misc_Other" }
+        ]
+    },
+
+    "AssemblyEditor__FixedPanel__Config": {
+        "AssemblyEditor__FixedPanel__Config__Description"    : "Fixed panel dropdown options for double door configurations.",
+        "AssemblyEditor__FixedPanel__Config__Options": [
+            { "Label": "None \u2014 Both Panels Open", "Value": "none"  },
+            { "Label": "Left Panel Fixed",              "Value": "left"  },
+            { "Label": "Right Panel Fixed",             "Value": "right" }
         ]
     },
 

@@ -119,7 +119,7 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // HELPER FUNCTION | Get Default Preview Aspect Ratio
     // ------------------------------------------------------------
     function ValeSpec__SvgPreview__GetDefaultAspectRatio() {
-        var profile          =  ValeSpec__SvgPreview__GetDoorPanelProfileForType('Outward Opening Double Doors');
+        var profile          =  ValeSpec__SvgPreview__GetDoorPanelProfileForType('Double Doors');
         var widthDefaultMm   =  ValeSpec__SvgPreview__ParseNumber(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm'], 1800);
         var heightDefaultMm  =  ValeSpec__SvgPreview__ParseNumber(profile['AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm'], 2100);
         var viewBoxWidthMm   =  widthDefaultMm + ValeSpec__SvgPreview__ViewportPaddingLeftMm + ValeSpec__SvgPreview__ViewportPaddingRightMm;
@@ -209,7 +209,8 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         var doorTypeCfg  =  assemblyData['Assembly__DoorType__Config'] || {};
         var doorType     =  doorTypeCfg['Assembly__DoorType__Config__Type'];
         if (!doorType || typeof doorType !== 'string') return false;
-        return doorType.trim().toLowerCase() !== 'none';
+        var lower  =  doorType.trim().toLowerCase();
+        return lower !== 'none' && lower !== '';
     }
     // ------------------------------------------------------------
 

@@ -1,0 +1,39 @@
+/* ================================================================= */
+/* REGION  |  Server Connection Lost Warning Banner                  */
+/* ================================================================= */
+
+.na-server-status-banner {
+    position         : fixed;
+    top              : 16px;
+    left             : 50%;
+    transform        : translateX(-50%);
+    z-index          : 1100;
+    max-width        : min(820px, calc(100vw - 28px));
+    padding          : 10px 16px;
+    border-radius    : 10px;
+    border           : 1px solid #dc2626;
+    background       : rgba(127, 29, 29, 0.97);
+    color            : #ffffff;
+    font-size        : 13px;
+    font-weight      : 700;
+    line-height      : 1.35;
+    text-align       : center;
+    box-shadow       : 0 12px 28px rgba(15, 23, 42, 0.35);
+    opacity          : 0;
+    visibility       : hidden;
+    pointer-events   : none;
+    transition       : opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.na-server-status-banner--reconnected {
+    border           : 1px solid #16a34a;
+    background       : rgba(21, 128, 61, 0.97);
+}
+
+.na-server-status-banner--visible {
+    opacity          : 1;
+    visibility       : visible;
+    transform        : translateX(-50%) translateY(0);
+}
+
+/* endregion -------------------------------------------------------- */

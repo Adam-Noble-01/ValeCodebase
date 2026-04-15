@@ -17,6 +17,7 @@
    - Delete confirms and removes assembly from the project
    - Add New Assembly creates a default assembly entry
    - Reorder via up/down arrows changes Assembly__Identity__Config__SortOrder
+   - Expects canonical project/assembly schema from AppUtils ProjectSchemaValidator (via ProjectFileManager)
 
    ============================================================================= */
 
@@ -374,7 +375,10 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         var configData     =  await ValeSpec__SectionManager__EnsureAssemblyEditorConfigLoaded();
         var defaultsCfg    =  (configData && configData['AssemblyEditor__DoorPanelDefaults__Config']) || {};
+        var handingCfg     =  (configData && configData['AssemblyEditor__DoorHanding__Config']) || {};
         var defaultDoor    =  defaultsCfg['AssemblyEditor__DoorPanelDefaults__Config__DefaultDoorTypeForNewAssembly'] || 'None';
+        var defaultHanding =  handingCfg['AssemblyEditor__DoorHanding__Config__DefaultValue'] || 'Left';
+        if (defaultHanding !== 'Right') defaultHanding  =  'Left';
         var profile        =  ValeSpec__SectionManager__GetDoorPanelProfileForType(configData, defaultDoor);
 
         var widthDefault   =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm'], 10)  || 1800;
@@ -393,7 +397,8 @@ const ValeSpec__DocEditor__SectionManager = (function() {
             'Assembly__Dimensions__Config': {
                 'Assembly__Dimensions__Config__WidthMm'  : widthDefault,
                 'Assembly__Dimensions__Config__HeightMm' : heightDefault
-            }
+            },
+            'Handing': defaultHanding
         };
 
         assemblies.push(newAssembly);

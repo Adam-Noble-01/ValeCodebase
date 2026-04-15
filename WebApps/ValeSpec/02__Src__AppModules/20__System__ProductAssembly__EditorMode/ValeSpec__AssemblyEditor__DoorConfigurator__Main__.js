@@ -120,7 +120,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
     // HELPER FUNCTION | Build Step Wizard via StepManager
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__BuildStepWizard() {
+    async function ValeSpec__DoorConfigurator__BuildStepWizard() {
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (!StepManager) {
             console.error('[ValeSpec__DoorConfigurator__Main] StepManager not available.');
@@ -137,7 +137,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         var step6Body  =  StepManager.ValeSpec__StepManager__CreateStep('hooks');
         var step7Body  =  StepManager.ValeSpec__StepManager__CreateStep('misc');
 
-        ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body);
+        await ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body);
         ValeSpec__DoorConfigurator__BuildSaveAssemblyButton(step7Body);
         ValeSpec__DoorConfigurator__BindSaveButtonStateListener();
 
@@ -149,30 +149,33 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
     // HELPER FUNCTION | Initialise Column Sub-Modules into Step Cards
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body) {
+    async function ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body) {
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
         var GlobalSettings =  window.ValeSpec__AssemblyEditor__GlobalSettings;
         var HingesHandles  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles;
         var CabinHooks    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
         var Miscellaneous =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
 
-        if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__Init(step1Body, step2Body);
-        if (GlobalSettings) GlobalSettings.ValeSpec__GlobalSettings__Init(step3Body);
-        if (HingesHandles) HingesHandles.ValeSpec__HingesAndHandles__Init(step5Body, step4Body);
-        if (CabinHooks) CabinHooks.ValeSpec__CabinHooks__Init(step6Body);
-        if (Miscellaneous) Miscellaneous.ValeSpec__Miscellaneous__Init(step7Body);
+        var initTasks  =  [];
+        if (DoorTypeDims) initTasks.push(Promise.resolve(DoorTypeDims.ValeSpec__DoorTypeAndDimensions__Init(step1Body, step2Body)));
+        if (GlobalSettings) initTasks.push(Promise.resolve(GlobalSettings.ValeSpec__GlobalSettings__Init(step3Body)));
+        if (HingesHandles) initTasks.push(Promise.resolve(HingesHandles.ValeSpec__HingesAndHandles__Init(step5Body, step4Body)));
+        if (CabinHooks) initTasks.push(Promise.resolve(CabinHooks.ValeSpec__CabinHooks__Init(step6Body)));
+        if (Miscellaneous) initTasks.push(Promise.resolve(Miscellaneous.ValeSpec__Miscellaneous__Init(step7Body)));
+
+        await Promise.all(initTasks);                                                           // <-- Ensure controls exist before any refresh call hydrates values
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Initialise Door Configurator
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__Init(container) {
+    async function ValeSpec__DoorConfigurator__Init(container) {
         if (ValeSpec__DoorConfigurator__Initialised) return;
         ValeSpec__DoorConfigurator__ContainerEl  =  container;
         if (!ValeSpec__DoorConfigurator__ContainerEl) return;
 
-        ValeSpec__DoorConfigurator__BuildStepWizard();
+        await ValeSpec__DoorConfigurator__BuildStepWizard();
 
         ValeSpec__DoorConfigurator__Initialised  =  true;
         console.log('[ValeSpec__DoorConfigurator__Main] Initialised.');

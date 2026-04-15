@@ -42,6 +42,24 @@
         "SvgDrawing__Opening__Config__FixedDashArray"        : "18,10"
     },
 
+    "SvgDrawing__PanelRoleLabel__Config": {
+        "SvgDrawing__PanelRoleLabel__Config__Description"                  : "Master/slave panel label styling for paired door render outputs.",
+        "SvgDrawing__PanelRoleLabel__Config__MasterText"                   : "Master",
+        "SvgDrawing__PanelRoleLabel__Config__SlaveText"                    : "Slave",
+        "SvgDrawing__PanelRoleLabel__Config__TextColor"                    : "#cc3333",
+        "SvgDrawing__PanelRoleLabel__Config__BorderColor"                  : "#888888",
+        "SvgDrawing__PanelRoleLabel__Config__BorderWidthMm"                : 1.5,
+        "SvgDrawing__PanelRoleLabel__Config__FillColor"                    : "none",
+        "SvgDrawing__PanelRoleLabel__Config__FillOpacity"                  : 0,
+        "SvgDrawing__PanelRoleLabel__Config__FontSizeMm"                   : 40,
+        "SvgDrawing__PanelRoleLabel__Config__PaddingXmm"                   : 50,
+        "SvgDrawing__PanelRoleLabel__Config__PaddingYmm"                   : 5,
+        "SvgDrawing__PanelRoleLabel__Config__MinimumBoxWidthMm"            : 200,
+        "SvgDrawing__PanelRoleLabel__Config__EstimatedCharacterWidthFactor": 0.58,
+        "SvgDrawing__PanelRoleLabel__Config__CornerRadiusMm"               : 5,
+        "SvgDrawing__PanelRoleLabel__Config__CenterOffsetYmm"              : 0
+    },
+
     "SvgDrawing__Viewport__Config": {
         "SvgDrawing__Viewport__Config__Description"      : "Padding around the assembled drawing within the SVG viewBox.",
         "SvgDrawing__Viewport__Config__PaddingMm"        : 200,

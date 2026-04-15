@@ -95,7 +95,7 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
 
     // HELPER FUNCTION | Initialise Sub-Modules
     // ------------------------------------------------------------
-    function ValeSpec__Layout__InitSubModules() {
+    async function ValeSpec__Layout__InitSubModules() {
         var SvgPreview        =  window.ValeSpec__AssemblyEditor__SvgPreview;
         var DoorConfigurator  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Main;
 
@@ -104,7 +104,7 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
         }
 
         if (DoorConfigurator && ValeSpec__Layout__ControlsPanelEl) {
-            DoorConfigurator.ValeSpec__DoorConfigurator__Init(ValeSpec__Layout__ControlsPanelEl);
+            await DoorConfigurator.ValeSpec__DoorConfigurator__Init(ValeSpec__Layout__ControlsPanelEl);  // <-- Wait for async control construction before first refresh
         }
     }
     // ------------------------------------------------------------
@@ -188,7 +188,7 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
         if (!ValeSpec__Layout__Initialised) {
             await ValeSpec__Layout__LoadConfig();
             ValeSpec__Layout__BuildPanels();
-            ValeSpec__Layout__InitSubModules();
+            await ValeSpec__Layout__InitSubModules();
 
             var StateManager  =  window.ValeSpec__AppCore__StateManager;
             if (StateManager) {

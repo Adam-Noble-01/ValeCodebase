@@ -9,13 +9,14 @@
    PURPOSE    : Step 1 (Door Type) and Step 2 (Dimensions)
    CREATED    : 15-Apr-2026
 
-   DESCRIPTION:
-   - Step 1: Opening Direction toggle (Outward/Inward) + Door Type dropdown
+  DESCRIPTION:
+   - Step 1: Opening Direction toggle (Outward/Inward), Door Handing toggle (Left/Right), + Door Type dropdown
    - Step 2: Width + Height inputs with linked range sliders
    - Opening Direction stored as separate Assembly__DoorType__Config__OpeningDirection field
    - On dimension change: calls HingeCalculator and LockingCalculator
    - Registers summary callbacks with StepManager for collapsed display
    - Auto-advances to next step on primary selection change
+   - Expects canonical assembly schema values normalised by AppUtils ProjectSchemaValidator
 
    ============================================================================= */
 
@@ -38,6 +39,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     let ValeSpec__DoorTypeAndDimensions__OpeningDirectionOutward     =  null;   // <-- Outward Opening radio button
     let ValeSpec__DoorTypeAndDimensions__OpeningDirectionInward      =  null;   // <-- Inward Opening radio button
     let ValeSpec__DoorTypeAndDimensions__DoorTypeSelect              =  null;   // <-- Door type dropdown
+    let ValeSpec__DoorTypeAndDimensions__DoorHandingLeft             =  null;   // <-- Door Handing: Left radio button
+    let ValeSpec__DoorTypeAndDimensions__DoorHandingRight            =  null;   // <-- Door Handing: Right radio button
     let ValeSpec__DoorTypeAndDimensions__WidthInput                  =  null;   // <-- Width numeric input
     let ValeSpec__DoorTypeAndDimensions__WidthSlider                 =  null;   // <-- Width range slider
     let ValeSpec__DoorTypeAndDimensions__HeightInput                 =  null;   // <-- Height numeric input
@@ -46,6 +49,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     let ValeSpec__DoorTypeAndDimensions__DoorPanelDefaultsConfig     =  null;   // <-- Door-type width/height defaults and limits
     let ValeSpec__DoorTypeAndDimensions__DoorConditionWarningsConfig =  null;   // <-- Threshold-driven condition messages
     let ValeSpec__DoorTypeAndDimensions__FixedPanelConfig            =  null;   // <-- Fixed panel dropdown options from config
+    let ValeSpec__DoorTypeAndDimensions__DoorHandingConfig           =  null;   // <-- Door handing labels/defaults from config
     let ValeSpec__DoorTypeAndDimensions__FixedPanelSelect            =  null;   // <-- Fixed panel dropdown element
     let ValeSpec__DoorTypeAndDimensions__FixedPanelGroup             =  null;   // <-- Fixed panel form group (show/hide)
     let ValeSpec__DoorTypeAndDimensions__LastDoorConditionCode       =  null;   // <-- Prevents duplicate warning toast spam
@@ -81,6 +85,27 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Read Configured Default Door Handing
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__GetDefaultDoorHanding() {
+        var cfg  =  ValeSpec__DoorTypeAndDimensions__DoorHandingConfig || {};
+        var configured  =  cfg['AssemblyEditor__DoorHanding__Config__DefaultValue'] || 'Left';
+        return configured === 'Right' ? 'Right' : 'Left';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Get Current Door Handing from Toggle
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__GetDoorHanding() {
+        if (ValeSpec__DoorTypeAndDimensions__DoorHandingRight && ValeSpec__DoorTypeAndDimensions__DoorHandingRight.checked) {
+            return 'Right';
+        }
+        return ValeSpec__DoorTypeAndDimensions__GetDefaultDoorHanding();
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Load Slider Configuration
     // ------------------------------------------------------------
     async function ValeSpec__DoorTypeAndDimensions__LoadConfig() {
@@ -92,6 +117,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
             ValeSpec__DoorTypeAndDimensions__DoorPanelDefaultsConfig       =  data['AssemblyEditor__DoorPanelDefaults__Config']     || null;
             ValeSpec__DoorTypeAndDimensions__DoorConditionWarningsConfig   =  data['AssemblyEditor__DoorConditionWarnings__Config'] || null;
             ValeSpec__DoorTypeAndDimensions__FixedPanelConfig              =  data['AssemblyEditor__FixedPanel__Config']            || null;
+            ValeSpec__DoorTypeAndDimensions__DoorHandingConfig             =  data['AssemblyEditor__DoorHanding__Config']           || null;
         } catch (e) {
             console.warn('[ValeSpec__DoorTypeAndDimensions] Config load failed:', e);
         }
@@ -416,6 +442,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
         var doorType          =  ValeSpec__DoorTypeAndDimensions__DoorTypeSelect ? ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.value : '';
         var openingDirection  =  ValeSpec__DoorTypeAndDimensions__GetOpeningDirection();
+        var doorHanding       =  ValeSpec__DoorTypeAndDimensions__GetDoorHanding();
         var widthRaw          =  ValeSpec__DoorTypeAndDimensions__WidthInput  ? ValeSpec__DoorTypeAndDimensions__WidthInput.value  : 1800;
         var heightRaw         =  ValeSpec__DoorTypeAndDimensions__HeightInput ? ValeSpec__DoorTypeAndDimensions__HeightInput.value : 2100;
 
@@ -439,6 +466,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         if (!assembly['Assembly__DoorType__Config']) assembly['Assembly__DoorType__Config'] = {};
         assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Type']             =  doorType;
         assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__OpeningDirection'] =  openingDirection;
+        assembly['Handing']  =  doorHanding;
 
         if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
         assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']   =  width;
@@ -517,6 +545,15 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Handle Door Handing Toggle Change
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__OnDoorHandingChange() {
+        ValeSpec__DoorTypeAndDimensions__UpdateDoorHandingToggleStyles();
+        ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -543,11 +580,31 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Update Door Handing Toggle Visual State
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__UpdateDoorHandingToggleStyles() {
+        if (!ValeSpec__DoorTypeAndDimensions__DoorHandingLeft || !ValeSpec__DoorTypeAndDimensions__DoorHandingRight) return;
+        var leftBtn   =  ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.parentElement;
+        var rightBtn  =  ValeSpec__DoorTypeAndDimensions__DoorHandingRight.parentElement;
+        if (!leftBtn || !rightBtn) return;
+
+        if (ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.checked) {
+            leftBtn.classList.add('ValeSpec__ToggleBtn--active');
+            rightBtn.classList.remove('ValeSpec__ToggleBtn--active');
+        } else {
+            leftBtn.classList.remove('ValeSpec__ToggleBtn--active');
+            rightBtn.classList.add('ValeSpec__ToggleBtn--active');
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Determine if Door Type is Double
     // ------------------------------------------------------------
     function ValeSpec__DoorTypeAndDimensions__IsDoubleDoor(doorType) {
         if (!doorType) return false;
-        return doorType.toLowerCase().indexOf('double') !== -1;
+        var lower  =  doorType.toLowerCase();
+        return lower.indexOf('double') !== -1 || lower.indexOf('bifold') !== -1;
     }
     // ------------------------------------------------------------
 
@@ -617,6 +674,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         typeGroup.appendChild(ValeSpec__DoorTypeAndDimensions__DoorTypeSelect);
         ValeSpec__DoorTypeAndDimensions__Step1BodyEl.insertBefore(typeGroup, footerEl);
 
+        var doorHandingCfg   =  ValeSpec__DoorTypeAndDimensions__DoorHandingConfig || {};
+        var defaultHanding   =  ValeSpec__DoorTypeAndDimensions__GetDefaultDoorHanding();
+        var handingLabelText =  doorHandingCfg['AssemblyEditor__DoorHanding__Config__Label']      || 'Door Handing';
+        var leftOptionLabel  =  doorHandingCfg['AssemblyEditor__DoorHanding__Config__LeftLabel']  || 'Left (Current)';
+        var rightOptionLabel =  doorHandingCfg['AssemblyEditor__DoorHanding__Config__RightLabel'] || 'Right';
+
         // OPENING DIRECTION TOGGLE
         var dirGroup  =  document.createElement('div');
         dirGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
@@ -655,6 +718,47 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         ValeSpec__DoorTypeAndDimensions__OpeningDirectionInward.addEventListener('change',  ValeSpec__DoorTypeAndDimensions__OnOpeningDirectionChange);
 
         ValeSpec__DoorTypeAndDimensions__Step1BodyEl.insertBefore(dirGroup, footerEl);
+
+        // DOOR HANDING TOGGLE
+        var handingGroup  =  document.createElement('div');
+        handingGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+
+        var handingLabel  =  document.createElement('label');
+        handingLabel.textContent  =  handingLabelText;
+        handingGroup.appendChild(handingLabel);
+
+        var handingToggleRow  =  document.createElement('div');
+        handingToggleRow.className  =  'ValeSpec__ToggleBtnGroup';
+
+        var leftHandingLabel  =  document.createElement('label');
+        leftHandingLabel.className  =  'ValeSpec__ToggleBtn';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingLeft        =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.type   =  'radio';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.name   =  'ValeSpec__AssemblyEditor__DoorHanding';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.value  =  'Left';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.checked  =  (defaultHanding !== 'Right');
+        leftHandingLabel.appendChild(ValeSpec__DoorTypeAndDimensions__DoorHandingLeft);
+        leftHandingLabel.appendChild(document.createTextNode(' ' + leftOptionLabel));
+
+        var rightHandingLabel  =  document.createElement('label');
+        rightHandingLabel.className  =  'ValeSpec__ToggleBtn';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingRight        =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__DoorHandingRight.type   =  'radio';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingRight.name   =  'ValeSpec__AssemblyEditor__DoorHanding';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingRight.value  =  'Right';
+        ValeSpec__DoorTypeAndDimensions__DoorHandingRight.checked  =  (defaultHanding === 'Right');
+        rightHandingLabel.appendChild(ValeSpec__DoorTypeAndDimensions__DoorHandingRight);
+        rightHandingLabel.appendChild(document.createTextNode(' ' + rightOptionLabel));
+
+        handingToggleRow.appendChild(leftHandingLabel);
+        handingToggleRow.appendChild(rightHandingLabel);
+        handingGroup.appendChild(handingToggleRow);
+
+        ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.addEventListener('change',  ValeSpec__DoorTypeAndDimensions__OnDoorHandingChange);
+        ValeSpec__DoorTypeAndDimensions__DoorHandingRight.addEventListener('change', ValeSpec__DoorTypeAndDimensions__OnDoorHandingChange);
+
+        ValeSpec__DoorTypeAndDimensions__Step1BodyEl.insertBefore(handingGroup, footerEl);
+        ValeSpec__DoorTypeAndDimensions__UpdateDoorHandingToggleStyles();
 
         // FIXED PANEL DROPDOWN (visible only for double doors)
         ValeSpec__DoorTypeAndDimensions__FixedPanelGroup  =  document.createElement('div');
@@ -830,7 +934,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         var val  =  ValeSpec__DoorTypeAndDimensions__DoorTypeSelect ? ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.value : '';
         if (!ValeSpec__DoorTypeAndDimensions__IsDoorTypeConfigured(val)) return 'Not selected';
         var direction  =  ValeSpec__DoorTypeAndDimensions__GetOpeningDirection();
-        return direction + ' Opening ' + val;
+        var handing    =  ValeSpec__DoorTypeAndDimensions__GetDoorHanding();
+        return direction + ' Opening ' + val + '  |  ' + handing + ' Handing';
     }
     // ------------------------------------------------------------
 
@@ -855,6 +960,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
         var doorType          =  doorCfg['Assembly__DoorType__Config__Type']             || '';
         var openingDirection  =  doorCfg['Assembly__DoorType__Config__OpeningDirection'] || 'Outward';
+        var handing           =  assemblyData['Handing'] || ValeSpec__DoorTypeAndDimensions__GetDefaultDoorHanding();
         var width             =  dimsCfg['Assembly__Dimensions__Config__WidthMm']        || 1800;
         var height            =  dimsCfg['Assembly__Dimensions__Config__HeightMm']       || 2100;
 
@@ -865,6 +971,15 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
                 ValeSpec__DoorTypeAndDimensions__OpeningDirectionOutward.checked  =  true;
             }
             ValeSpec__DoorTypeAndDimensions__UpdateToggleStyles();
+        }
+
+        if (ValeSpec__DoorTypeAndDimensions__DoorHandingLeft && ValeSpec__DoorTypeAndDimensions__DoorHandingRight) {
+            if (handing === 'Right') {
+                ValeSpec__DoorTypeAndDimensions__DoorHandingRight.checked  =  true;
+            } else {
+                ValeSpec__DoorTypeAndDimensions__DoorHandingLeft.checked   =  true;
+            }
+            ValeSpec__DoorTypeAndDimensions__UpdateDoorHandingToggleStyles();
         }
 
         if (ValeSpec__DoorTypeAndDimensions__DoorTypeSelect) {

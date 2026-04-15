@@ -88,6 +88,16 @@
         ]
     },
 
+    "AssemblyEditor__DoorHanding__Config": {
+        "AssemblyEditor__DoorHanding__Config__Description"          : "Labels and defaults for Door Handing controls and panel role naming.",
+        "AssemblyEditor__DoorHanding__Config__Label"                : "Door Handing",
+        "AssemblyEditor__DoorHanding__Config__LeftLabel"            : "Left (Current)",
+        "AssemblyEditor__DoorHanding__Config__RightLabel"           : "Right",
+        "AssemblyEditor__DoorHanding__Config__DefaultValue"         : "Left",
+        "AssemblyEditor__DoorHanding__Config__MasterLabel"          : "MASTER",
+        "AssemblyEditor__DoorHanding__Config__SlaveLabel"           : "SLAVE"
+    },
+
     "AssemblyEditor__CabinHooks__Config": {
         "AssemblyEditor__CabinHooks__Config__Description"            : "Cabin hook step options and control defaults.",
         "AssemblyEditor__CabinHooks__Config__SizeOptions"            : ["4\"", "6\"", "10\"", "12\"", "18\""],

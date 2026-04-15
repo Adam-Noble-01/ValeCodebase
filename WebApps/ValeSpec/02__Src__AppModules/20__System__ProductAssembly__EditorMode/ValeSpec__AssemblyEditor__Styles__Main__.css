@@ -646,39 +646,6 @@
 
 
 /* #region ----------------------------------------------------------------------
- * COMPONENT | Handing Prompt Radio Buttons
- * ----------------------------------------------------------------------------- */
-
-.ValeSpec__AssemblyEditor__HandingPrompt {
-    display                              : none;
-    flex-direction                       : row;
-    gap                                  : 12px;
-    margin-top                           : 8px;
-}
-
-.ValeSpec__AssemblyEditor__HandingPrompt--visible {
-    display                              : flex;
-}
-
-.ValeSpec__AssemblyEditor__HandingPrompt label {
-    display                              : flex;
-    align-items                          : center;
-    gap                                  : 4px;
-    font-size                            : 0.82rem;
-    font-weight                          : 400;
-    text-transform                       : none;
-    cursor                               : pointer;
-}
-
-.ValeSpec__AssemblyEditor__HandingPrompt input[type="radio"] {
-    accent-color                         : var(--Vale_EditorRadioAccent);
-    cursor                               : pointer;
-}
-
-/* #endregion ----------------------------------------------------------------- */
-
-
-/* #region ----------------------------------------------------------------------
  * COMPONENT | Checkbox Controls in Step Cards
  * ----------------------------------------------------------------------------- */
 

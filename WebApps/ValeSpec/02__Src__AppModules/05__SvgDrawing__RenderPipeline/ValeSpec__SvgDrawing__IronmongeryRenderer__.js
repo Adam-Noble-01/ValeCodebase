@@ -59,13 +59,17 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
     // HELPER FUNCTION | Build SVG Transform for Handle Placement on a Panel
     // ------------------------------------------------------------
     function ValeSpec__IronmongeryRenderer__BuildHandleTransform(panel, placement, leverHeight_mm) {
-        var isLeftPanel  =  (panel.hand === 'left');
+        var panelHand   =  panel && panel.hand ? panel.hand : 'right';                     // <-- Panel side defines hinge/meeting geometry
+        var handleHand  =  panel && panel.handleHand ? panel.handleHand : panelHand;       // <-- Handle profile can swap by handing
+        var useLeftProfile  =  (handleHand === 'left');
+        var isLeftPanel     =  (panelHand === 'left');
 
-        var transform  =  isLeftPanel
+        var transform  =  useLeftProfile
             ? placement['LeftHand__Transform']  || {}
             : placement['RightHand__Transform'] || {};
 
-        var offsetX_mm  =  transform['OffsetX_mm'] || 0;
+        var magnitudeX_mm  =  Math.abs(transform['OffsetX_mm'] || 0);                      // <-- Profile chooses set-out amount only
+        var offsetX_mm     =  isLeftPanel ? -magnitudeX_mm : magnitudeX_mm;                // <-- Panel side chooses inward direction
         var offsetY_mm  =  leverHeight_mm || transform['OffsetY_mm'] || 1000;
 
         var panelOriginSvgY  =  -panel.y - panel.height;

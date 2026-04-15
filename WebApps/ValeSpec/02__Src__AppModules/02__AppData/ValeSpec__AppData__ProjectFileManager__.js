@@ -15,6 +15,8 @@
    - Fast read cache: localStorage mirrors server data for synchronous access
    - syncFromServer() fetches all projects from disk and rebuilds the cache
    - Provides export for manual JSON file download
+   - IMPORTANT: all create/load/save/sync paths normalise project JSON via AppUtils ProjectSchemaValidator
+   - IMPORTANT: do not add IO paths that bypass schema normalisation
 
    ============================================================================= */
 
@@ -85,6 +87,24 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         var dateModified  =  metadata['ValeSpec__ProjectFile__Metadata__DateModified']   || fallback.dateModified;
 
         return ValeSpec__ProjectFileManager__BuildManifestEntry(code, projectName, documentName, status, dateCreated, dateModified);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Normalise Project Data to Current Schema
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectFileManager__NormaliseProjectData(projectData, sourceLabel) {
+        var SchemaValidator  =  window.ValeSpec__AppUtils__ProjectSchemaValidator;
+        if (!SchemaValidator || !SchemaValidator.ValeSpec__SchemaValidator__ValidateAndNormaliseProject) return { projectData: projectData, didMutate: false };
+
+        var result  =  SchemaValidator.ValeSpec__SchemaValidator__ValidateAndNormaliseProject(projectData, sourceLabel);
+        if (!result || !result.ProjectData) return { projectData: projectData, didMutate: false };
+
+        if (result.DidMutate) {
+            console.log('[ValeSpec__ProjectFileManager] Schema normalised for source:', sourceLabel || 'unknown');
+        }
+
+        return { projectData: result.ProjectData, didMutate: !!result.DidMutate };
     }
     // ------------------------------------------------------------
 
@@ -297,6 +317,9 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
             'ValeSpec__ProjectFile__Assemblies': []
         };
 
+        var normalisedCreate  =  ValeSpec__ProjectFileManager__NormaliseProjectData(projectData, 'createProject');
+        projectData  =  normalisedCreate.projectData || projectData;
+
         localStorage.setItem(storageKey, JSON.stringify(projectData));                              // <-- Write to local cache
         ValeSpec__ProjectFileManager__AddToManifest(
             projectCode,
@@ -327,6 +350,13 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
 
         try {
             var projectData  =  JSON.parse(raw);
+            var normalisedLoad  =  ValeSpec__ProjectFileManager__NormaliseProjectData(projectData, 'loadProject:cache');
+            projectData  =  normalisedLoad.projectData || projectData;
+            if (normalisedLoad.didMutate) {
+                localStorage.setItem(storageKey, JSON.stringify(projectData));                      // <-- Repair stale project schema directly in cache
+                var metadataAfterNormalise  =  projectData['ValeSpec__ProjectFile__Metadata'] || {};
+                ValeSpec__ProjectFileManager__UpdateManifestEntry(projectCode, metadataAfterNormalise);
+            }
             console.log('[ValeSpec__ProjectFileManager] Project loaded from cache: ' + projectCode);
             return projectData;
         } catch (e) {
@@ -340,6 +370,9 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // FUNCTION | Save Project — write to localStorage cache and persist to disk
     // ------------------------------------------------------------
     function ValeSpec__ProjectFileManager__SaveProject(projectData, updateSource) {
+        var normalisedSave  =  ValeSpec__ProjectFileManager__NormaliseProjectData(projectData, updateSource || 'saveProject');
+        projectData  =  normalisedSave.projectData || projectData;
+
         var metadata  =  projectData['ValeSpec__ProjectFile__Metadata'];
         if (!metadata) return Promise.resolve({ ok: false, error: 'Missing project metadata' });
 
@@ -402,8 +435,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
                             .then(function(pJson) {
                                 if (!pJson.ok) return;
                                 var storageKey  =  STORAGE_PREFIX + entry.projectCode;
-                                localStorage.setItem(storageKey, JSON.stringify(pJson.data));       // <-- Populate cache from disk
-                                var metadata  =  pJson.data ? pJson.data['ValeSpec__ProjectFile__Metadata'] : null;
+                                var diskProjectData  =  pJson.data || null;
+                                var normalisedServer  =  ValeSpec__ProjectFileManager__NormaliseProjectData(diskProjectData, 'syncFromServer:disk');
+                                var mergedProjectData =  normalisedServer.projectData || diskProjectData;
+
+                                localStorage.setItem(storageKey, JSON.stringify(mergedProjectData)); // <-- Populate cache from disk using normalised schema
+                                var metadata  =  mergedProjectData ? mergedProjectData['ValeSpec__ProjectFile__Metadata'] : null;
                                 if (metadata) {
                                     freshManifest.push(
                                         ValeSpec__ProjectFileManager__BuildManifestEntryFromMetadata(entry.projectCode, metadata, entry)

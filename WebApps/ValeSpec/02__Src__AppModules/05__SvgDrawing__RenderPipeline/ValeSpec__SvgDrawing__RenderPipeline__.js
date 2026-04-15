@@ -39,6 +39,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     var ValeSpec__RenderPipeline__FrameRenderer         =  null;               // <-- Lazy-loaded frame renderer
     var ValeSpec__RenderPipeline__IronmongeryRenderer    =  null;               // <-- Lazy-loaded ironmongery renderer
     var ValeSpec__RenderPipeline__DimensionRenderer     =  null;               // <-- Lazy-loaded dimension renderer
+    var ValeSpec__RenderPipeline__PanelRoleLabelRenderer =  null;              // <-- Lazy-loaded panel role label renderer
     // ------------------------------------------------------------
 
 
@@ -54,6 +55,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         if (!ValeSpec__RenderPipeline__FrameRenderer)       ValeSpec__RenderPipeline__FrameRenderer        =  window.ValeSpec__SvgDrawing__DoorFrameRenderer;
         if (!ValeSpec__RenderPipeline__IronmongeryRenderer) ValeSpec__RenderPipeline__IronmongeryRenderer  =  window.ValeSpec__SvgDrawing__IronmongeryRenderer;
         if (!ValeSpec__RenderPipeline__DimensionRenderer)   ValeSpec__RenderPipeline__DimensionRenderer    =  window.ValeSpec__SvgDrawing__DimensionRenderer;
+        if (!ValeSpec__RenderPipeline__PanelRoleLabelRenderer) ValeSpec__RenderPipeline__PanelRoleLabelRenderer =  window.ValeSpec__SvgDrawing__PanelRoleLabelRenderer;
     }
     // ------------------------------------------------------------
 
@@ -107,6 +109,14 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     function ValeSpec__RenderPipeline__ExtractDoorType(assemblyData) {
         var typeSection  =  assemblyData['Assembly__DoorType__Config'] || {};
         return typeSection['Assembly__DoorType__Config__Type'] || '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Door Handing from Assembly Data
+    // ------------------------------------------------------------
+    function ValeSpec__RenderPipeline__ExtractDoorHanding(assemblyData) {
+        return assemblyData['Handing'] === 'Right' ? 'Right' : 'Left';
     }
     // ------------------------------------------------------------
 
@@ -218,21 +228,23 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         var dims      =  ValeSpec__RenderPipeline__ExtractDimensions(assemblyData);
         var doorType  =  ValeSpec__RenderPipeline__ExtractDoorType(assemblyData);
+        var handing   =  ValeSpec__RenderPipeline__ExtractDoorHanding(assemblyData);
         if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
 
-        var frameConfig  =  config['SvgDrawing__Frame__Config']       || {};
-        var panelConfig  =  config['SvgDrawing__Panel__Config']       || {};
-        var openingCfg   =  config['SvgDrawing__Opening__Config']     || {};
-        var ironConfig   =  config['SvgDrawing__Ironmongery__Config'] || {};
-        var dimConfig    =  config['SvgDrawing__Dimension__Config']   || {};
-        var vpConfig     =  config['SvgDrawing__Viewport__Config']    || {};
+        var frameConfig      =  config['SvgDrawing__Frame__Config']            || {};
+        var panelConfig      =  config['SvgDrawing__Panel__Config']            || {};
+        var openingCfg       =  config['SvgDrawing__Opening__Config']          || {};
+        var panelLabelConfig =  config['SvgDrawing__PanelRoleLabel__Config']   || {};
+        var ironConfig       =  config['SvgDrawing__Ironmongery__Config']      || {};
+        var dimConfig        =  config['SvgDrawing__Dimension__Config']         || {};
+        var vpConfig         =  config['SvgDrawing__Viewport__Config']          || {};
 
         var openingConfig    =  ValeSpec__RenderPipeline__ExtractOpeningConfig(assemblyData);
         var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
         var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
-        var panelResult  =  ValeSpec__RenderPipeline__PanelRenderer.ValeSpec__DoorPanelRenderer__RenderPanels(doorType, dims.width_mm, dims.height_mm, panelConfig);
+        var panelResult  =  ValeSpec__RenderPipeline__PanelRenderer.ValeSpec__DoorPanelRenderer__RenderPanels(doorType, dims.width_mm, dims.height_mm, panelConfig, handing);
 
         var svg  =  '';
         svg += '<svg xmlns="http://www.w3.org/2000/svg"'
@@ -258,6 +270,12 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig);
         svg += '</g>';
 
+        if (ValeSpec__RenderPipeline__PanelRoleLabelRenderer) {
+            svg += '<g id="ValeSpec__SvgDrawing__LayerPanelRoleLabels">';
+            svg += ValeSpec__RenderPipeline__PanelRoleLabelRenderer.ValeSpec__PanelRoleLabelRenderer__RenderPanelRoleLabels(panelResult.panels, doorType, panelLabelConfig);
+            svg += '</g>';
+        }
+
         svg += '<g id="ValeSpec__SvgDrawing__LayerDimensions">';
         svg += ValeSpec__RenderPipeline__DimensionRenderer.ValeSpec__DimensionRenderer__RenderDimensions(dims.width_mm, dims.height_mm, dimConfig);
         svg += '</g>';
@@ -278,14 +296,16 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         var dims      =  ValeSpec__RenderPipeline__ExtractDimensions(assemblyData);
         var doorType  =  ValeSpec__RenderPipeline__ExtractDoorType(assemblyData);
+        var handing   =  ValeSpec__RenderPipeline__ExtractDoorHanding(assemblyData);
         if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
 
-        var frameConfig  =  config['SvgDrawing__Frame__Config']       || {};
-        var panelConfig  =  config['SvgDrawing__Panel__Config']       || {};
-        var openingCfg   =  config['SvgDrawing__Opening__Config']     || {};
-        var ironConfig   =  config['SvgDrawing__Ironmongery__Config'] || {};
-        var vpConfig     =  config['SvgDrawing__Viewport__Config']    || {};
+        var frameConfig      =  config['SvgDrawing__Frame__Config']            || {};
+        var panelConfig      =  config['SvgDrawing__Panel__Config']            || {};
+        var openingCfg       =  config['SvgDrawing__Opening__Config']          || {};
+        var panelLabelConfig =  config['SvgDrawing__PanelRoleLabel__Config']   || {};
+        var ironConfig       =  config['SvgDrawing__Ironmongery__Config']      || {};
+        var vpConfig         =  config['SvgDrawing__Viewport__Config']          || {};
 
         var openingConfig    =  ValeSpec__RenderPipeline__ExtractOpeningConfig(assemblyData);
         var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
@@ -294,7 +314,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var widthAttr   =  maxWidth  ? ' width="'  + maxWidth  + '"' : '';
         var heightAttr  =  maxHeight ? ' height="' + maxHeight + '"' : '';
 
-        var panelResult  =  ValeSpec__RenderPipeline__PanelRenderer.ValeSpec__DoorPanelRenderer__RenderPanels(doorType, dims.width_mm, dims.height_mm, panelConfig);
+        var panelResult  =  ValeSpec__RenderPipeline__PanelRenderer.ValeSpec__DoorPanelRenderer__RenderPanels(doorType, dims.width_mm, dims.height_mm, panelConfig, handing);
 
         var svg  =  '';
         svg += '<svg xmlns="http://www.w3.org/2000/svg"'
@@ -319,6 +339,12 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerIronmongery">';
         svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig);
         svg += '</g>';
+
+        if (ValeSpec__RenderPipeline__PanelRoleLabelRenderer) {
+            svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerPanelRoleLabels">';
+            svg += ValeSpec__RenderPipeline__PanelRoleLabelRenderer.ValeSpec__PanelRoleLabelRenderer__RenderPanelRoleLabels(panelResult.panels, doorType, panelLabelConfig);
+            svg += '</g>';
+        }
 
         svg += '</svg>';
 

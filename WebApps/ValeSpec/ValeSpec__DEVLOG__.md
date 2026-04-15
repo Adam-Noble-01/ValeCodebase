@@ -3,6 +3,49 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.0 - 15-Apr-2026
+
+### Project schema validation + canonical load/save alignment
+**Overview**
+- Added **`ValeSpec__AppUtils__ProjectSchemaValidator__.js`** as the schema compatibility utility for project data:
+  - normalises project metadata/global settings defaults
+  - normalises assembly blocks (door type, opening direction, handing, fixed panel, dimensions, lever config)
+  - migrates legacy data shape variants to canonical keys/values expected by current UI modules.
+- Wired normalisation into **all ProjectFileManager IO paths** in `ValeSpec__AppData__ProjectFileManager__.js`:
+  - `CreateProject`
+  - `LoadProject` (with cache repair writeback when mutations occur)
+  - `SaveProject`
+  - `SyncFromServer` cache hydration.
+- Verified local project data alignment (including `ValeSpec__ProjectFile__2601__.json`) against canonical schema expectations.
+
+**Result**
+- Existing and legacy project files now enter the app in a stable, consistent shape, reducing UI fallback/reset behaviour caused by schema drift.
+
+
+### Assembly Editor hydration race fix (edit existing assembly)
+**Overview**
+- Fixed async initialisation ordering so assembly refresh waits for form controls/config to finish building:
+  - `ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js` now awaits step/sub-module init
+  - `ValeSpec__AssemblyEditor__Layout__.js` now awaits sub-module initialisation before first render/refresh cycle.
+- This prevents early `RefreshFromAssembly(...)` calls from running before Door Type options are present in the DOM.
+
+**Result**
+- Editing an existing assembly now reliably rehydrates Door Type and related controls without forcing users to reselect values to restore preview.
+
+
+### Header documentation hardening for schema dependency
+**Overview**
+- Added explicit “IMPORTANT” header notes in relevant scripts to point to schema-normalisation ownership and dependency:
+  - `ValeSpec__AppUtils__ProjectSchemaValidator__.js`
+  - `ValeSpec__AppData__ProjectFileManager__.js`
+  - `ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js`
+  - `ValeSpec__DocEditor__SectionManager__.js`
+
+**Result**
+- Future maintenance has clearer guidance on where schema compatibility is enforced and which modules depend on canonicalised project data.
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.0.9 - 15-Apr-2026
 
 ### App-wide browser autofill suppression

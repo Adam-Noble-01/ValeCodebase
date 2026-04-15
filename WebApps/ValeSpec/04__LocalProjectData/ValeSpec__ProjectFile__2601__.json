@@ -13,7 +13,7 @@
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
         "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
     "ValeSpec__ProjectFile__Assemblies": [
@@ -46,7 +46,12 @@
             },
             "Assembly__Opening__Config": {
                 "Assembly__Opening__Config__FixedPanel": "none"
-            }
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Handing": "Left"
         }
     ]
 }

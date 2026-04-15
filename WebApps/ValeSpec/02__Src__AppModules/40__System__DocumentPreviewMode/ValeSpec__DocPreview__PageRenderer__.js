@@ -167,7 +167,11 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     function ValeSpec__PageRenderer__BuildAssemblyBlock(assembly, index) {
         var title  =  ValeSpec__PageRenderer__BuildAssemblyTitle(assembly);
 
-        var html  =  '<div class="ValeSpec__DocPreview__AssemblyBlock">';
+        var html  =  '';
+        if (index > 0) {
+            html  +=  '<hr class="ValeSpec__DocPreview__AssemblySectionHr" />';  // <-- Separator between assembly sections
+        }
+        html  +=  '<div class="ValeSpec__DocPreview__AssemblyBlock">';
         html     +=      '<div class="ValeSpec__DocPreview__AssemblyTitle">' + title + '</div>';
         html     +=      '<div class="ValeSpec__DocPreview__DrawingContainer" id="ValeSpec__DocPreview__Drawing_' + index + '"></div>';
 

@@ -367,9 +367,10 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__Miscellaneous__Init                : ValeSpec__Miscellaneous__Init,
-        ValeSpec__Miscellaneous__RefreshFromAssembly : ValeSpec__Miscellaneous__RefreshFromAssembly,
-        ValeSpec__Miscellaneous__FlushToAssembly     : ValeSpec__Miscellaneous__FlushToAssembly
+        ValeSpec__Miscellaneous__Init                     : ValeSpec__Miscellaneous__Init,
+        ValeSpec__Miscellaneous__RefreshFromAssembly      : ValeSpec__Miscellaneous__RefreshFromAssembly,
+        ValeSpec__Miscellaneous__FlushToAssembly          : ValeSpec__Miscellaneous__FlushToAssembly,
+        ValeSpec__Miscellaneous__ResolveLabelForKey       : ValeSpec__Miscellaneous__ResolveLabelForKey
     };
 
 })();

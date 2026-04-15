@@ -19,7 +19,7 @@
         "SvgDrawing__Dimension__Config__Description"         : "Colour, sizing, and offset parameters for red dimension annotation lines and labels.",
         "SvgDrawing__Dimension__Config__LineColor"           : "#cc3333",
         "SvgDrawing__Dimension__Config__TextColor"           : "#cc3333",
-        "SvgDrawing__Dimension__Config__FontSizeScaleFactor" : 0.15,
+        "SvgDrawing__Dimension__Config__FontSizeScaleFactor" : 0.0175,
         "SvgDrawing__Dimension__Config__TickSizeMm"          : 15,
         "SvgDrawing__Dimension__Config__OffsetFromFrameMm"   : 60,
         "SvgDrawing__Dimension__Config__ExtensionPastDimensionLineMm" : 20,

@@ -61,8 +61,10 @@
             "Assembly__Miscellaneous__Config": {
                 "Assembly__Miscellaneous__Config__Items": [
                     "Misc_LetterPlate",
-                    "Misc_CatFlap"
-                ]
+                    "Misc_CatFlap",
+                    "Misc_Other"
+                ],
+                "Assembly__Miscellaneous__Config__OtherText": "Ensure These Notes Are Reported In The Misc Sections of the tables if text exists here."
             }
         },
         {

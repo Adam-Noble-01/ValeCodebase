@@ -264,6 +264,11 @@
     .ValeSpec__DocEditor__SectionBlock .ValeSpec__DocPreview__SpecLabel {
         width                              : 38%;
     }
+
+    .ValeSpec__DocEditor__SectionBlock .ValeSpec__DocPreview__SpecDetail--multiline {
+        white-space                        : pre-wrap;
+        word-break                         : break-word;
+    }
     /* ------------------------------------------------------------ */
 
 

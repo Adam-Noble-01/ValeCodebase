@@ -26,6 +26,10 @@
    - Two-pass renderer: measure total height then render into custom-height page.
    - Spec table rows mirror SpecTableRenderer data extraction logic exactly.
 
+   15-Apr-2026 - Spec table miscellaneous
+   - Miscellaneous row uses human-readable labels via shared SpecTableRenderer helper.
+   - Optional Miscellaneous Notes row; PDF table uses dynamic row heights for wrapped text.
+
    ============================================================================= */
 
 // =============================================================================
@@ -60,12 +64,21 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
     const DRAWING_MAX_HEIGHT_MM    = 80;                                        // <-- Max height for rasterised SVG
     const DRAWING_GAP_BELOW_MM     = 4;                                         // <-- Gap below drawing before table
     const TABLE_HEADER_HEIGHT_MM   = 7;                                         // <-- Table header row height
-    const TABLE_ROW_HEIGHT_MM      = 6;                                         // <-- Table body row height
-    const TABLE_ROW_COUNT          = 8;                                         // <-- Number of spec table rows
-    const SECTION_GAP_MM           = 12;                                        // <-- Gap between assembly blocks
+    const TABLE_ROW_HEIGHT_MM      = 6;                                         // <-- Minimum table body row height
+    const SPEC_TABLE_LINE_HEIGHT_MM = 3.5;                                      // <-- Per-line height for wrapped spec table cells (8pt body)
+    const SECTION_GAP_MM           = 12;                                        // <-- Gap after last assembly (before job notes)
+    const ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM = 6;                              // <-- Space above inter-assembly horizontal rule
+    const ASSEMBLY_SECTION_RULE_GAP_AFTER_MM  = 6;                              // <-- Space below inter-assembly horizontal rule
     const JOBNOTES_TITLE_HEIGHT_MM = 8;                                         // <-- Job notes heading height
     const JOBNOTES_LINE_HEIGHT_MM  = 5;                                         // <-- Job notes text line height
     const JOBNOTES_TOP_GAP_MM      = 6;                                         // <-- Gap above job notes section
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Rule Stroke Widths (mm, align with preview CSS 1px / 2px borders)
+    // ------------------------------------------------------------
+    const LINE_WIDTH_RULE_1PX_MM   = 0.15;                                      // <-- Matches 1px hr / table row borders in DocPreview
+    const LINE_WIDTH_RULE_2PX_MM   = 0.30;                                      // <-- Matches 2px ValeSpec__DocPreview__BrandingHeader rule
     // ------------------------------------------------------------
 
 
@@ -300,9 +313,22 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         }
         rows.push(['Cabin Hooks', hooksDesc]);
 
-        var miscCfg   =  assembly['Assembly__Miscellaneous__Config'] || {};
-        var miscItems =  miscCfg['Assembly__Miscellaneous__Config__Items'] || [];
-        rows.push(['Miscellaneous', miscItems.length ? miscItems.join(', ') : 'None']);
+        var miscLine   =  'None';
+        var miscNotes  =  null;
+        var SpecRenderer  =  window.ValeSpec__DocPreview__SpecTableRenderer;
+        if (SpecRenderer && SpecRenderer.ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf) {
+            var miscParts  =  SpecRenderer.ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf(assembly);
+            miscLine   =  miscParts.itemsLine;
+            miscNotes  =  miscParts.notesText;
+        } else {
+            var miscCfgFb   =  assembly['Assembly__Miscellaneous__Config'] || {};
+            var miscItemsFb =  miscCfgFb['Assembly__Miscellaneous__Config__Items'] || [];
+            miscLine  =  miscItemsFb.length ? miscItemsFb.join(', ') : 'None';
+        }
+        rows.push(['Miscellaneous', miscLine]);
+        if (miscNotes) {
+            rows.push(['Miscellaneous Notes', miscNotes]);
+        }
 
         return rows;
     }
@@ -466,7 +492,7 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
         cursorY  +=  BRANDING_LOGO_HEIGHT_MM + BRANDING_RULE_GAP_MM;
         doc.setDrawColor(COLOUR_RULE_LINE[0], COLOUR_RULE_LINE[1], COLOUR_RULE_LINE[2]);
-        doc.setLineWidth(0.5);
+        doc.setLineWidth(LINE_WIDTH_RULE_2PX_MM);
         doc.line(x, cursorY, x + contentWidth, cursorY);
 
         return cursorY + 4;
@@ -482,6 +508,19 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
         doc.text(title, x, y + 4);
         return y + ASSEMBLY_TITLE_HEIGHT_MM;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Measure Height of One Spec Table Body Row (wrapped text)
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, row, labelColW, valueColW) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(FONT_SIZE_TABLE_BODY);
+        var labelLines  =  doc.splitTextToSize(row[0], Math.max(8, labelColW - 4));
+        var valueLines  =  doc.splitTextToSize(row[1], Math.max(8, valueColW - 4));
+        var lineCount   =  Math.max(labelLines.length, valueLines.length);
+        return Math.max(TABLE_ROW_HEIGHT_MM, 2 + lineCount * SPEC_TABLE_LINE_HEIGHT_MM);
     }
     // ------------------------------------------------------------
 
@@ -502,28 +541,31 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         doc.text('DETAIL', x + labelColW + 2, cursorY + 4.5);
         cursorY  +=  TABLE_HEADER_HEIGHT_MM;
 
-        doc.setFont('helvetica', 'normal');
         doc.setFontSize(FONT_SIZE_TABLE_BODY);
 
         for (var i = 0; i < rows.length; i++) {
+            var rowH  =  ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, rows[i], labelColW, valueColW);
+
             if (i % 2 === 1) {
                 doc.setFillColor(COLOUR_TABLE_ALT_ROW[0], COLOUR_TABLE_ALT_ROW[1], COLOUR_TABLE_ALT_ROW[2]);
-                doc.rect(x, cursorY, contentWidth, TABLE_ROW_HEIGHT_MM, 'F');
+                doc.rect(x, cursorY, contentWidth, rowH, 'F');
             }
 
             doc.setDrawColor(COLOUR_TABLE_BORDER[0], COLOUR_TABLE_BORDER[1], COLOUR_TABLE_BORDER[2]);
-            doc.setLineWidth(0.15);
-            doc.line(x, cursorY + TABLE_ROW_HEIGHT_MM, x + contentWidth, cursorY + TABLE_ROW_HEIGHT_MM);
+            doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
+            doc.line(x, cursorY + rowH, x + contentWidth, cursorY + rowH);
 
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
-            doc.text(rows[i][0], x + 2, cursorY + 4);
+            var labelLines  =  doc.splitTextToSize(rows[i][0], labelColW - 4);
+            doc.text(labelLines, x + 2, cursorY + 4);
 
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
-            doc.text(rows[i][1], x + labelColW + 2, cursorY + 4);
+            var valueLines  =  doc.splitTextToSize(rows[i][1], valueColW - 4);
+            doc.text(valueLines, x + labelColW + 2, cursorY + 4);
 
-            cursorY  +=  TABLE_ROW_HEIGHT_MM;
+            cursorY  +=  rowH;
         }
 
         return cursorY;
@@ -539,7 +581,7 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         var cursorY  =  y + JOBNOTES_TOP_GAP_MM;
 
         doc.setDrawColor(COLOUR_TABLE_BORDER[0], COLOUR_TABLE_BORDER[1], COLOUR_TABLE_BORDER[2]);
-        doc.setLineWidth(0.3);
+        doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
         doc.line(x, cursorY, x + contentWidth, cursorY);
         cursorY  +=  4;
 
@@ -577,11 +619,25 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
         height  +=  BRANDING_TOTAL_HEIGHT_MM;
 
+        var contentWidth  =  pdfConfig.pageWidthMm - (pad * 2);
+        var labelColW     =  contentWidth * 0.40;
+        var valueColW     =  contentWidth * 0.60;
+
         for (var i = 0; i < assemblies.length; i++) {
             height  +=  ASSEMBLY_TITLE_HEIGHT_MM;
             height  +=  DRAWING_MAX_HEIGHT_MM + DRAWING_GAP_BELOW_MM;
-            height  +=  TABLE_HEADER_HEIGHT_MM + (TABLE_ROW_COUNT * TABLE_ROW_HEIGHT_MM);
-            height  +=  SECTION_GAP_MM;
+
+            var specRows  =  ValeSpec__PdfExporter__ExtractSpecRows(assemblies[i]);
+            height  +=  TABLE_HEADER_HEIGHT_MM;
+            for (var r = 0; r < specRows.length; r++) {
+                height  +=  ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, specRows[r], labelColW, valueColW);
+            }
+
+            if (i < assemblies.length - 1) {
+                height  +=  ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM + ASSEMBLY_SECTION_RULE_GAP_AFTER_MM;
+            } else {
+                height  +=  SECTION_GAP_MM;
+            }
         }
 
         if (jobNotes) {
@@ -720,7 +776,15 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
                 var specRows  =  ValeSpec__PdfExporter__ExtractSpecRows(assembly);
                 cursorY       =  ValeSpec__PdfExporter__RenderSpecTable(doc, specRows, x, cursorY, contentWidth);
 
-                cursorY  +=  SECTION_GAP_MM;
+                if (i < assemblies.length - 1) {
+                    cursorY  +=  ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM;
+                    doc.setDrawColor(COLOUR_RULE_LINE[0], COLOUR_RULE_LINE[1], COLOUR_RULE_LINE[2]);
+                    doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
+                    doc.line(x, cursorY, x + contentWidth, cursorY);
+                    cursorY  +=  ASSEMBLY_SECTION_RULE_GAP_AFTER_MM;
+                } else {
+                    cursorY  +=  SECTION_GAP_MM;
+                }
             }
 
             // Render job notes

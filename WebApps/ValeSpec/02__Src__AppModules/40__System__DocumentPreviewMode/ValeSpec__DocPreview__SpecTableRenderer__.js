@@ -12,6 +12,7 @@
    DESCRIPTION:
    - ValeSpec__SpecTableRenderer__RenderSpecTable(assemblyData) returns HTML table string
    - Rows: Door Type, Dimensions, Multi-Point, Hinges, Handle, Cylinder, Cabin Hooks, Misc
+   - Optional row Miscellaneous Notes when Assembly__Miscellaneous__Config__OtherText is set
    - Uses ValeSpec__DocPreview__SpecTable CSS classes for styling
    - Config-driven table styling via DocPreview__SpecTable__Config
 
@@ -23,12 +24,49 @@
 
 const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
+    // HELPER FUNCTION | Escape HTML for Safe Table Cell Text
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__EscapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Miscellaneous Option Key to Display Label
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__ResolveMiscLabel(key) {
+        var Misc  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
+        if (Misc && Misc.ValeSpec__Miscellaneous__ResolveLabelForKey) {
+            return Misc.ValeSpec__Miscellaneous__ResolveLabelForKey(key);
+        }
+        return key;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build a Single Table Row
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__BuildRow(label, value) {
         var html  =  '<tr>';
         html     +=      '<td class="ValeSpec__DocPreview__SpecLabel">' + label + '</td>';
         html     +=      '<td>' + (value || '—') + '</td>';
+        html     +=  '</tr>';
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Miscellaneous Notes Row (escaped, multiline-friendly)
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__BuildMiscNotesRow(escapedNotes) {
+        var html  =  '<tr>';
+        html     +=      '<td class="ValeSpec__DocPreview__SpecLabel">Miscellaneous Notes</td>';
+        html     +=      '<td class="ValeSpec__DocPreview__SpecDetail ValeSpec__DocPreview__SpecDetail--multiline">' + escapedNotes + '</td>';
         html     +=  '</tr>';
         return html;
     }
@@ -123,13 +161,39 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Miscellaneous Items
+    // HELPER FUNCTION | Extract Miscellaneous Items (human-readable labels)
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetMiscDesc(assembly) {
         var miscConfig  =  assembly['Assembly__Miscellaneous__Config'] || {};
         var items       =  miscConfig['Assembly__Miscellaneous__Config__Items'] || [];
         if (!items.length) return 'None';
-        return items.join(', ');
+        var labels  =  [];
+        for (var i = 0; i < items.length; i++) {
+            labels.push(ValeSpec__SpecTableRenderer__ResolveMiscLabel(items[i]));
+        }
+        return labels.join(', ');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Trimmed Other Text (for conditional notes row / PDF)
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetMiscOtherTextTrimmed(assembly) {
+        var miscConfig  =  assembly['Assembly__Miscellaneous__Config'] || {};
+        var raw         =  miscConfig['Assembly__Miscellaneous__Config__OtherText'];
+        if (raw === null || raw === undefined) return '';
+        return String(raw).trim();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Miscellaneous Line + Optional Notes for PDF Mirror
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf(assembly) {
+        return {
+            itemsLine  : ValeSpec__SpecTableRenderer__GetMiscDesc(assembly),
+            notesText  : ValeSpec__SpecTableRenderer__GetMiscOtherTextTrimmed(assembly) || null
+        };
     }
     // ------------------------------------------------------------
 
@@ -155,6 +219,12 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cylinder Requirement',   ValeSpec__SpecTableRenderer__GetCylinderDesc(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cabin Hooks',            ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Miscellaneous',          ValeSpec__SpecTableRenderer__GetMiscDesc(assemblyData));
+
+        var otherNotes  =  ValeSpec__SpecTableRenderer__GetMiscOtherTextTrimmed(assemblyData);
+        if (otherNotes) {
+            html  +=  ValeSpec__SpecTableRenderer__BuildMiscNotesRow(ValeSpec__SpecTableRenderer__EscapeHtml(otherNotes));
+        }
+
         html  +=  '</tbody>';
 
         html  +=  '</table>';
@@ -166,7 +236,8 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__SpecTableRenderer__RenderSpecTable  : ValeSpec__SpecTableRenderer__RenderSpecTable
+        ValeSpec__SpecTableRenderer__RenderSpecTable           : ValeSpec__SpecTableRenderer__RenderSpecTable,
+        ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf    : ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf
     };
 
 })();

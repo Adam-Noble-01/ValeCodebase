@@ -117,7 +117,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         html     +=      '<div class="ValeSpec__DocManagement__EmptyState__Icon">&#128203;</div>';
         html     +=      '<div class="ValeSpec__DocManagement__EmptyState__Title">No Projects Yet</div>';
         html     +=      '<div class="ValeSpec__DocManagement__EmptyState__Text">';
-        html     +=          'Create a new project or import an existing JSON file to get started.';
+        html     +=          'Create a new project to get started.';
         html     +=      '</div>';
         html     +=  '</div>';
         return html;

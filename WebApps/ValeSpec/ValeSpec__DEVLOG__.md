@@ -3,6 +3,30 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.0.8 - 15-Apr-2026
+
+### Codebase Housekeeping — Import JSON Removal and Region Block Rollout
+
+**Overview**
+- Removed the redundant **Import JSON** feature from the Projects page. All project data is authoratively loaded via the Flask server (`SyncFromServer` on tab entry), making the local file-picker path obsolete — imported projects were never written back to the server, leaving them orphaned from the disk store.
+- Applied **region comment blocks** across six JS files to improve collapsibility and readability in the IDE.
+
+**Import JSON — Removed**
+- `ValeSpec__DocManagement__ProjectActions__.js` — removed `ValeSpec__ProjectActions__OnImportClick` function (hidden file input handler), the `Import JSON` button HTML from `Render`, and the `importBtn` event binding. Description block updated.
+- `ValeSpec__AppData__ProjectFileManager__.js` — removed `ValeSpec__ProjectFileManager__ImportProjectFromJson` function (FileReader + JSON.parse pipeline) and its public API export entry. Description block updated to "export only".
+- `ValeSpec__DocManagement__ProjectList__.js` — empty-state message updated: "Create a new project to get started." (removed import reference).
+- `ValeSpec__DocManagement__Styles__Main__.css` — removed `.ValeSpec__DocManagement__BtnSecondary` and `:hover` rules (exclusively used by the now-deleted Import JSON button; modal Cancel buttons use the separate `ValeSpec__Modal__BtnSecondary` class and are unaffected).
+
+**Region Blocks Added**
+- `ValeSpec__DocManagement__ProjectActions__.js` — 4 sub-regions: Modal Dialog Helpers / New Project Flow / Project Row Actions / Render and Initialisation.
+- `ValeSpec__SvgDrawing__RenderPipeline__.js` — 4 sub-regions: Config Loading and Sub-Renderer Initialisation / Assembly Data Extraction Helpers / Viewport and ViewBox Calculation / SVG Render Functions.
+- `ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js` — 6 sub-regions: Config Loading and Basic State Utilities / Dimension Constraint and Profile Helpers / Dimension Input Event Handling and Debounce / Door Condition and Door Type Option Resolution / Assembly State Change Handlers / UI State Helpers / DOM Building Steps 1 and 2 / Summary Callbacks, Refresh and Initialisation.
+- `ValeSpec__AppData__ProjectFileManager__.js` — 4 sub-regions: Manifest Read and Write Helpers / Server API Communication / Project CRUD Operations / Server Sync and JSON Export.
+
+**Result**
+- Import JSON feature is fully excised with no orphaned references; codebase is cleaner with zero dead-path code in the project management flow. Key long-form JS files are now collapsible by logical grouping, making navigation faster in the IDE.
+
+# ---------------------------------------------------------
 ## ValeSpec v0.0.7 - 15-Apr-2026
 
 ### Document Preview — PDF Export (jsPDF, ValeVision3D Parity)

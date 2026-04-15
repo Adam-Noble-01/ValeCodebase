@@ -1,0 +1,223 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "26985",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Tibbs-Smith",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery Project",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Completed",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
+        "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Satin Nickel",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Newton Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": "Dog is a wanker bites alot\n"
+    },
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_603764",
+                "Assembly__Identity__Config__Title": "",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Single Door",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1000,
+                "Assembly__Dimensions__Config__HeightMm": 2200
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__Projection": 6
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 3,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Handing": "Left",
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "12\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 4
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_LetterPlate",
+                    "Misc_CatFlap"
+                ]
+            }
+        },
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_595049",
+                "Assembly__Identity__Config__Title": "Back Doors",
+                "Assembly__Identity__Config__SortOrder": 1
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Inward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 2000,
+                "Assembly__Dimensions__Config__HeightMm": 2300
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__Projection": 4
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "12\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 4
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_OverheadRestrictors",
+                    "Misc_LetterPlate",
+                    "Misc_CatFlap",
+                    "Misc_Other"
+                ],
+                "Assembly__Miscellaneous__Config__OtherText": "Remember dog is evil."
+            }
+        },
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_301710",
+                "Assembly__Identity__Config__Title": "East Doors",
+                "Assembly__Identity__Config__SortOrder": 2
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 2000,
+                "Assembly__Dimensions__Config__HeightMm": 2400
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__Projection": 4
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "12\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 4
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_OverheadRestrictors",
+                    "Misc_LetterPlate",
+                    "Misc_CatFlap",
+                    "Misc_Other"
+                ],
+                "Assembly__Miscellaneous__Config__OtherText": "Remember dog is evil."
+            }
+        },
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_585959",
+                "Assembly__Identity__Config__Title": "West Doors",
+                "Assembly__Identity__Config__SortOrder": 3
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 2000,
+                "Assembly__Dimensions__Config__HeightMm": 2400
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__Projection": 4
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "12\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 4
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_OverheadRestrictors",
+                    "Misc_LetterPlate",
+                    "Misc_CatFlap",
+                    "Misc_Other"
+                ],
+                "Assembly__Miscellaneous__Config__OtherText": "Remember dog is evil."
+            }
+        }
+    ]
+}

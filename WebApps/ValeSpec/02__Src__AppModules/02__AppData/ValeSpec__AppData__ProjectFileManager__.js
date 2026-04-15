@@ -14,7 +14,7 @@
    - Primary storage: server API writing JSON files to 04__LocalProjectData/
    - Fast read cache: localStorage mirrors server data for synchronous access
    - syncFromServer() fetches all projects from disk and rebuilds the cache
-   - Provides import/export for manual JSON file management
+   - Provides export for manual JSON file download
 
    ============================================================================= */
 
@@ -31,6 +31,10 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     const API_BASE        =  '/api/projects';          // <-- Server project API root
     // ------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------------
+// REGION | Manifest Read and Write Helpers
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Get Manifest from localStorage
     // ------------------------------------------------------------
@@ -59,12 +63,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         var safeDateModified =  dateModified || safeDateCreated || new Date().toISOString().split('T')[0];
 
         return {
-            projectCode    : code || '',
-            projectName    : name || '',
-            documentName   : docName || '',
-            status         : safeStatus,
-            dateCreated    : safeDateCreated,
-            dateModified   : safeDateModified
+            projectCode   : code     || '',
+            projectName   : name     || '',
+            documentName  : docName  || '',
+            status        : safeStatus,
+            dateCreated   : safeDateCreated,
+            dateModified  : safeDateModified
         };
     }
     // ------------------------------------------------------------
@@ -73,12 +77,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // HELPER FUNCTION | Build Manifest Entry from Project Metadata
     // ------------------------------------------------------------
     function ValeSpec__ProjectFileManager__BuildManifestEntryFromMetadata(code, metadata, fallbackEntry) {
-        var fallback       =  fallbackEntry || {};
-        var projectName    =  metadata['ValeSpec__ProjectFile__Metadata__ProjectName']    || fallback.projectName;
-        var documentName   =  metadata['ValeSpec__ProjectFile__Metadata__DocumentName']   || fallback.documentName;
-        var status         =  metadata['ValeSpec__ProjectFile__Metadata__DocumentStatus'] || fallback.status;
-        var dateCreated    =  metadata['ValeSpec__ProjectFile__Metadata__DateCreated']    || fallback.dateCreated;
-        var dateModified   =  metadata['ValeSpec__ProjectFile__Metadata__DateModified']   || fallback.dateModified;
+        var fallback      =  fallbackEntry || {};
+        var projectName   =  metadata['ValeSpec__ProjectFile__Metadata__ProjectName']    || fallback.projectName;
+        var documentName  =  metadata['ValeSpec__ProjectFile__Metadata__DocumentName']   || fallback.documentName;
+        var status        =  metadata['ValeSpec__ProjectFile__Metadata__DocumentStatus'] || fallback.status;
+        var dateCreated   =  metadata['ValeSpec__ProjectFile__Metadata__DateCreated']    || fallback.dateCreated;
+        var dateModified  =  metadata['ValeSpec__ProjectFile__Metadata__DateModified']   || fallback.dateModified;
 
         return ValeSpec__ProjectFileManager__BuildManifestEntry(code, projectName, documentName, status, dateCreated, dateModified);
     }
@@ -170,12 +174,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         var left   =  a || {};
         var right  =  b || {};
         return (
-            (left.projectCode || '')  === (right.projectCode || '')  &&
-            (left.projectName || '')  === (right.projectName || '')  &&
-            (left.documentName || '') === (right.documentName || '') &&
-            (left.status || 'Draft')  === (right.status || 'Draft')  &&
-            (left.dateCreated || '')  === (right.dateCreated || '')  &&
-            (left.dateModified || '') === (right.dateModified || '')
+            (left.projectCode  || '')      === (right.projectCode  || '')      &&
+            (left.projectName  || '')      === (right.projectName  || '')      &&
+            (left.documentName || '')      === (right.documentName || '')      &&
+            (left.status       || 'Draft') === (right.status       || 'Draft') &&
+            (left.dateCreated  || '')      === (right.dateCreated  || '')      &&
+            (left.dateModified || '')      === (right.dateModified || '')
         );
     }
     // ------------------------------------------------------------
@@ -190,6 +194,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Server API Communication
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | POST or DELETE to Server API and Return Result
     // ------------------------------------------------------------
@@ -228,6 +238,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Project CRUD Operations
+// -----------------------------------------------------------------------------
 
     // FUNCTION | List All Projects
     // ------------------------------------------------------------
@@ -273,10 +289,10 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
                 'ValeSpec__ProjectFile__Metadata__RevisionCode'    : 'A'
             },
             'ValeSpec__ProjectFile__GlobalSettings': {
-                'ValeSpec__ProjectFile__GlobalSettings__Description'          : 'Document-wide settings that cascade to all assemblies.',
-                'ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'    : 'Unlacquered Brass',
-                'ValeSpec__ProjectFile__GlobalSettings__LeverType'            : 'Scroll',
-                'ValeSpec__ProjectFile__GlobalSettings__JobNotes'             : ''
+                'ValeSpec__ProjectFile__GlobalSettings__Description'        : 'Document-wide settings that cascade to all assemblies.',
+                'ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'  : 'Unlacquered Brass',
+                'ValeSpec__ProjectFile__GlobalSettings__LeverType'          : 'Scroll',
+                'ValeSpec__ProjectFile__GlobalSettings__JobNotes'           : ''
             },
             'ValeSpec__ProjectFile__Assemblies': []
         };
@@ -359,6 +375,12 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Server Sync and JSON Export
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Sync All Projects from Disk into localStorage Cache
     // ------------------------------------------------------------
@@ -436,44 +458,7 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     }
     // ------------------------------------------------------------
 
-
-    // FUNCTION | Import Project from JSON File
-    // ------------------------------------------------------------
-    function ValeSpec__ProjectFileManager__ImportProjectFromJson(file) {
-        return new Promise(function(resolve, reject) {
-            var reader  =  new FileReader();
-            reader.onload  =  function(e) {
-                try {
-                    var projectData  =  JSON.parse(e.target.result);
-                    if (!projectData['ValeSpec__ProjectFile__Metadata']) {
-                        reject(new Error('Invalid project file: missing metadata'));
-                        return;
-                    }
-
-                    var metadata     =  projectData['ValeSpec__ProjectFile__Metadata'];
-                    var projectCode  =  metadata['ValeSpec__ProjectFile__Metadata__ProjectCode'];
-                    var storageKey   =  STORAGE_PREFIX + projectCode;
-
-                    localStorage.setItem(storageKey, JSON.stringify(projectData));
-                    ValeSpec__ProjectFileManager__AddToManifest(
-                        projectCode,
-                        metadata['ValeSpec__ProjectFile__Metadata__ProjectName'],
-                        metadata['ValeSpec__ProjectFile__Metadata__DocumentName'],
-                        metadata['ValeSpec__ProjectFile__Metadata__DocumentStatus'],
-                        metadata['ValeSpec__ProjectFile__Metadata__DateCreated'],
-                        metadata['ValeSpec__ProjectFile__Metadata__DateModified']
-                    );
-
-                    resolve(projectData);
-                } catch (err) {
-                    reject(err);
-                }
-            };
-            reader.onerror  =  function() { reject(new Error('File read failed')); };
-            reader.readAsText(file);
-        });
-    }
-    // ------------------------------------------------------------
+// endregion -------------------------------------------------------------------
 
 
     // PUBLIC API
@@ -485,12 +470,11 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         ValeSpec__ProjectFileManager__SaveProject           : ValeSpec__ProjectFileManager__SaveProject,
         ValeSpec__ProjectFileManager__DeleteProject         : ValeSpec__ProjectFileManager__DeleteProject,
         ValeSpec__ProjectFileManager__SyncFromServer        : ValeSpec__ProjectFileManager__SyncFromServer,
-        ValeSpec__ProjectFileManager__ExportProjectAsJson   : ValeSpec__ProjectFileManager__ExportProjectAsJson,
-        ValeSpec__ProjectFileManager__ImportProjectFromJson : ValeSpec__ProjectFileManager__ImportProjectFromJson
+        ValeSpec__ProjectFileManager__ExportProjectAsJson   : ValeSpec__ProjectFileManager__ExportProjectAsJson
     };
 
-})();
-
 // endregion ===================================================================
+
+})();
 
 window.ValeSpec__AppData__ProjectFileManager  =  ValeSpec__AppData__ProjectFileManager;

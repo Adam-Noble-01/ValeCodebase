@@ -88,26 +88,6 @@
     /* ------------------------------------------------------------ */
 
 
-    /* ACTIONS | Secondary Action Button */
-    /* ------------------------------------------------------------ */
-    .ValeSpec__DocManagement__BtnSecondary {
-        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
-        background                         : transparent;
-        color                              : var(--Vale_TextSecondary);
-        border                             : 1px solid var(--Vale_BorderLight);
-        border-radius                      : var(--Vale_BorderRadius);
-        font-family                        : var(--Vale_FontFamily);
-        font-size                          : var(--Vale_FontSize_Standard);
-        cursor                             : pointer;
-        transition                         : all var(--Vale_Transition_Fast);
-    }
-
-    .ValeSpec__DocManagement__BtnSecondary:hover {
-        background                         : var(--Vale_HoverBackground);
-        color                              : var(--Vale_TextPrimary);
-    }
-    /* ------------------------------------------------------------ */
-
 /* #endregion ------------------------------------------------------------------- */
 
 

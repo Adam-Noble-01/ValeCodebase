@@ -10,9 +10,8 @@
    CREATED    : 2026
 
    DESCRIPTION:
-   - Renders New Project and Import JSON buttons into the actions container
+   - Renders the New Project button into the actions container
    - New Project opens a modal dialog for entering project metadata
-   - Import button triggers a hidden file input for .json import
    - Open action loads a project and switches to DocumentEditor mode
    - Delete action shows a confirmation modal before removing a project
    - Coordinates with ProjectFileManager, StateManager, and ModeManager
@@ -34,6 +33,10 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     const MODAL_ACTIONS_ID      =  'ValeSpec__Modal__ActionsEl';                  // <-- Modal button row element
     // ------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------------
+// REGION | Modal Dialog Helpers
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Show Modal Dialog
     // ------------------------------------------------------------
@@ -74,6 +77,12 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | New Project Flow
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Handle New Project Button Click
     // ------------------------------------------------------------
@@ -103,7 +112,7 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Confirm New Project Creation from Modal
+    // SUB FUNCTION | Confirm New Project Creation from Modal
     // ------------------------------------------------------------
     function ValeSpec__ProjectActions__OnConfirmNewProject() {
         var codeInput  =  document.getElementById('ValeSpec__Modal__InputProjectCode');
@@ -140,39 +149,12 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // FUNCTION | Handle Import JSON Button Click
-    // ------------------------------------------------------------
-    function ValeSpec__ProjectActions__OnImportClick() {
-        var fileInput            =  document.createElement('input');
-        fileInput.type           =  'file';
-        fileInput.accept         =  '.json';
-        fileInput.style.display  =  'none';
 
-        fileInput.addEventListener('change', function(e) {
-            var file  =  e.target.files[0];
-            if (!file) return;
-
-            var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
-            if (!ProjectFileManager) return;
-
-            ProjectFileManager.ValeSpec__ProjectFileManager__ImportProjectFromJson(file)
-                .then(function(projectData) {
-                    console.log('[ValeSpec__ProjectActions] Project imported successfully.');
-                    ValeSpec__ProjectActions__RefreshProjectList();                // <-- Refresh table after import
-                })
-                .catch(function(err) {
-                    console.error('[ValeSpec__ProjectActions] Import failed:', err);
-                });
-
-            fileInput.remove();                                                   // <-- Clean up hidden input
-        });
-
-        document.body.appendChild(fileInput);
-        fileInput.click();                                                        // <-- Trigger file browser dialog
-    }
-    // ------------------------------------------------------------
-
+// -----------------------------------------------------------------------------
+// REGION | Project Row Actions - Open and Delete
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Handle Open Project Row Action
     // ------------------------------------------------------------
@@ -229,6 +211,12 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Render and Initialisation
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Render Action Buttons into DOM
     // ------------------------------------------------------------
@@ -241,15 +229,12 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
         var html  =  '';
         html     +=  '<button id="ValeSpec__DocManagement__BtnNewProject" class="ValeSpec__DocManagement__BtnPrimary">+ New Project</button>';
-        html     +=  '<button id="ValeSpec__DocManagement__BtnImport" class="ValeSpec__DocManagement__BtnSecondary">Import JSON</button>';
 
         container.innerHTML  =  html;
 
-        var newBtn     =  document.getElementById('ValeSpec__DocManagement__BtnNewProject');
-        var importBtn  =  document.getElementById('ValeSpec__DocManagement__BtnImport');
+        var newBtn  =  document.getElementById('ValeSpec__DocManagement__BtnNewProject');
 
-        if (newBtn)    newBtn.addEventListener('click', ValeSpec__ProjectActions__OnNewProjectClick);   // <-- Bind New Project handler
-        if (importBtn) importBtn.addEventListener('click', ValeSpec__ProjectActions__OnImportClick);    // <-- Bind Import handler
+        if (newBtn) newBtn.addEventListener('click', ValeSpec__ProjectActions__OnNewProjectClick);      // <-- Bind New Project handler
     }
     // ------------------------------------------------------------
 
@@ -301,6 +286,8 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
         ValeSpec__ProjectActions__OpenProject   : ValeSpec__ProjectActions__OpenProject,
         ValeSpec__ProjectActions__DeleteProject : ValeSpec__ProjectActions__DeleteProject
     };
+
+// endregion -------------------------------------------------------------------
 
 })();
 

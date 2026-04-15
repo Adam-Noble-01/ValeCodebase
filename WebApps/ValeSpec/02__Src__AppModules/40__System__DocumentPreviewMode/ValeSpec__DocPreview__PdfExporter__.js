@@ -97,14 +97,26 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
     // MODULE CONSTANTS | Brand Colours
     // ------------------------------------------------------------
-    const COLOUR_BRAND_PRIMARY     = [23, 43, 58];                              // <-- #172b3a — Vale brand navy
+    // var (not const) = config-driven; overwritten by ResolveColours() at export time
+    var COLOUR_BRAND_PRIMARY       = [23, 43, 58];                              // <-- #172b3a — Vale brand navy
     const COLOUR_TEXT_PRIMARY      = [30, 30, 30];                              // <-- #1e1e1e — Primary body text
     const COLOUR_TEXT_SECONDARY    = [100, 100, 100];                           // <-- #646464 — Secondary / muted text
-    const COLOUR_TABLE_HEADER_BG   = [23, 43, 58];                              // <-- #172b3a — Table header background
-    const COLOUR_TABLE_HEADER_FG   = [255, 255, 255];                           // <-- #ffffff — Table header text
-    const COLOUR_TABLE_ALT_ROW     = [245, 245, 245];                           // <-- #f5f5f5 — Alternating row background
+    var COLOUR_TABLE_HEADER_BG     = [23, 43, 58];                              // <-- #172b3a — Table header background
+    var COLOUR_TABLE_HEADER_FG     = [255, 255, 255];                           // <-- #ffffff — Table header text
+    var COLOUR_TABLE_ALT_ROW       = [245, 245, 245];                           // <-- #f5f5f5 — Alternating row background
     const COLOUR_TABLE_BORDER      = [200, 200, 200];                           // <-- #c8c8c8 — Table cell border
-    const COLOUR_RULE_LINE         = [23, 43, 58];                              // <-- #172b3a — Horizontal rule
+    var COLOUR_RULE_LINE           = [23, 43, 58];                              // <-- #172b3a — Horizontal rule
+    const COLOUR_WARNING_BG        = [253, 237, 237];                           // <-- #fdeded — Warning box background
+    const COLOUR_WARNING_BORDER    = [211, 47, 47];                             // <-- #d32f2f — Warning box border
+    const COLOUR_WARNING_TITLE     = [183, 28, 28];                             // <-- #b71c1c — Warning title text
+    const COLOUR_WARNING_TEXT      = [198, 40, 40];                             // <-- #c62828 — Warning body text
+    const WARNING_BOX_PADDING_MM   = 4;                                         // <-- Inner padding for warning box
+    const WARNING_TITLE_HEIGHT_MM  = 5;                                         // <-- Warning title line height
+    const WARNING_LINE_HEIGHT_MM   = 3.5;                                       // <-- Warning body text line height
+    const WARNING_GAP_ABOVE_MM     = 4;                                         // <-- Gap above warning box
+    const WARNING_GAP_BELOW_MM     = 2;                                         // <-- Gap below warning box
+    const FONT_SIZE_WARNING_TITLE  = 9;                                         // <-- Warning title font size
+    const FONT_SIZE_WARNING_BODY   = 8;                                         // <-- Warning body font size
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -145,6 +157,51 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
             floatPrecision : (section && typeof section['DocPreview__PdfExport__Config__FloatPrecision'] === 'string')
                                 ? section['DocPreview__PdfExport__Config__FloatPrecision']
                                 : FALLBACK_FLOAT_PRECISION
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Convert Hex Colour String to RGB Array
+    // ------------------------------------------------------------
+    function hexToRgb(hex) {
+        if (typeof hex !== 'string' || hex.length < 7) return null;
+        var r  =  parseInt(hex.slice(1, 3), 16);                                // <-- Red channel (0-255)
+        var g  =  parseInt(hex.slice(3, 5), 16);                                // <-- Green channel (0-255)
+        var b  =  parseInt(hex.slice(5, 7), 16);                                // <-- Blue channel (0-255)
+        return (isNaN(r) || isNaN(g) || isNaN(b)) ? null : [r, g, b];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Brand and Table Colours from App Config
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__ResolveColours() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var section       =  null;
+
+        if (StateManager) {
+            var state      =  StateManager.ValeSpec__StateManager__GetState();
+            var appConfig  =  state ? state.appConfig : null;
+            if (appConfig) section  =  appConfig['DocPreview__SpecTable__Config'] || null;
+        }
+
+        function resolveHex(key, fallback) {
+            if (section && typeof section[key] === 'string') {
+                var rgb  =  hexToRgb(section[key]);
+                if (rgb) return rgb;
+            }
+            return fallback;
+        }
+
+        var headerBg  =  resolveHex('DocPreview__SpecTable__Config__HeaderBackground', COLOUR_TABLE_HEADER_BG);
+
+        return {
+            brandPrimary   : headerBg,                                          // <-- Derived from table header bg (same brand navy)
+            ruleLine       : headerBg,                                          // <-- Derived from table header bg (same brand navy)
+            tableHeaderBg  : headerBg,
+            tableHeaderFg  : resolveHex('DocPreview__SpecTable__Config__HeaderTextColor',  COLOUR_TABLE_HEADER_FG),
+            tableAltRow    : resolveHex('DocPreview__SpecTable__Config__AltRowBackground', COLOUR_TABLE_ALT_ROW)
         };
     }
     // ------------------------------------------------------------
@@ -263,74 +320,41 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
     // HELPER FUNCTION | Extract Spec Table Row Data as Array
     // ------------------------------------------------------------
     function ValeSpec__PdfExporter__ExtractSpecRows(assembly) {
-        var rows  =  [];
-
-        var doorCfg    =  assembly['Assembly__DoorType__Config'] || {};
-        var doorType   =  doorCfg['Assembly__DoorType__Config__Type']             || '';
-        var direction  =  doorCfg['Assembly__DoorType__Config__OpeningDirection'] || '';
-        var doorDesc   =  doorType ? (direction ? (direction + ' Opening ' + doorType) : doorType) : '\u2014';
-        rows.push(['Door Type', doorDesc]);
-
-        var dims    =  assembly['Assembly__Dimensions__Config'] || {};
-        var dimW    =  dims['Assembly__Dimensions__Config__WidthMm'];
-        var dimH    =  dims['Assembly__Dimensions__Config__HeightMm'];
-        var dimStr  =  (!dimW && !dimH) ? '\u2014' : ((dimW || '\u2014') + ' x ' + (dimH || '\u2014') + ' mm');
-        rows.push(['Dimensions', dimStr]);
-
-        var lockCfg   =  assembly['Assembly__Locking__Config'] || {};
-        var lockType  =  lockCfg['Assembly__Locking__Config__Type'] || 'None';
-        var mpDesc    =  'None';
-        if (lockType !== 'None') {
-            mpDesc  =  lockType;
-            var pts =  lockCfg['Assembly__Locking__Config__Points'] || '';
-            if (pts) mpDesc  +=  ' (' + pts + '-point)';
-        }
-        rows.push(['Multi-Point Locking', mpDesc]);
-
-        var hingeCfg    =  assembly['Assembly__Hinge__Config'] || {};
-        var hCount      =  hingeCfg['Assembly__Hinge__Config__HingesPerLeaf'] || '\u2014';
-        var hProj       =  hingeCfg['Assembly__Hinge__Config__Projection']    || '\u2014';
-        var hHand       =  hingeCfg['Assembly__Hinge__Config__Hanging']       || '\u2014';
-        rows.push(['Hinge Requirement', hCount + ' per leaf, ' + hProj + '" projection, ' + hHand + ' hand']);
-
-        var leverCfg  =  assembly['Assembly__Lever__Config'] || {};
-        var leverT    =  leverCfg['Assembly__Lever__Config__Type']      || '\u2014';
-        var leverH    =  leverCfg['Assembly__Lever__Config__HeightMm'] || '';
-        var leverDesc =  leverT;
-        if (leverH) leverDesc  +=  ' @ ' + leverH + ' mm';
-        rows.push(['Lever Type & Qty', leverDesc]);
-
-        var cylDesc  =  (lockType === 'None') ? 'Not required' : '1 x Euro Cylinder (per multi-point track)';
-        rows.push(['Cylinder Requirement', cylDesc]);
-
-        var hooksCfg   =  assembly['Assembly__CabinHooks__Config'] || {};
-        var hookCount  =  hooksCfg['Assembly__CabinHooks__Config__HookCount'] || 0;
-        var eyeCount   =  hooksCfg['Assembly__CabinHooks__Config__EyeCount']  || 0;
-        var hooksDesc  =  'None';
-        if (hookCount > 0 || eyeCount > 0) {
-            var hSize  =  hooksCfg['Assembly__CabinHooks__Config__Size'] || '';
-            hooksDesc  =  hSize + ' \u2014 ' + hookCount + ' hook(s), ' + eyeCount + ' eye(s)';
-        }
-        rows.push(['Cabin Hooks', hooksDesc]);
-
-        var miscLine   =  'None';
-        var miscNotes  =  null;
         var SpecRenderer  =  window.ValeSpec__DocPreview__SpecTableRenderer;
-        if (SpecRenderer && SpecRenderer.ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf) {
-            var miscParts  =  SpecRenderer.ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf(assembly);
-            miscLine   =  miscParts.itemsLine;
-            miscNotes  =  miscParts.notesText;
-        } else {
-            var miscCfgFb   =  assembly['Assembly__Miscellaneous__Config'] || {};
-            var miscItemsFb =  miscCfgFb['Assembly__Miscellaneous__Config__Items'] || [];
-            miscLine  =  miscItemsFb.length ? miscItemsFb.join(', ') : 'None';
-        }
-        rows.push(['Miscellaneous', miscLine]);
-        if (miscNotes) {
-            rows.push(['Miscellaneous Notes', miscNotes]);
+        if (SpecRenderer && SpecRenderer.ValeSpec__SpecTableRenderer__GetSpecRows) {
+            var sharedRows  =  SpecRenderer.ValeSpec__SpecTableRenderer__GetSpecRows(assembly) || [];
+            var rows        =  [];
+
+            for (var i = 0; i < sharedRows.length; i++) {
+                var sharedRow  =  sharedRows[i] || {};
+                var label      =  sharedRow.label || '\u2014';
+                var value      =  sharedRow.value;
+
+                if (value === null || value === undefined || value === '') value  =  '\u2014';
+
+                rows.push([String(label), String(value)]);
+            }
+
+            return rows;
         }
 
-        return rows;
+        console.warn('[ValeSpec__PdfExporter] Spec table helper unavailable; using fallback rows.');
+        return [
+            ['Door Type', '\u2014'],
+            ['Dimensions', '\u2014'],
+            ['Locking Type', 'None'],
+            ['Locking Points', 'Not required'],
+            ['Cylinder Requirement', 'Not required'],
+            ['Hinges Per Leaf', '\u2014'],
+            ['Hinge Projection', '\u2014'],
+            ['Hinge Hand', '\u2014'],
+            ['Handle Type', '\u2014'],
+            ['Handle Height', '\u2014'],
+            ['Cabin Hook Type', 'None'],
+            ['Cabin Hooks No.', 'None'],
+            ['Cabin Hook Eyes', 'None'],
+            ['Miscellaneous', 'None']
+        ];
     }
     // ------------------------------------------------------------
 
@@ -608,6 +632,97 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Warning Box Rendering
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Extract Active Warnings from Assembly
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__ExtractActiveWarnings(assembly) {
+        var warningsCfg  =  assembly['Assembly__Warnings__Config'] || {};
+        return warningsCfg['Assembly__Warnings__Config__ActiveWarnings'] || [];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Calculate Warning Box Height for Measurement
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__MeasureWarningBoxHeight(doc, activeWarnings, contentWidth) {
+        if (!activeWarnings || activeWarnings.length === 0) return 0;
+
+        var totalHeight  =  0;
+        var innerWidth   =  contentWidth - (WARNING_BOX_PADDING_MM * 2);
+
+        for (var w = 0; w < activeWarnings.length; w++) {
+            var warning     =  activeWarnings[w];
+            var docWarning  =  warning.DocumentWarning || {};
+            var warnMsg     =  docWarning.Message || warning.WarningMessage || '';
+
+            totalHeight  +=  WARNING_GAP_ABOVE_MM;
+            totalHeight  +=  WARNING_BOX_PADDING_MM;
+            totalHeight  +=  WARNING_TITLE_HEIGHT_MM;
+
+            doc.setFontSize(FONT_SIZE_WARNING_BODY);
+            var msgLines  =  doc.splitTextToSize(warnMsg, innerWidth);
+            totalHeight  +=  msgLines.length * WARNING_LINE_HEIGHT_MM;
+
+            totalHeight  +=  WARNING_BOX_PADDING_MM;
+            totalHeight  +=  WARNING_GAP_BELOW_MM;
+        }
+
+        return totalHeight;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Render Warning Boxes into PDF
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__RenderWarningBoxes(doc, activeWarnings, x, y, contentWidth) {
+        if (!activeWarnings || activeWarnings.length === 0) return y;
+
+        var cursorY    =  y;
+        var innerWidth =  contentWidth - (WARNING_BOX_PADDING_MM * 2);
+
+        for (var w = 0; w < activeWarnings.length; w++) {
+            var warning     =  activeWarnings[w];
+            var docWarning  =  warning.DocumentWarning || {};
+            var warnTitle   =  docWarning.Title   || 'Warning';
+            var warnMsg     =  docWarning.Message  || warning.WarningMessage || '';
+
+            cursorY  +=  WARNING_GAP_ABOVE_MM;
+
+            doc.setFontSize(FONT_SIZE_WARNING_BODY);
+            var msgLines  =  doc.splitTextToSize(warnMsg, innerWidth);
+            var boxH      =  WARNING_BOX_PADDING_MM
+                           + WARNING_TITLE_HEIGHT_MM
+                           + (msgLines.length * WARNING_LINE_HEIGHT_MM)
+                           + WARNING_BOX_PADDING_MM;
+
+            doc.setFillColor(COLOUR_WARNING_BG[0], COLOUR_WARNING_BG[1], COLOUR_WARNING_BG[2]);
+            doc.setDrawColor(COLOUR_WARNING_BORDER[0], COLOUR_WARNING_BORDER[1], COLOUR_WARNING_BORDER[2]);
+            doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
+            doc.roundedRect(x, cursorY, contentWidth, boxH, 1, 1, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(FONT_SIZE_WARNING_TITLE);
+            doc.setTextColor(COLOUR_WARNING_TITLE[0], COLOUR_WARNING_TITLE[1], COLOUR_WARNING_TITLE[2]);
+            doc.text('\u26A0 ' + warnTitle, x + WARNING_BOX_PADDING_MM, cursorY + WARNING_BOX_PADDING_MM + 3.5);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(FONT_SIZE_WARNING_BODY);
+            doc.setTextColor(COLOUR_WARNING_TEXT[0], COLOUR_WARNING_TEXT[1], COLOUR_WARNING_TEXT[2]);
+            doc.text(msgLines, x + WARNING_BOX_PADDING_MM, cursorY + WARNING_BOX_PADDING_MM + WARNING_TITLE_HEIGHT_MM + 2);
+
+            cursorY  +=  boxH + WARNING_GAP_BELOW_MM;
+        }
+
+        return cursorY;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Measurement Pass
 // -----------------------------------------------------------------------------
 
@@ -632,6 +747,9 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
             for (var r = 0; r < specRows.length; r++) {
                 height  +=  ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, specRows[r], labelColW, valueColW);
             }
+
+            var activeWarnings  =  ValeSpec__PdfExporter__ExtractActiveWarnings(assemblies[i]);
+            height  +=  ValeSpec__PdfExporter__MeasureWarningBoxHeight(doc, activeWarnings, contentWidth);
 
             if (i < assemblies.length - 1) {
                 height  +=  ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM + ASSEMBLY_SECTION_RULE_GAP_AFTER_MM;
@@ -672,6 +790,14 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         }
 
         var pdfConfig     =  ValeSpec__PdfExporter__ResolveConfig();
+        var colours       =  ValeSpec__PdfExporter__ResolveColours();           // <-- Read brand/table colours from Na__DocPreview__Config.json via app state
+
+        COLOUR_BRAND_PRIMARY     =  colours.brandPrimary;                       // <-- Override fallback constants with config-driven values
+        COLOUR_RULE_LINE         =  colours.ruleLine;
+        COLOUR_TABLE_HEADER_BG   =  colours.tableHeaderBg;
+        COLOUR_TABLE_HEADER_FG   =  colours.tableHeaderFg;
+        COLOUR_TABLE_ALT_ROW     =  colours.tableAltRow;
+
         var meta          =  ValeSpec__PdfExporter__GetProjectMeta();
         var assemblies    =  ValeSpec__PdfExporter__GetAssemblies();
         var jobNotes      =  ValeSpec__PdfExporter__GetJobNotes();
@@ -775,6 +901,11 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
                 // ------------------------------------------------------------
                 var specRows  =  ValeSpec__PdfExporter__ExtractSpecRows(assembly);
                 cursorY       =  ValeSpec__PdfExporter__RenderSpecTable(doc, specRows, x, cursorY, contentWidth);
+
+                // Render warning boxes (if any active warnings)
+                // ------------------------------------------------------------
+                var pdfWarnings  =  ValeSpec__PdfExporter__ExtractActiveWarnings(assembly);
+                cursorY          =  ValeSpec__PdfExporter__RenderWarningBoxes(doc, pdfWarnings, x, cursorY, contentWidth);
 
                 if (i < assemblies.length - 1) {
                     cursorY  +=  ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM;

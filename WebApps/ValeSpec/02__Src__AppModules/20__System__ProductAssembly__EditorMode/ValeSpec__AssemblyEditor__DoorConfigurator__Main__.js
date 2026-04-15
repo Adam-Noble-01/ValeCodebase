@@ -24,39 +24,12 @@
 
 const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
-    // MODULE CONSTANTS | Save Button Gating Requirements
-    // ------------------------------------------------------------
-    const SAVE_BUTTON_REQUIRED_NEXT_STEPS  =  ['doorType', 'dimensions', 'finish', 'handles', 'hinges', 'hooks'];
-    // ------------------------------------------------------------
-
-
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
     let ValeSpec__DoorConfigurator__ContainerEl             =  null;   // <-- Controls panel container
-    let ValeSpec__DoorConfigurator__SaveAssemblyBtnEl       =  null;   // <-- Final save button inside Misc step footer
-    let ValeSpec__DoorConfigurator__SaveButtonBindingDone   =  false;  // <-- Prevent duplicate StepManager listener registration
+    let ValeSpec__DoorConfigurator__SaveAssemblyBtnEl       =  null;   // <-- Fixed save button under step cards
+    let ValeSpec__DoorConfigurator__SaveActionBarEl         =  null;   // <-- Fixed action bar under step cards
     let ValeSpec__DoorConfigurator__Initialised             =  false;  // <-- Prevents double-init
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Check if Save Button Should Be Visible
-    // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__CanShowSaveAssemblyButton() {
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (!StepManager) return false;
-        if (StepManager.ValeSpec__StepManager__GetActiveStepId() !== 'misc') return false;
-        return StepManager.ValeSpec__StepManager__HasProgressedStepsViaNext(SAVE_BUTTON_REQUIRED_NEXT_STEPS);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Update Save Button Visibility
-    // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility() {
-        if (!ValeSpec__DoorConfigurator__SaveAssemblyBtnEl) return;
-        var canShow  =  ValeSpec__DoorConfigurator__CanShowSaveAssemblyButton();
-        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.style.display  =  canShow ? 'inline-flex' : 'none';
-    }
     // ------------------------------------------------------------
 
 
@@ -84,36 +57,21 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Save Assembly Button in Misc Footer
+    // HELPER FUNCTION | Build Fixed Save Action Bar
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__BuildSaveAssemblyButton(miscStepBodyEl) {
-        if (!miscStepBodyEl) return;
-        var footerEl  =  miscStepBodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        if (!footerEl) return;
+    function ValeSpec__DoorConfigurator__BuildFixedSaveActionBar() {
+        if (!ValeSpec__DoorConfigurator__ContainerEl) return;
+
+        ValeSpec__DoorConfigurator__SaveActionBarEl  =  document.createElement('div');
+        ValeSpec__DoorConfigurator__SaveActionBarEl.className  =  'ValeSpec__AssemblyEditor__FixedActionBar';
 
         ValeSpec__DoorConfigurator__SaveAssemblyBtnEl  =  document.createElement('button');
-        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.className    =  'ValeSpec__AssemblyEditor__StepCard__SaveBtn';
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.className    =  'ValeSpec__AssemblyEditor__StepCard__SaveBtn ValeSpec__AssemblyEditor__FixedActionBar__SaveBtn';
         ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.textContent  =  'Save Assembly';
-        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.style.display  =  'none';
         ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.addEventListener('click', ValeSpec__DoorConfigurator__OnSaveAssemblyClick);
 
-        footerEl.appendChild(ValeSpec__DoorConfigurator__SaveAssemblyBtnEl);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Subscribe to StepManager State Changes for Save Button
-    // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__BindSaveButtonStateListener() {
-        if (ValeSpec__DoorConfigurator__SaveButtonBindingDone) return;
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (!StepManager || !StepManager.ValeSpec__StepManager__OnStateChanged) return;
-
-        StepManager.ValeSpec__StepManager__OnStateChanged(function() {
-            ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
-        });
-
-        ValeSpec__DoorConfigurator__SaveButtonBindingDone  =  true;
+        ValeSpec__DoorConfigurator__SaveActionBarEl.appendChild(ValeSpec__DoorConfigurator__SaveAssemblyBtnEl);
+        ValeSpec__DoorConfigurator__ContainerEl.appendChild(ValeSpec__DoorConfigurator__SaveActionBarEl);
     }
     // ------------------------------------------------------------
 
@@ -138,11 +96,19 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         var step7Body  =  StepManager.ValeSpec__StepManager__CreateStep('misc');
 
         await ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body);
-        ValeSpec__DoorConfigurator__BuildSaveAssemblyButton(step7Body);
-        ValeSpec__DoorConfigurator__BindSaveButtonStateListener();
+        ValeSpec__DoorConfigurator__BuildFixedSaveActionBar();
+
+        var ProgressStateSave  =  window.ValeSpec__AssemblyEditor__ProgressState__Save;
+        if (ProgressStateSave && ProgressStateSave.ValeSpec__ProgressStateSave__Init) {
+            ProgressStateSave.ValeSpec__ProgressStateSave__Init();
+        }
+
+        var ProgressStateLoad  =  window.ValeSpec__AssemblyEditor__ProgressState__Load;
+        if (ProgressStateLoad && ProgressStateLoad.ValeSpec__ProgressStateLoad__Init) {
+            ProgressStateLoad.ValeSpec__ProgressStateLoad__Init();
+        }
 
         StepManager.ValeSpec__StepManager__GoToStep('doorType');
-        ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
     }
     // ------------------------------------------------------------
 
@@ -208,15 +174,20 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
         ValeSpec__DoorConfigurator__ApplyAssemblyDataToSubModules(assemblyData);
 
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) {
-            if (StepManager.ValeSpec__StepManager__ResetNextProgressTracking) {
-                StepManager.ValeSpec__StepManager__ResetNextProgressTracking();
+        var ProgressStateLoad  =  window.ValeSpec__AssemblyEditor__ProgressState__Load;
+        if (ProgressStateLoad && ProgressStateLoad.ValeSpec__ProgressStateLoad__ApplyFromAssembly) {
+            ProgressStateLoad.ValeSpec__ProgressStateLoad__ApplyFromAssembly(assemblyData);
+        } else {
+            var FallbackStepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+            if (FallbackStepManager && FallbackStepManager.ValeSpec__StepManager__ResetProgressState) {
+                FallbackStepManager.ValeSpec__StepManager__ResetProgressState();
             }
-            StepManager.ValeSpec__StepManager__RefreshAllSummaries();
         }
 
-        ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) {
+            StepManager.ValeSpec__StepManager__RefreshAllSummaries();
+        }
     }
     // ------------------------------------------------------------
 
@@ -232,8 +203,6 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         if (StepManager) {
             StepManager.ValeSpec__StepManager__RefreshAllSummaries();
         }
-
-        ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
     }
     // ------------------------------------------------------------
 

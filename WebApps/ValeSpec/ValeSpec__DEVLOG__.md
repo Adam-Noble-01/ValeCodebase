@@ -3,6 +3,92 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.1 - 15-Apr-2026
+
+### Assembly Editor — Progress persistence, save action UX, and naming-style correction
+**Overview**
+- Implemented per-assembly wizard progress persistence so step bubbles are no longer session-only/global state.
+- Added two dedicated modules:
+  - `ValeSpec__AssemblyEditor__ProgressState__Save__.js` — subscribes to StepManager state and persists progress into assembly data.
+  - `ValeSpec__AssemblyEditor__ProgressState__Load__.js` — hydrates StepManager progress from assembly data on refresh/select.
+- Extended `ValeSpec__AssemblyEditor__StepManager__.js` with explicit state APIs for reliable hydration/reset:
+  - `ValeSpec__StepManager__GetStateSnapshot()`
+  - `ValeSpec__StepManager__ApplyProgressState(progressState)`
+  - `ValeSpec__StepManager__ResetProgressState()`
+- Refactored `ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js` so **Save Assembly** is a fixed always-visible action below the step cards (removed old misc-step gating).
+- Added schema normalisation in `ValeSpec__AppUtils__ProjectSchemaValidator__.js` for `Assembly__ProgressState__Config`, including legacy data migration support.
+- Updated `ValeSpec__DocEditor__SectionManager__.js` so:
+  - new assemblies start with clean progress state
+  - duplicated assemblies reset progress state (do not inherit completion).
+- Wired module load order in `ValeSpec__App__.html` and added fixed action bar styling in `ValeSpec__AssemblyEditor__Styles__Main__.css`.
+
+**Reflection / Follow-up**
+- Initial implementation used short inner completed-step keys (`doorType`, `dimensions`, etc.) inside progress data.
+- User feedback flagged this as non-conformant with ValeSpec key style.
+- Corrected by migrating persisted completed-step keys to full styled names:
+  - `Assembly__ProgressState__Config__CompletedSteps__DoorType`
+  - `Assembly__ProgressState__Config__CompletedSteps__Dimensions`
+  - `Assembly__ProgressState__Config__CompletedSteps__Finish`
+  - `Assembly__ProgressState__Config__CompletedSteps__Handles`
+  - `Assembly__ProgressState__Config__CompletedSteps__Hinges`
+  - `Assembly__ProgressState__Config__CompletedSteps__Hooks`
+  - `Assembly__ProgressState__Config__CompletedSteps__Misc`
+- Save/load + schema validator now support both formats for backward compatibility and auto-normalise legacy keys forward.
+
+**Result**
+- Assembly step progress is now reliable, per-assembly, and persisted to project data.
+- Save action is always available in editor flow, reducing friction when revisiting existing assemblies.
+- Persisted progress keys now match project naming conventions.
+
+### Document Preview — Style consolidation and single sources of truth
+**Overview**
+- Eliminated duplicated hex colour literals spread across DocPreview CSS, Variables.css, and the PDF exporter by wiring everything back to authoritative single sources.
+- **`ValeSpec__CoreUi__Styles__Variables__.css`** — Added one missing token: `--Vale_PrimaryBrand_Dark: #0f1e28` for button hover/pressed states.
+- **`ValeSpec__DocPreview__Styles__Main__.css`** — Replaced 9 hard-coded hex literals in screen rules with `var()` references to existing tokens (`--ValeSpec_PreviewBackground`, `--ValeSpec_PreviewPaperShadow`, `--Vale_PrimaryBrand`, `--Vale_TextLight`, `--Vale_BackgroundLight`, `--Vale_PrimaryBrand_Dark`). The `@media print` block retains its literals intentionally — `print-color-adjust: exact` requires literal values for reliable cross-browser print colour forcing.
+- **`ValeSpec__DocPreview__PdfExporter__.js`** — Added `hexToRgb()` helper and `ValeSpec__PdfExporter__ResolveColours()` function (Config Resolution region) that reads `DocPreview__SpecTable__Config` from the already-loaded app state (same access pattern as `ResolveConfig()`). The 5 brand/table `const` colour declarations (`COLOUR_BRAND_PRIMARY`, `COLOUR_TABLE_HEADER_BG`, `COLOUR_TABLE_HEADER_FG`, `COLOUR_TABLE_ALT_ROW`, `COLOUR_RULE_LINE`) changed to `var` so they can be overwritten at runtime. Export function calls `ResolveColours()` immediately after `ResolveConfig()` and reassigns these variables before any rendering begins. Fallback constants remain as a safety net when config is absent.
+- **`Na__DocPreview__Config.json`** — No changes. Already held the correct colour values (`DocPreview__SpecTable__Config__HeaderBackground`, `HeaderTextColor`, `AltRowBackground`); it was just not being consumed. Now actively drives PDF rendering.
+
+**Result**
+- To change a brand colour: update `Variables.css` (screen) + `Na__DocPreview__Config.json` (PDF) — 2 explicit files, 0 hunting for stray literals. Previously the same values appeared in 3–4 locations. The CSS/jsPDF duality is unavoidable (CSS vars cannot feed into jsPDF), but it is now explicit and documented rather than silent divergence.
+
+
+### Hardware schedule spec table — granular rows and single source of truth
+**Overview**
+- **`ValeSpec__DocPreview__SpecTableRenderer__.js`** — Replaced one-line compound cells with **atomic rows**: locking type vs locking points, cylinder, hinges (per leaf / projection / hand), handles (type vs height), cabin hooks (type / hook count / eye count), then miscellaneous (+ optional **Miscellaneous Notes** when `OtherText` is set).
+- **`ValeSpec__SpecTableRenderer__GetSpecRows(assembly)`** — New ordered row list drives both HTML and PDF so **Document Editor summary**, **Document Preview**, and **PDF export** stay aligned without duplicated string-building logic.
+- **`ValeSpec__DocPreview__PdfExporter__.js`** — `ExtractSpecRows` now consumes `GetSpecRows` from the spec table renderer (fallback row skeleton only if the helper is missing).
+- **Row order (user-facing):** Door Type → Dimensions → **Handle Type / Handle Height** → locking + cylinder → hinge rows → cabin hook rows → Miscellaneous.
+- **File structure:** Region comment blocks added inside the spec table renderer (utilities, extractors by domain, row schema/render, public API) for easier navigation and folding.
+
+**Result**
+- Specification tables read as separate labelled facts instead of dense comma-separated detail strings; PDF and on-screen tables match labels and order by construction.
+
+
+### Data-driven assembly warnings (config, editor, preview, PDF)
+**Overview**
+- **`Na__AssemblyEditor__Config.json`** — Added **`AssemblyEditor__WarningRules__Config`**: rules array (`RuleId`, `ObjectType`, `Condition`, `ThresholdMm` / `ThresholdValue`, `EditorNotification`, `DocumentWarning`) plus global settings in the same block: **`CentredNotificationDurationMs`**, **`HingeProjection8ModalMessage`**, **`HeightMismatchModalMessage`**. Removed the separate **`AssemblyEditor__Warnings__Config`** object so warning copy and timing live in one place.
+- **`ValeSpec__AssemblyEditor__WarningSystem__.js`** — Evaluation engine (`EvaluateWarnings`, `ApplyWarningsToAssembly`), centred overlay notification, inline warning sections in step cards; persists **`Assembly__Warnings__Config__ActiveWarnings`** on the assembly.
+- **`ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js`** — Calls `ApplyWarningsToAssembly` after dimension updates; **`await ValeSpec__WarningSystem__EnsureConfig()`** during init so rules are loaded before any synchronous evaluation.
+- **`ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles__.js`** — Re-evaluates warnings after hinge projection updates (e.g. 8-inch rule).
+- **`ValeSpec__AssemblyEditor__Styles__Main__.css`** — **`WarningSection`** (inline card) and **`CentredNotification`** (full-screen overlay).
+- **`ValeSpec__DocPreview__PageRenderer__.js`** + **`ValeSpec__DocPreview__Styles__Main__.css`** — Warning callouts after each assembly spec table in preview (with print colour-adjust helpers where needed).
+- **`ValeSpec__DocPreview__PdfExporter__.js`** — Warning boxes after spec tables; height included in the measurement pass.
+- **`ValeSpec__AppUtils__ProjectSchemaValidator__.js`** — Ensures **`Assembly__Warnings__Config`** and **`ActiveWarnings`** array exist on normalised assemblies.
+
+**Result**
+- Threshold-based warnings are data-driven from JSON; active warnings flow to saved project data, on-screen preview, and exported PDF.
+
+
+### Warning system reliability fixes (same release)
+**Overview**
+- **Rules not applied at runtime:** `EnsureConfig()` was only used by hinge/height **modal** helpers, so the rules array stayed empty during dimension commits. **Fix:** preload **`ValeSpec__WarningSystem__EnsureConfig()`** inside **`DoorTypeAndDimensions__Init`** (async init path already awaited by layout).
+- **Exact threshold (e.g. 1050 mm):** `WidthOver` / `HeightOver` used strict **`>`**, so width **equal** to the limit never fired. **Fix:** **`>=`** / **`<=`** for Over/Under conditions so the configured mm value is inclusive.
+
+**Result**
+- Single-door width at the configured limit (e.g. 1050 mm) correctly triggers warnings, centred notification, and inline sections after the fix.
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.0 - 15-Apr-2026
 
 ### Project schema validation + canonical load/save alignment

@@ -161,6 +161,25 @@ const ValeSpec__DocEditor__SectionManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build Default Assembly Progress State
+    // ------------------------------------------------------------
+    function ValeSpec__SectionManager__BuildDefaultProgressState() {
+        return {
+            'Assembly__ProgressState__Config__CompletedSteps' : {
+                'Assembly__ProgressState__Config__CompletedSteps__DoorType'   : false,
+                'Assembly__ProgressState__Config__CompletedSteps__Dimensions' : false,
+                'Assembly__ProgressState__Config__CompletedSteps__Finish'     : false,
+                'Assembly__ProgressState__Config__CompletedSteps__Handles'    : false,
+                'Assembly__ProgressState__Config__CompletedSteps__Hinges'     : false,
+                'Assembly__ProgressState__Config__CompletedSteps__Hooks'      : false,
+                'Assembly__ProgressState__Config__CompletedSteps__Misc'       : false
+            },
+            'Assembly__ProgressState__Config__ActiveStepId' : 'doorType'
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Spec Table HTML via Shared SpecTableRenderer
     // ------------------------------------------------------------
     function ValeSpec__SectionManager__BuildSpecSummary(assembly) {
@@ -317,6 +336,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         identity['Assembly__Identity__Config__Title']      =  (identity['Assembly__Identity__Config__Title'] || '') + ' (Copy)';
         identity['Assembly__Identity__Config__SortOrder']  =  assemblies.length;
         clone['Assembly__Identity__Config']  =  identity;
+        clone['Assembly__ProgressState__Config']  =  ValeSpec__SectionManager__BuildDefaultProgressState(); // <-- Duplicates start unconfigured in workflow progress
 
         assemblies.push(clone);
         StateManager.ValeSpec__StateManager__MarkDirty();
@@ -398,7 +418,8 @@ const ValeSpec__DocEditor__SectionManager = (function() {
                 'Assembly__Dimensions__Config__WidthMm'  : widthDefault,
                 'Assembly__Dimensions__Config__HeightMm' : heightDefault
             },
-            'Handing': defaultHanding
+            'Handing' : defaultHanding,
+            'Assembly__ProgressState__Config' : ValeSpec__SectionManager__BuildDefaultProgressState()
         };
 
         assemblies.push(newAssembly);

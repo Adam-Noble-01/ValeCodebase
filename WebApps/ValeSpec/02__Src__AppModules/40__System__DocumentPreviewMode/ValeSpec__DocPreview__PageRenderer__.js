@@ -162,6 +162,30 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build Warning Callout HTML for an Assembly
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__BuildWarningCallouts(assembly) {
+        var warningsCfg      =  assembly['Assembly__Warnings__Config'] || {};
+        var activeWarnings   =  warningsCfg['Assembly__Warnings__Config__ActiveWarnings'] || [];
+        if (!activeWarnings.length) return '';
+
+        var html  =  '';
+        for (var w = 0; w < activeWarnings.length; w++) {
+            var warning     =  activeWarnings[w];
+            var docWarning  =  warning.DocumentWarning || {};
+            var warnTitle   =  docWarning.Title   || 'Warning';
+            var warnMsg     =  docWarning.Message  || warning.WarningMessage || '';
+
+            html  +=  '<div class="ValeSpec__DocPreview__WarningCallout">';
+            html  +=      '<div class="ValeSpec__DocPreview__WarningCallout__Title">\u26A0 ' + warnTitle + '</div>';
+            html  +=      '<div class="ValeSpec__DocPreview__WarningCallout__Message">' + warnMsg + '</div>';
+            html  +=  '</div>';
+        }
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build Single Assembly Block HTML
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BuildAssemblyBlock(assembly, index) {
@@ -179,6 +203,8 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         if (SpecTableRenderer) {
             html  +=  SpecTableRenderer.ValeSpec__SpecTableRenderer__RenderSpecTable(assembly);  // <-- Hardware schedule table
         }
+
+        html  +=  ValeSpec__PageRenderer__BuildWarningCallouts(assembly);
 
         html  +=  '</div>';
         return html;

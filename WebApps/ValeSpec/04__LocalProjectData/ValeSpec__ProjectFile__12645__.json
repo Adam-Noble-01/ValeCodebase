@@ -12,7 +12,7 @@
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
-        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Satin Nickel",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
         "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
@@ -28,8 +28,8 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1800,
-                "Assembly__Dimensions__Config__HeightMm": 2100
+                "Assembly__Dimensions__Config__WidthMm": 2200,
+                "Assembly__Dimensions__Config__HeightMm": 2400
             },
             "Assembly__Lever__Config": {
                 "Assembly__Lever__Config__Type": "Scroll Lever Handle",
@@ -37,6 +37,7 @@
             },
             "Assembly__Miscellaneous__Config": {
                 "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_OverheadRestrictors",
                     "Misc_CatFlap",
                     "Misc_Other"
                 ],
@@ -47,15 +48,15 @@
                 "Assembly__CabinHooks__Config__HookCount": 2,
                 "Assembly__CabinHooks__Config__EyeCount": 2
             },
-            "Handing": "Right",
+            "Handing": "Left",
             "Assembly__Hinge__Config": {
-                "Assembly__Hinge__Config__HingesPerLeaf": 3,
-                "Assembly__Hinge__Config__Hanging": "Standard",
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top",
                 "Assembly__Hinge__Config__Projection": 4
             },
             "Assembly__DoorCondition__Config": {
-                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
-                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
                 "Assembly__DoorCondition__Config__AppliesWarning": false
             },
             "Assembly__Locking__Config": {
@@ -64,6 +65,44 @@
             },
             "Assembly__Opening__Config": {
                 "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Warnings__Config": {
+                "Assembly__Warnings__Config__ActiveWarnings": [
+                    {
+                        "RuleId": "WARN_DOUBLE_DOOR_WIDTH_OVER_1899",
+                        "Severity": "Warning",
+                        "WarningMessage": "Double doors above 1899mm width are subject to approval by Senior Technical Manager.",
+                        "DocumentWarning": {
+                            "Title": "Door Width Warning",
+                            "Message": "Double doors above 1899mm width are subject to approval by Senior Technical Manager."
+                        },
+                        "TriggeredAtValue": 2200,
+                        "Acknowledged": false
+                    },
+                    {
+                        "RuleId": "WARN_DOOR_HEIGHT_OVER_2400",
+                        "Severity": "Warning",
+                        "WarningMessage": "Doors above 2400mm height require non-standard hinge specification.",
+                        "DocumentWarning": {
+                            "Title": "Door Height Warning",
+                            "Message": "Doors above 2400mm height require non-standard hinge specification."
+                        },
+                        "TriggeredAtValue": 2400,
+                        "Acknowledged": false
+                    }
+                ]
+            },
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "misc"
             }
         },
         {
@@ -77,17 +116,17 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1000,
+                "Assembly__Dimensions__Config__WidthMm": 1200,
                 "Assembly__Dimensions__Config__HeightMm": 2200
             },
             "Assembly__Hinge__Config": {
-                "Assembly__Hinge__Config__HingesPerLeaf": 3,
-                "Assembly__Hinge__Config__Hanging": "Standard",
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top",
                 "Assembly__Hinge__Config__Projection": 4
             },
             "Assembly__DoorCondition__Config": {
-                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
-                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
                 "Assembly__DoorCondition__Config__AppliesWarning": false
             },
             "Assembly__Locking__Config": {
@@ -111,6 +150,33 @@
                 "Assembly__CabinHooks__Config__Size": "",
                 "Assembly__CabinHooks__Config__HookCount": 2,
                 "Assembly__CabinHooks__Config__EyeCount": 2
+            },
+            "Assembly__Warnings__Config": {
+                "Assembly__Warnings__Config__ActiveWarnings": [
+                    {
+                        "RuleId": "WARN_SINGLE_DOOR_WIDTH_OVER_1050",
+                        "Severity": "Warning",
+                        "WarningMessage": "Doors above 1050mm width are subject to approval by Senior Technical Manager.",
+                        "DocumentWarning": {
+                            "Title": "Door Width Warning",
+                            "Message": "Doors above 1050mm width are subject to approval by Senior Technical Manager."
+                        },
+                        "TriggeredAtValue": 1200,
+                        "Acknowledged": false
+                    }
+                ]
+            },
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "dimensions"
             }
         }
     ]

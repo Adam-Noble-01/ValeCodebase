@@ -37,7 +37,7 @@
     /* CANVAS | Grey Background Scroll Area */
     /* ------------------------------------------------------------ */
     #ValeSpec__DocPreview__Container {
-        background                         : #b0b5ba;
+        background                         : var(--ValeSpec_PreviewBackground);
         min-height                         : 100%;
         padding                            : var(--Vale_Spacing_Large);
         overflow-y                         : auto;
@@ -52,7 +52,7 @@
         margin                             : 0 auto;
         background                         : var(--Vale_BackgroundWhite);
         padding                            : 56px;
-        box-shadow                         : 0 12px 40px rgba(0, 0, 0, 0.25);
+        box-shadow                         : 0 12px 40px var(--ValeSpec_PreviewPaperShadow);
         border-radius                      : 2px;
     }
     /* ------------------------------------------------------------ */
@@ -94,7 +94,7 @@
     }
 
     .ValeSpec__DocPreview__BtnBack:hover {
-        background                         : #0f1e28;
+        background                         : var(--Vale_PrimaryBrand_Dark);
     }
     /* ------------------------------------------------------------ */
 
@@ -115,7 +115,7 @@
     }
 
     .ValeSpec__DocPreview__BtnExport:hover {
-        background                         : #0f1e28;
+        background                         : var(--Vale_PrimaryBrand_Dark);
     }
 
     .ValeSpec__DocPreview__BtnExport:disabled {
@@ -193,7 +193,7 @@
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__AssemblySectionHr {
         border                               : none;
-        border-top                           : 1px solid #172b3a;
+        border-top                           : 1px solid var(--Vale_PrimaryBrand);
         margin                               : var(--Vale_Spacing_XLarge) 0 var(--Vale_Spacing_Large) 0;
         height                               : 0;
     }
@@ -265,8 +265,8 @@
     .ValeSpec__DocPreview__SpecTable thead th {
         text-align                         : left;
         padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
-        background                         : #172b3a;
-        color                              : #ffffff;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
         font-size                          : var(--Vale_FontSize_Small);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         text-transform                     : uppercase;
@@ -289,7 +289,7 @@
     /* TABLE | Alternating Row Background */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__SpecTable tbody tr:nth-child(even) {
-        background                         : #f5f5f5;
+        background                         : var(--Vale_BackgroundLight);
     }
     /* ------------------------------------------------------------ */
 
@@ -310,6 +310,49 @@
     .ValeSpec__DocPreview__SpecTable .ValeSpec__DocPreview__SpecDetail--multiline {
         white-space                        : pre-wrap;
         word-break                         : break-word;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Warning Callout (Document Preview)
+ * ----------------------------------------------------------------------------- */
+
+    /* CALLOUT | Warning Box */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__WarningCallout {
+        display                              : flex;
+        flex-direction                       : column;
+        gap                                  : 4px;
+        padding                              : 12px 16px;
+        margin-top                           : var(--Vale_Spacing_Medium);
+        margin-bottom                        : var(--Vale_Spacing_Small);
+        background-color                     : rgba(211, 47, 47, 0.07);
+        border                               : 1px solid rgba(211, 47, 47, 0.35);
+        border-radius                        : 4px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CALLOUT | Warning Title */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__WarningCallout__Title {
+        font-size                            : var(--Vale_FontSize_Standard);
+        font-weight                          : var(--Vale_FontWeight_SemiBold);
+        color                                : #b71c1c;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CALLOUT | Warning Message */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__WarningCallout__Message {
+        font-size                            : var(--Vale_FontSize_Small);
+        font-weight                          : var(--Vale_FontWeight_Regular);
+        color                                : #c62828;
+        line-height                          : 1.5;
     }
     /* ------------------------------------------------------------ */
 
@@ -389,6 +432,13 @@
 
         .ValeSpec__DocPreview__SpecTable tbody tr:nth-child(even) {
             background                     : #f5f5f5 !important;
+            -webkit-print-color-adjust     : exact;
+            print-color-adjust             : exact;
+        }
+
+        .ValeSpec__DocPreview__WarningCallout {
+            background-color               : rgba(211, 47, 47, 0.07) !important;
+            border-color                   : rgba(211, 47, 47, 0.35) !important;
             -webkit-print-color-adjust     : exact;
             print-color-adjust             : exact;
         }

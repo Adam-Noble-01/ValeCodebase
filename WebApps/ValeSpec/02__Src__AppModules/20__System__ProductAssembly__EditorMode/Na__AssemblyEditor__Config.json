@@ -127,10 +127,62 @@
         ]
     },
 
-    "AssemblyEditor__Warnings__Config": {
-        "AssemblyEditor__Warnings__Config__Description"              : "Warning thresholds and messages for the assembly editor.",
-        "AssemblyEditor__Warnings__Config__HingeProjection8Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification. Confirm to proceed or cancel to select a different projection.",
-        "AssemblyEditor__Warnings__Config__HeightMismatchMessage"    : "Assembly heights differ by more than 15 mm. Mismatched door heights on the same elevation may cause visual inconsistency. Review before finalising."
+    "AssemblyEditor__WarningRules__Config": {
+        "AssemblyEditor__WarningRules__Config__Description"                    : "Data-driven warning rules evaluated against assembly state. Each rule defines a condition, threshold, and messages for editor and document output. Also contains global warning system settings and cross-assembly warning messages.",
+        "AssemblyEditor__WarningRules__Config__CentredNotificationDurationMs"  : 4000,
+        "AssemblyEditor__WarningRules__Config__HingeProjection8ModalMessage"   : "8-inch hinge projection is non-standard and requires senior architect approval before specification. Confirm to proceed or cancel to select a different projection.",
+        "AssemblyEditor__WarningRules__Config__HeightMismatchModalMessage"     : "Assembly heights differ by more than 15 mm. Mismatched door heights on the same elevation may cause visual inconsistency. Review before finalising.",
+        "AssemblyEditor__WarningRules__Config__Rules": [
+            {
+                "RuleId"               : "WARN_SINGLE_DOOR_WIDTH_OVER_1050",
+                "ObjectType"           : "SingleDoor",
+                "Condition"            : "WidthOver",
+                "ThresholdMm"          : 1050,
+                "Severity"             : "Warning",
+                "EditorNotification"   : "Doors above 1050mm width are subject to approval by Senior Technical Manager.",
+                "DocumentWarning"      : {
+                    "Title"    : "Door Width Warning",
+                    "Message"  : "Doors above 1050mm width are subject to approval by Senior Technical Manager."
+                }
+            },
+            {
+                "RuleId"               : "WARN_DOUBLE_DOOR_WIDTH_OVER_1899",
+                "ObjectType"           : "DoubleDoor",
+                "Condition"            : "WidthOver",
+                "ThresholdMm"          : 1899,
+                "Severity"             : "Warning",
+                "EditorNotification"   : "Double doors above 1899mm width are subject to approval by Senior Technical Manager.",
+                "DocumentWarning"      : {
+                    "Title"    : "Door Width Warning",
+                    "Message"  : "Double doors above 1899mm width are subject to approval by Senior Technical Manager."
+                }
+            },
+            {
+                "RuleId"               : "WARN_DOOR_HEIGHT_OVER_2400",
+                "ObjectType"           : "AnyDoor",
+                "Condition"            : "HeightOver",
+                "ThresholdMm"          : 2400,
+                "Severity"             : "Warning",
+                "EditorNotification"   : "Doors above 2400mm height require non-standard hinge specification.",
+                "DocumentWarning"      : {
+                    "Title"    : "Door Height Warning",
+                    "Message"  : "Doors above 2400mm height require non-standard hinge specification."
+                }
+            },
+            {
+                "RuleId"               : "WARN_HINGE_PROJECTION_8",
+                "ObjectType"           : "AnyDoor",
+                "Condition"            : "HingeProjectionEquals",
+                "ThresholdValue"       : 8,
+                "Severity"             : "Warning",
+                "RequiresConfirmation" : true,
+                "EditorNotification"   : "8-inch hinge projection is non-standard and requires senior architect approval.",
+                "DocumentWarning"      : {
+                    "Title"    : "Hinge Projection Warning",
+                    "Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification."
+                }
+            }
+        ]
     }
 
 }

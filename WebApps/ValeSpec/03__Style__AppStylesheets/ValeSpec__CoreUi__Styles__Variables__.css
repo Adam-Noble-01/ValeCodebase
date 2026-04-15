@@ -116,6 +116,9 @@
         /* Document Preview */
         --ValeSpec_PreviewBackground       : #b0b5ba;                      /* <-- Preview canvas background */
         --ValeSpec_PreviewPaperShadow      : rgba(0, 0, 0, 0.25);         /* <-- Paper drop shadow */
+
+        /* Brand Interaction States */
+        --Vale_PrimaryBrand_Dark           : #0f1e28;                      /* <-- Hover/pressed state for PrimaryBrand buttons */
     }
     /* ------------------------------------------------------------ */
 

@@ -500,6 +500,13 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         }
         ValeSpec__DoorTypeAndDimensions__LastDoorConditionCode  =  doorCondition.Code;
 
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+            var activeWarnings  =  WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+            if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__DoorTypeAndDimensions__Step2BodyEl) {
+                WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__DoorTypeAndDimensions__Step2BodyEl, activeWarnings);
+            }
+        }
+
         if (LockingCalculator) {
             var lockResult  =  LockingCalculator.ValeSpec__LockingCalculator__CalculateLocking(doorType, height);
             if (!assembly['Assembly__Locking__Config']) assembly['Assembly__Locking__Config'] = {};
@@ -1040,6 +1047,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         if (!ValeSpec__DoorTypeAndDimensions__Step1BodyEl || !ValeSpec__DoorTypeAndDimensions__Step2BodyEl) return;
 
         await ValeSpec__DoorTypeAndDimensions__LoadConfig();
+
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__EnsureConfig) {
+            await WarningSystem.ValeSpec__WarningSystem__EnsureConfig();        // <-- Preload warning rules so synchronous evaluation has rules available
+        }
+
         ValeSpec__DoorTypeAndDimensions__BuildDoorTypeStep();
         ValeSpec__DoorTypeAndDimensions__BuildDimensionsStep();
         ValeSpec__DoorTypeAndDimensions__RegisterSummaries();

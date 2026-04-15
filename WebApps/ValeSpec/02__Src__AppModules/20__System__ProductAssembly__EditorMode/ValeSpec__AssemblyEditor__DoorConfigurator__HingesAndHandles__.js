@@ -110,6 +110,15 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
         if (!assembly) return;
         if (!assembly['Assembly__Hinge__Config']) assembly['Assembly__Hinge__Config'] = {};
         assembly['Assembly__Hinge__Config']['Assembly__Hinge__Config__Projection']  =  parseInt(ValeSpec__HingesAndHandles__HingeProjectionSel.value, 10);
+
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+            var activeWarnings  =  WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+            if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__HingesAndHandles__StepHingeBodyEl) {
+                WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__HingesAndHandles__StepHingeBodyEl, activeWarnings);
+            }
+        }
+
         StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }
     // ------------------------------------------------------------

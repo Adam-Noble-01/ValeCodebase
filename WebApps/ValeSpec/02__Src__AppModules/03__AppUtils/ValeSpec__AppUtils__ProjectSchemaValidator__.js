@@ -33,6 +33,16 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
     const VALESPEC__SCHEMA__DOOR_TYPE_BIFOLD   =  'Bifold Doors';
     const VALESPEC__SCHEMA__DOOR_TYPE_SINGLE   =  'Single Door';
     const VALESPEC__SCHEMA__DOOR_TYPE_WINDOW   =  'Window Panel';
+    const VALESPEC__SCHEMA__ASSEMBLY_DEFAULT_ACTIVE_STEP_ID  =  'doorType';
+    const VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS  =  [
+        { StepId: 'doorType',   PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__DoorType'   },
+        { StepId: 'dimensions', PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__Dimensions' },
+        { StepId: 'finish',     PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__Finish'     },
+        { StepId: 'handles',    PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__Handles'    },
+        { StepId: 'hinges',     PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__Hinges'     },
+        { StepId: 'hooks',      PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__Hooks'      },
+        { StepId: 'misc',       PersistedCompletedKey: 'Assembly__ProgressState__Config__CompletedSteps__Misc'       }
+    ];
     // ------------------------------------------------------------
 
 
@@ -161,6 +171,104 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Validate Assembly Step Id
+    // ------------------------------------------------------------
+    function ValeSpec__SchemaValidator__IsAssemblyStepId(stepId) {
+        for (var i = 0; i < VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS.length; i++) {
+            if (VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS[i].StepId === stepId) return true;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Validate Persisted Completed-Step Key
+    // ------------------------------------------------------------
+    function ValeSpec__SchemaValidator__IsAssemblyPersistedCompletedKey(rawKey) {
+        for (var i = 0; i < VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS.length; i++) {
+            if (VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS[i].PersistedCompletedKey === rawKey) return true;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Default Assembly Progress State
+    // ------------------------------------------------------------
+    function ValeSpec__SchemaValidator__BuildDefaultAssemblyProgressState() {
+        var completedSteps  =  {};
+        for (var i = 0; i < VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS.length; i++) {
+            completedSteps[VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS[i].PersistedCompletedKey]  =  false;
+        }
+
+        return {
+            'Assembly__ProgressState__Config__CompletedSteps' : completedSteps,
+            'Assembly__ProgressState__Config__ActiveStepId'   : VALESPEC__SCHEMA__ASSEMBLY_DEFAULT_ACTIVE_STEP_ID
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Normalise Assembly Progress State
+    // ------------------------------------------------------------
+    function ValeSpec__SchemaValidator__NormaliseAssemblyProgressState(rawProgressState) {
+        var didMutate    =  false;
+        var progressCfg  =  rawProgressState;
+
+        if (!progressCfg || typeof progressCfg !== 'object' || Array.isArray(progressCfg)) {
+            progressCfg  =  {};
+            didMutate    =  true;
+        }
+
+        var sourceCompleted  =  progressCfg['Assembly__ProgressState__Config__CompletedSteps'];
+        if (!sourceCompleted || typeof sourceCompleted !== 'object' || Array.isArray(sourceCompleted)) {
+            sourceCompleted  =  {};
+            didMutate        =  true;
+        }
+
+        var completedSteps  =  {};
+        for (var i = 0; i < VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS.length; i++) {
+            var stepDef           =  VALESPEC__SCHEMA__ASSEMBLY_STEP_DEFS[i];
+            var stepId            =  stepDef.StepId;
+            var persistedStepKey  =  stepDef.PersistedCompletedKey;
+            var hasPersistedKey   =  Object.prototype.hasOwnProperty.call(sourceCompleted, persistedStepKey);
+            var hasLegacyKey      =  Object.prototype.hasOwnProperty.call(sourceCompleted, stepId);
+            var stepValue         =  hasPersistedKey ? sourceCompleted[persistedStepKey] : sourceCompleted[stepId];
+            var boolValue         =  !!stepValue;
+
+            if (stepValue !== boolValue) didMutate  =  true;
+            if (!hasPersistedKey) didMutate  =  true;
+            if (hasLegacyKey) didMutate  =  true;                                          // <-- Legacy inner keys are migrated to styled keys
+            completedSteps[persistedStepKey]  =  boolValue;
+        }
+
+        for (var sourceKey in sourceCompleted) {
+            if (!Object.prototype.hasOwnProperty.call(sourceCompleted, sourceKey)) continue;
+            var isLegacyKey     =  ValeSpec__SchemaValidator__IsAssemblyStepId(sourceKey);
+            var isPersistedKey  =  ValeSpec__SchemaValidator__IsAssemblyPersistedCompletedKey(sourceKey);
+            if (!isLegacyKey && !isPersistedKey) {
+                didMutate  =  true;
+            }
+        }
+
+        var activeStepRaw  =  progressCfg['Assembly__ProgressState__Config__ActiveStepId'];
+        var activeStepId   =  VALESPEC__SCHEMA__ASSEMBLY_DEFAULT_ACTIVE_STEP_ID;
+        if (typeof activeStepRaw === 'string' && ValeSpec__SchemaValidator__IsAssemblyStepId(activeStepRaw)) {
+            activeStepId  =  activeStepRaw;
+        }
+        if (activeStepRaw !== activeStepId) didMutate  =  true;
+
+        return {
+            ProgressState : {
+                'Assembly__ProgressState__Config__CompletedSteps' : completedSteps,
+                'Assembly__ProgressState__Config__ActiveStepId'   : activeStepId
+            },
+            DidMutate : didMutate
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Normalise Single Assembly Block
     // ------------------------------------------------------------
     function ValeSpec__SchemaValidator__NormaliseAssembly(assembly, index) {
@@ -175,6 +283,7 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
         if (ValeSpec__SchemaValidator__EnsureObject(assembly, 'Assembly__Dimensions__Config')) didMutate =  true;
         if (ValeSpec__SchemaValidator__EnsureObject(assembly, 'Assembly__Opening__Config')) didMutate    =  true;
         if (ValeSpec__SchemaValidator__EnsureObject(assembly, 'Assembly__Lever__Config')) didMutate      =  true;
+        if (ValeSpec__SchemaValidator__EnsureObject(assembly, 'Assembly__ProgressState__Config')) didMutate  =  true;
 
         var identityCfg  =  assembly['Assembly__Identity__Config'];
         if (!identityCfg['Assembly__Identity__Config__Id']) {
@@ -249,6 +358,10 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
             assembly['Handing']  =  nextHanding;
             didMutate  =  true;
         }
+
+        var progressResult  =  ValeSpec__SchemaValidator__NormaliseAssemblyProgressState(assembly['Assembly__ProgressState__Config']);
+        assembly['Assembly__ProgressState__Config']  =  progressResult.ProgressState || ValeSpec__SchemaValidator__BuildDefaultAssemblyProgressState();
+        if (progressResult.DidMutate) didMutate  =  true;
 
         return { AssemblyData: assembly, DidMutate: didMutate };
     }

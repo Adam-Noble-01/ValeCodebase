@@ -9,9 +9,10 @@
    PURPOSE    : Generate HTML spec table for hardware schedule from assembly data
    CREATED    : 15-Apr-2026
 
-   DESCRIPTION:
-   - ValeSpec__SpecTableRenderer__RenderSpecTable(assemblyData) returns HTML table string
-   - Rows: Door Type, Dimensions, Multi-Point, Hinges, Handle, Cylinder, Cabin Hooks, Misc
+  DESCRIPTION:
+  - ValeSpec__SpecTableRenderer__RenderSpecTable(assemblyData) returns HTML table string
+  - ValeSpec__SpecTableRenderer__GetSpecRows(assemblyData) returns ordered row objects
+  - Rows are atomic (locking, hinges, handles, cabin hooks split into separate fields)
    - Optional row Miscellaneous Notes when Assembly__Miscellaneous__Config__OtherText is set
    - Uses ValeSpec__DocPreview__SpecTable CSS classes for styling
    - Config-driven table styling via DocPreview__SpecTable__Config
@@ -23,6 +24,10 @@
 // =============================================================================
 
 const ValeSpec__DocPreview__SpecTableRenderer = (function() {
+
+// -----------------------------------------------------------------------------
+// REGION | Utility Helpers - HTML Escaping and Row Markup
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Escape HTML for Safe Table Cell Text
     // ------------------------------------------------------------
@@ -61,16 +66,23 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Miscellaneous Notes Row (escaped, multiline-friendly)
+    // HELPER FUNCTION | Build Multiline Table Row (escaped, multiline-friendly)
     // ------------------------------------------------------------
-    function ValeSpec__SpecTableRenderer__BuildMiscNotesRow(escapedNotes) {
+    function ValeSpec__SpecTableRenderer__BuildMultilineRow(label, escapedValue) {
         var html  =  '<tr>';
-        html     +=      '<td class="ValeSpec__DocPreview__SpecLabel">Miscellaneous Notes</td>';
-        html     +=      '<td class="ValeSpec__DocPreview__SpecDetail ValeSpec__DocPreview__SpecDetail--multiline">' + escapedNotes + '</td>';
+        html     +=      '<td class="ValeSpec__DocPreview__SpecLabel">' + label + '</td>';
+        html     +=      '<td class="ValeSpec__DocPreview__SpecDetail ValeSpec__DocPreview__SpecDetail--multiline">' + escapedValue + '</td>';
         html     +=  '</tr>';
         return html;
     }
     // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Extractors - Door Type and Dimensions
+// -----------------------------------------------------------------------------
 
 
     // HELPER FUNCTION | Extract Door Type Description
@@ -96,43 +108,85 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // HELPER FUNCTION | Extract Multi-Point Locking Description
+
+// -----------------------------------------------------------------------------
+// REGION | Extractors - Locking, Hinges, Handles, Cylinder
+// -----------------------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Locking Type
     // ------------------------------------------------------------
-    function ValeSpec__SpecTableRenderer__GetMultiPointDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetLockingType(assembly) {
         var lockConfig  =  assembly['Assembly__Locking__Config'] || {};
         var lockType    =  lockConfig['Assembly__Locking__Config__Type'] || 'None';
-        if (lockType === 'None') return 'None';
+        return lockType;
+    }
+    // ------------------------------------------------------------
 
-        var points  =  lockConfig['Assembly__Locking__Config__Points'] || '';
-        var desc    =  lockType;
-        if (points) desc  +=  ' (' + points + '-point)';
-        return desc;
+    // HELPER FUNCTION | Extract Locking Points Description
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetLockingPoints(assembly) {
+        var lockType  =  ValeSpec__SpecTableRenderer__GetLockingType(assembly);
+        if (lockType === 'None') return 'Not required';
+
+        var lockConfig  =  assembly['Assembly__Locking__Config'] || {};
+        var points      =  lockConfig['Assembly__Locking__Config__Points'];
+        if (points === null || points === undefined || points === '') return '—';
+        return points + '-point';
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Hinge Requirement Description
+    // HELPER FUNCTION | Extract Hinges per Leaf
     // ------------------------------------------------------------
-    function ValeSpec__SpecTableRenderer__GetHingeDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetHingesPerLeaf(assembly) {
         var hingeConfig  =  assembly['Assembly__Hinge__Config'] || {};
         var count        =  hingeConfig['Assembly__Hinge__Config__HingesPerLeaf'] || '—';
-        var projection   =  hingeConfig['Assembly__Hinge__Config__Projection']    || '—';
-        var hanging      =  hingeConfig['Assembly__Hinge__Config__Hanging']       || '—';
-        return count + ' per leaf, ' + projection + '" projection, ' + hanging + ' hand';
+        return count;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Handle Type and Quantity
+    // HELPER FUNCTION | Extract Hinge Projection
     // ------------------------------------------------------------
-    function ValeSpec__SpecTableRenderer__GetHandleDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetHingeProjection(assembly) {
+        var hingeConfig  =  assembly['Assembly__Hinge__Config'] || {};
+        var projection   =  hingeConfig['Assembly__Hinge__Config__Projection']    || '—';
+        if (projection === '—') return projection;
+        return projection + '"';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Hinge Hand
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetHingeHand(assembly) {
+        var hingeConfig  =  assembly['Assembly__Hinge__Config'] || {};
+        var hanging      =  hingeConfig['Assembly__Hinge__Config__Hanging'] || '';
+        if (!hanging) return '—';
+        return hanging + ' hand';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Handle Type
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetHandleType(assembly) {
         var handleConfig  =  assembly['Assembly__Lever__Config'] || {};
-        var handleType    =  handleConfig['Assembly__Lever__Config__Type']      || '—';
-        var handleHeight  =  handleConfig['Assembly__Lever__Config__HeightMm'] || '';
-        var desc          =  handleType;
-        if (handleHeight) desc  +=  ' @ ' + handleHeight + ' mm';
-        return desc;
+        return handleConfig['Assembly__Lever__Config__Type'] || '—';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Handle Height
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetHandleHeight(assembly) {
+        var handleConfig  =  assembly['Assembly__Lever__Config'] || {};
+        var handleHeight  =  handleConfig['Assembly__Lever__Config__HeightMm'];
+        if (!handleHeight) return '—';
+        return handleHeight + ' mm';
     }
     // ------------------------------------------------------------
 
@@ -140,23 +194,77 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // HELPER FUNCTION | Extract Cylinder Requirement
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetCylinderDesc(assembly) {
-        var lockConfig  =  assembly['Assembly__Locking__Config'] || {};
-        var lockType    =  lockConfig['Assembly__Locking__Config__Type'] || 'None';
+        var lockType  =  ValeSpec__SpecTableRenderer__GetLockingType(assembly);
         if (lockType === 'None') return 'Not required';
         return '1 x Euro Cylinder (per multi-point track)';
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // HELPER FUNCTION | Extract Cabin Hooks Summary
+
+// -----------------------------------------------------------------------------
+// REGION | Extractors - Cabin Hooks and Miscellaneous
+// -----------------------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Cabin Hooks Counts
     // ------------------------------------------------------------
-    function ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetCabinHooksCounts(assembly) {
         var hooksConfig  =  assembly['Assembly__CabinHooks__Config'] || {};
-        var hookCount    =  hooksConfig['Assembly__CabinHooks__Config__HookCount'] || 0;
-        var eyeCount     =  hooksConfig['Assembly__CabinHooks__Config__EyeCount']  || 0;
-        if (hookCount === 0 && eyeCount === 0) return 'None';
-        var size  =  hooksConfig['Assembly__CabinHooks__Config__Size'] || '';
-        return size + ' — ' + hookCount + ' hook(s), ' + eyeCount + ' eye(s)';
+        var hookCountRaw =  hooksConfig['Assembly__CabinHooks__Config__HookCount'];
+        var eyeCountRaw  =  hooksConfig['Assembly__CabinHooks__Config__EyeCount'];
+
+        var hookCount  =  parseInt(hookCountRaw, 10);
+        var eyeCount   =  parseInt(eyeCountRaw, 10);
+
+        if (isNaN(hookCount) || hookCount < 0) hookCount  =  0;
+        if (isNaN(eyeCount) || eyeCount < 0) eyeCount     =  0;
+
+        return {
+            hookCount  : hookCount,
+            eyeCount   : eyeCount
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Format Count + Unit with Singular/Plural
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__FormatCountUnit(count, singular, plural) {
+        var suffix  =  (count === 1) ? singular : plural;
+        return count + ' ' + suffix;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Cabin Hook Type
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetCabinHookType(assembly) {
+        var hooksConfig  =  assembly['Assembly__CabinHooks__Config'] || {};
+        var counts       =  ValeSpec__SpecTableRenderer__GetCabinHooksCounts(assembly);
+        if (counts.hookCount === 0 && counts.eyeCount === 0) return 'None';
+        return hooksConfig['Assembly__CabinHooks__Config__Size'] || '—';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Cabin Hooks Quantity
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetCabinHooksNo(assembly) {
+        var counts  =  ValeSpec__SpecTableRenderer__GetCabinHooksCounts(assembly);
+        if (counts.hookCount === 0 && counts.eyeCount === 0) return 'None';
+        return ValeSpec__SpecTableRenderer__FormatCountUnit(counts.hookCount, 'Hook', 'Hooks');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Cabin Hook Eyes Quantity
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetCabinHookEyes(assembly) {
+        var counts  =  ValeSpec__SpecTableRenderer__GetCabinHooksCounts(assembly);
+        if (counts.hookCount === 0 && counts.eyeCount === 0) return 'None';
+        return ValeSpec__SpecTableRenderer__FormatCountUnit(counts.eyeCount, 'Eye', 'Eyes');
     }
     // ------------------------------------------------------------
 
@@ -197,6 +305,47 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Spec Row Schema and HTML Table Rendering
+// -----------------------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Ordered Atomic Spec Rows
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetSpecRows(assembly) {
+        var rows  =  [];
+
+        rows.push({ label: 'Door Type',            value: ValeSpec__SpecTableRenderer__GetDoorType(assembly) });
+        rows.push({ label: 'Dimensions',           value: ValeSpec__SpecTableRenderer__GetDimensions(assembly) });
+        rows.push({ label: 'Handle Type',          value: ValeSpec__SpecTableRenderer__GetHandleType(assembly) });
+        rows.push({ label: 'Handle Height',        value: ValeSpec__SpecTableRenderer__GetHandleHeight(assembly) });
+        rows.push({ label: 'Locking Type',         value: ValeSpec__SpecTableRenderer__GetLockingType(assembly) });
+        rows.push({ label: 'Locking Points',       value: ValeSpec__SpecTableRenderer__GetLockingPoints(assembly) });
+        rows.push({ label: 'Cylinder Requirement', value: ValeSpec__SpecTableRenderer__GetCylinderDesc(assembly) });
+        rows.push({ label: 'Hinges Per Leaf',      value: ValeSpec__SpecTableRenderer__GetHingesPerLeaf(assembly) });
+        rows.push({ label: 'Hinge Projection',     value: ValeSpec__SpecTableRenderer__GetHingeProjection(assembly) });
+        rows.push({ label: 'Hinge Hand',           value: ValeSpec__SpecTableRenderer__GetHingeHand(assembly) });
+        rows.push({ label: 'Cabin Hook Type',      value: ValeSpec__SpecTableRenderer__GetCabinHookType(assembly) });
+        rows.push({ label: 'Cabin Hooks No.',      value: ValeSpec__SpecTableRenderer__GetCabinHooksNo(assembly) });
+        rows.push({ label: 'Cabin Hook Eyes',      value: ValeSpec__SpecTableRenderer__GetCabinHookEyes(assembly) });
+        rows.push({ label: 'Miscellaneous',        value: ValeSpec__SpecTableRenderer__GetMiscDesc(assembly) });
+
+        var otherNotes  =  ValeSpec__SpecTableRenderer__GetMiscOtherTextTrimmed(assembly);
+        if (otherNotes) {
+            rows.push({
+                label       : 'Miscellaneous Notes',
+                value       : otherNotes,
+                isMultiline : true
+            });
+        }
+
+        return rows;
+    }
+    // ------------------------------------------------------------
+
 
     // FUNCTION | Render Full Spec Table HTML String
     // ------------------------------------------------------------
@@ -211,18 +360,19 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
         html  +=  '</tr></thead>';
 
         html  +=  '<tbody>';
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Door Type',              ValeSpec__SpecTableRenderer__GetDoorType(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Dimensions',             ValeSpec__SpecTableRenderer__GetDimensions(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Multi-Point Locking',    ValeSpec__SpecTableRenderer__GetMultiPointDesc(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Hinge Requirement',      ValeSpec__SpecTableRenderer__GetHingeDesc(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Handle Type &amp; Qty',   ValeSpec__SpecTableRenderer__GetHandleDesc(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cylinder Requirement',   ValeSpec__SpecTableRenderer__GetCylinderDesc(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cabin Hooks',            ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Miscellaneous',          ValeSpec__SpecTableRenderer__GetMiscDesc(assemblyData));
+        var specRows  =  ValeSpec__SpecTableRenderer__GetSpecRows(assemblyData);
+        for (var i = 0; i < specRows.length; i++) {
+            var row    =  specRows[i] || {};
+            var label  =  row.label || '—';
+            var value  =  row.value;
 
-        var otherNotes  =  ValeSpec__SpecTableRenderer__GetMiscOtherTextTrimmed(assemblyData);
-        if (otherNotes) {
-            html  +=  ValeSpec__SpecTableRenderer__BuildMiscNotesRow(ValeSpec__SpecTableRenderer__EscapeHtml(otherNotes));
+            if (value === null || value === undefined || value === '') value  =  '—';
+
+            if (row.isMultiline) {
+                html  +=  ValeSpec__SpecTableRenderer__BuildMultilineRow(label, ValeSpec__SpecTableRenderer__EscapeHtml(value));
+            } else {
+                html  +=  ValeSpec__SpecTableRenderer__BuildRow(label, value);
+            }
         }
 
         html  +=  '</tbody>';
@@ -232,13 +382,23 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public API Export
+// -----------------------------------------------------------------------------
+
 
     // PUBLIC API
     // ------------------------------------------------------------
     return {
         ValeSpec__SpecTableRenderer__RenderSpecTable           : ValeSpec__SpecTableRenderer__RenderSpecTable,
+        ValeSpec__SpecTableRenderer__GetSpecRows               : ValeSpec__SpecTableRenderer__GetSpecRows,
         ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf    : ValeSpec__SpecTableRenderer__GetMiscellaneousForPdf
     };
+
+// endregion -------------------------------------------------------------------
 
 })();
 

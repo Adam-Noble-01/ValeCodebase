@@ -181,16 +181,79 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Emit Step State Change to Subscribers
+    // HELPER FUNCTION | Build Current State Snapshot
     // ------------------------------------------------------------
-    function ValeSpec__StepManager__EmitStateChanged() {
-        if (!ValeSpec__StepManager__StateChangeListeners.length) return;
-
-        var stateSnapshot  =  {
+    function ValeSpec__StepManager__BuildStateSnapshot() {
+        return {
             ActiveStepId        : ValeSpec__StepManager__ActiveStepId,
             CompletedSteps      : Object.assign({}, ValeSpec__StepManager__CompletedSteps),
             NextProgressedSteps : Object.assign({}, ValeSpec__StepManager__NextProgressedSteps)
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Normalised Progress State Payload
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__BuildNormalisedProgressState(progressState) {
+        var defaultActiveStepId  =  STEP_DEFS.length ? STEP_DEFS[0].Id : null;
+        var sourceState          =  progressState;
+        if (!sourceState || typeof sourceState !== 'object') sourceState  =  {};
+
+        var sourceCompleted  =  sourceState.CompletedSteps;
+        if (!sourceCompleted || typeof sourceCompleted !== 'object' || Array.isArray(sourceCompleted)) {
+            sourceCompleted  =  {};
+        }
+
+        var normalisedCompleted  =  {};
+        for (var i = 0; i < STEP_DEFS.length; i++) {
+            var sid  =  STEP_DEFS[i].Id;
+            normalisedCompleted[sid]  =  !!sourceCompleted[sid];
+        }
+
+        var nextActiveStepId  =  sourceState.ActiveStepId;
+        var isActiveValid     =  false;
+        if (typeof nextActiveStepId === 'string') {
+            for (var j = 0; j < STEP_DEFS.length; j++) {
+                if (STEP_DEFS[j].Id === nextActiveStepId) {
+                    isActiveValid  =  true;
+                    break;
+                }
+            }
+        }
+        if (!isActiveValid) nextActiveStepId  =  defaultActiveStepId;
+
+        return {
+            ActiveStepId   : nextActiveStepId,
+            CompletedSteps : normalisedCompleted
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Apply Completed State Classes to All Cards
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__ApplyCompletedCardClasses() {
+        for (var i = 0; i < STEP_DEFS.length; i++) {
+            var sid    =  STEP_DEFS[i].Id;
+            var entry  =  ValeSpec__StepManager__StepCards[sid];
+            if (!entry) continue;
+
+            if (ValeSpec__StepManager__CompletedSteps[sid]) {
+                entry.cardEl.classList.add('ValeSpec__AssemblyEditor__StepCard--completed');
+            } else {
+                entry.cardEl.classList.remove('ValeSpec__AssemblyEditor__StepCard--completed');
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Emit Step State Change to Subscribers
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__EmitStateChanged() {
+        if (!ValeSpec__StepManager__StateChangeListeners.length) return;
+        var stateSnapshot  =  ValeSpec__StepManager__BuildStateSnapshot();
 
         for (var i = 0; i < ValeSpec__StepManager__StateChangeListeners.length; i++) {
             try {
@@ -421,6 +484,54 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Get Step Manager State Snapshot
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__GetStateSnapshot() {
+        return ValeSpec__StepManager__BuildStateSnapshot();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Apply Progress State to Step Manager
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__ApplyProgressState(progressState) {
+        var normalisedState  =  ValeSpec__StepManager__BuildNormalisedProgressState(progressState);
+        var nextActiveStepId =  normalisedState.ActiveStepId;
+
+        ValeSpec__StepManager__CompletedSteps       =  normalisedState.CompletedSteps;
+        ValeSpec__StepManager__NextProgressedSteps  =  {};
+        ValeSpec__StepManager__ApplyCompletedCardClasses();
+
+        for (var i = 0; i < STEP_DEFS.length; i++) {
+            var sid  =  STEP_DEFS[i].Id;
+            if (sid === nextActiveStepId) continue;
+            ValeSpec__StepManager__CollapseStep(sid);
+        }
+
+        ValeSpec__StepManager__ActiveStepId  =  null;
+        if (nextActiveStepId) {
+            ValeSpec__StepManager__ExpandStep(nextActiveStepId);
+            ValeSpec__StepManager__ActiveStepId  =  nextActiveStepId;
+        }
+
+        ValeSpec__StepManager__UpdateProgressBar();
+        ValeSpec__StepManager__EmitStateChanged();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Reset Progress State to Defaults
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__ResetProgressState() {
+        var defaultActiveStepId  =  STEP_DEFS.length ? STEP_DEFS[0].Id : null;
+        ValeSpec__StepManager__ApplyProgressState({
+            ActiveStepId   : defaultActiveStepId,
+            CompletedSteps : {}
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Check if Specific Steps Used Next Progression
     // ------------------------------------------------------------
     function ValeSpec__StepManager__HasProgressedStepsViaNext(stepIds) {
@@ -463,6 +574,9 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
         ValeSpec__StepManager__GetStepBody        : ValeSpec__StepManager__GetStepBody,
         ValeSpec__StepManager__GetActiveStepId    : ValeSpec__StepManager__GetActiveStepId,
         ValeSpec__StepManager__RefreshAllSummaries: ValeSpec__StepManager__RefreshAllSummaries,
+        ValeSpec__StepManager__GetStateSnapshot   : ValeSpec__StepManager__GetStateSnapshot,
+        ValeSpec__StepManager__ApplyProgressState : ValeSpec__StepManager__ApplyProgressState,
+        ValeSpec__StepManager__ResetProgressState : ValeSpec__StepManager__ResetProgressState,
         ValeSpec__StepManager__HasProgressedStepsViaNext : ValeSpec__StepManager__HasProgressedStepsViaNext,
         ValeSpec__StepManager__ResetNextProgressTracking : ValeSpec__StepManager__ResetNextProgressTracking,
         ValeSpec__StepManager__OnStateChanged            : ValeSpec__StepManager__OnStateChanged

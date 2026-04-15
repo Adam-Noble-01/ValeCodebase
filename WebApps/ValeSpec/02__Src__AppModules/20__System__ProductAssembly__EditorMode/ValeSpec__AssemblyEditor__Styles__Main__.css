@@ -467,6 +467,28 @@
     background-color                     : var(--Vale_EditorSaveBtnHover);
 }
 
+.ValeSpec__AssemblyEditor__FixedActionBar {
+    display                              : flex;
+    justify-content                      : flex-end;
+    align-items                          : center;
+    gap                                  : 10px;
+    margin-top                           : 8px;
+    padding-top                          : 12px;
+    padding-right                        : 0;
+    padding-bottom                       : 2px;
+    padding-left                         : 0;
+    border-top                           : 1px solid var(--Vale_EditorFormGroupBorder);
+    background-color                     : var(--Vale_EditorControlsBg);
+    position                             : sticky;
+    bottom                               : 0;
+    z-index                              : 3;
+    flex-shrink                          : 0;
+}
+
+.ValeSpec__AssemblyEditor__FixedActionBar__SaveBtn {
+    min-width                            : 164px;
+}
+
 /* #endregion ----------------------------------------------------------------- */
 
 
@@ -640,6 +662,102 @@
     background-color                     : var(--Vale_EditorWarningBg);
     color                                : var(--Vale_EditorWarningColour);
     border                               : 1px solid var(--Vale_EditorWarningBorder);
+}
+
+/* #endregion ----------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Inline Warning Section (Step Card)
+ * ----------------------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__WarningSection {
+    display                              : flex;
+    flex-direction                       : column;
+    gap                                  : 4px;
+    padding                              : 10px 14px;
+    margin-top                           : 12px;
+    margin-bottom                        : 4px;
+    background-color                     : rgba(211, 47, 47, 0.08);
+    border                               : 1px solid rgba(211, 47, 47, 0.4);
+    border-radius                        : 4px;
+}
+
+.ValeSpec__AssemblyEditor__WarningSection__Title {
+    display                              : flex;
+    align-items                          : center;
+    gap                                  : 6px;
+    font-size                            : 0.82rem;
+    font-weight                          : 700;
+    color                                : #b71c1c;
+}
+
+.ValeSpec__AssemblyEditor__WarningSection__Title::before {
+    content                              : '\26A0';
+    font-size                            : 1rem;
+}
+
+.ValeSpec__AssemblyEditor__WarningSection__Message {
+    font-size                            : 0.8rem;
+    font-weight                          : 400;
+    color                                : #c62828;
+    line-height                          : 1.45;
+}
+
+/* #endregion ----------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Centred Warning Notification Overlay
+ * ----------------------------------------------------------------------------- */
+
+.ValeSpec__AssemblyEditor__CentredNotification {
+    position                             : fixed;
+    inset                                : 0;
+    display                              : flex;
+    align-items                          : center;
+    justify-content                      : center;
+    z-index                              : 11000;
+    background-color                     : rgba(0, 0, 0, 0.35);
+    opacity                              : 0;
+    pointer-events                       : none;
+    transition                           : opacity 0.25s ease;
+}
+
+.ValeSpec__AssemblyEditor__CentredNotification--visible {
+    opacity                              : 1;
+    pointer-events                       : auto;
+}
+
+.ValeSpec__AssemblyEditor__CentredNotification__Card {
+    background-color                     : #ffffff;
+    border                               : 2px solid rgba(211, 47, 47, 0.5);
+    border-radius                        : 8px;
+    padding                              : 28px 32px;
+    max-width                            : 460px;
+    width                                : 88%;
+    text-align                           : center;
+    box-shadow                           : 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.ValeSpec__AssemblyEditor__CentredNotification__Icon {
+    font-size                            : 2rem;
+    margin-bottom                        : 8px;
+    color                                : #d32f2f;
+}
+
+.ValeSpec__AssemblyEditor__CentredNotification__Title {
+    font-size                            : 1rem;
+    font-weight                          : 700;
+    color                                : #b71c1c;
+    margin-bottom                        : 8px;
+}
+
+.ValeSpec__AssemblyEditor__CentredNotification__Message {
+    font-size                            : 0.88rem;
+    font-weight                          : 400;
+    color                                : #444444;
+    line-height                          : 1.55;
 }
 
 /* #endregion ----------------------------------------------------------------- */

@@ -21,7 +21,7 @@
         "SvgDrawing__Dimension__Config__TextColor"           : "#cc3333",
         "SvgDrawing__Dimension__Config__FontSizeScaleFactor" : 0.0175,
         "SvgDrawing__Dimension__Config__TickSizeMm"          : 15,
-        "SvgDrawing__Dimension__Config__OffsetFromFrameMm"   : 60,
+        "SvgDrawing__Dimension__Config__OffsetFromFrameMm"   : 100,
         "SvgDrawing__Dimension__Config__ExtensionPastDimensionLineMm" : 20,
         "SvgDrawing__Dimension__Config__ExtensionInsetFromCornerMm"   : 20
     },

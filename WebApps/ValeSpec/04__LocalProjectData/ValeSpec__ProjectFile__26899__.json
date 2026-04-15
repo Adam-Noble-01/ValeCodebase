@@ -1,0 +1,19 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "26899",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Dennis Bergkamp",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Extra Doors",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Approved",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A"
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "ValeSpec__ProjectFile__Assemblies": []
+}

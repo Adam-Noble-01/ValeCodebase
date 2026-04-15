@@ -8,7 +8,7 @@
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Fixed top-centre banner that displays when the local Flask
                 server connection is lost or restored
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Subscribes to the ServerConnectionMonitor status change events

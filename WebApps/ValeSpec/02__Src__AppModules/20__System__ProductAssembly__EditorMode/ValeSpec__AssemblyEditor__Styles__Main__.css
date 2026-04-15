@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - Styles
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Layout, step wizard controls, and component styles for Assembly Editor
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Two-panel editor layout with configurable split
@@ -425,6 +425,8 @@
 .ValeSpec__AssemblyEditor__StepCard__Footer {
     display                              : flex;
     justify-content                      : flex-end;
+    width                                : 100%;
+    box-sizing                           : border-box;
     margin-top                           : 14px;
     padding-top                          : 10px;
     border-top                           : 1px solid var(--Vale_EditorFormGroupBorder);

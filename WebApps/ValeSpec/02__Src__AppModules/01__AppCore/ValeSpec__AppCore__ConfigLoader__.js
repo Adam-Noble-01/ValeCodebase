@@ -7,7 +7,7 @@
    MODULE     : AppCore - ConfigLoader
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Fetch and parse the main application configuration JSON
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Fetches ValeSpec__AppConfig__Main__.json via fetch()

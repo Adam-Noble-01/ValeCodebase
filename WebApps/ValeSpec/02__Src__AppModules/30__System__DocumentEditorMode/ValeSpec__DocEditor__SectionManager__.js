@@ -7,7 +7,7 @@
    MODULE     : DocEditor - SectionManager
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Render and manage assembly section blocks in Document Editor mode
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders assembly section blocks into #ValeSpec__DocEditor__SectionsContainer
@@ -388,8 +388,7 @@ const ValeSpec__DocEditor__SectionManager = (function() {
             },
             'Assembly__DoorType__Config': {
                 'Assembly__DoorType__Config__Type'              : defaultDoor,
-                'Assembly__DoorType__Config__OpeningDirection'  : 'Outward',
-                'Assembly__DoorType__Config__Quantity'          : 1
+                'Assembly__DoorType__Config__OpeningDirection'  : 'Outward'
             },
             'Assembly__Dimensions__Config': {
                 'Assembly__Dimensions__Config__WidthMm'  : widthDefault,

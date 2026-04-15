@@ -7,7 +7,7 @@
    MODULE     : SvgDrawing - CoordHelpers
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Shared coordinate utilities for mm-based SVG rendering
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - All renderers work in mm with a bottom-left origin, Y-up coordinate system

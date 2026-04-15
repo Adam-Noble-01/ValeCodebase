@@ -7,7 +7,7 @@
 # MODULE     : Build - HardwareDataIndex
 # AUTHOR     : Adam Noble - Noble Architecture
 # PURPOSE    : Scan hardware JSON files and build a consolidated data index
-# CREATED    : 2026
+# CREATED    : 15-Apr-2026
 #
 # DESCRIPTION:
 # - Scans ../03__Data__HardwareDataLibrary/ recursively for *.json files

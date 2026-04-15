@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - GlobalSettings
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Step-based global finish controls within assembly wizard
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders global finish selector as a dedicated step card section
@@ -106,7 +106,13 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         group.appendChild(label);
         group.appendChild(ValeSpec__GlobalSettings__FinishSelect);
         group.appendChild(ValeSpec__GlobalSettings__OtherInput);
-        ValeSpec__GlobalSettings__ContainerEl.appendChild(group);
+
+        var footerEl  =  ValeSpec__GlobalSettings__ContainerEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        if (footerEl) {
+            ValeSpec__GlobalSettings__ContainerEl.insertBefore(group, footerEl);
+        } else {
+            ValeSpec__GlobalSettings__ContainerEl.appendChild(group);
+        }
     }
     // ------------------------------------------------------------
 

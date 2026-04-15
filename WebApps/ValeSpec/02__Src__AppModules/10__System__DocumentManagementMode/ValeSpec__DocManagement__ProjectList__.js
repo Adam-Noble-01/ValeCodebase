@@ -7,7 +7,7 @@
    MODULE     : DocManagement - ProjectList
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Render the project table into the Document Management mode panel
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Reads project manifest via ProjectFileManager.ValeSpec__ProjectFileManager__ListProjects()

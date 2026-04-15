@@ -7,7 +7,7 @@
    MODULE     : DocEditor - JobNotes
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Render and manage editable job notes textarea in Document Editor
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders editable textarea into #ValeSpec__DocEditor__JobNotesContainer

@@ -7,7 +7,7 @@
    MODULE     : AppCore - StateManager
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Central application state with event emitter for reactive UI
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Holds all mutable application state (current project, assembly, config)
@@ -31,7 +31,7 @@ const ValeSpec__AppCore__StateManager = (function() {
         currentProject         : null,                    // <-- Currently loaded project data
         currentAssemblyIndex   : -1,                      // <-- Index of assembly being edited (-1 = none)
         globalIronmongeryFinish: 'Unlacquered Brass',     // <-- Cascading finish selection
-        globalLeverType        : 'Scroll',                // <-- Cascading lever type selection
+        globalHandleType       : 'Scroll',                // <-- Cascading handle type selection (persisted as LeverType in project JSON)
         isDirty                : false,                   // <-- Unsaved changes flag
         currentMode            : 'DocManagement'          // <-- Active UI mode
     };
@@ -109,7 +109,7 @@ const ValeSpec__AppCore__StateManager = (function() {
             var globalSettings  =  projectData['ValeSpec__ProjectFile__GlobalSettings'];
             if (globalSettings) {
                 ValeSpec__StateManager__State.globalIronmongeryFinish  =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'] || 'Unlacquered Brass';
-                ValeSpec__StateManager__State.globalLeverType          =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__LeverType'] || 'Scroll';
+                ValeSpec__StateManager__State.globalHandleType         =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__LeverType'] || 'Scroll';
             }
         }
         ValeSpec__StateManager__Emit('projectChanged', projectData);
@@ -163,15 +163,15 @@ const ValeSpec__AppCore__StateManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Set Global Lever Type
+    // FUNCTION | Set Global Handle Type
     // ------------------------------------------------------------
-    function ValeSpec__StateManager__SetGlobalLeverType(leverType) {
-        ValeSpec__StateManager__State.globalLeverType  =  leverType;
+    function ValeSpec__StateManager__SetGlobalHandleType(handleType) {
+        ValeSpec__StateManager__State.globalHandleType  =  handleType;
         if (ValeSpec__StateManager__State.currentProject && ValeSpec__StateManager__State.currentProject['ValeSpec__ProjectFile__GlobalSettings']) {
-            ValeSpec__StateManager__State.currentProject['ValeSpec__ProjectFile__GlobalSettings']['ValeSpec__ProjectFile__GlobalSettings__LeverType']  =  leverType;
+            ValeSpec__StateManager__State.currentProject['ValeSpec__ProjectFile__GlobalSettings']['ValeSpec__ProjectFile__GlobalSettings__LeverType']  =  handleType;
         }
         ValeSpec__StateManager__State.isDirty  =  true;
-        ValeSpec__StateManager__Emit('globalLeverTypeChanged', leverType);
+        ValeSpec__StateManager__Emit('globalHandleTypeChanged', handleType);
     }
     // ------------------------------------------------------------
 
@@ -216,7 +216,7 @@ const ValeSpec__AppCore__StateManager = (function() {
         ValeSpec__StateManager__GetCurrentAssembly       : ValeSpec__StateManager__GetCurrentAssembly,
         ValeSpec__StateManager__UpdateCurrentAssembly    : ValeSpec__StateManager__UpdateCurrentAssembly,
         ValeSpec__StateManager__SetGlobalFinish          : ValeSpec__StateManager__SetGlobalFinish,
-        ValeSpec__StateManager__SetGlobalLeverType       : ValeSpec__StateManager__SetGlobalLeverType,
+        ValeSpec__StateManager__SetGlobalHandleType      : ValeSpec__StateManager__SetGlobalHandleType,
         ValeSpec__StateManager__SetCurrentMode           : ValeSpec__StateManager__SetCurrentMode,
         ValeSpec__StateManager__MarkDirty                : ValeSpec__StateManager__MarkDirty,
         ValeSpec__StateManager__MarkClean                : ValeSpec__StateManager__MarkClean

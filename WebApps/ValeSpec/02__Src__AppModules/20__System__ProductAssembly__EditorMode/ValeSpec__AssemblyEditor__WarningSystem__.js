@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - WarningSystem
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Modal dialogs, toast notifications, and validation warnings
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - ValeSpec__WarningSystem__ShowHingeProjectionWarning() for 8-inch projection approval

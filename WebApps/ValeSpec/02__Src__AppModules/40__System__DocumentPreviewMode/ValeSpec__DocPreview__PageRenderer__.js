@@ -7,7 +7,7 @@
    MODULE     : DocPreview - PageRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Render read-only document preview with toolbar, branding, and assemblies
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders read-only document preview into #ValeSpec__DocPreview__Container

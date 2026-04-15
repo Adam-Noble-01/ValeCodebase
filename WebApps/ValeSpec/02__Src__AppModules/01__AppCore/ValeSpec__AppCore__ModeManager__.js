@@ -7,7 +7,7 @@
    MODULE     : AppCore - ModeManager
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Mode switching between the four application views
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Manages visibility of mode panel sections

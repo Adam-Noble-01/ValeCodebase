@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - DoorConfigurator - Miscellaneous
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Step 7 (Miscellaneous) controls and persistence
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders miscellaneous checkbox options from Na__AssemblyEditor__Config.json

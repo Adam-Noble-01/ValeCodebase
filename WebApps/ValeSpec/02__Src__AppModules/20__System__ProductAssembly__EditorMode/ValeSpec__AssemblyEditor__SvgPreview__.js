@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - SvgPreview
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : SVG viewport management and interactive dimension editing
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Creates SVG viewport element inside preview panel

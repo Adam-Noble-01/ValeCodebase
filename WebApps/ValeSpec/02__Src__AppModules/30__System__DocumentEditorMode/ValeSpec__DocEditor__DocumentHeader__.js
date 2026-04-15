@@ -7,7 +7,7 @@
    MODULE     : DocEditor - DocumentHeader
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Render and manage the document header block in Document Editor mode
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders document header into #ValeSpec__DocEditor__HeaderBlock

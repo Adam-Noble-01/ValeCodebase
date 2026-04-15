@@ -8,7 +8,7 @@
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Polls the local Flask server health endpoint and publishes
                 connection status changes to subscribers
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Fetches api/system/health every 6 seconds when running on localhost

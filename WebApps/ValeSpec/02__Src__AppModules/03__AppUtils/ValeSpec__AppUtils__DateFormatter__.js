@@ -7,7 +7,7 @@
    MODULE     : AppUtils - DateFormatter
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Global date formatting utility for Vale-style date strings
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Formats dates in Vale standard formats

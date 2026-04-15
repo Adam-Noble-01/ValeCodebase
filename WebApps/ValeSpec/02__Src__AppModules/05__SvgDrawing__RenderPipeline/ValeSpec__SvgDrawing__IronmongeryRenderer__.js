@@ -7,7 +7,7 @@
    MODULE     : SvgDrawing - IronmongeryRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Places hardware vector paths onto door panels
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Reads HardwareItem__VectorData Paths array from the full hardware data

@@ -7,7 +7,7 @@
    MODULE     : AppCore - Init
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Boot sequence for ValeSpec application
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Executes the application startup sequence
@@ -259,8 +259,8 @@
             ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:globalFinishChanged'); // <-- Batch rapid updates into a single autosave write
         });
 
-        StateManager.ValeSpec__StateManager__On('globalLeverTypeChanged', function() {
-            ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:globalLeverTypeChanged'); // <-- Batch rapid updates into a single autosave write
+        StateManager.ValeSpec__StateManager__On('globalHandleTypeChanged', function() {
+            ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:globalHandleTypeChanged'); // <-- Batch rapid updates into a single autosave write
         });
     }
     // ------------------------------------------------------------

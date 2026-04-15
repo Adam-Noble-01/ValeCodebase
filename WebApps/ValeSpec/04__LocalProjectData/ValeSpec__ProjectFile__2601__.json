@@ -1,0 +1,52 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "2601",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Derek",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
+        "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_601519",
+                "Assembly__Identity__Config__Title": "",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward"
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1800,
+                "Assembly__Dimensions__Config__HeightMm": 2100
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__Hanging": "Standard"
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            }
+        }
+    ]
+}

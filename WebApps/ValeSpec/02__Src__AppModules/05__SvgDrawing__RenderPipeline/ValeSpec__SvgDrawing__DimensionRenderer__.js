@@ -7,11 +7,13 @@
    MODULE     : SvgDrawing - DimensionRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Draws red dimension annotations with architectural tick marks
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Width dimension below the frame with horizontal line, ticks, and label
    - Height dimension to the left with vertical line, ticks, and rotated label
+   - Perpendicular extension (witness) lines from frame corners past the dimension line
+   - Optional inset from each corner so witness lines do not start flush on the frame corner
    - Architectural 45-degree slash tick marks at line endpoints
    - Responsive font sizing scaled to door height with minimum floor
    - All coordinates in mm, Y-flip applied at render time via CoordHelpers
@@ -24,6 +26,10 @@
 
 const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
+// -----------------------------------------------------------------------------
+// REGION | Module State and Shared Dependencies
+// -----------------------------------------------------------------------------
+
     // MODULE CONSTANTS | Minimum Font Size
     // ------------------------------------------------------------
     const MIN_FONT_SIZE_MM  =  9;
@@ -35,6 +41,13 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     var ValeSpec__DimensionRenderer__CoordsRef  =  null;
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Shared Helper Functions
+// -----------------------------------------------------------------------------
+
 
     // HELPER FUNCTION | Lazy-Load CoordHelpers Reference
     // ------------------------------------------------------------
@@ -45,11 +58,35 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Parse Config Length in mm (avoids string + number concat bugs)
+    // ------------------------------------------------------------
+    function ValeSpec__DimensionRenderer__ParseMm(value, fallback) {
+        var n  =  parseFloat(value);
+        return isNaN(n) ? fallback : n;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Calculate Responsive Font Size
     // ------------------------------------------------------------
     function ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor) {
         var scaled  =  height_mm * (scaleFactor || 0.02);  // <-- Scale font to door height
         return Math.max(scaled, MIN_FONT_SIZE_MM);         // <-- Enforce minimum readability
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Render a Plain Line Segment (extension / witness lines)
+    // ------------------------------------------------------------
+    function ValeSpec__DimensionRenderer__RenderLineSegment(x1, y1, x2, y2, color, strokeWidth) {
+        return '<line'
+            + ' x1="' + x1 + '"'
+            + ' y1="' + y1 + '"'
+            + ' x2="' + x2 + '"'
+            + ' y2="' + y2 + '"'
+            + ' stroke="'       + color       + '"'
+            + ' stroke-width="' + strokeWidth + '"'
+            + ' />';
     }
     // ------------------------------------------------------------
 
@@ -74,6 +111,13 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Width Dimension Rendering
+// -----------------------------------------------------------------------------
+
 
     // SUB FUNCTION | Render Width Dimension Below Frame
     // ------------------------------------------------------------
@@ -83,13 +127,21 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
         var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.02;
         var tickSize     =  config['SvgDrawing__Dimension__Config__TickSizeMm']          || 15;
         var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
+        var pastDimMm    =  ValeSpec__DimensionRenderer__ParseMm(config['SvgDrawing__Dimension__Config__ExtensionPastDimensionLineMm'], 22);
+        var cornerInset  =  ValeSpec__DimensionRenderer__ParseMm(config['SvgDrawing__Dimension__Config__ExtensionInsetFromCornerMm'], 10);
         var lineWidth    =  2;
 
         var fontSize  =  ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor);
         var dimY      =  -offset;                          // <-- Below the frame origin in data coords
         var svgDimY   =  -dimY;                            // <-- Y-flip for SVG space
+        var dimXLeft    =  0;
+        var dimXRight   =  width_mm;
 
         var svg  =  '';
+
+        // Perpendicular extension lines (vertical): bottom corners down past the horizontal dimension line
+        svg += ValeSpec__DimensionRenderer__RenderLineSegment(dimXLeft, cornerInset, dimXLeft, svgDimY + pastDimMm, lineColor, lineWidth);
+        svg += ValeSpec__DimensionRenderer__RenderLineSegment(dimXRight, cornerInset, dimXRight, svgDimY + pastDimMm, lineColor, lineWidth);
 
         svg += '<line'
             + ' x1="' + 0        + '" y1="' + svgDimY + '"'
@@ -120,6 +172,13 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Height Dimension Rendering
+// -----------------------------------------------------------------------------
+
 
     // SUB FUNCTION | Render Height Dimension to Left of Frame
     // ------------------------------------------------------------
@@ -129,14 +188,25 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
         var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.02;
         var tickSize     =  config['SvgDrawing__Dimension__Config__TickSizeMm']          || 15;
         var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
+        var pastDimMm    =  ValeSpec__DimensionRenderer__ParseMm(config['SvgDrawing__Dimension__Config__ExtensionPastDimensionLineMm'], 22);
+        var cornerInset  =  ValeSpec__DimensionRenderer__ParseMm(config['SvgDrawing__Dimension__Config__ExtensionInsetFromCornerMm'], 10);
         var lineWidth    =  2;
 
         var fontSize   =  ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor);
         var dimX       =  -offset;                         // <-- Left of the frame origin in data coords
         var svgTopY    =  -height_mm;                      // <-- Y-flip: top of frame in SVG space
         var svgBotY    =  0;                               // <-- Y-flip: bottom of frame in SVG space
+        // Height witnesses need their own axis calculations: exact frame-height Y values, independent X extension
+        var witnessStartX  =  -cornerInset;                // <-- Shift left to create the same small negative-X gap feel as the lower dim
+        var witnessEndX    =  dimX - pastDimMm;            // <-- Continue past the vertical dim line like the width witnesses do
+        var witnessTopY    =  svgTopY;                     // <-- Align with true frame top
+        var witnessBotY    =  svgBotY;                     // <-- Align with true frame bottom
 
         var svg  =  '';
+
+        // Horizontal witness: independent X-axis endpoints for the left-side height dimension
+        svg += ValeSpec__DimensionRenderer__RenderLineSegment(witnessStartX, witnessTopY, witnessEndX, witnessTopY, lineColor, lineWidth);
+        svg += ValeSpec__DimensionRenderer__RenderLineSegment(witnessStartX, witnessBotY, witnessEndX, witnessBotY, lineColor, lineWidth);
 
         svg += '<line'
             + ' x1="' + dimX + '" y1="' + svgTopY + '"'
@@ -149,7 +219,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
         svg += ValeSpec__DimensionRenderer__RenderTick(dimX, svgBotY, tickSize, lineColor, lineWidth);
 
         var labelX    =  dimX - fontSize - 8;              // <-- Position text left of dimension line
-        var labelY    =  -(height_mm / 2);                 // <-- Centre vertically in SVG space
+        var labelY    =  -(height_mm / 2);                 // <-- Centre on the full assembly height
         var rotation  =  -90;                              // <-- Rotate text for vertical reading
 
         svg += '<text'
@@ -168,6 +238,13 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
         return svg;
     }
     // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public Render Entry Point and Exports
+// -----------------------------------------------------------------------------
 
 
     // FUNCTION | Render All Dimension Annotations
@@ -191,6 +268,8 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     };
 
 })();
+
+// endregion -------------------------------------------------------------------
 
 // endregion ===================================================================
 

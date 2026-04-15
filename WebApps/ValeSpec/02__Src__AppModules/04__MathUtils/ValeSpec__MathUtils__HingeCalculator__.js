@@ -7,7 +7,7 @@
    MODULE     : MathUtils - HingeCalculator
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Calculate hinge count and hanging type per door leaf
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Determines hinge count and hanging arrangement based on door type,

@@ -7,7 +7,7 @@
    MODULE     : SvgDrawing - RenderPipeline
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Orchestrates sub-renderers into a complete SVG assembly drawing
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Fetches and caches Na__SvgDrawing__Config.json on first call

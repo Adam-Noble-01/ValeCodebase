@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - Layout
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Renders two-panel editor layout and orchestrates sub-modules
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders preview panel (left) and controls panel (right)

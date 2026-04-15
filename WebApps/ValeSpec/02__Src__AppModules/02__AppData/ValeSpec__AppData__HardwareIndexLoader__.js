@@ -7,7 +7,7 @@
    MODULE     : AppData - HardwareIndexLoader
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Fetch, cache, and query the hardware data index
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Fetches ValeSpec__HardwareDataIndex__.json via fetch()

@@ -7,11 +7,11 @@
    MODULE     : DocPreview - SpecTableRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Generate HTML spec table for hardware schedule from assembly data
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - ValeSpec__SpecTableRenderer__RenderSpecTable(assemblyData) returns HTML table string
-   - Rows: Door Type, Dimensions, Multi-Point, Hinges, Lever, Cylinder, Cabin Hooks, Misc
+   - Rows: Door Type, Dimensions, Multi-Point, Hinges, Handle, Cylinder, Cabin Hooks, Misc
    - Uses ValeSpec__DocPreview__SpecTable CSS classes for styling
    - Config-driven table styling via DocPreview__SpecTable__Config
 
@@ -86,14 +86,14 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Lever Type and Quantity
+    // HELPER FUNCTION | Extract Handle Type and Quantity
     // ------------------------------------------------------------
-    function ValeSpec__SpecTableRenderer__GetLeverDesc(assembly) {
-        var leverConfig  =  assembly['Assembly__Lever__Config'] || {};
-        var leverType    =  leverConfig['Assembly__Lever__Config__Type']      || '—';
-        var leverHeight  =  leverConfig['Assembly__Lever__Config__HeightMm'] || '';
-        var desc         =  leverType;
-        if (leverHeight) desc  +=  ' @ ' + leverHeight + ' mm';
+    function ValeSpec__SpecTableRenderer__GetHandleDesc(assembly) {
+        var handleConfig  =  assembly['Assembly__Lever__Config'] || {};
+        var handleType    =  handleConfig['Assembly__Lever__Config__Type']      || '—';
+        var handleHeight  =  handleConfig['Assembly__Lever__Config__HeightMm'] || '';
+        var desc          =  handleType;
+        if (handleHeight) desc  +=  ' @ ' + handleHeight + ' mm';
         return desc;
     }
     // ------------------------------------------------------------
@@ -151,7 +151,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Dimensions',             ValeSpec__SpecTableRenderer__GetDimensions(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Multi-Point Locking',    ValeSpec__SpecTableRenderer__GetMultiPointDesc(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Hinge Requirement',      ValeSpec__SpecTableRenderer__GetHingeDesc(assemblyData));
-        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Lever Type &amp; Qty',   ValeSpec__SpecTableRenderer__GetLeverDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Handle Type &amp; Qty',   ValeSpec__SpecTableRenderer__GetHandleDesc(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cylinder Requirement',   ValeSpec__SpecTableRenderer__GetCylinderDesc(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cabin Hooks',            ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assemblyData));
         html  +=      ValeSpec__SpecTableRenderer__BuildRow('Miscellaneous',          ValeSpec__SpecTableRenderer__GetMiscDesc(assemblyData));

@@ -6,7 +6,7 @@ REM
 REM FILE       : Start__ValeSpec__WindowsStartUp__Silent__8002__.bat
 REM AUTHOR     : Adam Noble - Noble Architecture
 REM PURPOSE    : Launch ValeSpec server at login with no visible console
-REM CREATED    : 2026
+REM CREATED    : 15-Apr-2026
 REM
 REM INSTALLATION:
 REM - Press Win+R and run: shell:startup

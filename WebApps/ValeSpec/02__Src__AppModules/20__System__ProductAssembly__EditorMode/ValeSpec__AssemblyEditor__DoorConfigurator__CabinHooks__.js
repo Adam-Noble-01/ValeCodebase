@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - DoorConfigurator - CabinHooks
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Step 6 (Cabin Hooks) controls and persistence
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders cabin hook size, hook count, and eye count controls

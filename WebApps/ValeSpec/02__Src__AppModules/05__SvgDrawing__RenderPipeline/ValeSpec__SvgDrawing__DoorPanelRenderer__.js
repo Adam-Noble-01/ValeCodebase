@@ -7,7 +7,7 @@
    MODULE     : SvgDrawing - DoorPanelRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Draws door panels within the frame based on door type
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders filled rectangles for single or double door configurations

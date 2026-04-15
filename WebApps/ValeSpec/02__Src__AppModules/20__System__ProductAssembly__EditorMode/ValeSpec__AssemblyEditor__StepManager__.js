@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - StepManager
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Sequential step wizard controller for the Assembly Editor
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Manages ordered step state (active, completed, collapsed)
@@ -28,10 +28,10 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
     // ------------------------------------------------------------
     const STEP_DEFS  =  [
         { Id: 'doorType',    Number: 1,  Title: 'Door Type',              ShortTitle: 'Door Type'  },
-        { Id: 'dimensions',  Number: 2,  Title: 'Quantity & Dimensions',  ShortTitle: 'Qty & Dims' },
+        { Id: 'dimensions',  Number: 2,  Title: 'Dimensions',             ShortTitle: 'Dimensions' },
         { Id: 'finish',      Number: 3,  Title: 'Ironmongery Finish',     ShortTitle: 'Finish'     },
-        { Id: 'hinges',      Number: 4,  Title: 'Hinge Projection',       ShortTitle: 'Hinges'     },
-        { Id: 'levers',      Number: 5,  Title: 'Lever Specification',    ShortTitle: 'Levers'     },
+        { Id: 'handles',     Number: 4,  Title: 'Handle Specification',   ShortTitle: 'Handles'    },
+        { Id: 'hinges',      Number: 5,  Title: 'Hinge Projection',       ShortTitle: 'Hinges'     },
         { Id: 'hooks',       Number: 6,  Title: 'Cabin Hooks',            ShortTitle: 'Hooks'      },
         { Id: 'misc',        Number: 7,  Title: 'Miscellaneous',          ShortTitle: 'Misc'       }
     ];

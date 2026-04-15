@@ -7,7 +7,7 @@
    MODULE     : SvgDrawing - DoorFrameRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Draws the outer door frame rectangle with drop shadow
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders a single rectangle from (0,0) to (width_mm, height_mm)

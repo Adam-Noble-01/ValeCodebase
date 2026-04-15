@@ -7,7 +7,7 @@
    MODULE     : AssemblyEditor - DoorConfigurator - Main
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Orchestrates stepped wizard form and sub-module rendering
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders the global settings bar and step-based wizard layout
@@ -26,7 +26,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
     // MODULE CONSTANTS | Save Button Gating Requirements
     // ------------------------------------------------------------
-    const SAVE_BUTTON_REQUIRED_NEXT_STEPS  =  ['doorType', 'dimensions', 'finish', 'hinges', 'levers', 'hooks'];
+    const SAVE_BUTTON_REQUIRED_NEXT_STEPS  =  ['doorType', 'dimensions', 'finish', 'handles', 'hinges', 'hooks'];
     // ------------------------------------------------------------
 
 
@@ -132,8 +132,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         var step1Body  =  StepManager.ValeSpec__StepManager__CreateStep('doorType');
         var step2Body  =  StepManager.ValeSpec__StepManager__CreateStep('dimensions');
         var step3Body  =  StepManager.ValeSpec__StepManager__CreateStep('finish');
-        var step4Body  =  StepManager.ValeSpec__StepManager__CreateStep('hinges');
-        var step5Body  =  StepManager.ValeSpec__StepManager__CreateStep('levers');
+        var step4Body  =  StepManager.ValeSpec__StepManager__CreateStep('handles');
+        var step5Body  =  StepManager.ValeSpec__StepManager__CreateStep('hinges');
         var step6Body  =  StepManager.ValeSpec__StepManager__CreateStep('hooks');
         var step7Body  =  StepManager.ValeSpec__StepManager__CreateStep('misc');
 
@@ -152,13 +152,13 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     function ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body) {
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
         var GlobalSettings =  window.ValeSpec__AssemblyEditor__GlobalSettings;
-        var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
+        var HingesHandles  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles;
         var CabinHooks    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
         var Miscellaneous =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
 
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__Init(step1Body, step2Body);
         if (GlobalSettings) GlobalSettings.ValeSpec__GlobalSettings__Init(step3Body);
-        if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__Init(step4Body, step5Body);
+        if (HingesHandles) HingesHandles.ValeSpec__HingesAndHandles__Init(step5Body, step4Body);
         if (CabinHooks) CabinHooks.ValeSpec__CabinHooks__Init(step6Body);
         if (Miscellaneous) Miscellaneous.ValeSpec__Miscellaneous__Init(step7Body);
     }
@@ -186,12 +186,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         if (!assemblyData) return;
 
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
-        var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
+        var HingesHandles  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles;
         var CabinHooks    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
         var Miscellaneous =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
 
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData);
-        if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__RefreshFromAssembly(assemblyData);
+        if (HingesHandles) HingesHandles.ValeSpec__HingesAndHandles__RefreshFromAssembly(assemblyData);
         if (CabinHooks) CabinHooks.ValeSpec__CabinHooks__RefreshFromAssembly(assemblyData);
         if (Miscellaneous) Miscellaneous.ValeSpec__Miscellaneous__RefreshFromAssembly(assemblyData);
     }

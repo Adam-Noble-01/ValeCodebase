@@ -7,7 +7,7 @@
    MODULE     : MathUtils - LockingCalculator
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Calculate locking points, type, top bolt, and extensions
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Determines multi-point locking configuration based on door type and height

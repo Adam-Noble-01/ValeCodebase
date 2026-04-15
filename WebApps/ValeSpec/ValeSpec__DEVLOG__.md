@@ -3,6 +3,59 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.0.9 - 15-Apr-2026
+
+### App-wide browser autofill suppression
+**Overview**
+- Added **`ValeSpec__AppUtils__AutofillGuard__.js`** — sets `autocomplete="off"` (and `autocapitalize` / `autocorrect` on relevant text-like controls) on all `input`, `textarea`, and `select` elements; runs an initial pass on `document.documentElement` and uses a **`MutationObserver`** so dynamically injected UI (e.g. New Project modal, Assembly Editor, Document Editor) is covered without repeating attributes in every module.
+- **Shell:** `ValeSpec__App__.html` — script load immediately after `ValeSpec__AppUtils__DateFormatter__.js`; the guard self-invokes `Install()` at parse time so it runs before downstream scripts.
+- **Cad dev viewer:** `65__Dev__CadObjectBuilder/ValeSpec__CadObjectViewer__.html` — same script included via relative path for consistent behaviour.
+
+**Result**
+- Chromium / Edge “Saved info” and similar autofill dropdowns are suppressed across the ValeSpec SPA; behaviour is centralised for future fields.
+
+
+### SVG Assembly Preview — Dimension witness lines and height/width geometry
+
+**Overview**
+- **`ValeSpec__SvgDrawing__DimensionRenderer__.js`** — Red dimension annotations now include **perpendicular witness (extension) lines** from the frame toward the dimension line, with **separate calculations for width vs height** so they do not share one inset model incorrectly.
+- **Width (below frame):** Vertical witnesses from bottom jambs (`ExtensionInsetFromCornerMm` gap along the sill), horizontal dimension line, ticks at outer corners, optional continuation **past** the horizontal dimension line (`ExtensionPastDimensionLineMm`).
+- **Height (left of frame):** Main vertical line spans full assembly **`height_mm`** (frame top `svgTopY` to bottom `svgBotY`); ticks at those endpoints; horizontal witnesses use their **own X-axis endpoints** — start at **negative X** (`-ExtensionInsetFromCornerMm`) for the same small clearance gap as the bottom dimension, end at `dimX - ExtensionPastDimensionLineMm` past the vertical dimension line; **Y** aligns with true frame top/bottom (no vertical shrink of the measured graphic vs label).
+- **`ValeSpec__DimensionRenderer__ParseMm`** — Parses dimension config lengths as numbers to avoid string/number concatenation bugs in witness coordinates.
+- **Region blocks** — File structured into collapsible regions: module state, shared helpers, width rendering, height rendering, public entry point.
+- **`Na__SvgDrawing__Config.json`** — `SvgDrawing__Dimension__Config` documents **`ExtensionPastDimensionLineMm`** and **`ExtensionInsetFromCornerMm`** alongside line colour, tick size, and offset from frame.
+
+**Result**
+- Assembly Editor SVG dimensions match the frame size in both label and line geometry; left-side height dimension spacing and end-line behaviour are consistent with the lower width dimension; config and code stay aligned for future tuning.
+
+
+### Remove per-assembly door Quantity (duplicate assemblies preferred)
+- Removed Step 2 quantity input and `Assembly__DoorType__Config__Quantity` from project data; wizard step relabelled to **Dimensions** (`ValeSpec__AssemblyEditor__StepManager__.js`, `Na__AssemblyEditor__Config.json`).
+- New assemblies omit the field (`ValeSpec__DocEditor__SectionManager__.js`); `RefreshFromAssembly` drops the legacy key when loading older JSON (`ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js`).
+
+
+### Assembly Editor — Handle step order, naming, and handle dropdown placeholder
+**Overview**
+- **Step order:** **Handle Specification** is now step **4** (immediately after **Ironmongery Finish**); **Hinge Projection** is step **5**; later steps renumbered (`ValeSpec__AssemblyEditor__StepManager__.js`, `Na__AssemblyEditor__Config.json`, `ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js`). Save-button gating list updated to `…, finish, handles, hinges, hooks`.
+- **Lever → Handle (UI + code):** Progress labels and form copy use **Handle** / **Handle Specification** / **Handles**; step id `levers` replaced with **`handles`**. Module renamed to **`ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles__.js`** (replaces `HingesAndLevers__`); public API `ValeSpec__HingesAndHandles__Init` / `RefreshFromAssembly`. **`ValeSpec__AppCore__StateManager__.js`** — `globalHandleType`, `SetGlobalHandleType`, event **`globalHandleTypeChanged`**; autosave listener in **`ValeSpec__AppCore__Init__.js`** updated. On-disk project JSON **unchanged** (`Assembly__Lever__Config`, `ValeSpec__ProjectFile__GlobalSettings__LeverType`) for backward compatibility.
+- **Handle type `<select>`:** First option is a visible disabled placeholder **`Please select field`** (no `hidden` on the option) so new assemblies show an explicit prompt before a product is chosen; change handler ignores empty value until a real option is selected.
+- **Preview spec table:** Row label **Handle Type & Qty**; helper renamed to `ValeSpec__SpecTableRenderer__GetHandleDesc` (`ValeSpec__DocPreview__SpecTableRenderer__.js`).
+
+**Result**
+- Wizard order matches the intended ironmongery flow (finish → handle type/height → hinge projection); terminology is consistent with “handle” in the UI while existing project files keep loading without migration.
+
+
+### Assembly Editor — Next button below step content (Ironmongery Finish)
+**Overview**
+- **Cause:** `StepManager` appends the shared **Next »** footer to each step body first; modules that **`appendChild`** to the step body were inserting fields *after* the footer, so **Next** appeared above the controls (notably **Ironmongery Finish**).
+- **Fix:** **`ValeSpec__AssemblyEditor__GlobalSettings__.js`** — insert the finish form group with **`insertBefore(group, footerEl)`** (same pattern as other configurators). **`ValeSpec__AssemblyEditor__Styles__Main__.css`** — footer row uses **`width: 100%`** and **`box-sizing: border-box`** so the Next row spans the card and stays right-aligned.
+
+**Result**
+- **Next »** sits below the step fields at the bottom-right of each expanded section; Finish step matches the rest of the wizard.
+
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.0.8 - 15-Apr-2026
 
 ### Codebase Housekeeping — Import JSON Removal and Region Block Rollout

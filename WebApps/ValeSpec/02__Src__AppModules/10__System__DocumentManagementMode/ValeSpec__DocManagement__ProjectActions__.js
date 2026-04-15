@@ -7,7 +7,7 @@
    MODULE     : DocManagement - ProjectActions
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Action buttons and modal dialogs for project CRUD operations
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders the New Project button into the actions container
@@ -89,11 +89,11 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     function ValeSpec__ProjectActions__OnNewProjectClick() {
         var bodyHtml  =  '';
         bodyHtml     +=  '<label style="display:block; margin-bottom:4px; font-weight:600; font-size:var(--Vale_FontSize_Small);">Project Code</label>';
-        bodyHtml     +=  '<input id="ValeSpec__Modal__InputProjectCode" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. PRJ-001">';
+        bodyHtml     +=  '<input id="ValeSpec__Modal__InputProjectCode" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. 2526">';
         bodyHtml     +=  '<label style="display:block; margin-bottom:4px; font-weight:600; font-size:var(--Vale_FontSize_Small);">Project Name</label>';
-        bodyHtml     +=  '<input id="ValeSpec__Modal__InputProjectName" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. Oak Lodge">';
+        bodyHtml     +=  '<input id="ValeSpec__Modal__InputProjectName" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. Jones-Smith">';
         bodyHtml     +=  '<label style="display:block; margin-bottom:4px; font-weight:600; font-size:var(--Vale_FontSize_Small);">Document Name</label>';
-        bodyHtml     +=  '<input id="ValeSpec__Modal__InputDocumentName" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. Oak Lodge Doors">';
+        bodyHtml     +=  '<input id="ValeSpec__Modal__InputDocumentName" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. Orangery / Doors / Extras etc.">';
 
         var actionsHtml  =  '';
         actionsHtml     +=  '<button id="ValeSpec__Modal__BtnCancel" class="ValeSpec__Modal__BtnSecondary">Cancel</button>';

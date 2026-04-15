@@ -7,7 +7,7 @@
    MODULE     : SvgDrawing - OpeningSymbolRenderer
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Draws door opening direction symbols on panel elevations
-   CREATED    : 2026
+   CREATED    : 15-Apr-2026
 
    DESCRIPTION:
    - Renders two grey dashed lines per operable panel forming a triangle

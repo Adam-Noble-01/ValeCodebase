@@ -1,0 +1,154 @@
+---
+description: ValeSpec project naming convention for all functions, variables, modules, CSS, and DOM IDs. Apply whenever writing or editing any ValeSpec JS, CSS, or HTML file.
+globs: ["**/*.js", "**/*.css", "**/*.html"]
+alwaysApply: true
+---
+
+# ValeSpec — Naming Convention Rules
+
+## Core Rule — The Three-Part `ValeSpec__` Pattern
+
+Every named symbol at module or function scope MUST follow this exact structure:
+
+```
+ValeSpec__<FeatureOrSystem>__<PurposeOrRole>
+```
+
+- **Segment 1**: Always `ValeSpec` — the project namespace. Never omitted.
+- **Segment 2**: The feature area or system — e.g. `AppCore`, `ConfigLoader`, `ModeManager`, `StateManager`, `AssemblyEditor`, `DocEditor`, `DocPreview`, `SvgDrawing`, `AppData`.
+- **Segment 3**: The function's purpose or role in PascalCase — e.g. `LoadConfig`, `SwitchToMode`, `GetCurrentAssembly`, `RenderPanel`, `InitNavigationBar`.
+- Segments are **always** separated by double-underscore `__` delimiters. Single underscores are never used as separators.
+
+---
+
+## 1. Function Naming
+
+All named functions — public API, private helpers, sub-functions — use the three-part pattern:
+
+```js
+// Public API function
+async function ValeSpec__ConfigLoader__LoadConfig() { ... }
+
+// Helper function (private to IIFE/module scope)
+function ValeSpec__ModeManager__HideAllPanels() { ... }
+
+// Sub-function
+async function ValeSpec__AppCore__RenderAssemblyEditor() { ... }
+```
+
+- **No underscore prefix** (`_`) for private functions — the namespace itself establishes scope
+- **Async suffix** is NOT used — async is conveyed by the `async` keyword only
+- Local one-liner callbacks (anonymous arrow functions / event handlers inline) may use camelCase
+
+---
+
+## 2. Module-Level Variable Naming
+
+All `let` and `const` variables declared at module scope follow the three-part pattern:
+
+```js
+let ValeSpec__StateManager__State          = { ... };
+let ValeSpec__StateManager__Listeners      = {};
+let ValeSpec__ModeManager__NavigationStack = [];
+let ValeSpec__ModeManager__CurrentMode     = null;
+const ValeSpec__ConfigLoader__ConfigPath   = '...';
+```
+
+- Local variables **inside** function bodies use camelCase: `var configData`, `var panelId`, `var tab`
+
+---
+
+## 3. Public API Return Object Keys
+
+When a module exposes a public API via an IIFE return statement, the return object keys match the function names exactly:
+
+```js
+return {
+    ValeSpec__ConfigLoader__LoadConfig  : ValeSpec__ConfigLoader__LoadConfig,
+    ValeSpec__ConfigLoader__GetSection  : ValeSpec__ConfigLoader__GetSection
+};
+```
+
+Callers access methods via the full key:
+```js
+window.ValeSpec__AppCore__ConfigLoader.ValeSpec__ConfigLoader__LoadConfig();
+window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__On('modeChanged', handler);
+```
+
+---
+
+## 4. Module Constants
+
+Constants use the three-part pattern in SCREAMING_SNAKE for single-word values, or PascalCase for compound names:
+
+```js
+const ValeSpec__ModeManager__ModePanelIds = { ... };   // Object constant — PascalCase
+const CONFIG_PATH = '...';                              // File-scoped single-use string — plain caps OK
+```
+
+---
+
+## 5. CSS Class and ID Naming
+
+- **IDs**: `valespec` + PascalCase — `valеspecAppRoot`, `valespecModePanel`
+- **CSS Classes**: BEM with `valespec-` prefix
+  - Block: `valespec-app-header`, `valespec-nav-tab`, `valespec-mode-panel`
+  - Element: `valespec-app-header__left`, `valespec-nav-tab__label`
+  - Modifier: `valespec-nav-tab--active`, `valespec-nav-tab--disabled`, `valespec-mode-panel--active`
+- **CSS Custom Properties**: `--valespec-colour-*`, `--valespec-font-*`, `--valespec-shadow-*`
+
+---
+
+## 6. File Naming
+
+Files follow the existing `ValeSpec__<Area>__<Role>__.js` pattern already in use:
+
+```
+ValeSpec__AppCore__ConfigLoader__.js
+ValeSpec__AppCore__ModeManager__.js
+ValeSpec__AssemblyEditor__Layout__.js
+ValeSpec__DocEditor__JobNotes__.js
+```
+
+- Double-underscore `__` separates every segment
+- Trailing `__` before extension on multi-concern or feature files
+- Folder prefixes encode ordering: `01__AppCore`, `20__System__ProductAssembly__EditorMode`, `30__System__DocumentEditorMode`
+
+---
+
+## 7. Quick Reference — Segment Vocabulary
+
+| Area | Segment 2 Value |
+|---|---|
+| Application bootstrap & core | `AppCore` |
+| Config loading | `ConfigLoader` |
+| Mode routing | `ModeManager` |
+| Central state | `StateManager` |
+| Data / persistence | `AppData` |
+| Assembly editor system | `AssemblyEditor` |
+| Document editor system | `DocEditor` |
+| Document preview system | `DocPreview` |
+| SVG drawing engine | `SvgDrawing` |
+| Hardware data | `HardwareData` |
+
+---
+
+## 8. Examples — Do and Don't
+
+```js
+// CORRECT
+async function ValeSpec__ConfigLoader__LoadConfig() { ... }
+function ValeSpec__ModeManager__SwitchToMode(modeId, addToHistory) { ... }
+let ValeSpec__StateManager__State = {};
+window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__SetCurrentMode('AssemblyEditor');
+
+// INCORRECT — plain camelCase for module-level functions
+async function loadConfig() { ... }
+function switchToMode(modeId) { ... }
+
+// INCORRECT — underscore prefix instead of full namespace
+function _hideAllPanels() { ... }
+
+// INCORRECT — wrong separator (single underscore)
+function ValeSpec_ModeManager_SwitchToMode() { ... }
+```

@@ -37,11 +37,11 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // HELPER FUNCTION | Show Modal Dialog
     // ------------------------------------------------------------
-    function _showModal(title, bodyHtml, actionsHtml) {
-        var root        =  document.getElementById(MODAL_ROOT_ID);
-        var titleEl     =  document.getElementById(MODAL_TITLE_ID);
-        var bodyEl      =  document.getElementById(MODAL_BODY_ID);
-        var actionsEl   =  document.getElementById(MODAL_ACTIONS_ID);
+    function ValeSpec__ProjectActions__ShowModal(title, bodyHtml, actionsHtml) {
+        var root       =  document.getElementById(MODAL_ROOT_ID);
+        var titleEl    =  document.getElementById(MODAL_TITLE_ID);
+        var bodyEl     =  document.getElementById(MODAL_BODY_ID);
+        var actionsEl  =  document.getElementById(MODAL_ACTIONS_ID);
 
         if (!root || !titleEl || !bodyEl || !actionsEl) return;
 
@@ -56,7 +56,7 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // HELPER FUNCTION | Hide Modal Dialog
     // ------------------------------------------------------------
-    function _hideModal() {
+    function ValeSpec__ProjectActions__HideModal() {
         var root  =  document.getElementById(MODAL_ROOT_ID);
         if (root) {
             root.classList.remove('ValeSpec__Modal__Overlay--visible');            // <-- Hide the modal overlay
@@ -67,9 +67,9 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // HELPER FUNCTION | Re-render Project List Table
     // ------------------------------------------------------------
-    function _refreshProjectList() {
+    function ValeSpec__ProjectActions__RefreshProjectList() {
         if (window.ValeSpec__DocManagement__ProjectList) {
-            window.ValeSpec__DocManagement__ProjectList.render();                  // <-- Delegate to ProjectList module
+            window.ValeSpec__DocManagement__ProjectList.ValeSpec__ProjectList__Render();   // <-- Delegate to ProjectList module
         }
     }
     // ------------------------------------------------------------
@@ -77,7 +77,7 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // FUNCTION | Handle New Project Button Click
     // ------------------------------------------------------------
-    function _onNewProjectClick() {
+    function ValeSpec__ProjectActions__OnNewProjectClick() {
         var bodyHtml  =  '';
         bodyHtml     +=  '<label style="display:block; margin-bottom:4px; font-weight:600; font-size:var(--Vale_FontSize_Small);">Project Code</label>';
         bodyHtml     +=  '<input id="ValeSpec__Modal__InputProjectCode" class="ValeSpec__Modal__Input" type="text" placeholder="e.g. PRJ-001">';
@@ -90,14 +90,14 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
         actionsHtml     +=  '<button id="ValeSpec__Modal__BtnCancel" class="ValeSpec__Modal__BtnSecondary">Cancel</button>';
         actionsHtml     +=  '<button id="ValeSpec__Modal__BtnConfirm" class="ValeSpec__Modal__BtnPrimary">Create Project</button>';
 
-        _showModal('New Project', bodyHtml, actionsHtml);
+        ValeSpec__ProjectActions__ShowModal('New Project', bodyHtml, actionsHtml);
 
         setTimeout(function() {
             var cancelBtn   =  document.getElementById('ValeSpec__Modal__BtnCancel');
             var confirmBtn  =  document.getElementById('ValeSpec__Modal__BtnConfirm');
 
-            if (cancelBtn)  cancelBtn.addEventListener('click', _hideModal);
-            if (confirmBtn) confirmBtn.addEventListener('click', _onConfirmNewProject);
+            if (cancelBtn)  cancelBtn.addEventListener('click', ValeSpec__ProjectActions__HideModal);
+            if (confirmBtn) confirmBtn.addEventListener('click', ValeSpec__ProjectActions__OnConfirmNewProject);
         }, 0);
     }
     // ------------------------------------------------------------
@@ -105,14 +105,14 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // FUNCTION | Confirm New Project Creation from Modal
     // ------------------------------------------------------------
-    function _onConfirmNewProject() {
+    function ValeSpec__ProjectActions__OnConfirmNewProject() {
         var codeInput  =  document.getElementById('ValeSpec__Modal__InputProjectCode');
         var nameInput  =  document.getElementById('ValeSpec__Modal__InputProjectName');
         var docInput   =  document.getElementById('ValeSpec__Modal__InputDocumentName');
 
-        var projectCode    =  codeInput ? codeInput.value.trim() : '';
-        var projectName    =  nameInput ? nameInput.value.trim() : '';
-        var documentName   =  docInput  ? docInput.value.trim()  : '';
+        var projectCode   =  codeInput ? codeInput.value.trim() : '';
+        var projectName   =  nameInput ? nameInput.value.trim() : '';
+        var documentName  =  docInput  ? docInput.value.trim()  : '';
 
         if (!projectCode || !projectName) {
             console.warn('[ValeSpec__ProjectActions] Project Code and Name are required.');
@@ -125,17 +125,17 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
         if (!ProjectFileManager) return;
 
-        var projectData  =  ProjectFileManager.createProject(projectCode, projectName, documentName);
+        var projectData  =  ProjectFileManager.ValeSpec__ProjectFileManager__CreateProject(projectCode, projectName, documentName);
 
         if (StateManager && projectData) {
-            StateManager.setCurrentProject(projectData);                          // <-- Set new project as active
+            StateManager.ValeSpec__StateManager__SetCurrentProject(projectData);  // <-- Set new project as active
         }
 
-        _hideModal();
-        _refreshProjectList();
+        ValeSpec__ProjectActions__HideModal();
+        ValeSpec__ProjectActions__RefreshProjectList();
 
         if (ModeManager) {
-            ModeManager.switchToMode('DocumentEditor');                           // <-- Navigate to Document Editor
+            ModeManager.ValeSpec__ModeManager__SwitchToMode('DocumentEditor');    // <-- Navigate to Document Editor
         }
     }
     // ------------------------------------------------------------
@@ -143,10 +143,10 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // FUNCTION | Handle Import JSON Button Click
     // ------------------------------------------------------------
-    function _onImportClick() {
-        var fileInput       =  document.createElement('input');
-        fileInput.type      =  'file';
-        fileInput.accept    =  '.json';
+    function ValeSpec__ProjectActions__OnImportClick() {
+        var fileInput            =  document.createElement('input');
+        fileInput.type           =  'file';
+        fileInput.accept         =  '.json';
         fileInput.style.display  =  'none';
 
         fileInput.addEventListener('change', function(e) {
@@ -156,10 +156,10 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
             var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
             if (!ProjectFileManager) return;
 
-            ProjectFileManager.importProjectFromJson(file)
+            ProjectFileManager.ValeSpec__ProjectFileManager__ImportProjectFromJson(file)
                 .then(function(projectData) {
                     console.log('[ValeSpec__ProjectActions] Project imported successfully.');
-                    _refreshProjectList();                                        // <-- Refresh table after import
+                    ValeSpec__ProjectActions__RefreshProjectList();                // <-- Refresh table after import
                 })
                 .catch(function(err) {
                     console.error('[ValeSpec__ProjectActions] Import failed:', err);
@@ -176,25 +176,25 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // FUNCTION | Handle Open Project Row Action
     // ------------------------------------------------------------
-    function openProject(projectCode) {
+    function ValeSpec__ProjectActions__OpenProject(projectCode) {
         var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
         var StateManager        =  window.ValeSpec__AppCore__StateManager;
         var ModeManager         =  window.ValeSpec__AppCore__ModeManager;
 
         if (!ProjectFileManager) return;
 
-        var projectData  =  ProjectFileManager.loadProject(projectCode);          // <-- Load from localStorage
+        var projectData  =  ProjectFileManager.ValeSpec__ProjectFileManager__LoadProject(projectCode);   // <-- Load from localStorage
         if (!projectData) {
             console.warn('[ValeSpec__ProjectActions] Could not load project: ' + projectCode);
             return;
         }
 
         if (StateManager) {
-            StateManager.setCurrentProject(projectData);                          // <-- Store in application state
+            StateManager.ValeSpec__StateManager__SetCurrentProject(projectData);  // <-- Store in application state
         }
 
         if (ModeManager) {
-            ModeManager.switchToMode('DocumentEditor');                           // <-- Navigate to Document Editor
+            ModeManager.ValeSpec__ModeManager__SwitchToMode('DocumentEditor');    // <-- Navigate to Document Editor
         }
     }
     // ------------------------------------------------------------
@@ -202,7 +202,7 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // FUNCTION | Handle Delete Project Row Action
     // ------------------------------------------------------------
-    function deleteProject(projectCode) {
+    function ValeSpec__ProjectActions__DeleteProject(projectCode) {
         var bodyHtml  =  '<p>Are you sure you want to delete project <strong>' + projectCode + '</strong>?</p>';
         bodyHtml     +=  '<p style="margin-top:8px; color:var(--ValeSpec_ErrorRed);">This action cannot be undone.</p>';
 
@@ -210,20 +210,20 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
         actionsHtml     +=  '<button id="ValeSpec__Modal__BtnCancel" class="ValeSpec__Modal__BtnSecondary">Cancel</button>';
         actionsHtml     +=  '<button id="ValeSpec__Modal__BtnConfirmDelete" class="ValeSpec__Modal__BtnPrimary" style="background:var(--ValeSpec_ErrorRed);">Delete</button>';
 
-        _showModal('Delete Project', bodyHtml, actionsHtml);
+        ValeSpec__ProjectActions__ShowModal('Delete Project', bodyHtml, actionsHtml);
 
         setTimeout(function() {
             var cancelBtn   =  document.getElementById('ValeSpec__Modal__BtnCancel');
             var confirmBtn  =  document.getElementById('ValeSpec__Modal__BtnConfirmDelete');
 
-            if (cancelBtn)  cancelBtn.addEventListener('click', _hideModal);
+            if (cancelBtn)  cancelBtn.addEventListener('click', ValeSpec__ProjectActions__HideModal);
             if (confirmBtn) confirmBtn.addEventListener('click', function() {
                 var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
                 if (ProjectFileManager) {
-                    ProjectFileManager.deleteProject(projectCode);                // <-- Remove from localStorage
+                    ProjectFileManager.ValeSpec__ProjectFileManager__DeleteProject(projectCode); // <-- Remove from localStorage
                 }
-                _hideModal();
-                _refreshProjectList();                                            // <-- Refresh table after delete
+                ValeSpec__ProjectActions__HideModal();
+                ValeSpec__ProjectActions__RefreshProjectList();                                  // <-- Refresh table after delete
             });
         }, 0);
     }
@@ -232,7 +232,7 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // FUNCTION | Render Action Buttons into DOM
     // ------------------------------------------------------------
-    function render() {
+    function ValeSpec__ProjectActions__Render() {
         var container  =  document.getElementById(ACTIONS_CONTAINER_ID);
         if (!container) {
             console.warn('[ValeSpec__ProjectActions] Container not found: #' + ACTIONS_CONTAINER_ID);
@@ -248,15 +248,15 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
         var newBtn     =  document.getElementById('ValeSpec__DocManagement__BtnNewProject');
         var importBtn  =  document.getElementById('ValeSpec__DocManagement__BtnImport');
 
-        if (newBtn)    newBtn.addEventListener('click', _onNewProjectClick);       // <-- Bind New Project handler
-        if (importBtn) importBtn.addEventListener('click', _onImportClick);        // <-- Bind Import handler
+        if (newBtn)    newBtn.addEventListener('click', ValeSpec__ProjectActions__OnNewProjectClick);   // <-- Bind New Project handler
+        if (importBtn) importBtn.addEventListener('click', ValeSpec__ProjectActions__OnImportClick);    // <-- Bind Import handler
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Bind Table Row Action Event Delegation
     // ------------------------------------------------------------
-    function _bindTableRowActions() {
+    function ValeSpec__ProjectActions__BindTableRowActions() {
         var tableContainer  =  document.getElementById('ValeSpec__DocManagement__TableContainer');
         if (!tableContainer) return;
 
@@ -268,8 +268,8 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
             var code    =  btn.dataset.code;                                      // <-- Project code from data attribute
             if (!action || !code) return;
 
-            if (action === 'open')   openProject(code);
-            if (action === 'delete') deleteProject(code);
+            if (action === 'open')   ValeSpec__ProjectActions__OpenProject(code);
+            if (action === 'delete') ValeSpec__ProjectActions__DeleteProject(code);
         });
     }
     // ------------------------------------------------------------
@@ -277,19 +277,19 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
 
     // BOOT | Render Buttons and Bind Listeners When DOM is Ready
     // ------------------------------------------------------------
-    function _init() {
-        render();
-        _bindTableRowActions();
+    function ValeSpec__ProjectActions__Init() {
+        ValeSpec__ProjectActions__Render();
+        ValeSpec__ProjectActions__BindTableRowActions();
 
         if (window.ValeSpec__DocManagement__ProjectList) {
-            window.ValeSpec__DocManagement__ProjectList.render();                  // <-- Initial table render
+            window.ValeSpec__DocManagement__ProjectList.ValeSpec__ProjectList__Render();   // <-- Initial table render
         }
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', _init);
+        document.addEventListener('DOMContentLoaded', ValeSpec__ProjectActions__Init);
     } else {
-        _init();
+        ValeSpec__ProjectActions__Init();
     }
     // ------------------------------------------------------------
 
@@ -297,9 +297,9 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        render         : render,
-        openProject    : openProject,
-        deleteProject  : deleteProject
+        ValeSpec__ProjectActions__Render        : ValeSpec__ProjectActions__Render,
+        ValeSpec__ProjectActions__OpenProject   : ValeSpec__ProjectActions__OpenProject,
+        ValeSpec__ProjectActions__DeleteProject : ValeSpec__ProjectActions__DeleteProject
     };
 
 })();

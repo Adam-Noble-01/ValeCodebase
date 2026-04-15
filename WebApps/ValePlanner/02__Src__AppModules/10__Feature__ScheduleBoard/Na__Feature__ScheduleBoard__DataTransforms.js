@@ -41,38 +41,53 @@ import { Na__Utils__TimeToMinutes } from '../05__AppUtils/Na__Utils__Time.js';
  // ------------------------------------------------------------
 
 
- // HELPER FUNCTION | Get Visible Time Bounds
- // ------------------------------------------------------------
- export function Na__Schedule__GetBounds(columns, allShifts) {
-     let minMinutes = 24 * 60;
-     let maxMinutes = 0;
-     let hasVisibleShifts = false;
+// HELPER FUNCTION | Get Visible Time Bounds
+// ------------------------------------------------------------
+export function Na__Schedule__GetBounds(columns, allShifts, draftShift = null) {
+    let minMinutes = 24 * 60;
+    let maxMinutes = 0;
+    let hasVisibleShifts = false;
 
-     columns.forEach((column) => {
-         const columnShifts = allShifts.filter((shift) => {
-             const isDateMatch = shift.date === column.date;
-             const isWorkerMatch = column.workerId ? shift.workerId === column.workerId : true;
-             return isDateMatch && isWorkerMatch;
-         });
+    columns.forEach((column) => {
+        const columnShifts = allShifts.filter((shift) => {
+            const isDateMatch = shift.date === column.date;
+            const isWorkerMatch = column.workerId ? shift.workerId === column.workerId : true;
+            return isDateMatch && isWorkerMatch;
+        });
 
-         columnShifts.forEach((shift) => {
-             hasVisibleShifts = true;
-             minMinutes = Math.min(minMinutes, Na__Utils__TimeToMinutes(shift.startTime));
-             maxMinutes = Math.max(maxMinutes, Na__Utils__TimeToMinutes(shift.endTime));
-         });
-     });
+        columnShifts.forEach((shift) => {
+            hasVisibleShifts = true;
+            minMinutes = Math.min(minMinutes, Na__Utils__TimeToMinutes(shift.startTime));
+            maxMinutes = Math.max(maxMinutes, Na__Utils__TimeToMinutes(shift.endTime));
+        });
+    });
 
-     if (!hasVisibleShifts) {
-         return { start: 480, end: 1020 }; // <-- 8am to 5pm fallback
-     }
+    if (draftShift) {
+        hasVisibleShifts = true;
+        minMinutes = Math.min(minMinutes, Na__Utils__TimeToMinutes(draftShift.startTime)); // <-- include draft start in range
+        maxMinutes = Math.max(maxMinutes, Na__Utils__TimeToMinutes(draftShift.endTime));   // <-- include draft end in range
+    }
 
-     if (minMinutes >= 480 && maxMinutes <= 1020) {
-         return { start: 480, end: 1020 };
-     }
+    if (!hasVisibleShifts) {
+        return { start: 480, end: 1020 }; // <-- 8am to 5pm fallback
+    }
 
-     return { start: 360, end: 1260 }; // <-- 6am to 9pm extended range
- }
- // ------------------------------------------------------------
+    const DEFAULT_START = 480;  // <-- 8am baseline
+    const DEFAULT_END   = 1020; // <-- 5pm baseline
+    const HOUR          = 60;
+
+    // Snap content extents to whole-hour boundaries so grid lines stay clean
+    const contentStart  = Math.min(minMinutes, DEFAULT_START);
+    const contentEnd    = Math.max(maxMinutes, DEFAULT_END);
+    const snappedStart  = Math.floor(contentStart / HOUR) * HOUR; // <-- round down to nearest hour
+    const snappedEnd    = Math.ceil(contentEnd    / HOUR) * HOUR; // <-- round up to nearest hour
+
+    return {
+        start : Math.max(0,    snappedStart), // <-- never before midnight
+        end   : Math.min(1440, snappedEnd)    // <-- never after midnight
+    };
+}
+// ------------------------------------------------------------
 
 
  // HELPER FUNCTION | Build Hour Labels for Axis and Grid

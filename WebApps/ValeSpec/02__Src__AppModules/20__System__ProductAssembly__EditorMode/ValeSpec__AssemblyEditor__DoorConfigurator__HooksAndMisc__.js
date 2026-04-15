@@ -29,30 +29,30 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     const MISC_OPTIONS  =  [
         { Label: 'N/A',                    Key: 'Misc_NA'                   },
         { Label: 'Overhead Restrictors',   Key: 'Misc_OverheadRestrictors'  },
-        { Label: 'Letter Plate',           Key: 'Misc_LetterPlate'         },
-        { Label: 'Cat Flap',              Key: 'Misc_CatFlap'             }
+        { Label: 'Letter Plate',           Key: 'Misc_LetterPlate'          },
+        { Label: 'Cat Flap',               Key: 'Misc_CatFlap'              }
     ];
     // ------------------------------------------------------------
 
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _step5BodyEl       =  null;                                         // <-- Step 5 card body (Hooks)
-    let _step6BodyEl       =  null;                                         // <-- Step 6 card body (Misc)
-    let _cabinHookSelect   =  null;                                         // <-- Cabin hook size dropdown
-    let _hookCountInput    =  null;                                         // <-- Hook count numeric input
-    let _eyeCountInput     =  null;                                         // <-- Eye count numeric input
-    let _miscCheckboxes    =  {};                                           // <-- Map of Key -> checkbox element
+    let ValeSpec__HooksAndMisc__Step5BodyEl      =  null;   // <-- Step 5 card body (Hooks)
+    let ValeSpec__HooksAndMisc__Step6BodyEl      =  null;   // <-- Step 6 card body (Misc)
+    let ValeSpec__HooksAndMisc__CabinHookSelect  =  null;   // <-- Cabin hook size dropdown
+    let ValeSpec__HooksAndMisc__HookCountInput   =  null;   // <-- Hook count numeric input
+    let ValeSpec__HooksAndMisc__EyeCountInput    =  null;   // <-- Eye count numeric input
+    let ValeSpec__HooksAndMisc__MiscCheckboxes   =  {};     // <-- Map of Key -> checkbox element
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Get Cabin Hook Options from AppConfig
     // ------------------------------------------------------------
-    function _getCabinHookOptions() {
+    function ValeSpec__HooksAndMisc__GetCabinHookOptions() {
         var ConfigLoader  =  window.ValeSpec__AppCore__ConfigLoader;
         if (!ConfigLoader) return [];
 
-        var section  =  ConfigLoader.getSection('CabinHookOptions');
+        var section  =  ConfigLoader.ValeSpec__ConfigLoader__GetSection('CabinHookOptions');
         if (!section) return [];
 
         return section['ValeSpec__CabinHook__Options__Config__Sizes'] || [
@@ -65,9 +65,36 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Push All Hook/Misc Updates to StateManager
+    // ------------------------------------------------------------
+    function ValeSpec__HooksAndMisc__PushUpdate() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+
+        if (!assembly['Assembly__CabinHooks__Config']) assembly['Assembly__CabinHooks__Config'] = {};
+        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__Size']       =  ValeSpec__HooksAndMisc__CabinHookSelect.value || '';
+        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__HookCount']  =  parseInt(ValeSpec__HooksAndMisc__HookCountInput.value, 10);
+        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__EyeCount']   =  parseInt(ValeSpec__HooksAndMisc__EyeCountInput.value, 10);
+
+        var miscItems  =  [];
+        for (var key in ValeSpec__HooksAndMisc__MiscCheckboxes) {
+            if (ValeSpec__HooksAndMisc__MiscCheckboxes[key].checked) miscItems.push(key);
+        }
+        if (miscItems.length === 0) miscItems.push('N/A');
+        if (!assembly['Assembly__Miscellaneous__Config']) assembly['Assembly__Miscellaneous__Config'] = {};
+        assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__Items']  =  miscItems;
+
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Step 5 - Cabin Hooks
     // ------------------------------------------------------------
-    function _buildHooksStep() {
+    function ValeSpec__HooksAndMisc__BuildHooksStep() {
         var hookGroup  =  document.createElement('div');
         hookGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
@@ -75,26 +102,26 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         hookLabel.textContent  =  'Cabin Hook Size';
         hookLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__CabinHookSize');
 
-        _cabinHookSelect     =  document.createElement('select');
-        _cabinHookSelect.id  =  'ValeSpec__AssemblyEditor__CabinHookSize';
+        ValeSpec__HooksAndMisc__CabinHookSelect     =  document.createElement('select');
+        ValeSpec__HooksAndMisc__CabinHookSelect.id  =  'ValeSpec__AssemblyEditor__CabinHookSize';
 
         var noneOpt          =  document.createElement('option');
         noneOpt.value        =  '';
         noneOpt.textContent  =  'None';
-        _cabinHookSelect.appendChild(noneOpt);
+        ValeSpec__HooksAndMisc__CabinHookSelect.appendChild(noneOpt);
 
-        var hookOptions  =  _getCabinHookOptions();
+        var hookOptions  =  ValeSpec__HooksAndMisc__GetCabinHookOptions();
         for (var i = 0; i < hookOptions.length; i++) {
             var opt          =  document.createElement('option');
             opt.value        =  hookOptions[i].Value;
             opt.textContent  =  hookOptions[i].Label;
-            _cabinHookSelect.appendChild(opt);
+            ValeSpec__HooksAndMisc__CabinHookSelect.appendChild(opt);
         }
 
-        _cabinHookSelect.addEventListener('change', _onCabinHookChange);
+        ValeSpec__HooksAndMisc__CabinHookSelect.addEventListener('change', ValeSpec__HooksAndMisc__PushUpdate);
 
         hookGroup.appendChild(hookLabel);
-        hookGroup.appendChild(_cabinHookSelect);
+        hookGroup.appendChild(ValeSpec__HooksAndMisc__CabinHookSelect);
 
         var countsRow  =  document.createElement('div');
         countsRow.className  =  'ValeSpec__AssemblyEditor__FormRow';
@@ -107,17 +134,17 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         hookCountLabel.textContent  =  'Hook Count';
         hookCountLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__HookCount');
 
-        _hookCountInput       =  document.createElement('input');
-        _hookCountInput.type  =  'number';
-        _hookCountInput.id    =  'ValeSpec__AssemblyEditor__HookCount';
-        _hookCountInput.min   =  0;
-        _hookCountInput.max   =  20;
-        _hookCountInput.value =  0;
+        ValeSpec__HooksAndMisc__HookCountInput       =  document.createElement('input');
+        ValeSpec__HooksAndMisc__HookCountInput.type  =  'number';
+        ValeSpec__HooksAndMisc__HookCountInput.id    =  'ValeSpec__AssemblyEditor__HookCount';
+        ValeSpec__HooksAndMisc__HookCountInput.min   =  0;
+        ValeSpec__HooksAndMisc__HookCountInput.max   =  20;
+        ValeSpec__HooksAndMisc__HookCountInput.value =  0;
 
-        _hookCountInput.addEventListener('change', _onHookCountChange);
+        ValeSpec__HooksAndMisc__HookCountInput.addEventListener('change', ValeSpec__HooksAndMisc__PushUpdate);
 
         hookCountGroup.appendChild(hookCountLabel);
-        hookCountGroup.appendChild(_hookCountInput);
+        hookCountGroup.appendChild(ValeSpec__HooksAndMisc__HookCountInput);
 
         var eyeCountGroup  =  document.createElement('div');
         eyeCountGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
@@ -126,140 +153,81 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         eyeCountLabel.textContent  =  'Eye Count';
         eyeCountLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__EyeCount');
 
-        _eyeCountInput       =  document.createElement('input');
-        _eyeCountInput.type  =  'number';
-        _eyeCountInput.id    =  'ValeSpec__AssemblyEditor__EyeCount';
-        _eyeCountInput.min   =  0;
-        _eyeCountInput.max   =  20;
-        _eyeCountInput.value =  0;
+        ValeSpec__HooksAndMisc__EyeCountInput       =  document.createElement('input');
+        ValeSpec__HooksAndMisc__EyeCountInput.type  =  'number';
+        ValeSpec__HooksAndMisc__EyeCountInput.id    =  'ValeSpec__AssemblyEditor__EyeCount';
+        ValeSpec__HooksAndMisc__EyeCountInput.min   =  0;
+        ValeSpec__HooksAndMisc__EyeCountInput.max   =  20;
+        ValeSpec__HooksAndMisc__EyeCountInput.value =  0;
 
-        _eyeCountInput.addEventListener('change', _onEyeCountChange);
+        ValeSpec__HooksAndMisc__EyeCountInput.addEventListener('change', ValeSpec__HooksAndMisc__PushUpdate);
 
         eyeCountGroup.appendChild(eyeCountLabel);
-        eyeCountGroup.appendChild(_eyeCountInput);
+        eyeCountGroup.appendChild(ValeSpec__HooksAndMisc__EyeCountInput);
 
         countsRow.appendChild(hookCountGroup);
         countsRow.appendChild(eyeCountGroup);
 
-        var footerEl  =  _step5BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        _step5BodyEl.insertBefore(hookGroup, footerEl);
-        _step5BodyEl.insertBefore(countsRow, footerEl);
+        var footerEl  =  ValeSpec__HooksAndMisc__Step5BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        ValeSpec__HooksAndMisc__Step5BodyEl.insertBefore(hookGroup, footerEl);
+        ValeSpec__HooksAndMisc__Step5BodyEl.insertBefore(countsRow, footerEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Step 6 - Miscellaneous
     // ------------------------------------------------------------
-    function _buildMiscStep() {
+    function ValeSpec__HooksAndMisc__BuildMiscStep() {
         var miscGroup  =  document.createElement('div');
         miscGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
         var miscLabel  =  document.createElement('label');
         miscLabel.textContent  =  'Select Applicable Items';
-
         miscGroup.appendChild(miscLabel);
 
         for (var i = 0; i < MISC_OPTIONS.length; i++) {
             var wrapper  =  document.createElement('label');
             wrapper.className  =  'ValeSpec__AssemblyEditor__CheckboxRow';
 
-            var checkbox       =  document.createElement('input');
-            checkbox.type      =  'checkbox';
-            checkbox.id        =  'ValeSpec__AssemblyEditor__' + MISC_OPTIONS[i].Key;
+            var checkbox              =  document.createElement('input');
+            checkbox.type             =  'checkbox';
+            checkbox.id               =  'ValeSpec__AssemblyEditor__' + MISC_OPTIONS[i].Key;
             checkbox.dataset.miscKey  =  MISC_OPTIONS[i].Key;
 
-            checkbox.addEventListener('change', _onMiscCheckboxChange);
+            checkbox.addEventListener('change', function(e) {
+                var key  =  e.target.dataset.miscKey;
+
+                if (key === 'Misc_NA' && e.target.checked) {
+                    for (var k in ValeSpec__HooksAndMisc__MiscCheckboxes) {
+                        if (k !== 'Misc_NA') ValeSpec__HooksAndMisc__MiscCheckboxes[k].checked  =  false;
+                    }
+                } else if (key !== 'Misc_NA' && e.target.checked) {
+                    if (ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_NA']) ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_NA'].checked  =  false;
+                }
+
+                ValeSpec__HooksAndMisc__PushUpdate();
+            });
 
             var text  =  document.createTextNode(MISC_OPTIONS[i].Label);
-
             wrapper.appendChild(checkbox);
             wrapper.appendChild(text);
             miscGroup.appendChild(wrapper);
 
-            _miscCheckboxes[MISC_OPTIONS[i].Key]  =  checkbox;
+            ValeSpec__HooksAndMisc__MiscCheckboxes[MISC_OPTIONS[i].Key]  =  checkbox;
         }
 
-        var footerEl  =  _step6BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        _step6BodyEl.insertBefore(miscGroup, footerEl);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Cabin Hook Size Change
-    // ------------------------------------------------------------
-    function _onCabinHookChange() {
-        _pushUpdate();
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Hook Count Change
-    // ------------------------------------------------------------
-    function _onHookCountChange() {
-        _pushUpdate();
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Eye Count Change
-    // ------------------------------------------------------------
-    function _onEyeCountChange() {
-        _pushUpdate();
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Miscellaneous Checkbox Change
-    // ------------------------------------------------------------
-    function _onMiscCheckboxChange(e) {
-        var key  =  e.target.dataset.miscKey;
-
-        if (key === 'Misc_NA' && e.target.checked) {
-            for (var k in _miscCheckboxes) {
-                if (k !== 'Misc_NA') _miscCheckboxes[k].checked  =  false;
-            }
-        } else if (key !== 'Misc_NA' && e.target.checked) {
-            if (_miscCheckboxes['Misc_NA']) _miscCheckboxes['Misc_NA'].checked  =  false;
-        }
-
-        _pushUpdate();
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Push All Hook/Misc Updates to StateManager
-    // ------------------------------------------------------------
-    function _pushUpdate() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-
-        if (!assembly['Assembly__CabinHooks__Config']) assembly['Assembly__CabinHooks__Config'] = {};
-        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__Size']       =  _cabinHookSelect.value || '';
-        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__HookCount']  =  parseInt(_hookCountInput.value, 10);
-        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__EyeCount']   =  parseInt(_eyeCountInput.value, 10);
-
-        var miscItems  =  [];
-        for (var key in _miscCheckboxes) {
-            if (_miscCheckboxes[key].checked) miscItems.push(key);
-        }
-        if (miscItems.length === 0) miscItems.push('N/A');
-        if (!assembly['Assembly__Miscellaneous__Config']) assembly['Assembly__Miscellaneous__Config'] = {};
-        assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__Items']  =  miscItems;
-
-        StateManager.updateCurrentAssembly(assembly);
+        var footerEl  =  ValeSpec__HooksAndMisc__Step6BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        ValeSpec__HooksAndMisc__Step6BodyEl.insertBefore(miscGroup, footerEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Summary Callback for Step 5 (Hooks)
     // ------------------------------------------------------------
-    function _hooksSummary() {
-        var size   =  _cabinHookSelect ? _cabinHookSelect.value : '';
-        var hooks  =  _hookCountInput  ? _hookCountInput.value  : '0';
-        var eyes   =  _eyeCountInput   ? _eyeCountInput.value   : '0';
+    function ValeSpec__HooksAndMisc__HooksSummary() {
+        var size   =  ValeSpec__HooksAndMisc__CabinHookSelect ? ValeSpec__HooksAndMisc__CabinHookSelect.value : '';
+        var hooks  =  ValeSpec__HooksAndMisc__HookCountInput  ? ValeSpec__HooksAndMisc__HookCountInput.value  : '0';
+        var eyes   =  ValeSpec__HooksAndMisc__EyeCountInput   ? ValeSpec__HooksAndMisc__EyeCountInput.value   : '0';
         if (!size) return 'None';
         return size + ' mm  |  ' + hooks + ' hooks, ' + eyes + ' eyes';
     }
@@ -268,10 +236,10 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
     // HELPER FUNCTION | Summary Callback for Step 6 (Misc)
     // ------------------------------------------------------------
-    function _miscSummary() {
+    function ValeSpec__HooksAndMisc__MiscSummary() {
         var selected  =  [];
-        for (var key in _miscCheckboxes) {
-            if (_miscCheckboxes[key].checked) {
+        for (var key in ValeSpec__HooksAndMisc__MiscCheckboxes) {
+            if (ValeSpec__HooksAndMisc__MiscCheckboxes[key].checked) {
                 for (var j = 0; j < MISC_OPTIONS.length; j++) {
                     if (MISC_OPTIONS[j].Key === key) {
                         selected.push(MISC_OPTIONS[j].Label);
@@ -287,25 +255,25 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
     // FUNCTION | Refresh Controls from Assembly Data
     // ------------------------------------------------------------
-    function refreshFromAssembly(assemblyData) {
+    function ValeSpec__HooksAndMisc__RefreshFromAssembly(assemblyData) {
         if (!assemblyData) return;
 
         var hooksCfg  =  assemblyData['Assembly__CabinHooks__Config']    || {};
         var miscCfg   =  assemblyData['Assembly__Miscellaneous__Config'] || {};
 
-        if (_cabinHookSelect) {
-            _cabinHookSelect.value  =  hooksCfg['Assembly__CabinHooks__Config__Size'] || '';
+        if (ValeSpec__HooksAndMisc__CabinHookSelect) {
+            ValeSpec__HooksAndMisc__CabinHookSelect.value  =  hooksCfg['Assembly__CabinHooks__Config__Size'] || '';
         }
-        if (_hookCountInput) {
-            _hookCountInput.value   =  hooksCfg['Assembly__CabinHooks__Config__HookCount'] || 2;
+        if (ValeSpec__HooksAndMisc__HookCountInput) {
+            ValeSpec__HooksAndMisc__HookCountInput.value   =  hooksCfg['Assembly__CabinHooks__Config__HookCount'] || 2;
         }
-        if (_eyeCountInput) {
-            _eyeCountInput.value    =  hooksCfg['Assembly__CabinHooks__Config__EyeCount'] || 2;
+        if (ValeSpec__HooksAndMisc__EyeCountInput) {
+            ValeSpec__HooksAndMisc__EyeCountInput.value    =  hooksCfg['Assembly__CabinHooks__Config__EyeCount'] || 2;
         }
 
         var miscItems  =  miscCfg['Assembly__Miscellaneous__Config__Items'] || ['N/A'];
-        for (var key in _miscCheckboxes) {
-            _miscCheckboxes[key].checked  =  miscItems.indexOf(key) !== -1;
+        for (var key in ValeSpec__HooksAndMisc__MiscCheckboxes) {
+            ValeSpec__HooksAndMisc__MiscCheckboxes[key].checked  =  miscItems.indexOf(key) !== -1;
         }
     }
     // ------------------------------------------------------------
@@ -313,26 +281,26 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
 
     // FUNCTION | Register Summaries with StepManager
     // ------------------------------------------------------------
-    function _registerSummaries() {
+    function ValeSpec__HooksAndMisc__RegisterSummaries() {
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (!StepManager) return;
 
-        StepManager.registerSummary('hooks', _hooksSummary);
-        StepManager.registerSummary('misc',  _miscSummary);
+        StepManager.ValeSpec__StepManager__RegisterSummary('hooks', ValeSpec__HooksAndMisc__HooksSummary);
+        StepManager.ValeSpec__StepManager__RegisterSummary('misc',  ValeSpec__HooksAndMisc__MiscSummary);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Initialise Hooks and Miscellaneous Steps
     // ------------------------------------------------------------
-    function init(step5BodyEl, step6BodyEl) {
-        _step5BodyEl  =  step5BodyEl;
-        _step6BodyEl  =  step6BodyEl;
-        if (!_step5BodyEl || !_step6BodyEl) return;
+    function ValeSpec__HooksAndMisc__Init(step5BodyEl, step6BodyEl) {
+        ValeSpec__HooksAndMisc__Step5BodyEl  =  step5BodyEl;
+        ValeSpec__HooksAndMisc__Step6BodyEl  =  step6BodyEl;
+        if (!ValeSpec__HooksAndMisc__Step5BodyEl || !ValeSpec__HooksAndMisc__Step6BodyEl) return;
 
-        _buildHooksStep();
-        _buildMiscStep();
-        _registerSummaries();
+        ValeSpec__HooksAndMisc__BuildHooksStep();
+        ValeSpec__HooksAndMisc__BuildMiscStep();
+        ValeSpec__HooksAndMisc__RegisterSummaries();
 
         console.log('[ValeSpec__HooksAndMisc] Initialised.');
     }
@@ -342,8 +310,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init                 : init,
-        refreshFromAssembly  : refreshFromAssembly
+        ValeSpec__HooksAndMisc__Init                : ValeSpec__HooksAndMisc__Init,
+        ValeSpec__HooksAndMisc__RefreshFromAssembly : ValeSpec__HooksAndMisc__RefreshFromAssembly
     };
 
 })();

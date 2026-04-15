@@ -3,6 +3,32 @@
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
+## ValePlanner v0.5.3 - 15-Apr-2026
+### Schedule — Timeline Auto-Extend + Drag Render Performance
+
+**Overview**
+- Schedule timeline now extends progressively as shift blocks are dragged or resized past the visible boundary, adding one clean hour at a time rather than jumping to a fixed wide range.
+- Eliminated profile image flicker and general drag jank by replacing the full DOM re-render on every `mousemove` with a surgical fast-path that only mutates the draft card's position style.
+
+**Timeline Auto-Extend**
+- Updated `Na__Schedule__GetBounds` to accept an optional `draftShift` argument so live drag position is factored into visible bounds before any re-render.
+- Replaced binary `{ 480, 1020 }` / `{ 360, 1260 }` hard-switch with a progressive calculation: bounds extend to the nearest whole-hour boundary above (or below) the current content extents. Grid grows one hour at a time as the user drags.
+- Absolute drag ceiling raised from `bounds.end` to `1260` (9 pm) for all three interaction modes (`create`, `move`, `resize`) in `Na__Schedule__SetupDragHandlers`.
+- Move action top clamp changed from `bounds.start` to `420` (7 am) so shifts can be dragged upward to allow early-morning start times, with the grid extending progressively in the same manner.
+
+**Drag Render Performance**
+- Added surgical fast-path in `Na__Schedule__RenderScheduleBoard`: when a drag is active and both bounds and the draft's column are unchanged, the function mutates `draftCard.style.top`, `draftCard.style.height`, and the time label text directly and returns without any `innerHTML` replacement.
+- Bounds (`boundsStart`, `boundsEnd`) and draft column index are stored as `data-` attributes on `#naScheduleGridMain` after each full render so the fast-path can compare correctly on the next frame.
+- Scroll position in `.na-schedule-grid-scroll` is saved before and restored after any full re-render triggered during drag (bounds expansion, column change on move).
+- Added `Na__AppCore__LastRenderedHeaderState` module variable tracking `mainTab`, `viewMode`, and `currentDate`. `Na__Header__RenderShell` (which replaces `rootElement.innerHTML` including the profile image node) is now only called when one of those three values actually changes — never during drag, never on clock tick, never on shift selection or workers mutation. Profile image `<img>` node now persists for the entire session unless the user switches tabs or navigates weeks.
+
+**Files Changed**
+- `02__Src__AppModules/10__Feature__ScheduleBoard/Na__Feature__ScheduleBoard__DataTransforms.js`
+- `02__Src__AppModules/10__Feature__ScheduleBoard/Na__Feature__ScheduleBoard__Interactions.js`
+- `02__Src__AppModules/10__Feature__ScheduleBoard/Na__Feature__ScheduleBoard__Render.js`
+- `02__Src__AppModules/02__AppCore/Na__AppCore__ValePlannerApp.js`
+
+# ---------------------------------------------------------
 ## ValePlanner v0.5.2 - 14-Apr-2026
 ### Server Connection Warning Banner + PWA Enablement + Silent Startup
 

@@ -39,23 +39,23 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
 
     // MODULE VARIABLES | State
     // ------------------------------------------------------------
-    let _containerEl       =  null;                                          // <-- Parent controls panel
-    let _progressBarEl     =  null;                                          // <-- Progress bar wrapper
-    let _stepsWrapperEl    =  null;                                          // <-- Step cards vertical stack
-    let _stepCards         =  {};                                            // <-- Map of stepId -> { headerEl, bodyEl, cardEl, summaryEl }
-    let _activeStepId      =  null;                                          // <-- Currently expanded step id
-    let _completedSteps    =  {};                                            // <-- Map of stepId -> boolean
-    let _summaryCallbacks  =  {};                                            // <-- Map of stepId -> function returning summary text
-    let _initialised       =  false;                                         // <-- Prevents double-init
+    let ValeSpec__StepManager__ContainerEl      =  null;   // <-- Parent controls panel
+    let ValeSpec__StepManager__ProgressBarEl    =  null;   // <-- Progress bar wrapper
+    let ValeSpec__StepManager__StepsWrapperEl   =  null;   // <-- Step cards vertical stack
+    let ValeSpec__StepManager__StepCards        =  {};     // <-- Map of stepId -> { headerEl, bodyEl, cardEl, summaryEl }
+    let ValeSpec__StepManager__ActiveStepId     =  null;   // <-- Currently expanded step id
+    let ValeSpec__StepManager__CompletedSteps   =  {};     // <-- Map of stepId -> boolean
+    let ValeSpec__StepManager__SummaryCallbacks =  {};     // <-- Map of stepId -> function returning summary text
+    let ValeSpec__StepManager__Initialised      =  false;  // <-- Prevents double-init
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Progress Bar
     // ------------------------------------------------------------
-    function _buildProgressBar() {
-        _progressBarEl  =  document.createElement('div');
-        _progressBarEl.className  =  'ValeSpec__AssemblyEditor__StepProgressBar';
-        _progressBarEl.id         =  'ValeSpec__AssemblyEditor__StepProgressBar';
+    function ValeSpec__StepManager__BuildProgressBar() {
+        ValeSpec__StepManager__ProgressBarEl  =  document.createElement('div');
+        ValeSpec__StepManager__ProgressBarEl.className  =  'ValeSpec__AssemblyEditor__StepProgressBar';
+        ValeSpec__StepManager__ProgressBarEl.id         =  'ValeSpec__AssemblyEditor__StepProgressBar';
 
         for (var i = 0; i < STEP_DEFS.length; i++) {
             var step  =  STEP_DEFS[i];
@@ -64,7 +64,7 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
                 var connector  =  document.createElement('div');
                 connector.className  =  'ValeSpec__AssemblyEditor__StepConnector';
                 connector.dataset.afterStep  =  STEP_DEFS[i - 1].Id;
-                _progressBarEl.appendChild(connector);
+                ValeSpec__StepManager__ProgressBarEl.appendChild(connector);
             }
 
             var pill  =  document.createElement('div');
@@ -84,34 +84,122 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
             pill.appendChild(labelSpan);
 
             pill.addEventListener('click', (function(sid) {
-                return function() { goToStep(sid); };
+                return function() { ValeSpec__StepManager__GoToStep(sid); };
             })(step.Id));
 
-            _progressBarEl.appendChild(pill);
+            ValeSpec__StepManager__ProgressBarEl.appendChild(pill);
         }
 
-        _containerEl.appendChild(_progressBarEl);
+        ValeSpec__StepManager__ContainerEl.appendChild(ValeSpec__StepManager__ProgressBarEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Steps Wrapper
     // ------------------------------------------------------------
-    function _buildStepsWrapper() {
-        _stepsWrapperEl  =  document.createElement('div');
-        _stepsWrapperEl.className  =  'ValeSpec__AssemblyEditor__StepsWrapper';
-        _stepsWrapperEl.id         =  'ValeSpec__AssemblyEditor__StepsWrapper';
-        _containerEl.appendChild(_stepsWrapperEl);
+    function ValeSpec__StepManager__BuildStepsWrapper() {
+        ValeSpec__StepManager__StepsWrapperEl  =  document.createElement('div');
+        ValeSpec__StepManager__StepsWrapperEl.className  =  'ValeSpec__AssemblyEditor__StepsWrapper';
+        ValeSpec__StepManager__StepsWrapperEl.id         =  'ValeSpec__AssemblyEditor__StepsWrapper';
+        ValeSpec__StepManager__ContainerEl.appendChild(ValeSpec__StepManager__StepsWrapperEl);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Refresh Summary Text for a Step
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__RefreshSummary(stepId) {
+        var entry  =  ValeSpec__StepManager__StepCards[stepId];
+        if (!entry) return;
+        var cb  =  ValeSpec__StepManager__SummaryCallbacks[stepId];
+        if (cb) {
+            entry.summaryEl.textContent  =  cb();
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Expand a Step Card
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__ExpandStep(stepId) {
+        var entry  =  ValeSpec__StepManager__StepCards[stepId];
+        if (!entry) return;
+        entry.cardEl.classList.add('ValeSpec__AssemblyEditor__StepCard--active');
+        entry.cardEl.classList.remove('ValeSpec__AssemblyEditor__StepCard--collapsed');
+        entry.chevronEl.innerHTML        =  '&#9650;';
+        entry.summaryEl.style.display    =  'none';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Collapse a Step Card
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__CollapseStep(stepId) {
+        var entry  =  ValeSpec__StepManager__StepCards[stepId];
+        if (!entry) return;
+        entry.cardEl.classList.remove('ValeSpec__AssemblyEditor__StepCard--active');
+        entry.cardEl.classList.add('ValeSpec__AssemblyEditor__StepCard--collapsed');
+        entry.chevronEl.innerHTML      =  '&#9660;';
+        entry.summaryEl.style.display  =  '';
+        ValeSpec__StepManager__RefreshSummary(stepId);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Update Progress Bar State
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__UpdateProgressBar() {
+        if (!ValeSpec__StepManager__ProgressBarEl) return;
+
+        var pills  =  ValeSpec__StepManager__ProgressBarEl.querySelectorAll('.ValeSpec__AssemblyEditor__StepPill');
+        for (var i = 0; i < pills.length; i++) {
+            var sid  =  pills[i].dataset.stepId;
+            pills[i].classList.remove('ValeSpec__AssemblyEditor__StepPill--active');
+            pills[i].classList.remove('ValeSpec__AssemblyEditor__StepPill--completed');
+
+            if (sid === ValeSpec__StepManager__ActiveStepId) {
+                pills[i].classList.add('ValeSpec__AssemblyEditor__StepPill--active');
+            }
+            if (ValeSpec__StepManager__CompletedSteps[sid]) {
+                pills[i].classList.add('ValeSpec__AssemblyEditor__StepPill--completed');
+            }
+        }
+
+        var connectors  =  ValeSpec__StepManager__ProgressBarEl.querySelectorAll('.ValeSpec__AssemblyEditor__StepConnector');
+        for (var j = 0; j < connectors.length; j++) {
+            var afterId  =  connectors[j].dataset.afterStep;
+            if (ValeSpec__StepManager__CompletedSteps[afterId]) {
+                connectors[j].classList.add('ValeSpec__AssemblyEditor__StepConnector--filled');
+            } else {
+                connectors[j].classList.remove('ValeSpec__AssemblyEditor__StepConnector--filled');
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Toggle Step Expand/Collapse
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__ToggleStep(stepId) {
+        if (ValeSpec__StepManager__ActiveStepId === stepId) {
+            ValeSpec__StepManager__CollapseStep(stepId);
+            ValeSpec__StepManager__ActiveStepId  =  null;
+        } else {
+            if (ValeSpec__StepManager__ActiveStepId) ValeSpec__StepManager__CollapseStep(ValeSpec__StepManager__ActiveStepId);
+            ValeSpec__StepManager__ExpandStep(stepId);
+            ValeSpec__StepManager__ActiveStepId  =  stepId;
+        }
+        ValeSpec__StepManager__UpdateProgressBar();
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Create a Step Card
     // ------------------------------------------------------------
-    function _createStepCard(stepDef) {
+    function ValeSpec__StepManager__CreateStepCard(stepDef) {
         var card  =  document.createElement('div');
-        card.className    =  'ValeSpec__AssemblyEditor__StepCard';
-        card.id           =  'ValeSpec__AssemblyEditor__StepCard__' + stepDef.Id;
+        card.className       =  'ValeSpec__AssemblyEditor__StepCard';
+        card.id              =  'ValeSpec__AssemblyEditor__StepCard__' + stepDef.Id;
         card.dataset.stepId  =  stepDef.Id;
 
         var header  =  document.createElement('div');
@@ -126,7 +214,7 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
         titleEl.textContent  =  stepDef.Title;
 
         var summaryEl  =  document.createElement('span');
-        summaryEl.className  =  'ValeSpec__AssemblyEditor__StepCard__Summary';
+        summaryEl.className    =  'ValeSpec__AssemblyEditor__StepCard__Summary';
         summaryEl.textContent  =  '';
 
         var chevron  =  document.createElement('span');
@@ -139,7 +227,7 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
         header.appendChild(chevron);
 
         header.addEventListener('click', (function(sid) {
-            return function() { _toggleStep(sid); };
+            return function() { ValeSpec__StepManager__ToggleStep(sid); };
         })(stepDef.Id));
 
         var body  =  document.createElement('div');
@@ -158,7 +246,7 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
             nextBtn.className    =  'ValeSpec__AssemblyEditor__StepCard__NextBtn';
             nextBtn.textContent  =  'Next \u00BB';
             nextBtn.addEventListener('click', (function(nid) {
-                return function() { goToStep(nid); };
+                return function() { ValeSpec__StepManager__GoToStep(nid); };
             })(STEP_DEFS[nextIdx].Id));
             footer.appendChild(nextBtn);
         }
@@ -167,7 +255,7 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
         card.appendChild(header);
         card.appendChild(body);
 
-        _stepCards[stepDef.Id]  =  {
+        ValeSpec__StepManager__StepCards[stepDef.Id]  =  {
             cardEl    : card,
             headerEl  : header,
             bodyEl    : body,
@@ -176,111 +264,23 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
             chevronEl : chevron
         };
 
-        _stepsWrapperEl.appendChild(card);
+        ValeSpec__StepManager__StepsWrapperEl.appendChild(card);
         return body;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Toggle Step Expand/Collapse
-    // ------------------------------------------------------------
-    function _toggleStep(stepId) {
-        if (_activeStepId === stepId) {
-            _collapseStep(stepId);
-            _activeStepId  =  null;
-        } else {
-            if (_activeStepId) _collapseStep(_activeStepId);
-            _expandStep(stepId);
-            _activeStepId  =  stepId;
-        }
-        _updateProgressBar();
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Expand a Step Card
-    // ------------------------------------------------------------
-    function _expandStep(stepId) {
-        var entry  =  _stepCards[stepId];
-        if (!entry) return;
-        entry.cardEl.classList.add('ValeSpec__AssemblyEditor__StepCard--active');
-        entry.cardEl.classList.remove('ValeSpec__AssemblyEditor__StepCard--collapsed');
-        entry.chevronEl.innerHTML  =  '&#9650;';
-        entry.summaryEl.style.display  =  'none';
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Collapse a Step Card
-    // ------------------------------------------------------------
-    function _collapseStep(stepId) {
-        var entry  =  _stepCards[stepId];
-        if (!entry) return;
-        entry.cardEl.classList.remove('ValeSpec__AssemblyEditor__StepCard--active');
-        entry.cardEl.classList.add('ValeSpec__AssemblyEditor__StepCard--collapsed');
-        entry.chevronEl.innerHTML  =  '&#9660;';
-        entry.summaryEl.style.display  =  '';
-        _refreshSummary(stepId);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Refresh Summary Text for a Step
-    // ------------------------------------------------------------
-    function _refreshSummary(stepId) {
-        var entry  =  _stepCards[stepId];
-        if (!entry) return;
-        var cb  =  _summaryCallbacks[stepId];
-        if (cb) {
-            entry.summaryEl.textContent  =  cb();
-        }
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Update Progress Bar State
-    // ------------------------------------------------------------
-    function _updateProgressBar() {
-        if (!_progressBarEl) return;
-
-        var pills  =  _progressBarEl.querySelectorAll('.ValeSpec__AssemblyEditor__StepPill');
-        for (var i = 0; i < pills.length; i++) {
-            var sid  =  pills[i].dataset.stepId;
-            pills[i].classList.remove('ValeSpec__AssemblyEditor__StepPill--active');
-            pills[i].classList.remove('ValeSpec__AssemblyEditor__StepPill--completed');
-
-            if (sid === _activeStepId) {
-                pills[i].classList.add('ValeSpec__AssemblyEditor__StepPill--active');
-            }
-            if (_completedSteps[sid]) {
-                pills[i].classList.add('ValeSpec__AssemblyEditor__StepPill--completed');
-            }
-        }
-
-        var connectors  =  _progressBarEl.querySelectorAll('.ValeSpec__AssemblyEditor__StepConnector');
-        for (var j = 0; j < connectors.length; j++) {
-            var afterId  =  connectors[j].dataset.afterStep;
-            if (_completedSteps[afterId]) {
-                connectors[j].classList.add('ValeSpec__AssemblyEditor__StepConnector--filled');
-            } else {
-                connectors[j].classList.remove('ValeSpec__AssemblyEditor__StepConnector--filled');
-            }
-        }
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Initialise Step Manager
     // ------------------------------------------------------------
-    function init(container) {
-        if (_initialised) return;
-        _containerEl  =  container;
-        if (!_containerEl) return;
+    function ValeSpec__StepManager__Init(container) {
+        if (ValeSpec__StepManager__Initialised) return;
+        ValeSpec__StepManager__ContainerEl  =  container;
+        if (!ValeSpec__StepManager__ContainerEl) return;
 
-        _buildProgressBar();
-        _buildStepsWrapper();
+        ValeSpec__StepManager__BuildProgressBar();
+        ValeSpec__StepManager__BuildStepsWrapper();
 
-        _initialised  =  true;
+        ValeSpec__StepManager__Initialised  =  true;
         console.log('[ValeSpec__StepManager] Initialised.');
     }
     // ------------------------------------------------------------
@@ -288,26 +288,26 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
 
     // FUNCTION | Create Step Card and Return Body Element
     // ------------------------------------------------------------
-    function createStep(stepId) {
+    function ValeSpec__StepManager__CreateStep(stepId) {
         var stepDef  =  null;
         for (var i = 0; i < STEP_DEFS.length; i++) {
             if (STEP_DEFS[i].Id === stepId) { stepDef = STEP_DEFS[i]; break; }
         }
         if (!stepDef) return null;
-        return _createStepCard(stepDef);
+        return ValeSpec__StepManager__CreateStepCard(stepDef);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Navigate to a Step
     // ------------------------------------------------------------
-    function goToStep(stepId) {
-        if (_activeStepId) _collapseStep(_activeStepId);
-        _expandStep(stepId);
-        _activeStepId  =  stepId;
-        _updateProgressBar();
+    function ValeSpec__StepManager__GoToStep(stepId) {
+        if (ValeSpec__StepManager__ActiveStepId) ValeSpec__StepManager__CollapseStep(ValeSpec__StepManager__ActiveStepId);
+        ValeSpec__StepManager__ExpandStep(stepId);
+        ValeSpec__StepManager__ActiveStepId  =  stepId;
+        ValeSpec__StepManager__UpdateProgressBar();
 
-        var entry  =  _stepCards[stepId];
+        var entry  =  ValeSpec__StepManager__StepCards[stepId];
         if (entry && entry.cardEl) {
             entry.cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -317,9 +317,9 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
 
     // FUNCTION | Mark Step as Completed
     // ------------------------------------------------------------
-    function markCompleted(stepId, isComplete) {
-        _completedSteps[stepId]  =  !!isComplete;
-        var entry  =  _stepCards[stepId];
+    function ValeSpec__StepManager__MarkCompleted(stepId, isComplete) {
+        ValeSpec__StepManager__CompletedSteps[stepId]  =  !!isComplete;
+        var entry  =  ValeSpec__StepManager__StepCards[stepId];
         if (entry) {
             if (isComplete) {
                 entry.cardEl.classList.add('ValeSpec__AssemblyEditor__StepCard--completed');
@@ -327,29 +327,29 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
                 entry.cardEl.classList.remove('ValeSpec__AssemblyEditor__StepCard--completed');
             }
         }
-        _updateProgressBar();
+        ValeSpec__StepManager__UpdateProgressBar();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Register Summary Callback for a Step
     // ------------------------------------------------------------
-    function registerSummary(stepId, callback) {
-        _summaryCallbacks[stepId]  =  callback;
+    function ValeSpec__StepManager__RegisterSummary(stepId, callback) {
+        ValeSpec__StepManager__SummaryCallbacks[stepId]  =  callback;
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Advance to Next Step After Current
     // ------------------------------------------------------------
-    function advanceFromStep(currentStepId) {
-        markCompleted(currentStepId, true);
+    function ValeSpec__StepManager__AdvanceFromStep(currentStepId) {
+        ValeSpec__StepManager__MarkCompleted(currentStepId, true);
         var nextIdx  =  -1;
         for (var i = 0; i < STEP_DEFS.length; i++) {
             if (STEP_DEFS[i].Id === currentStepId) { nextIdx = i + 1; break; }
         }
         if (nextIdx >= 0 && nextIdx < STEP_DEFS.length) {
-            goToStep(STEP_DEFS[nextIdx].Id);
+            ValeSpec__StepManager__GoToStep(STEP_DEFS[nextIdx].Id);
         }
     }
     // ------------------------------------------------------------
@@ -357,8 +357,8 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
 
     // FUNCTION | Get Step Body Element by Id
     // ------------------------------------------------------------
-    function getStepBody(stepId) {
-        var entry  =  _stepCards[stepId];
+    function ValeSpec__StepManager__GetStepBody(stepId) {
+        var entry  =  ValeSpec__StepManager__StepCards[stepId];
         return entry ? entry.bodyEl : null;
     }
     // ------------------------------------------------------------
@@ -366,17 +366,17 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
 
     // FUNCTION | Get the Active Step Id
     // ------------------------------------------------------------
-    function getActiveStepId() {
-        return _activeStepId;
+    function ValeSpec__StepManager__GetActiveStepId() {
+        return ValeSpec__StepManager__ActiveStepId;
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Refresh All Summaries
     // ------------------------------------------------------------
-    function refreshAllSummaries() {
-        for (var sid in _summaryCallbacks) {
-            _refreshSummary(sid);
+    function ValeSpec__StepManager__RefreshAllSummaries() {
+        for (var sid in ValeSpec__StepManager__SummaryCallbacks) {
+            ValeSpec__StepManager__RefreshSummary(sid);
         }
     }
     // ------------------------------------------------------------
@@ -385,15 +385,15 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init                : init,
-        createStep          : createStep,
-        goToStep            : goToStep,
-        markCompleted       : markCompleted,
-        registerSummary     : registerSummary,
-        advanceFromStep     : advanceFromStep,
-        getStepBody         : getStepBody,
-        getActiveStepId     : getActiveStepId,
-        refreshAllSummaries : refreshAllSummaries
+        ValeSpec__StepManager__Init               : ValeSpec__StepManager__Init,
+        ValeSpec__StepManager__CreateStep         : ValeSpec__StepManager__CreateStep,
+        ValeSpec__StepManager__GoToStep           : ValeSpec__StepManager__GoToStep,
+        ValeSpec__StepManager__MarkCompleted      : ValeSpec__StepManager__MarkCompleted,
+        ValeSpec__StepManager__RegisterSummary    : ValeSpec__StepManager__RegisterSummary,
+        ValeSpec__StepManager__AdvanceFromStep    : ValeSpec__StepManager__AdvanceFromStep,
+        ValeSpec__StepManager__GetStepBody        : ValeSpec__StepManager__GetStepBody,
+        ValeSpec__StepManager__GetActiveStepId    : ValeSpec__StepManager__GetActiveStepId,
+        ValeSpec__StepManager__RefreshAllSummaries: ValeSpec__StepManager__RefreshAllSummaries
     };
 
 })();

@@ -228,16 +228,65 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 // REGION | Schedule Board - Render, Bind Events and Destroy
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Resolve Column Index for a Draft Shift
+    // ------------------------------------------------------------
+    function Na__Schedule__GetDraftColumnIndex(draft, columns, viewMode) {
+        return columns.findIndex((col) =>
+            viewMode === 'day' ? col.workerId === draft.workerId : col.date === draft.date
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build Schedule Board Markup and Bindings
     // ------------------------------------------------------------
     export function Na__Schedule__RenderScheduleBoard(config) {
         const { state, panelElement, setState, setWorkers, getState } = config;
         const columns    = Na__Schedule__GetColumns(state);
         const allShifts  = Na__Schedule__GetAllShifts(state.workers);
-        const bounds     = Na__Schedule__GetBounds(columns, allShifts);
+        const bounds     = Na__Schedule__GetBounds(columns, allShifts, state.draftShift || null); // <-- include draft shift so grid expands during drag
         const timeLabels = Na__Schedule__GetTimeLabels(bounds);
         const pad        = Na__Schedule__GridPaddingPx;                                          // <-- breathing room at top and bottom
         const gridHeight = (bounds.end - bounds.start) * Na__Schedule__PixelsPerMinute + pad * 2; // <-- expanded to include padding
+
+        // FAST PATH | Surgical draft card update during drag (avoids full innerHTML replacement)
+        // ---------------------------------------------------------------
+        if (state.draftShift) {
+            const gridMain = panelElement.querySelector('#naScheduleGridMain');
+            if (gridMain) {
+                const prevStart       = Number(gridMain.dataset.boundsStart);
+                const prevEnd         = Number(gridMain.dataset.boundsEnd);
+                const boundsUnchanged = prevStart === bounds.start && prevEnd === bounds.end;
+
+                const draft            = state.draftShift;
+                const draftColumnIndex = Na__Schedule__GetDraftColumnIndex(draft, columns, state.viewMode);
+                const prevColumnIndex  = Number(gridMain.dataset.draftColumnIndex ?? -1);
+                const columnUnchanged  = draftColumnIndex === prevColumnIndex;
+
+                if (boundsUnchanged && columnUnchanged && draftColumnIndex >= 0) {
+                    const draftCard = panelElement.querySelector('.na-shift-card--draft');
+                    if (draftCard) {
+                        const draftStartMins    = Na__Utils__TimeToMinutes(draft.startTime);
+                        const draftEndMins      = Na__Utils__TimeToMinutes(draft.endTime);
+                        const draftDurationMins = draftEndMins - draftStartMins;
+                        const draftTopOffset    = (draftStartMins - bounds.start) * Na__Schedule__PixelsPerMinute + pad;
+                        const draftHeight       = draftDurationMins * Na__Schedule__PixelsPerMinute;
+
+                        draftCard.style.top    = `${draftTopOffset}px`;
+                        draftCard.style.height = `${draftHeight}px`;
+                        if (draftDurationMins < 45) draftCard.classList.add('na-shift-card--compact');
+                        else                        draftCard.classList.remove('na-shift-card--compact');
+                        const timeEl = draftCard.querySelector('.na-shift-card__time');
+                        if (timeEl) timeEl.textContent = `${draft.startTime} - ${draft.endTime}`;
+                        return; // <-- skip full re-render
+                    }
+                }
+            }
+        }
+        // ---------------------------------------------------------------
+
+        const scrollEl       = panelElement.querySelector('.na-schedule-grid-scroll');
+        const savedScrollTop = scrollEl ? scrollEl.scrollTop : 0; // <-- preserve scroll before innerHTML wipe
 
         panelElement.innerHTML = `
             <div class="na-schedule-root" id="naScheduleRoot">
@@ -288,6 +337,21 @@ import { Na__Utils__FormatHourLabel, Na__Utils__TimeToMinutes } from '../05__App
 
         const gridElement = panelElement.querySelector('#naScheduleGridMain');
         if (!gridElement) return;
+
+        if (savedScrollTop > 0) {
+            const newScrollEl = panelElement.querySelector('.na-schedule-grid-scroll');
+            if (newScrollEl) newScrollEl.scrollTop = savedScrollTop; // <-- restore scroll position after full re-render
+        }
+
+        gridElement.dataset.boundsStart      = String(bounds.start);  // <-- store for fast-path comparison
+        gridElement.dataset.boundsEnd        = String(bounds.end);
+        if (state.draftShift) {
+            gridElement.dataset.draftColumnIndex = String(
+                Na__Schedule__GetDraftColumnIndex(state.draftShift, columns, state.viewMode)
+            );
+        } else {
+            delete gridElement.dataset.draftColumnIndex;
+        }
 
         panelElement.querySelectorAll('[data-action="create-shift"]').forEach((cellElement) => {
             cellElement.addEventListener('mousedown', (mouseEvent) => {

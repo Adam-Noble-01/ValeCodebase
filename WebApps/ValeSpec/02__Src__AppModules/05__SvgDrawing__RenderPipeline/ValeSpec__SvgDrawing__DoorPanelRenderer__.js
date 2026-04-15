@@ -26,22 +26,22 @@ const ValeSpec__SvgDrawing__DoorPanelRenderer = (function() {
 
     // MODULE VARIABLES | Module Dependencies
     // ------------------------------------------------------------
-    var Coords  =  null;
+    var ValeSpec__DoorPanelRenderer__CoordsRef  =  null;
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Lazy-Load CoordHelpers Reference
     // ------------------------------------------------------------
-    function _coords() {
-        if (!Coords) Coords  =  window.ValeSpec__SvgDrawing__CoordHelpers;
-        return Coords;
+    function ValeSpec__DoorPanelRenderer__GetCoords() {
+        if (!ValeSpec__DoorPanelRenderer__CoordsRef) ValeSpec__DoorPanelRenderer__CoordsRef  =  window.ValeSpec__SvgDrawing__CoordHelpers;
+        return ValeSpec__DoorPanelRenderer__CoordsRef;
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Determine if Door Type is Double
     // ------------------------------------------------------------
-    function _isDoubleDoor(doorType) {
+    function ValeSpec__DoorPanelRenderer__IsDoubleDoor(doorType) {
         if (!doorType) return false;
         var lower  =  doorType.toLowerCase();
         return lower.indexOf('double') !== -1;
@@ -51,39 +51,39 @@ const ValeSpec__SvgDrawing__DoorPanelRenderer = (function() {
 
     // HELPER FUNCTION | Render a Single Panel Rectangle
     // ------------------------------------------------------------
-    function _renderPanelRect(x, y, w, h, config) {
+    function ValeSpec__DoorPanelRenderer__RenderPanelRect(x, y, w, h, config) {
         var fillColor    =  config['SvgDrawing__Panel__Config__FillColor']     || '#e8e4df';
         var strokeColor  =  config['SvgDrawing__Panel__Config__StrokeColor']   || '#172b3a';
         var strokeWidth  =  config['SvgDrawing__Panel__Config__StrokeWidthMm'] || 2;
 
-        return _coords().svgRect(x, y, w, h, fillColor, strokeColor, strokeWidth);
+        return ValeSpec__DoorPanelRenderer__GetCoords().ValeSpec__CoordHelpers__SvgRect(x, y, w, h, fillColor, strokeColor, strokeWidth);
     }
     // ------------------------------------------------------------
 
 
     // SUB FUNCTION | Build Double Door Panels
     // ------------------------------------------------------------
-    function _buildDoublePanels(width_mm, height_mm, config) {
-        var halfWidth  =  width_mm / 2;                // <-- Each panel is half the frame width
+    function ValeSpec__DoorPanelRenderer__BuildDoublePanels(width_mm, height_mm, config) {
+        var halfWidth  =  width_mm / 2;                    // <-- Each panel is half the frame width
         var svg        =  '';
         var panels     =  [];
 
-        svg += _renderPanelRect(0, 0, halfWidth, height_mm, config);
+        svg += ValeSpec__DoorPanelRenderer__RenderPanelRect(0, 0, halfWidth, height_mm, config);
         panels.push({
             x       : 0,
             y       : 0,
             width   : halfWidth,
             height  : height_mm,
-            hand    : 'left'                           // <-- Left panel opens left
+            hand    : 'left'                               // <-- Left panel opens left
         });
 
-        svg += _renderPanelRect(halfWidth, 0, halfWidth, height_mm, config);
+        svg += ValeSpec__DoorPanelRenderer__RenderPanelRect(halfWidth, 0, halfWidth, height_mm, config);
         panels.push({
             x       : halfWidth,
             y       : 0,
             width   : halfWidth,
             height  : height_mm,
-            hand    : 'right'                          // <-- Right panel opens right
+            hand    : 'right'                              // <-- Right panel opens right
         });
 
         return { svg: svg, panels: panels };
@@ -93,17 +93,17 @@ const ValeSpec__SvgDrawing__DoorPanelRenderer = (function() {
 
     // SUB FUNCTION | Build Single Door Panel
     // ------------------------------------------------------------
-    function _buildSinglePanel(width_mm, height_mm, config, hand) {
+    function ValeSpec__DoorPanelRenderer__BuildSinglePanel(width_mm, height_mm, config, hand) {
         var svg     =  '';
         var panels  =  [];
 
-        svg += _renderPanelRect(0, 0, width_mm, height_mm, config);
+        svg += ValeSpec__DoorPanelRenderer__RenderPanelRect(0, 0, width_mm, height_mm, config);
         panels.push({
             x       : 0,
             y       : 0,
             width   : width_mm,
             height  : height_mm,
-            hand    : hand || 'right'                  // <-- Default hand for single doors
+            hand    : hand || 'right'                      // <-- Default hand for single doors
         });
 
         return { svg: svg, panels: panels };
@@ -113,14 +113,14 @@ const ValeSpec__SvgDrawing__DoorPanelRenderer = (function() {
 
     // FUNCTION | Render Door Panels
     // ------------------------------------------------------------
-    function renderPanels(doorType, width_mm, height_mm, config) {
+    function ValeSpec__DoorPanelRenderer__RenderPanels(doorType, width_mm, height_mm, config) {
         var panelConfig  =  config || {};
 
-        if (_isDoubleDoor(doorType)) {
-            return _buildDoublePanels(width_mm, height_mm, panelConfig);
+        if (ValeSpec__DoorPanelRenderer__IsDoubleDoor(doorType)) {
+            return ValeSpec__DoorPanelRenderer__BuildDoublePanels(width_mm, height_mm, panelConfig);
         }
 
-        return _buildSinglePanel(width_mm, height_mm, panelConfig);
+        return ValeSpec__DoorPanelRenderer__BuildSinglePanel(width_mm, height_mm, panelConfig);
     }
     // ------------------------------------------------------------
 
@@ -128,7 +128,7 @@ const ValeSpec__SvgDrawing__DoorPanelRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        renderPanels  : renderPanels
+        ValeSpec__DoorPanelRenderer__RenderPanels  : ValeSpec__DoorPanelRenderer__RenderPanels
     };
 
 })();

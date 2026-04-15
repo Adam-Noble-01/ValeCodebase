@@ -25,23 +25,32 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
 
     // MODULE VARIABLES | Cached Index Data
     // ------------------------------------------------------------
-    let _indexData  =  null;
+    let ValeSpec__HardwareIndexLoader__IndexData  =  null;
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Get Root Index Object
+    // ------------------------------------------------------------
+    function ValeSpec__HardwareIndexLoader__GetRoot() {
+        if (!ValeSpec__HardwareIndexLoader__IndexData) return null;
+        return ValeSpec__HardwareIndexLoader__IndexData['ValeSpec__Data__HardwareIndex__'] || ValeSpec__HardwareIndexLoader__IndexData;
+    }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Load Hardware Index from JSON File
     // ------------------------------------------------------------
-    async function loadIndex(indexPath) {
+    async function ValeSpec__HardwareIndexLoader__LoadIndex(indexPath) {
         try {
             var response  =  await fetch(indexPath);
             if (!response.ok) throw new Error('Hardware index fetch failed: ' + response.status);
 
-            _indexData  =  await response.json();
+            ValeSpec__HardwareIndexLoader__IndexData  =  await response.json();
 
-            var root  =  _indexData['ValeSpec__Data__HardwareIndex__'] || _indexData;
+            var root  =  ValeSpec__HardwareIndexLoader__GetRoot();
 
             if (window.ValeSpec__AppCore__StateManager) {
-                window.ValeSpec__AppCore__StateManager.setHardwareIndex(root);
+                window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__SetHardwareIndex(root);
             }
 
             var itemCount  =  Object.keys(root).length;
@@ -59,11 +68,11 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
 
     // FUNCTION | Load Full Vector Data for All Index Entries
     // ------------------------------------------------------------
-    async function loadVectorData() {
-        var root  =  _getRoot();
+    async function ValeSpec__HardwareIndexLoader__LoadVectorData() {
+        var root  =  ValeSpec__HardwareIndexLoader__GetRoot();
         if (!root) return;
 
-        var keys  =  Object.keys(root);
+        var keys    =  Object.keys(root);
         var loaded  =  0;
 
         for (var i = 0; i < keys.length; i++) {
@@ -94,7 +103,7 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
         }
 
         if (window.ValeSpec__AppCore__StateManager) {
-            window.ValeSpec__AppCore__StateManager.setHardwareIndex(root);
+            window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__SetHardwareIndex(root);
         }
 
         console.log('[ValeSpec__HardwareIndexLoader] Vector data loaded for ' + loaded + ' of ' + keys.length + ' items');
@@ -104,8 +113,8 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
 
     // FUNCTION | Get Hardware Item by Code
     // ------------------------------------------------------------
-    function getHardwareByCode(code) {
-        var root  =  _getRoot();
+    function ValeSpec__HardwareIndexLoader__GetHardwareByCode(code) {
+        var root  =  ValeSpec__HardwareIndexLoader__GetRoot();
         if (!root) return null;
         var keys  =  Object.keys(root);
         for (var i = 0; i < keys.length; i++) {
@@ -119,8 +128,8 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
 
     // FUNCTION | Get Hardware Items by Type
     // ------------------------------------------------------------
-    function getHardwareByType(type) {
-        var root    =  _getRoot();
+    function ValeSpec__HardwareIndexLoader__GetHardwareByType(type) {
+        var root    =  ValeSpec__HardwareIndexLoader__GetRoot();
         if (!root) return [];
         var result  =  [];
         var keys    =  Object.keys(root);
@@ -135,27 +144,18 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
 
     // FUNCTION | Get All Lever Handles
     // ------------------------------------------------------------
-    function getAllLeverHandles() {
-        return getHardwareByType('Door Handle');
+    function ValeSpec__HardwareIndexLoader__GetAllLeverHandles() {
+        return ValeSpec__HardwareIndexLoader__GetHardwareByType('Door Handle');
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Get Hardware Item by Name
     // ------------------------------------------------------------
-    function getHardwareByName(name) {
-        var root  =  _getRoot();
+    function ValeSpec__HardwareIndexLoader__GetHardwareByName(name) {
+        var root  =  ValeSpec__HardwareIndexLoader__GetRoot();
         if (!root) return null;
         return root[name] || null;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Get Root Index Object
-    // ------------------------------------------------------------
-    function _getRoot() {
-        if (!_indexData) return null;
-        return _indexData['ValeSpec__Data__HardwareIndex__'] || _indexData;
     }
     // ------------------------------------------------------------
 
@@ -163,12 +163,12 @@ const ValeSpec__AppData__HardwareIndexLoader = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        loadIndex           : loadIndex,
-        loadVectorData      : loadVectorData,
-        getHardwareByCode   : getHardwareByCode,
-        getHardwareByType   : getHardwareByType,
-        getHardwareByName   : getHardwareByName,
-        getAllLeverHandles   : getAllLeverHandles
+        ValeSpec__HardwareIndexLoader__LoadIndex           : ValeSpec__HardwareIndexLoader__LoadIndex,
+        ValeSpec__HardwareIndexLoader__LoadVectorData      : ValeSpec__HardwareIndexLoader__LoadVectorData,
+        ValeSpec__HardwareIndexLoader__GetHardwareByCode   : ValeSpec__HardwareIndexLoader__GetHardwareByCode,
+        ValeSpec__HardwareIndexLoader__GetHardwareByType   : ValeSpec__HardwareIndexLoader__GetHardwareByType,
+        ValeSpec__HardwareIndexLoader__GetHardwareByName   : ValeSpec__HardwareIndexLoader__GetHardwareByName,
+        ValeSpec__HardwareIndexLoader__GetAllLeverHandles  : ValeSpec__HardwareIndexLoader__GetAllLeverHandles
     };
 
 })();

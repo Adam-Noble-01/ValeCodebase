@@ -10,7 +10,7 @@
    CREATED    : 2026
 
    DESCRIPTION:
-   - Reads project manifest via ProjectFileManager.listProjects()
+   - Reads project manifest via ProjectFileManager.ValeSpec__ProjectFileManager__ListProjects()
    - Renders a full HTML table with project metadata columns
    - Status column renders a colour-coded pill badge
    - Each row provides Open and Delete action buttons
@@ -45,7 +45,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // HELPER FUNCTION | Build Status Badge HTML
     // ------------------------------------------------------------
-    function _buildStatusBadge(status) {
+    function ValeSpec__ProjectList__BuildStatusBadge(status) {
         var cssClass  =  STATUS_CLASS_MAP[status] || STATUS_CLASS_MAP['Draft'];   // <-- Fallback to Draft style
         return '<span class="ValeSpec__DocManagement__StatusBadge ' + cssClass + '">' + status + '</span>';
     }
@@ -54,10 +54,10 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // HELPER FUNCTION | Format Date via DateFormatter Utility
     // ------------------------------------------------------------
-    function _formatDate(dateStr) {
+    function ValeSpec__ProjectList__FormatDate(dateStr) {
         if (!dateStr) return '—';
         if (window.ValeSpec__AppUtils__DateFormatter) {
-            return window.ValeSpec__AppUtils__DateFormatter.formatShort(dateStr);  // <-- "09 Apr 2026" format
+            return window.ValeSpec__AppUtils__DateFormatter.ValeSpec__DateFormatter__FormatShort(dateStr);  // <-- "09 Apr 2026" format
         }
         return dateStr;                                                           // <-- Raw fallback if formatter unavailable
     }
@@ -66,7 +66,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // HELPER FUNCTION | Build Table Header Row HTML
     // ------------------------------------------------------------
-    function _buildTableHeader() {
+    function ValeSpec__ProjectList__BuildTableHeader() {
         var html  =  '<thead><tr>';
         html     +=  '<th>Project Code</th>';
         html     +=  '<th>Project Name</th>';
@@ -83,19 +83,19 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // HELPER FUNCTION | Build Single Table Row HTML
     // ------------------------------------------------------------
-    function _buildTableRow(project) {
+    function ValeSpec__ProjectList__BuildTableRow(project) {
         var code          =  project.projectCode   || '—';                        // <-- Project code identifier
         var name          =  project.projectName   || '—';                        // <-- Human-readable project name
         var docName       =  project.documentName  || '—';                        // <-- Document title
         var status        =  project.status        || 'Draft';                    // <-- Workflow status
-        var dateCreated   =  _formatDate(project.dateCreated);                    // <-- Formatted creation date
-        var dateModified  =  _formatDate(project.dateModified);                   // <-- Formatted last-modified date
+        var dateCreated   =  ValeSpec__ProjectList__FormatDate(project.dateCreated);   // <-- Formatted creation date
+        var dateModified  =  ValeSpec__ProjectList__FormatDate(project.dateModified);  // <-- Formatted last-modified date
 
         var html  =  '<tr>';
         html     +=  '<td>' + code + '</td>';
         html     +=  '<td>' + name + '</td>';
         html     +=  '<td>' + docName + '</td>';
-        html     +=  '<td>' + _buildStatusBadge(status) + '</td>';
+        html     +=  '<td>' + ValeSpec__ProjectList__BuildStatusBadge(status) + '</td>';
         html     +=  '<td>' + dateCreated + '</td>';
         html     +=  '<td>' + dateModified + '</td>';
         html     +=  '<td>';
@@ -112,7 +112,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // HELPER FUNCTION | Build Empty State Placeholder HTML
     // ------------------------------------------------------------
-    function _buildEmptyState() {
+    function ValeSpec__ProjectList__BuildEmptyState() {
         var html  =  '<div class="ValeSpec__DocManagement__EmptyState">';
         html     +=      '<div class="ValeSpec__DocManagement__EmptyState__Icon">&#128203;</div>';
         html     +=      '<div class="ValeSpec__DocManagement__EmptyState__Title">No Projects Yet</div>';
@@ -127,7 +127,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // FUNCTION | Render Project Table into DOM
     // ------------------------------------------------------------
-    function render() {
+    function ValeSpec__ProjectList__Render() {
         var container  =  document.getElementById(TABLE_CONTAINER_ID);
         if (!container) {
             console.warn('[ValeSpec__ProjectList] Container not found: #' + TABLE_CONTAINER_ID);
@@ -137,22 +137,22 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;  // <-- Reference to data layer
         if (!ProjectFileManager) {
             console.error('[ValeSpec__ProjectList] ProjectFileManager not available.');
-            container.innerHTML  =  _buildEmptyState();
+            container.innerHTML  =  ValeSpec__ProjectList__BuildEmptyState();
             return;
         }
 
-        var projects  =  ProjectFileManager.listProjects();                       // <-- Fetch project manifest array
+        var projects  =  ProjectFileManager.ValeSpec__ProjectFileManager__ListProjects();   // <-- Fetch project manifest array
 
         if (!projects || projects.length === 0) {
-            container.innerHTML  =  _buildEmptyState();                           // <-- Show empty state when no projects
+            container.innerHTML  =  ValeSpec__ProjectList__BuildEmptyState();               // <-- Show empty state when no projects
             return;
         }
 
         var html  =  '<table class="ValeSpec__DocManagement__Table">';
-        html     +=  _buildTableHeader();
+        html     +=  ValeSpec__ProjectList__BuildTableHeader();
         html     +=  '<tbody>';
         for (var i = 0; i < projects.length; i++) {
-            html  +=  _buildTableRow(projects[i]);                                // <-- Append each project row
+            html  +=  ValeSpec__ProjectList__BuildTableRow(projects[i]);                    // <-- Append each project row
         }
         html     +=  '</tbody>';
         html     +=  '</table>';
@@ -164,10 +164,10 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // FUNCTION | Subscribe to State Change Events
     // ------------------------------------------------------------
-    function _subscribeToStateEvents() {
+    function ValeSpec__ProjectList__SubscribeToStateEvents() {
         if (window.ValeSpec__AppCore__StateManager) {
-            window.ValeSpec__AppCore__StateManager.on('projectChanged', function() {
-                render();                                                         // <-- Re-render table on project change
+            window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__On('projectChanged', function() {
+                ValeSpec__ProjectList__Render();                                           // <-- Re-render table on project change
             });
         }
     }
@@ -176,14 +176,14 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
     // BOOT | Initial Subscription
     // ------------------------------------------------------------
-    _subscribeToStateEvents();
+    ValeSpec__ProjectList__SubscribeToStateEvents();
     // ------------------------------------------------------------
 
 
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        render  : render
+        ValeSpec__ProjectList__Render  : ValeSpec__ProjectList__Render
     };
 
 })();

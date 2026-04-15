@@ -14,7 +14,7 @@
    - The Y-flip is applied at render time when generating SVG markup
    - Rectangles: svgY = -y - h  (bottom-left origin to top-left SVG origin)
    - Points:     svgY = -dataY  (invert Y axis for SVG coordinate space)
-   - Provides svgRect, svgLine, svgText, and dataToSvg conversion helpers
+   - Provides SvgRect, SvgLine, SvgText, and DataToSvg conversion helpers
 
    ============================================================================= */
 
@@ -26,7 +26,7 @@ const ValeSpec__SvgDrawing__CoordHelpers = (function() {
 
     // HELPER FUNCTION | Convert Data Coordinates to SVG Coordinates
     // ------------------------------------------------------------
-    function dataToSvg(dataX, dataY) {
+    function ValeSpec__CoordHelpers__DataToSvg(dataX, dataY) {
         return {
             x  :  dataX,        // <-- X passes through unchanged
             y  :  -dataY        // <-- Y-flip: data Y-up to SVG Y-down
@@ -37,7 +37,7 @@ const ValeSpec__SvgDrawing__CoordHelpers = (function() {
 
     // FUNCTION | Generate SVG Rect String with Y-Flip
     // ------------------------------------------------------------
-    function svgRect(x, y, w, h, fill, stroke, strokeWidth) {
+    function ValeSpec__CoordHelpers__SvgRect(x, y, w, h, fill, stroke, strokeWidth) {
         var svgX  =  x;         // <-- X origin unchanged
         var svgY  =  -y - h;    // <-- Y-flip for rect: bottom-left to top-left
 
@@ -56,9 +56,9 @@ const ValeSpec__SvgDrawing__CoordHelpers = (function() {
 
     // FUNCTION | Generate SVG Line String with Y-Flip
     // ------------------------------------------------------------
-    function svgLine(x1, y1, x2, y2, stroke, strokeWidth) {
-        var p1  =  dataToSvg(x1, y1);  // <-- Convert start point
-        var p2  =  dataToSvg(x2, y2);  // <-- Convert end point
+    function ValeSpec__CoordHelpers__SvgLine(x1, y1, x2, y2, stroke, strokeWidth) {
+        var p1  =  ValeSpec__CoordHelpers__DataToSvg(x1, y1);  // <-- Convert start point
+        var p2  =  ValeSpec__CoordHelpers__DataToSvg(x2, y2);  // <-- Convert end point
 
         return '<line'
             + ' x1="'           + p1.x        + '"'
@@ -74,11 +74,11 @@ const ValeSpec__SvgDrawing__CoordHelpers = (function() {
 
     // FUNCTION | Generate SVG Text Element with Y-Flip
     // ------------------------------------------------------------
-    function svgText(x, y, text, fontSize, fill, anchor, rotation) {
-        var pt        =  dataToSvg(x, y);       // <-- Convert anchor point
-        var anchorVal =  anchor   || 'middle';   // <-- Default text-anchor
-        var fillVal   =  fill     || '#000';     // <-- Default text colour
-        var sizeVal   =  fontSize || 14;         // <-- Default font size
+    function ValeSpec__CoordHelpers__SvgText(x, y, text, fontSize, fill, anchor, rotation) {
+        var pt        =  ValeSpec__CoordHelpers__DataToSvg(x, y);   // <-- Convert anchor point
+        var anchorVal =  anchor   || 'middle';                       // <-- Default text-anchor
+        var fillVal   =  fill     || '#000';                         // <-- Default text colour
+        var sizeVal   =  fontSize || 14;                             // <-- Default font size
 
         var transform  =  '';
         if (rotation) {
@@ -101,10 +101,10 @@ const ValeSpec__SvgDrawing__CoordHelpers = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        dataToSvg  : dataToSvg,
-        svgRect    : svgRect,
-        svgLine    : svgLine,
-        svgText    : svgText
+        ValeSpec__CoordHelpers__DataToSvg  : ValeSpec__CoordHelpers__DataToSvg,
+        ValeSpec__CoordHelpers__SvgRect    : ValeSpec__CoordHelpers__SvgRect,
+        ValeSpec__CoordHelpers__SvgLine    : ValeSpec__CoordHelpers__SvgLine,
+        ValeSpec__CoordHelpers__SvgText    : ValeSpec__CoordHelpers__SvgText
     };
 
 })();

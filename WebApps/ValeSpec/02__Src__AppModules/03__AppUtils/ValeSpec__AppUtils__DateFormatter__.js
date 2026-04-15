@@ -34,7 +34,7 @@ const ValeSpec__AppUtils__DateFormatter = (function() {
 
     // HELPER FUNCTION | Parse Input to Date Object
     // ------------------------------------------------------------
-    function _toDate(input) {
+    function ValeSpec__DateFormatter__ToDate(input) {
         if (input instanceof Date) return input;
         if (typeof input === 'string') return new Date(input + 'T00:00:00');
         return new Date();
@@ -44,7 +44,7 @@ const ValeSpec__AppUtils__DateFormatter = (function() {
 
     // HELPER FUNCTION | Get Ordinal Suffix for Day Number
     // ------------------------------------------------------------
-    function _getOrdinalSuffix(day) {
+    function ValeSpec__DateFormatter__GetOrdinalSuffix(day) {
         if (day >= 11 && day <= 13) return 'th';
         switch (day % 10) {
             case 1:  return 'st';
@@ -58,7 +58,7 @@ const ValeSpec__AppUtils__DateFormatter = (function() {
 
     // HELPER FUNCTION | Zero-Pad Day to Two Digits
     // ------------------------------------------------------------
-    function _padDay(day) {
+    function ValeSpec__DateFormatter__PadDay(day) {
         return day < 10 ? '0' + day : '' + day;
     }
     // ------------------------------------------------------------
@@ -66,50 +66,50 @@ const ValeSpec__AppUtils__DateFormatter = (function() {
 
     // FUNCTION | Format: "09 Apr 2026"
     // ------------------------------------------------------------
-    function formatShort(input) {
-        var d  =  _toDate(input);
-        return _padDay(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+    function ValeSpec__DateFormatter__FormatShort(input) {
+        var d  =  ValeSpec__DateFormatter__ToDate(input);
+        return ValeSpec__DateFormatter__PadDay(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Format: "Wed 09 Apr 2026"
     // ------------------------------------------------------------
-    function formatWithDay(input) {
-        var d  =  _toDate(input);
-        return DAYS_SHORT[d.getDay()] + ' ' + _padDay(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+    function ValeSpec__DateFormatter__FormatWithDay(input) {
+        var d  =  ValeSpec__DateFormatter__ToDate(input);
+        return DAYS_SHORT[d.getDay()] + ' ' + ValeSpec__DateFormatter__PadDay(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Format: "Wednesday 09th Apr 2026" (plain text ordinal)
     // ------------------------------------------------------------
-    function formatFullDay(input) {
-        var d       =  _toDate(input);
+    function ValeSpec__DateFormatter__FormatFullDay(input) {
+        var d       =  ValeSpec__DateFormatter__ToDate(input);
         var day     =  d.getDate();
-        var suffix  =  _getOrdinalSuffix(day);
-        return DAYS_FULL[d.getDay()] + ' ' + _padDay(day) + suffix + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+        var suffix  =  ValeSpec__DateFormatter__GetOrdinalSuffix(day);
+        return DAYS_FULL[d.getDay()] + ' ' + ValeSpec__DateFormatter__PadDay(day) + suffix + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Format: "Wednesday 09<sup>th</sup> Apr 2026" (HTML superscript)
     // ------------------------------------------------------------
-    function formatFullDayHtml(input) {
-        var d       =  _toDate(input);
+    function ValeSpec__DateFormatter__FormatFullDayHtml(input) {
+        var d       =  ValeSpec__DateFormatter__ToDate(input);
         var day     =  d.getDate();
-        var suffix  =  _getOrdinalSuffix(day);
-        return DAYS_FULL[d.getDay()] + ' ' + _padDay(day) + '<sup>' + suffix + '</sup> ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+        var suffix  =  ValeSpec__DateFormatter__GetOrdinalSuffix(day);
+        return DAYS_FULL[d.getDay()] + ' ' + ValeSpec__DateFormatter__PadDay(day) + '<sup>' + suffix + '</sup> ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Format ISO String "2026-04-09"
     // ------------------------------------------------------------
-    function formatIso(input) {
-        var d  =  _toDate(input);
+    function ValeSpec__DateFormatter__FormatIso(input) {
+        var d  =  ValeSpec__DateFormatter__ToDate(input);
         var m  =  d.getMonth() + 1;
-        return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + _padDay(d.getDate());
+        return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + ValeSpec__DateFormatter__PadDay(d.getDate());
     }
     // ------------------------------------------------------------
 
@@ -117,11 +117,11 @@ const ValeSpec__AppUtils__DateFormatter = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        formatShort       : formatShort,
-        formatWithDay     : formatWithDay,
-        formatFullDay     : formatFullDay,
-        formatFullDayHtml : formatFullDayHtml,
-        formatIso         : formatIso
+        ValeSpec__DateFormatter__FormatShort       : ValeSpec__DateFormatter__FormatShort,
+        ValeSpec__DateFormatter__FormatWithDay     : ValeSpec__DateFormatter__FormatWithDay,
+        ValeSpec__DateFormatter__FormatFullDay     : ValeSpec__DateFormatter__FormatFullDay,
+        ValeSpec__DateFormatter__FormatFullDayHtml : ValeSpec__DateFormatter__FormatFullDayHtml,
+        ValeSpec__DateFormatter__FormatIso         : ValeSpec__DateFormatter__FormatIso
     };
 
 })();

@@ -25,22 +25,22 @@ const ValeSpec__SvgDrawing__DoorFrameRenderer = (function() {
 
     // MODULE VARIABLES | Module Dependencies
     // ------------------------------------------------------------
-    var Coords  =  null;
+    var ValeSpec__DoorFrameRenderer__CoordsRef  =  null;
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Lazy-Load CoordHelpers Reference
     // ------------------------------------------------------------
-    function _coords() {
-        if (!Coords) Coords  =  window.ValeSpec__SvgDrawing__CoordHelpers;
-        return Coords;
+    function ValeSpec__DoorFrameRenderer__GetCoords() {
+        if (!ValeSpec__DoorFrameRenderer__CoordsRef) ValeSpec__DoorFrameRenderer__CoordsRef  =  window.ValeSpec__SvgDrawing__CoordHelpers;
+        return ValeSpec__DoorFrameRenderer__CoordsRef;
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build SVG Drop Shadow Filter Definition
     // ------------------------------------------------------------
-    function _buildShadowFilter(config) {
+    function ValeSpec__DoorFrameRenderer__BuildShadowFilter(config) {
         var blur    =  config['SvgDrawing__Frame__Config__ShadowBlurMm']    || 8;   // <-- Gaussian blur radius
         var offset  =  config['SvgDrawing__Frame__Config__ShadowOffsetMm']  || 3;   // <-- Shadow offset distance
         var color   =  config['SvgDrawing__Frame__Config__ShadowColor']     || 'rgba(0,0,0,0.20)';
@@ -59,21 +59,21 @@ const ValeSpec__SvgDrawing__DoorFrameRenderer = (function() {
 
     // FUNCTION | Render Outer Door Frame
     // ------------------------------------------------------------
-    function renderFrame(width_mm, height_mm, config) {
+    function ValeSpec__DoorFrameRenderer__RenderFrame(width_mm, height_mm, config) {
         var frameConfig   =  config || {};
         var strokeWidth   =  (frameConfig['SvgDrawing__Frame__Config__StrokeWidthMm'] || 4) * 2;  // <-- Double stroke weight for frame
         var strokeColor   =  frameConfig['SvgDrawing__Frame__Config__StrokeColor']    || '#172b3a';
 
         var svg  =  '';
-        svg += _buildShadowFilter(frameConfig);
+        svg += ValeSpec__DoorFrameRenderer__BuildShadowFilter(frameConfig);
         svg += '<rect'
-            + ' x="'            + 0          + '"'
-            + ' y="'            + (-height_mm) + '"'
-            + ' width="'        + width_mm   + '"'
-            + ' height="'       + height_mm  + '"'
+            + ' x="'            + 0              + '"'
+            + ' y="'            + (-height_mm)   + '"'
+            + ' width="'        + width_mm       + '"'
+            + ' height="'       + height_mm      + '"'
             + ' fill="none"'
-            + ' stroke="'       + strokeColor  + '"'
-            + ' stroke-width="' + strokeWidth  + '"'
+            + ' stroke="'       + strokeColor    + '"'
+            + ' stroke-width="' + strokeWidth    + '"'
             + ' filter="url(#ValeSpec__SvgDrawing__DropShadow)"'
             + ' />';
 
@@ -85,7 +85,7 @@ const ValeSpec__SvgDrawing__DoorFrameRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        renderFrame  : renderFrame
+        ValeSpec__DoorFrameRenderer__RenderFrame  : ValeSpec__DoorFrameRenderer__RenderFrame
     };
 
 })();

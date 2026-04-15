@@ -32,26 +32,26 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _step1BodyEl       =  null;                                         // <-- Step 1 card body (Door Type)
-    let _step2BodyEl       =  null;                                         // <-- Step 2 card body (Qty & Dims)
-    let _doorTypeSelect    =  null;                                         // <-- Door type dropdown
-    let _quantityInput     =  null;                                         // <-- Quantity numeric input
-    let _widthInput        =  null;                                         // <-- Width numeric input
-    let _widthSlider       =  null;                                         // <-- Width range slider
-    let _heightInput       =  null;                                         // <-- Height numeric input
-    let _heightSlider      =  null;                                         // <-- Height range slider
-    let _sliderConfig      =  null;                                         // <-- Slider limits from config
+    let ValeSpec__DoorTypeAndDimensions__Step1BodyEl    =  null;   // <-- Step 1 card body (Door Type)
+    let ValeSpec__DoorTypeAndDimensions__Step2BodyEl    =  null;   // <-- Step 2 card body (Qty & Dims)
+    let ValeSpec__DoorTypeAndDimensions__DoorTypeSelect =  null;   // <-- Door type dropdown
+    let ValeSpec__DoorTypeAndDimensions__QuantityInput  =  null;   // <-- Quantity numeric input
+    let ValeSpec__DoorTypeAndDimensions__WidthInput     =  null;   // <-- Width numeric input
+    let ValeSpec__DoorTypeAndDimensions__WidthSlider    =  null;   // <-- Width range slider
+    let ValeSpec__DoorTypeAndDimensions__HeightInput    =  null;   // <-- Height numeric input
+    let ValeSpec__DoorTypeAndDimensions__HeightSlider   =  null;   // <-- Height range slider
+    let ValeSpec__DoorTypeAndDimensions__SliderConfig   =  null;   // <-- Slider limits from config
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Load Slider Configuration
     // ------------------------------------------------------------
-    async function _loadConfig() {
+    async function ValeSpec__DoorTypeAndDimensions__LoadConfig() {
         try {
             var response  =  await fetch(CONFIG_PATH);
             if (!response.ok) return;
-            var data         =  await response.json();
-            _sliderConfig    =  data['AssemblyEditor__Slider__Config'] || null;
+            var data  =  await response.json();
+            ValeSpec__DoorTypeAndDimensions__SliderConfig  =  data['AssemblyEditor__Slider__Config'] || null;
         } catch (e) {
             console.warn('[ValeSpec__DoorTypeAndDimensions] Config load failed:', e);
         }
@@ -61,15 +61,15 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
     // HELPER FUNCTION | Get Door Type Options from AppConfig
     // ------------------------------------------------------------
-    function _getDoorTypeOptions() {
+    function ValeSpec__DoorTypeAndDimensions__GetDoorTypeOptions() {
         var ConfigLoader  =  window.ValeSpec__AppCore__ConfigLoader;
-        if (!ConfigLoader) return _getDefaultDoorTypes();
+        if (!ConfigLoader) return ValeSpec__DoorTypeAndDimensions__GetDefaultDoorTypes();
 
-        var section  =  ConfigLoader.getSection('DoorTypeOptions');
-        if (!section) return _getDefaultDoorTypes();
+        var section  =  ConfigLoader.ValeSpec__ConfigLoader__GetSection('DoorTypeOptions');
+        if (!section) return ValeSpec__DoorTypeAndDimensions__GetDefaultDoorTypes();
 
         var types  =  section['ValeSpec__DoorType__Options__Config__DoorTypes'];
-        if (!types || !types.length) return _getDefaultDoorTypes();
+        if (!types || !types.length) return ValeSpec__DoorTypeAndDimensions__GetDefaultDoorTypes();
 
         var result  =  [];
         for (var i = 0; i < types.length; i++) {
@@ -87,7 +87,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
     // HELPER FUNCTION | Default Door Types Fallback
     // ------------------------------------------------------------
-    function _getDefaultDoorTypes() {
+    function ValeSpec__DoorTypeAndDimensions__GetDefaultDoorTypes() {
         return [
             { Label: 'Outward Opening Double Doors', Value: 'Outward Opening Double Doors', Enabled: true  },
             { Label: 'Inward Opening Double Doors',  Value: 'Inward Opening Double Doors',  Enabled: true  },
@@ -99,9 +99,80 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Handle Dimension Change - Recalculate Hinges and Locking
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__OnDimensionChange() {
+        var StateManager       =  window.ValeSpec__AppCore__StateManager;
+        var HingeCalculator    =  window.ValeSpec__MathUtils__HingeCalculator;
+        var LockingCalculator  =  window.ValeSpec__MathUtils__LockingCalculator;
+        if (!StateManager) return;
+
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+
+        var doorType  =  ValeSpec__DoorTypeAndDimensions__DoorTypeSelect ? ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.value : '';
+        var width     =  ValeSpec__DoorTypeAndDimensions__WidthInput  ? parseInt(ValeSpec__DoorTypeAndDimensions__WidthInput.value, 10)  : 1800;
+        var height    =  ValeSpec__DoorTypeAndDimensions__HeightInput ? parseInt(ValeSpec__DoorTypeAndDimensions__HeightInput.value, 10) : 2100;
+
+        if (!assembly['Assembly__DoorType__Config']) assembly['Assembly__DoorType__Config'] = {};
+        assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Type']  =  doorType;
+
+        if (ValeSpec__DoorTypeAndDimensions__QuantityInput) {
+            assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Quantity']  =  parseInt(ValeSpec__DoorTypeAndDimensions__QuantityInput.value, 10);
+        }
+
+        if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
+        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']   =  width;
+        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  height;
+
+        if (HingeCalculator) {
+            var hingeResult  =  HingeCalculator.ValeSpec__HingeCalculator__CalculateHingesPerLeaf(doorType, width, height);
+            if (!assembly['Assembly__Hinge__Config']) assembly['Assembly__Hinge__Config'] = {};
+            assembly['Assembly__Hinge__Config']['Assembly__Hinge__Config__HingesPerLeaf']  =  hingeResult.count;
+            assembly['Assembly__Hinge__Config']['Assembly__Hinge__Config__Hanging']        =  hingeResult.hanging;
+        }
+
+        if (LockingCalculator) {
+            var lockResult  =  LockingCalculator.ValeSpec__LockingCalculator__CalculateLocking(doorType, height);
+            if (!assembly['Assembly__Locking__Config']) assembly['Assembly__Locking__Config'] = {};
+            assembly['Assembly__Locking__Config']['Assembly__Locking__Config__Points']  =  lockResult.points;
+            assembly['Assembly__Locking__Config']['Assembly__Locking__Config__Type']    =  lockResult.type;
+        }
+
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Door Type Change
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__OnDoorTypeChange() {
+        ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
+
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) {
+            StepManager.ValeSpec__StepManager__AdvanceFromStep('doorType');
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Quantity Change
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__OnQuantityChange() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+        assembly['Quantity']  =  parseInt(ValeSpec__DoorTypeAndDimensions__QuantityInput.value, 10);
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Step 1 - Door Type
     // ------------------------------------------------------------
-    function _buildDoorTypeStep() {
+    function ValeSpec__DoorTypeAndDimensions__BuildDoorTypeStep() {
         var group  =  document.createElement('div');
         group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
@@ -109,35 +180,46 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         label.textContent  =  'Door Type';
         label.setAttribute('for', 'ValeSpec__AssemblyEditor__DoorType');
 
-        _doorTypeSelect     =  document.createElement('select');
-        _doorTypeSelect.id  =  'ValeSpec__AssemblyEditor__DoorType';
+        ValeSpec__DoorTypeAndDimensions__DoorTypeSelect     =  document.createElement('select');
+        ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.id  =  'ValeSpec__AssemblyEditor__DoorType';
 
-        var options  =  _getDoorTypeOptions();
+        var options  =  ValeSpec__DoorTypeAndDimensions__GetDoorTypeOptions();
         for (var i = 0; i < options.length; i++) {
-            var opt        =  document.createElement('option');
-            opt.value      =  options[i].Value;
-            opt.textContent =  options[i].Label;
+            var opt          =  document.createElement('option');
+            opt.value        =  options[i].Value;
+            opt.textContent  =  options[i].Label;
             if (!options[i].Enabled) {
                 opt.disabled  =  true;
                 opt.title     =  'Bi Fold configuration is not yet supported';
             }
-            _doorTypeSelect.appendChild(opt);
+            ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.appendChild(opt);
         }
 
-        _doorTypeSelect.addEventListener('change', _onDoorTypeChange);
+        ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.addEventListener('change', ValeSpec__DoorTypeAndDimensions__OnDoorTypeChange);
 
         group.appendChild(label);
-        group.appendChild(_doorTypeSelect);
+        group.appendChild(ValeSpec__DoorTypeAndDimensions__DoorTypeSelect);
 
-        var footerEl  =  _step1BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        _step1BodyEl.insertBefore(group, footerEl);
+        var footerEl  =  ValeSpec__DoorTypeAndDimensions__Step1BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        ValeSpec__DoorTypeAndDimensions__Step1BodyEl.insertBefore(group, footerEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Step 2 - Quantity and Dimensions
     // ------------------------------------------------------------
-    function _buildDimensionsStep() {
+    function ValeSpec__DoorTypeAndDimensions__BuildDimensionsStep() {
+        var cfg    =  ValeSpec__DoorTypeAndDimensions__SliderConfig;
+
+        var wMin   =  (cfg && cfg['AssemblyEditor__Slider__Config__WidthMinMm'])     || 600;
+        var wMax   =  (cfg && cfg['AssemblyEditor__Slider__Config__WidthMaxMm'])     || 4000;
+        var wStep  =  (cfg && cfg['AssemblyEditor__Slider__Config__WidthStepMm'])    || 1;
+        var wDef   =  (cfg && cfg['AssemblyEditor__Slider__Config__WidthDefaultMm']) || 1800;
+        var hMin   =  (cfg && cfg['AssemblyEditor__Slider__Config__HeightMinMm'])     || 1800;
+        var hMax   =  (cfg && cfg['AssemblyEditor__Slider__Config__HeightMaxMm'])     || 3000;
+        var hStep  =  (cfg && cfg['AssemblyEditor__Slider__Config__HeightStepMm'])    || 1;
+        var hDef   =  (cfg && cfg['AssemblyEditor__Slider__Config__HeightDefaultMm']) || 2100;
+
         var qtyGroup  =  document.createElement('div');
         qtyGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
@@ -145,39 +227,17 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         qtyLabel.textContent  =  'Quantity';
         qtyLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__Quantity');
 
-        _quantityInput       =  document.createElement('input');
-        _quantityInput.type  =  'number';
-        _quantityInput.id    =  'ValeSpec__AssemblyEditor__Quantity';
-        _quantityInput.min   =  1;
-        _quantityInput.max   =  50;
-        _quantityInput.value =  1;
+        ValeSpec__DoorTypeAndDimensions__QuantityInput       =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__QuantityInput.type  =  'number';
+        ValeSpec__DoorTypeAndDimensions__QuantityInput.id    =  'ValeSpec__AssemblyEditor__Quantity';
+        ValeSpec__DoorTypeAndDimensions__QuantityInput.min   =  1;
+        ValeSpec__DoorTypeAndDimensions__QuantityInput.max   =  50;
+        ValeSpec__DoorTypeAndDimensions__QuantityInput.value =  1;
 
-        _quantityInput.addEventListener('change', _onQuantityChange);
+        ValeSpec__DoorTypeAndDimensions__QuantityInput.addEventListener('change', ValeSpec__DoorTypeAndDimensions__OnQuantityChange);
 
         qtyGroup.appendChild(qtyLabel);
-        qtyGroup.appendChild(_quantityInput);
-
-        var widthCfg   =  _sliderConfig ? {
-            Min: _sliderConfig['AssemblyEditor__Slider__Config__WidthMinMm']  || 600,
-            Max: _sliderConfig['AssemblyEditor__Slider__Config__WidthMaxMm']  || 4000,
-            Step: _sliderConfig['AssemblyEditor__Slider__Config__WidthStepMm'] || 1,
-            Default: _sliderConfig['AssemblyEditor__Slider__Config__WidthDefaultMm'] || 1800
-        } : {};
-        var heightCfg  =  _sliderConfig ? {
-            Min: _sliderConfig['AssemblyEditor__Slider__Config__HeightMinMm']  || 1800,
-            Max: _sliderConfig['AssemblyEditor__Slider__Config__HeightMaxMm']  || 3000,
-            Step: _sliderConfig['AssemblyEditor__Slider__Config__HeightStepMm'] || 1,
-            Default: _sliderConfig['AssemblyEditor__Slider__Config__HeightDefaultMm'] || 2100
-        } : {};
-
-        var wMin  =  (widthCfg  && widthCfg['Min'])     || 600;
-        var wMax  =  (widthCfg  && widthCfg['Max'])     || 4000;
-        var wStep =  (widthCfg  && widthCfg['Step'])    || 1;
-        var wDef  =  (widthCfg  && widthCfg['Default']) || 1800;
-        var hMin  =  (heightCfg && heightCfg['Min'])     || 1800;
-        var hMax  =  (heightCfg && heightCfg['Max'])     || 3000;
-        var hStep =  (heightCfg && heightCfg['Step'])    || 1;
-        var hDef  =  (heightCfg && heightCfg['Default']) || 2100;
+        qtyGroup.appendChild(ValeSpec__DoorTypeAndDimensions__QuantityInput);
 
         var dimsRow  =  document.createElement('div');
         dimsRow.className  =  'ValeSpec__AssemblyEditor__FormRow';
@@ -188,25 +248,25 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         var widthLabel  =  document.createElement('label');
         widthLabel.textContent  =  'Width (mm)';
 
-        _widthInput       =  document.createElement('input');
-        _widthInput.type  =  'number';
-        _widthInput.id    =  'ValeSpec__AssemblyEditor__WidthInput';
-        _widthInput.min   =  wMin;
-        _widthInput.max   =  wMax;
-        _widthInput.step  =  wStep;
-        _widthInput.value =  wDef;
+        ValeSpec__DoorTypeAndDimensions__WidthInput       =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__WidthInput.type  =  'number';
+        ValeSpec__DoorTypeAndDimensions__WidthInput.id    =  'ValeSpec__AssemblyEditor__WidthInput';
+        ValeSpec__DoorTypeAndDimensions__WidthInput.min   =  wMin;
+        ValeSpec__DoorTypeAndDimensions__WidthInput.max   =  wMax;
+        ValeSpec__DoorTypeAndDimensions__WidthInput.step  =  wStep;
+        ValeSpec__DoorTypeAndDimensions__WidthInput.value =  wDef;
 
-        _widthSlider       =  document.createElement('input');
-        _widthSlider.type  =  'range';
-        _widthSlider.id    =  'ValeSpec__AssemblyEditor__WidthRange';
-        _widthSlider.min   =  wMin;
-        _widthSlider.max   =  wMax;
-        _widthSlider.step  =  wStep;
-        _widthSlider.value =  wDef;
+        ValeSpec__DoorTypeAndDimensions__WidthSlider       =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.type  =  'range';
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.id    =  'ValeSpec__AssemblyEditor__WidthRange';
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.min   =  wMin;
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.max   =  wMax;
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.step  =  wStep;
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.value =  wDef;
 
         widthGroup.appendChild(widthLabel);
-        widthGroup.appendChild(_widthInput);
-        widthGroup.appendChild(_widthSlider);
+        widthGroup.appendChild(ValeSpec__DoorTypeAndDimensions__WidthInput);
+        widthGroup.appendChild(ValeSpec__DoorTypeAndDimensions__WidthSlider);
 
         var heightGroup  =  document.createElement('div');
         heightGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
@@ -214,128 +274,57 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         var heightLabel  =  document.createElement('label');
         heightLabel.textContent  =  'Height (mm)';
 
-        _heightInput       =  document.createElement('input');
-        _heightInput.type  =  'number';
-        _heightInput.id    =  'ValeSpec__AssemblyEditor__HeightInput';
-        _heightInput.min   =  hMin;
-        _heightInput.max   =  hMax;
-        _heightInput.step  =  hStep;
-        _heightInput.value =  hDef;
+        ValeSpec__DoorTypeAndDimensions__HeightInput       =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__HeightInput.type  =  'number';
+        ValeSpec__DoorTypeAndDimensions__HeightInput.id    =  'ValeSpec__AssemblyEditor__HeightInput';
+        ValeSpec__DoorTypeAndDimensions__HeightInput.min   =  hMin;
+        ValeSpec__DoorTypeAndDimensions__HeightInput.max   =  hMax;
+        ValeSpec__DoorTypeAndDimensions__HeightInput.step  =  hStep;
+        ValeSpec__DoorTypeAndDimensions__HeightInput.value =  hDef;
 
-        _heightSlider       =  document.createElement('input');
-        _heightSlider.type  =  'range';
-        _heightSlider.id    =  'ValeSpec__AssemblyEditor__HeightRange';
-        _heightSlider.min   =  hMin;
-        _heightSlider.max   =  hMax;
-        _heightSlider.step  =  hStep;
-        _heightSlider.value =  hDef;
+        ValeSpec__DoorTypeAndDimensions__HeightSlider       =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.type  =  'range';
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.id    =  'ValeSpec__AssemblyEditor__HeightRange';
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.min   =  hMin;
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.max   =  hMax;
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.step  =  hStep;
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.value =  hDef;
 
         heightGroup.appendChild(heightLabel);
-        heightGroup.appendChild(_heightInput);
-        heightGroup.appendChild(_heightSlider);
+        heightGroup.appendChild(ValeSpec__DoorTypeAndDimensions__HeightInput);
+        heightGroup.appendChild(ValeSpec__DoorTypeAndDimensions__HeightSlider);
 
         dimsRow.appendChild(widthGroup);
         dimsRow.appendChild(heightGroup);
 
-        _widthInput.addEventListener('input', function() {
-            _widthSlider.value  =  _widthInput.value;
-            _onDimensionChange();
+        ValeSpec__DoorTypeAndDimensions__WidthInput.addEventListener('input', function() {
+            ValeSpec__DoorTypeAndDimensions__WidthSlider.value  =  ValeSpec__DoorTypeAndDimensions__WidthInput.value;
+            ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
         });
-        _widthSlider.addEventListener('input', function() {
-            _widthInput.value  =  _widthSlider.value;
-            _onDimensionChange();
+        ValeSpec__DoorTypeAndDimensions__WidthSlider.addEventListener('input', function() {
+            ValeSpec__DoorTypeAndDimensions__WidthInput.value  =  ValeSpec__DoorTypeAndDimensions__WidthSlider.value;
+            ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
         });
-        _heightInput.addEventListener('input', function() {
-            _heightSlider.value  =  _heightInput.value;
-            _onDimensionChange();
+        ValeSpec__DoorTypeAndDimensions__HeightInput.addEventListener('input', function() {
+            ValeSpec__DoorTypeAndDimensions__HeightSlider.value  =  ValeSpec__DoorTypeAndDimensions__HeightInput.value;
+            ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
         });
-        _heightSlider.addEventListener('input', function() {
-            _heightInput.value  =  _heightSlider.value;
-            _onDimensionChange();
+        ValeSpec__DoorTypeAndDimensions__HeightSlider.addEventListener('input', function() {
+            ValeSpec__DoorTypeAndDimensions__HeightInput.value  =  ValeSpec__DoorTypeAndDimensions__HeightSlider.value;
+            ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
         });
 
-        var footerEl  =  _step2BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        _step2BodyEl.insertBefore(qtyGroup, footerEl);
-        _step2BodyEl.insertBefore(dimsRow, footerEl);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Door Type Change
-    // ------------------------------------------------------------
-    function _onDoorTypeChange() {
-        _onDimensionChange();
-
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) {
-            StepManager.advanceFromStep('doorType');
-        }
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Quantity Change
-    // ------------------------------------------------------------
-    function _onQuantityChange() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-        assembly['Quantity']  =  parseInt(_quantityInput.value, 10);
-        StateManager.updateCurrentAssembly(assembly);
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Handle Dimension Change - Recalculate Hinges and Locking
-    // ------------------------------------------------------------
-    function _onDimensionChange() {
-        var StateManager       =  window.ValeSpec__AppCore__StateManager;
-        var HingeCalculator    =  window.ValeSpec__MathUtils__HingeCalculator;
-        var LockingCalculator  =  window.ValeSpec__MathUtils__LockingCalculator;
-        if (!StateManager) return;
-
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-
-        var doorType  =  _doorTypeSelect ? _doorTypeSelect.value : '';
-        var width     =  _widthInput  ? parseInt(_widthInput.value, 10)  : 1800;
-        var height    =  _heightInput ? parseInt(_heightInput.value, 10) : 2100;
-
-        if (!assembly['Assembly__DoorType__Config']) assembly['Assembly__DoorType__Config'] = {};
-        assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Type']  =  doorType;
-
-        if (_quantityInput) {
-            assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Quantity']  =  parseInt(_quantityInput.value, 10);
-        }
-
-        if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
-        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']   =  width;
-        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  height;
-
-        if (HingeCalculator) {
-            var hingeResult  =  HingeCalculator.calculateHingesPerLeaf(doorType, width, height);
-            if (!assembly['Assembly__Hinge__Config']) assembly['Assembly__Hinge__Config'] = {};
-            assembly['Assembly__Hinge__Config']['Assembly__Hinge__Config__HingesPerLeaf']  =  hingeResult.count;
-            assembly['Assembly__Hinge__Config']['Assembly__Hinge__Config__Hanging']        =  hingeResult.hanging;
-        }
-
-        if (LockingCalculator) {
-            var lockResult  =  LockingCalculator.calculateLocking(doorType, height);
-            if (!assembly['Assembly__Locking__Config']) assembly['Assembly__Locking__Config'] = {};
-            assembly['Assembly__Locking__Config']['Assembly__Locking__Config__Points']  =  lockResult.points;
-            assembly['Assembly__Locking__Config']['Assembly__Locking__Config__Type']    =  lockResult.type;
-        }
-
-        StateManager.updateCurrentAssembly(assembly);
+        var footerEl  =  ValeSpec__DoorTypeAndDimensions__Step2BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        ValeSpec__DoorTypeAndDimensions__Step2BodyEl.insertBefore(qtyGroup, footerEl);
+        ValeSpec__DoorTypeAndDimensions__Step2BodyEl.insertBefore(dimsRow, footerEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Summary Callback for Step 1 (Door Type)
     // ------------------------------------------------------------
-    function _doorTypeSummary() {
-        var val  =  _doorTypeSelect ? _doorTypeSelect.value : '';
+    function ValeSpec__DoorTypeAndDimensions__DoorTypeSummary() {
+        var val  =  ValeSpec__DoorTypeAndDimensions__DoorTypeSelect ? ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.value : '';
         return val || 'Not selected';
     }
     // ------------------------------------------------------------
@@ -343,10 +332,10 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
     // HELPER FUNCTION | Summary Callback for Step 2 (Qty & Dims)
     // ------------------------------------------------------------
-    function _dimensionsSummary() {
-        var qty  =  _quantityInput ? _quantityInput.value : '1';
-        var w    =  _widthInput    ? _widthInput.value    : '1800';
-        var h    =  _heightInput   ? _heightInput.value   : '2100';
+    function ValeSpec__DoorTypeAndDimensions__DimensionsSummary() {
+        var qty  =  ValeSpec__DoorTypeAndDimensions__QuantityInput ? ValeSpec__DoorTypeAndDimensions__QuantityInput.value : '1';
+        var w    =  ValeSpec__DoorTypeAndDimensions__WidthInput    ? ValeSpec__DoorTypeAndDimensions__WidthInput.value    : '1800';
+        var h    =  ValeSpec__DoorTypeAndDimensions__HeightInput   ? ValeSpec__DoorTypeAndDimensions__HeightInput.value   : '2100';
         return qty + 'x  |  ' + w + ' x ' + h + ' mm';
     }
     // ------------------------------------------------------------
@@ -354,7 +343,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
     // FUNCTION | Refresh Controls from Assembly Data
     // ------------------------------------------------------------
-    function refreshFromAssembly(assemblyData) {
+    function ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData) {
         if (!assemblyData) return;
 
         var doorCfg  =  assemblyData['Assembly__DoorType__Config']   || {};
@@ -365,37 +354,37 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         var width     =  dimsCfg['Assembly__Dimensions__Config__WidthMm']  || 1800;
         var height    =  dimsCfg['Assembly__Dimensions__Config__HeightMm'] || 2100;
 
-        if (_doorTypeSelect) _doorTypeSelect.value  =  doorType;
-        if (_quantityInput)  _quantityInput.value   =  quantity;
-        if (_widthInput)  { _widthInput.value   =  width;  _widthSlider.value  =  width;  }
-        if (_heightInput) { _heightInput.value  =  height; _heightSlider.value =  height; }
+        if (ValeSpec__DoorTypeAndDimensions__DoorTypeSelect) ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.value  =  doorType;
+        if (ValeSpec__DoorTypeAndDimensions__QuantityInput)  ValeSpec__DoorTypeAndDimensions__QuantityInput.value   =  quantity;
+        if (ValeSpec__DoorTypeAndDimensions__WidthInput)  { ValeSpec__DoorTypeAndDimensions__WidthInput.value   =  width;  ValeSpec__DoorTypeAndDimensions__WidthSlider.value  =  width;  }
+        if (ValeSpec__DoorTypeAndDimensions__HeightInput) { ValeSpec__DoorTypeAndDimensions__HeightInput.value  =  height; ValeSpec__DoorTypeAndDimensions__HeightSlider.value =  height; }
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Register Summaries with StepManager
     // ------------------------------------------------------------
-    function _registerSummaries() {
+    function ValeSpec__DoorTypeAndDimensions__RegisterSummaries() {
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (!StepManager) return;
 
-        StepManager.registerSummary('doorType',   _doorTypeSummary);
-        StepManager.registerSummary('dimensions', _dimensionsSummary);
+        StepManager.ValeSpec__StepManager__RegisterSummary('doorType',   ValeSpec__DoorTypeAndDimensions__DoorTypeSummary);
+        StepManager.ValeSpec__StepManager__RegisterSummary('dimensions', ValeSpec__DoorTypeAndDimensions__DimensionsSummary);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Initialise Door Type and Dimensions Steps
     // ------------------------------------------------------------
-    async function init(step1BodyEl, step2BodyEl) {
-        _step1BodyEl  =  step1BodyEl;
-        _step2BodyEl  =  step2BodyEl;
-        if (!_step1BodyEl || !_step2BodyEl) return;
+    async function ValeSpec__DoorTypeAndDimensions__Init(step1BodyEl, step2BodyEl) {
+        ValeSpec__DoorTypeAndDimensions__Step1BodyEl  =  step1BodyEl;
+        ValeSpec__DoorTypeAndDimensions__Step2BodyEl  =  step2BodyEl;
+        if (!ValeSpec__DoorTypeAndDimensions__Step1BodyEl || !ValeSpec__DoorTypeAndDimensions__Step2BodyEl) return;
 
-        await _loadConfig();
-        _buildDoorTypeStep();
-        _buildDimensionsStep();
-        _registerSummaries();
+        await ValeSpec__DoorTypeAndDimensions__LoadConfig();
+        ValeSpec__DoorTypeAndDimensions__BuildDoorTypeStep();
+        ValeSpec__DoorTypeAndDimensions__BuildDimensionsStep();
+        ValeSpec__DoorTypeAndDimensions__RegisterSummaries();
 
         console.log('[ValeSpec__DoorTypeAndDimensions] Initialised.');
     }
@@ -405,8 +394,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init                 : init,
-        refreshFromAssembly  : refreshFromAssembly
+        ValeSpec__DoorTypeAndDimensions__Init                : ValeSpec__DoorTypeAndDimensions__Init,
+        ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly : ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly
     };
 
 })();

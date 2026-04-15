@@ -34,7 +34,7 @@ const ValeSpec__AppCore__ModeManager = (function() {
 
     // MODULE CONSTANTS | Mode Panel DOM IDs
     // ------------------------------------------------------------
-    const MODE_PANEL_IDS  =  {
+    const ValeSpec__ModeManager__ModePanelIds  =  {
         'DocManagement'    : 'ValeSpec__App__ModeDocManagement',
         'AssemblyEditor'   : 'ValeSpec__App__ModeAssemblyEditor',
         'DocumentEditor'   : 'ValeSpec__App__ModeDocEditor',
@@ -45,14 +45,14 @@ const ValeSpec__AppCore__ModeManager = (function() {
 
     // MODULE VARIABLES | Navigation State
     // ------------------------------------------------------------
-    let _navigationStack  =  [];
-    let _currentMode      =  null;
+    let ValeSpec__ModeManager__NavigationStack  =  [];
+    let ValeSpec__ModeManager__CurrentMode      =  null;
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Hide All Mode Panels
     // ------------------------------------------------------------
-    function _hideAllPanels() {
+    function ValeSpec__ModeManager__HideAllPanels() {
         var panels  =  document.querySelectorAll('.ValeSpec__App__ModePanel');
         for (var i = 0; i < panels.length; i++) {
             panels[i].classList.remove('ValeSpec__App__ModePanel--active');
@@ -63,7 +63,7 @@ const ValeSpec__AppCore__ModeManager = (function() {
 
     // HELPER FUNCTION | Update Navigation Bar Active Tab
     // ------------------------------------------------------------
-    function _updateNavTabs(modeId) {
+    function ValeSpec__ModeManager__UpdateNavTabs(modeId) {
         var tabs  =  document.querySelectorAll('.ValeSpec__App__NavTab');
         for (var i = 0; i < tabs.length; i++) {
             var tab  =  tabs[i];
@@ -79,29 +79,29 @@ const ValeSpec__AppCore__ModeManager = (function() {
 
     // FUNCTION | Switch to a Specific Mode
     // ------------------------------------------------------------
-    function switchToMode(modeId, addToHistory) {
-        if (!MODE_PANEL_IDS[modeId]) {
+    function ValeSpec__ModeManager__SwitchToMode(modeId, addToHistory) {
+        if (!ValeSpec__ModeManager__ModePanelIds[modeId]) {
             console.warn('[ValeSpec__ModeManager] Unknown mode:', modeId);
             return;
         }
 
-        if (addToHistory !== false && _currentMode) {
-            _navigationStack.push(_currentMode);
+        if (addToHistory !== false && ValeSpec__ModeManager__CurrentMode) {
+            ValeSpec__ModeManager__NavigationStack.push(ValeSpec__ModeManager__CurrentMode);
         }
 
-        _hideAllPanels();
+        ValeSpec__ModeManager__HideAllPanels();
 
-        var panelId  =  MODE_PANEL_IDS[modeId];
+        var panelId  =  ValeSpec__ModeManager__ModePanelIds[modeId];
         var panel    =  document.getElementById(panelId);
         if (panel) {
             panel.classList.add('ValeSpec__App__ModePanel--active');
         }
 
-        _currentMode  =  modeId;
-        _updateNavTabs(modeId);
+        ValeSpec__ModeManager__CurrentMode  =  modeId;
+        ValeSpec__ModeManager__UpdateNavTabs(modeId);
 
         if (window.ValeSpec__AppCore__StateManager) {
-            window.ValeSpec__AppCore__StateManager.setCurrentMode(modeId);
+            window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__SetCurrentMode(modeId);
         }
     }
     // ------------------------------------------------------------
@@ -109,26 +109,26 @@ const ValeSpec__AppCore__ModeManager = (function() {
 
     // FUNCTION | Navigate Back to Previous Mode
     // ------------------------------------------------------------
-    function navigateBack() {
-        if (_navigationStack.length === 0) return;
-        var previousMode  =  _navigationStack.pop();
-        switchToMode(previousMode, false);
+    function ValeSpec__ModeManager__NavigateBack() {
+        if (ValeSpec__ModeManager__NavigationStack.length === 0) return;
+        var previousMode  =  ValeSpec__ModeManager__NavigationStack.pop();
+        ValeSpec__ModeManager__SwitchToMode(previousMode, false);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Get Current Mode
     // ------------------------------------------------------------
-    function getCurrentMode() {
-        return _currentMode;
+    function ValeSpec__ModeManager__GetCurrentMode() {
+        return ValeSpec__ModeManager__CurrentMode;
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Can Navigate Back
     // ------------------------------------------------------------
-    function canGoBack() {
-        return _navigationStack.length > 0;
+    function ValeSpec__ModeManager__CanGoBack() {
+        return ValeSpec__ModeManager__NavigationStack.length > 0;
     }
     // ------------------------------------------------------------
 
@@ -136,14 +136,14 @@ const ValeSpec__AppCore__ModeManager = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        MODE_DOC_MANAGEMENT    : MODE_DOC_MANAGEMENT,
-        MODE_ASSEMBLY_EDITOR   : MODE_ASSEMBLY_EDITOR,
-        MODE_DOC_EDITOR        : MODE_DOC_EDITOR,
-        MODE_DOC_PREVIEW       : MODE_DOC_PREVIEW,
-        switchToMode           : switchToMode,
-        navigateBack           : navigateBack,
-        getCurrentMode         : getCurrentMode,
-        canGoBack              : canGoBack
+        MODE_DOC_MANAGEMENT                    : MODE_DOC_MANAGEMENT,
+        MODE_ASSEMBLY_EDITOR                   : MODE_ASSEMBLY_EDITOR,
+        MODE_DOC_EDITOR                        : MODE_DOC_EDITOR,
+        MODE_DOC_PREVIEW                       : MODE_DOC_PREVIEW,
+        ValeSpec__ModeManager__SwitchToMode    : ValeSpec__ModeManager__SwitchToMode,
+        ValeSpec__ModeManager__NavigateBack    : ValeSpec__ModeManager__NavigateBack,
+        ValeSpec__ModeManager__GetCurrentMode  : ValeSpec__ModeManager__GetCurrentMode,
+        ValeSpec__ModeManager__CanGoBack       : ValeSpec__ModeManager__CanGoBack
     };
 
 })();

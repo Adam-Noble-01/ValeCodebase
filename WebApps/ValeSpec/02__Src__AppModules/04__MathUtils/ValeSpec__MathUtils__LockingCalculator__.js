@@ -32,7 +32,7 @@ const ValeSpec__MathUtils__LockingCalculator = (function() {
 
     // HELPER FUNCTION | Determine Extension Type
     // ------------------------------------------------------------
-    function _getExtensionType(height_mm) {
+    function ValeSpec__LockingCalculator__GetExtensionType(height_mm) {
         if (height_mm > EXTENSION_HEIGHT_THRESHOLD) {
             return 'Extended';                                              // <-- Taller doors need extended rods
         }
@@ -43,8 +43,8 @@ const ValeSpec__MathUtils__LockingCalculator = (function() {
 
     // FUNCTION | Calculate Locking Configuration
     // ------------------------------------------------------------
-    function calculateLocking(doorType, height_mm) {
-        var extensions  =  _getExtensionType(height_mm);
+    function ValeSpec__LockingCalculator__CalculateLocking(doorType, height_mm) {
+        var extensions  =  ValeSpec__LockingCalculator__GetExtensionType(height_mm);
 
         if (doorType && doorType.indexOf('Double') !== -1) {
             return {
@@ -77,7 +77,7 @@ const ValeSpec__MathUtils__LockingCalculator = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        calculateLocking  : calculateLocking
+        ValeSpec__LockingCalculator__CalculateLocking  : ValeSpec__LockingCalculator__CalculateLocking
     };
 
 })();

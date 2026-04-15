@@ -26,16 +26,16 @@ const ValeSpec__MathUtils__HingeCalculator = (function() {
 
     // MODULE CONSTANTS | Threshold Values
     // ------------------------------------------------------------
-    const SINGLE_WIDTH_THRESHOLD   =  940;                                  // <-- Width threshold for single doors
-    const MULTI_WIDTH_THRESHOLD    =  1800;                                 // <-- Width threshold for multi-leaf doors
-    const WIDE_LEAF_THRESHOLD      =  950;                                  // <-- Leaf width for Double Top hanging
-    const TALL_DOOR_THRESHOLD      =  2200;                                 // <-- Height threshold for extra hinge
+    const SINGLE_WIDTH_THRESHOLD  =  940;                                   // <-- Width threshold for single doors
+    const MULTI_WIDTH_THRESHOLD   =  1800;                                  // <-- Width threshold for multi-leaf doors
+    const WIDE_LEAF_THRESHOLD     =  950;                                   // <-- Leaf width for Double Top hanging
+    const TALL_DOOR_THRESHOLD     =  2200;                                  // <-- Height threshold for extra hinge
     // ------------------------------------------------------------
 
 
     // FUNCTION | Calculate Hinges Per Leaf
     // ------------------------------------------------------------
-    function calculateHingesPerLeaf(doorType, width_mm, height_mm) {
+    function ValeSpec__HingeCalculator__CalculateHingesPerLeaf(doorType, width_mm, height_mm) {
         var widthThreshold  =  MULTI_WIDTH_THRESHOLD;                       // <-- Default to multi-leaf
 
         if (doorType && doorType.indexOf('Single') !== -1) {
@@ -62,7 +62,7 @@ const ValeSpec__MathUtils__HingeCalculator = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        calculateHingesPerLeaf  : calculateHingesPerLeaf
+        ValeSpec__HingeCalculator__CalculateHingesPerLeaf  : ValeSpec__HingeCalculator__CalculateHingesPerLeaf
     };
 
 })();

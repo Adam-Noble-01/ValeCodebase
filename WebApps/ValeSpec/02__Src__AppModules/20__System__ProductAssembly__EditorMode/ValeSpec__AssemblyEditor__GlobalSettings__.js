@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Renders global finish selector as a persistent header bar
    - Options: Unlacquered Brass, Satin Nickel, Bronze, Other (free text)
-   - On change calls StateManager.setGlobalFinish()
+   - On change calls StateManager.ValeSpec__StateManager__SetGlobalFinish()
    - Cascades finish to all assemblies in the project
    - Styled as a prominent context bar above the step progression
 
@@ -37,16 +37,16 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _containerEl       =  null;                                         // <-- Global bar container
-    let _finishSelect      =  null;                                         // <-- Finish dropdown
-    let _otherInput        =  null;                                         // <-- Free text input for 'Other'
+    let ValeSpec__GlobalSettings__ContainerEl  =  null;  // <-- Global bar container
+    let ValeSpec__GlobalSettings__FinishSelect =  null;  // <-- Finish dropdown
+    let ValeSpec__GlobalSettings__OtherInput   =  null;  // <-- Free text input for 'Other'
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Global Context Bar
     // ------------------------------------------------------------
-    function _buildFinishDropdown() {
-        _containerEl.classList.add('ValeSpec__AssemblyEditor__GlobalBar');
+    function ValeSpec__GlobalSettings__BuildFinishDropdown() {
+        ValeSpec__GlobalSettings__ContainerEl.classList.add('ValeSpec__AssemblyEditor__GlobalBar');
 
         var icon  =  document.createElement('span');
         icon.textContent    =  '\u2699';
@@ -56,25 +56,25 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         label.textContent  =  'Ironmongery Finish';
         label.setAttribute('for', 'ValeSpec__AssemblyEditor__GlobalFinish');
 
-        _finishSelect     =  document.createElement('select');
-        _finishSelect.id  =  'ValeSpec__AssemblyEditor__GlobalFinish';
+        ValeSpec__GlobalSettings__FinishSelect     =  document.createElement('select');
+        ValeSpec__GlobalSettings__FinishSelect.id  =  'ValeSpec__AssemblyEditor__GlobalFinish';
 
         for (var i = 0; i < FINISH_OPTIONS.length; i++) {
             var opt          =  document.createElement('option');
             opt.value        =  FINISH_OPTIONS[i].Value;
             opt.textContent  =  FINISH_OPTIONS[i].Label;
-            _finishSelect.appendChild(opt);
+            ValeSpec__GlobalSettings__FinishSelect.appendChild(opt);
         }
 
-        _otherInput              =  document.createElement('input');
-        _otherInput.type         =  'text';
-        _otherInput.id           =  'ValeSpec__AssemblyEditor__GlobalFinishOther';
-        _otherInput.placeholder  =  'Specify finish...';
-        _otherInput.style.display  =  'none';
+        ValeSpec__GlobalSettings__OtherInput              =  document.createElement('input');
+        ValeSpec__GlobalSettings__OtherInput.type         =  'text';
+        ValeSpec__GlobalSettings__OtherInput.id           =  'ValeSpec__AssemblyEditor__GlobalFinishOther';
+        ValeSpec__GlobalSettings__OtherInput.placeholder  =  'Specify finish...';
+        ValeSpec__GlobalSettings__OtherInput.style.display  =  'none';
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
-            var state  =  StateManager.getState();
+            var state  =  StateManager.ValeSpec__StateManager__GetState();
             if (state.globalIronmongeryFinish) {
                 var matchFound  =  false;
                 for (var j = 0; j < FINISH_OPTIONS.length; j++) {
@@ -84,43 +84,43 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
                     }
                 }
                 if (matchFound) {
-                    _finishSelect.value  =  state.globalIronmongeryFinish;
+                    ValeSpec__GlobalSettings__FinishSelect.value  =  state.globalIronmongeryFinish;
                 } else {
-                    _finishSelect.value      =  'Other';
-                    _otherInput.value        =  state.globalIronmongeryFinish;
-                    _otherInput.style.display  =  '';
+                    ValeSpec__GlobalSettings__FinishSelect.value        =  'Other';
+                    ValeSpec__GlobalSettings__OtherInput.value          =  state.globalIronmongeryFinish;
+                    ValeSpec__GlobalSettings__OtherInput.style.display  =  '';
                 }
             }
         }
 
-        _finishSelect.addEventListener('change', _onFinishChange);
-        _otherInput.addEventListener('change', _onOtherInputChange);
+        ValeSpec__GlobalSettings__FinishSelect.addEventListener('change', ValeSpec__GlobalSettings__OnFinishChange);
+        ValeSpec__GlobalSettings__OtherInput.addEventListener('change', ValeSpec__GlobalSettings__OnOtherInputChange);
 
-        _containerEl.appendChild(icon);
-        _containerEl.appendChild(label);
-        _containerEl.appendChild(_finishSelect);
-        _containerEl.appendChild(_otherInput);
+        ValeSpec__GlobalSettings__ContainerEl.appendChild(icon);
+        ValeSpec__GlobalSettings__ContainerEl.appendChild(label);
+        ValeSpec__GlobalSettings__ContainerEl.appendChild(ValeSpec__GlobalSettings__FinishSelect);
+        ValeSpec__GlobalSettings__ContainerEl.appendChild(ValeSpec__GlobalSettings__OtherInput);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Handle Finish Dropdown Change
     // ------------------------------------------------------------
-    function _onFinishChange() {
-        var value  =  _finishSelect.value;
+    function ValeSpec__GlobalSettings__OnFinishChange() {
+        var value  =  ValeSpec__GlobalSettings__FinishSelect.value;
 
         if (value === 'Other') {
-            _otherInput.style.display  =  '';
-            _otherInput.focus();
+            ValeSpec__GlobalSettings__OtherInput.style.display  =  '';
+            ValeSpec__GlobalSettings__OtherInput.focus();
             return;
         }
 
-        _otherInput.style.display  =  'none';
-        _otherInput.value          =  '';
+        ValeSpec__GlobalSettings__OtherInput.style.display  =  'none';
+        ValeSpec__GlobalSettings__OtherInput.value          =  '';
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
-            StateManager.setGlobalFinish(value);
+            StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
         }
     }
     // ------------------------------------------------------------
@@ -128,13 +128,13 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
 
     // HELPER FUNCTION | Handle Other Free Text Change
     // ------------------------------------------------------------
-    function _onOtherInputChange() {
-        var value  =  _otherInput.value.trim();
+    function ValeSpec__GlobalSettings__OnOtherInputChange() {
+        var value  =  ValeSpec__GlobalSettings__OtherInput.value.trim();
         if (!value) return;
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
-            StateManager.setGlobalFinish(value);
+            StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
         }
     }
     // ------------------------------------------------------------
@@ -142,11 +142,11 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
 
     // FUNCTION | Initialise Global Settings
     // ------------------------------------------------------------
-    function init(container) {
-        _containerEl  =  container;
-        if (!_containerEl) return;
+    function ValeSpec__GlobalSettings__Init(container) {
+        ValeSpec__GlobalSettings__ContainerEl  =  container;
+        if (!ValeSpec__GlobalSettings__ContainerEl) return;
 
-        _buildFinishDropdown();
+        ValeSpec__GlobalSettings__BuildFinishDropdown();
 
         console.log('[ValeSpec__GlobalSettings] Initialised.');
     }
@@ -156,7 +156,7 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init  : init
+        ValeSpec__GlobalSettings__Init  : ValeSpec__GlobalSettings__Init
     };
 
 })();

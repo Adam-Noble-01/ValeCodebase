@@ -38,23 +38,23 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _step3BodyEl          =  null;                                      // <-- Step 3 card body (Hinges)
-    let _step4BodyEl          =  null;                                      // <-- Step 4 card body (Levers)
-    let _hingeProjectionSel   =  null;                                      // <-- Hinge projection dropdown
-    let _leverTypeSelect      =  null;                                      // <-- Lever type dropdown
-    let _leverHeightInput     =  null;                                      // <-- Lever height numeric input
-    let _handingPromptEl      =  null;                                      // <-- Handing prompt container
-    let _handingLeftRadio     =  null;                                      // <-- Left-hand radio button
-    let _handingRightRadio    =  null;                                      // <-- Right-hand radio button
+    let ValeSpec__HingesAndLevers__Step3BodyEl        =  null;   // <-- Step 3 card body (Hinges)
+    let ValeSpec__HingesAndLevers__Step4BodyEl        =  null;   // <-- Step 4 card body (Levers)
+    let ValeSpec__HingesAndLevers__HingeProjectionSel =  null;   // <-- Hinge projection dropdown
+    let ValeSpec__HingesAndLevers__LeverTypeSelect    =  null;   // <-- Lever type dropdown
+    let ValeSpec__HingesAndLevers__LeverHeightInput   =  null;   // <-- Lever height numeric input
+    let ValeSpec__HingesAndLevers__HandingPromptEl    =  null;   // <-- Handing prompt container
+    let ValeSpec__HingesAndLevers__HandingLeftRadio   =  null;   // <-- Left-hand radio button
+    let ValeSpec__HingesAndLevers__HandingRightRadio  =  null;   // <-- Right-hand radio button
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Get Lever Type Options from Hardware Index
     // ------------------------------------------------------------
-    function _getLeverTypeOptions() {
+    function ValeSpec__HingesAndLevers__GetLeverTypeOptions() {
         var HwLoader  =  window.ValeSpec__AppData__HardwareIndexLoader;
         if (HwLoader) {
-            var handles  =  HwLoader.getAllLeverHandles();
+            var handles  =  HwLoader.ValeSpec__HardwareIndexLoader__GetAllLeverHandles();
             if (handles && handles.length > 0) {
                 var result  =  [];
                 for (var i = 0; i < handles.length; i++) {
@@ -76,9 +76,114 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Update Assembly Hinge Projection
+    // ------------------------------------------------------------
+    function ValeSpec__HingesAndLevers__UpdateAssemblyHinge() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+        assembly['HingeProjection']  =  parseInt(ValeSpec__HingesAndLevers__HingeProjectionSel.value, 10);
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Update Handing Prompt Visibility
+    // ------------------------------------------------------------
+    function ValeSpec__HingesAndLevers__UpdateHandingVisibility(doorType) {
+        if (!ValeSpec__HingesAndLevers__HandingPromptEl) return;
+        var isSingle  =  doorType && doorType.indexOf('Single') !== -1;
+        if (isSingle) {
+            ValeSpec__HingesAndLevers__HandingPromptEl.classList.add('ValeSpec__AssemblyEditor__HandingPrompt--visible');
+        } else {
+            ValeSpec__HingesAndLevers__HandingPromptEl.classList.remove('ValeSpec__AssemblyEditor__HandingPrompt--visible');
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Hinge Projection Change
+    // ------------------------------------------------------------
+    function ValeSpec__HingesAndLevers__OnHingeProjectionChange() {
+        var value  =  parseInt(ValeSpec__HingesAndLevers__HingeProjectionSel.value, 10);
+
+        if (value === 8) {
+            var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+            if (WarningSystem) {
+                WarningSystem.ValeSpec__WarningSystem__ShowHingeProjectionWarning().then(function(confirmed) {
+                    if (!confirmed) {
+                        ValeSpec__HingesAndLevers__HingeProjectionSel.value  =  5;
+                    }
+                    ValeSpec__HingesAndLevers__UpdateAssemblyHinge();
+                });
+                return;
+            }
+        }
+
+        ValeSpec__HingesAndLevers__UpdateAssemblyHinge();
+
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) {
+            StepManager.ValeSpec__StepManager__AdvanceFromStep('hinges');
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Lever Type Change (Global + Assembly)
+    // ------------------------------------------------------------
+    function ValeSpec__HingesAndLevers__OnLeverTypeChange() {
+        var leverName     =  ValeSpec__HingesAndLevers__LeverTypeSelect.value;
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+
+        StateManager.ValeSpec__StateManager__SetGlobalLeverType(leverName);
+
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+
+        if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
+        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  leverName;
+        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__HingesAndLevers__LeverHeightInput.value, 10) || 1000;
+
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Lever Height Change
+    // ------------------------------------------------------------
+    function ValeSpec__HingesAndLevers__OnLeverHeightChange() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+
+        if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
+        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__HingesAndLevers__LeverHeightInput.value, 10);
+
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Handing Radio Change
+    // ------------------------------------------------------------
+    function ValeSpec__HingesAndLevers__OnHandingChange() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return;
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+        assembly['Handing']  =  ValeSpec__HingesAndLevers__HandingLeftRadio.checked ? 'Left' : 'Right';
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Step 3 - Hinge Projection
     // ------------------------------------------------------------
-    function _buildHingeStep() {
+    function ValeSpec__HingesAndLevers__BuildHingeStep() {
         var group  =  document.createElement('div');
         group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
@@ -86,30 +191,30 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
         label.textContent  =  'Hinge Projection';
         label.setAttribute('for', 'ValeSpec__AssemblyEditor__HingeProjection');
 
-        _hingeProjectionSel     =  document.createElement('select');
-        _hingeProjectionSel.id  =  'ValeSpec__AssemblyEditor__HingeProjection';
+        ValeSpec__HingesAndLevers__HingeProjectionSel     =  document.createElement('select');
+        ValeSpec__HingesAndLevers__HingeProjectionSel.id  =  'ValeSpec__AssemblyEditor__HingeProjection';
 
         for (var i = 0; i < HINGE_PROJECTIONS.length; i++) {
             var opt          =  document.createElement('option');
             opt.value        =  HINGE_PROJECTIONS[i].Value;
             opt.textContent  =  HINGE_PROJECTIONS[i].Label;
-            _hingeProjectionSel.appendChild(opt);
+            ValeSpec__HingesAndLevers__HingeProjectionSel.appendChild(opt);
         }
 
-        _hingeProjectionSel.addEventListener('change', _onHingeProjectionChange);
+        ValeSpec__HingesAndLevers__HingeProjectionSel.addEventListener('change', ValeSpec__HingesAndLevers__OnHingeProjectionChange);
 
         group.appendChild(label);
-        group.appendChild(_hingeProjectionSel);
+        group.appendChild(ValeSpec__HingesAndLevers__HingeProjectionSel);
 
-        var footerEl  =  _step3BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        _step3BodyEl.insertBefore(group, footerEl);
+        var footerEl  =  ValeSpec__HingesAndLevers__Step3BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        ValeSpec__HingesAndLevers__Step3BodyEl.insertBefore(group, footerEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Step 4 - Lever Specification
     // ------------------------------------------------------------
-    function _buildLeverStep() {
+    function ValeSpec__HingesAndLevers__BuildLeverStep() {
         var leverGroup  =  document.createElement('div');
         leverGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
@@ -117,21 +222,21 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
         leverLabel.textContent  =  'Lever Type';
         leverLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__LeverType');
 
-        _leverTypeSelect     =  document.createElement('select');
-        _leverTypeSelect.id  =  'ValeSpec__AssemblyEditor__LeverType';
+        ValeSpec__HingesAndLevers__LeverTypeSelect     =  document.createElement('select');
+        ValeSpec__HingesAndLevers__LeverTypeSelect.id  =  'ValeSpec__AssemblyEditor__LeverType';
 
-        var leverOptions  =  _getLeverTypeOptions();
+        var leverOptions  =  ValeSpec__HingesAndLevers__GetLeverTypeOptions();
         for (var i = 0; i < leverOptions.length; i++) {
             var opt          =  document.createElement('option');
             opt.value        =  leverOptions[i].Value;
             opt.textContent  =  leverOptions[i].Label;
-            _leverTypeSelect.appendChild(opt);
+            ValeSpec__HingesAndLevers__LeverTypeSelect.appendChild(opt);
         }
 
-        _leverTypeSelect.addEventListener('change', _onLeverTypeChange);
+        ValeSpec__HingesAndLevers__LeverTypeSelect.addEventListener('change', ValeSpec__HingesAndLevers__OnLeverTypeChange);
 
         leverGroup.appendChild(leverLabel);
-        leverGroup.appendChild(_leverTypeSelect);
+        leverGroup.appendChild(ValeSpec__HingesAndLevers__LeverTypeSelect);
 
         var heightGroup  =  document.createElement('div');
         heightGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
@@ -141,167 +246,62 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
         heightLabel.textContent  =  'Lever Height (mm)';
         heightLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__LeverHeight');
 
-        _leverHeightInput       =  document.createElement('input');
-        _leverHeightInput.type  =  'number';
-        _leverHeightInput.id    =  'ValeSpec__AssemblyEditor__LeverHeight';
-        _leverHeightInput.min   =  800;
-        _leverHeightInput.max   =  1200;
-        _leverHeightInput.value =  1000;
+        ValeSpec__HingesAndLevers__LeverHeightInput       =  document.createElement('input');
+        ValeSpec__HingesAndLevers__LeverHeightInput.type  =  'number';
+        ValeSpec__HingesAndLevers__LeverHeightInput.id    =  'ValeSpec__AssemblyEditor__LeverHeight';
+        ValeSpec__HingesAndLevers__LeverHeightInput.min   =  800;
+        ValeSpec__HingesAndLevers__LeverHeightInput.max   =  1200;
+        ValeSpec__HingesAndLevers__LeverHeightInput.value =  1000;
 
-        _leverHeightInput.addEventListener('change', _onLeverHeightChange);
+        ValeSpec__HingesAndLevers__LeverHeightInput.addEventListener('change', ValeSpec__HingesAndLevers__OnLeverHeightChange);
 
         heightGroup.appendChild(heightLabel);
-        heightGroup.appendChild(_leverHeightInput);
+        heightGroup.appendChild(ValeSpec__HingesAndLevers__LeverHeightInput);
 
-        _handingPromptEl  =  document.createElement('div');
-        _handingPromptEl.className  =  'ValeSpec__AssemblyEditor__HandingPrompt';
-        _handingPromptEl.id         =  'ValeSpec__AssemblyEditor__HandingPrompt';
+        ValeSpec__HingesAndLevers__HandingPromptEl  =  document.createElement('div');
+        ValeSpec__HingesAndLevers__HandingPromptEl.className  =  'ValeSpec__AssemblyEditor__HandingPrompt';
+        ValeSpec__HingesAndLevers__HandingPromptEl.id         =  'ValeSpec__AssemblyEditor__HandingPrompt';
 
         var handingLabel  =  document.createElement('span');
         handingLabel.textContent    =  'Handing:';
         handingLabel.style.fontSize =  '0.78rem';
 
         var leftLabel  =  document.createElement('label');
-        _handingLeftRadio       =  document.createElement('input');
-        _handingLeftRadio.type  =  'radio';
-        _handingLeftRadio.name  =  'ValeSpec__AssemblyEditor__Handing';
-        _handingLeftRadio.value =  'Left';
-        leftLabel.appendChild(_handingLeftRadio);
+        ValeSpec__HingesAndLevers__HandingLeftRadio       =  document.createElement('input');
+        ValeSpec__HingesAndLevers__HandingLeftRadio.type  =  'radio';
+        ValeSpec__HingesAndLevers__HandingLeftRadio.name  =  'ValeSpec__AssemblyEditor__Handing';
+        ValeSpec__HingesAndLevers__HandingLeftRadio.value =  'Left';
+        leftLabel.appendChild(ValeSpec__HingesAndLevers__HandingLeftRadio);
         leftLabel.appendChild(document.createTextNode(' Left'));
 
         var rightLabel  =  document.createElement('label');
-        _handingRightRadio       =  document.createElement('input');
-        _handingRightRadio.type  =  'radio';
-        _handingRightRadio.name  =  'ValeSpec__AssemblyEditor__Handing';
-        _handingRightRadio.value =  'Right';
-        _handingRightRadio.checked  =  true;
-        rightLabel.appendChild(_handingRightRadio);
+        ValeSpec__HingesAndLevers__HandingRightRadio          =  document.createElement('input');
+        ValeSpec__HingesAndLevers__HandingRightRadio.type     =  'radio';
+        ValeSpec__HingesAndLevers__HandingRightRadio.name     =  'ValeSpec__AssemblyEditor__Handing';
+        ValeSpec__HingesAndLevers__HandingRightRadio.value    =  'Right';
+        ValeSpec__HingesAndLevers__HandingRightRadio.checked  =  true;
+        rightLabel.appendChild(ValeSpec__HingesAndLevers__HandingRightRadio);
         rightLabel.appendChild(document.createTextNode(' Right'));
 
-        _handingPromptEl.appendChild(handingLabel);
-        _handingPromptEl.appendChild(leftLabel);
-        _handingPromptEl.appendChild(rightLabel);
+        ValeSpec__HingesAndLevers__HandingPromptEl.appendChild(handingLabel);
+        ValeSpec__HingesAndLevers__HandingPromptEl.appendChild(leftLabel);
+        ValeSpec__HingesAndLevers__HandingPromptEl.appendChild(rightLabel);
 
-        _handingLeftRadio.addEventListener('change', _onHandingChange);
-        _handingRightRadio.addEventListener('change', _onHandingChange);
+        ValeSpec__HingesAndLevers__HandingLeftRadio.addEventListener('change',  ValeSpec__HingesAndLevers__OnHandingChange);
+        ValeSpec__HingesAndLevers__HandingRightRadio.addEventListener('change', ValeSpec__HingesAndLevers__OnHandingChange);
 
-        var footerEl  =  _step4BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
-        _step4BodyEl.insertBefore(leverGroup, footerEl);
-        _step4BodyEl.insertBefore(heightGroup, footerEl);
-        _step4BodyEl.insertBefore(_handingPromptEl, footerEl);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Hinge Projection Change
-    // ------------------------------------------------------------
-    function _onHingeProjectionChange() {
-        var value  =  parseInt(_hingeProjectionSel.value, 10);
-
-        if (value === 8) {
-            var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
-            if (WarningSystem) {
-                WarningSystem.showHingeProjectionWarning().then(function(confirmed) {
-                    if (!confirmed) {
-                        _hingeProjectionSel.value  =  5;
-                    }
-                    _updateAssemblyHinge();
-                });
-                return;
-            }
-        }
-
-        _updateAssemblyHinge();
-
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) {
-            StepManager.advanceFromStep('hinges');
-        }
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Update Assembly Hinge Projection
-    // ------------------------------------------------------------
-    function _updateAssemblyHinge() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-        assembly['HingeProjection']  =  parseInt(_hingeProjectionSel.value, 10);
-        StateManager.updateCurrentAssembly(assembly);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Lever Type Change (Global + Assembly)
-    // ------------------------------------------------------------
-    function _onLeverTypeChange() {
-        var leverName     =  _leverTypeSelect.value;
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-
-        StateManager.setGlobalLeverType(leverName);
-
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-
-        if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
-        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  leverName;
-        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(_leverHeightInput.value, 10) || 1000;
-
-        StateManager.updateCurrentAssembly(assembly);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Lever Height Change
-    // ------------------------------------------------------------
-    function _onLeverHeightChange() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-
-        if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
-        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(_leverHeightInput.value, 10);
-
-        StateManager.updateCurrentAssembly(assembly);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Handing Radio Change
-    // ------------------------------------------------------------
-    function _onHandingChange() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
-        var assembly  =  StateManager.getCurrentAssembly();
-        if (!assembly) return;
-        assembly['Handing']  =  _handingLeftRadio.checked ? 'Left' : 'Right';
-        StateManager.updateCurrentAssembly(assembly);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Update Handing Prompt Visibility
-    // ------------------------------------------------------------
-    function _updateHandingVisibility(doorType) {
-        if (!_handingPromptEl) return;
-        var isSingle  =  doorType && doorType.indexOf('Single') !== -1;
-        if (isSingle) {
-            _handingPromptEl.classList.add('ValeSpec__AssemblyEditor__HandingPrompt--visible');
-        } else {
-            _handingPromptEl.classList.remove('ValeSpec__AssemblyEditor__HandingPrompt--visible');
-        }
+        var footerEl  =  ValeSpec__HingesAndLevers__Step4BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        ValeSpec__HingesAndLevers__Step4BodyEl.insertBefore(leverGroup, footerEl);
+        ValeSpec__HingesAndLevers__Step4BodyEl.insertBefore(heightGroup, footerEl);
+        ValeSpec__HingesAndLevers__Step4BodyEl.insertBefore(ValeSpec__HingesAndLevers__HandingPromptEl, footerEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Summary Callback for Step 3 (Hinges)
     // ------------------------------------------------------------
-    function _hingeSummary() {
-        var val  =  _hingeProjectionSel ? _hingeProjectionSel.value : '';
+    function ValeSpec__HingesAndLevers__HingeSummary() {
+        var val  =  ValeSpec__HingesAndLevers__HingeProjectionSel ? ValeSpec__HingesAndLevers__HingeProjectionSel.value : '';
         return val ? val + ' inch projection' : 'Not set';
     }
     // ------------------------------------------------------------
@@ -309,9 +309,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
 
     // HELPER FUNCTION | Summary Callback for Step 4 (Levers)
     // ------------------------------------------------------------
-    function _leverSummary() {
-        var type    =  _leverTypeSelect   ? _leverTypeSelect.options[_leverTypeSelect.selectedIndex].text : '';
-        var height  =  _leverHeightInput  ? _leverHeightInput.value : '1000';
+    function ValeSpec__HingesAndLevers__LeverSummary() {
+        var type    =  ValeSpec__HingesAndLevers__LeverTypeSelect   ? ValeSpec__HingesAndLevers__LeverTypeSelect.options[ValeSpec__HingesAndLevers__LeverTypeSelect.selectedIndex].text : '';
+        var height  =  ValeSpec__HingesAndLevers__LeverHeightInput  ? ValeSpec__HingesAndLevers__LeverHeightInput.value : '1000';
         return type + '  |  ' + height + ' mm';
     }
     // ------------------------------------------------------------
@@ -319,76 +319,76 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
 
     // FUNCTION | Refresh Controls from Assembly Data
     // ------------------------------------------------------------
-    function refreshFromAssembly(assemblyData) {
+    function ValeSpec__HingesAndLevers__RefreshFromAssembly(assemblyData) {
         if (!assemblyData) return;
 
-        var hingeCfg   =  assemblyData['Assembly__Hinge__Config']    || {};
-        var leverCfg   =  assemblyData['Assembly__Lever__Config']    || {};
-        var doorCfg    =  assemblyData['Assembly__DoorType__Config'] || {};
+        var hingeCfg  =  assemblyData['Assembly__Hinge__Config']    || {};
+        var leverCfg  =  assemblyData['Assembly__Lever__Config']    || {};
+        var doorCfg   =  assemblyData['Assembly__DoorType__Config'] || {};
 
-        if (_hingeProjectionSel && hingeCfg['Assembly__Hinge__Config__Projection'] !== undefined) {
-            _hingeProjectionSel.value  =  hingeCfg['Assembly__Hinge__Config__Projection'];
+        if (ValeSpec__HingesAndLevers__HingeProjectionSel && hingeCfg['Assembly__Hinge__Config__Projection'] !== undefined) {
+            ValeSpec__HingesAndLevers__HingeProjectionSel.value  =  hingeCfg['Assembly__Hinge__Config__Projection'];
         }
 
-        if (_leverHeightInput) {
-            _leverHeightInput.value  =  leverCfg['Assembly__Lever__Config__HeightMm'] || 1000;
+        if (ValeSpec__HingesAndLevers__LeverHeightInput) {
+            ValeSpec__HingesAndLevers__LeverHeightInput.value  =  leverCfg['Assembly__Lever__Config__HeightMm'] || 1000;
         }
 
         var leverType  =  leverCfg['Assembly__Lever__Config__Type'] || '';
-        if (_leverTypeSelect && leverType) {
-            _leverTypeSelect.value  =  leverType;
+        if (ValeSpec__HingesAndLevers__LeverTypeSelect && leverType) {
+            ValeSpec__HingesAndLevers__LeverTypeSelect.value  =  leverType;
         } else {
             var StateManager  =  window.ValeSpec__AppCore__StateManager;
             if (StateManager) {
-                var state  =  StateManager.getState();
-                if (_leverTypeSelect && state.globalLeverType) {
-                    _leverTypeSelect.value  =  state.globalLeverType;
+                var state  =  StateManager.ValeSpec__StateManager__GetState();
+                if (ValeSpec__HingesAndLevers__LeverTypeSelect && state.globalLeverType) {
+                    ValeSpec__HingesAndLevers__LeverTypeSelect.value  =  state.globalLeverType;
                 }
             }
         }
 
         var handing  =  leverCfg['Assembly__Lever__Config__Handing'] || 'Dual';
-        if (handing === 'Left' && _handingLeftRadio) {
-            _handingLeftRadio.checked   =  true;
-        } else if (_handingRightRadio) {
-            _handingRightRadio.checked  =  true;
+        if (handing === 'Left' && ValeSpec__HingesAndLevers__HandingLeftRadio) {
+            ValeSpec__HingesAndLevers__HandingLeftRadio.checked   =  true;
+        } else if (ValeSpec__HingesAndLevers__HandingRightRadio) {
+            ValeSpec__HingesAndLevers__HandingRightRadio.checked  =  true;
         }
 
         var doorType  =  doorCfg['Assembly__DoorType__Config__Type'] || '';
-        _updateHandingVisibility(doorType);
+        ValeSpec__HingesAndLevers__UpdateHandingVisibility(doorType);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Register Summaries with StepManager
     // ------------------------------------------------------------
-    function _registerSummaries() {
+    function ValeSpec__HingesAndLevers__RegisterSummaries() {
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (!StepManager) return;
 
-        StepManager.registerSummary('hinges', _hingeSummary);
-        StepManager.registerSummary('levers', _leverSummary);
+        StepManager.ValeSpec__StepManager__RegisterSummary('hinges', ValeSpec__HingesAndLevers__HingeSummary);
+        StepManager.ValeSpec__StepManager__RegisterSummary('levers', ValeSpec__HingesAndLevers__LeverSummary);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Initialise Hinges and Levers Steps
     // ------------------------------------------------------------
-    function init(step3BodyEl, step4BodyEl) {
-        _step3BodyEl  =  step3BodyEl;
-        _step4BodyEl  =  step4BodyEl;
-        if (!_step3BodyEl || !_step4BodyEl) return;
+    function ValeSpec__HingesAndLevers__Init(step3BodyEl, step4BodyEl) {
+        ValeSpec__HingesAndLevers__Step3BodyEl  =  step3BodyEl;
+        ValeSpec__HingesAndLevers__Step4BodyEl  =  step4BodyEl;
+        if (!ValeSpec__HingesAndLevers__Step3BodyEl || !ValeSpec__HingesAndLevers__Step4BodyEl) return;
 
-        _buildHingeStep();
-        _buildLeverStep();
-        _registerSummaries();
+        ValeSpec__HingesAndLevers__BuildHingeStep();
+        ValeSpec__HingesAndLevers__BuildLeverStep();
+        ValeSpec__HingesAndLevers__RegisterSummaries();
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
-            StateManager.on('assemblyUpdated', function(data) {
+            StateManager.ValeSpec__StateManager__On('assemblyUpdated', function(data) {
                 if (data) {
                     var dt  =  (data['Assembly__DoorType__Config'] || {})['Assembly__DoorType__Config__Type'] || '';
-                    _updateHandingVisibility(dt);
+                    ValeSpec__HingesAndLevers__UpdateHandingVisibility(dt);
                 }
             });
         }
@@ -401,8 +401,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init                 : init,
-        refreshFromAssembly  : refreshFromAssembly
+        ValeSpec__HingesAndLevers__Init                : ValeSpec__HingesAndLevers__Init,
+        ValeSpec__HingesAndLevers__RefreshFromAssembly : ValeSpec__HingesAndLevers__RefreshFromAssembly
     };
 
 })();

@@ -10,9 +10,9 @@
    CREATED    : 2026
 
    DESCRIPTION:
-   - showHingeProjectionWarning() for 8-inch projection approval
-   - showHeightMismatchWarning() compares all assembly heights (>15mm diff)
-   - showWarningToast() for non-blocking toast notifications
+   - ValeSpec__WarningSystem__ShowHingeProjectionWarning() for 8-inch projection approval
+   - ValeSpec__WarningSystem__ShowHeightMismatchWarning() compares all assembly heights (>15mm diff)
+   - ValeSpec__WarningSystem__ShowWarningToast() for non-blocking toast notifications
    - Uses #ValeSpec__Modal__Root for modal dialog DOM
 
    ============================================================================= */
@@ -25,32 +25,32 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
     // MODULE CONSTANTS | Config Path
     // ------------------------------------------------------------
-    const CONFIG_PATH         =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
-    const HEIGHT_THRESHOLD    =  15;                                        // <-- Max mm difference before warning
-    const TOAST_DURATION_MS   =  4000;                                      // <-- Toast display duration
+    const CONFIG_PATH        =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
+    const HEIGHT_THRESHOLD   =  15;                                         // <-- Max mm difference before warning
+    const TOAST_DURATION_MS  =  4000;                                       // <-- Toast display duration
     // ------------------------------------------------------------
 
 
     // MODULE VARIABLES | Cached Warning Messages
     // ------------------------------------------------------------
-    let _hingeWarningMsg    =  null;                                        // <-- 8-inch hinge warning text
-    let _heightMismatchMsg  =  null;                                        // <-- Height mismatch warning text
-    let _configLoaded       =  false;                                       // <-- Config load flag
+    let ValeSpec__WarningSystem__HingeWarningMsg    =  null;                // <-- 8-inch hinge warning text
+    let ValeSpec__WarningSystem__HeightMismatchMsg  =  null;                // <-- Height mismatch warning text
+    let ValeSpec__WarningSystem__ConfigLoaded       =  false;               // <-- Config load flag
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Load Warning Messages from Config
     // ------------------------------------------------------------
-    async function _ensureConfig() {
-        if (_configLoaded) return;
+    async function ValeSpec__WarningSystem__EnsureConfig() {
+        if (ValeSpec__WarningSystem__ConfigLoaded) return;
         try {
             var response  =  await fetch(CONFIG_PATH);
             if (!response.ok) return;
             var data      =  await response.json();
             var warnings  =  data['AssemblyEditor__Warnings__Config'] || {};
-            _hingeWarningMsg    =  warnings['HingeProjection8InchMessage']  || 'Non-standard hinge projection selected.';
-            _heightMismatchMsg  =  warnings['HeightMismatchMessage']        || 'Assembly heights differ significantly.';
-            _configLoaded       =  true;
+            ValeSpec__WarningSystem__HingeWarningMsg    =  warnings['HingeProjection8InchMessage']  || 'Non-standard hinge projection selected.';
+            ValeSpec__WarningSystem__HeightMismatchMsg  =  warnings['HeightMismatchMessage']        || 'Assembly heights differ significantly.';
+            ValeSpec__WarningSystem__ConfigLoaded       =  true;
         } catch (e) {
             console.warn('[ValeSpec__WarningSystem] Config load failed:', e);
         }
@@ -60,7 +60,7 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
     // HELPER FUNCTION | Get or Create Modal Root Element
     // ------------------------------------------------------------
-    function _getModalRoot() {
+    function ValeSpec__WarningSystem__GetModalRoot() {
         var root  =  document.getElementById('ValeSpec__Modal__Root');
         if (!root) {
             root     =  document.createElement('div');
@@ -74,7 +74,7 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
     // HELPER FUNCTION | Create Modal Overlay with Dialog
     // ------------------------------------------------------------
-    function _createModal(title, message) {
+    function ValeSpec__WarningSystem__CreateModal(title, message) {
         var overlay  =  document.createElement('div');
         overlay.className  =  'ValeSpec__Modal__Overlay';
 
@@ -113,10 +113,10 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
     // HELPER FUNCTION | Show Modal and Return Promise
     // ------------------------------------------------------------
-    function _showModal(title, message) {
+    function ValeSpec__WarningSystem__ShowModal(title, message) {
         return new Promise(function(resolve) {
-            var modalRoot  =  _getModalRoot();
-            var modal      =  _createModal(title, message);
+            var modalRoot  =  ValeSpec__WarningSystem__GetModalRoot();
+            var modal      =  ValeSpec__WarningSystem__CreateModal(title, message);
 
             modalRoot.appendChild(modal.overlay);
 
@@ -124,7 +124,7 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
                 modal.overlay.classList.add('ValeSpec__Modal__Overlay--visible');
             });
 
-            function _cleanup(result) {
+            function cleanup(result) {
                 modal.overlay.classList.remove('ValeSpec__Modal__Overlay--visible');
                 setTimeout(function() {
                     if (modal.overlay.parentNode) modal.overlay.parentNode.removeChild(modal.overlay);
@@ -132,8 +132,8 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
                 resolve(result);
             }
 
-            modal.confirmBtn.addEventListener('click', function() { _cleanup(true);  });
-            modal.cancelBtn.addEventListener('click',  function() { _cleanup(false); });
+            modal.confirmBtn.addEventListener('click', function() { cleanup(true);  });
+            modal.cancelBtn.addEventListener('click',  function() { cleanup(false); });
         });
     }
     // ------------------------------------------------------------
@@ -141,17 +141,17 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
     // FUNCTION | Show Hinge Projection Warning (8-inch)
     // ------------------------------------------------------------
-    async function showHingeProjectionWarning() {
-        await _ensureConfig();
-        var msg  =  _hingeWarningMsg || 'Non-standard hinge projection selected.';
-        return _showModal('Hinge Projection Warning', msg);
+    async function ValeSpec__WarningSystem__ShowHingeProjectionWarning() {
+        await ValeSpec__WarningSystem__EnsureConfig();
+        var msg  =  ValeSpec__WarningSystem__HingeWarningMsg || 'Non-standard hinge projection selected.';
+        return ValeSpec__WarningSystem__ShowModal('Hinge Projection Warning', msg);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Show Height Mismatch Warning
     // ------------------------------------------------------------
-    async function showHeightMismatchWarning(assemblies) {
+    async function ValeSpec__WarningSystem__ShowHeightMismatchWarning(assemblies) {
         if (!assemblies || assemblies.length < 2) return false;
 
         var heights  =  [];
@@ -167,16 +167,16 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
         if ((maxH - minH) <= HEIGHT_THRESHOLD) return false;               // <-- Within tolerance
 
-        await _ensureConfig();
-        var msg  =  _heightMismatchMsg || 'Assembly heights differ significantly.';
-        return _showModal('Height Mismatch Warning', msg);
+        await ValeSpec__WarningSystem__EnsureConfig();
+        var msg  =  ValeSpec__WarningSystem__HeightMismatchMsg || 'Assembly heights differ significantly.';
+        return ValeSpec__WarningSystem__ShowModal('Height Mismatch Warning', msg);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Show Warning Toast Notification
     // ------------------------------------------------------------
-    function showWarningToast(message, type) {
+    function ValeSpec__WarningSystem__ShowWarningToast(message, type) {
         var toast  =  document.createElement('div');
         toast.className  =  'ValeSpec__AssemblyEditor__Toast';
 
@@ -204,9 +204,9 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        showHingeProjectionWarning  : showHingeProjectionWarning,
-        showHeightMismatchWarning   : showHeightMismatchWarning,
-        showWarningToast            : showWarningToast
+        ValeSpec__WarningSystem__ShowHingeProjectionWarning  : ValeSpec__WarningSystem__ShowHingeProjectionWarning,
+        ValeSpec__WarningSystem__ShowHeightMismatchWarning   : ValeSpec__WarningSystem__ShowHeightMismatchWarning,
+        ValeSpec__WarningSystem__ShowWarningToast            : ValeSpec__WarningSystem__ShowWarningToast
     };
 
 })();

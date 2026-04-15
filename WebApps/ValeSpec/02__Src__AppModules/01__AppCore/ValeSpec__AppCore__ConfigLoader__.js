@@ -31,39 +31,39 @@ const ValeSpec__AppCore__ConfigLoader = (function() {
 
     // MODULE VARIABLES | Parsed Config Sections
     // ------------------------------------------------------------
-    let ValeSpec__Config__Application          =  null;
-    let ValeSpec__Config__IronmongeryDefaults  =  null;
-    let ValeSpec__Config__DoorTypeOptions      =  null;
-    let ValeSpec__Config__LeverTypeOptions     =  null;
-    let ValeSpec__Config__HingeProjection      =  null;
-    let ValeSpec__Config__CabinHookOptions     =  null;
-    let ValeSpec__Config__Validation           =  null;
+    let ValeSpec__ConfigLoader__Application          =  null;
+    let ValeSpec__ConfigLoader__IronmongeryDefaults  =  null;
+    let ValeSpec__ConfigLoader__DoorTypeOptions      =  null;
+    let ValeSpec__ConfigLoader__LeverTypeOptions     =  null;
+    let ValeSpec__ConfigLoader__HingeProjection      =  null;
+    let ValeSpec__ConfigLoader__CabinHookOptions     =  null;
+    let ValeSpec__ConfigLoader__Validation           =  null;
     // ------------------------------------------------------------
 
 
     // FUNCTION | Load Configuration from JSON File
     // ------------------------------------------------------------
-    async function loadConfig() {
+    async function ValeSpec__ConfigLoader__LoadConfig() {
         try {
             var response  =  await fetch(CONFIG_PATH);
             if (!response.ok) throw new Error('Config fetch failed: ' + response.status);
 
             var configData  =  await response.json();
 
-            ValeSpec__Config__Application          =  configData['ValeSpec__Application__Config']             || {};
-            ValeSpec__Config__IronmongeryDefaults   =  configData['ValeSpec__Ironmongery__GlobalDefaults__Config'] || {};
-            ValeSpec__Config__DoorTypeOptions       =  configData['ValeSpec__DoorType__Options__Config']      || {};
-            ValeSpec__Config__LeverTypeOptions      =  configData['ValeSpec__LeverType__Options__Config']     || {};
-            ValeSpec__Config__HingeProjection       =  configData['ValeSpec__HingeProjection__Options__Config'] || {};
-            ValeSpec__Config__CabinHookOptions      =  configData['ValeSpec__CabinHook__Options__Config']     || {};
-            ValeSpec__Config__Validation            =  configData['ValeSpec__Validation__Config']             || {};
+            ValeSpec__ConfigLoader__Application          =  configData['ValeSpec__Application__Config']                || {};
+            ValeSpec__ConfigLoader__IronmongeryDefaults  =  configData['ValeSpec__Ironmongery__GlobalDefaults__Config'] || {};
+            ValeSpec__ConfigLoader__DoorTypeOptions      =  configData['ValeSpec__DoorType__Options__Config']           || {};
+            ValeSpec__ConfigLoader__LeverTypeOptions     =  configData['ValeSpec__LeverType__Options__Config']          || {};
+            ValeSpec__ConfigLoader__HingeProjection      =  configData['ValeSpec__HingeProjection__Options__Config']    || {};
+            ValeSpec__ConfigLoader__CabinHookOptions     =  configData['ValeSpec__CabinHook__Options__Config']          || {};
+            ValeSpec__ConfigLoader__Validation           =  configData['ValeSpec__Validation__Config']                  || {};
 
             if (window.ValeSpec__AppCore__StateManager) {
-                window.ValeSpec__AppCore__StateManager.setAppConfig(configData);
+                window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__SetAppConfig(configData);
             }
 
             console.log('[ValeSpec__ConfigLoader] Configuration loaded successfully. App v' +
-                (ValeSpec__Config__Application['ValeSpec__Application__Config__AppVersion'] || '?.?.?'));
+                (ValeSpec__ConfigLoader__Application['ValeSpec__Application__Config__AppVersion'] || '?.?.?'));
 
             return configData;
 
@@ -77,15 +77,15 @@ const ValeSpec__AppCore__ConfigLoader = (function() {
 
     // FUNCTION | Get a Specific Config Section
     // ------------------------------------------------------------
-    function getSection(sectionName) {
+    function ValeSpec__ConfigLoader__GetSection(sectionName) {
         var sections  =  {
-            'Application'          : ValeSpec__Config__Application,
-            'IronmongeryDefaults'  : ValeSpec__Config__IronmongeryDefaults,
-            'DoorTypeOptions'      : ValeSpec__Config__DoorTypeOptions,
-            'LeverTypeOptions'     : ValeSpec__Config__LeverTypeOptions,
-            'HingeProjection'      : ValeSpec__Config__HingeProjection,
-            'CabinHookOptions'     : ValeSpec__Config__CabinHookOptions,
-            'Validation'           : ValeSpec__Config__Validation
+            'Application'          : ValeSpec__ConfigLoader__Application,
+            'IronmongeryDefaults'  : ValeSpec__ConfigLoader__IronmongeryDefaults,
+            'DoorTypeOptions'      : ValeSpec__ConfigLoader__DoorTypeOptions,
+            'LeverTypeOptions'     : ValeSpec__ConfigLoader__LeverTypeOptions,
+            'HingeProjection'      : ValeSpec__ConfigLoader__HingeProjection,
+            'CabinHookOptions'     : ValeSpec__ConfigLoader__CabinHookOptions,
+            'Validation'           : ValeSpec__ConfigLoader__Validation
         };
         return sections[sectionName] || null;
     }
@@ -95,8 +95,8 @@ const ValeSpec__AppCore__ConfigLoader = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        loadConfig  : loadConfig,
-        getSection  : getSection
+        ValeSpec__ConfigLoader__LoadConfig   : ValeSpec__ConfigLoader__LoadConfig,
+        ValeSpec__ConfigLoader__GetSection   : ValeSpec__ConfigLoader__GetSection
     };
 
 })();

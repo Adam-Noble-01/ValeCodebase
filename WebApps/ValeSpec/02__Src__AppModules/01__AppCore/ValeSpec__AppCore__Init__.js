@@ -28,7 +28,7 @@
 
     // FUNCTION | Initialize Application
     // ------------------------------------------------------------
-    async function _initApp() {
+    async function ValeSpec__AppCore__InitApp() {
         console.log('[ValeSpec__Init] Starting ValeSpec application...');
 
         var ConfigLoader       =  window.ValeSpec__AppCore__ConfigLoader;
@@ -37,14 +37,14 @@
         var HwLoader           =  window.ValeSpec__AppData__HardwareIndexLoader;
         var ProjectFileManager =  window.ValeSpec__AppData__ProjectFileManager;
 
-        var configData  =  await ConfigLoader.loadConfig();
+        var configData  =  await ConfigLoader.ValeSpec__ConfigLoader__LoadConfig();
         if (!configData) {
             console.error('[ValeSpec__Init] Fatal: could not load app configuration.');
             return;
         }
 
-        var appSection    =  configData['ValeSpec__Application__Config'] || {};
-        var hwIndexPath   =  appSection['ValeSpec__Application__Config__HardwareIndexPath'];
+        var appSection   =  configData['ValeSpec__Application__Config'] || {};
+        var hwIndexPath  =  appSection['ValeSpec__Application__Config__HardwareIndexPath'];
         if (hwIndexPath) {
             await HwLoader.loadIndex(hwIndexPath);
             await HwLoader.loadVectorData();
@@ -56,14 +56,14 @@
         }
 
         if (ProjectFileManager && ProjectFileManager.syncFromServer) {
-            await ProjectFileManager.syncFromServer();                         // <-- Pull disk project files into localStorage cache before first render
+            await ProjectFileManager.syncFromServer();                          // <-- Pull disk project files into localStorage cache before first render
         }
 
-        _initNavigationBar();
-        _initModeLifecycle();
-        _initProjectLifecycle();
+        ValeSpec__AppCore__InitNavigationBar();
+        ValeSpec__AppCore__InitModeLifecycle();
+        ValeSpec__AppCore__InitProjectLifecycle();
 
-        ModeManager.switchToMode(ModeManager.MODE_DOC_MANAGEMENT, false);
+        ModeManager.ValeSpec__ModeManager__SwitchToMode(ModeManager.MODE_DOC_MANAGEMENT, false);
 
         console.log('[ValeSpec__Init] Application ready.');
     }
@@ -72,7 +72,7 @@
 
     // FUNCTION | Initialize Navigation Bar Event Listeners
     // ------------------------------------------------------------
-    function _initNavigationBar() {
+    function ValeSpec__AppCore__InitNavigationBar() {
         var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
 
         var tabs  =  document.querySelectorAll('.ValeSpec__App__NavTab');
@@ -81,7 +81,7 @@
                 var tab  =  e.currentTarget;
                 if (tab.classList.contains('ValeSpec__App__NavTab--disabled')) return;
                 var mode  =  tab.dataset.mode;
-                if (mode) ModeManager.switchToMode(mode);
+                if (mode) ModeManager.ValeSpec__ModeManager__SwitchToMode(mode);
             });
         }
     }
@@ -90,12 +90,12 @@
 
     // FUNCTION | Initialize Mode Lifecycle Hooks
     // ------------------------------------------------------------
-    function _initModeLifecycle() {
+    function ValeSpec__AppCore__InitModeLifecycle() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return;
 
-        StateManager.on('modeChanged', function(modeId) {
-            _onModeEntered(modeId);
+        StateManager.ValeSpec__StateManager__On('modeChanged', function(modeId) {
+            ValeSpec__AppCore__OnModeEntered(modeId);
         });
     }
     // ------------------------------------------------------------
@@ -103,15 +103,15 @@
 
     // FUNCTION | Handle Mode Entry - Trigger System Renders
     // ------------------------------------------------------------
-    async function _onModeEntered(modeId) {
+    async function ValeSpec__AppCore__OnModeEntered(modeId) {
         if (modeId === 'DocumentEditor') {
-            _renderDocumentEditor();
+            ValeSpec__AppCore__RenderDocumentEditor();
         }
         if (modeId === 'AssemblyEditor') {
-            await _renderAssemblyEditor();                                     // <-- Must await: Layout.init() is async
+            await ValeSpec__AppCore__RenderAssemblyEditor();                    // <-- Must await: Layout.init() is async
         }
         if (modeId === 'DocumentPreview') {
-            _renderDocumentPreview();
+            ValeSpec__AppCore__RenderDocumentPreview();
         }
     }
     // ------------------------------------------------------------
@@ -119,7 +119,7 @@
 
     // SUB FUNCTION | Render Document Editor Mode
     // ------------------------------------------------------------
-    function _renderDocumentEditor() {
+    function ValeSpec__AppCore__RenderDocumentEditor() {
         var DocHeader       =  window.ValeSpec__DocEditor__DocumentHeader;
         var SectionManager  =  window.ValeSpec__DocEditor__SectionManager;
         var JobNotes        =  window.ValeSpec__DocEditor__JobNotes;
@@ -133,17 +133,17 @@
 
     // SUB FUNCTION | Render Assembly Editor Mode
     // ------------------------------------------------------------
-    async function _renderAssemblyEditor() {
+    async function ValeSpec__AppCore__RenderAssemblyEditor() {
         var Layout  =  window.ValeSpec__AssemblyEditor__Layout;
         if (!Layout) return;
 
-        await Layout.init();                                                   // <-- Await config fetch + panel build on first visit
+        await Layout.init();                                                    // <-- Await config fetch + panel build on first visit
 
         var StateManager      =  window.ValeSpec__AppCore__StateManager;
         var DoorConfigurator  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Main;
         var SvgPreview        =  window.ValeSpec__AssemblyEditor__SvgPreview;
 
-        var assembly  =  StateManager ? StateManager.getCurrentAssembly() : null;
+        var assembly  =  StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
 
         if (assembly) {
             if (DoorConfigurator && DoorConfigurator.refreshFromAssembly) DoorConfigurator.refreshFromAssembly(assembly);
@@ -166,7 +166,7 @@
 
     // SUB FUNCTION | Render Document Preview Mode
     // ------------------------------------------------------------
-    function _renderDocumentPreview() {
+    function ValeSpec__AppCore__RenderDocumentPreview() {
         var PageRenderer  =  window.ValeSpec__DocPreview__PageRenderer;
         if (PageRenderer && PageRenderer.render) PageRenderer.render();
     }
@@ -175,12 +175,12 @@
 
     // HELPER FUNCTION | Persist Current Project to Disk
     // ------------------------------------------------------------
-    function _autosaveCurrentProject() {
+    function ValeSpec__AppCore__AutosaveCurrentProject() {
         var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
         var StateManager        =  window.ValeSpec__AppCore__StateManager;
         if (!ProjectFileManager || !StateManager) return;
 
-        var state  =  StateManager.getState();
+        var state  =  StateManager.ValeSpec__StateManager__GetState();
         if (state.currentProject) {
             ProjectFileManager.saveProject(state.currentProject);              // <-- Write full project JSON to localStorage + disk
         }
@@ -190,16 +190,16 @@
 
     // FUNCTION | Initialize Project Lifecycle - Enable/Disable Nav Tabs, Auto-Save Hooks
     // ------------------------------------------------------------
-    function _initProjectLifecycle() {
+    function ValeSpec__AppCore__InitProjectLifecycle() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return;
 
-        StateManager.on('projectChanged', function(projectData) {
-            _updateNavTabStates(projectData);
+        StateManager.ValeSpec__StateManager__On('projectChanged', function(projectData) {
+            ValeSpec__AppCore__UpdateNavTabStates(projectData);
         });
 
-        StateManager.on('assemblyUpdated', function() {
-            _autosaveCurrentProject();                                         // <-- Persist whenever an assembly field is changed
+        StateManager.ValeSpec__StateManager__On('assemblyUpdated', function() {
+            ValeSpec__AppCore__AutosaveCurrentProject();                        // <-- Persist whenever an assembly field is changed
         });
     }
     // ------------------------------------------------------------
@@ -207,7 +207,7 @@
 
     // FUNCTION | Enable or Disable Navigation Tabs Based on Project State
     // ------------------------------------------------------------
-    function _updateNavTabStates(projectData) {
+    function ValeSpec__AppCore__UpdateNavTabStates(projectData) {
         var hasProject  =  !!projectData;
         var tabs        =  document.querySelectorAll('.ValeSpec__App__NavTab');
 
@@ -230,9 +230,9 @@
     // BOOT | Run Init When DOM is Ready
     // ------------------------------------------------------------
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', _initApp);
+        document.addEventListener('DOMContentLoaded', ValeSpec__AppCore__InitApp);
     } else {
-        _initApp();
+        ValeSpec__AppCore__InitApp();
     }
     // ------------------------------------------------------------
 

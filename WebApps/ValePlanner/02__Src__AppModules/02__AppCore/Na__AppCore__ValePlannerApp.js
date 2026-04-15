@@ -15,11 +15,12 @@ import { Na__Persistence__LoadWorkersAsync, Na__Persistence__SaveWorkersAsync } 
 
  // MODULE VARIABLES | Root and Timer Handles
  // ------------------------------------------------------------
- let Na__AppCore__RootElement = null;
- let Na__AppCore__ClockIntervalId = null;
-let Na__AppCore__WorkersSaveTimeoutId = null;
+ let Na__AppCore__RootElement              = null;
+ let Na__AppCore__ClockIntervalId          = null;
+let Na__AppCore__WorkersSaveTimeoutId      = null;
 let Na__AppCore__PendingWorkersSavePayload = null;
-let Na__AppCore__LastObservedWorkersRef = null;
+let Na__AppCore__LastObservedWorkersRef    = null;
+let Na__AppCore__LastRenderedHeaderState   = null; // <-- tracks last header render to avoid unnecessary re-renders
  // ------------------------------------------------------------
 
 
@@ -70,11 +71,27 @@ export async function Na__AppCore__InitializeValePlannerApp(rootElement) {
      const currentState = Na__AppCore__GetState();
      if (!Na__AppCore__RootElement || !currentState) return;
 
-     Na__Header__RenderShell(currentState, Na__AppCore__RootElement);
+     const isDragging = !!(currentState.draftShift || currentState.pendingDrag); // <-- detect active drag
+
+     const headerNeedsUpdate = !isDragging && (
+         !Na__AppCore__LastRenderedHeaderState                                                           ||
+         Na__AppCore__LastRenderedHeaderState.mainTab     !== currentState.mainTab                      ||
+         Na__AppCore__LastRenderedHeaderState.viewMode    !== currentState.viewMode                     ||
+         Na__AppCore__LastRenderedHeaderState.currentDate !== currentState.currentDate
+     );
+
+     if (headerNeedsUpdate) {
+         Na__Header__RenderShell(currentState, Na__AppCore__RootElement); // <-- only re-render when header-relevant state actually changes
+         Na__AppCore__BindHeaderEvents();
+         Na__AppCore__LastRenderedHeaderState = {
+             mainTab:     currentState.mainTab,
+             viewMode:    currentState.viewMode,
+             currentDate: currentState.currentDate
+         };
+     }
+
      const panelElement = Na__AppCore__RootElement.querySelector('#naAppFeaturePanel');
      if (!panelElement) return;
-
-     Na__AppCore__BindHeaderEvents();
 
     if (currentState.mainTab === 'schedule') {
         Na__Analytics__DestroyCharts();

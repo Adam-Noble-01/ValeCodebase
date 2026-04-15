@@ -32,22 +32,22 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
     // MODULE VARIABLES | Module Dependencies
     // ------------------------------------------------------------
-    var Coords  =  null;
+    var ValeSpec__DimensionRenderer__CoordsRef  =  null;
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Lazy-Load CoordHelpers Reference
     // ------------------------------------------------------------
-    function _coords() {
-        if (!Coords) Coords  =  window.ValeSpec__SvgDrawing__CoordHelpers;
-        return Coords;
+    function ValeSpec__DimensionRenderer__GetCoords() {
+        if (!ValeSpec__DimensionRenderer__CoordsRef) ValeSpec__DimensionRenderer__CoordsRef  =  window.ValeSpec__SvgDrawing__CoordHelpers;
+        return ValeSpec__DimensionRenderer__CoordsRef;
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Calculate Responsive Font Size
     // ------------------------------------------------------------
-    function _calcFontSize(height_mm, scaleFactor) {
+    function ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor) {
         var scaled  =  height_mm * (scaleFactor || 0.04);  // <-- Scale font to door height
         return Math.max(scaled, MIN_FONT_SIZE_MM);         // <-- Enforce minimum readability
     }
@@ -56,12 +56,12 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
     // HELPER FUNCTION | Render Architectural Tick Mark at a Point
     // ------------------------------------------------------------
-    function _renderTick(cx, cy, tickSize, color, strokeWidth) {
+    function ValeSpec__DimensionRenderer__RenderTick(cx, cy, tickSize, color, strokeWidth) {
         var half  =  tickSize / 2;
-        var x1  =  cx - half;                          // <-- Tick extends 45deg from centre
-        var y1  =  cy - half;
-        var x2  =  cx + half;
-        var y2  =  cy + half;
+        var x1    =  cx - half;                            // <-- Tick extends 45deg from centre
+        var y1    =  cy - half;
+        var x2    =  cx + half;
+        var y2    =  cy + half;
 
         return '<line'
             + ' x1="' + x1 + '"'
@@ -77,7 +77,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
     // SUB FUNCTION | Render Width Dimension Below Frame
     // ------------------------------------------------------------
-    function _renderWidthDimension(width_mm, height_mm, config) {
+    function ValeSpec__DimensionRenderer__RenderWidthDimension(width_mm, height_mm, config) {
         var lineColor    =  config['SvgDrawing__Dimension__Config__LineColor']           || '#cc3333';
         var textColor    =  config['SvgDrawing__Dimension__Config__TextColor']           || '#cc3333';
         var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.04;
@@ -85,9 +85,9 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
         var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
         var lineWidth    =  2;
 
-        var fontSize  =  _calcFontSize(height_mm, scaleFactor);
-        var dimY      =  -offset;                      // <-- Below the frame origin in data coords
-        var svgDimY   =  -dimY;                        // <-- Y-flip for SVG space
+        var fontSize  =  ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor);
+        var dimY      =  -offset;                          // <-- Below the frame origin in data coords
+        var svgDimY   =  -dimY;                            // <-- Y-flip for SVG space
 
         var svg  =  '';
 
@@ -98,11 +98,11 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
             + ' stroke-width="' + lineWidth + '"'
             + ' />';
 
-        svg += _renderTick(0, svgDimY, tickSize, lineColor, lineWidth);
-        svg += _renderTick(width_mm, svgDimY, tickSize, lineColor, lineWidth);
+        svg += ValeSpec__DimensionRenderer__RenderTick(0, svgDimY, tickSize, lineColor, lineWidth);
+        svg += ValeSpec__DimensionRenderer__RenderTick(width_mm, svgDimY, tickSize, lineColor, lineWidth);
 
-        var labelX  =  width_mm / 2;                   // <-- Centre the label horizontally
-        var labelY  =  svgDimY + fontSize + 8;         // <-- Position text below dimension line
+        var labelX  =  width_mm / 2;                       // <-- Centre the label horizontally
+        var labelY  =  svgDimY + fontSize + 8;             // <-- Position text below dimension line
 
         svg += '<text'
             + ' x="'               + labelX    + '"'
@@ -123,7 +123,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
     // SUB FUNCTION | Render Height Dimension to Left of Frame
     // ------------------------------------------------------------
-    function _renderHeightDimension(width_mm, height_mm, config) {
+    function ValeSpec__DimensionRenderer__RenderHeightDimension(width_mm, height_mm, config) {
         var lineColor    =  config['SvgDrawing__Dimension__Config__LineColor']           || '#cc3333';
         var textColor    =  config['SvgDrawing__Dimension__Config__TextColor']           || '#cc3333';
         var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.04;
@@ -131,10 +131,10 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
         var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
         var lineWidth    =  2;
 
-        var fontSize  =  _calcFontSize(height_mm, scaleFactor);
-        var dimX      =  -offset;                      // <-- Left of the frame origin in data coords
-        var svgTopY   =  -height_mm;                   // <-- Y-flip: top of frame in SVG space
-        var svgBotY   =  0;                            // <-- Y-flip: bottom of frame in SVG space
+        var fontSize   =  ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor);
+        var dimX       =  -offset;                         // <-- Left of the frame origin in data coords
+        var svgTopY    =  -height_mm;                      // <-- Y-flip: top of frame in SVG space
+        var svgBotY    =  0;                               // <-- Y-flip: bottom of frame in SVG space
 
         var svg  =  '';
 
@@ -145,12 +145,12 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
             + ' stroke-width="' + lineWidth + '"'
             + ' />';
 
-        svg += _renderTick(dimX, svgTopY, tickSize, lineColor, lineWidth);
-        svg += _renderTick(dimX, svgBotY, tickSize, lineColor, lineWidth);
+        svg += ValeSpec__DimensionRenderer__RenderTick(dimX, svgTopY, tickSize, lineColor, lineWidth);
+        svg += ValeSpec__DimensionRenderer__RenderTick(dimX, svgBotY, tickSize, lineColor, lineWidth);
 
-        var labelX  =  dimX - fontSize - 8;            // <-- Position text left of dimension line
-        var labelY  =  -(height_mm / 2);               // <-- Centre vertically in SVG space
-        var rotation  =  -90;                          // <-- Rotate text for vertical reading
+        var labelX    =  dimX - fontSize - 8;              // <-- Position text left of dimension line
+        var labelY    =  -(height_mm / 2);                 // <-- Centre vertically in SVG space
+        var rotation  =  -90;                              // <-- Rotate text for vertical reading
 
         svg += '<text'
             + ' x="'               + labelX     + '"'
@@ -172,12 +172,12 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
     // FUNCTION | Render All Dimension Annotations
     // ------------------------------------------------------------
-    function renderDimensions(width_mm, height_mm, config) {
+    function ValeSpec__DimensionRenderer__RenderDimensions(width_mm, height_mm, config) {
         var dimConfig  =  config || {};
 
         var svg  =  '';
-        svg += _renderWidthDimension(width_mm, height_mm, dimConfig);
-        svg += _renderHeightDimension(width_mm, height_mm, dimConfig);
+        svg += ValeSpec__DimensionRenderer__RenderWidthDimension(width_mm, height_mm, dimConfig);
+        svg += ValeSpec__DimensionRenderer__RenderHeightDimension(width_mm, height_mm, dimConfig);
 
         return svg;
     }
@@ -187,7 +187,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        renderDimensions  : renderDimensions
+        ValeSpec__DimensionRenderer__RenderDimensions  : ValeSpec__DimensionRenderer__RenderDimensions
     };
 
 })();

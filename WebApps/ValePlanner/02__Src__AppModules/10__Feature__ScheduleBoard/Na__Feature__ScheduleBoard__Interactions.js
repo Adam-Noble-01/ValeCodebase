@@ -160,38 +160,38 @@ import { Na__Utils__MinutesToTime, Na__Utils__SnapMinutes, Na__Utils__TimeToMinu
          const hoveredColumn = columns[columnIndex];
          const hoveredMinutes = bounds.start + (yPosition / Na__Schedule__PixelsPerMinute);
 
-         if (nextState.draftShift.action === 'create') {
-             const snappedMinutes = Na__Utils__SnapMinutes(hoveredMinutes, Na__Schedule__SnapMinutes);
-             const startMins = Na__Utils__TimeToMinutes(nextState.draftShift.startTime);
-             const endMins = Math.max(startMins + 15, Math.min(bounds.end, snappedMinutes));
+        if (nextState.draftShift.action === 'create') {
+            const snappedMinutes = Na__Utils__SnapMinutes(hoveredMinutes, Na__Schedule__SnapMinutes);
+            const startMins = Na__Utils__TimeToMinutes(nextState.draftShift.startTime);
+            const endMins = Math.max(startMins + 15, Math.min(1260, snappedMinutes)); // <-- clamp to 9pm absolute ceiling
 
-             nextState.draftShift = {
-                 ...nextState.draftShift,
-                 date: hoveredColumn.date,
-                 workerId: hoveredColumn.workerId || nextState.draftShift.workerId,
-                 endTime: Na__Utils__MinutesToTime(endMins)
-             };
-         } else if (nextState.draftShift.action === 'move') {
-             let startMins = Na__Utils__SnapMinutes(hoveredMinutes - nextState.dragOffsetMins, Na__Schedule__SnapMinutes);
-             const duration = Na__Utils__TimeToMinutes(nextState.draftShift.endTime) - Na__Utils__TimeToMinutes(nextState.draftShift.startTime);
-             startMins = Math.max(bounds.start, Math.min(startMins, bounds.end - duration));
+            nextState.draftShift = {
+                ...nextState.draftShift,
+                date: hoveredColumn.date,
+                workerId: hoveredColumn.workerId || nextState.draftShift.workerId,
+                endTime: Na__Utils__MinutesToTime(endMins)
+            };
+        } else if (nextState.draftShift.action === 'move') {
+            let startMins = Na__Utils__SnapMinutes(hoveredMinutes - nextState.dragOffsetMins, Na__Schedule__SnapMinutes);
+            const duration = Na__Utils__TimeToMinutes(nextState.draftShift.endTime) - Na__Utils__TimeToMinutes(nextState.draftShift.startTime);
+            startMins = Math.max(420, Math.min(startMins, 1260 - duration)); // <-- clamp to 7am floor / 9pm ceiling
 
-             nextState.draftShift = {
-                 ...nextState.draftShift,
-                 date: hoveredColumn.date,
-                 workerId: hoveredColumn.workerId || nextState.draftShift.workerId,
-                 startTime: Na__Utils__MinutesToTime(startMins),
-                 endTime: Na__Utils__MinutesToTime(startMins + duration)
-             };
-         } else if (nextState.draftShift.action === 'resize') {
-             const snappedMinutes = Na__Utils__SnapMinutes(hoveredMinutes, Na__Schedule__SnapMinutes);
-             const startMins = Na__Utils__TimeToMinutes(nextState.draftShift.startTime);
-             const endMins = Math.max(startMins + 15, Math.min(bounds.end, snappedMinutes));
-             nextState.draftShift = {
-                 ...nextState.draftShift,
-                 endTime: Na__Utils__MinutesToTime(endMins)
-             };
-         }
+            nextState.draftShift = {
+                ...nextState.draftShift,
+                date: hoveredColumn.date,
+                workerId: hoveredColumn.workerId || nextState.draftShift.workerId,
+                startTime: Na__Utils__MinutesToTime(startMins),
+                endTime: Na__Utils__MinutesToTime(startMins + duration)
+            };
+        } else if (nextState.draftShift.action === 'resize') {
+            const snappedMinutes = Na__Utils__SnapMinutes(hoveredMinutes, Na__Schedule__SnapMinutes);
+            const startMins = Na__Utils__TimeToMinutes(nextState.draftShift.startTime);
+            const endMins = Math.max(startMins + 15, Math.min(1260, snappedMinutes)); // <-- clamp to 9pm absolute ceiling
+            nextState.draftShift = {
+                ...nextState.draftShift,
+                endTime: Na__Utils__MinutesToTime(endMins)
+            };
+        }
 
          setState(nextState);
      };

@@ -28,7 +28,7 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
 
     // HELPER FUNCTION | Render Vector Line Paths as SVG Markup
     // ------------------------------------------------------------
-    function _renderPaths(paths, strokeColor, strokeWidth) {
+    function ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth) {
         var svg  =  '';
 
         for (var i = 0; i < paths.length; i++) {
@@ -58,7 +58,7 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
 
     // HELPER FUNCTION | Build SVG Transform for Handle Placement on a Panel
     // ------------------------------------------------------------
-    function _buildHandleTransform(panel, placement, leverHeight_mm) {
+    function ValeSpec__IronmongeryRenderer__BuildHandleTransform(panel, placement, leverHeight_mm) {
         var isLeftPanel  =  (panel.hand === 'left');
 
         var transform  =  isLeftPanel
@@ -85,7 +85,7 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
 
     // FUNCTION | Render Ironmongery onto Panels
     // ------------------------------------------------------------
-    function renderIronmongery(panels, hardwareData, leverHeight_mm, config) {
+    function ValeSpec__IronmongeryRenderer__RenderIronmongery(panels, hardwareData, leverHeight_mm, config) {
         if (!panels || !panels.length) return '';
         if (!hardwareData) return '';
 
@@ -101,13 +101,13 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
         var strokeWidth  =  ironConfig['SvgDrawing__Ironmongery__Config__StrokeWidthMm'] || 1.2;
         var paths        =  vectorData['Paths'];
 
-        var pathsSvg  =  _renderPaths(paths, strokeColor, strokeWidth);
+        var pathsSvg  =  ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth);
 
         var svg  =  '';
 
         for (var p = 0; p < panels.length; p++) {
             var panel      =  panels[p];
-            var transform  =  _buildHandleTransform(panel, placement, leverHeight_mm);
+            var transform  =  ValeSpec__IronmongeryRenderer__BuildHandleTransform(panel, placement, leverHeight_mm);
 
             svg += '<g transform="' + transform + '">';
             svg += pathsSvg;
@@ -122,7 +122,7 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        renderIronmongery  : renderIronmongery
+        ValeSpec__IronmongeryRenderer__RenderIronmongery  : ValeSpec__IronmongeryRenderer__RenderIronmongery
     };
 
 })();

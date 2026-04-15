@@ -33,26 +33,26 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // HELPER FUNCTION | Get Logo Path from Config
     // ------------------------------------------------------------
-    function _getLogoPath() {
+    function ValeSpec__PageRenderer__GetLogoPath() {
         var fallbackLogoPath  =  '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png';
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return fallbackLogoPath;
-        var state   =  StateManager.getState();
+        var state   =  StateManager.ValeSpec__StateManager__GetState();
         var config  =  state.appConfig;
         if (!config) return fallbackLogoPath;
         var headerConfig  =  config['DocEditor__Header__Config'];
         if (!headerConfig) return fallbackLogoPath;
-        return headerConfig['DocEditor__Header__Config__LogoPath'] || fallbackLogoPath;          // <-- Shared logo asset path
+        return headerConfig['DocEditor__Header__Config__LogoPath'] || fallbackLogoPath; // <-- Shared logo asset path
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Get Project Metadata from State
     // ------------------------------------------------------------
-    function _getProjectMeta() {
+    function ValeSpec__PageRenderer__GetProjectMeta() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return {};
-        var state    =  StateManager.getState();
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
         var project  =  state.currentProject;
         if (!project) return {};
         return project['ValeSpec__ProjectFile__Metadata'] || {};
@@ -62,10 +62,10 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // HELPER FUNCTION | Get Assemblies Array from State
     // ------------------------------------------------------------
-    function _getAssemblies() {
+    function ValeSpec__PageRenderer__GetAssemblies() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return [];
-        var state    =  StateManager.getState();
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
         var project  =  state.currentProject;
         if (!project) return [];
         return project['ValeSpec__ProjectFile__Assemblies'] || [];
@@ -75,10 +75,10 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // HELPER FUNCTION | Get Job Notes from State
     // ------------------------------------------------------------
-    function _getJobNotes() {
+    function ValeSpec__PageRenderer__GetJobNotes() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return '';
-        var state    =  StateManager.getState();
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
         var project  =  state.currentProject;
         if (!project) return '';
         var globalSettings  =  project['ValeSpec__ProjectFile__GlobalSettings'] || {};
@@ -89,10 +89,10 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // HELPER FUNCTION | Format Date via DateFormatter
     // ------------------------------------------------------------
-    function _formatDate(dateStr) {
+    function ValeSpec__PageRenderer__FormatDate(dateStr) {
         if (!dateStr) return '—';
         if (window.ValeSpec__AppUtils__DateFormatter) {
-            return window.ValeSpec__AppUtils__DateFormatter.formatShort(dateStr);  // <-- "09 Apr 2026" format
+            return window.ValeSpec__AppUtils__DateFormatter.ValeSpec__DateFormatter__FormatShort(dateStr);  // <-- "09 Apr 2026" format
         }
         return dateStr;
     }
@@ -101,7 +101,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // HELPER FUNCTION | Build Assembly Title from Data
     // ------------------------------------------------------------
-    function _buildAssemblyTitle(assembly) {
+    function ValeSpec__PageRenderer__BuildAssemblyTitle(assembly) {
         var identity  =  assembly['Assembly__Identity__Config'] || {};
         var custom    =  identity['Assembly__Identity__Config__CustomTitle'];
         if (custom) return custom;
@@ -117,7 +117,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Build Toolbar HTML
     // ------------------------------------------------------------
-    function _buildToolbar() {
+    function ValeSpec__PageRenderer__BuildToolbar() {
         var html  =  '<div class="ValeSpec__DocPreview__Toolbar">';
         html     +=      '<button class="ValeSpec__DocPreview__BtnBack" id="ValeSpec__DocPreview__BtnBack">&larr; Back to Editor</button>';
         html     +=      '<button class="ValeSpec__DocPreview__BtnExport" disabled>PDF Export &mdash; Coming Soon</button>';
@@ -129,12 +129,12 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Build Branding Header HTML
     // ------------------------------------------------------------
-    function _buildBrandingHeader(meta) {
-        var logoPath     =  _getLogoPath();
+    function ValeSpec__PageRenderer__BuildBrandingHeader(meta) {
+        var logoPath     =  ValeSpec__PageRenderer__GetLogoPath();
         var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName']  || 'Untitled Project';
         var docName      =  meta['ValeSpec__ProjectFile__Metadata__DocumentName'] || 'Untitled Document';
         var revision     =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode'] || '';
-        var dateAuthored =  _formatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
+        var dateAuthored =  ValeSpec__PageRenderer__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
 
         var html  =  '<div class="ValeSpec__DocPreview__BrandingHeader">';
 
@@ -161,8 +161,8 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Build Single Assembly Block HTML
     // ------------------------------------------------------------
-    function _buildAssemblyBlock(assembly, index) {
-        var title  =  _buildAssemblyTitle(assembly);
+    function ValeSpec__PageRenderer__BuildAssemblyBlock(assembly, index) {
+        var title  =  ValeSpec__PageRenderer__BuildAssemblyTitle(assembly);
 
         var html  =  '<div class="ValeSpec__DocPreview__AssemblyBlock">';
         html     +=      '<div class="ValeSpec__DocPreview__AssemblyTitle">' + title + '</div>';
@@ -170,7 +170,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
         var SpecTableRenderer  =  window.ValeSpec__DocPreview__SpecTableRenderer;
         if (SpecTableRenderer) {
-            html  +=  SpecTableRenderer.renderSpecTable(assembly);                // <-- Hardware schedule table
+            html  +=  SpecTableRenderer.ValeSpec__SpecTableRenderer__RenderSpecTable(assembly);  // <-- Hardware schedule table
         }
 
         html  +=  '</div>';
@@ -181,7 +181,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Build Job Notes Section HTML
     // ------------------------------------------------------------
-    function _buildJobNotesSection(notesText) {
+    function ValeSpec__PageRenderer__BuildJobNotesSection(notesText) {
         if (!notesText) return '';
 
         var escaped  =  notesText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -197,7 +197,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Render SVG Drawings into Mounted Containers
     // ------------------------------------------------------------
-    function _renderDrawings(assemblies) {
+    function ValeSpec__PageRenderer__RenderDrawings(assemblies) {
         var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
         if (!RenderPipeline) return;
 
@@ -205,8 +205,8 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
             var drawingContainer  =  document.getElementById('ValeSpec__DocPreview__Drawing_' + i);
             if (drawingContainer) {
                 try {
-                    var svgEl  =  RenderPipeline.renderThumbnail(assemblies[i]);  // <-- Full SVG drawing
-                    if (svgEl) drawingContainer.appendChild(svgEl);
+                    var svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assemblies[i]);  // <-- Full SVG drawing
+                    if (svgMarkup) drawingContainer.innerHTML  =  svgMarkup;
                 } catch (e) {
                     console.warn('[ValeSpec__PageRenderer] Drawing render error for index ' + i + ':', e);
                 }
@@ -218,12 +218,12 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Bind Toolbar Event Listeners
     // ------------------------------------------------------------
-    function _bindEvents() {
+    function ValeSpec__PageRenderer__BindEvents() {
         var backBtn  =  document.getElementById('ValeSpec__DocPreview__BtnBack');
         if (backBtn) {
             backBtn.addEventListener('click', function() {
                 var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
-                if (ModeManager) ModeManager.navigateBack();                      // <-- Return to previous mode
+                if (ModeManager) ModeManager.ValeSpec__ModeManager__NavigateBack();  // <-- Return to previous mode
             });
         }
     }
@@ -232,43 +232,43 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // FUNCTION | Render Full Document Preview into DOM
     // ------------------------------------------------------------
-    function render() {
+    function ValeSpec__PageRenderer__Render() {
         var container  =  document.getElementById(PREVIEW_CONTAINER_ID);
         if (!container) {
             console.warn('[ValeSpec__PageRenderer] Container not found: #' + PREVIEW_CONTAINER_ID);
             return;
         }
 
-        var meta        =  _getProjectMeta();
-        var assemblies  =  _getAssemblies();
-        var jobNotes    =  _getJobNotes();
+        var meta        =  ValeSpec__PageRenderer__GetProjectMeta();
+        var assemblies  =  ValeSpec__PageRenderer__GetAssemblies();
+        var jobNotes    =  ValeSpec__PageRenderer__GetJobNotes();
 
-        var html  =  _buildToolbar();
+        var html  =  ValeSpec__PageRenderer__BuildToolbar();
         html     +=  '<div class="ValeSpec__DocPreview__Paper">';
-        html     +=      _buildBrandingHeader(meta);
+        html     +=      ValeSpec__PageRenderer__BuildBrandingHeader(meta);
 
         for (var i = 0; i < assemblies.length; i++) {
-            html  +=      _buildAssemblyBlock(assemblies[i], i);
+            html  +=      ValeSpec__PageRenderer__BuildAssemblyBlock(assemblies[i], i);
         }
 
-        html     +=      _buildJobNotesSection(jobNotes);
+        html     +=      ValeSpec__PageRenderer__BuildJobNotesSection(jobNotes);
         html     +=  '</div>';
 
         container.innerHTML  =  html;
 
-        _renderDrawings(assemblies);
-        _bindEvents();
+        ValeSpec__PageRenderer__RenderDrawings(assemblies);
+        ValeSpec__PageRenderer__BindEvents();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Subscribe to Mode Change Events
     // ------------------------------------------------------------
-    function _subscribeToModeChange() {
+    function ValeSpec__PageRenderer__SubscribeToModeChange() {
         if (window.ValeSpec__AppCore__StateManager) {
-            window.ValeSpec__AppCore__StateManager.on('modeChanged', function(mode) {
+            window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__On('modeChanged', function(mode) {
                 if (mode === 'DocumentPreview') {
-                    render();                                                     // <-- Auto-render when entering preview mode
+                    ValeSpec__PageRenderer__Render();                              // <-- Auto-render when entering preview mode
                 }
             });
         }
@@ -278,14 +278,14 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
     // BOOT | Initial Subscription
     // ------------------------------------------------------------
-    _subscribeToModeChange();
+    ValeSpec__PageRenderer__SubscribeToModeChange();
     // ------------------------------------------------------------
 
 
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        render  : render
+        ValeSpec__PageRenderer__Render  : ValeSpec__PageRenderer__Render
     };
 
 })();

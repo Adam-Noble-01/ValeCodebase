@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Renders document header into #ValeSpec__DocEditor__HeaderBlock
    - Shows project name and document name
-   - Date authored formatted via DateFormatter.formatShort
+   - Date authored formatted via ValeSpec__DateFormatter__FormatShort
    - Editable revision code text input
    - Status dropdown with colour-coded badge
    - Changes update project metadata in StateManager
@@ -47,22 +47,23 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // HELPER FUNCTION | Get Project Metadata from State
     // ------------------------------------------------------------
-    function _getProjectMeta() {
+    function ValeSpec__DocumentHeader__GetProjectMeta() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return null;
-        var state    =  StateManager.getState();
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
         var project  =  state.currentProject;
         if (!project) return null;
         return project['ValeSpec__ProjectFile__Metadata'] || null;
     }
     // ------------------------------------------------------------
 
+
     // HELPER FUNCTION | Format Date via DateFormatter
     // ------------------------------------------------------------
-    function _formatDate(dateStr) {
+    function ValeSpec__DocumentHeader__FormatDate(dateStr) {
         if (!dateStr) return '\u2014';
         if (window.ValeSpec__AppUtils__DateFormatter) {
-            return window.ValeSpec__AppUtils__DateFormatter.formatShort(dateStr);
+            return window.ValeSpec__AppUtils__DateFormatter.ValeSpec__DateFormatter__FormatShort(dateStr);
         }
         return dateStr;
     }
@@ -71,7 +72,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // HELPER FUNCTION | Build Status Dropdown HTML
     // ------------------------------------------------------------
-    function _buildStatusDropdown(currentStatus) {
+    function ValeSpec__DocumentHeader__BuildStatusDropdown(currentStatus) {
         var html  =  '<select class="ValeSpec__DocEditor__StatusSelect" id="ValeSpec__DocEditor__StatusDropdown">';
         for (var i = 0; i < STATUS_OPTIONS.length; i++) {
             var opt       =  STATUS_OPTIONS[i];
@@ -86,7 +87,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // HELPER FUNCTION | Build Status Badge HTML
     // ------------------------------------------------------------
-    function _buildStatusBadge(status) {
+    function ValeSpec__DocumentHeader__BuildStatusBadge(status) {
         var color  =  STATUS_COLORS[status] || STATUS_COLORS['Draft'];
         return '<span class="ValeSpec__DocEditor__StatusBadge" style="background:' + color + '; color:#fff; padding:2px 10px; border-radius:4px; font-size:var(--Vale_FontSize_Small);">' + status + '</span>';
     }
@@ -95,7 +96,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // HELPER FUNCTION | Build Inline-Editable Text Span
     // ------------------------------------------------------------
-    function _buildEditableSpan(id, value, style) {
+    function ValeSpec__DocumentHeader__BuildEditableSpan(id, value, style) {
         var escaped  =  value.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return '<span id="' + id + '" class="ValeSpec__DocEditor__EditableField" data-value="' + escaped + '" style="' + style + ' cursor:pointer; border-radius:3px;" title="Click to edit">' + escaped + '</span>';
     }
@@ -104,7 +105,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // HELPER FUNCTION | Build Header HTML
     // ------------------------------------------------------------
-    function _buildHeaderHtml(meta) {
+    function ValeSpec__DocumentHeader__BuildHeaderHtml(meta) {
         var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName']     || 'Untitled Project';
         var docName      =  meta['ValeSpec__ProjectFile__Metadata__DocumentName']    || 'Untitled Document';
         var authorName   =  meta['ValeSpec__ProjectFile__Metadata__Author']          || '';
@@ -119,11 +120,11 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
         var html  =  '<div style="display:flex; align-items:center; gap:var(--Vale_Spacing_Large); width:100%; box-sizing:border-box; padding:var(--Vale_Spacing_Medium); background:var(--Vale_BackgroundWhite); border:1px solid var(--Vale_BorderLight); border-radius:var(--Vale_BorderRadius);">';
 
         html  +=  '<div style="flex:1;">';
-        html  +=      '<div>' + _buildEditableSpan('ValeSpec__DocEditor__ProjectNameField', projectName, projectNameStyle) + '</div>';
-        html  +=      '<div style="margin-top:2px;">' + _buildEditableSpan('ValeSpec__DocEditor__DocNameField', docName, docNameStyle);
-        if (projectCode) html  +=  '<span style="font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSecondary);"> &mdash; Code: ' + projectCode + '</span>'; // <-- Read-only: project code is the localStorage key used to find/load the project
+        html  +=      '<div>' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__ProjectNameField', projectName, projectNameStyle) + '</div>';
+        html  +=      '<div style="margin-top:2px;">' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__DocNameField', docName, docNameStyle);
+        if (projectCode) html  +=  '<span style="font-size:var(--Vale_FontSize_Standard); color:var(--Vale_TextSecondary);"> &mdash; Code: ' + projectCode + '</span>'; // <-- Read-only: project code is the localStorage key
         html  +=      '</div>';
-        html  +=      '<div style="margin-top:4px;"><span style="font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextSubtle);">Author: </span>' + _buildEditableSpan('ValeSpec__DocEditor__AuthorField', authorName || '\u2014', authorStyle) + '</div>';
+        html  +=      '<div style="margin-top:4px;"><span style="font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextSubtle);">Author: </span>' + ValeSpec__DocumentHeader__BuildEditableSpan('ValeSpec__DocEditor__AuthorField', authorName || '\u2014', authorStyle) + '</div>';
         html  +=  '</div>';
 
         html  +=  '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">';
@@ -131,8 +132,8 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
         html  +=          '<label style="font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextSubtle);">Rev</label>';
         html  +=          '<input id="ValeSpec__DocEditor__RevisionInput" type="text" value="' + revision + '" style="width:48px; text-align:center; padding:4px; border:1px solid var(--Vale_BorderLight); border-radius:var(--Vale_BorderRadius); font-family:var(--Vale_FontFamily); font-size:var(--Vale_FontSize_Standard);" />';
         html  +=      '</div>';
-        html  +=      _buildStatusBadge(status);
-        html  +=      _buildStatusDropdown(status);
+        html  +=      ValeSpec__DocumentHeader__BuildStatusBadge(status);
+        html  +=      ValeSpec__DocumentHeader__BuildStatusDropdown(status);
         html  +=  '</div>';
 
         html  +=  '</div>';
@@ -141,17 +142,46 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Update a Single Meta Field — Persist and Refresh
+    // ------------------------------------------------------------
+    function ValeSpec__DocumentHeader__UpdateMetaField(key, value) {
+        var StateManager       =  window.ValeSpec__AppCore__StateManager;
+        var ProjectFileManager =  window.ValeSpec__AppData__ProjectFileManager;
+        if (!StateManager) return;
+
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
+        var project  =  state.currentProject;
+        if (!project) return;
+
+        var meta  =  project['ValeSpec__ProjectFile__Metadata'];
+        if (!meta) return;
+
+        meta[key]  =  value;                                                      // <-- Mutates the live project object in state
+
+        StateManager.ValeSpec__StateManager__MarkDirty();
+
+        if (ProjectFileManager) {
+            ProjectFileManager.ValeSpec__ProjectFileManager__SaveProject(project);  // <-- Persist to localStorage + update manifest
+        }
+
+        var ProjectList  =  window.ValeSpec__DocManagement__ProjectList;
+        if (ProjectList) {
+            ProjectList.ValeSpec__ProjectList__Render();                            // <-- Refresh project manager table with updated names
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Activate Inline Edit on a Span Field
     // ------------------------------------------------------------
-    function _activateInlineEdit(spanEl, metaKey) {
-        if (spanEl.querySelector('input')) return; // <-- Already editing
+    function ValeSpec__DocumentHeader__ActivateInlineEdit(spanEl, metaKey) {
+        if (spanEl.querySelector('input')) return;                                // <-- Already editing
 
         var currentValue  =  spanEl.getAttribute('data-value');
-        var currentStyle  =  spanEl.style.cssText;
 
         var input  =  document.createElement('input');
         input.type        =  'text';
-        input.value       =  (currentValue === '\u2014') ? '' : currentValue; // <-- Clear placeholder dash
+        input.value       =  (currentValue === '\u2014') ? '' : currentValue;    // <-- Clear placeholder dash
         input.style.cssText  =  'font:inherit; color:inherit; background:transparent; border:none; border-bottom:1px solid var(--Vale_TextPrimary); outline:none; width:100%; min-width:120px; padding:0; margin:0;';
 
         spanEl.textContent  =  '';
@@ -160,16 +190,16 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
         input.focus();
         input.select();
 
-        function _commit() {
+        function commit() {
             var newValue  =  input.value.trim();
-            if (!newValue) newValue  =  '\u2014'; // <-- Restore dash if left empty
-            _updateMetaField(metaKey, (newValue === '\u2014') ? '' : newValue);
+            if (!newValue) newValue  =  '\u2014';                                 // <-- Restore dash if left empty
+            ValeSpec__DocumentHeader__UpdateMetaField(metaKey, (newValue === '\u2014') ? '' : newValue);
             spanEl.setAttribute('data-value', newValue);
             spanEl.textContent  =  newValue;
             spanEl.style.cursor  =  'pointer';
         }
 
-        input.addEventListener('blur', _commit);
+        input.addEventListener('blur', commit);
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
             if (e.key === 'Escape') { input.value = (currentValue === '\u2014') ? '' : currentValue; input.blur(); }
@@ -180,7 +210,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // SUB FUNCTION | Bind Event Listeners for Header Controls
     // ------------------------------------------------------------
-    function _bindEvents() {
+    function ValeSpec__DocumentHeader__BindEvents() {
         var revisionInput   =  document.getElementById('ValeSpec__DocEditor__RevisionInput');
         var statusDropdown  =  document.getElementById('ValeSpec__DocEditor__StatusDropdown');
         var projectNameEl   =  document.getElementById('ValeSpec__DocEditor__ProjectNameField');
@@ -189,63 +219,33 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
         if (revisionInput) {
             revisionInput.addEventListener('change', function() {
-                _updateMetaField('ValeSpec__ProjectFile__Metadata__RevisionCode', revisionInput.value.trim());
+                ValeSpec__DocumentHeader__UpdateMetaField('ValeSpec__ProjectFile__Metadata__RevisionCode', revisionInput.value.trim());
             });
         }
 
         if (statusDropdown) {
             statusDropdown.addEventListener('change', function() {
-                _updateMetaField('ValeSpec__ProjectFile__Metadata__DocumentStatus', statusDropdown.value);
-                render();
+                ValeSpec__DocumentHeader__UpdateMetaField('ValeSpec__ProjectFile__Metadata__DocumentStatus', statusDropdown.value);
+                ValeSpec__DocumentHeader__Render();
             });
         }
 
         if (projectNameEl) {
             projectNameEl.addEventListener('click', function() {
-                _activateInlineEdit(projectNameEl, 'ValeSpec__ProjectFile__Metadata__ProjectName');
+                ValeSpec__DocumentHeader__ActivateInlineEdit(projectNameEl, 'ValeSpec__ProjectFile__Metadata__ProjectName');
             });
         }
 
         if (docNameEl) {
             docNameEl.addEventListener('click', function() {
-                _activateInlineEdit(docNameEl, 'ValeSpec__ProjectFile__Metadata__DocumentName');
+                ValeSpec__DocumentHeader__ActivateInlineEdit(docNameEl, 'ValeSpec__ProjectFile__Metadata__DocumentName');
             });
         }
 
         if (authorEl) {
             authorEl.addEventListener('click', function() {
-                _activateInlineEdit(authorEl, 'ValeSpec__ProjectFile__Metadata__Author');
+                ValeSpec__DocumentHeader__ActivateInlineEdit(authorEl, 'ValeSpec__ProjectFile__Metadata__Author');
             });
-        }
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Update a Single Meta Field — Persist and Refresh
-    // ------------------------------------------------------------
-    function _updateMetaField(key, value) {
-        var StateManager       =  window.ValeSpec__AppCore__StateManager;
-        var ProjectFileManager =  window.ValeSpec__AppData__ProjectFileManager;
-        if (!StateManager) return;
-
-        var state    =  StateManager.getState();
-        var project  =  state.currentProject;   // <-- Shallow copy but currentProject is same reference
-        if (!project) return;
-
-        var meta  =  project['ValeSpec__ProjectFile__Metadata'];
-        if (!meta) return;
-
-        meta[key]  =  value;                    // <-- Mutates the live project object in state
-
-        StateManager.markDirty();
-
-        if (ProjectFileManager) {
-            ProjectFileManager.saveProject(project);    // <-- Persist to localStorage + update manifest
-        }
-
-        var ProjectList  =  window.ValeSpec__DocManagement__ProjectList;
-        if (ProjectList) {
-            ProjectList.render();               // <-- Refresh project manager table with updated names
         }
     }
     // ------------------------------------------------------------
@@ -253,7 +253,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // HELPER FUNCTION | Inject Editable Field Hover Styles Once
     // ------------------------------------------------------------
-    function _injectStyles() {
+    function ValeSpec__DocumentHeader__InjectStyles() {
         if (document.getElementById('ValeSpec__DocEditor__HeaderStyles')) return; // <-- Already injected
         var style  =  document.createElement('style');
         style.id   =  'ValeSpec__DocEditor__HeaderStyles';
@@ -271,22 +271,22 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
 
     // FUNCTION | Render Document Header into DOM
     // ------------------------------------------------------------
-    function render() {
+    function ValeSpec__DocumentHeader__Render() {
         var container  =  document.getElementById(HEADER_CONTAINER_ID);
         if (!container) {
             console.warn('[ValeSpec__DocHeader] Container not found: #' + HEADER_CONTAINER_ID);
             return;
         }
 
-        var meta  =  _getProjectMeta();
+        var meta  =  ValeSpec__DocumentHeader__GetProjectMeta();
         if (!meta) {
             container.innerHTML  =  '<div style="padding:16px; color:var(--Vale_TextSubtle);">No project loaded.</div>';
             return;
         }
 
-        _injectStyles();
-        container.innerHTML  =  _buildHeaderHtml(meta);
-        _bindEvents();
+        ValeSpec__DocumentHeader__InjectStyles();
+        container.innerHTML  =  ValeSpec__DocumentHeader__BuildHeaderHtml(meta);
+        ValeSpec__DocumentHeader__BindEvents();
     }
     // ------------------------------------------------------------
 
@@ -294,7 +294,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        render  : render
+        ValeSpec__DocumentHeader__Render  : ValeSpec__DocumentHeader__Render
     };
 
 })();

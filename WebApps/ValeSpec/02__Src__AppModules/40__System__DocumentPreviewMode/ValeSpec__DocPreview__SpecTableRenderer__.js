@@ -10,7 +10,7 @@
    CREATED    : 2026
 
    DESCRIPTION:
-   - renderSpecTable(assemblyData) returns HTML table string
+   - ValeSpec__SpecTableRenderer__RenderSpecTable(assemblyData) returns HTML table string
    - Rows: Door Type, Dimensions, Multi-Point, Hinges, Lever, Cylinder, Cabin Hooks, Misc
    - Uses ValeSpec__DocPreview__SpecTable CSS classes for styling
    - Config-driven table styling via DocPreview__SpecTable__Config
@@ -25,7 +25,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Build a Single Table Row
     // ------------------------------------------------------------
-    function _buildRow(label, value) {
+    function ValeSpec__SpecTableRenderer__BuildRow(label, value) {
         var html  =  '<tr>';
         html     +=      '<td class="ValeSpec__DocPreview__SpecLabel">' + label + '</td>';
         html     +=      '<td>' + (value || '—') + '</td>';
@@ -37,7 +37,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Door Type Description
     // ------------------------------------------------------------
-    function _getDoorType(assembly) {
+    function ValeSpec__SpecTableRenderer__GetDoorType(assembly) {
         var doorConfig  =  assembly['Assembly__DoorType__Config'] || {};
         return doorConfig['Assembly__DoorType__Config__DoorType'] || '—';
     }
@@ -46,7 +46,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Dimensions String
     // ------------------------------------------------------------
-    function _getDimensions(assembly) {
+    function ValeSpec__SpecTableRenderer__GetDimensions(assembly) {
         var dims    =  assembly['Assembly__Dimensions__Config'] || {};
         var width   =  dims['Assembly__Dimensions__Config__WidthMm'];
         var height  =  dims['Assembly__Dimensions__Config__HeightMm'];
@@ -58,7 +58,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Multi-Point Requirement Description
     // ------------------------------------------------------------
-    function _getMultiPointDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetMultiPointDesc(assembly) {
         var lockConfig  =  assembly['Assembly__MultiPointRequirement'] || {};
         var lockType    =  lockConfig['Assembly__MultiPointRequirement__LockType'] || 'None';
         if (lockType === 'None') return 'None';
@@ -73,7 +73,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Hinge Requirement Description
     // ------------------------------------------------------------
-    function _getHingeDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetHingeDesc(assembly) {
         var hingeConfig  =  assembly['Assembly__HingeRequirement'] || {};
         var count        =  hingeConfig['Assembly__HingeRequirement__CountPerLeaf'] || '—';
         var projection   =  hingeConfig['Assembly__HingeRequirement__Projection']   || '—';
@@ -85,7 +85,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Lever Type and Quantity
     // ------------------------------------------------------------
-    function _getLeverDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetLeverDesc(assembly) {
         var leverConfig  =  assembly['Assembly__LeverRequirement'] || {};
         var leverType    =  leverConfig['Assembly__LeverRequirement__LeverType'] || '—';
         var quantity     =  leverConfig['Assembly__LeverRequirement__Quantity']  || 1;
@@ -96,7 +96,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Cylinder Requirement
     // ------------------------------------------------------------
-    function _getCylinderDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetCylinderDesc(assembly) {
         var lockConfig  =  assembly['Assembly__MultiPointRequirement'] || {};
         var lockType    =  lockConfig['Assembly__MultiPointRequirement__LockType'] || 'None';
         if (lockType === 'None') return 'Not required';
@@ -107,7 +107,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Cabin Hooks Summary
     // ------------------------------------------------------------
-    function _getCabinHooksDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assembly) {
         var hooksConfig  =  assembly['Assembly__CabinHookRequirement'] || {};
         var quantity     =  hooksConfig['Assembly__CabinHookRequirement__Quantity'] || 0;
         if (quantity === 0) return 'None';
@@ -119,7 +119,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // HELPER FUNCTION | Extract Miscellaneous Items
     // ------------------------------------------------------------
-    function _getMiscDesc(assembly) {
+    function ValeSpec__SpecTableRenderer__GetMiscDesc(assembly) {
         var miscConfig  =  assembly['Assembly__MiscellaneousItems'] || {};
         var items       =  miscConfig['Assembly__MiscellaneousItems__List'] || [];
         if (!items.length) return 'None';
@@ -130,7 +130,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
 
     // FUNCTION | Render Full Spec Table HTML String
     // ------------------------------------------------------------
-    function renderSpecTable(assemblyData) {
+    function ValeSpec__SpecTableRenderer__RenderSpecTable(assemblyData) {
         if (!assemblyData) return '';
 
         var html  =  '<table class="ValeSpec__DocPreview__SpecTable">';
@@ -141,14 +141,14 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
         html  +=  '</tr></thead>';
 
         html  +=  '<tbody>';
-        html  +=      _buildRow('Door Type',              _getDoorType(assemblyData));
-        html  +=      _buildRow('Dimensions',             _getDimensions(assemblyData));
-        html  +=      _buildRow('Multi-Point Locking',    _getMultiPointDesc(assemblyData));
-        html  +=      _buildRow('Hinge Requirement',      _getHingeDesc(assemblyData));
-        html  +=      _buildRow('Lever Type &amp; Qty',   _getLeverDesc(assemblyData));
-        html  +=      _buildRow('Cylinder Requirement',   _getCylinderDesc(assemblyData));
-        html  +=      _buildRow('Cabin Hooks',            _getCabinHooksDesc(assemblyData));
-        html  +=      _buildRow('Miscellaneous',          _getMiscDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Door Type',              ValeSpec__SpecTableRenderer__GetDoorType(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Dimensions',             ValeSpec__SpecTableRenderer__GetDimensions(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Multi-Point Locking',    ValeSpec__SpecTableRenderer__GetMultiPointDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Hinge Requirement',      ValeSpec__SpecTableRenderer__GetHingeDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Lever Type &amp; Qty',   ValeSpec__SpecTableRenderer__GetLeverDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cylinder Requirement',   ValeSpec__SpecTableRenderer__GetCylinderDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Cabin Hooks',            ValeSpec__SpecTableRenderer__GetCabinHooksDesc(assemblyData));
+        html  +=      ValeSpec__SpecTableRenderer__BuildRow('Miscellaneous',          ValeSpec__SpecTableRenderer__GetMiscDesc(assemblyData));
         html  +=  '</tbody>';
 
         html  +=  '</table>';
@@ -160,7 +160,7 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        renderSpecTable  : renderSpecTable
+        ValeSpec__SpecTableRenderer__RenderSpecTable  : ValeSpec__SpecTableRenderer__RenderSpecTable
     };
 
 })();

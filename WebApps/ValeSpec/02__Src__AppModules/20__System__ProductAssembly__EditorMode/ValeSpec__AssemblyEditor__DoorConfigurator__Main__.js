@@ -14,7 +14,7 @@
    - Uses StepManager to create sequential collapsible step cards
    - Calls three sub-modules to render into their respective step cards
    - Coordinates saving changes back to assembly via StateManager
-   - Provides refreshFromAssembly() for external re-population
+   - Provides ValeSpec__DoorConfigurator__RefreshFromAssembly() for external re-population
 
    ============================================================================= */
 
@@ -26,77 +26,77 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _containerEl   =  null;                                             // <-- Controls panel container
-    let _globalBarEl   =  null;                                             // <-- Global settings bar element
-    let _initialised   =  false;                                            // <-- Prevents double-init
+    let ValeSpec__DoorConfigurator__ContainerEl  =  null;   // <-- Controls panel container
+    let ValeSpec__DoorConfigurator__GlobalBarEl  =  null;   // <-- Global settings bar element
+    let ValeSpec__DoorConfigurator__Initialised  =  false;  // <-- Prevents double-init
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Global Settings Bar
     // ------------------------------------------------------------
-    function _buildGlobalBar() {
+    function ValeSpec__DoorConfigurator__BuildGlobalBar() {
         var GlobalSettings  =  window.ValeSpec__AssemblyEditor__GlobalSettings;
         if (!GlobalSettings) return;
 
-        _globalBarEl  =  document.createElement('div');
-        _globalBarEl.id  =  'ValeSpec__AssemblyEditor__GlobalBar';
-        _containerEl.appendChild(_globalBarEl);
+        ValeSpec__DoorConfigurator__GlobalBarEl     =  document.createElement('div');
+        ValeSpec__DoorConfigurator__GlobalBarEl.id  =  'ValeSpec__AssemblyEditor__GlobalBar';
+        ValeSpec__DoorConfigurator__ContainerEl.appendChild(ValeSpec__DoorConfigurator__GlobalBarEl);
 
-        GlobalSettings.init(_globalBarEl);
+        GlobalSettings.ValeSpec__GlobalSettings__Init(ValeSpec__DoorConfigurator__GlobalBarEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Step Wizard via StepManager
     // ------------------------------------------------------------
-    function _buildStepWizard() {
+    function ValeSpec__DoorConfigurator__BuildStepWizard() {
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (!StepManager) {
             console.error('[ValeSpec__DoorConfigurator__Main] StepManager not available.');
             return;
         }
 
-        StepManager.init(_containerEl);
+        StepManager.ValeSpec__StepManager__Init(ValeSpec__DoorConfigurator__ContainerEl);
 
-        var step1Body  =  StepManager.createStep('doorType');
-        var step2Body  =  StepManager.createStep('dimensions');
-        var step3Body  =  StepManager.createStep('hinges');
-        var step4Body  =  StepManager.createStep('levers');
-        var step5Body  =  StepManager.createStep('hooks');
-        var step6Body  =  StepManager.createStep('misc');
+        var step1Body  =  StepManager.ValeSpec__StepManager__CreateStep('doorType');
+        var step2Body  =  StepManager.ValeSpec__StepManager__CreateStep('dimensions');
+        var step3Body  =  StepManager.ValeSpec__StepManager__CreateStep('hinges');
+        var step4Body  =  StepManager.ValeSpec__StepManager__CreateStep('levers');
+        var step5Body  =  StepManager.ValeSpec__StepManager__CreateStep('hooks');
+        var step6Body  =  StepManager.ValeSpec__StepManager__CreateStep('misc');
 
-        _initColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body);
+        ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body);
 
-        StepManager.goToStep('doorType');
+        StepManager.ValeSpec__StepManager__GoToStep('doorType');
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Initialise Column Sub-Modules into Step Cards
     // ------------------------------------------------------------
-    function _initColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body) {
-        var DoorTypeDims    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
-        var HingesLevers    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
-        var HooksMisc       =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
+    function ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body) {
+        var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
+        var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
+        var HooksMisc     =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
 
-        if (DoorTypeDims) DoorTypeDims.init(step1Body, step2Body);
-        if (HingesLevers) HingesLevers.init(step3Body, step4Body);
-        if (HooksMisc)    HooksMisc.init(step5Body, step6Body);
+        if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__Init(step1Body, step2Body);
+        if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__Init(step3Body, step4Body);
+        if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__Init(step5Body, step6Body);
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Initialise Door Configurator
     // ------------------------------------------------------------
-    function init(container) {
-        if (_initialised) return;
-        _containerEl  =  container;
-        if (!_containerEl) return;
+    function ValeSpec__DoorConfigurator__Init(container) {
+        if (ValeSpec__DoorConfigurator__Initialised) return;
+        ValeSpec__DoorConfigurator__ContainerEl  =  container;
+        if (!ValeSpec__DoorConfigurator__ContainerEl) return;
 
-        _buildGlobalBar();
-        _buildStepWizard();
+        ValeSpec__DoorConfigurator__BuildGlobalBar();
+        ValeSpec__DoorConfigurator__BuildStepWizard();
 
-        _initialised  =  true;
+        ValeSpec__DoorConfigurator__Initialised  =  true;
         console.log('[ValeSpec__DoorConfigurator__Main] Initialised.');
     }
     // ------------------------------------------------------------
@@ -104,33 +104,33 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
     // FUNCTION | Refresh All Sub-Modules from Assembly Data
     // ------------------------------------------------------------
-    function refreshFromAssembly(assemblyData) {
+    function ValeSpec__DoorConfigurator__RefreshFromAssembly(assemblyData) {
         if (!assemblyData) return;
 
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
         var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
         var HooksMisc     =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
 
-        if (DoorTypeDims) DoorTypeDims.refreshFromAssembly(assemblyData);
-        if (HingesLevers) HingesLevers.refreshFromAssembly(assemblyData);
-        if (HooksMisc)    HooksMisc.refreshFromAssembly(assemblyData);
+        if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData);
+        if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__RefreshFromAssembly(assemblyData);
+        if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__RefreshFromAssembly(assemblyData);
 
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) StepManager.refreshAllSummaries();
+        if (StepManager) StepManager.ValeSpec__StepManager__RefreshAllSummaries();
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Save Current Form State to Assembly
     // ------------------------------------------------------------
-    function saveToAssembly() {
+    function ValeSpec__DoorConfigurator__SaveToAssembly() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return;
 
-        var assembly  =  StateManager.getCurrentAssembly();
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
         if (!assembly) return;
 
-        StateManager.updateCurrentAssembly(assembly);
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }
     // ------------------------------------------------------------
 
@@ -138,9 +138,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init                 : init,
-        refreshFromAssembly  : refreshFromAssembly,
-        saveToAssembly       : saveToAssembly
+        ValeSpec__DoorConfigurator__Init                : ValeSpec__DoorConfigurator__Init,
+        ValeSpec__DoorConfigurator__RefreshFromAssembly : ValeSpec__DoorConfigurator__RefreshFromAssembly,
+        ValeSpec__DoorConfigurator__SaveToAssembly      : ValeSpec__DoorConfigurator__SaveToAssembly
     };
 
 })();

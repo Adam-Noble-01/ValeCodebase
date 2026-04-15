@@ -46,17 +46,17 @@
         var appSection   =  configData['ValeSpec__Application__Config'] || {};
         var hwIndexPath  =  appSection['ValeSpec__Application__Config__HardwareIndexPath'];
         if (hwIndexPath) {
-            await HwLoader.loadIndex(hwIndexPath);
-            await HwLoader.loadVectorData();
+            await HwLoader.ValeSpec__HardwareIndexLoader__LoadIndex(hwIndexPath);
+            await HwLoader.ValeSpec__HardwareIndexLoader__LoadVectorData();
         }
 
         var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
-        if (RenderPipeline && RenderPipeline.ensureConfigLoaded) {
-            await RenderPipeline.ensureConfigLoaded();
+        if (RenderPipeline && RenderPipeline.ValeSpec__RenderPipeline__EnsureConfigLoaded) {
+            await RenderPipeline.ValeSpec__RenderPipeline__EnsureConfigLoaded();
         }
 
-        if (ProjectFileManager && ProjectFileManager.syncFromServer) {
-            await ProjectFileManager.syncFromServer();                          // <-- Pull disk project files into localStorage cache before first render
+        if (ProjectFileManager && ProjectFileManager.ValeSpec__ProjectFileManager__SyncFromServer) {
+            await ProjectFileManager.ValeSpec__ProjectFileManager__SyncFromServer();   // <-- Pull disk project files into localStorage cache before first render
         }
 
         ValeSpec__AppCore__InitNavigationBar();
@@ -108,7 +108,7 @@
             ValeSpec__AppCore__RenderDocumentEditor();
         }
         if (modeId === 'AssemblyEditor') {
-            await ValeSpec__AppCore__RenderAssemblyEditor();                    // <-- Must await: Layout.init() is async
+            await ValeSpec__AppCore__RenderAssemblyEditor();                        // <-- Must await: Layout.init() is async
         }
         if (modeId === 'DocumentPreview') {
             ValeSpec__AppCore__RenderDocumentPreview();
@@ -124,9 +124,9 @@
         var SectionManager  =  window.ValeSpec__DocEditor__SectionManager;
         var JobNotes        =  window.ValeSpec__DocEditor__JobNotes;
 
-        if (DocHeader)       DocHeader.render();
-        if (SectionManager)  SectionManager.render();
-        if (JobNotes)        JobNotes.render();
+        if (DocHeader)       DocHeader.ValeSpec__DocumentHeader__Render();
+        if (SectionManager)  SectionManager.ValeSpec__SectionManager__Render();
+        if (JobNotes)        JobNotes.ValeSpec__JobNotes__Render();
     }
     // ------------------------------------------------------------
 
@@ -137,7 +137,7 @@
         var Layout  =  window.ValeSpec__AssemblyEditor__Layout;
         if (!Layout) return;
 
-        await Layout.init();                                                    // <-- Await config fetch + panel build on first visit
+        await Layout.ValeSpec__Layout__Init();                                      // <-- Await config fetch + panel build on first visit
 
         var StateManager      =  window.ValeSpec__AppCore__StateManager;
         var DoorConfigurator  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Main;
@@ -146,8 +146,8 @@
         var assembly  =  StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
 
         if (assembly) {
-            if (DoorConfigurator && DoorConfigurator.refreshFromAssembly) DoorConfigurator.refreshFromAssembly(assembly);
-            if (SvgPreview && SvgPreview.render) SvgPreview.render(assembly);
+            if (DoorConfigurator && DoorConfigurator.ValeSpec__DoorConfigurator__RefreshFromAssembly) DoorConfigurator.ValeSpec__DoorConfigurator__RefreshFromAssembly(assembly);
+            if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) SvgPreview.ValeSpec__SvgPreview__Render(assembly);
         } else {
             var defaultAssembly  =  {
                 'Assembly__Dimensions__Config': {
@@ -158,7 +158,7 @@
                     'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
                 }
             };
-            if (SvgPreview && SvgPreview.render) SvgPreview.render(defaultAssembly);
+            if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) SvgPreview.ValeSpec__SvgPreview__Render(defaultAssembly);
         }
     }
     // ------------------------------------------------------------
@@ -168,7 +168,7 @@
     // ------------------------------------------------------------
     function ValeSpec__AppCore__RenderDocumentPreview() {
         var PageRenderer  =  window.ValeSpec__DocPreview__PageRenderer;
-        if (PageRenderer && PageRenderer.render) PageRenderer.render();
+        if (PageRenderer && PageRenderer.ValeSpec__PageRenderer__Render) PageRenderer.ValeSpec__PageRenderer__Render();
     }
     // ------------------------------------------------------------
 
@@ -182,7 +182,7 @@
 
         var state  =  StateManager.ValeSpec__StateManager__GetState();
         if (state.currentProject) {
-            ProjectFileManager.saveProject(state.currentProject);              // <-- Write full project JSON to localStorage + disk
+            ProjectFileManager.ValeSpec__ProjectFileManager__SaveProject(state.currentProject); // <-- Write full project JSON to localStorage + disk
         }
     }
     // ------------------------------------------------------------
@@ -199,7 +199,7 @@
         });
 
         StateManager.ValeSpec__StateManager__On('assemblyUpdated', function() {
-            ValeSpec__AppCore__AutosaveCurrentProject();                        // <-- Persist whenever an assembly field is changed
+            ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist whenever an assembly field is changed
         });
     }
     // ------------------------------------------------------------

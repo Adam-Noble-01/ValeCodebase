@@ -15,5 +15,84 @@
         "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
-    "ValeSpec__ProjectFile__Assemblies": []
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_222647",
+                "Assembly__Identity__Config__Title": "Outward Opening Double Doors — 1800 x 2100 mm",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Outward Opening Double Doors",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1800,
+                "Assembly__Dimensions__Config__HeightMm": 2100
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__Projection": 5,
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__Hanging": "Standard"
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Scroll",
+                "Assembly__Lever__Config__HeightMm": 1000,
+                "Assembly__Lever__Config__Handing": "Dual"
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "6\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 2
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "N/A"
+                ]
+            }
+        },
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_404080",
+                "Assembly__Identity__Config__Title": "",
+                "Assembly__Identity__Config__SortOrder": 1
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Outward Opening Double Doors",
+                "Assembly__DoorType__Config__Quantity": 1
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1800,
+                "Assembly__Dimensions__Config__HeightMm": 2100
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__Projection": 5,
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__Hanging": "Standard"
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Scroll",
+                "Assembly__Lever__Config__HeightMm": 1000,
+                "Assembly__Lever__Config__Handing": "Dual"
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "6\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 2
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "N/A"
+                ]
+            }
+        }
+    ]
 }

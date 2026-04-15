@@ -31,25 +31,25 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let _containerEl     =  null;                                           // <-- Parent container from Layout
-    let _viewportEl      =  null;                                           // <-- SVG viewport wrapper div
-    let _widthSliderEl   =  null;                                           // <-- Width range input
-    let _heightSliderEl  =  null;                                           // <-- Height range input
-    let _widthValueEl    =  null;                                           // <-- Width numeric display
-    let _heightValueEl   =  null;                                           // <-- Height numeric display
-    let _sliderConfig    =  null;                                           // <-- Slider limits from config
+    let ValeSpec__SvgPreview__ContainerEl    =  null;   // <-- Parent container from Layout
+    let ValeSpec__SvgPreview__ViewportEl     =  null;   // <-- SVG viewport wrapper div
+    let ValeSpec__SvgPreview__WidthSliderEl  =  null;   // <-- Width range input
+    let ValeSpec__SvgPreview__HeightSliderEl =  null;   // <-- Height range input
+    let ValeSpec__SvgPreview__WidthValueEl   =  null;   // <-- Width numeric display
+    let ValeSpec__SvgPreview__HeightValueEl  =  null;   // <-- Height numeric display
+    let ValeSpec__SvgPreview__SliderConfig   =  null;   // <-- Slider limits from config
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Load Slider Configuration
     // ------------------------------------------------------------
-    async function _loadSliderConfig() {
+    async function ValeSpec__SvgPreview__LoadSliderConfig() {
         try {
             var response  =  await fetch(CONFIG_PATH);
             if (!response.ok) return null;
             var data  =  await response.json();
-            _sliderConfig  =  data['AssemblyEditor__Slider__Config'] || null;
-            return _sliderConfig;
+            ValeSpec__SvgPreview__SliderConfig  =  data['AssemblyEditor__Slider__Config'] || null;
+            return ValeSpec__SvgPreview__SliderConfig;
         } catch (e) {
             console.warn('[ValeSpec__SvgPreview] Could not load slider config:', e);
             return null;
@@ -60,22 +60,22 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
 
     // HELPER FUNCTION | Build SVG Viewport Element
     // ------------------------------------------------------------
-    function _buildViewport() {
-        _viewportEl  =  document.createElement('div');
-        _viewportEl.className  =  'ValeSpec__AssemblyEditor__SvgViewport';
-        _viewportEl.id         =  'ValeSpec__AssemblyEditor__SvgViewport';
-        _containerEl.appendChild(_viewportEl);
+    function ValeSpec__SvgPreview__BuildViewport() {
+        ValeSpec__SvgPreview__ViewportEl  =  document.createElement('div');
+        ValeSpec__SvgPreview__ViewportEl.className  =  'ValeSpec__AssemblyEditor__SvgViewport';
+        ValeSpec__SvgPreview__ViewportEl.id         =  'ValeSpec__AssemblyEditor__SvgViewport';
+        ValeSpec__SvgPreview__ContainerEl.appendChild(ValeSpec__SvgPreview__ViewportEl);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Create Single Slider Group
     // ------------------------------------------------------------
-    function _createSliderGroup(labelText, id, cfg) {
-        var min      =  (cfg && cfg['Min'])     || 600;
-        var max      =  (cfg && cfg['Max'])     || 4000;
-        var step     =  (cfg && cfg['Step'])    || 1;
-        var defVal   =  (cfg && cfg['Default']) || 1800;
+    function ValeSpec__SvgPreview__CreateSliderGroup(labelText, id, cfg) {
+        var min     =  (cfg && cfg['Min'])     || 600;
+        var max     =  (cfg && cfg['Max'])     || 4000;
+        var step    =  (cfg && cfg['Step'])    || 1;
+        var defVal  =  (cfg && cfg['Default']) || 1800;
 
         var group  =  document.createElement('div');
         group.className  =  'ValeSpec__AssemblyEditor__SliderGroup';
@@ -106,113 +106,76 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Dimension Sliders
-    // ------------------------------------------------------------
-    function _buildSliders() {
-        var wrapper  =  document.createElement('div');
-        wrapper.className  =  'ValeSpec__AssemblyEditor__PreviewSliders';
-
-        var widthCfg   =  _sliderConfig ? {
-            Min: _sliderConfig['AssemblyEditor__Slider__Config__WidthMinMm']  || 600,
-            Max: _sliderConfig['AssemblyEditor__Slider__Config__WidthMaxMm']  || 4000,
-            Step: _sliderConfig['AssemblyEditor__Slider__Config__WidthStepMm'] || 1,
-            Default: _sliderConfig['AssemblyEditor__Slider__Config__WidthDefaultMm'] || 1800
-        } : null;
-        var heightCfg  =  _sliderConfig ? {
-            Min: _sliderConfig['AssemblyEditor__Slider__Config__HeightMinMm']  || 1800,
-            Max: _sliderConfig['AssemblyEditor__Slider__Config__HeightMaxMm']  || 3000,
-            Step: _sliderConfig['AssemblyEditor__Slider__Config__HeightStepMm'] || 1,
-            Default: _sliderConfig['AssemblyEditor__Slider__Config__HeightDefaultMm'] || 2100
-        } : null;
-
-        var widthParts   =  _createSliderGroup('Width (mm)', 'ValeSpec__AssemblyEditor__WidthSlider', widthCfg);
-        var heightParts  =  _createSliderGroup('Height (mm)', 'ValeSpec__AssemblyEditor__HeightSlider', heightCfg);
-
-        _widthSliderEl   =  widthParts.input;
-        _heightSliderEl  =  heightParts.input;
-        _widthValueEl    =  widthParts.valueSpan;
-        _heightValueEl   =  heightParts.valueSpan;
-
-        wrapper.appendChild(widthParts.group);
-        wrapper.appendChild(heightParts.group);
-        _containerEl.appendChild(wrapper);
-
-        _widthSliderEl.addEventListener('input', _onWidthChange);
-        _heightSliderEl.addEventListener('input', _onHeightChange);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Width Slider Change
-    // ------------------------------------------------------------
-    function _onWidthChange() {
-        var value  =  parseInt(_widthSliderEl.value, 10);
-        _widthValueEl.textContent  =  value + ' mm';
-        _pushDimensionUpdate();
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Handle Height Slider Change
-    // ------------------------------------------------------------
-    function _onHeightChange() {
-        var value  =  parseInt(_heightSliderEl.value, 10);
-        _heightValueEl.textContent  =  value + ' mm';
-        _pushDimensionUpdate();
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | Push Dimension Update to StateManager
     // ------------------------------------------------------------
-    function _pushDimensionUpdate() {
+    function ValeSpec__SvgPreview__PushDimensionUpdate() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return;
 
-        var assembly  =  StateManager.getCurrentAssembly();
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
         if (!assembly) return;
 
         if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
-        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']   =  parseInt(_widthSliderEl.value, 10);
-        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  parseInt(_heightSliderEl.value, 10);
-        StateManager.updateCurrentAssembly(assembly);
+        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']   =  parseInt(ValeSpec__SvgPreview__WidthSliderEl.value, 10);
+        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  parseInt(ValeSpec__SvgPreview__HeightSliderEl.value, 10);
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Render Assembly SVG into Viewport
+    // HELPER FUNCTION | Build Dimension Sliders
     // ------------------------------------------------------------
-    function render(assemblyData) {
-        if (!_viewportEl) return;
+    function ValeSpec__SvgPreview__BuildSliders() {
+        var wrapper  =  document.createElement('div');
+        wrapper.className  =  'ValeSpec__AssemblyEditor__PreviewSliders';
 
-        var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
-        var StateManager    =  window.ValeSpec__AppCore__StateManager;
-        var hwIndex         =  StateManager ? StateManager.getState().hardwareIndex : null;
+        var cfg  =  ValeSpec__SvgPreview__SliderConfig;
 
-        if (RenderPipeline && assemblyData) {
-            try {
-                var svgMarkup  =  RenderPipeline.renderAssembly(assemblyData, hwIndex);
-                _viewportEl.innerHTML  =  svgMarkup || '';
-                _bindDimensionClicks();
-            } catch (e) {
-                _viewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">SVG render error: ' + e.message + '</p>';
-                console.error('[ValeSpec__SvgPreview] Render error:', e);
-            }
-        } else {
-            _viewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">Select an assembly to preview</p>';
-        }
+        var widthCfg   =  cfg ? {
+            Min: cfg['AssemblyEditor__Slider__Config__WidthMinMm']     || 600,
+            Max: cfg['AssemblyEditor__Slider__Config__WidthMaxMm']     || 4000,
+            Step: cfg['AssemblyEditor__Slider__Config__WidthStepMm']   || 1,
+            Default: cfg['AssemblyEditor__Slider__Config__WidthDefaultMm'] || 1800
+        } : null;
+        var heightCfg  =  cfg ? {
+            Min: cfg['AssemblyEditor__Slider__Config__HeightMinMm']     || 1800,
+            Max: cfg['AssemblyEditor__Slider__Config__HeightMaxMm']     || 3000,
+            Step: cfg['AssemblyEditor__Slider__Config__HeightStepMm']   || 1,
+            Default: cfg['AssemblyEditor__Slider__Config__HeightDefaultMm'] || 2100
+        } : null;
+
+        var widthParts   =  ValeSpec__SvgPreview__CreateSliderGroup('Width (mm)',  'ValeSpec__AssemblyEditor__WidthSlider',  widthCfg);
+        var heightParts  =  ValeSpec__SvgPreview__CreateSliderGroup('Height (mm)', 'ValeSpec__AssemblyEditor__HeightSlider', heightCfg);
+
+        ValeSpec__SvgPreview__WidthSliderEl   =  widthParts.input;
+        ValeSpec__SvgPreview__HeightSliderEl  =  heightParts.input;
+        ValeSpec__SvgPreview__WidthValueEl    =  widthParts.valueSpan;
+        ValeSpec__SvgPreview__HeightValueEl   =  heightParts.valueSpan;
+
+        wrapper.appendChild(widthParts.group);
+        wrapper.appendChild(heightParts.group);
+        ValeSpec__SvgPreview__ContainerEl.appendChild(wrapper);
+
+        ValeSpec__SvgPreview__WidthSliderEl.addEventListener('input', function() {
+            ValeSpec__SvgPreview__WidthValueEl.textContent  =  parseInt(ValeSpec__SvgPreview__WidthSliderEl.value, 10) + ' mm';
+            ValeSpec__SvgPreview__PushDimensionUpdate();
+        });
+        ValeSpec__SvgPreview__HeightSliderEl.addEventListener('input', function() {
+            ValeSpec__SvgPreview__HeightValueEl.textContent  =  parseInt(ValeSpec__SvgPreview__HeightSliderEl.value, 10) + ' mm';
+            ValeSpec__SvgPreview__PushDimensionUpdate();
+        });
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Bind Click Handlers to SVG Dimension Text
     // ------------------------------------------------------------
-    function _bindDimensionClicks() {
-        if (!_viewportEl) return;
+    function ValeSpec__SvgPreview__BindDimensionClicks() {
+        if (!ValeSpec__SvgPreview__ViewportEl) return;
 
-        var dimTexts  =  _viewportEl.querySelectorAll('text[data-dimension]');
+        var dimTexts  =  ValeSpec__SvgPreview__ViewportEl.querySelectorAll('text[data-dimension]');
         for (var i = 0; i < dimTexts.length; i++) {
-            dimTexts[i].addEventListener('click', _onDimensionTextClick);
+            dimTexts[i].addEventListener('click', ValeSpec__SvgPreview__OnDimensionTextClick);
         }
     }
     // ------------------------------------------------------------
@@ -220,16 +183,16 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
 
     // HELPER FUNCTION | Handle Click on SVG Dimension Text
     // ------------------------------------------------------------
-    function _onDimensionTextClick(e) {
+    function ValeSpec__SvgPreview__OnDimensionTextClick(e) {
         e.stopPropagation();
 
-        var textEl     =  e.currentTarget;
-        var dimType    =  textEl.getAttribute('data-dimension');
-        var curValue   =  textEl.getAttribute('data-value');
+        var textEl    =  e.currentTarget;
+        var dimType   =  textEl.getAttribute('data-dimension');
+        var curValue  =  textEl.getAttribute('data-value');
 
         var rect  =  textEl.getBoundingClientRect();
 
-        var existingInput  =  _viewportEl.parentElement.querySelector('.ValeSpec__AssemblyEditor__DimEditInput');
+        var existingInput  =  ValeSpec__SvgPreview__ViewportEl.parentElement.querySelector('.ValeSpec__AssemblyEditor__DimEditInput');
         if (existingInput) existingInput.remove();
 
         var input  =  document.createElement('input');
@@ -246,20 +209,20 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
             input.max  =  3000;
         }
 
-        var containerRect  =  _viewportEl.parentElement.getBoundingClientRect();
+        var containerRect  =  ValeSpec__SvgPreview__ViewportEl.parentElement.getBoundingClientRect();
         input.style.position  =  'absolute';
         input.style.left      =  (rect.left - containerRect.left + rect.width / 2 - 50) + 'px';
         input.style.top       =  (rect.top  - containerRect.top  + rect.height / 2 - 14) + 'px';
         input.style.width     =  '100px';
         input.style.zIndex    =  '100';
 
-        _viewportEl.parentElement.style.position  =  'relative';
-        _viewportEl.parentElement.appendChild(input);
+        ValeSpec__SvgPreview__ViewportEl.parentElement.style.position  =  'relative';
+        ValeSpec__SvgPreview__ViewportEl.parentElement.appendChild(input);
 
         input.focus();
         input.select();
 
-        function _commitValue() {
+        function commitValue() {
             var newVal  =  parseInt(input.value, 10);
             if (isNaN(newVal)) { input.remove(); return; }
 
@@ -272,26 +235,26 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
             var StateManager  =  window.ValeSpec__AppCore__StateManager;
             if (!StateManager) { input.remove(); return; }
 
-            var assembly  =  StateManager.getCurrentAssembly();
+            var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
             if (!assembly) { input.remove(); return; }
 
             if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
 
             if (dimType === 'width') {
                 assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']  =  newVal;
-                if (_widthSliderEl) { _widthSliderEl.value = newVal; _widthValueEl.textContent = newVal + ' mm'; }
+                if (ValeSpec__SvgPreview__WidthSliderEl) { ValeSpec__SvgPreview__WidthSliderEl.value = newVal; ValeSpec__SvgPreview__WidthValueEl.textContent = newVal + ' mm'; }
             } else {
                 assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  newVal;
-                if (_heightSliderEl) { _heightSliderEl.value = newVal; _heightValueEl.textContent = newVal + ' mm'; }
+                if (ValeSpec__SvgPreview__HeightSliderEl) { ValeSpec__SvgPreview__HeightSliderEl.value = newVal; ValeSpec__SvgPreview__HeightValueEl.textContent = newVal + ' mm'; }
             }
 
-            StateManager.updateCurrentAssembly(assembly);
+            StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
             input.remove();
         }
 
-        input.addEventListener('blur', _commitValue);
+        input.addEventListener('blur', commitValue);
         input.addEventListener('keydown', function(ev) {
-            if (ev.key === 'Enter')  { ev.preventDefault(); _commitValue(); }
+            if (ev.key === 'Enter')  { ev.preventDefault(); commitValue(); }
             if (ev.key === 'Escape') { input.remove(); }
         });
     }
@@ -300,64 +263,89 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
 
     // HELPER FUNCTION | Handle Assembly Updated Event
     // ------------------------------------------------------------
-    function _onAssemblyUpdated(assemblyData) {
-        if (assemblyData && _widthSliderEl && _heightSliderEl) {
-            var dims   =  assemblyData['Assembly__Dimensions__Config'] || {};
-            var width  =  dims['Assembly__Dimensions__Config__WidthMm']  || _widthSliderEl.value;
-            var height =  dims['Assembly__Dimensions__Config__HeightMm'] || _heightSliderEl.value;
-            _widthSliderEl.value       =  width;
-            _heightSliderEl.value      =  height;
-            _widthValueEl.textContent  =  width + ' mm';
-            _heightValueEl.textContent =  height + ' mm';
+    function ValeSpec__SvgPreview__OnAssemblyUpdated(assemblyData) {
+        if (assemblyData && ValeSpec__SvgPreview__WidthSliderEl && ValeSpec__SvgPreview__HeightSliderEl) {
+            var dims    =  assemblyData['Assembly__Dimensions__Config'] || {};
+            var width   =  dims['Assembly__Dimensions__Config__WidthMm']  || ValeSpec__SvgPreview__WidthSliderEl.value;
+            var height  =  dims['Assembly__Dimensions__Config__HeightMm'] || ValeSpec__SvgPreview__HeightSliderEl.value;
+            ValeSpec__SvgPreview__WidthSliderEl.value        =  width;
+            ValeSpec__SvgPreview__HeightSliderEl.value       =  height;
+            ValeSpec__SvgPreview__WidthValueEl.textContent   =  width + ' mm';
+            ValeSpec__SvgPreview__HeightValueEl.textContent  =  height + ' mm';
         }
-        render(assemblyData);
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Initialise SVG Preview
-    // ------------------------------------------------------------
-    async function init(container) {
-        _containerEl  =  container;
-        if (!_containerEl) return;
-
-        await _loadSliderConfig();
-        _buildViewport();
-        _buildSliders();
-
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (StateManager) {
-            StateManager.on('assemblyUpdated', _onAssemblyUpdated);
-        }
-
-        _doInitialRender();
-
-        console.log('[ValeSpec__SvgPreview] Initialised.');
+        ValeSpec__SvgPreview__Render(assemblyData);
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Perform Initial Render on First Load
     // ------------------------------------------------------------
-    function _doInitialRender() {
+    function ValeSpec__SvgPreview__DoInitialRender() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        var assembly      =  StateManager ? StateManager.getCurrentAssembly() : null;
+        var assembly      =  StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
 
         if (assembly) {
-            render(assembly);
+            ValeSpec__SvgPreview__Render(assembly);
             return;
         }
 
         var defaultAssembly  =  {
             'Assembly__Dimensions__Config': {
-                'Assembly__Dimensions__Config__WidthMm'  : parseInt(_widthSliderEl.value, 10)  || 1800,
-                'Assembly__Dimensions__Config__HeightMm' : parseInt(_heightSliderEl.value, 10) || 2100
+                'Assembly__Dimensions__Config__WidthMm'  : parseInt(ValeSpec__SvgPreview__WidthSliderEl.value, 10)  || 1800,
+                'Assembly__Dimensions__Config__HeightMm' : parseInt(ValeSpec__SvgPreview__HeightSliderEl.value, 10) || 2100
             },
             'Assembly__DoorType__Config': {
                 'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
             }
         };
-        render(defaultAssembly);
+        ValeSpec__SvgPreview__Render(defaultAssembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render Assembly SVG into Viewport
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__Render(assemblyData) {
+        if (!ValeSpec__SvgPreview__ViewportEl) return;
+
+        var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
+        var StateManager    =  window.ValeSpec__AppCore__StateManager;
+        var hwIndex         =  StateManager ? StateManager.ValeSpec__StateManager__GetState().hardwareIndex : null;
+
+        if (RenderPipeline && assemblyData) {
+            try {
+                var svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderAssembly(assemblyData, hwIndex);
+                ValeSpec__SvgPreview__ViewportEl.innerHTML  =  svgMarkup || '';
+                ValeSpec__SvgPreview__BindDimensionClicks();
+            } catch (e) {
+                ValeSpec__SvgPreview__ViewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">SVG render error: ' + e.message + '</p>';
+                console.error('[ValeSpec__SvgPreview] Render error:', e);
+            }
+        } else {
+            ValeSpec__SvgPreview__ViewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">Select an assembly to preview</p>';
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialise SVG Preview
+    // ------------------------------------------------------------
+    async function ValeSpec__SvgPreview__Init(container) {
+        ValeSpec__SvgPreview__ContainerEl  =  container;
+        if (!ValeSpec__SvgPreview__ContainerEl) return;
+
+        await ValeSpec__SvgPreview__LoadSliderConfig();
+        ValeSpec__SvgPreview__BuildViewport();
+        ValeSpec__SvgPreview__BuildSliders();
+
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (StateManager) {
+            StateManager.ValeSpec__StateManager__On('assemblyUpdated', ValeSpec__SvgPreview__OnAssemblyUpdated);
+        }
+
+        ValeSpec__SvgPreview__DoInitialRender();
+
+        console.log('[ValeSpec__SvgPreview] Initialised.');
     }
     // ------------------------------------------------------------
 
@@ -365,8 +353,8 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        init    : init,
-        render  : render
+        ValeSpec__SvgPreview__Init   : ValeSpec__SvgPreview__Init,
+        ValeSpec__SvgPreview__Render : ValeSpec__SvgPreview__Render
     };
 
 })();

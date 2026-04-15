@@ -24,23 +24,23 @@ const ValeSpec__DocEditor__JobNotes = (function() {
 
     // MODULE CONSTANTS | DOM Target ID and Debounce Delay
     // ------------------------------------------------------------
-    const CONTAINER_ID    =  'ValeSpec__DocEditor__JobNotesContainer';
-    const DEBOUNCE_MS     =  500;                                                 // <-- Auto-save delay in milliseconds
+    const CONTAINER_ID  =  'ValeSpec__DocEditor__JobNotesContainer';
+    const DEBOUNCE_MS   =  500;                                                   // <-- Auto-save delay in milliseconds
     // ------------------------------------------------------------
 
 
     // MODULE VARIABLES | Debounce Timer Reference
     // ------------------------------------------------------------
-    let _debounceTimer  =  null;
+    let ValeSpec__JobNotes__DebounceTimer  =  null;
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Get Job Notes from Project State
     // ------------------------------------------------------------
-    function _getJobNotes() {
+    function ValeSpec__JobNotes__GetJobNotes() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return '';
-        var state    =  StateManager.getState();
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
         var project  =  state.currentProject;
         if (!project) return '';
         var globalSettings  =  project['ValeSpec__ProjectFile__GlobalSettings'] || {};
@@ -51,10 +51,10 @@ const ValeSpec__DocEditor__JobNotes = (function() {
 
     // HELPER FUNCTION | Save Job Notes to Project State
     // ------------------------------------------------------------
-    function _saveJobNotes(text) {
+    function ValeSpec__JobNotes__SaveJobNotes(text) {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return;
-        var state    =  StateManager.getState();
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
         var project  =  state.currentProject;
         if (!project) return;
 
@@ -62,14 +62,14 @@ const ValeSpec__DocEditor__JobNotes = (function() {
         globalSettings['ValeSpec__ProjectFile__GlobalSettings__JobNotes']  =  text;
         project['ValeSpec__ProjectFile__GlobalSettings']  =  globalSettings;
 
-        StateManager.markDirty();
+        StateManager.ValeSpec__StateManager__MarkDirty();
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Build Job Notes HTML
     // ------------------------------------------------------------
-    function _buildNotesHtml(notesText) {
+    function ValeSpec__JobNotes__BuildNotesHtml(notesText) {
         var escaped  =  notesText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
         var html  =  '<label class="ValeSpec__DocEditor__JobNotesLabel">Job Notes</label>';
@@ -84,14 +84,14 @@ const ValeSpec__DocEditor__JobNotes = (function() {
 
     // SUB FUNCTION | Bind Textarea Change Events with Debounce
     // ------------------------------------------------------------
-    function _bindEvents() {
+    function ValeSpec__JobNotes__BindEvents() {
         var textarea  =  document.getElementById('ValeSpec__DocEditor__NotesTextarea');
         if (!textarea) return;
 
         textarea.addEventListener('input', function() {
-            clearTimeout(_debounceTimer);
-            _debounceTimer  =  setTimeout(function() {
-                _saveJobNotes(textarea.value);                                    // <-- Debounced auto-save on input
+            clearTimeout(ValeSpec__JobNotes__DebounceTimer);
+            ValeSpec__JobNotes__DebounceTimer  =  setTimeout(function() {
+                ValeSpec__JobNotes__SaveJobNotes(textarea.value);                 // <-- Debounced auto-save on input
             }, DEBOUNCE_MS);
         });
     }
@@ -100,16 +100,16 @@ const ValeSpec__DocEditor__JobNotes = (function() {
 
     // FUNCTION | Render Job Notes Textarea into DOM
     // ------------------------------------------------------------
-    function render() {
+    function ValeSpec__JobNotes__Render() {
         var container  =  document.getElementById(CONTAINER_ID);
         if (!container) {
             console.warn('[ValeSpec__JobNotes] Container not found: #' + CONTAINER_ID);
             return;
         }
 
-        var notesText  =  _getJobNotes();
-        container.innerHTML  =  _buildNotesHtml(notesText);
-        _bindEvents();
+        var notesText  =  ValeSpec__JobNotes__GetJobNotes();
+        container.innerHTML  =  ValeSpec__JobNotes__BuildNotesHtml(notesText);
+        ValeSpec__JobNotes__BindEvents();
     }
     // ------------------------------------------------------------
 
@@ -117,7 +117,7 @@ const ValeSpec__DocEditor__JobNotes = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        render  : render
+        ValeSpec__JobNotes__Render  : ValeSpec__JobNotes__Render
     };
 
 })();

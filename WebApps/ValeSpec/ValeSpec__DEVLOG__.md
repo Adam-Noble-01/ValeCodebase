@@ -2,6 +2,24 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeSpec v0.0.5 - 15-Apr-2026
+### Assembly Editor Workflow Refactor + Save Pipeline Hardening
+
+**Overview**
+- Added `Save Assembly` final-step gate behavior so button visibility is controlled by wizard progression through steps `1-6` before reaching `Misc`.
+- Added `Misc -> Other` option with conditional text input and persisted `Assembly__Miscellaneous__Config__OtherText` support.
+- Refactored coupled `HooksAndMisc` implementation into two separate modules:
+  - `ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks__.js`
+  - `ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous__.js`
+- Rewired orchestrator/script loading so hooks and misc now initialise/refresh independently from `ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js` and `ValeSpec__App__.html`.
+- Added config-driven hooks/misc schema in `Na__AssemblyEditor__Config.json` to reduce hardcoded values (options, defaults, min/max, Other/NA behavior).
+- Hardened save flow to flush step controls before save and perform explicit project persistence from Save action (not only event-chain autosave).
+- Updated `ValeSpec__ProjectFileManager__ServerWrite(...)` to return deterministic success/failure results and updated autosave lifecycle for global finish/lever changes.
+- Result: Assembly Editor section behavior is more modular, data-driven, and save reliability to project JSON is improved.
+
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
 ## ValeSpec v0.0.4 - 15-Apr-2026
 ### SVG Dimension Edit -> UI Panel Sync
 

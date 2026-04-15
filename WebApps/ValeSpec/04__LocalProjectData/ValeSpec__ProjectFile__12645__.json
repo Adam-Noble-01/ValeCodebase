@@ -16,50 +16,5 @@
         "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
-    "ValeSpec__ProjectFile__Assemblies": [
-        {
-            "Assembly__Identity__Config": {
-                "Assembly__Identity__Config__Id": "asm_304166",
-                "Assembly__Identity__Config__Title": "",
-                "Assembly__Identity__Config__SortOrder": 0
-            },
-            "Assembly__DoorType__Config": {
-                "Assembly__DoorType__Config__Type": "Outward Opening Double Doors",
-                "Assembly__DoorType__Config__Quantity": 1
-            },
-            "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1200,
-                "Assembly__Dimensions__Config__HeightMm": 2100
-            },
-            "HingeProjection": 5,
-            "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
-                "Assembly__Lever__Config__HeightMm": 1000
-            },
-            "Assembly__CabinHooks__Config": {
-                "Assembly__CabinHooks__Config__Size": "4\"",
-                "Assembly__CabinHooks__Config__HookCount": 0,
-                "Assembly__CabinHooks__Config__EyeCount": 0
-            },
-            "Assembly__Miscellaneous__Config": {
-                "Assembly__Miscellaneous__Config__Items": [
-                    "Misc_NA"
-                ]
-            },
-            "Quantity": 3,
-            "Assembly__Hinge__Config": {
-                "Assembly__Hinge__Config__HingesPerLeaf": 3,
-                "Assembly__Hinge__Config__Hanging": "Standard"
-            },
-            "Assembly__DoorCondition__Config": {
-                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
-                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
-                "Assembly__DoorCondition__Config__AppliesWarning": false
-            },
-            "Assembly__Locking__Config": {
-                "Assembly__Locking__Config__Points": 5,
-                "Assembly__Locking__Config__Type": "Multi-Point"
-            }
-        }
-    ]
+    "ValeSpec__ProjectFile__Assemblies": []
 }

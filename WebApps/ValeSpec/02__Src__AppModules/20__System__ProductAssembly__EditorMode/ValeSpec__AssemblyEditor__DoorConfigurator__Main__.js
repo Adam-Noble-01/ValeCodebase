@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Renders the global settings bar and step-based wizard layout
    - Uses StepManager to create sequential collapsible step cards
-   - Calls three sub-modules to render into their respective step cards
+   - Calls step sub-modules to render into their respective step cards
    - Coordinates saving changes back to assembly via StateManager
    - Provides ValeSpec__DoorConfigurator__RefreshFromAssembly() for external re-population
 
@@ -63,12 +63,23 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // HELPER FUNCTION | Handle Save Button Click
     // ------------------------------------------------------------
     function ValeSpec__DoorConfigurator__OnSaveAssemblyClick() {
-        ValeSpec__DoorConfigurator__SaveToAssembly();
+        ValeSpec__DoorConfigurator__SaveToAssembly().finally(function() {
+            var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
+            if (ModeManager) {
+                ModeManager.ValeSpec__ModeManager__SwitchToMode(ModeManager.MODE_DOC_EDITOR);
+            }
+        });
+    }
+    // ------------------------------------------------------------
 
-        var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
-        if (ModeManager) {
-            ModeManager.ValeSpec__ModeManager__SwitchToMode(ModeManager.MODE_DOC_EDITOR);
-        }
+
+    // HELPER FUNCTION | Flush Hooks and Misc Controls Before Save
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__FlushFinalStepsToAssembly() {
+        var CabinHooks     =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
+        var Miscellaneous  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
+        if (CabinHooks && CabinHooks.ValeSpec__CabinHooks__FlushToAssembly) CabinHooks.ValeSpec__CabinHooks__FlushToAssembly();
+        if (Miscellaneous && Miscellaneous.ValeSpec__Miscellaneous__FlushToAssembly) Miscellaneous.ValeSpec__Miscellaneous__FlushToAssembly();
     }
     // ------------------------------------------------------------
 
@@ -142,12 +153,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
         var GlobalSettings =  window.ValeSpec__AssemblyEditor__GlobalSettings;
         var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
-        var HooksMisc     =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
+        var CabinHooks    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
+        var Miscellaneous =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
 
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__Init(step1Body, step2Body);
         if (GlobalSettings) GlobalSettings.ValeSpec__GlobalSettings__Init(step3Body);
         if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__Init(step4Body, step5Body);
-        if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__Init(step6Body, step7Body);
+        if (CabinHooks) CabinHooks.ValeSpec__CabinHooks__Init(step6Body);
+        if (Miscellaneous) Miscellaneous.ValeSpec__Miscellaneous__Init(step7Body);
     }
     // ------------------------------------------------------------
 
@@ -174,11 +187,13 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
         var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
-        var HooksMisc     =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
+        var CabinHooks    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
+        var Miscellaneous =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
 
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData);
         if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__RefreshFromAssembly(assemblyData);
-        if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__RefreshFromAssembly(assemblyData);
+        if (CabinHooks) CabinHooks.ValeSpec__CabinHooks__RefreshFromAssembly(assemblyData);
+        if (Miscellaneous) Miscellaneous.ValeSpec__Miscellaneous__RefreshFromAssembly(assemblyData);
     }
     // ------------------------------------------------------------
 
@@ -223,13 +238,39 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // FUNCTION | Save Current Form State to Assembly
     // ------------------------------------------------------------
     function ValeSpec__DoorConfigurator__SaveToAssembly() {
+        ValeSpec__DoorConfigurator__FlushFinalStepsToAssembly();
+
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
+        if (!StateManager) return Promise.resolve(false);
 
         var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
-        if (!assembly) return;
+        if (!assembly) return Promise.resolve(false);
 
         StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+
+        var ProjectFileManager  =  window.ValeSpec__AppData__ProjectFileManager;
+        var state  =  StateManager.ValeSpec__StateManager__GetState ? StateManager.ValeSpec__StateManager__GetState() : null;
+        var currentProject  =  state ? state.currentProject : null;
+        if (ProjectFileManager && currentProject && ProjectFileManager.ValeSpec__ProjectFileManager__SaveProject) {
+            return Promise.resolve(ProjectFileManager.ValeSpec__ProjectFileManager__SaveProject(currentProject))
+                .then(function(saveResult) {
+                    if (saveResult === false) {
+                        console.warn('[ValeSpec__DoorConfigurator__Main] SaveProject reported failure.');
+                        return false;
+                    }
+                    if (saveResult && typeof saveResult === 'object' && saveResult.ok === false) {
+                        console.warn('[ValeSpec__DoorConfigurator__Main] SaveProject server write failed:', saveResult.error || 'Unknown error');
+                        return false;
+                    }
+                    return true;
+                })
+                .catch(function(err) {
+                    console.error('[ValeSpec__DoorConfigurator__Main] SaveProject threw error:', err);
+                    return false;
+                });
+        }
+
+        return Promise.resolve(true);
     }
     // ------------------------------------------------------------
 

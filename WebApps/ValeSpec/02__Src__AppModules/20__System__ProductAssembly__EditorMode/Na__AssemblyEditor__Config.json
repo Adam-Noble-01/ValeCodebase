@@ -65,6 +65,35 @@
         ]
     },
 
+    "AssemblyEditor__CabinHooks__Config": {
+        "AssemblyEditor__CabinHooks__Config__Description"            : "Cabin hook step options and control defaults.",
+        "AssemblyEditor__CabinHooks__Config__SizeOptions"            : ["4\"", "6\"", "10\"", "12\"", "18\""],
+        "AssemblyEditor__CabinHooks__Config__IncludeNoneOption"      : true,
+        "AssemblyEditor__CabinHooks__Config__NoneOptionLabel"        : "None",
+        "AssemblyEditor__CabinHooks__Config__HookCountMin"           : 0,
+        "AssemblyEditor__CabinHooks__Config__HookCountMax"           : 20,
+        "AssemblyEditor__CabinHooks__Config__HookCountDefault"       : 0,
+        "AssemblyEditor__CabinHooks__Config__EyeCountMin"            : 0,
+        "AssemblyEditor__CabinHooks__Config__EyeCountMax"            : 20,
+        "AssemblyEditor__CabinHooks__Config__EyeCountDefault"        : 0
+    },
+
+    "AssemblyEditor__Miscellaneous__Config": {
+        "AssemblyEditor__Miscellaneous__Config__Description"         : "Miscellaneous options and Other input behaviour for assembly editor.",
+        "AssemblyEditor__Miscellaneous__Config__NaOptionKey"         : "Misc_NA",
+        "AssemblyEditor__Miscellaneous__Config__OtherOptionKey"      : "Misc_Other",
+        "AssemblyEditor__Miscellaneous__Config__DefaultItems"        : ["Misc_NA"],
+        "AssemblyEditor__Miscellaneous__Config__OtherLabel"          : "Other Details",
+        "AssemblyEditor__Miscellaneous__Config__OtherPlaceholder"    : "Enter other miscellaneous item...",
+        "AssemblyEditor__Miscellaneous__Config__Options": [
+            { "Label": "N/A",                  "Key": "Misc_NA" },
+            { "Label": "Overhead Restrictors", "Key": "Misc_OverheadRestrictors" },
+            { "Label": "Letter Plate",         "Key": "Misc_LetterPlate" },
+            { "Label": "Cat Flap",             "Key": "Misc_CatFlap" },
+            { "Label": "Other",                "Key": "Misc_Other" }
+        ]
+    },
+
     "AssemblyEditor__Warnings__Config": {
         "AssemblyEditor__Warnings__Config__Description"              : "Warning thresholds and messages for the assembly editor.",
         "AssemblyEditor__Warnings__Config__HingeProjection8Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification. Confirm to proceed or cancel to select a different projection.",

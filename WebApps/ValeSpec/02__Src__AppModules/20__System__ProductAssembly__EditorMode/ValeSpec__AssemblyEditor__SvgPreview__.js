@@ -292,9 +292,21 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         input.focus();
         input.select();
 
+        var isFinalized  =  false;
+
+        function finalizeInlineEdit() {
+            if (isFinalized) return;
+            isFinalized  =  true;
+            input.removeEventListener('blur', commitValue);
+            input.removeEventListener('keydown', onInputKeydown);
+            if (input.parentNode) input.remove();
+        }
+
         function commitValue() {
+            if (isFinalized) return;
+
             var newVal  =  parseInt(input.value, 10);
-            if (isNaN(newVal)) { input.remove(); return; }
+            if (isNaN(newVal)) { finalizeInlineEdit(); return; }
 
             if (dimType === 'width') {
                 newVal  =  Math.max(widthMin, Math.min(widthMax, newVal));
@@ -302,10 +314,10 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
                 newVal  =  Math.max(heightMin, Math.min(heightMax, newVal));
             }
 
-            if (!StateManager) { input.remove(); return; }
+            if (!StateManager) { finalizeInlineEdit(); return; }
 
             var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
-            if (!assembly) { input.remove(); return; }
+            if (!assembly) { finalizeInlineEdit(); return; }
 
             if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
 
@@ -316,14 +328,24 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
             }
 
             StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
-            input.remove();
+            finalizeInlineEdit();
+        }
+
+        function onInputKeydown(ev) {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                input.blur();
+                return;
+            }
+
+            if (ev.key === 'Escape') {
+                ev.preventDefault();
+                finalizeInlineEdit();
+            }
         }
 
         input.addEventListener('blur', commitValue);
-        input.addEventListener('keydown', function(ev) {
-            if (ev.key === 'Enter')  { ev.preventDefault(); commitValue(); }
-            if (ev.key === 'Escape') { input.remove(); }
-        });
+        input.addEventListener('keydown', onInputKeydown);
     }
     // ------------------------------------------------------------
 

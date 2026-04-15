@@ -99,20 +99,33 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | POST or DELETE to server API, fire-and-forget with fallback logging
+    // HELPER FUNCTION | POST or DELETE to Server API and Return Result
     // ------------------------------------------------------------
     function ValeSpec__ProjectFileManager__ServerWrite(method, projectCode, bodyData) {
         var url   =  API_BASE + '/' + encodeURIComponent(projectCode);
         var opts  =  { method: method, headers: { 'Content-Type': 'application/json' } };
         if (bodyData) opts.body  =  JSON.stringify(bodyData);
 
-        fetch(url, opts)
-            .then(function(res) { return res.json(); })
+        return fetch(url, opts)
+            .then(function(res) {
+                return res.json().then(function(json) {
+                    if (!res.ok) {
+                        return { ok: false, error: (json && json.error) ? json.error : ('HTTP ' + res.status) };
+                    }
+                    return json;
+                });
+            })
             .then(function(json) {
-                if (!json.ok) console.error('[ValeSpec__ProjectFileManager] Server ' + method + ' failed for ' + projectCode + ':', json.error);
+                if (!json || !json.ok) {
+                    var errorText  =  json && json.error ? json.error : 'Unknown error';
+                    console.error('[ValeSpec__ProjectFileManager] Server ' + method + ' failed for ' + projectCode + ':', errorText);
+                    return { ok: false, error: errorText };
+                }
+                return { ok: true };
             })
             .catch(function(err) {
                 console.warn('[ValeSpec__ProjectFileManager] Server ' + method + ' unreachable for ' + projectCode + ' (localStorage-only fallback):', err.message);
+                return { ok: false, error: err.message || 'Server unreachable' };
             });
     }
     // ------------------------------------------------------------
@@ -189,7 +202,7 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
     function ValeSpec__ProjectFileManager__SaveProject(projectData) {
         var metadata  =  projectData['ValeSpec__ProjectFile__Metadata'];
-        if (!metadata) return false;
+        if (!metadata) return Promise.resolve({ ok: false, error: 'Missing project metadata' });
 
         var projectCode  =  metadata['ValeSpec__ProjectFile__Metadata__ProjectCode'];
         var storageKey   =  STORAGE_PREFIX + projectCode;
@@ -199,10 +212,13 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
         localStorage.setItem(storageKey, JSON.stringify(projectData));                              // <-- Update local cache
         ValeSpec__ProjectFileManager__UpdateManifestEntry(projectCode, metadata);
 
-        ValeSpec__ProjectFileManager__ServerWrite('POST', projectCode, projectData);                // <-- Persist to disk async
-
-        console.log('[ValeSpec__ProjectFileManager] Project saved: ' + projectCode);
-        return true;
+        return ValeSpec__ProjectFileManager__ServerWrite('POST', projectCode, projectData)          // <-- Persist to disk async
+            .then(function(serverResult) {
+                if (serverResult && serverResult.ok) {
+                    console.log('[ValeSpec__ProjectFileManager] Project saved: ' + projectCode);
+                }
+                return serverResult;
+            });
     }
     // ------------------------------------------------------------
 

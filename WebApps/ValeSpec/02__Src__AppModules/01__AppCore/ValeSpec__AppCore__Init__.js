@@ -192,6 +192,14 @@
         StateManager.ValeSpec__StateManager__On('assemblyUpdated', function() {
             ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist whenever an assembly field is changed
         });
+
+        StateManager.ValeSpec__StateManager__On('globalFinishChanged', function() {
+            ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist global finish updates that do not emit assemblyUpdated
+        });
+
+        StateManager.ValeSpec__StateManager__On('globalLeverTypeChanged', function() {
+            ValeSpec__AppCore__AutosaveCurrentProject();                            // <-- Persist global lever updates that do not emit assemblyUpdated
+        });
     }
     // ------------------------------------------------------------
 

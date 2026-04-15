@@ -1,7 +1,7 @@
 {
     "SvgDrawing__Frame__Config": {
         "SvgDrawing__Frame__Config__Description"     : "Stroke, shadow and visual styling for the outer door frame rectangle.",
-        "SvgDrawing__Frame__Config__StrokeWidthMm"   : 4,
+        "SvgDrawing__Frame__Config__StrokeWidthMm"   : 2,
         "SvgDrawing__Frame__Config__StrokeColor"     : "#172b3a",
         "SvgDrawing__Frame__Config__ShadowBlurMm"    : 8,
         "SvgDrawing__Frame__Config__ShadowOffsetMm"  : 3,
@@ -10,7 +10,7 @@
 
     "SvgDrawing__Panel__Config": {
         "SvgDrawing__Panel__Config__Description"     : "Fill and stroke styling for individual door panels within the frame.",
-        "SvgDrawing__Panel__Config__FillColor"       : "#e8e4df",
+        "SvgDrawing__Panel__Config__FillColor"       : "#fcfcfc",
         "SvgDrawing__Panel__Config__StrokeColor"     : "#172b3a",
         "SvgDrawing__Panel__Config__StrokeWidthMm"   : 2
     },
@@ -27,13 +27,13 @@
     "SvgDrawing__Ironmongery__Config": {
         "SvgDrawing__Ironmongery__Config__Description"   : "Stroke styling for hardware vector paths rendered onto door panels.",
         "SvgDrawing__Ironmongery__Config__StrokeColor"   : "#172b3a",
-        "SvgDrawing__Ironmongery__Config__StrokeWidthMm" : 1.2
+        "SvgDrawing__Ironmongery__Config__StrokeWidthMm" : 1.75
     },
 
     "SvgDrawing__Viewport__Config": {
         "SvgDrawing__Viewport__Config__Description"      : "Padding around the assembled drawing within the SVG viewBox.",
         "SvgDrawing__Viewport__Config__PaddingMm"        : 200,
-        "SvgDrawing__Viewport__Config__PaddingTopMm"     : 150,
+        "SvgDrawing__Viewport__Config__PaddingTopMm"     : 100,
         "SvgDrawing__Viewport__Config__PaddingRightMm"   : 200,
         "SvgDrawing__Viewport__Config__PaddingBottomMm"  : 200,
         "SvgDrawing__Viewport__Config__PaddingLeftMm"    : 200

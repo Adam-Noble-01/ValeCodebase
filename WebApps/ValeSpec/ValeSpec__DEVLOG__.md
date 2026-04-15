@@ -2,6 +2,39 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeSpec v0.0.4 - 15-Apr-2026
+### SVG Dimension Edit -> UI Panel Sync
+
+**Overview**
+- Fixed Assembly Editor sync gap where clicking SVG dimensions and entering values updated state/SVG but did not refresh right-side UI controls.
+- Added `assemblyUpdated` observer routing in `ValeSpec__AssemblyEditor__Layout__.js` so assembly changes now propagate to Door Configurator UI refresh.
+- Added non-destructive `ValeSpec__DoorConfigurator__SyncFromAssemblyUpdate(...)` in `ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js`.
+- Preserved existing full refresh path for `assemblySelected` / mode-entry while avoiding `Next`-progress reset during frequent live updates.
+- Result: SVG inline width/height edits now keep Quantity & Dimensions panel values and sliders in sync immediately.
+
+### Assembly Preview Adaptive Sizing + Layout Cleanup
+
+**Overview**
+- Fixed Assembly Editor layout config key wiring so `Na__AssemblyEditor__Config.json` values now apply correctly in `ValeSpec__AssemblyEditor__Layout__.js` (with backward-safe fallback support).
+- Reworked preview card sizing in `ValeSpec__AssemblyEditor__SvgPreview__.js` to be data-driven from rendered SVG `viewBox` ratio instead of fixed geometry.
+- Added adaptive fit behavior using preview-panel available space + resize handling (`ResizeObserver` and `window` resize fallback), improving behavior for both wide and tall assemblies.
+- Removed fixed card sizing constraints from `ValeSpec__AssemblyEditor__Styles__Main__.css` and kept the required panel-side margin behavior.
+- Extended SVG viewport config in `Na__SvgDrawing__Config.json` to support per-side render padding (`Top/Right/Bottom/Left`) and updated `ValeSpec__SvgDrawing__RenderPipeline__.js` viewBox calculation to use asymmetric padding.
+- Reduced effective top render-space padding by 25% via viewport config (while keeping other sides unchanged) so top whitespace now responds as expected.
+
+### Door Panel Defaults + Condition Rules (Config Driven)
+
+**Overview**
+- Added `AssemblyEditor__DoorPanelDefaults__Config` in `Na__AssemblyEditor__Config.json` with explicit door-type profile mapping and per-profile min/max/default dimensions.
+- Wired new assembly creation in `ValeSpec__DocEditor__SectionManager__.js` so new panels now use config-driven defaults (Double `1800 x 2100`, Single `900 x 2100`) instead of hard-coded values.
+- Updated `ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js` to apply door-type defaults/min/max when changing door type, and to clamp entered values against profile limits.
+- Updated dimension click-edit limits in `ValeSpec__AssemblyEditor__SvgPreview__.js` so inline SVG edits use the same configured min/max constraints (including 1600-3000 door height range).
+- Added `AssemblyEditor__DoorConditionWarnings__Config` with rule thresholds/messages (3 hinges, tall-door 4 hinges, Double Top, Subject to Review) and wired condition state updates from dimension changes.
+- Updated `ValeSpec__MathUtils__HingeCalculator__.js` thresholds to align with current rule intent (`949/1899` standard limits, `950+` wide condition, `2250` tall threshold), and aligned warning message key reading in `ValeSpec__AssemblyEditor__WarningSystem__.js`.
+
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
 ## ValeSpec v0.0.3 - 15-Apr-2026
 ### Full Codebase Naming Convention Refactor — ValeSpec Three-Part Namespace
 

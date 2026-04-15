@@ -26,7 +26,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
     // MODULE CONSTANTS | Minimum Font Size
     // ------------------------------------------------------------
-    const MIN_FONT_SIZE_MM  =  18;
+    const MIN_FONT_SIZE_MM  =  9;
     // ------------------------------------------------------------
 
 
@@ -48,7 +48,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     // HELPER FUNCTION | Calculate Responsive Font Size
     // ------------------------------------------------------------
     function ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor) {
-        var scaled  =  height_mm * (scaleFactor || 0.04);  // <-- Scale font to door height
+        var scaled  =  height_mm * (scaleFactor || 0.02);  // <-- Scale font to door height
         return Math.max(scaled, MIN_FONT_SIZE_MM);         // <-- Enforce minimum readability
     }
     // ------------------------------------------------------------
@@ -80,7 +80,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     function ValeSpec__DimensionRenderer__RenderWidthDimension(width_mm, height_mm, config) {
         var lineColor    =  config['SvgDrawing__Dimension__Config__LineColor']           || '#cc3333';
         var textColor    =  config['SvgDrawing__Dimension__Config__TextColor']           || '#cc3333';
-        var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.04;
+        var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.02;
         var tickSize     =  config['SvgDrawing__Dimension__Config__TickSizeMm']          || 15;
         var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
         var lineWidth    =  2;
@@ -126,7 +126,7 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     function ValeSpec__DimensionRenderer__RenderHeightDimension(width_mm, height_mm, config) {
         var lineColor    =  config['SvgDrawing__Dimension__Config__LineColor']           || '#cc3333';
         var textColor    =  config['SvgDrawing__Dimension__Config__TextColor']           || '#cc3333';
-        var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.04;
+        var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.02;
         var tickSize     =  config['SvgDrawing__Dimension__Config__TickSizeMm']          || 15;
         var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
         var lineWidth    =  2;

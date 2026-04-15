@@ -86,7 +86,16 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     // ------------------------------------------------------------
     function ValeSpec__RenderPipeline__ExtractDoorType(assemblyData) {
         var typeSection  =  assemblyData['Assembly__DoorType__Config'] || {};
-        return typeSection['Assembly__DoorType__Config__Type'] || 'Outward Opening Double Doors';
+        return typeSection['Assembly__DoorType__Config__Type'] || '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Determine if Door Type Is Configured
+    // ------------------------------------------------------------
+    function ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType) {
+        if (!doorType || typeof doorType !== 'string') return false;
+        return doorType.trim().toLowerCase() !== 'none';
     }
     // ------------------------------------------------------------
 
@@ -123,13 +132,36 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Compute ViewBox from Dimensions and Padding
+    // HELPER FUNCTION | Parse Numeric Value with Fallback
+    // ------------------------------------------------------------
+    function ValeSpec__RenderPipeline__ParseNumber(value, fallbackValue) {
+        var parsedValue  =  parseFloat(value);
+        return isNaN(parsedValue) ? fallbackValue : parsedValue;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Viewport Padding Per Side
+    // ------------------------------------------------------------
+    function ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig) {
+        var basePadding  =  ValeSpec__RenderPipeline__ParseNumber(vpConfig['SvgDrawing__Viewport__Config__PaddingMm'], 120);
+        return {
+            top    : ValeSpec__RenderPipeline__ParseNumber(vpConfig['SvgDrawing__Viewport__Config__PaddingTopMm'], basePadding),
+            right  : ValeSpec__RenderPipeline__ParseNumber(vpConfig['SvgDrawing__Viewport__Config__PaddingRightMm'], basePadding),
+            bottom : ValeSpec__RenderPipeline__ParseNumber(vpConfig['SvgDrawing__Viewport__Config__PaddingBottomMm'], basePadding),
+            left   : ValeSpec__RenderPipeline__ParseNumber(vpConfig['SvgDrawing__Viewport__Config__PaddingLeftMm'], basePadding)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Compute ViewBox from Dimensions and Side Padding
     // ------------------------------------------------------------
     function ValeSpec__RenderPipeline__ComputeViewBox(width_mm, height_mm, padding) {
-        var minX   =  -padding;                            // <-- Extend left for dimension annotations
-        var minY   =  -height_mm - padding;                // <-- Extend above top of frame (SVG Y-flip)
-        var vbW    =  width_mm + (padding * 2);            // <-- Total viewBox width
-        var vbH    =  height_mm + (padding * 2);           // <-- Total viewBox height
+        var minX   =  -padding.left;                            // <-- Extend left for dimension annotations
+        var minY   =  -height_mm - padding.top;                // <-- Extend above top of frame (SVG Y-flip)
+        var vbW    =  width_mm + padding.left + padding.right; // <-- Total viewBox width
+        var vbH    =  height_mm + padding.top + padding.bottom;// <-- Total viewBox height
 
         return minX + ' ' + minY + ' ' + vbW + ' ' + vbH;
     }
@@ -153,6 +185,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         var dims      =  ValeSpec__RenderPipeline__ExtractDimensions(assemblyData);
         var doorType  =  ValeSpec__RenderPipeline__ExtractDoorType(assemblyData);
+        if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
 
         var frameConfig   =  config['SvgDrawing__Frame__Config']        || {};
@@ -161,8 +194,8 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var dimConfig     =  config['SvgDrawing__Dimension__Config']    || {};
         var vpConfig      =  config['SvgDrawing__Viewport__Config']     || {};
 
-        var padding      =  vpConfig['SvgDrawing__Viewport__Config__PaddingMm'] || 120;
-        var viewBox      =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, padding);
+        var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
+        var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
         var panelResult  =  ValeSpec__RenderPipeline__PanelRenderer.ValeSpec__DoorPanelRenderer__RenderPanels(doorType, dims.width_mm, dims.height_mm, panelConfig);
 
@@ -204,6 +237,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         var dims      =  ValeSpec__RenderPipeline__ExtractDimensions(assemblyData);
         var doorType  =  ValeSpec__RenderPipeline__ExtractDoorType(assemblyData);
+        if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
 
         var frameConfig   =  config['SvgDrawing__Frame__Config']        || {};
@@ -211,8 +245,8 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var ironConfig    =  config['SvgDrawing__Ironmongery__Config']  || {};
         var vpConfig      =  config['SvgDrawing__Viewport__Config']     || {};
 
-        var padding      =  vpConfig['SvgDrawing__Viewport__Config__PaddingMm'] || 120;
-        var viewBox      =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, padding);
+        var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
+        var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
         var widthAttr    =  maxWidth  ? ' width="'  + maxWidth  + '"' : '';
         var heightAttr   =  maxHeight ? ' height="' + maxHeight + '"' : '';

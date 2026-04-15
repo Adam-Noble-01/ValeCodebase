@@ -1,0 +1,53 @@
+/* #region ----------------------------------------------------------------------
+ * INDEX | ValeSpec Main Stylesheet Index
+ * ----------------------------------------------------------------------------- */
+/*
+ * Central import file for all ValeSpec stylesheets
+ * Import order matters: fonts -> variables -> base -> components -> systems
+ *
+ * Author: Adam Noble - Noble Architecture
+ * Project: ValeSpec
+ */
+/* ================================================================= */
+
+
+/* Custom Fonts - Open Sans from CDN */
+/* ----------------------------------------------------------------- */
+@import url('ValeSpec__CoreUi__Styles__Fonts__.css');
+
+
+/* CSS Variables - Vale Design Suite Tokens */
+/* ----------------------------------------------------------------- */
+@import url('ValeSpec__CoreUi__Styles__Variables__.css');
+
+
+/* Base Styles - Reset & Layout */
+/* ----------------------------------------------------------------- */
+@import url('ValeSpec__CoreUi__Styles__BaseLayout__.css');
+
+
+/* Header Component - Vale Branding */
+/* ----------------------------------------------------------------- */
+@import url('ValeSpec__UiFeature__Styles__AppHeader__.css');
+
+
+/* Navigation Bar - Mode Switching Tabs */
+/* ----------------------------------------------------------------- */
+@import url('ValeSpec__UiFeature__Styles__NavigationBar__.css');
+
+
+/* Modals, Toasts & Warning Badges */
+/* ----------------------------------------------------------------- */
+@import url('ValeSpec__UiFeature__Styles__ModalsAndToasts__.css');
+
+
+/* System-Specific Sheets (imported from module folders) */
+/* ----------------------------------------------------------------- */
+@import url('../02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__Styles__Main__.css');
+@import url('../02__Src__AppModules/10__System__DocumentManagementMode/ValeSpec__DocManagement__Styles__Main__.css');
+@import url('../02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__Styles__Main__.css');
+@import url('../02__Src__AppModules/30__System__DocumentEditorMode/ValeSpec__DocEditor__Styles__Main__.css');
+@import url('../02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__Styles__Main__.css');
+
+
+/* #endregion -------------------------------------------------------- */

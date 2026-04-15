@@ -30,7 +30,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         { Label: 'N/A',                    Key: 'Misc_NA'                   },
         { Label: 'Overhead Restrictors',   Key: 'Misc_OverheadRestrictors'  },
         { Label: 'Letter Plate',           Key: 'Misc_LetterPlate'          },
-        { Label: 'Cat Flap',               Key: 'Misc_CatFlap'              }
+        { Label: 'Cat Flap',               Key: 'Misc_CatFlap'              },
+        { Label: 'Other',                  Key: 'Misc_Other'                }
     ];
     // ------------------------------------------------------------
 
@@ -43,6 +44,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     let ValeSpec__HooksAndMisc__HookCountInput   =  null;   // <-- Hook count numeric input
     let ValeSpec__HooksAndMisc__EyeCountInput    =  null;   // <-- Eye count numeric input
     let ValeSpec__HooksAndMisc__MiscCheckboxes   =  {};     // <-- Map of Key -> checkbox element
+    let ValeSpec__HooksAndMisc__MiscOtherInput   =  null;   // <-- Free text input shown when 'Other' is checked
+    let ValeSpec__HooksAndMisc__MiscOtherGroupEl =  null;   // <-- Form group wrapper for Other text input
     // ------------------------------------------------------------
 
 
@@ -50,17 +53,33 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // ------------------------------------------------------------
     function ValeSpec__HooksAndMisc__GetCabinHookOptions() {
         var ConfigLoader  =  window.ValeSpec__AppCore__ConfigLoader;
-        if (!ConfigLoader) return [];
+        var sourceOptions =  ['4"', '6"', '10"', '12"', '18"'];
+        if (!ConfigLoader) return sourceOptions.map(function(item) { return { Label: item, Value: item }; });
 
         var section  =  ConfigLoader.ValeSpec__ConfigLoader__GetSection('CabinHookOptions');
-        if (!section) return [];
+        if (section) {
+            sourceOptions  =  section['ValeSpec__CabinHook__Options__Config__Sizes'] || sourceOptions;
+        }
 
-        return section['ValeSpec__CabinHook__Options__Config__Sizes'] || [
-            { Label: '75 mm',   Value: 75  },
-            { Label: '100 mm',  Value: 100 },
-            { Label: '150 mm',  Value: 150 },
-            { Label: '200 mm',  Value: 200 }
-        ];
+        var result  =  [];
+        for (var i = 0; i < sourceOptions.length; i++) {
+            var item   =  sourceOptions[i];
+            var label  =  '';
+            var value  =  '';
+
+            if (typeof item === 'string') {
+                label  =  item.trim();
+                value  =  label;
+            } else if (item && typeof item === 'object') {
+                label  =  String(item.Label || item.Value || '').trim();
+                value  =  String(item.Value !== undefined ? item.Value : label).trim();
+            }
+
+            if (!label) continue;
+            result.push({ Label: label, Value: value || label });
+        }
+
+        return result;
     }
     // ------------------------------------------------------------
 
@@ -86,8 +105,23 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         if (miscItems.length === 0) miscItems.push('N/A');
         if (!assembly['Assembly__Miscellaneous__Config']) assembly['Assembly__Miscellaneous__Config'] = {};
         assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__Items']  =  miscItems;
+        if (ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_Other'] && ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_Other'].checked) {
+            assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__OtherText']  =  ValeSpec__HooksAndMisc__MiscOtherInput ? ValeSpec__HooksAndMisc__MiscOtherInput.value.trim() : '';
+        } else {
+            delete assembly['Assembly__Miscellaneous__Config']['Assembly__Miscellaneous__Config__OtherText'];
+        }
 
         StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Toggle Visibility of Misc Other Text Input
+    // ------------------------------------------------------------
+    function ValeSpec__HooksAndMisc__UpdateMiscOtherVisibility() {
+        if (!ValeSpec__HooksAndMisc__MiscOtherGroupEl) return;
+        var isOtherChecked  =  !!(ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_Other'] && ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_Other'].checked);
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl.style.display  =  isOtherChecked ? '' : 'none';
     }
     // ------------------------------------------------------------
 
@@ -105,11 +139,6 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         ValeSpec__HooksAndMisc__CabinHookSelect     =  document.createElement('select');
         ValeSpec__HooksAndMisc__CabinHookSelect.id  =  'ValeSpec__AssemblyEditor__CabinHookSize';
 
-        var noneOpt          =  document.createElement('option');
-        noneOpt.value        =  '';
-        noneOpt.textContent  =  'None';
-        ValeSpec__HooksAndMisc__CabinHookSelect.appendChild(noneOpt);
-
         var hookOptions  =  ValeSpec__HooksAndMisc__GetCabinHookOptions();
         for (var i = 0; i < hookOptions.length; i++) {
             var opt          =  document.createElement('option');
@@ -117,6 +146,11 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
             opt.textContent  =  hookOptions[i].Label;
             ValeSpec__HooksAndMisc__CabinHookSelect.appendChild(opt);
         }
+
+        var noneOpt          =  document.createElement('option');
+        noneOpt.value        =  '';
+        noneOpt.textContent  =  'None';
+        ValeSpec__HooksAndMisc__CabinHookSelect.appendChild(noneOpt);               // <-- Keep None at end of list
 
         ValeSpec__HooksAndMisc__CabinHookSelect.addEventListener('change', ValeSpec__HooksAndMisc__PushUpdate);
 
@@ -205,6 +239,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
                     if (ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_NA']) ValeSpec__HooksAndMisc__MiscCheckboxes['Misc_NA'].checked  =  false;
                 }
 
+                ValeSpec__HooksAndMisc__UpdateMiscOtherVisibility();
                 ValeSpec__HooksAndMisc__PushUpdate();
             });
 
@@ -216,6 +251,25 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
             ValeSpec__HooksAndMisc__MiscCheckboxes[MISC_OPTIONS[i].Key]  =  checkbox;
         }
 
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl  =  document.createElement('div');
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl.style.marginTop  =  '10px';
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl.style.display    =  'none';
+
+        var miscOtherLabel  =  document.createElement('label');
+        miscOtherLabel.textContent  =  'Other Details';
+        miscOtherLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__MiscOtherText');
+
+        ValeSpec__HooksAndMisc__MiscOtherInput       =  document.createElement('input');
+        ValeSpec__HooksAndMisc__MiscOtherInput.type  =  'text';
+        ValeSpec__HooksAndMisc__MiscOtherInput.id    =  'ValeSpec__AssemblyEditor__MiscOtherText';
+        ValeSpec__HooksAndMisc__MiscOtherInput.placeholder  =  'Enter other miscellaneous item...';
+        ValeSpec__HooksAndMisc__MiscOtherInput.addEventListener('input', ValeSpec__HooksAndMisc__PushUpdate);
+
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl.appendChild(miscOtherLabel);
+        ValeSpec__HooksAndMisc__MiscOtherGroupEl.appendChild(ValeSpec__HooksAndMisc__MiscOtherInput);
+        miscGroup.appendChild(ValeSpec__HooksAndMisc__MiscOtherGroupEl);
+
         var footerEl  =  ValeSpec__HooksAndMisc__Step6BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
         ValeSpec__HooksAndMisc__Step6BodyEl.insertBefore(miscGroup, footerEl);
     }
@@ -226,10 +280,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
     // ------------------------------------------------------------
     function ValeSpec__HooksAndMisc__HooksSummary() {
         var size   =  ValeSpec__HooksAndMisc__CabinHookSelect ? ValeSpec__HooksAndMisc__CabinHookSelect.value : '';
+        var label  =  '';
         var hooks  =  ValeSpec__HooksAndMisc__HookCountInput  ? ValeSpec__HooksAndMisc__HookCountInput.value  : '0';
         var eyes   =  ValeSpec__HooksAndMisc__EyeCountInput   ? ValeSpec__HooksAndMisc__EyeCountInput.value   : '0';
         if (!size) return 'None';
-        return size + ' mm  |  ' + hooks + ' hooks, ' + eyes + ' eyes';
+        if (ValeSpec__HooksAndMisc__CabinHookSelect && ValeSpec__HooksAndMisc__CabinHookSelect.selectedIndex >= 0) {
+            label  =  ValeSpec__HooksAndMisc__CabinHookSelect.options[ValeSpec__HooksAndMisc__CabinHookSelect.selectedIndex].textContent || '';
+        }
+        return (label || size) + '  |  ' + hooks + ' hooks, ' + eyes + ' eyes';
     }
     // ------------------------------------------------------------
 
@@ -242,7 +300,12 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
             if (ValeSpec__HooksAndMisc__MiscCheckboxes[key].checked) {
                 for (var j = 0; j < MISC_OPTIONS.length; j++) {
                     if (MISC_OPTIONS[j].Key === key) {
-                        selected.push(MISC_OPTIONS[j].Label);
+                        if (key === 'Misc_Other') {
+                            var otherText  =  ValeSpec__HooksAndMisc__MiscOtherInput ? ValeSpec__HooksAndMisc__MiscOtherInput.value.trim() : '';
+                            selected.push(otherText ? ('Other: ' + otherText) : 'Other');
+                        } else {
+                            selected.push(MISC_OPTIONS[j].Label);
+                        }
                         break;
                     }
                 }
@@ -262,19 +325,24 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc = (function() {
         var miscCfg   =  assemblyData['Assembly__Miscellaneous__Config'] || {};
 
         if (ValeSpec__HooksAndMisc__CabinHookSelect) {
-            ValeSpec__HooksAndMisc__CabinHookSelect.value  =  hooksCfg['Assembly__CabinHooks__Config__Size'] || '';
+            ValeSpec__HooksAndMisc__CabinHookSelect.value  =  hooksCfg['Assembly__CabinHooks__Config__Size'] !== undefined ? String(hooksCfg['Assembly__CabinHooks__Config__Size']) : '';
         }
         if (ValeSpec__HooksAndMisc__HookCountInput) {
-            ValeSpec__HooksAndMisc__HookCountInput.value   =  hooksCfg['Assembly__CabinHooks__Config__HookCount'] || 2;
+            ValeSpec__HooksAndMisc__HookCountInput.value   =  hooksCfg['Assembly__CabinHooks__Config__HookCount'] || 0;
         }
         if (ValeSpec__HooksAndMisc__EyeCountInput) {
-            ValeSpec__HooksAndMisc__EyeCountInput.value    =  hooksCfg['Assembly__CabinHooks__Config__EyeCount'] || 2;
+            ValeSpec__HooksAndMisc__EyeCountInput.value    =  hooksCfg['Assembly__CabinHooks__Config__EyeCount'] || 0;
         }
 
         var miscItems  =  miscCfg['Assembly__Miscellaneous__Config__Items'] || ['N/A'];
         for (var key in ValeSpec__HooksAndMisc__MiscCheckboxes) {
             ValeSpec__HooksAndMisc__MiscCheckboxes[key].checked  =  miscItems.indexOf(key) !== -1;
         }
+
+        if (ValeSpec__HooksAndMisc__MiscOtherInput) {
+            ValeSpec__HooksAndMisc__MiscOtherInput.value  =  miscCfg['Assembly__Miscellaneous__Config__OtherText'] || '';
+        }
+        ValeSpec__HooksAndMisc__UpdateMiscOtherVisibility();
     }
     // ------------------------------------------------------------
 

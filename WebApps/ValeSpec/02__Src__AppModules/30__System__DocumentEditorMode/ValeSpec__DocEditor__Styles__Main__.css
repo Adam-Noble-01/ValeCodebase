@@ -2,7 +2,7 @@
  * VALESPEC - DOCUMENT EDITOR MODE STYLES
  * =============================================================================
  *
- * FILE       : Na__DocEditor__Styles__Main__.css
+ * FILE       : ValeSpec__DocEditor__Styles__Main__.css
  * NAMESPACE  : ValeSpec
  * MODULE     : Document Editor Mode
  * AUTHOR     : Adam Noble - Noble Architecture
@@ -22,8 +22,8 @@
  * ============================================================================= */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Document Editor Container and A4 Layout
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Document Editor Container and A4 Layout
  * ----------------------------------------------------------------------------- */
 
     /* CONTAINER | Main Document Editor Wrapper */
@@ -35,11 +35,11 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Document Header Block
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Document Header Block
  * ----------------------------------------------------------------------------- */
 
     /* HEADER | Branding and Meta Container */
@@ -148,11 +148,11 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Assembly Section Blocks
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Assembly Section Blocks
  * ----------------------------------------------------------------------------- */
 
     /* SECTIONS | Scroll Container */
@@ -245,13 +245,51 @@
     .ValeSpec__DocEditor__SpecSummary span {
         display                            : block;
     }
+
+    .ValeSpec__DocEditor__SpecSummary--unconfigured {
+        padding                            : 8px 10px;
+        border                             : 1px dashed var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : #f9fbfd;
+        color                              : var(--Vale_TextMuted);
+    }
+
+    .ValeSpec__DocEditor__ThumbPlaceholder {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : var(--Vale_Spacing_Small);
+        width                              : 100%;
+        height                             : 100%;
+        min-width                          : 220px;
+        padding                            : var(--Vale_Spacing_Medium);
+        border                             : 1px dashed var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : #f9fbfd;
+        text-align                         : center;
+        box-sizing                         : border-box;
+    }
+
+    .ValeSpec__DocEditor__ThumbPlaceholderTitle {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .ValeSpec__DocEditor__ThumbPlaceholderText {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextMuted);
+        line-height                        : 1.5;
+        max-width                          : 220px;
+    }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Section Action Buttons and Reorder Handles
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Section Action Buttons and Reorder Handles
  * ----------------------------------------------------------------------------- */
 
     /* ACTIONS | Button Row */
@@ -369,11 +407,11 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Add New Assembly Button
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Add New Assembly Button
  * ----------------------------------------------------------------------------- */
 
     /* ADD | Full-Width New Assembly Button */
@@ -402,11 +440,11 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | Job Notes Textarea
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Job Notes Textarea
  * ----------------------------------------------------------------------------- */
 
     /* NOTES | Container */
@@ -453,4 +491,4 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */

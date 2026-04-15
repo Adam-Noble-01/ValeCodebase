@@ -62,9 +62,18 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
         ValeSpec__Layout__ContainerEl.innerHTML  =  '';
 
         var layoutCfg    =  (ValeSpec__Layout__ConfigData && ValeSpec__Layout__ConfigData['AssemblyEditor__Layout__Config']) || {};
-        var previewPct   =  (layoutCfg['PreviewPanelWidthPct']  || 62) + '%';
-        var controlsPct  =  (layoutCfg['ControlsPanelWidthPct'] || 38) + '%';
-        var minPreviewPx =  (layoutCfg['MinPreviewWidthPx']     || 480) + 'px';
+        var previewPctValue   =  layoutCfg['AssemblyEditor__Layout__Config__PreviewPanelWidthPct'];
+        if (previewPctValue == null) previewPctValue = layoutCfg['PreviewPanelWidthPct'];                 // <-- Backward compatibility with legacy config keys
+
+        var controlsPctValue  =  layoutCfg['AssemblyEditor__Layout__Config__ControlsPanelWidthPct'];
+        if (controlsPctValue == null) controlsPctValue = layoutCfg['ControlsPanelWidthPct'];              // <-- Backward compatibility with legacy config keys
+
+        var minPreviewPxValue =  layoutCfg['AssemblyEditor__Layout__Config__MinPreviewWidthPx'];
+        if (minPreviewPxValue == null) minPreviewPxValue = layoutCfg['MinPreviewWidthPx'];                // <-- Backward compatibility with legacy config keys
+
+        var previewPct   =  ((previewPctValue != null ? previewPctValue : 60) + '%');
+        var controlsPct  =  ((controlsPctValue != null ? controlsPctValue : 40) + '%');
+        var minPreviewPx =  ((minPreviewPxValue != null ? minPreviewPxValue : 480) + 'px');
 
         ValeSpec__Layout__PreviewPanelEl  =  document.createElement('div');
         ValeSpec__Layout__PreviewPanelEl.className  =  'ValeSpec__AssemblyEditor__PreviewPanel';
@@ -125,6 +134,32 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Handle Assembly Updated Event
+    // ------------------------------------------------------------
+    function ValeSpec__Layout__OnAssemblyUpdated(assemblyData) {
+        var data  =  assemblyData;
+        if (!data) {
+            var StateManager  =  window.ValeSpec__AppCore__StateManager;
+            if (!StateManager) return;
+            data  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        }
+        if (!data) return;
+
+        var DoorConfigurator  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Main;
+        if (!DoorConfigurator) return;
+
+        if (DoorConfigurator.ValeSpec__DoorConfigurator__SyncFromAssemblyUpdate) {
+            DoorConfigurator.ValeSpec__DoorConfigurator__SyncFromAssemblyUpdate(data);
+            return;
+        }
+
+        if (DoorConfigurator.ValeSpec__DoorConfigurator__RefreshFromAssembly) {
+            DoorConfigurator.ValeSpec__DoorConfigurator__RefreshFromAssembly(data);
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Trigger Render on Mode Entry
     // ------------------------------------------------------------
     function ValeSpec__Layout__TriggerRender() {
@@ -135,15 +170,7 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
 
         var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
         if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) {
-            SvgPreview.ValeSpec__SvgPreview__Render(assemblyData || {
-                'Assembly__Dimensions__Config': {
-                    'Assembly__Dimensions__Config__WidthMm'  : 1800,
-                    'Assembly__Dimensions__Config__HeightMm' : 2100
-                },
-                'Assembly__DoorType__Config': {
-                    'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
-                }
-            });
+            SvgPreview.ValeSpec__SvgPreview__Render(assemblyData || null);
         }
     }
     // ------------------------------------------------------------
@@ -166,6 +193,7 @@ const ValeSpec__AssemblyEditor__Layout = (function() {
             var StateManager  =  window.ValeSpec__AppCore__StateManager;
             if (StateManager) {
                 StateManager.ValeSpec__StateManager__On('assemblySelected', ValeSpec__Layout__OnAssemblySelected);
+                StateManager.ValeSpec__StateManager__On('assemblyUpdated', ValeSpec__Layout__OnAssemblyUpdated);
             }
 
             ValeSpec__Layout__Initialised  =  true;

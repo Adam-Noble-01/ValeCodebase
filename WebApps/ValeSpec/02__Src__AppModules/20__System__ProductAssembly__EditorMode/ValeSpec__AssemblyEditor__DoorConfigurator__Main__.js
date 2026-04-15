@@ -24,25 +24,85 @@
 
 const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
+    // MODULE CONSTANTS | Save Button Gating Requirements
+    // ------------------------------------------------------------
+    const SAVE_BUTTON_REQUIRED_NEXT_STEPS  =  ['doorType', 'dimensions', 'finish', 'hinges', 'levers', 'hooks'];
+    // ------------------------------------------------------------
+
+
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let ValeSpec__DoorConfigurator__ContainerEl  =  null;   // <-- Controls panel container
-    let ValeSpec__DoorConfigurator__GlobalBarEl  =  null;   // <-- Global settings bar element
-    let ValeSpec__DoorConfigurator__Initialised  =  false;  // <-- Prevents double-init
+    let ValeSpec__DoorConfigurator__ContainerEl             =  null;   // <-- Controls panel container
+    let ValeSpec__DoorConfigurator__SaveAssemblyBtnEl       =  null;   // <-- Final save button inside Misc step footer
+    let ValeSpec__DoorConfigurator__SaveButtonBindingDone   =  false;  // <-- Prevent duplicate StepManager listener registration
+    let ValeSpec__DoorConfigurator__Initialised             =  false;  // <-- Prevents double-init
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Global Settings Bar
+    // HELPER FUNCTION | Check if Save Button Should Be Visible
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__BuildGlobalBar() {
-        var GlobalSettings  =  window.ValeSpec__AssemblyEditor__GlobalSettings;
-        if (!GlobalSettings) return;
+    function ValeSpec__DoorConfigurator__CanShowSaveAssemblyButton() {
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager) return false;
+        if (StepManager.ValeSpec__StepManager__GetActiveStepId() !== 'misc') return false;
+        return StepManager.ValeSpec__StepManager__HasProgressedStepsViaNext(SAVE_BUTTON_REQUIRED_NEXT_STEPS);
+    }
+    // ------------------------------------------------------------
 
-        ValeSpec__DoorConfigurator__GlobalBarEl     =  document.createElement('div');
-        ValeSpec__DoorConfigurator__GlobalBarEl.id  =  'ValeSpec__AssemblyEditor__GlobalBar';
-        ValeSpec__DoorConfigurator__ContainerEl.appendChild(ValeSpec__DoorConfigurator__GlobalBarEl);
 
-        GlobalSettings.ValeSpec__GlobalSettings__Init(ValeSpec__DoorConfigurator__GlobalBarEl);
+    // HELPER FUNCTION | Update Save Button Visibility
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility() {
+        if (!ValeSpec__DoorConfigurator__SaveAssemblyBtnEl) return;
+        var canShow  =  ValeSpec__DoorConfigurator__CanShowSaveAssemblyButton();
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.style.display  =  canShow ? 'inline-flex' : 'none';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Handle Save Button Click
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__OnSaveAssemblyClick() {
+        ValeSpec__DoorConfigurator__SaveToAssembly();
+
+        var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
+        if (ModeManager) {
+            ModeManager.ValeSpec__ModeManager__SwitchToMode(ModeManager.MODE_DOC_EDITOR);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Save Assembly Button in Misc Footer
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__BuildSaveAssemblyButton(miscStepBodyEl) {
+        if (!miscStepBodyEl) return;
+        var footerEl  =  miscStepBodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+        if (!footerEl) return;
+
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl  =  document.createElement('button');
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.className    =  'ValeSpec__AssemblyEditor__StepCard__SaveBtn';
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.textContent  =  'Save Assembly';
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.style.display  =  'none';
+        ValeSpec__DoorConfigurator__SaveAssemblyBtnEl.addEventListener('click', ValeSpec__DoorConfigurator__OnSaveAssemblyClick);
+
+        footerEl.appendChild(ValeSpec__DoorConfigurator__SaveAssemblyBtnEl);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Subscribe to StepManager State Changes for Save Button
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__BindSaveButtonStateListener() {
+        if (ValeSpec__DoorConfigurator__SaveButtonBindingDone) return;
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager || !StepManager.ValeSpec__StepManager__OnStateChanged) return;
+
+        StepManager.ValeSpec__StepManager__OnStateChanged(function() {
+            ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
+        });
+
+        ValeSpec__DoorConfigurator__SaveButtonBindingDone  =  true;
     }
     // ------------------------------------------------------------
 
@@ -60,28 +120,34 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
 
         var step1Body  =  StepManager.ValeSpec__StepManager__CreateStep('doorType');
         var step2Body  =  StepManager.ValeSpec__StepManager__CreateStep('dimensions');
-        var step3Body  =  StepManager.ValeSpec__StepManager__CreateStep('hinges');
-        var step4Body  =  StepManager.ValeSpec__StepManager__CreateStep('levers');
-        var step5Body  =  StepManager.ValeSpec__StepManager__CreateStep('hooks');
-        var step6Body  =  StepManager.ValeSpec__StepManager__CreateStep('misc');
+        var step3Body  =  StepManager.ValeSpec__StepManager__CreateStep('finish');
+        var step4Body  =  StepManager.ValeSpec__StepManager__CreateStep('hinges');
+        var step5Body  =  StepManager.ValeSpec__StepManager__CreateStep('levers');
+        var step6Body  =  StepManager.ValeSpec__StepManager__CreateStep('hooks');
+        var step7Body  =  StepManager.ValeSpec__StepManager__CreateStep('misc');
 
-        ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body);
+        ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body);
+        ValeSpec__DoorConfigurator__BuildSaveAssemblyButton(step7Body);
+        ValeSpec__DoorConfigurator__BindSaveButtonStateListener();
 
         StepManager.ValeSpec__StepManager__GoToStep('doorType');
+        ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Initialise Column Sub-Modules into Step Cards
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body) {
+    function ValeSpec__DoorConfigurator__InitColumnModules(step1Body, step2Body, step3Body, step4Body, step5Body, step6Body, step7Body) {
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
+        var GlobalSettings =  window.ValeSpec__AssemblyEditor__GlobalSettings;
         var HingesLevers  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers;
         var HooksMisc     =  window.ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc;
 
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__Init(step1Body, step2Body);
-        if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__Init(step3Body, step4Body);
-        if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__Init(step5Body, step6Body);
+        if (GlobalSettings) GlobalSettings.ValeSpec__GlobalSettings__Init(step3Body);
+        if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__Init(step4Body, step5Body);
+        if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__Init(step6Body, step7Body);
     }
     // ------------------------------------------------------------
 
@@ -93,7 +159,6 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         ValeSpec__DoorConfigurator__ContainerEl  =  container;
         if (!ValeSpec__DoorConfigurator__ContainerEl) return;
 
-        ValeSpec__DoorConfigurator__BuildGlobalBar();
         ValeSpec__DoorConfigurator__BuildStepWizard();
 
         ValeSpec__DoorConfigurator__Initialised  =  true;
@@ -102,9 +167,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Refresh All Sub-Modules from Assembly Data
+    // HELPER FUNCTION | Apply Assembly Data to Door Configurator Sub-Modules
     // ------------------------------------------------------------
-    function ValeSpec__DoorConfigurator__RefreshFromAssembly(assemblyData) {
+    function ValeSpec__DoorConfigurator__ApplyAssemblyDataToSubModules(assemblyData) {
         if (!assemblyData) return;
 
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
@@ -114,9 +179,43 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData);
         if (HingesLevers) HingesLevers.ValeSpec__HingesAndLevers__RefreshFromAssembly(assemblyData);
         if (HooksMisc)    HooksMisc.ValeSpec__HooksAndMisc__RefreshFromAssembly(assemblyData);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Refresh All Sub-Modules from Assembly Data
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__RefreshFromAssembly(assemblyData) {
+        if (!assemblyData) return;
+
+        ValeSpec__DoorConfigurator__ApplyAssemblyDataToSubModules(assemblyData);
 
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) StepManager.ValeSpec__StepManager__RefreshAllSummaries();
+        if (StepManager) {
+            if (StepManager.ValeSpec__StepManager__ResetNextProgressTracking) {
+                StepManager.ValeSpec__StepManager__ResetNextProgressTracking();
+            }
+            StepManager.ValeSpec__StepManager__RefreshAllSummaries();
+        }
+
+        ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Sync Sub-Modules from Assembly Update Event
+    // ------------------------------------------------------------
+    function ValeSpec__DoorConfigurator__SyncFromAssemblyUpdate(assemblyData) {
+        if (!assemblyData) return;
+
+        ValeSpec__DoorConfigurator__ApplyAssemblyDataToSubModules(assemblyData);
+
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) {
+            StepManager.ValeSpec__StepManager__RefreshAllSummaries();
+        }
+
+        ValeSpec__DoorConfigurator__UpdateSaveAssemblyButtonVisibility();
     }
     // ------------------------------------------------------------
 
@@ -140,6 +239,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
     return {
         ValeSpec__DoorConfigurator__Init                : ValeSpec__DoorConfigurator__Init,
         ValeSpec__DoorConfigurator__RefreshFromAssembly : ValeSpec__DoorConfigurator__RefreshFromAssembly,
+        ValeSpec__DoorConfigurator__SyncFromAssemblyUpdate : ValeSpec__DoorConfigurator__SyncFromAssemblyUpdate,
         ValeSpec__DoorConfigurator__SaveToAssembly      : ValeSpec__DoorConfigurator__SaveToAssembly
     };
 

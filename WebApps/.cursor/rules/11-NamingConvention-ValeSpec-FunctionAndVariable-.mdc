@@ -1,0 +1,177 @@
+---
+description: ValeSpec main app — IIFE module function, variable, and public API naming convention. Apply when editing ValeSpec JS modules or the main HTML.
+globs:
+  - "**/ValeSpec/02__Src__AppModules/**/*.js"
+  - "**/ValeSpec/ValeSpec__App__.html"
+alwaysApply: false
+---
+
+# ValeSpec — Function & Variable Naming Convention
+
+## Core Rule
+
+Every symbol at module scope uses the three-part double-underscore pattern:
+
+```
+ValeSpec__<ModuleName>__<PurposeOrRole>
+```
+
+- Segment 1: Always `ValeSpec` — never omitted
+- Segment 2: The specific module name (see vocabulary below)
+- Segment 3: PascalCase purpose/role
+- Separator: Always `__` (double underscore) — never single underscore
+
+---
+
+## Functions
+
+All named functions — public, private, helpers — use the three-part pattern. No `_` prefix for private functions.
+
+```js
+async function ValeSpec__ConfigLoader__LoadConfig() { ... }
+function ValeSpec__ModeManager__HideAllPanels() { ... }      // private helper — no underscore prefix
+function ValeSpec__StepManager__BuildProgressBar() { ... }
+```
+
+Local anonymous callbacks / one-liner event handlers may use camelCase.
+
+---
+
+## Module-Level Variables
+
+All `let` / `const` at IIFE scope use the three-part pattern:
+
+```js
+let ValeSpec__StateManager__State       = { ... };
+let ValeSpec__ModeManager__CurrentMode  = null;
+const ValeSpec__ModeManager__ModePanelIds = { ... };
+```
+
+Simple scalar constants private to the IIFE use plain SCREAMING_SNAKE:
+
+```js
+const CONFIG_PATH = '...';
+const SINGLE_WIDTH_THRESHOLD = 940;
+```
+
+Local variables **inside** function bodies use camelCase: `var configData`, `var panelId`.
+
+---
+
+## Public API Return Objects
+
+IIFE return keys match the function name exactly. Callers use the full key:
+
+```js
+return {
+    ValeSpec__ConfigLoader__LoadConfig : ValeSpec__ConfigLoader__LoadConfig,
+    ValeSpec__ConfigLoader__GetSection : ValeSpec__ConfigLoader__GetSection
+};
+
+// caller:
+window.ValeSpec__AppCore__ConfigLoader.ValeSpec__ConfigLoader__LoadConfig();
+window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__On('modeChanged', fn);
+```
+
+---
+
+## CSS Classes, IDs, and HTML
+
+Both IDs and CSS classes use the same three-part convention:
+
+```html
+id="ValeSpec__App__NavigationBar"
+id="ValeSpec__DocManagement__TableContainer"
+class="ValeSpec__App__NavTab"
+class="ValeSpec__App__ModePanel"
+```
+
+BEM modifiers append `--modifier`:
+
+```html
+class="ValeSpec__App__NavTab--active"
+class="ValeSpec__DocManagement__RowBtn--delete"
+class="ValeSpec__AssemblyEditor__StepPill--completed"
+```
+
+BEM sub-elements append `__SubElement` (PascalCase):
+
+```html
+class="ValeSpec__DocManagement__EmptyState__Title"
+class="ValeSpec__AssemblyEditor__StepPill__Number"
+```
+
+---
+
+## Module Segment Vocabulary (Segment 2)
+
+### Window Registration — broader area as Segment 2
+`window.ValeSpec__AppCore__StateManager`, `window.ValeSpec__SvgDrawing__RenderPipeline`, etc.
+
+| Area | Window segment |
+|---|---|
+| App core bootstrap, mode routing, state, config | `AppCore` |
+| Data & persistence | `AppData` |
+| Utilities | `AppUtils`, `MathUtils` |
+| SVG drawing engine | `SvgDrawing` |
+| Document management mode | `DocManagement` |
+| Assembly editor mode | `AssemblyEditor` |
+| Document editor mode | `DocEditor` |
+| Document preview mode | `DocPreview` |
+
+### Function-Level Segment 2 — specific module name inside each file
+
+| Module file | Segment 2 in functions |
+|---|---|
+| `ValeSpec__AppCore__ConfigLoader__.js` | `ConfigLoader` |
+| `ValeSpec__AppCore__ModeManager__.js` | `ModeManager` |
+| `ValeSpec__AppCore__StateManager__.js` | `StateManager` |
+| `ValeSpec__AppCore__Init__.js` | `AppCore` |
+| `ValeSpec__AppData__HardwareIndexLoader__.js` | `HardwareIndexLoader` |
+| `ValeSpec__AppData__ProjectFileManager__.js` | `ProjectFileManager` |
+| `ValeSpec__AppUtils__DateFormatter__.js` | `DateFormatter` |
+| `ValeSpec__MathUtils__HingeCalculator__.js` | `HingeCalculator` |
+| `ValeSpec__MathUtils__LockingCalculator__.js` | `LockingCalculator` |
+| `ValeSpec__SvgDrawing__CoordHelpers__.js` | `CoordHelpers` |
+| `ValeSpec__SvgDrawing__DimensionRenderer__.js` | `DimensionRenderer` |
+| `ValeSpec__SvgDrawing__DoorFrameRenderer__.js` | `DoorFrameRenderer` |
+| `ValeSpec__SvgDrawing__DoorPanelRenderer__.js` | `DoorPanelRenderer` |
+| `ValeSpec__SvgDrawing__IronmongeryRenderer__.js` | `IronmongeryRenderer` |
+| `ValeSpec__SvgDrawing__RenderPipeline__.js` | `RenderPipeline` |
+| `ValeSpec__DocManagement__ProjectList__.js` | `ProjectList` |
+| `ValeSpec__DocManagement__ProjectActions__.js` | `ProjectActions` |
+| `ValeSpec__AssemblyEditor__GlobalSettings__.js` | `GlobalSettings` |
+| `ValeSpec__AssemblyEditor__WarningSystem__.js` | `WarningSystem` |
+| `ValeSpec__AssemblyEditor__StepManager__.js` | `StepManager` |
+| `ValeSpec__AssemblyEditor__SvgPreview__.js` | `SvgPreview` |
+| `ValeSpec__AssemblyEditor__Layout__.js` | `Layout` |
+| `ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js` | `DoorConfigurator` |
+| `ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js` | `DoorTypeAndDimensions` |
+| `ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers__.js` | `HingesAndLevers` |
+| `ValeSpec__AssemblyEditor__DoorConfigurator__HooksAndMisc__.js` | `HooksAndMisc` |
+| `ValeSpec__DocEditor__DocumentHeader__.js` | `DocumentHeader` |
+| `ValeSpec__DocEditor__JobNotes__.js` | `JobNotes` |
+| `ValeSpec__DocEditor__SectionManager__.js` | `SectionManager` |
+| `ValeSpec__DocPreview__PageRenderer__.js` | `PageRenderer` |
+| `ValeSpec__DocPreview__SpecTableRenderer__.js` | `SpecTableRenderer` |
+
+---
+
+## Do / Don't
+
+```js
+// CORRECT
+async function ValeSpec__ConfigLoader__LoadConfig() { ... }
+function ValeSpec__ModeManager__HideAllPanels() { ... }
+let ValeSpec__StateManager__State = {};
+window.ValeSpec__AppCore__StateManager.ValeSpec__StateManager__SetCurrentMode('AssemblyEditor');
+
+// WRONG — plain camelCase at module scope
+async function loadConfig() { ... }
+
+// WRONG — underscore prefix instead of namespace
+function _hideAllPanels() { ... }
+
+// WRONG — single underscore separator
+function ValeSpec_ModeManager_SwitchToMode() { ... }
+```

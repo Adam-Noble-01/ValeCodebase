@@ -36,7 +36,7 @@ const ValeSpec__DocEditor__DocumentHeader = (function() {
     const STATUS_OPTIONS  =  ['Draft', 'In Progress', 'Pending Approval', 'Approved', 'Completed'];
 
     const STATUS_COLORS  =  {
-        'Draft'              : '#888888',
+        'Draft'              : '#d32f2f',
         'In Progress'        : '#e6a817',
         'Pending Approval'   : '#d67e28',
         'Approved'           : '#2a7d4f',

@@ -7,7 +7,7 @@ Set-Location $ScriptRoot
 Write-Host "=============================================================================" -ForegroundColor Cyan
 Write-Host " VALESPEC - LOCALHOST STARTER (POWERSHELL)" -ForegroundColor Cyan
 Write-Host "=============================================================================" -ForegroundColor Cyan
-Write-Host " Launching python server.py on http://127.0.0.1:8002/ValeSpec__App__.html" -ForegroundColor Yellow
+Write-Host " Launching python ValeSpec__FlaskServer__Localhost__.py on http://127.0.0.1:8002/ValeSpec__App__.html" -ForegroundColor Yellow
 Write-Host "=============================================================================" -ForegroundColor Cyan
 
 $PortInUseConnections = Get-NetTCPConnection -LocalPort 8002 -State Listen -ErrorAction SilentlyContinue
@@ -21,9 +21,9 @@ if ($PortInUseConnections) {
 }
 
 try {
-    python -u server.py --host 127.0.0.1 --port 8002
+    python -u ValeSpec__FlaskServer__Localhost__.py --host 127.0.0.1 --port 8002
 }
 catch {
     Write-Host "python failed, trying py launcher..." -ForegroundColor Yellow
-    py -3 -u server.py --host 127.0.0.1 --port 8002
+    py -3 -u ValeSpec__FlaskServer__Localhost__.py --host 127.0.0.1 --port 8002
 }

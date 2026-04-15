@@ -12,8 +12,8 @@
    DESCRIPTION:
    - Determines hinge count and hanging arrangement based on door type,
      width, and height dimensions
-   - Single doors use a 940mm width threshold
-   - Double/multi-leaf doors use a 1800mm width threshold
+   - Single doors use 949mm/950mm standard-vs-wide thresholds
+   - Double doors use 1899mm/1900mm standard-vs-wide thresholds
    - Returns { count, hanging } for each leaf
 
    ============================================================================= */
@@ -26,35 +26,36 @@ const ValeSpec__MathUtils__HingeCalculator = (function() {
 
     // MODULE CONSTANTS | Threshold Values
     // ------------------------------------------------------------
-    const SINGLE_WIDTH_THRESHOLD  =  940;                                   // <-- Width threshold for single doors
-    const MULTI_WIDTH_THRESHOLD   =  1800;                                  // <-- Width threshold for multi-leaf doors
-    const WIDE_LEAF_THRESHOLD     =  950;                                   // <-- Leaf width for Double Top hanging
-    const TALL_DOOR_THRESHOLD     =  2200;                                  // <-- Height threshold for extra hinge
+    const SINGLE_WIDTH_MAX_STANDARD  =  949;                                // <-- Max single width for standard (3/4 hinge) rules
+    const DOUBLE_WIDTH_MAX_STANDARD  =  1899;                               // <-- Max double-set width for standard (3/4 hinge) rules
+    const WIDE_SINGLE_THRESHOLD      =  950;                                // <-- Single width at/above requires Double Top
+    const WIDE_DOUBLE_THRESHOLD      =  1900;                               // <-- Double overall width at/above requires Double Top
+    const TALL_DOOR_THRESHOLD        =  2250;                               // <-- Height threshold for 4-hinge standard
     // ------------------------------------------------------------
 
 
     // FUNCTION | Calculate Hinges Per Leaf
     // ------------------------------------------------------------
     function ValeSpec__HingeCalculator__CalculateHingesPerLeaf(doorType, width_mm, height_mm) {
-        var widthThreshold  =  MULTI_WIDTH_THRESHOLD;                       // <-- Default to multi-leaf
+        var safeDoorType  =  (doorType || '').toLowerCase();
+        var isSingleDoor  =  safeDoorType.indexOf('single') !== -1;
 
-        if (doorType && doorType.indexOf('Single') !== -1) {
-            widthThreshold  =  SINGLE_WIDTH_THRESHOLD;                      // <-- Use single door threshold
+        var widthStandardMax  =  isSingleDoor ? SINGLE_WIDTH_MAX_STANDARD : DOUBLE_WIDTH_MAX_STANDARD;
+        var wideThreshold     =  isSingleDoor ? WIDE_SINGLE_THRESHOLD     : WIDE_DOUBLE_THRESHOLD;
+
+        if (width_mm >= wideThreshold) {
+            return { count: 4, hanging: 'Double Top', condition: 'DOUBLE_TOP_4_HINGES' }; // <-- Wide door rule (leaf basis)
         }
 
-        if (width_mm > WIDE_LEAF_THRESHOLD) {
-            return { count: 4, hanging: 'Double Top' };                     // <-- Wide leaf needs 4 hinges
+        if (height_mm > TALL_DOOR_THRESHOLD && width_mm <= widthStandardMax) {
+            return { count: 4, hanging: 'Standard', condition: 'TALL_STANDARD_4_HINGES' }; // <-- Tall but not wide
         }
 
-        if (height_mm < TALL_DOOR_THRESHOLD && width_mm < widthThreshold) {
-            return { count: 3, hanging: 'Standard' };                       // <-- Standard 3-hinge arrangement
+        if (height_mm <= TALL_DOOR_THRESHOLD && width_mm <= widthStandardMax) {
+            return { count: 3, hanging: 'Standard', condition: 'STANDARD_3_HINGES' };      // <-- Standard 3-hinge condition
         }
 
-        if (height_mm >= TALL_DOOR_THRESHOLD && width_mm < widthThreshold) {
-            return { count: 4, hanging: 'Standard' };                       // <-- Tall door needs 4 hinges
-        }
-
-        return { count: 3, hanging: 'Standard' };                          // <-- Default fallback
+        return { count: 4, hanging: 'Standard', condition: 'SUBJECT_TO_REVIEW' };          // <-- Fallback review condition
     }
     // ------------------------------------------------------------
 

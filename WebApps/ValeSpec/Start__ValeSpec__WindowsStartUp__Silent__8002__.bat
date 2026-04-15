@@ -22,7 +22,7 @@ powershell -NoProfile -WindowStyle Hidden -Command ^
     "if ($existingConnection) { exit 0 }; " ^
     "$pythonw = Get-Command pythonw.exe -ErrorAction SilentlyContinue; " ^
     "if ($pythonw) { $pythonExePath = $pythonw.Source } else { $pythonExePath = (Get-Command python.exe -ErrorAction Stop).Source }; " ^
-    "$serverScriptPath = Join-Path $pwd.Path 'server.py'; " ^
+    "$serverScriptPath = Join-Path $pwd.Path 'ValeSpec__FlaskServer__Localhost__.py'; " ^
     "Start-Process -FilePath $pythonExePath -ArgumentList @($serverScriptPath, '--host', '127.0.0.1', '--port', '8002', '--silent', '--log-file', 'Na__ValeSpecServer__Startup.log') -WorkingDirectory $pwd.Path -WindowStyle Hidden"
 
 exit /b 0

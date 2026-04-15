@@ -2,7 +2,7 @@
  * VALESPEC - CSS VARIABLES
  * =============================================================================
  *
- * FILE       : Na__CoreUi__Styles__Variables__.css
+ * FILE       : ValeSpec__CoreUi__Styles__Variables__.css
  * NAMESPACE  : ValeSpec
  * MODULE     : CSS Variables
  * AUTHOR     : Adam Noble - Noble Architecture
@@ -17,8 +17,8 @@
  *
  * ============================================================================= */
 
-/* -----------------------------------------------------------------------------
- * REGION | CSS Variables - Vale Design Suite Standards
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | Vale Design Suite Standards
  * ----------------------------------------------------------------------------- */
 
     /* CSS VARIABLES | Color Palette and Design Tokens */
@@ -78,18 +78,18 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */
 
 
-/* -----------------------------------------------------------------------------
- * REGION | ValeSpec-Specific Extension Tokens
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | ValeSpec Extension Tokens
  * ----------------------------------------------------------------------------- */
 
     /* CSS VARIABLES | ValeSpec Application Tokens */
     /* ------------------------------------------------------------ */
     :root {
         /* Status Badge Colors */
-        --ValeSpec_StatusDraft              : #888888;                      /* <-- Draft status grey */
+        --ValeSpec_StatusDraft              : #d32f2f;                      /* <-- Draft status red (same as --ValeSpec_ErrorRed) */
         --ValeSpec_StatusInProgress         : #e6a817;                      /* <-- In Progress status amber */
         --ValeSpec_StatusPending            : #d67e28;                      /* <-- Pending Approval status orange */
         --ValeSpec_StatusApproved           : #2a7d4f;                      /* <-- Approved status green */
@@ -119,4 +119,4 @@
     }
     /* ------------------------------------------------------------ */
 
-/* endregion ------------------------------------------------------------------- */
+/* #endregion ------------------------------------------------------------------- */

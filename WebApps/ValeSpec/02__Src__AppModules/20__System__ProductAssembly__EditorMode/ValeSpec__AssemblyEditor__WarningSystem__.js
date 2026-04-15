@@ -48,8 +48,12 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             if (!response.ok) return;
             var data      =  await response.json();
             var warnings  =  data['AssemblyEditor__Warnings__Config'] || {};
-            ValeSpec__WarningSystem__HingeWarningMsg    =  warnings['HingeProjection8InchMessage']  || 'Non-standard hinge projection selected.';
-            ValeSpec__WarningSystem__HeightMismatchMsg  =  warnings['HeightMismatchMessage']        || 'Assembly heights differ significantly.';
+            ValeSpec__WarningSystem__HingeWarningMsg    =  warnings['AssemblyEditor__Warnings__Config__HingeProjection8Message']
+                                                       || warnings['HingeProjection8InchMessage']
+                                                       || 'Non-standard hinge projection selected.';
+            ValeSpec__WarningSystem__HeightMismatchMsg  =  warnings['AssemblyEditor__Warnings__Config__HeightMismatchMessage']
+                                                       || warnings['HeightMismatchMessage']
+                                                       || 'Assembly heights differ significantly.';
             ValeSpec__WarningSystem__ConfigLoaded       =  true;
         } catch (e) {
             console.warn('[ValeSpec__WarningSystem] Config load failed:', e);

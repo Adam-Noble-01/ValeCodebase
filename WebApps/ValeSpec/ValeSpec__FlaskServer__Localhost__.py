@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
- VALESPEC - DEVELOPMENT SERVER
+ VALESPEC - FLASK SERVER LOCALHOST
 =============================================================================
 Purpose:
 - Serve ValeSpec over HTTP for module loading (no file:// CORS issues)

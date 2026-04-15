@@ -1,8 +1,8 @@
 {
     "AssemblyEditor__Layout__Config": {
         "AssemblyEditor__Layout__Config__Description"            : "Two-panel layout configuration for the product assembly editor.",
-        "AssemblyEditor__Layout__Config__PreviewPanelWidthPct"   : 62,
-        "AssemblyEditor__Layout__Config__ControlsPanelWidthPct"  : 38,
+        "AssemblyEditor__Layout__Config__PreviewPanelWidthPct"   : 65,
+        "AssemblyEditor__Layout__Config__ControlsPanelWidthPct"  : 35,
         "AssemblyEditor__Layout__Config__MinPreviewWidthPx"      : 480
     },
 
@@ -12,22 +12,56 @@
         "AssemblyEditor__Slider__Config__WidthMaxMm"             : 4000,
         "AssemblyEditor__Slider__Config__WidthStepMm"            : 1,
         "AssemblyEditor__Slider__Config__WidthDefaultMm"         : 1800,
-        "AssemblyEditor__Slider__Config__HeightMinMm"            : 1800,
+        "AssemblyEditor__Slider__Config__HeightMinMm"            : 1600,
         "AssemblyEditor__Slider__Config__HeightMaxMm"            : 3000,
         "AssemblyEditor__Slider__Config__HeightStepMm"           : 1,
         "AssemblyEditor__Slider__Config__HeightDefaultMm"        : 2100
+    },
+
+    "AssemblyEditor__DoorPanelDefaults__Config": {
+        "AssemblyEditor__DoorPanelDefaults__Config__Description"                  : "Door-type specific defaults and min/max constraints used by the assembly manager and door dimension controls.",
+        "AssemblyEditor__DoorPanelDefaults__Config__DefaultDoorTypeForNewAssembly": "None",
+        "AssemblyEditor__DoorPanelDefaults__Config__FallbackProfileKey"           : "DoubleDoors",
+        "AssemblyEditor__DoorPanelDefaults__Config__DoorTypeProfileMap": {
+            "None"                           : "DoubleDoors",
+            "Outward Opening Double Doors"   : "DoubleDoors",
+            "Inward Opening Double Doors"    : "DoubleDoors",
+            "Outward Opening Single Doors"   : "SingleDoors",
+            "Inward Opening Single Doors"    : "SingleDoors",
+            "Bi Fold Doors"                  : "DoubleDoors",
+            "Other"                          : "DoubleDoors"
+        },
+        "AssemblyEditor__DoorPanelDefaults__Config__Profiles": {
+            "DoubleDoors": {
+                "AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm"       : 1800,
+                "AssemblyEditor__DoorPanelDefaults__Config__WidthMinMm"           : 600,
+                "AssemblyEditor__DoorPanelDefaults__Config__WidthMaxMm"           : 4000,
+                "AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm"      : 2100,
+                "AssemblyEditor__DoorPanelDefaults__Config__HeightMinMm"          : 1600,
+                "AssemblyEditor__DoorPanelDefaults__Config__HeightMaxMm"          : 3000
+            },
+            "SingleDoors": {
+                "AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm"       : 900,
+                "AssemblyEditor__DoorPanelDefaults__Config__WidthMinMm"           : 600,
+                "AssemblyEditor__DoorPanelDefaults__Config__WidthMaxMm"           : 4000,
+                "AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm"      : 2100,
+                "AssemblyEditor__DoorPanelDefaults__Config__HeightMinMm"          : 1600,
+                "AssemblyEditor__DoorPanelDefaults__Config__HeightMaxMm"          : 3000
+            }
+        }
     },
 
     "AssemblyEditor__Steps__Config": {
         "AssemblyEditor__Steps__Config__Description"             : "Step wizard configuration for the sequential door configurator.",
         "AssemblyEditor__Steps__Config__AutoAdvanceOnSelection"  : true,
         "AssemblyEditor__Steps__Config__Steps": [
-            { "Id": "doorType",   "Number": 1, "Title": "Door Type",            "ShortTitle": "Door Type"  },
+            { "Id": "doorType",   "Number": 1, "Title": "Door Type",             "ShortTitle": "Door Type"  },
             { "Id": "dimensions", "Number": 2, "Title": "Quantity & Dimensions", "ShortTitle": "Qty & Dims" },
-            { "Id": "hinges",     "Number": 3, "Title": "Hinge Projection",      "ShortTitle": "Hinges"     },
-            { "Id": "levers",     "Number": 4, "Title": "Lever Specification",   "ShortTitle": "Levers"     },
-            { "Id": "hooks",      "Number": 5, "Title": "Cabin Hooks",           "ShortTitle": "Hooks"      },
-            { "Id": "misc",       "Number": 6, "Title": "Miscellaneous",         "ShortTitle": "Misc"       }
+            { "Id": "finish",     "Number": 3, "Title": "Ironmongery Finish",    "ShortTitle": "Finish"     },
+            { "Id": "hinges",     "Number": 4, "Title": "Hinge Projection",      "ShortTitle": "Hinges"     },
+            { "Id": "levers",     "Number": 5, "Title": "Lever Specification",   "ShortTitle": "Levers"     },
+            { "Id": "hooks",      "Number": 6, "Title": "Cabin Hooks",           "ShortTitle": "Hooks"      },
+            { "Id": "misc",       "Number": 7, "Title": "Miscellaneous",         "ShortTitle": "Misc"       }
         ]
     },
 
@@ -35,5 +69,19 @@
         "AssemblyEditor__Warnings__Config__Description"              : "Warning thresholds and messages for the assembly editor.",
         "AssemblyEditor__Warnings__Config__HingeProjection8Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification. Confirm to proceed or cancel to select a different projection.",
         "AssemblyEditor__Warnings__Config__HeightMismatchMessage"    : "Assembly heights differ by more than 15 mm. Mismatched door heights on the same elevation may cause visual inconsistency. Review before finalising."
+    },
+
+    "AssemblyEditor__DoorConditionWarnings__Config": {
+        "AssemblyEditor__DoorConditionWarnings__Config__Description"                : "Hinge-condition thresholds and warning text for dimension-based door hanging outcomes.",
+        "AssemblyEditor__DoorConditionWarnings__Config__MinDoorHeightMm"            : 1600,
+        "AssemblyEditor__DoorConditionWarnings__Config__MaxDoorHeightMm"            : 3000,
+        "AssemblyEditor__DoorConditionWarnings__Config__TallDoorThresholdMm"        : 2250,
+        "AssemblyEditor__DoorConditionWarnings__Config__MaxSingleDoorWidthMm"       : 949,
+        "AssemblyEditor__DoorConditionWarnings__Config__MaxDoubleDoorWidthMm"       : 1899,
+        "AssemblyEditor__DoorConditionWarnings__Config__WideLeafThresholdMm"        : 950,
+        "AssemblyEditor__DoorConditionWarnings__Config__ThreeHingeRuleMessage"      : "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+        "AssemblyEditor__DoorConditionWarnings__Config__FourHingeTallRuleMessage"   : "Doors greater than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 4 hinges per leaf.",
+        "AssemblyEditor__DoorConditionWarnings__Config__DoubleTopRuleMessage"       : "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+        "AssemblyEditor__DoorConditionWarnings__Config__SubjectToReviewRuleMessage" : "Subject to review. May be Double Top & Bottom (5 hinges total)."
     }
 }

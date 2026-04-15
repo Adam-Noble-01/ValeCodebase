@@ -6,15 +6,15 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - GlobalSettings
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Persistent global context bar pinned above the step wizard
+   PURPOSE    : Step-based global finish controls within assembly wizard
    CREATED    : 2026
 
    DESCRIPTION:
-   - Renders global finish selector as a persistent header bar
+   - Renders global finish selector as a dedicated step card section
    - Options: Unlacquered Brass, Satin Nickel, Bronze, Other (free text)
    - On change calls StateManager.ValeSpec__StateManager__SetGlobalFinish()
    - Cascades finish to all assemblies in the project
-   - Styled as a prominent context bar above the step progression
+   - Registers StepManager summary and completion state for finish step
 
    ============================================================================= */
 
@@ -37,20 +37,18 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let ValeSpec__GlobalSettings__ContainerEl  =  null;  // <-- Global bar container
+    let ValeSpec__GlobalSettings__ContainerEl  =  null;  // <-- Step body container
     let ValeSpec__GlobalSettings__FinishSelect =  null;  // <-- Finish dropdown
     let ValeSpec__GlobalSettings__OtherInput   =  null;  // <-- Free text input for 'Other'
+    let ValeSpec__GlobalSettings__UserConfirmed =  false; // <-- Tracks explicit user confirmation for finish step completion
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Global Context Bar
+    // HELPER FUNCTION | Build Finish Controls in Step Body
     // ------------------------------------------------------------
     function ValeSpec__GlobalSettings__BuildFinishDropdown() {
-        ValeSpec__GlobalSettings__ContainerEl.classList.add('ValeSpec__AssemblyEditor__GlobalBar');
-
-        var icon  =  document.createElement('span');
-        icon.textContent    =  '\u2699';
-        icon.style.fontSize =  '1.1rem';
+        var group  =  document.createElement('div');
+        group.className  =  'ValeSpec__AssemblyEditor__FormGroup';
 
         var label  =  document.createElement('label');
         label.textContent  =  'Ironmongery Finish';
@@ -71,6 +69,7 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         ValeSpec__GlobalSettings__OtherInput.id           =  'ValeSpec__AssemblyEditor__GlobalFinishOther';
         ValeSpec__GlobalSettings__OtherInput.placeholder  =  'Specify finish...';
         ValeSpec__GlobalSettings__OtherInput.style.display  =  'none';
+        ValeSpec__GlobalSettings__OtherInput.style.marginTop =  '8px';
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
@@ -96,10 +95,44 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         ValeSpec__GlobalSettings__FinishSelect.addEventListener('change', ValeSpec__GlobalSettings__OnFinishChange);
         ValeSpec__GlobalSettings__OtherInput.addEventListener('change', ValeSpec__GlobalSettings__OnOtherInputChange);
 
-        ValeSpec__GlobalSettings__ContainerEl.appendChild(icon);
-        ValeSpec__GlobalSettings__ContainerEl.appendChild(label);
-        ValeSpec__GlobalSettings__ContainerEl.appendChild(ValeSpec__GlobalSettings__FinishSelect);
-        ValeSpec__GlobalSettings__ContainerEl.appendChild(ValeSpec__GlobalSettings__OtherInput);
+        group.appendChild(label);
+        group.appendChild(ValeSpec__GlobalSettings__FinishSelect);
+        group.appendChild(ValeSpec__GlobalSettings__OtherInput);
+        ValeSpec__GlobalSettings__ContainerEl.appendChild(group);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Selected Finish Label
+    // ------------------------------------------------------------
+    function ValeSpec__GlobalSettings__GetResolvedFinishLabel() {
+        if (!ValeSpec__GlobalSettings__FinishSelect) return '';
+        if (ValeSpec__GlobalSettings__FinishSelect.value === 'Other') {
+            return ValeSpec__GlobalSettings__OtherInput ? ValeSpec__GlobalSettings__OtherInput.value.trim() : '';
+        }
+        return ValeSpec__GlobalSettings__FinishSelect.value || '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Update Finish Step Completion State
+    // ------------------------------------------------------------
+    function ValeSpec__GlobalSettings__UpdateStepCompletion(isComplete) {
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager) return;
+        StepManager.ValeSpec__StepManager__MarkCompleted('finish', !!isComplete);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Register Finish Step Summary Callback
+    // ------------------------------------------------------------
+    function ValeSpec__GlobalSettings__RegisterSummary() {
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (!StepManager) return;
+        StepManager.ValeSpec__StepManager__RegisterSummary('finish', function() {
+            return ValeSpec__GlobalSettings__GetResolvedFinishLabel() || 'Not set';
+        });
     }
     // ------------------------------------------------------------
 
@@ -108,10 +141,13 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
     // ------------------------------------------------------------
     function ValeSpec__GlobalSettings__OnFinishChange() {
         var value  =  ValeSpec__GlobalSettings__FinishSelect.value;
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
 
         if (value === 'Other') {
             ValeSpec__GlobalSettings__OtherInput.style.display  =  '';
             ValeSpec__GlobalSettings__OtherInput.focus();
+            ValeSpec__GlobalSettings__UserConfirmed  =  false;
+            ValeSpec__GlobalSettings__UpdateStepCompletion(false);
             return;
         }
 
@@ -122,6 +158,12 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         if (StateManager) {
             StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
         }
+
+        ValeSpec__GlobalSettings__UserConfirmed  =  !!value;
+        ValeSpec__GlobalSettings__UpdateStepCompletion(ValeSpec__GlobalSettings__UserConfirmed);
+        if (StepManager && value) {
+            StepManager.ValeSpec__StepManager__AdvanceFromStep('finish');
+        }
     }
     // ------------------------------------------------------------
 
@@ -130,11 +172,23 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
     // ------------------------------------------------------------
     function ValeSpec__GlobalSettings__OnOtherInputChange() {
         var value  =  ValeSpec__GlobalSettings__OtherInput.value.trim();
-        if (!value) return;
+        if (!value) {
+            ValeSpec__GlobalSettings__UserConfirmed  =  false;
+            ValeSpec__GlobalSettings__UpdateStepCompletion(false);
+            return;
+        }
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
             StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+        }
+
+        ValeSpec__GlobalSettings__UserConfirmed  =  true;
+        ValeSpec__GlobalSettings__UpdateStepCompletion(ValeSpec__GlobalSettings__UserConfirmed);
+
+        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
+        if (StepManager) {
+            StepManager.ValeSpec__StepManager__AdvanceFromStep('finish');
         }
     }
     // ------------------------------------------------------------
@@ -147,6 +201,9 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         if (!ValeSpec__GlobalSettings__ContainerEl) return;
 
         ValeSpec__GlobalSettings__BuildFinishDropdown();
+        ValeSpec__GlobalSettings__RegisterSummary();
+        ValeSpec__GlobalSettings__UserConfirmed  =  false;                 // <-- Default value does not count as user-confirmed completion
+        ValeSpec__GlobalSettings__UpdateStepCompletion(false);
 
         console.log('[ValeSpec__GlobalSettings] Initialised.');
     }

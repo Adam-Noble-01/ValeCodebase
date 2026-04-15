@@ -52,26 +52,54 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndLevers = (function() 
     // HELPER FUNCTION | Get Lever Type Options from Hardware Index
     // ------------------------------------------------------------
     function ValeSpec__HingesAndLevers__GetLeverTypeOptions() {
+        var names  =  [];
+
         var HwLoader  =  window.ValeSpec__AppData__HardwareIndexLoader;
         if (HwLoader) {
             var handles  =  HwLoader.ValeSpec__HardwareIndexLoader__GetAllLeverHandles();
             if (handles && handles.length > 0) {
-                var result  =  [];
                 for (var i = 0; i < handles.length; i++) {
                     var name  =  handles[i]['HardwareItem__Name'] || '';
                     if (name) {
-                        result.push({ Label: name, Value: name });
+                        names.push(name.trim());
                     }
                 }
-                if (result.length > 0) return result;
             }
         }
 
-        return [
-            { Label: 'Scroll Lever Handle',  Value: 'Scroll Lever Handle'  },
-            { Label: 'Plain Lever Handle',   Value: 'Plain Lever Handle'   },
-            { Label: 'Newton Lever Handle',  Value: 'Newton Lever Handle'  }
-        ];
+        if (!names.length) {
+            names  =  [
+                'Scroll Lever Handle',
+                'Plain Lever Handle',
+                'Newton Lever Handle',
+                'None'
+            ];
+        }
+
+        var deduped  =  [];
+        var seen     =  {};
+        for (var j = 0; j < names.length; j++) {
+            var label  =  names[j];
+            var key    =  label.toLowerCase();
+            if (seen[key]) continue;
+            seen[key]  =  true;
+            deduped.push({ Label: label, Value: label });
+        }
+
+        deduped.sort(function(a, b) {
+            function rank(label) {
+                var lower  =  label.toLowerCase();
+                if (lower.indexOf('scroll') !== -1) return 0;                           // <-- Keep Scroll first
+                if (lower === 'none' || lower.indexOf('none') !== -1) return 2;         // <-- Keep None at end
+                return 1;
+            }
+            var rankA  =  rank(a.Label);
+            var rankB  =  rank(b.Label);
+            if (rankA !== rankB) return rankA - rankB;
+            return a.Label.localeCompare(b.Label);
+        });
+
+        return deduped;
     }
     // ------------------------------------------------------------
 

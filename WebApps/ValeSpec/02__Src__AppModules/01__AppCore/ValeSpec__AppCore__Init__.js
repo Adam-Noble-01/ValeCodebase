@@ -148,17 +148,8 @@
         if (assembly) {
             if (DoorConfigurator && DoorConfigurator.ValeSpec__DoorConfigurator__RefreshFromAssembly) DoorConfigurator.ValeSpec__DoorConfigurator__RefreshFromAssembly(assembly);
             if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) SvgPreview.ValeSpec__SvgPreview__Render(assembly);
-        } else {
-            var defaultAssembly  =  {
-                'Assembly__Dimensions__Config': {
-                    'Assembly__Dimensions__Config__WidthMm'  : 1800,
-                    'Assembly__Dimensions__Config__HeightMm' : 2100
-                },
-                'Assembly__DoorType__Config': {
-                    'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
-                }
-            };
-            if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) SvgPreview.ValeSpec__SvgPreview__Render(defaultAssembly);
+        } else if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) {
+            SvgPreview.ValeSpec__SvgPreview__Render(null);
         }
     }
     // ------------------------------------------------------------

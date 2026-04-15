@@ -2,7 +2,7 @@
    VALESPEC - ASSEMBLY EDITOR STYLES
    =============================================================================
 
-   FILE       : Na__AssemblyEditor__Styles__Main__.css
+  FILE       : ValeSpec__AssemblyEditor__Styles__Main__.css
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - Styles
    AUTHOR     : Adam Noble - Noble Architecture
@@ -18,14 +18,15 @@
    ============================================================================= */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | CSS Variables - Assembly Editor                          */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | Assembly Editor Design Tokens
+ * ----------------------------------------------------------------------------- */
 
 :root {
-    --Vale_EditorPreviewPct              : 62%;
-    --Vale_EditorControlsPct             : 38%;
+    --Vale_EditorPreviewPct              : 60%;
+    --Vale_EditorControlsPct             : 40%;
     --Vale_EditorMinPreviewWidth         : 480px;
+    --Vale_EditorViewportHeight          : calc(100vh - var(--Vale_HeaderHeight) - var(--ValeSpec_NavHeight));
     --Vale_EditorPreviewBg               : #f5f7f9;
     --Vale_EditorPreviewBorder           : #d0d5dc;
     --Vale_EditorControlsBg              : #ffffff;
@@ -59,38 +60,50 @@
     --Vale_EditorStepPillTextColour      : #ffffff;
     --Vale_EditorNextBtnBg               : #336699;
     --Vale_EditorNextBtnHover            : #2a5580;
+    --Vale_EditorSaveBtnBg               : #4a9a4a;
+    --Vale_EditorSaveBtnHover            : #3d843d;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Two-Panel Editor Layout                                  */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Two-Panel Editor Layout
+ * ----------------------------------------------------------------------------- */
+
+#ValeSpec__App__ModeAssemblyEditor {
+    height                               : var(--Vale_EditorViewportHeight);
+    min-height                           : var(--Vale_EditorViewportHeight);
+    padding                              : 0;
+    overflow                             : hidden;
+}
 
 .ValeSpec__AssemblyEditor__Container {
     display                              : flex;
     flex-direction                       : row;
     width                                : 100%;
-    height                               : 100%;
+    height                               : var(--Vale_EditorViewportHeight);
+    min-height                           : 0;
     overflow                             : hidden;
 }
 
 .ValeSpec__AssemblyEditor__PreviewPanel {
     flex                                 : 0 0 var(--Vale_EditorPreviewPct);
     min-width                            : var(--Vale_EditorMinPreviewWidth);
+    min-height                           : 0;
     display                              : flex;
     flex-direction                       : column;
     align-items                          : center;
     justify-content                      : center;
     background-color                     : var(--Vale_EditorPreviewBg);
     border-right                         : 1px solid var(--Vale_EditorPreviewBorder);
-    overflow                             : auto;
-    padding                              : 24px 32px;
+    overflow                             : hidden;
+    padding                              : 20px;
 }
 
 .ValeSpec__AssemblyEditor__ControlsPanel {
     flex                                 : 1 1 var(--Vale_EditorControlsPct);
+    min-height                           : 0;
     display                              : flex;
     flex-direction                       : column;
     background-color                     : var(--Vale_EditorControlsBg);
@@ -98,17 +111,20 @@
     padding                              : 16px;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | SVG Preview Viewport                                     */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | SVG Preview Viewport
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__SvgViewport {
     width                                : 100%;
-    max-width                            : 800px;
-    aspect-ratio                         : 3 / 4;
+    max-width                            : 100%;
+    height                               : auto;
+    max-height                           : 100%;
+    min-width                            : 0;
+    aspect-ratio                         : 0.88;
     background-color                     : #ffffff;
     border                               : 1px solid var(--Vale_EditorPreviewBorder);
     border-radius                        : 4px;
@@ -116,7 +132,10 @@
     align-items                          : center;
     justify-content                      : center;
     overflow                             : visible;
-    padding                              : 20px;
+    padding-top                          : 0px;
+    padding-right                        : 40px;
+    padding-bottom                       : 20px;
+    padding-left                         : 40px;
     box-sizing                           : border-box;
 }
 
@@ -125,16 +144,33 @@
     height                               : 100%;
 }
 
-.ValeSpec__AssemblyEditor__PreviewSliders {
+.ValeSpec__AssemblyEditor__CanvasGuide {
     display                              : flex;
-    gap                                  : 24px;
-    margin-top                           : 12px;
+    flex-direction                       : column;
+    align-items                          : center;
+    justify-content                      : center;
+    gap                                  : 8px;
     width                                : 100%;
-    max-width                            : 800px;
+    height                               : 100%;
+    border                               : 1px dashed var(--Vale_EditorPreviewBorder);
+    border-radius                        : 4px;
+    background-color                     : #f9fbfd;
+    padding                              : 24px;
+    text-align                           : center;
+    box-sizing                           : border-box;
 }
 
-.ValeSpec__AssemblyEditor__PreviewSliders .ValeSpec__AssemblyEditor__SliderGroup {
-    flex                                 : 1;
+.ValeSpec__AssemblyEditor__CanvasGuideTitle {
+    font-size                            : 0.98rem;
+    font-weight                          : 700;
+    color                                : var(--Vale_EditorLabelColour);
+}
+
+.ValeSpec__AssemblyEditor__CanvasGuideText {
+    font-size                            : 0.84rem;
+    color                                : #68788c;
+    max-width                            : 320px;
+    line-height                          : 1.5;
 }
 
 .ValeSpec__AssemblyEditor__DimEditInput {
@@ -151,12 +187,12 @@
     box-sizing                           : border-box;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Global Settings Bar                                      */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Global Settings Bar
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__GlobalBar {
     display                              : flex;
@@ -185,12 +221,12 @@
     font-size                            : 0.85rem;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Step Progress Bar                                        */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Step Progress Bar
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__StepProgressBar {
     display                              : flex;
@@ -266,12 +302,12 @@
     background-color                     : var(--Vale_EditorStepCompletedAccent);
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Steps Wrapper and Step Cards                             */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Steps Wrapper and Step Cards
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__StepsWrapper {
     display                              : flex;
@@ -407,12 +443,31 @@
     background-color                     : var(--Vale_EditorNextBtnHover);
 }
 
-/* endregion ----------------------------------------------------------------- */
+.ValeSpec__AssemblyEditor__StepCard__SaveBtn {
+    display                              : inline-flex;
+    align-items                          : center;
+    justify-content                      : center;
+    padding                              : 7px 22px;
+    background-color                     : var(--Vale_EditorSaveBtnBg);
+    color                                : #ffffff;
+    border                               : none;
+    border-radius                        : 4px;
+    font-size                            : 0.82rem;
+    font-weight                          : 600;
+    cursor                               : pointer;
+    transition                           : background-color 0.15s ease;
+}
+
+.ValeSpec__AssemblyEditor__StepCard__SaveBtn:hover {
+    background-color                     : var(--Vale_EditorSaveBtnHover);
+}
+
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Form Group Controls                                      */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Form Group Controls
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__FormGroup {
     display                              : flex;
@@ -465,12 +520,12 @@
     flex                                 : 1;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Range Slider Controls                                    */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Range Slider Controls
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__SliderGroup {
     display                              : flex;
@@ -519,18 +574,12 @@
     cursor                               : pointer;
 }
 
-.ValeSpec__AssemblyEditor__SliderValue {
-    font-size                            : 0.78rem;
-    color                                : var(--Vale_EditorLabelColour);
-    text-align                           : right;
-}
-
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Warning Badges and Toasts                                */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Warning Badges and Toasts
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__WarningBadge {
     display                              : inline-flex;
@@ -578,12 +627,12 @@
     border                               : 1px solid var(--Vale_EditorWarningBorder);
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Handing Prompt Radio Buttons                             */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Handing Prompt Radio Buttons
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__HandingPrompt {
     display                              : none;
@@ -611,12 +660,12 @@
     cursor                               : pointer;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Checkbox Controls in Step Cards                          */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Checkbox Controls in Step Cards
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__AssemblyEditor__CheckboxRow {
     display                              : flex;
@@ -635,12 +684,12 @@
     height                               : 16px;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/* REGION | Modal Dialog Overlay                                     */
-/* ----------------------------------------------------------------- */
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Modal Dialog Overlay
+ * ----------------------------------------------------------------------------- */
 
 .ValeSpec__Modal__Overlay {
     position                             : fixed;
@@ -716,4 +765,4 @@
     background-color                     : #f0f0f0;
 }
 
-/* endregion ----------------------------------------------------------------- */
+/* #endregion ----------------------------------------------------------------- */

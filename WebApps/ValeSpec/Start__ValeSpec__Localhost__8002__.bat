@@ -4,7 +4,7 @@ cd /d "%~dp0"
 echo =============================================================================
 echo  VALESPEC - LOCALHOST STARTER (BATCH)
 echo =============================================================================
-echo  Launching python server.py on http://127.0.0.1:8002/ValeSpec__App__.html
+echo  Launching python ValeSpec__FlaskServer__Localhost__.py on http://127.0.0.1:8002/ValeSpec__App__.html
 echo =============================================================================
 
 set "Na__PortInUse="
@@ -22,10 +22,10 @@ if defined Na__PortInUse (
     exit /b 1
 )
 
-python -u server.py --host 127.0.0.1 --port 8002
+python -u ValeSpec__FlaskServer__Localhost__.py --host 127.0.0.1 --port 8002
 if errorlevel 1 (
     echo python command failed, trying py launcher...
-    py -3 -u server.py --host 127.0.0.1 --port 8002
+    py -3 -u ValeSpec__FlaskServer__Localhost__.py --host 127.0.0.1 --port 8002
 )
 
 endlocal

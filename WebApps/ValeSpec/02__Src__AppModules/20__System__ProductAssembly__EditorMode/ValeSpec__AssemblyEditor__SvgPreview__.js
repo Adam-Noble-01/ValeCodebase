@@ -6,13 +6,13 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - SvgPreview
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : SVG viewport management and dimension slider controls
+   PURPOSE    : SVG viewport management and interactive dimension editing
    CREATED    : 2026
 
    DESCRIPTION:
    - Creates SVG viewport element inside preview panel
-   - Width and height sliders below the SVG sync with assembly dimensions
    - Subscribes to 'assemblyUpdated' for reactive re-rendering
+   - Supports click-to-edit on rendered SVG dimension annotations
    - Delegates actual SVG drawing to ValeSpec__SvgDrawing__RenderPipeline
 
    ============================================================================= */
@@ -23,9 +23,10 @@
 
 const ValeSpec__AssemblyEditor__SvgPreview = (function() {
 
-    // MODULE CONSTANTS | Config Path
+    // MODULE CONSTANTS | Config File Paths
     // ------------------------------------------------------------
-    const CONFIG_PATH  =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
+    const ASSEMBLY_EDITOR_CONFIG_PATH  =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
+    const SVG_DRAWING_CONFIG_PATH      =  '02__Src__AppModules/05__SvgDrawing__RenderPipeline/Na__SvgDrawing__Config.json';
     // ------------------------------------------------------------
 
 
@@ -33,28 +34,14 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // ------------------------------------------------------------
     let ValeSpec__SvgPreview__ContainerEl    =  null;   // <-- Parent container from Layout
     let ValeSpec__SvgPreview__ViewportEl     =  null;   // <-- SVG viewport wrapper div
-    let ValeSpec__SvgPreview__WidthSliderEl  =  null;   // <-- Width range input
-    let ValeSpec__SvgPreview__HeightSliderEl =  null;   // <-- Height range input
-    let ValeSpec__SvgPreview__WidthValueEl   =  null;   // <-- Width numeric display
-    let ValeSpec__SvgPreview__HeightValueEl  =  null;   // <-- Height numeric display
-    let ValeSpec__SvgPreview__SliderConfig   =  null;   // <-- Slider limits from config
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Load Slider Configuration
-    // ------------------------------------------------------------
-    async function ValeSpec__SvgPreview__LoadSliderConfig() {
-        try {
-            var response  =  await fetch(CONFIG_PATH);
-            if (!response.ok) return null;
-            var data  =  await response.json();
-            ValeSpec__SvgPreview__SliderConfig  =  data['AssemblyEditor__Slider__Config'] || null;
-            return ValeSpec__SvgPreview__SliderConfig;
-        } catch (e) {
-            console.warn('[ValeSpec__SvgPreview] Could not load slider config:', e);
-            return null;
-        }
-    }
+    let ValeSpec__SvgPreview__DoorPanelDefaultsConfig  =  null;   // <-- Door-type width/height min/max defaults
+    let ValeSpec__SvgPreview__ViewportPaddingTopMm     =  150;    // <-- Top render-space padding from SVG config
+    let ValeSpec__SvgPreview__ViewportPaddingRightMm   =  200;    // <-- Right render-space padding from SVG config
+    let ValeSpec__SvgPreview__ViewportPaddingBottomMm  =  200;    // <-- Bottom render-space padding from SVG config
+    let ValeSpec__SvgPreview__ViewportPaddingLeftMm    =  200;    // <-- Left render-space padding from SVG config
+    let ValeSpec__SvgPreview__CurrentAspectRatio       =  0.88;   // <-- Last applied card aspect ratio
+    let ValeSpec__SvgPreview__ResizeObserver           =  null;    // <-- Preview panel resize observer
+    let ValeSpec__SvgPreview__WindowResizeHandler      =  null;    // <-- Window resize fallback handler
     // ------------------------------------------------------------
 
 
@@ -69,101 +56,173 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Create Single Slider Group
+    // HELPER FUNCTION | Parse Numeric Value with Fallback
     // ------------------------------------------------------------
-    function ValeSpec__SvgPreview__CreateSliderGroup(labelText, id, cfg) {
-        var min     =  (cfg && cfg['Min'])     || 600;
-        var max     =  (cfg && cfg['Max'])     || 4000;
-        var step    =  (cfg && cfg['Step'])    || 1;
-        var defVal  =  (cfg && cfg['Default']) || 1800;
-
-        var group  =  document.createElement('div');
-        group.className  =  'ValeSpec__AssemblyEditor__SliderGroup';
-
-        var label  =  document.createElement('label');
-        label.textContent  =  labelText;
-        label.setAttribute('for', id);
-
-        var input  =  document.createElement('input');
-        input.type   =  'range';
-        input.id     =  id;
-        input.min    =  min;
-        input.max    =  max;
-        input.step   =  step;
-        input.value  =  defVal;
-
-        var valueSpan  =  document.createElement('span');
-        valueSpan.className    =  'ValeSpec__AssemblyEditor__SliderValue';
-        valueSpan.id           =  id + '__Value';
-        valueSpan.textContent  =  defVal + ' mm';
-
-        group.appendChild(label);
-        group.appendChild(input);
-        group.appendChild(valueSpan);
-
-        return { group: group, input: input, valueSpan: valueSpan };
+    function ValeSpec__SvgPreview__ParseNumber(value, fallbackValue) {
+        var parsedValue  =  parseFloat(value);
+        return isNaN(parsedValue) ? fallbackValue : parsedValue;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Push Dimension Update to StateManager
+    // HELPER FUNCTION | Load Local Preview Config
     // ------------------------------------------------------------
-    function ValeSpec__SvgPreview__PushDimensionUpdate() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return;
+    async function ValeSpec__SvgPreview__EnsureConfigLoaded() {
+        if (ValeSpec__SvgPreview__DoorPanelDefaultsConfig) return;
+        try {
+            var assemblyResponse  =  await fetch(ASSEMBLY_EDITOR_CONFIG_PATH);
+            if (assemblyResponse.ok) {
+                var assemblyData  =  await assemblyResponse.json();
+                ValeSpec__SvgPreview__DoorPanelDefaultsConfig  =  assemblyData['AssemblyEditor__DoorPanelDefaults__Config'] || null;
+            }
 
-        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
-        if (!assembly) return;
-
-        if (!assembly['Assembly__Dimensions__Config']) assembly['Assembly__Dimensions__Config'] = {};
-        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']   =  parseInt(ValeSpec__SvgPreview__WidthSliderEl.value, 10);
-        assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  parseInt(ValeSpec__SvgPreview__HeightSliderEl.value, 10);
-        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+            var svgResponse  =  await fetch(SVG_DRAWING_CONFIG_PATH);
+            if (svgResponse.ok) {
+                var svgData    =  await svgResponse.json();
+                var viewportConfig  =  svgData['SvgDrawing__Viewport__Config'] || {};
+                var basePadding  =  ValeSpec__SvgPreview__ParseNumber(viewportConfig['SvgDrawing__Viewport__Config__PaddingMm'], 200);
+                ValeSpec__SvgPreview__ViewportPaddingTopMm     =  ValeSpec__SvgPreview__ParseNumber(viewportConfig['SvgDrawing__Viewport__Config__PaddingTopMm'], basePadding);
+                ValeSpec__SvgPreview__ViewportPaddingRightMm   =  ValeSpec__SvgPreview__ParseNumber(viewportConfig['SvgDrawing__Viewport__Config__PaddingRightMm'], basePadding);
+                ValeSpec__SvgPreview__ViewportPaddingBottomMm  =  ValeSpec__SvgPreview__ParseNumber(viewportConfig['SvgDrawing__Viewport__Config__PaddingBottomMm'], basePadding);
+                ValeSpec__SvgPreview__ViewportPaddingLeftMm    =  ValeSpec__SvgPreview__ParseNumber(viewportConfig['SvgDrawing__Viewport__Config__PaddingLeftMm'], basePadding);
+            }
+        } catch (e) {
+            console.warn('[ValeSpec__SvgPreview] Config load failed:', e);
+        }
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Dimension Sliders
+    // HELPER FUNCTION | Resolve Door Type Profile
     // ------------------------------------------------------------
-    function ValeSpec__SvgPreview__BuildSliders() {
-        var wrapper  =  document.createElement('div');
-        wrapper.className  =  'ValeSpec__AssemblyEditor__PreviewSliders';
+    function ValeSpec__SvgPreview__GetDoorPanelProfileForType(doorType) {
+        var cfg         =  ValeSpec__SvgPreview__DoorPanelDefaultsConfig || {};
+        var profileMap  =  cfg['AssemblyEditor__DoorPanelDefaults__Config__DoorTypeProfileMap'] || {};
+        var profiles    =  cfg['AssemblyEditor__DoorPanelDefaults__Config__Profiles'] || {};
+        var fallbackKey =  cfg['AssemblyEditor__DoorPanelDefaults__Config__FallbackProfileKey'] || 'DoubleDoors';
+        var profileKey  =  profileMap[doorType] || fallbackKey;
+        var profile     =  profiles[profileKey] || profiles[fallbackKey];
+        if (profile) return profile;
 
-        var cfg  =  ValeSpec__SvgPreview__SliderConfig;
+        return {
+            'AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm' : 1800,
+            'AssemblyEditor__DoorPanelDefaults__Config__WidthMinMm'   : 600,
+            'AssemblyEditor__DoorPanelDefaults__Config__WidthMaxMm'   : 4000,
+            'AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm' : 2100,
+            'AssemblyEditor__DoorPanelDefaults__Config__HeightMinMm'  : 1600,
+            'AssemblyEditor__DoorPanelDefaults__Config__HeightMaxMm'  : 3000
+        };
+    }
+    // ------------------------------------------------------------
 
-        var widthCfg   =  cfg ? {
-            Min: cfg['AssemblyEditor__Slider__Config__WidthMinMm']     || 600,
-            Max: cfg['AssemblyEditor__Slider__Config__WidthMaxMm']     || 4000,
-            Step: cfg['AssemblyEditor__Slider__Config__WidthStepMm']   || 1,
-            Default: cfg['AssemblyEditor__Slider__Config__WidthDefaultMm'] || 1800
-        } : null;
-        var heightCfg  =  cfg ? {
-            Min: cfg['AssemblyEditor__Slider__Config__HeightMinMm']     || 1800,
-            Max: cfg['AssemblyEditor__Slider__Config__HeightMaxMm']     || 3000,
-            Step: cfg['AssemblyEditor__Slider__Config__HeightStepMm']   || 1,
-            Default: cfg['AssemblyEditor__Slider__Config__HeightDefaultMm'] || 2100
-        } : null;
 
-        var widthParts   =  ValeSpec__SvgPreview__CreateSliderGroup('Width (mm)',  'ValeSpec__AssemblyEditor__WidthSlider',  widthCfg);
-        var heightParts  =  ValeSpec__SvgPreview__CreateSliderGroup('Height (mm)', 'ValeSpec__AssemblyEditor__HeightSlider', heightCfg);
+    // HELPER FUNCTION | Get Default Preview Aspect Ratio
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__GetDefaultAspectRatio() {
+        var profile          =  ValeSpec__SvgPreview__GetDoorPanelProfileForType('Outward Opening Double Doors');
+        var widthDefaultMm   =  ValeSpec__SvgPreview__ParseNumber(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm'], 1800);
+        var heightDefaultMm  =  ValeSpec__SvgPreview__ParseNumber(profile['AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm'], 2100);
+        var viewBoxWidthMm   =  widthDefaultMm + ValeSpec__SvgPreview__ViewportPaddingLeftMm + ValeSpec__SvgPreview__ViewportPaddingRightMm;
+        var viewBoxHeightMm  =  heightDefaultMm + ValeSpec__SvgPreview__ViewportPaddingTopMm + ValeSpec__SvgPreview__ViewportPaddingBottomMm;
+        if (viewBoxWidthMm <= 0 || viewBoxHeightMm <= 0) return 0.88;
 
-        ValeSpec__SvgPreview__WidthSliderEl   =  widthParts.input;
-        ValeSpec__SvgPreview__HeightSliderEl  =  heightParts.input;
-        ValeSpec__SvgPreview__WidthValueEl    =  widthParts.valueSpan;
-        ValeSpec__SvgPreview__HeightValueEl   =  heightParts.valueSpan;
+        return viewBoxWidthMm / viewBoxHeightMm;
+    }
+    // ------------------------------------------------------------
 
-        wrapper.appendChild(widthParts.group);
-        wrapper.appendChild(heightParts.group);
-        ValeSpec__SvgPreview__ContainerEl.appendChild(wrapper);
 
-        ValeSpec__SvgPreview__WidthSliderEl.addEventListener('input', function() {
-            ValeSpec__SvgPreview__WidthValueEl.textContent  =  parseInt(ValeSpec__SvgPreview__WidthSliderEl.value, 10) + ' mm';
-            ValeSpec__SvgPreview__PushDimensionUpdate();
-        });
-        ValeSpec__SvgPreview__HeightSliderEl.addEventListener('input', function() {
-            ValeSpec__SvgPreview__HeightValueEl.textContent  =  parseInt(ValeSpec__SvgPreview__HeightSliderEl.value, 10) + ' mm';
-            ValeSpec__SvgPreview__PushDimensionUpdate();
-        });
+    // HELPER FUNCTION | Fit Viewport Card to Available Preview Space
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__ApplyViewportFit(aspectRatio) {
+        if (!ValeSpec__SvgPreview__ContainerEl || !ValeSpec__SvgPreview__ViewportEl) return;
+
+        var ratio  =  ValeSpec__SvgPreview__ParseNumber(aspectRatio, ValeSpec__SvgPreview__GetDefaultAspectRatio());
+        if (ratio <= 0) ratio = 0.88;
+
+        var styles        =  window.getComputedStyle(ValeSpec__SvgPreview__ContainerEl);
+        var paddingLeft   =  ValeSpec__SvgPreview__ParseNumber(styles.paddingLeft, 0);
+        var paddingRight  =  ValeSpec__SvgPreview__ParseNumber(styles.paddingRight, 0);
+        var paddingTop    =  ValeSpec__SvgPreview__ParseNumber(styles.paddingTop, 0);
+        var paddingBottom =  ValeSpec__SvgPreview__ParseNumber(styles.paddingBottom, 0);
+
+        var availableWidth   =  ValeSpec__SvgPreview__ContainerEl.clientWidth  - paddingLeft - paddingRight;
+        var availableHeight  =  ValeSpec__SvgPreview__ContainerEl.clientHeight - paddingTop  - paddingBottom;
+        if (availableWidth <= 0 || availableHeight <= 0) return;
+
+        var fittedWidth   =  Math.min(availableWidth, availableHeight * ratio);
+        var fittedHeight  =  fittedWidth / ratio;
+
+        ValeSpec__SvgPreview__CurrentAspectRatio       =  ratio;
+        ValeSpec__SvgPreview__ViewportEl.style.width   =  Math.max(0, fittedWidth) + 'px';
+        ValeSpec__SvgPreview__ViewportEl.style.height  =  Math.max(0, fittedHeight) + 'px';
+        ValeSpec__SvgPreview__ViewportEl.style.aspectRatio  =  ratio.toString();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fit Viewport using Current SVG ViewBox
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__FitViewportToContent() {
+        if (!ValeSpec__SvgPreview__ViewportEl) return;
+
+        var svgEl      =  ValeSpec__SvgPreview__ViewportEl.querySelector('svg');
+        var ratio      =  ValeSpec__SvgPreview__CurrentAspectRatio || ValeSpec__SvgPreview__GetDefaultAspectRatio();
+        var hasViewBox =  !!(svgEl && svgEl.viewBox && svgEl.viewBox.baseVal);
+
+        if (hasViewBox && svgEl.viewBox.baseVal.height > 0) {
+            ratio  =  svgEl.viewBox.baseVal.width / svgEl.viewBox.baseVal.height;
+        } else {
+            ratio  =  ValeSpec__SvgPreview__GetDefaultAspectRatio();
+        }
+
+        ValeSpec__SvgPreview__ApplyViewportFit(ratio);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Bind Resize Hooks for Adaptive Preview
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__BindResizeHandlers() {
+        if (!ValeSpec__SvgPreview__ContainerEl) return;
+
+        if (!ValeSpec__SvgPreview__WindowResizeHandler) {
+            ValeSpec__SvgPreview__WindowResizeHandler  =  function() {
+                ValeSpec__SvgPreview__FitViewportToContent();
+            };
+            window.addEventListener('resize', ValeSpec__SvgPreview__WindowResizeHandler);
+        }
+
+        if (!ValeSpec__SvgPreview__ResizeObserver && window.ResizeObserver) {
+            ValeSpec__SvgPreview__ResizeObserver  =  new ResizeObserver(function() {
+                ValeSpec__SvgPreview__FitViewportToContent();
+            });
+            ValeSpec__SvgPreview__ResizeObserver.observe(ValeSpec__SvgPreview__ContainerEl);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Determine if Assembly Door Type is Configured
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__IsAssemblyConfigured(assemblyData) {
+        if (!assemblyData) return false;
+        var doorTypeCfg  =  assemblyData['Assembly__DoorType__Config'] || {};
+        var doorType     =  doorTypeCfg['Assembly__DoorType__Config__Type'];
+        if (!doorType || typeof doorType !== 'string') return false;
+        return doorType.trim().toLowerCase() !== 'none';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Render Canvas Guidance Message
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__RenderCanvasGuide() {
+        if (!ValeSpec__SvgPreview__ViewportEl) return;
+        var html  =  '<div class="ValeSpec__AssemblyEditor__CanvasGuide">';
+        html     +=      '<div class="ValeSpec__AssemblyEditor__CanvasGuideTitle">Assembly preview not started</div>';
+        html     +=      '<div class="ValeSpec__AssemblyEditor__CanvasGuideText">Begin by selecting Door Type in the configuration menu.</div>';
+        html     +=  '</div>';
+        ValeSpec__SvgPreview__ViewportEl.innerHTML  =  html;
     }
     // ------------------------------------------------------------
 
@@ -201,12 +260,23 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         input.value      =  curValue;
         input.step       =  1;
 
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var assemblyData  =  StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
+        var doorTypeCfg   =  assemblyData ? (assemblyData['Assembly__DoorType__Config'] || {}) : {};
+        var doorType      =  doorTypeCfg['Assembly__DoorType__Config__Type'] || 'None';
+        var profile       =  ValeSpec__SvgPreview__GetDoorPanelProfileForType(doorType);
+
+        var widthMin      =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthMinMm'], 10)   || 600;
+        var widthMax      =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthMaxMm'], 10)   || 4000;
+        var heightMin     =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__HeightMinMm'], 10)  || 1600;
+        var heightMax     =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__HeightMaxMm'], 10)  || 3000;
+
         if (dimType === 'width') {
-            input.min  =  600;
-            input.max  =  4000;
+            input.min  =  widthMin;
+            input.max  =  widthMax;
         } else {
-            input.min  =  1800;
-            input.max  =  3000;
+            input.min  =  heightMin;
+            input.max  =  heightMax;
         }
 
         var containerRect  =  ValeSpec__SvgPreview__ViewportEl.parentElement.getBoundingClientRect();
@@ -227,12 +297,11 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
             if (isNaN(newVal)) { input.remove(); return; }
 
             if (dimType === 'width') {
-                newVal  =  Math.max(600, Math.min(4000, newVal));
+                newVal  =  Math.max(widthMin, Math.min(widthMax, newVal));
             } else {
-                newVal  =  Math.max(1800, Math.min(3000, newVal));
+                newVal  =  Math.max(heightMin, Math.min(heightMax, newVal));
             }
 
-            var StateManager  =  window.ValeSpec__AppCore__StateManager;
             if (!StateManager) { input.remove(); return; }
 
             var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
@@ -242,10 +311,8 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
 
             if (dimType === 'width') {
                 assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__WidthMm']  =  newVal;
-                if (ValeSpec__SvgPreview__WidthSliderEl) { ValeSpec__SvgPreview__WidthSliderEl.value = newVal; ValeSpec__SvgPreview__WidthValueEl.textContent = newVal + ' mm'; }
             } else {
                 assembly['Assembly__Dimensions__Config']['Assembly__Dimensions__Config__HeightMm']  =  newVal;
-                if (ValeSpec__SvgPreview__HeightSliderEl) { ValeSpec__SvgPreview__HeightSliderEl.value = newVal; ValeSpec__SvgPreview__HeightValueEl.textContent = newVal + ' mm'; }
             }
 
             StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
@@ -264,15 +331,6 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // HELPER FUNCTION | Handle Assembly Updated Event
     // ------------------------------------------------------------
     function ValeSpec__SvgPreview__OnAssemblyUpdated(assemblyData) {
-        if (assemblyData && ValeSpec__SvgPreview__WidthSliderEl && ValeSpec__SvgPreview__HeightSliderEl) {
-            var dims    =  assemblyData['Assembly__Dimensions__Config'] || {};
-            var width   =  dims['Assembly__Dimensions__Config__WidthMm']  || ValeSpec__SvgPreview__WidthSliderEl.value;
-            var height  =  dims['Assembly__Dimensions__Config__HeightMm'] || ValeSpec__SvgPreview__HeightSliderEl.value;
-            ValeSpec__SvgPreview__WidthSliderEl.value        =  width;
-            ValeSpec__SvgPreview__HeightSliderEl.value       =  height;
-            ValeSpec__SvgPreview__WidthValueEl.textContent   =  width + ' mm';
-            ValeSpec__SvgPreview__HeightValueEl.textContent  =  height + ' mm';
-        }
         ValeSpec__SvgPreview__Render(assemblyData);
     }
     // ------------------------------------------------------------
@@ -283,22 +341,7 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     function ValeSpec__SvgPreview__DoInitialRender() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         var assembly      =  StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
-
-        if (assembly) {
-            ValeSpec__SvgPreview__Render(assembly);
-            return;
-        }
-
-        var defaultAssembly  =  {
-            'Assembly__Dimensions__Config': {
-                'Assembly__Dimensions__Config__WidthMm'  : parseInt(ValeSpec__SvgPreview__WidthSliderEl.value, 10)  || 1800,
-                'Assembly__Dimensions__Config__HeightMm' : parseInt(ValeSpec__SvgPreview__HeightSliderEl.value, 10) || 2100
-            },
-            'Assembly__DoorType__Config': {
-                'Assembly__DoorType__Config__Type': 'Outward Opening Double Doors'
-            }
-        };
-        ValeSpec__SvgPreview__Render(defaultAssembly);
+        ValeSpec__SvgPreview__Render(assembly);
     }
     // ------------------------------------------------------------
 
@@ -312,17 +355,32 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         var StateManager    =  window.ValeSpec__AppCore__StateManager;
         var hwIndex         =  StateManager ? StateManager.ValeSpec__StateManager__GetState().hardwareIndex : null;
 
-        if (RenderPipeline && assemblyData) {
+        if (!assemblyData) {
+            ValeSpec__SvgPreview__ViewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">Select an assembly to preview.</p>';
+            ValeSpec__SvgPreview__FitViewportToContent();
+            return;
+        }
+
+        if (!ValeSpec__SvgPreview__IsAssemblyConfigured(assemblyData)) {
+            ValeSpec__SvgPreview__RenderCanvasGuide();
+            ValeSpec__SvgPreview__FitViewportToContent();
+            return;
+        }
+
+        if (RenderPipeline) {
             try {
                 var svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderAssembly(assemblyData, hwIndex);
                 ValeSpec__SvgPreview__ViewportEl.innerHTML  =  svgMarkup || '';
                 ValeSpec__SvgPreview__BindDimensionClicks();
+                ValeSpec__SvgPreview__FitViewportToContent();
             } catch (e) {
                 ValeSpec__SvgPreview__ViewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">SVG render error: ' + e.message + '</p>';
                 console.error('[ValeSpec__SvgPreview] Render error:', e);
+                ValeSpec__SvgPreview__FitViewportToContent();
             }
         } else {
-            ValeSpec__SvgPreview__ViewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">Select an assembly to preview</p>';
+            ValeSpec__SvgPreview__ViewportEl.innerHTML  =  '<p style="color:var(--Vale_TextSubtle); padding:20px;">Drawing pipeline unavailable.</p>';
+            ValeSpec__SvgPreview__FitViewportToContent();
         }
     }
     // ------------------------------------------------------------
@@ -334,9 +392,9 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         ValeSpec__SvgPreview__ContainerEl  =  container;
         if (!ValeSpec__SvgPreview__ContainerEl) return;
 
-        await ValeSpec__SvgPreview__LoadSliderConfig();
+        await ValeSpec__SvgPreview__EnsureConfigLoaded();
         ValeSpec__SvgPreview__BuildViewport();
-        ValeSpec__SvgPreview__BuildSliders();
+        ValeSpec__SvgPreview__BindResizeHandlers();
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {

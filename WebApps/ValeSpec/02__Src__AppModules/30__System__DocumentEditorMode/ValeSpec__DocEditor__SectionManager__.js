@@ -28,13 +28,16 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
     // MODULE CONSTANTS | DOM Target IDs
     // ------------------------------------------------------------
-    const SECTIONS_CONTAINER_ID  =  'ValeSpec__DocEditor__SectionsContainer';
+    const SECTIONS_CONTAINER_ID           =  'ValeSpec__DocEditor__SectionsContainer';
+    const ASSEMBLY_EDITOR_CONFIG_PATH     =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
     // ------------------------------------------------------------
 
 
     // MODULE VARIABLES | Binding Guard
     // ------------------------------------------------------------
     let ValeSpec__SectionManager__DelegationBound  =  false;   // <-- Prevents duplicate click listeners on re-renders
+    let ValeSpec__SectionManager__AssemblyEditorConfig         =  null;   // <-- Cached assembly editor config JSON
+    let ValeSpec__SectionManager__AssemblyEditorConfigPromise  =  null;   // <-- Shared in-flight config request
     // ------------------------------------------------------------
 
 
@@ -47,6 +50,26 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         var project  =  state.currentProject;
         if (!project) return [];
         return project['ValeSpec__ProjectFile__Assemblies'] || [];                 // <-- Assembly array from project data
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read Door Type String from Assembly Data
+    // ------------------------------------------------------------
+    function ValeSpec__SectionManager__GetDoorTypeValue(assembly) {
+        var doorConfig  =  assembly['Assembly__DoorType__Config'] || {};
+        var doorType    =  doorConfig['Assembly__DoorType__Config__Type'];
+        return typeof doorType === 'string' ? doorType.trim() : '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Determine if Assembly is Configured
+    // ------------------------------------------------------------
+    function ValeSpec__SectionManager__IsAssemblyConfigured(assembly) {
+        var doorType  =  ValeSpec__SectionManager__GetDoorTypeValue(assembly);
+        if (!doorType) return false;
+        return doorType.toLowerCase() !== 'none';
     }
     // ------------------------------------------------------------
 
@@ -66,14 +89,65 @@ const ValeSpec__DocEditor__SectionManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Ensure Assembly Editor Config Is Loaded
+    // ------------------------------------------------------------
+    async function ValeSpec__SectionManager__EnsureAssemblyEditorConfigLoaded() {
+        if (ValeSpec__SectionManager__AssemblyEditorConfig) return ValeSpec__SectionManager__AssemblyEditorConfig;
+        if (ValeSpec__SectionManager__AssemblyEditorConfigPromise) return ValeSpec__SectionManager__AssemblyEditorConfigPromise;
+
+        ValeSpec__SectionManager__AssemblyEditorConfigPromise  =  fetch(ASSEMBLY_EDITOR_CONFIG_PATH)
+            .then(function(response) {
+                if (!response.ok) throw new Error('Config fetch failed: ' + response.status);
+                return response.json();
+            })
+            .then(function(data) {
+                ValeSpec__SectionManager__AssemblyEditorConfig  =  data || {};
+                return ValeSpec__SectionManager__AssemblyEditorConfig;
+            })
+            .catch(function(e) {
+                console.warn('[ValeSpec__SectionManager] Assembly config load failed:', e);
+                return null;
+            })
+            .finally(function() {
+                ValeSpec__SectionManager__AssemblyEditorConfigPromise  =  null;
+            });
+
+        return ValeSpec__SectionManager__AssemblyEditorConfigPromise;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Door Panel Profile for Door Type
+    // ------------------------------------------------------------
+    function ValeSpec__SectionManager__GetDoorPanelProfileForType(configData, doorType) {
+        var doorDefaults  =  (configData && configData['AssemblyEditor__DoorPanelDefaults__Config']) || {};
+        var profileMap    =  doorDefaults['AssemblyEditor__DoorPanelDefaults__Config__DoorTypeProfileMap'] || {};
+        var profiles      =  doorDefaults['AssemblyEditor__DoorPanelDefaults__Config__Profiles'] || {};
+        var fallbackKey   =  doorDefaults['AssemblyEditor__DoorPanelDefaults__Config__FallbackProfileKey'] || 'DoubleDoors';
+
+        var profileKey    =  profileMap[doorType] || fallbackKey;
+        var profile       =  profiles[profileKey] || profiles[fallbackKey];
+        if (profile) return profile;
+
+        return {
+            'AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm'   : 1800,
+            'AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm'  : 2100
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Default Assembly Title
     // ------------------------------------------------------------
     function ValeSpec__SectionManager__BuildDefaultTitle(assembly) {
         var identity  =  assembly['Assembly__Identity__Config'] || {};
         var custom    =  identity['Assembly__Identity__Config__Title'];
         if (custom) return custom;
+        if (!ValeSpec__SectionManager__IsAssemblyConfigured(assembly)) {
+            return 'Assembly not configured — start in Edit Assembly';
+        }
 
-        var doorType    =  (assembly['Assembly__DoorType__Config'] || {})['Assembly__DoorType__Config__Type'] || 'Door';
+        var doorType    =  ValeSpec__SectionManager__GetDoorTypeValue(assembly) || 'Door';
         var dimensions  =  assembly['Assembly__Dimensions__Config'] || {};
         var width       =  dimensions['Assembly__Dimensions__Config__WidthMm']  || '\u2014';
         var height      =  dimensions['Assembly__Dimensions__Config__HeightMm'] || '\u2014';
@@ -85,6 +159,10 @@ const ValeSpec__DocEditor__SectionManager = (function() {
     // HELPER FUNCTION | Build Spec Summary HTML
     // ------------------------------------------------------------
     function ValeSpec__SectionManager__BuildSpecSummary(assembly) {
+        if (!ValeSpec__SectionManager__IsAssemblyConfigured(assembly)) {
+            return '<div class="ValeSpec__DocEditor__SpecSummary ValeSpec__DocEditor__SpecSummary--unconfigured"><span>Configuration not started.</span><span>Click &quot;Edit Assembly&quot; and choose Door Type to begin.</span></div>';
+        }
+
         var doorConfig   =  assembly['Assembly__DoorType__Config']   || {};
         var hingeConfig  =  assembly['Assembly__Hinge__Config']      || {};
         var lockConfig   =  assembly['Assembly__Locking__Config']    || {};
@@ -198,6 +276,11 @@ const ValeSpec__DocEditor__SectionManager = (function() {
         for (var i = 0; i < assemblies.length; i++) {
             var thumbContainer  =  document.getElementById('ValeSpec__DocEditor__Thumb_' + i);
             if (thumbContainer) {
+                if (!ValeSpec__SectionManager__IsAssemblyConfigured(assemblies[i])) {
+                    thumbContainer.innerHTML  =  '<div class="ValeSpec__DocEditor__ThumbPlaceholder"><div class="ValeSpec__DocEditor__ThumbPlaceholderTitle">Preview not available</div><div class="ValeSpec__DocEditor__ThumbPlaceholderText">Start configuration by choosing a Door Type.</div></div>';
+                    continue;
+                }
+
                 try {
                     var svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assemblies[i], hwIndex);
                     thumbContainer.innerHTML  =  svgMarkup || '';
@@ -289,9 +372,17 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
     // SUB FUNCTION | Handle Add New Assembly Action
     // ------------------------------------------------------------
-    function ValeSpec__SectionManager__HandleAddNewAssembly() {
+    async function ValeSpec__SectionManager__HandleAddNewAssembly() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         var assemblies    =  ValeSpec__SectionManager__GetAssemblies();
+
+        var configData     =  await ValeSpec__SectionManager__EnsureAssemblyEditorConfigLoaded();
+        var defaultsCfg    =  (configData && configData['AssemblyEditor__DoorPanelDefaults__Config']) || {};
+        var defaultDoor    =  defaultsCfg['AssemblyEditor__DoorPanelDefaults__Config__DefaultDoorTypeForNewAssembly'] || 'None';
+        var profile        =  ValeSpec__SectionManager__GetDoorPanelProfileForType(configData, defaultDoor);
+
+        var widthDefault   =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm'], 10)  || 1800;
+        var heightDefault  =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm'], 10) || 2100;
 
         var newAssembly  =  {
             'Assembly__Identity__Config': {
@@ -300,34 +391,12 @@ const ValeSpec__DocEditor__SectionManager = (function() {
                 'Assembly__Identity__Config__SortOrder'  : assemblies.length
             },
             'Assembly__DoorType__Config': {
-                'Assembly__DoorType__Config__Type'       : 'Outward Opening Double Doors',
+                'Assembly__DoorType__Config__Type'       : defaultDoor,
                 'Assembly__DoorType__Config__Quantity'   : 1
             },
             'Assembly__Dimensions__Config': {
-                'Assembly__Dimensions__Config__WidthMm'  : 1800,
-                'Assembly__Dimensions__Config__HeightMm' : 2100
-            },
-            'Assembly__Hinge__Config': {
-                'Assembly__Hinge__Config__Projection'    : 5,
-                'Assembly__Hinge__Config__HingesPerLeaf' : 3,
-                'Assembly__Hinge__Config__Hanging'       : 'Standard'
-            },
-            'Assembly__Locking__Config': {
-                'Assembly__Locking__Config__Points'  : 5,
-                'Assembly__Locking__Config__Type'    : 'Multi-Point'
-            },
-            'Assembly__Lever__Config': {
-                'Assembly__Lever__Config__Type'      : 'Scroll',
-                'Assembly__Lever__Config__HeightMm'  : 1000,
-                'Assembly__Lever__Config__Handing'   : 'Dual'
-            },
-            'Assembly__CabinHooks__Config': {
-                'Assembly__CabinHooks__Config__Size'       : '6"',
-                'Assembly__CabinHooks__Config__HookCount'  : 2,
-                'Assembly__CabinHooks__Config__EyeCount'   : 2
-            },
-            'Assembly__Miscellaneous__Config': {
-                'Assembly__Miscellaneous__Config__Items'  : ['N/A']
+                'Assembly__Dimensions__Config__WidthMm'  : widthDefault,
+                'Assembly__Dimensions__Config__HeightMm' : heightDefault
             }
         };
 

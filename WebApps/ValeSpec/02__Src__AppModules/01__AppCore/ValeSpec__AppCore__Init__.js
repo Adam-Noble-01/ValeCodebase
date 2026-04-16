@@ -46,8 +46,12 @@
 
         var ServerConnectionMonitor  =  window.ValeSpec__AppNotifications__ServerConnectionMonitor;
         var ServerStatusBanner       =  window.ValeSpec__AppNotifications__ServerConnectionBanner;
+        var AppInstallability        =  window.ValeSpec__Feature__AppInstallability;
         if (ServerConnectionMonitor) ServerConnectionMonitor.ValeSpec__ServerConnection__InitializeMonitor();
         if (ServerStatusBanner)      ServerStatusBanner.ValeSpec__ServerStatusBanner__Initialize();
+        if (AppInstallability && AppInstallability.ValeSpec__AppInstallability__RegisterServiceWorkerAsync) {
+            void AppInstallability.ValeSpec__AppInstallability__RegisterServiceWorkerAsync();
+        }
 
         var ConfigLoader       =  window.ValeSpec__AppCore__ConfigLoader;
         var ModeManager        =  window.ValeSpec__AppCore__ModeManager;

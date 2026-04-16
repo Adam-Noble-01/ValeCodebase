@@ -203,13 +203,15 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body_bytes)
     # ------------------------------------------------------------
 
-    # SUB FUNCTION | Reduce noisy default formatting
+    # SUB FUNCTION | Reduce noisy default formatting and suppress health pings
     # ------------------------------------------------------------
     def log_message(self, format: str, *args) -> None:
-        client_ip = self.client_address[0]
         message = format % args
-        request_utc_iso = datetime.now(timezone.utc).isoformat()
-        print(f"[REQUEST] {request_utc_iso} | {client_ip} | {message}")
+        if "api/system/health" in message:
+            return                                                               # <-- Suppress health check noise from console output
+        client_ip    = self.client_address[0]
+        request_time = datetime.now().strftime("%d-%b-%Y - %H:%M")
+        print(f"[REQUEST] {request_time} | {client_ip} | {message}")
     # ------------------------------------------------------------
 
 

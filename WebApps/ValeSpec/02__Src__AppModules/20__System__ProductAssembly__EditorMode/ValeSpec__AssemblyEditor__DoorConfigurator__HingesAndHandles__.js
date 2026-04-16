@@ -170,6 +170,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
         assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  handleName;
         assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__HingesAndHandles__HandleHeightInput.value, 10) || 1000;
 
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+            var activeWarnings  =  WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+            if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__HingesAndHandles__StepHandleBodyEl) {
+                WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__HingesAndHandles__StepHandleBodyEl, activeWarnings);
+            }
+        }
+
         StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }
     // ------------------------------------------------------------
@@ -185,6 +193,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
 
         if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
         assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__HingesAndHandles__HandleHeightInput.value, 10);
+
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+            var activeWarnings  =  WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+            if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__HingesAndHandles__StepHandleBodyEl) {
+                WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__HingesAndHandles__StepHandleBodyEl, activeWarnings);
+            }
+        }
 
         StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }

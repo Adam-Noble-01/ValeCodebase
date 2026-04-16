@@ -11,9 +11,9 @@
    CREATED    : 15-Apr-2026
 
    DESCRIPTION:
-   - Fetches api/system/health every 6 seconds when running on localhost
+   - Probes api/system/health on initial load, browser-online events, and UI clicks (20s cooldown)
    - Maintains a state machine: unknown → stable → lost
-   - Surfaces 'lost' on startup failures so users see outage state immediately
+   - Suppresses 'lost' state until server has been confirmed stable at least once
    - Exposes a subscriber pattern so UI modules can react to status changes
    - Also responds to browser online/offline events
    - Adapted from ValePlanner Na__System__ServerConnectionStatus__Monitor.js
@@ -21,6 +21,11 @@
    =============================================================================
 
    DEVELOPMENT LOG:
+   16-Apr-2026 - Version 1.1.0
+   - Replaced periodic setInterval heartbeat (6s) with click-based probing (20s cooldown)
+   - Added IsHealthCheckInFlight guard to prevent overlapping health requests
+   - Updated ReportApiFailure to suppress lost state until first stable confirmation
+
    15-Apr-2026 - Version 1.0.0
    - Initial port from ValePlanner connection monitor
 
@@ -34,21 +39,22 @@
 
     // MODULE CONSTANTS | Health Route and Status Tokens
     // ------------------------------------------------------------
-    var ValeSpec__ServerConnection__DefaultHealthPath       = 'api/system/health';  // <-- Flask health route
-    var ValeSpec__ServerConnection__DefaultHealthIntervalMs = 6000;                 // <-- Poll interval in milliseconds
-    var ValeSpec__ServerConnection__StatusUnknown           = 'unknown';            // <-- Initial state before first check
-    var ValeSpec__ServerConnection__StatusStable            = 'stable';             // <-- Server responding normally
-    var ValeSpec__ServerConnection__StatusLost              = 'lost';               // <-- Server unreachable after being stable
+    var ValeSpec__ServerConnection__DefaultHealthPath            = 'api/system/health';  // <-- Flask health route
+    var ValeSpec__ServerConnection__DefaultClickHealthCooldownMs = 20000;                // <-- Cooldown between click-sourced probes in milliseconds
+    var ValeSpec__ServerConnection__StatusUnknown                = 'unknown';            // <-- Initial state before first check
+    var ValeSpec__ServerConnection__StatusStable                 = 'stable';             // <-- Server responding normally
+    var ValeSpec__ServerConnection__StatusLost                   = 'lost';               // <-- Server unreachable after being stable
     // ------------------------------------------------------------
 
 
     // MODULE VARIABLES | Runtime Monitor State
     // ------------------------------------------------------------
-    var ValeSpec__ServerConnection__HealthPath        = ValeSpec__ServerConnection__DefaultHealthPath;
-    var ValeSpec__ServerConnection__HealthIntervalMs  = ValeSpec__ServerConnection__DefaultHealthIntervalMs;
-    var ValeSpec__ServerConnection__HealthIntervalId  = null;
-    var ValeSpec__ServerConnection__IsInitialized     = false;
-    var ValeSpec__ServerConnection__Subscribers       = new Set();
+    var ValeSpec__ServerConnection__HealthPath               = ValeSpec__ServerConnection__DefaultHealthPath;
+    var ValeSpec__ServerConnection__ClickHealthCooldownMs    = ValeSpec__ServerConnection__DefaultClickHealthCooldownMs;
+    var ValeSpec__ServerConnection__LastClickHealthProbeAtMs = 0;
+    var ValeSpec__ServerConnection__IsHealthCheckInFlight    = false;
+    var ValeSpec__ServerConnection__IsInitialized            = false;
+    var ValeSpec__ServerConnection__Subscribers              = new Set();
     var ValeSpec__ServerConnection__StatusState = {
         status             : ValeSpec__ServerConnection__StatusUnknown,
         hasEverBeenStable  : false,
@@ -75,10 +81,28 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Run Click-Sourced Health Probe With Cooldown
+    // ------------------------------------------------------------
+    function ValeSpec__ServerConnection__RunClickHealthProbeWithCooldown() {
+        var nowTimestampMs            = Date.now();
+        var elapsedSinceLastProbeMs   = nowTimestampMs - ValeSpec__ServerConnection__LastClickHealthProbeAtMs;
+        if (elapsedSinceLastProbeMs < ValeSpec__ServerConnection__ClickHealthCooldownMs) {
+            return;
+        }
+
+        ValeSpec__ServerConnection__LastClickHealthProbeAtMs = nowTimestampMs;
+        ValeSpec__ServerConnection__RunHealthCheckAsync('ui-click');
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Execute Health Ping Against Local API
     // ------------------------------------------------------------
     function ValeSpec__ServerConnection__RunHealthCheckAsync(signalSource) {
         if (!ValeSpec__ServerConnection__IsRunningOnLocalhost()) return;
+        if (ValeSpec__ServerConnection__IsHealthCheckInFlight) return;
+
+        ValeSpec__ServerConnection__IsHealthCheckInFlight = true;
 
         var cacheBypassJoinChar = ValeSpec__ServerConnection__HealthPath.includes('?') ? '&' : '?';
         var healthRequestUrl    = ValeSpec__ServerConnection__HealthPath + cacheBypassJoinChar + 'vsHeartbeatTs=' + Date.now();
@@ -107,6 +131,9 @@
         })
         .catch(function() {
             ValeSpec__ServerConnection__ReportApiFailure(signalSource);
+        })
+        .finally(function() {
+            ValeSpec__ServerConnection__IsHealthCheckInFlight = false;
         });
     }
     // ------------------------------------------------------------
@@ -127,7 +154,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Initialize Connection Monitor and Heartbeat Loop
+    // FUNCTION | Initialize Connection Monitor and Event Probes
     // ------------------------------------------------------------
     function ValeSpec__ServerConnection__InitializeMonitor(config) {
         if (ValeSpec__ServerConnection__IsInitialized) return;
@@ -138,8 +165,10 @@
         if (typeof config.healthPath === 'string' && config.healthPath.trim()) {
             ValeSpec__ServerConnection__HealthPath = config.healthPath.trim();
         }
-        if (isFinite(config.healthIntervalMs) && config.healthIntervalMs >= 2000) {
-            ValeSpec__ServerConnection__HealthIntervalMs = Number(config.healthIntervalMs);
+        if (isFinite(config.clickHealthCooldownMs) && config.clickHealthCooldownMs >= 2000) {
+            ValeSpec__ServerConnection__ClickHealthCooldownMs = Number(config.clickHealthCooldownMs);
+        } else if (isFinite(config.healthIntervalMs) && config.healthIntervalMs >= 2000) {
+            ValeSpec__ServerConnection__ClickHealthCooldownMs = Number(config.healthIntervalMs);
         }
 
         if (!ValeSpec__ServerConnection__IsRunningOnLocalhost()) return;
@@ -152,11 +181,11 @@
             ValeSpec__ServerConnection__ReportApiFailure('browser-offline');
         });
 
-        ValeSpec__ServerConnection__RunHealthCheckAsync('initial-health');
+        window.addEventListener('click', function() {
+            ValeSpec__ServerConnection__RunClickHealthProbeWithCooldown();
+        });
 
-        ValeSpec__ServerConnection__HealthIntervalId = window.setInterval(function() {
-            ValeSpec__ServerConnection__RunHealthCheckAsync('heartbeat');
-        }, ValeSpec__ServerConnection__HealthIntervalMs);
+        ValeSpec__ServerConnection__RunHealthCheckAsync('initial-health');
     }
     // ------------------------------------------------------------
 
@@ -222,9 +251,8 @@
         ValeSpec__ServerConnection__StatusState.lastFailureIso    = new Date().toISOString();
         ValeSpec__ServerConnection__StatusState.lastSignalSource  = signalSource;
 
-        if (!ValeSpec__ServerConnection__StatusState.hasEverBeenStable
-            && ValeSpec__ServerConnection__StatusState.status === ValeSpec__ServerConnection__StatusUnknown) {
-            ValeSpec__ServerConnection__StatusState.hasEverBeenStable = true;        // <-- Allow startup-offline state to surface through existing banner gating
+        if (!ValeSpec__ServerConnection__StatusState.hasEverBeenStable) {
+            return;                                                                   // <-- Suppress lost state until server has been confirmed stable at least once
         }
 
         var didStatusChange = ValeSpec__ServerConnection__StatusState.status !== ValeSpec__ServerConnection__StatusLost;

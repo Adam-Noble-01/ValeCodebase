@@ -15,6 +15,30 @@
         "DocPreview__SpecTable__Config__AltRowBackground"   : "#f5f5f5"
     },
 
+    "DocPreview__ViewState__Config": {
+        "DocPreview__ViewState__Config__Description"              : "Default UI state values for Document Preview controls.",
+        "DocPreview__ViewState__Config__DefaultDiagramMode"       : "small",
+        "DocPreview__ViewState__Config__ShowFullScheduleByDefault": true,
+        "DocPreview__ViewState__Config__ShowSummaryByDefault"     : true,
+        "DocPreview__ViewState__Config__ShowJobNotesByDefault"    : true
+    },
+
+    "DocPreview__Section__Config": {
+        "DocPreview__Section__Config__Description" : "Section heading labels and ordering used by preview and PDF export.",
+        "DocPreview__Section__Config__Section01Title": "Section 01 | Full Ironmongery Schedule",
+        "DocPreview__Section__Config__Section02Title": "Section 02 | Ironmongery Schedule Summary",
+        "DocPreview__Section__Config__Section03Title": "Section 03 | Warnings Section",
+        "DocPreview__Section__Config__Section04Title": "Section 04 | Special Job Notes Section"
+    },
+
+    "DocPreview__StyleTokens__Config": {
+        "DocPreview__StyleTokens__Config__Description"      : "Shared warning and section styling tokens for preview and PDF parity.",
+        "DocPreview__StyleTokens__Config__WarningBackground": "rgba(211, 47, 47, 0.07)",
+        "DocPreview__StyleTokens__Config__WarningBorder"    : "rgba(211, 47, 47, 0.35)",
+        "DocPreview__StyleTokens__Config__WarningTitle"     : "#b71c1c",
+        "DocPreview__StyleTokens__Config__WarningText"      : "#c62828"
+    },
+
     "DocPreview__PdfExport__Config": {
         "DocPreview__PdfExport__Config__Description"        : "PDF export settings for document preview. A4 portrait, pageless scroll, SVGs rasterised to JPEG.",
         "DocPreview__PdfExport__Config__TargetDpi"          : 300,

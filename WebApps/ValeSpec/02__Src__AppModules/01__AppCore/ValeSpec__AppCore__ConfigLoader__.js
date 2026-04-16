@@ -25,7 +25,8 @@ const ValeSpec__AppCore__ConfigLoader = (function() {
 
     // MODULE CONSTANTS | Config File Path
     // ------------------------------------------------------------
-    const CONFIG_PATH  =  '02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json';
+    const CONFIG_PATH              =  '02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json';
+    const DOC_PREVIEW_CONFIG_PATH  =  '02__Src__AppModules/40__System__DocumentPreviewMode/Na__DocPreview__Config.json';
     // ------------------------------------------------------------
 
 
@@ -45,10 +46,23 @@ const ValeSpec__AppCore__ConfigLoader = (function() {
     // ------------------------------------------------------------
     async function ValeSpec__ConfigLoader__LoadConfig() {
         try {
-            var response  =  await fetch(CONFIG_PATH);
-            if (!response.ok) throw new Error('Config fetch failed: ' + response.status);
+            var responseMain  =  await fetch(CONFIG_PATH);
+            if (!responseMain.ok) throw new Error('Config fetch failed: ' + responseMain.status);
 
-            var configData  =  await response.json();
+            var configDataMain  =  await responseMain.json();
+            var configDataDocPreview  =  {};
+
+            try {
+                var responseDocPreview  =  await fetch(DOC_PREVIEW_CONFIG_PATH);
+                if (!responseDocPreview.ok) {
+                    throw new Error('DocPreview config fetch failed: ' + responseDocPreview.status);
+                }
+                configDataDocPreview  =  await responseDocPreview.json();
+            } catch (docPreviewError) {
+                console.warn('[ValeSpec__ConfigLoader] DocPreview config unavailable, using app-config defaults only:', docPreviewError.message);
+            }
+
+            var configData  =  Object.assign({}, configDataMain, configDataDocPreview);
 
             ValeSpec__ConfigLoader__Application          =  configData['ValeSpec__Application__Config']                || {};
             ValeSpec__ConfigLoader__IronmongeryDefaults  =  configData['ValeSpec__Ironmongery__GlobalDefaults__Config'] || {};

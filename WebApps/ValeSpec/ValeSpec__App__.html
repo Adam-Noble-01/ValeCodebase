@@ -11,9 +11,12 @@
     <meta name="theme-color" content="#172b3a">
     <title>ValeSpec |  Ironmongery Configurator</title>
 
-    <!-- Favicon - Shared Vale Icon -->
-    <link rel="icon" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <link rel="apple-touch-icon" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <!-- Favicon - ValeSpec PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png">
+    <link rel="shortcut icon" type="image/png" href="01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png">
+    <link rel="manifest" href="02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest">
 
     <!-- Single Stylesheet (hub @imports all other CSS including system-local sheets) -->
     <link rel="stylesheet" href="03__Style__AppStylesheets/ValeSpec__CoreUi__Styles__Index__.css">
@@ -202,12 +205,17 @@
 
     <!-- System: Document Preview Mode -->
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__SpecTableRenderer__.js"></script>
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentState__.js"></script>
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentModel__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfExporter__.js"></script>
 
     <!-- App Notifications (connection monitor must precede banner) -->
     <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionMonitor__.js"></script>
     <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionBanner__.js"></script>
+
+    <!-- Feature: App Installability -->
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/Na__Feature__AppInstallability__ServiceWorkerRegistration__.js"></script>
 
     <!-- Init (last - boots the app) -->
     <script src="02__Src__AppModules/01__AppCore/ValeSpec__AppCore__Init__.js"></script>

@@ -6,29 +6,15 @@
    NAMESPACE  : ValeSpec
    MODULE     : DocPreview - PdfExporter
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Export the document preview as an A4-width pageless PDF via jsPDF
-   CREATED    : 15-Apr-2026
+   PURPOSE    : Export the rendered Document Preview into a parity-aligned PDF
+   CREATED    : 16-Apr-2026
 
    DESCRIPTION:
-   - Produces a single-page A4-width PDF whose height grows to fit all content.
-   - SVG drawings are rasterised to JPEG at 300 DPI via offscreen canvas.
-   - All text (branding, titles, spec tables, job notes) is rendered as native
-     selectable PDF text using jsPDF doc.text() / doc.setFont().
-   - jsPDF v4.1.0 UMD build loaded via <script> tag (version-locked, CDN independent).
-   - Accessed via window.jspdf.jsPDF (standard jsPDF UMD pattern).
-   - Config values read from Na__DocPreview__Config.json with hard-coded fallbacks.
-
-   -----------------------------------------------------------------------------
-
-   DEVELOPMENT LOG:
-   15-Apr-2026 - Version 1.0.0
-   - Initial implementation with selectable text and rasterised SVG pipeline.
-   - Two-pass renderer: measure total height then render into custom-height page.
-   - Spec table rows mirror SpecTableRenderer data extraction logic exactly.
-
-   15-Apr-2026 - Spec table miscellaneous
-   - Miscellaneous row uses human-readable labels via shared SpecTableRenderer helper.
-   - Optional Miscellaneous Notes row; PDF table uses dynamic row heights for wrapped text.
+   - Uses shared DocumentState + DocumentModel for preview/PDF parity
+   - Applies section toggles and diagram mode exactly as current preview state
+   - Renders full schedule, summary, warnings, and special notes sections
+   - Resolves supplier/finish/quantity fallback values as N/A in summary output
+   - Renders warning content in red bordered boxes for high visibility
 
    ============================================================================= */
 
@@ -39,99 +25,94 @@
 const ValeSpec__DocPreview__PdfExporter = (function() {
 
 // -----------------------------------------------------------------------------
-// REGION | Fallback Constants
+// REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Fallback PDF Export Settings
+    // MODULE CONSTANTS | PDF Config Fallbacks
     // ------------------------------------------------------------
-    const FALLBACK_DPI             = 300;                                       // <-- Target DPI for SVG rasterisation
-    const FALLBACK_JPEG_QUALITY    = 0.92;                                      // <-- JPEG compression quality (0.0 - 1.0)
-    const FALLBACK_PAGE_WIDTH_MM   = 210;                                       // <-- A4 portrait width in millimetres
-    const FALLBACK_PAGE_PADDING_MM = 15;                                        // <-- Page padding on all sides
-    const FALLBACK_COMPRESS        = true;                                      // <-- FlateEncode compression on PDF streams
-    const FALLBACK_FLOAT_PRECISION = 'smart';                                   // <-- Coordinate precision mode
-    const FALLBACK_MIN_DATAURL_LEN = 500;                                       // <-- Minimum valid data URL length
+    const FALLBACK_DPI             =  300;
+    const FALLBACK_JPEG_QUALITY    =  0.92;
+    const FALLBACK_PAGE_WIDTH_MM   =  210;
+    const FALLBACK_PAGE_PADDING_MM =  15;
+    const FALLBACK_COMPRESS        =  true;
+    const FALLBACK_FLOAT_PRECISION =  'smart';
     // ------------------------------------------------------------
 
 
     // MODULE CONSTANTS | Layout Metrics (mm)
     // ------------------------------------------------------------
-    const BRANDING_LOGO_HEIGHT_MM  = 10;                                        // <-- Logo image height in the PDF
-    const BRANDING_LOGO_WIDTH_MM   = 36;                                        // <-- Logo image width in the PDF
-    const BRANDING_TOTAL_HEIGHT_MM = 22;                                        // <-- Branding block total height
-    const BRANDING_RULE_GAP_MM     = 3;                                         // <-- Gap before horizontal rule
-    const ASSEMBLY_TITLE_HEIGHT_MM = 8;                                         // <-- Assembly title line height
-    const DRAWING_MAX_HEIGHT_MM    = 80;                                        // <-- Max height for rasterised SVG
-    const DRAWING_GAP_BELOW_MM     = 4;                                         // <-- Gap below drawing before table
-    const TABLE_HEADER_HEIGHT_MM   = 7;                                         // <-- Table header row height
-    const TABLE_ROW_HEIGHT_MM      = 6;                                         // <-- Minimum table body row height
-    const SPEC_TABLE_LINE_HEIGHT_MM = 3.5;                                      // <-- Per-line height for wrapped spec table cells (8pt body)
-    const SECTION_GAP_MM           = 12;                                        // <-- Gap after last assembly (before job notes)
-    const ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM = 6;                              // <-- Space above inter-assembly horizontal rule
-    const ASSEMBLY_SECTION_RULE_GAP_AFTER_MM  = 6;                              // <-- Space below inter-assembly horizontal rule
-    const JOBNOTES_TITLE_HEIGHT_MM = 8;                                         // <-- Job notes heading height
-    const JOBNOTES_LINE_HEIGHT_MM  = 5;                                         // <-- Job notes text line height
-    const JOBNOTES_TOP_GAP_MM      = 6;                                         // <-- Gap above job notes section
+    const BRANDING_LOGO_WIDTH_MM          =  36;
+    const BRANDING_LOGO_HEIGHT_MM         =  10;
+    const BRANDING_RULE_GAP_MM            =  3;
+    const BRANDING_BLOCK_BOTTOM_GAP_MM    =  6;
+    const SECTION_HEADING_HEIGHT_MM       =  7;
+    const SECTION_HEADING_BOTTOM_GAP_MM   =  4;
+    const SECTION_BOTTOM_GAP_MM           =  8;
+    const ASSEMBLY_TITLE_HEIGHT_MM        =  7;
+    const ASSEMBLY_BLOCK_GAP_MM           =  8;
+    const DRAWING_HEIGHT_LARGE_MM         =  80;
+    const DRAWING_HEIGHT_SMALL_MM         =  40;
+    const DRAWING_GAP_BELOW_MM            =  4;
+    const TABLE_HEADER_HEIGHT_MM          =  7;
+    const TABLE_ROW_MIN_HEIGHT_MM         =  6;
+    const TABLE_LINE_HEIGHT_MM            =  3.5;
+    const WARNING_BOX_PADDING_MM          =  4;
+    const WARNING_BOX_GAP_MM              =  3;
+    const WARNING_TITLE_HEIGHT_MM         =  4.5;
+    const WARNING_LINE_HEIGHT_MM          =  3.5;
+    const NOTES_LINE_HEIGHT_MM            =  4.5;
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Rule Stroke Widths (mm, align with preview CSS 1px / 2px borders)
+    // MODULE CONSTANTS | Stroke Widths (mm)
     // ------------------------------------------------------------
-    const LINE_WIDTH_RULE_1PX_MM   = 0.15;                                      // <-- Matches 1px hr / table row borders in DocPreview
-    const LINE_WIDTH_RULE_2PX_MM   = 0.30;                                      // <-- Matches 2px ValeSpec__DocPreview__BrandingHeader rule
+    const LINE_WIDTH_THIN_MM   =  0.15;
+    const LINE_WIDTH_MEDIUM_MM =  0.30;
     // ------------------------------------------------------------
 
 
     // MODULE CONSTANTS | Font Sizes (pt)
     // ------------------------------------------------------------
-    const FONT_SIZE_PROJECT_NAME   = 14;                                        // <-- Project name heading
-    const FONT_SIZE_DOC_NAME       = 10;                                        // <-- Document name sub-heading
-    const FONT_SIZE_DATE           = 8;                                         // <-- Date label
-    const FONT_SIZE_ASSEMBLY_TITLE = 11;                                        // <-- Assembly block title
-    const FONT_SIZE_TABLE_HEADER   = 8;                                         // <-- Table header text
-    const FONT_SIZE_TABLE_BODY     = 8;                                         // <-- Table body text
-    const FONT_SIZE_NOTES_TITLE    = 11;                                        // <-- Job notes heading
-    const FONT_SIZE_NOTES_BODY     = 9;                                         // <-- Job notes body text
+    const FONT_SIZE_PROJECT_NAME   =  14;
+    const FONT_SIZE_DOC_NAME       =  10;
+    const FONT_SIZE_META_DATE      =  8;
+    const FONT_SIZE_SECTION_TITLE  =  11;
+    const FONT_SIZE_ASSEMBLY_TITLE =  10;
+    const FONT_SIZE_TABLE_HEADER   =  8;
+    const FONT_SIZE_TABLE_BODY     =  8;
+    const FONT_SIZE_WARNING_TITLE  =  9;
+    const FONT_SIZE_WARNING_BODY   =  8;
+    const FONT_SIZE_NOTES_BODY     =  9;
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Brand Colours
+    // MODULE CONSTANTS | Fallback Colour Palette
     // ------------------------------------------------------------
-    // var (not const) = config-driven; overwritten by ResolveColours() at export time
-    var COLOUR_BRAND_PRIMARY       = [23, 43, 58];                              // <-- #172b3a — Vale brand navy
-    const COLOUR_TEXT_PRIMARY      = [30, 30, 30];                              // <-- #1e1e1e — Primary body text
-    const COLOUR_TEXT_SECONDARY    = [100, 100, 100];                           // <-- #646464 — Secondary / muted text
-    var COLOUR_TABLE_HEADER_BG     = [23, 43, 58];                              // <-- #172b3a — Table header background
-    var COLOUR_TABLE_HEADER_FG     = [255, 255, 255];                           // <-- #ffffff — Table header text
-    var COLOUR_TABLE_ALT_ROW       = [245, 245, 245];                           // <-- #f5f5f5 — Alternating row background
-    const COLOUR_TABLE_BORDER      = [200, 200, 200];                           // <-- #c8c8c8 — Table cell border
-    var COLOUR_RULE_LINE           = [23, 43, 58];                              // <-- #172b3a — Horizontal rule
-    const COLOUR_WARNING_BG        = [253, 237, 237];                           // <-- #fdeded — Warning box background
-    const COLOUR_WARNING_BORDER    = [211, 47, 47];                             // <-- #d32f2f — Warning box border
-    const COLOUR_WARNING_TITLE     = [183, 28, 28];                             // <-- #b71c1c — Warning title text
-    const COLOUR_WARNING_TEXT      = [198, 40, 40];                             // <-- #c62828 — Warning body text
-    const WARNING_BOX_PADDING_MM   = 4;                                         // <-- Inner padding for warning box
-    const WARNING_TITLE_HEIGHT_MM  = 5;                                         // <-- Warning title line height
-    const WARNING_LINE_HEIGHT_MM   = 3.5;                                       // <-- Warning body text line height
-    const WARNING_GAP_ABOVE_MM     = 4;                                         // <-- Gap above warning box
-    const WARNING_GAP_BELOW_MM     = 2;                                         // <-- Gap below warning box
-    const FONT_SIZE_WARNING_TITLE  = 9;                                         // <-- Warning title font size
-    const FONT_SIZE_WARNING_BODY   = 8;                                         // <-- Warning body font size
+    const COLOUR_TEXT_PRIMARY       =  [30, 30, 30];
+    const COLOUR_TEXT_SECONDARY     =  [95, 95, 95];
+    const COLOUR_BORDER_LIGHT       =  [204, 204, 204];
+    const COLOUR_BRAND_PRIMARY      =  [23, 43, 58];
+    const COLOUR_TABLE_HEADER_BG    =  [23, 43, 58];
+    const COLOUR_TABLE_HEADER_FG    =  [255, 255, 255];
+    const COLOUR_TABLE_ALT_ROW      =  [245, 245, 245];
+    const COLOUR_WARNING_BG         =  [253, 237, 237];
+    const COLOUR_WARNING_BORDER     =  [211, 47, 47];
+    const COLOUR_WARNING_TITLE      =  [183, 28, 28];
+    const COLOUR_WARNING_TEXT       =  [198, 40, 40];
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
-// REGION | Config Resolution
+// REGION | Internal Helpers - Config and State
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Resolve PDF Export Config from App State
+    // HELPER FUNCTION | Resolve PDF Export Config
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__ResolveConfig() {
+    function ValeSpec__PdfExporter__ResolvePdfConfig() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         var section       =  null;
-
         if (StateManager) {
             var state      =  StateManager.ValeSpec__StateManager__GetState();
             var appConfig  =  state ? state.appConfig : null;
@@ -140,136 +121,108 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
         return {
             targetDpi      : (section && typeof section['DocPreview__PdfExport__Config__TargetDpi'] === 'number')
-                                ? section['DocPreview__PdfExport__Config__TargetDpi']
-                                : FALLBACK_DPI,
+                                ? section['DocPreview__PdfExport__Config__TargetDpi'] : FALLBACK_DPI,
             jpegQuality    : (section && typeof section['DocPreview__PdfExport__Config__JpegQuality'] === 'number')
-                                ? section['DocPreview__PdfExport__Config__JpegQuality']
-                                : FALLBACK_JPEG_QUALITY,
+                                ? section['DocPreview__PdfExport__Config__JpegQuality'] : FALLBACK_JPEG_QUALITY,
             pageWidthMm    : (section && typeof section['DocPreview__PdfExport__Config__PageWidthMm'] === 'number')
-                                ? section['DocPreview__PdfExport__Config__PageWidthMm']
-                                : FALLBACK_PAGE_WIDTH_MM,
+                                ? section['DocPreview__PdfExport__Config__PageWidthMm'] : FALLBACK_PAGE_WIDTH_MM,
             pagePaddingMm  : (section && typeof section['DocPreview__PdfExport__Config__PagePaddingMm'] === 'number')
-                                ? section['DocPreview__PdfExport__Config__PagePaddingMm']
-                                : FALLBACK_PAGE_PADDING_MM,
+                                ? section['DocPreview__PdfExport__Config__PagePaddingMm'] : FALLBACK_PAGE_PADDING_MM,
             compress       : (section && typeof section['DocPreview__PdfExport__Config__Compress'] === 'boolean')
-                                ? section['DocPreview__PdfExport__Config__Compress']
-                                : FALLBACK_COMPRESS,
+                                ? section['DocPreview__PdfExport__Config__Compress'] : FALLBACK_COMPRESS,
             floatPrecision : (section && typeof section['DocPreview__PdfExport__Config__FloatPrecision'] === 'string')
-                                ? section['DocPreview__PdfExport__Config__FloatPrecision']
-                                : FALLBACK_FLOAT_PRECISION
+                                ? section['DocPreview__PdfExport__Config__FloatPrecision'] : FALLBACK_FLOAT_PRECISION
         };
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Convert Hex Colour String to RGB Array
+    // HELPER FUNCTION | Convert Hex Colour to RGB Triplet
     // ------------------------------------------------------------
-    function hexToRgb(hex) {
-        if (typeof hex !== 'string' || hex.length < 7) return null;
-        var r  =  parseInt(hex.slice(1, 3), 16);                                // <-- Red channel (0-255)
-        var g  =  parseInt(hex.slice(3, 5), 16);                                // <-- Green channel (0-255)
-        var b  =  parseInt(hex.slice(5, 7), 16);                                // <-- Blue channel (0-255)
-        return (isNaN(r) || isNaN(g) || isNaN(b)) ? null : [r, g, b];
+    function ValeSpec__PdfExporter__HexToRgb(hexValue) {
+        if (typeof hexValue !== 'string') return null;
+        var hex  =  hexValue.trim();
+        if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return null;
+
+        var r  =  parseInt(hex.slice(1, 3), 16);
+        var g  =  parseInt(hex.slice(3, 5), 16);
+        var b  =  parseInt(hex.slice(5, 7), 16);
+        return [r, g, b];
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Resolve Brand and Table Colours from App Config
+    // HELPER FUNCTION | Convert rgb()/rgba() String to RGB Triplet
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__CssRgbToTriplet(rgbString) {
+        if (typeof rgbString !== 'string') return null;
+        var match  =  rgbString.match(/rgba?\s*\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/i);
+        if (!match) return null;
+
+        var r  =  Math.max(0, Math.min(255, Math.round(parseFloat(match[1]))));
+        var g  =  Math.max(0, Math.min(255, Math.round(parseFloat(match[2]))));
+        var b  =  Math.max(0, Math.min(255, Math.round(parseFloat(match[3]))));
+        if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+        return [r, g, b];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Colour Token into RGB Triplet
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__ResolveColourToken(rawValue, fallbackRgb) {
+        var fromHex  =  ValeSpec__PdfExporter__HexToRgb(rawValue);
+        if (fromHex) return fromHex;
+        var fromRgb  =  ValeSpec__PdfExporter__CssRgbToTriplet(rawValue);
+        if (fromRgb) return fromRgb;
+        return fallbackRgb;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Shared Colour Set from DocumentState Tokens
     // ------------------------------------------------------------
     function ValeSpec__PdfExporter__ResolveColours() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        var section       =  null;
-
-        if (StateManager) {
-            var state      =  StateManager.ValeSpec__StateManager__GetState();
-            var appConfig  =  state ? state.appConfig : null;
-            if (appConfig) section  =  appConfig['DocPreview__SpecTable__Config'] || null;
-        }
-
-        function resolveHex(key, fallback) {
-            if (section && typeof section[key] === 'string') {
-                var rgb  =  hexToRgb(section[key]);
-                if (rgb) return rgb;
-            }
-            return fallback;
-        }
-
-        var headerBg  =  resolveHex('DocPreview__SpecTable__Config__HeaderBackground', COLOUR_TABLE_HEADER_BG);
+        var DocumentState  =  window.ValeSpec__DocPreview__DocumentState;
+        var styleTokens    =  (DocumentState && DocumentState.ValeSpec__DocumentState__GetStyleTokens)
+                                ? DocumentState.ValeSpec__DocumentState__GetStyleTokens()
+                                : {};
 
         return {
-            brandPrimary   : headerBg,                                          // <-- Derived from table header bg (same brand navy)
-            ruleLine       : headerBg,                                          // <-- Derived from table header bg (same brand navy)
-            tableHeaderBg  : headerBg,
-            tableHeaderFg  : resolveHex('DocPreview__SpecTable__Config__HeaderTextColor',  COLOUR_TABLE_HEADER_FG),
-            tableAltRow    : resolveHex('DocPreview__SpecTable__Config__AltRowBackground', COLOUR_TABLE_ALT_ROW)
+            brandPrimary  : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.tableHeaderBg, COLOUR_BRAND_PRIMARY),
+            tableHeaderBg : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.tableHeaderBg, COLOUR_TABLE_HEADER_BG),
+            tableHeaderFg : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.tableHeaderFg, COLOUR_TABLE_HEADER_FG),
+            tableAltRow   : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.tableAltRowBg, COLOUR_TABLE_ALT_ROW),
+            warningBg     : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.warningBg, COLOUR_WARNING_BG),
+            warningBorder : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.warningBorder, COLOUR_WARNING_BORDER),
+            warningTitle  : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.warningTitle, COLOUR_WARNING_TITLE),
+            warningText   : ValeSpec__PdfExporter__ResolveColourToken(styleTokens.warningText, COLOUR_WARNING_TEXT)
         };
     }
     // ------------------------------------------------------------
 
-// endregion -------------------------------------------------------------------
 
-
-// -----------------------------------------------------------------------------
-// REGION | State Access Helpers
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Get Logo Path from Config
+    // HELPER FUNCTION | Get Current Model + View State + Style Tokens
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__GetLogoPath() {
-        var fallback      =  '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png';
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return fallback;
-        var state   =  StateManager.ValeSpec__StateManager__GetState();
-        var config  =  state.appConfig;
-        if (!config) return fallback;
-        var hdr  =  config['DocEditor__Header__Config'];
-        if (!hdr) return fallback;
-        return hdr['DocEditor__Header__Config__LogoPath'] || fallback;
+    function ValeSpec__PdfExporter__GetRenderContext() {
+        var DocumentState  =  window.ValeSpec__DocPreview__DocumentState;
+        var DocumentModel  =  window.ValeSpec__DocPreview__DocumentModel;
+        if (!DocumentState || !DocumentModel) return null;
+
+        var viewState    =  DocumentState.ValeSpec__DocumentState__GetViewState();
+        var styleTokens  =  DocumentState.ValeSpec__DocumentState__GetStyleTokens();
+        var model        =  DocumentModel.ValeSpec__DocumentModel__Build(viewState);
+
+        return {
+            viewState   : viewState,
+            styleTokens : styleTokens,
+            model       : model
+        };
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Get Project Metadata from State
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__GetProjectMeta() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return {};
-        var state    =  StateManager.ValeSpec__StateManager__GetState();
-        var project  =  state.currentProject;
-        if (!project) return {};
-        return project['ValeSpec__ProjectFile__Metadata'] || {};
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Get Assemblies Array from State
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__GetAssemblies() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return [];
-        var state    =  StateManager.ValeSpec__StateManager__GetState();
-        var project  =  state.currentProject;
-        if (!project) return [];
-        return project['ValeSpec__ProjectFile__Assemblies'] || [];
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Get Job Notes from State
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__GetJobNotes() {
-        var StateManager  =  window.ValeSpec__AppCore__StateManager;
-        if (!StateManager) return '';
-        var state    =  StateManager.ValeSpec__StateManager__GetState();
-        var project  =  state.currentProject;
-        if (!project) return '';
-        var gs  =  project['ValeSpec__ProjectFile__GlobalSettings'] || {};
-        return gs['ValeSpec__ProjectFile__GlobalSettings__JobNotes'] || '';
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Get Hardware Index from State
+    // HELPER FUNCTION | Resolve Hardware Index from State
     // ------------------------------------------------------------
     function ValeSpec__PdfExporter__GetHardwareIndex() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
@@ -280,10 +233,24 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Logo Path from App Config
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__GetLogoPath() {
+        var fallbackLogoPath  =  '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png';
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager) return fallbackLogoPath;
+        var state    =  StateManager.ValeSpec__StateManager__GetState();
+        var config   =  state.appConfig || {};
+        var headerConfig  =  config['DocEditor__Header__Config'] || {};
+        return headerConfig['DocEditor__Header__Config__LogoPath'] || fallbackLogoPath;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Format Date via DateFormatter
     // ------------------------------------------------------------
     function ValeSpec__PdfExporter__FormatDate(dateStr) {
-        if (!dateStr) return '\u2014';
+        if (!dateStr) return '—';
         if (window.ValeSpec__AppUtils__DateFormatter) {
             return window.ValeSpec__AppUtils__DateFormatter.ValeSpec__DateFormatter__FormatShort(dateStr);
         }
@@ -295,77 +262,55 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Spec Table Data Extraction (mirrors SpecTableRenderer)
+// REGION | Internal Helpers - Image and SVG
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build Assembly Title from Data
+    // HELPER FUNCTION | Load Image as PNG Data URL
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__BuildAssemblyTitle(assembly) {
-        var identity  =  assembly['Assembly__Identity__Config'] || {};
-        var custom    =  identity['Assembly__Identity__Config__Title'];
-        if (custom) return custom;
+    function ValeSpec__PdfExporter__LoadImageAsDataUrl(imageSrc, widthPx, heightPx) {
+        return new Promise(function(resolve) {
+            if (!imageSrc) { resolve(null); return; }
 
-        var doorCfg     =  assembly['Assembly__DoorType__Config'] || {};
-        var doorType    =  doorCfg['Assembly__DoorType__Config__Type']             || 'Door';
-        var direction   =  doorCfg['Assembly__DoorType__Config__OpeningDirection'] || '';
-        var fullLabel   =  direction ? (direction + ' Opening ' + doorType) : doorType;
-        var dimensions  =  assembly['Assembly__Dimensions__Config'] || {};
-        var width       =  dimensions['Assembly__Dimensions__Config__WidthMm']  || '\u2014';
-        var height      =  dimensions['Assembly__Dimensions__Config__HeightMm'] || '\u2014';
-        return fullLabel + ' \u2014 ' + width + ' x ' + height + ' mm';
+            var image  =  new Image();
+            image.crossOrigin  =  'anonymous';
+
+            image.onload  =  function() {
+                var canvas  =  document.createElement('canvas');
+                canvas.width   =  widthPx  || image.naturalWidth;
+                canvas.height  =  heightPx || image.naturalHeight;
+                var ctx  =  canvas.getContext('2d');
+                if (!ctx) { resolve(null); return; }
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/png'));
+            };
+
+            image.onerror  =  function() {
+                resolve(null);
+            };
+
+            image.src  =  imageSrc;
+        });
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extract Spec Table Row Data as Array
+    // HELPER FUNCTION | Get SVG Aspect Ratio from Markup
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__ExtractSpecRows(assembly) {
-        var SpecRenderer  =  window.ValeSpec__DocPreview__SpecTableRenderer;
-        if (SpecRenderer && SpecRenderer.ValeSpec__SpecTableRenderer__GetSpecRows) {
-            var sharedRows  =  SpecRenderer.ValeSpec__SpecTableRenderer__GetSpecRows(assembly) || [];
-            var rows        =  [];
-
-            for (var i = 0; i < sharedRows.length; i++) {
-                var sharedRow  =  sharedRows[i] || {};
-                var label      =  sharedRow.label || '\u2014';
-                var value      =  sharedRow.value;
-
-                if (value === null || value === undefined || value === '') value  =  '\u2014';
-
-                rows.push([String(label), String(value)]);
-            }
-
-            return rows;
-        }
-
-        console.warn('[ValeSpec__PdfExporter] Spec table helper unavailable; using fallback rows.');
-        return [
-            ['Door Type', '\u2014'],
-            ['Dimensions', '\u2014'],
-            ['Locking Type', 'None'],
-            ['Locking Points', 'Not required'],
-            ['Cylinder Requirement', 'Not required'],
-            ['Hinges Per Leaf', '\u2014'],
-            ['Hinge Projection', '\u2014'],
-            ['Hinge Hand', '\u2014'],
-            ['Handle Type', '\u2014'],
-            ['Handle Height', '\u2014'],
-            ['Cabin Hook Type', 'None'],
-            ['Cabin Hooks No.', 'None'],
-            ['Cabin Hook Eyes', 'None'],
-            ['Miscellaneous', 'None']
-        ];
+    function ValeSpec__PdfExporter__GetSvgAspectRatio(svgMarkup) {
+        if (!svgMarkup) return 1;
+        var match  =  svgMarkup.match(/viewBox\s*=\s*"([^"]+)"/);
+        if (!match) return 1;
+        var parts  =  match[1].split(/\s+/);
+        if (parts.length < 4) return 1;
+        var vbW  =  parseFloat(parts[2]);
+        var vbH  =  parseFloat(parts[3]);
+        if (!vbW || !vbH) return 1;
+        return vbW / vbH;
     }
     // ------------------------------------------------------------
 
-// endregion -------------------------------------------------------------------
 
-
-// -----------------------------------------------------------------------------
-// REGION | SVG Rasterisation
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Rasterise SVG Markup to JPEG Data URL via Offscreen Canvas
+    // HELPER FUNCTION | Rasterise SVG Markup to JPEG Data URL
     // ------------------------------------------------------------
     function ValeSpec__PdfExporter__RasteriseSvg(svgMarkup, widthPx, heightPx, jpegQuality) {
         return new Promise(function(resolve) {
@@ -373,103 +318,180 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
             var blob  =  new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
             var url   =  URL.createObjectURL(blob);
-            var img   =  new Image();
+            var image =  new Image();
 
-            img.onload  =  function() {
-                var canvas     =  document.createElement('canvas');
+            image.onload  =  function() {
+                var canvas  =  document.createElement('canvas');
                 canvas.width   =  widthPx;
                 canvas.height  =  heightPx;
-
-                if (canvas.width !== widthPx || canvas.height !== heightPx) {
-                    console.error('[ValeSpec__PdfExporter] Canvas capped by browser: requested ' + widthPx + 'x' + heightPx);
-                    URL.revokeObjectURL(url);
-                    resolve(null);
-                    return;
-                }
-
                 var ctx  =  canvas.getContext('2d');
                 if (!ctx) {
-                    console.error('[ValeSpec__PdfExporter] Failed to acquire 2D context');
                     URL.revokeObjectURL(url);
                     resolve(null);
                     return;
                 }
 
-                ctx.fillStyle  =  '#ffffff';
+                ctx.fillStyle =  '#ffffff';
                 ctx.fillRect(0, 0, widthPx, heightPx);
-                ctx.drawImage(img, 0, 0, widthPx, heightPx);
+                ctx.drawImage(image, 0, 0, widthPx, heightPx);
 
-                var dataUrl  =  canvas.toDataURL('image/jpeg', jpegQuality);
                 URL.revokeObjectURL(url);
+                resolve(canvas.toDataURL('image/jpeg', jpegQuality));
+            };
 
-                if (!dataUrl || dataUrl.length < FALLBACK_MIN_DATAURL_LEN) {
-                    console.error('[ValeSpec__PdfExporter] Canvas toDataURL returned invalid result');
-                    resolve(null);
-                    return;
+            image.onerror  =  function() {
+                URL.revokeObjectURL(url);
+                resolve(null);
+            };
+
+            image.src  =  url;
+        });
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Internal Helpers - Measurement
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Compute Wrapped Row Height
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__MeasureWrappedRowHeight(doc, rowValues, columnWidths) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(FONT_SIZE_TABLE_BODY);
+
+        var maxLines  =  1;
+        for (var c = 0; c < rowValues.length; c++) {
+            var rawCellValue  =  rowValues[c] === null || rowValues[c] === undefined ? '' : String(rowValues[c]);
+            var wrapWidth     =  Math.max(8, columnWidths[c] - 4);
+            var lines         =  doc.splitTextToSize(rawCellValue, wrapWidth);
+            if (lines.length > maxLines) maxLines  =  lines.length;
+        }
+
+        return Math.max(TABLE_ROW_MIN_HEIGHT_MM, 2 + (maxLines * TABLE_LINE_HEIGHT_MM));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Measure Table Total Height
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__MeasureTableHeight(doc, rows, columnWidths) {
+        var total  =  TABLE_HEADER_HEIGHT_MM;
+        for (var i = 0; i < rows.length; i++) {
+            total += ValeSpec__PdfExporter__MeasureWrappedRowHeight(doc, rows[i], columnWidths);
+        }
+        return total;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Get Diagram Height by Mode
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__GetDiagramHeightByMode(diagramMode) {
+        if (diagramMode === 'small') return DRAWING_HEIGHT_SMALL_MM;
+        if (diagramMode === 'none') return 0;
+        return DRAWING_HEIGHT_LARGE_MM;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Measure Warning Box Height
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__MeasureWarningBoxHeight(doc, row, contentWidth) {
+        var titleLine  =  (row.assemblyTitle || 'N/A') + ' | ' + (row.warningTitle || 'Warning');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(FONT_SIZE_WARNING_TITLE);
+        var titleLines  =  doc.splitTextToSize(titleLine, contentWidth - (WARNING_BOX_PADDING_MM * 2));
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(FONT_SIZE_WARNING_BODY);
+        var msgLines  =  doc.splitTextToSize(row.warningMessage || '', contentWidth - (WARNING_BOX_PADDING_MM * 2));
+
+        return WARNING_BOX_PADDING_MM
+             + (titleLines.length * WARNING_TITLE_HEIGHT_MM)
+             + (msgLines.length * WARNING_LINE_HEIGHT_MM)
+             + WARNING_BOX_PADDING_MM;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Measure Total PDF Height
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__MeasureTotalHeight(context, pdfConfig, colours, doc) {
+        var model       =  context.model;
+        var viewState   =  context.viewState;
+        var contentW    =  pdfConfig.pageWidthMm - (pdfConfig.pagePaddingMm * 2);
+        var cursorY     =  pdfConfig.pagePaddingMm;
+
+        cursorY += BRANDING_LOGO_HEIGHT_MM + BRANDING_RULE_GAP_MM + BRANDING_BLOCK_BOTTOM_GAP_MM;
+
+        if (viewState.showFullSchedule) {
+            cursorY += SECTION_HEADING_HEIGHT_MM + SECTION_HEADING_BOTTOM_GAP_MM;
+
+            if (!model.orderedAssemblies.length) {
+                cursorY += TABLE_ROW_MIN_HEIGHT_MM + SECTION_BOTTOM_GAP_MM;
+            } else {
+                var diagramHeight  =  ValeSpec__PdfExporter__GetDiagramHeightByMode(viewState.diagramMode);
+                for (var i = 0; i < model.orderedAssemblies.length; i++) {
+                    var specRows       =  model.orderedAssemblies[i].specRows || [];
+                    var specTableRows  =  [];
+                    for (var s = 0; s < specRows.length; s++) {
+                        var r  =  specRows[s] || {};
+                        specTableRows.push([String(r.label || '—'), String(r.value === null || r.value === undefined || r.value === '' ? '—' : r.value)]);
+                    }
+
+                    var specColWidths  =  [contentW * 0.40, contentW * 0.60];
+                    cursorY += ASSEMBLY_TITLE_HEIGHT_MM;
+                    if (diagramHeight > 0) cursorY += diagramHeight + DRAWING_GAP_BELOW_MM;
+                    cursorY += ValeSpec__PdfExporter__MeasureTableHeight(doc, specTableRows, specColWidths);
+                    cursorY += ASSEMBLY_BLOCK_GAP_MM;
                 }
+            }
 
-                resolve(dataUrl);
-            };
+            cursorY += SECTION_BOTTOM_GAP_MM;
+        }
 
-            img.onerror  =  function() {
-                console.error('[ValeSpec__PdfExporter] Failed to load SVG into Image element');
-                URL.revokeObjectURL(url);
-                resolve(null);
-            };
+        if (viewState.showSummary) {
+            var summaryRows  =  model.summaryRows && model.summaryRows.length
+                ? model.summaryRows.map(function(row) {
+                    return [
+                        String(row.itemName || 'N/A'),
+                        String(row.detail || 'N/A'),
+                        String(row.supplier || 'N/A'),
+                        String(row.finish || 'N/A'),
+                        String(row.totalQuantity || 'N/A')
+                    ];
+                })
+                : [['N/A', 'N/A', 'N/A', 'N/A', 'N/A']];
 
-            img.src  =  url;
-        });
-    }
-    // ------------------------------------------------------------
+            var summaryWidths  =  [contentW * 0.24, contentW * 0.26, contentW * 0.16, contentW * 0.16, contentW * 0.18];
+            cursorY += SECTION_HEADING_HEIGHT_MM + SECTION_HEADING_BOTTOM_GAP_MM;
+            cursorY += ValeSpec__PdfExporter__MeasureTableHeight(doc, summaryRows, summaryWidths);
+            cursorY += SECTION_BOTTOM_GAP_MM;
+        }
 
+        if (model.warningRows && model.warningRows.length) {
+            cursorY += SECTION_HEADING_HEIGHT_MM + SECTION_HEADING_BOTTOM_GAP_MM;
+            for (var w = 0; w < model.warningRows.length; w++) {
+                cursorY += ValeSpec__PdfExporter__MeasureWarningBoxHeight(doc, model.warningRows[w], contentW);
+                cursorY += WARNING_BOX_GAP_MM;
+            }
+            cursorY += SECTION_BOTTOM_GAP_MM;
+        }
 
-    // HELPER FUNCTION | Get SVG Intrinsic Aspect Ratio from viewBox
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__GetSvgAspectRatio(svgMarkup) {
-        var match  =  svgMarkup.match(/viewBox\s*=\s*"([^"]+)"/);
-        if (!match) return 1.0;
-        var parts  =  match[1].split(/\s+/);
-        if (parts.length < 4) return 1.0;
-        var vbW  =  parseFloat(parts[2]);
-        var vbH  =  parseFloat(parts[3]);
-        if (!vbW || !vbH) return 1.0;
-        return vbW / vbH;
-    }
-    // ------------------------------------------------------------
+        if (viewState.showJobNotes && model.jobNotes) {
+            cursorY += SECTION_HEADING_HEIGHT_MM + SECTION_HEADING_BOTTOM_GAP_MM;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(FONT_SIZE_NOTES_BODY);
+            var notesLines  =  doc.splitTextToSize(model.jobNotes, contentW);
+            cursorY += notesLines.length * NOTES_LINE_HEIGHT_MM;
+            cursorY += SECTION_BOTTOM_GAP_MM;
+        }
 
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Image Loading Helper
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Load Image from URL as Data URL for PDF Embedding
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__LoadImageAsDataUrl(imageSrc, width, height) {
-        return new Promise(function(resolve) {
-            if (!imageSrc) { resolve(null); return; }
-
-            var img  =  new Image();
-            img.crossOrigin  =  'anonymous';
-
-            img.onload  =  function() {
-                var canvas     =  document.createElement('canvas');
-                canvas.width   =  width  || img.naturalWidth;
-                canvas.height  =  height || img.naturalHeight;
-                var ctx  =  canvas.getContext('2d');
-                if (!ctx) { resolve(null); return; }
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/png'));
-            };
-
-            img.onerror  =  function() {
-                console.warn('[ValeSpec__PdfExporter] Could not load logo image: ' + imageSrc);
-                resolve(null);
-            };
-
-            img.src  =  imageSrc;
-        });
+        cursorY += pdfConfig.pagePaddingMm;
+        return Math.max(cursorY, 120);
     }
     // ------------------------------------------------------------
 
@@ -477,12 +499,12 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | PDF Rendering Helpers
+// REGION | Internal Helpers - Rendering
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Render Branding Header into PDF Document
+    // HELPER FUNCTION | Render Branding Block
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__RenderBranding(doc, meta, logoDataUrl, x, y, contentWidth) {
+    function ValeSpec__PdfExporter__RenderBranding(doc, meta, logoDataUrl, x, y, contentWidth, colours) {
         var cursorY  =  y;
 
         if (logoDataUrl) {
@@ -494,102 +516,106 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         }
 
         var textX  =  x + BRANDING_LOGO_WIDTH_MM + 4;
+        var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName'] || 'Untitled Project';
+        var docName      =  meta['ValeSpec__ProjectFile__Metadata__DocumentName'] || 'Untitled Document';
+        var revisionCode =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode'] || '';
+        var dateText     =  ValeSpec__PdfExporter__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
 
-        var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName']  || 'Untitled Project';
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(FONT_SIZE_PROJECT_NAME);
-        doc.setTextColor(COLOUR_BRAND_PRIMARY[0], COLOUR_BRAND_PRIMARY[1], COLOUR_BRAND_PRIMARY[2]);
+        doc.setTextColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
         doc.text(projectName, textX, cursorY + 5);
 
-        var docName   =  meta['ValeSpec__ProjectFile__Metadata__DocumentName'] || 'Untitled Document';
-        var revision  =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode'] || '';
-        var docLabel  =  revision ? (docName + ' \u2014 Rev ' + revision) : docName;
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(FONT_SIZE_DOC_NAME);
         doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
-        doc.text(docLabel, textX, cursorY + 10);
+        doc.text(revisionCode ? (docName + ' — Rev ' + revisionCode) : docName, textX, cursorY + 10);
 
-        var dateStr  =  ValeSpec__PdfExporter__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
-        doc.setFontSize(FONT_SIZE_DATE);
-        doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
-        doc.text(dateStr, x + contentWidth, cursorY + 5, { align: 'right' });
+        doc.setFontSize(FONT_SIZE_META_DATE);
+        doc.text(dateText, x + contentWidth, cursorY + 5, { align: 'right' });
 
-        cursorY  +=  BRANDING_LOGO_HEIGHT_MM + BRANDING_RULE_GAP_MM;
-        doc.setDrawColor(COLOUR_RULE_LINE[0], COLOUR_RULE_LINE[1], COLOUR_RULE_LINE[2]);
-        doc.setLineWidth(LINE_WIDTH_RULE_2PX_MM);
+        cursorY += BRANDING_LOGO_HEIGHT_MM + BRANDING_RULE_GAP_MM;
+        doc.setDrawColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
+        doc.setLineWidth(LINE_WIDTH_MEDIUM_MM);
         doc.line(x, cursorY, x + contentWidth, cursorY);
+        cursorY += BRANDING_BLOCK_BOTTOM_GAP_MM;
 
-        return cursorY + 4;
+        return cursorY;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Render Assembly Title into PDF
+    // HELPER FUNCTION | Render Section Heading
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__RenderAssemblyTitle(doc, title, x, y) {
+    function ValeSpec__PdfExporter__RenderSectionHeading(doc, headingText, x, y, contentWidth, colours) {
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(FONT_SIZE_ASSEMBLY_TITLE);
-        doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
-        doc.text(title, x, y + 4);
-        return y + ASSEMBLY_TITLE_HEIGHT_MM;
+        doc.setFontSize(FONT_SIZE_SECTION_TITLE);
+        doc.setTextColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
+        doc.text(headingText, x, y + 4);
+
+        var ruleY  =  y + SECTION_HEADING_HEIGHT_MM;
+        doc.setDrawColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
+        doc.setLineWidth(LINE_WIDTH_THIN_MM);
+        doc.line(x, ruleY, x + contentWidth, ruleY);
+
+        return ruleY + SECTION_HEADING_BOTTOM_GAP_MM;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Measure Height of One Spec Table Body Row (wrapped text)
+    // HELPER FUNCTION | Render Data Table
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, row, labelColW, valueColW) {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(FONT_SIZE_TABLE_BODY);
-        var labelLines  =  doc.splitTextToSize(row[0], Math.max(8, labelColW - 4));
-        var valueLines  =  doc.splitTextToSize(row[1], Math.max(8, valueColW - 4));
-        var lineCount   =  Math.max(labelLines.length, valueLines.length);
-        return Math.max(TABLE_ROW_HEIGHT_MM, 2 + lineCount * SPEC_TABLE_LINE_HEIGHT_MM);
-    }
-    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__RenderTable(doc, headerLabels, rows, columnWidths, x, y, colours) {
+        var cursorY  =  y;
+        var totalW   =  0;
+        for (var i = 0; i < columnWidths.length; i++) totalW += columnWidths[i];
 
-
-    // HELPER FUNCTION | Render Spec Table into PDF
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__RenderSpecTable(doc, rows, x, y, contentWidth) {
-        var cursorY    =  y;
-        var labelColW  =  contentWidth * 0.40;
-        var valueColW  =  contentWidth * 0.60;
-
-        doc.setFillColor(COLOUR_TABLE_HEADER_BG[0], COLOUR_TABLE_HEADER_BG[1], COLOUR_TABLE_HEADER_BG[2]);
-        doc.rect(x, cursorY, contentWidth, TABLE_HEADER_HEIGHT_MM, 'F');
+        doc.setFillColor(colours.tableHeaderBg[0], colours.tableHeaderBg[1], colours.tableHeaderBg[2]);
+        doc.rect(x, cursorY, totalW, TABLE_HEADER_HEIGHT_MM, 'F');
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(FONT_SIZE_TABLE_HEADER);
-        doc.setTextColor(COLOUR_TABLE_HEADER_FG[0], COLOUR_TABLE_HEADER_FG[1], COLOUR_TABLE_HEADER_FG[2]);
-        doc.text('SPECIFICATION ITEM', x + 2, cursorY + 4.5);
-        doc.text('DETAIL', x + labelColW + 2, cursorY + 4.5);
-        cursorY  +=  TABLE_HEADER_HEIGHT_MM;
+        doc.setTextColor(colours.tableHeaderFg[0], colours.tableHeaderFg[1], colours.tableHeaderFg[2]);
 
-        doc.setFontSize(FONT_SIZE_TABLE_BODY);
+        var runningX  =  x;
+        for (var h = 0; h < headerLabels.length; h++) {
+            doc.text(String(headerLabels[h] || ''), runningX + 2, cursorY + 4.5);
+            runningX += columnWidths[h];
+        }
+        cursorY += TABLE_HEADER_HEIGHT_MM;
 
-        for (var i = 0; i < rows.length; i++) {
-            var rowH  =  ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, rows[i], labelColW, valueColW);
+        for (var r = 0; r < rows.length; r++) {
+            var row          =  rows[r] || [];
+            var rowHeight    =  ValeSpec__PdfExporter__MeasureWrappedRowHeight(doc, row, columnWidths);
 
-            if (i % 2 === 1) {
-                doc.setFillColor(COLOUR_TABLE_ALT_ROW[0], COLOUR_TABLE_ALT_ROW[1], COLOUR_TABLE_ALT_ROW[2]);
-                doc.rect(x, cursorY, contentWidth, rowH, 'F');
+            if (r % 2 === 1) {
+                doc.setFillColor(colours.tableAltRow[0], colours.tableAltRow[1], colours.tableAltRow[2]);
+                doc.rect(x, cursorY, totalW, rowHeight, 'F');
             }
 
-            doc.setDrawColor(COLOUR_TABLE_BORDER[0], COLOUR_TABLE_BORDER[1], COLOUR_TABLE_BORDER[2]);
-            doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
-            doc.line(x, cursorY + rowH, x + contentWidth, cursorY + rowH);
+            doc.setDrawColor(COLOUR_BORDER_LIGHT[0], COLOUR_BORDER_LIGHT[1], COLOUR_BORDER_LIGHT[2]);
+            doc.setLineWidth(LINE_WIDTH_THIN_MM);
+            doc.line(x, cursorY + rowHeight, x + totalW, cursorY + rowHeight);
 
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
-            var labelLines  =  doc.splitTextToSize(rows[i][0], labelColW - 4);
-            doc.text(labelLines, x + 2, cursorY + 4);
+            runningX =  x;
+            for (var c = 0; c < columnWidths.length; c++) {
+                var cellText  =  row[c] === null || row[c] === undefined || row[c] === '' ? 'N/A' : String(row[c]);
+                var wrapW     =  Math.max(8, columnWidths[c] - 4);
+                var lines     =  doc.splitTextToSize(cellText, wrapW);
 
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
-            var valueLines  =  doc.splitTextToSize(rows[i][1], valueColW - 4);
-            doc.text(valueLines, x + labelColW + 2, cursorY + 4);
+                if (c === 0) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
+                } else {
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
+                }
 
-            cursorY  +=  rowH;
+                doc.setFontSize(FONT_SIZE_TABLE_BODY);
+                doc.text(lines, runningX + 2, cursorY + 4);
+                runningX += columnWidths[c];
+            }
+
+            cursorY += rowHeight;
         }
 
         return cursorY;
@@ -597,34 +623,41 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Render Job Notes Section into PDF
+    // HELPER FUNCTION | Render One Warning Box
     // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__RenderJobNotes(doc, notesText, x, y, contentWidth) {
-        if (!notesText) return y;
-
-        var cursorY  =  y + JOBNOTES_TOP_GAP_MM;
-
-        doc.setDrawColor(COLOUR_TABLE_BORDER[0], COLOUR_TABLE_BORDER[1], COLOUR_TABLE_BORDER[2]);
-        doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
-        doc.line(x, cursorY, x + contentWidth, cursorY);
-        cursorY  +=  4;
+    function ValeSpec__PdfExporter__RenderWarningBox(doc, row, x, y, contentWidth, colours) {
+        var titleText  =  (row.assemblyTitle || 'N/A') + ' | ' + (row.warningTitle || 'Warning');
+        var bodyText   =  row.warningMessage || '';
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(FONT_SIZE_NOTES_TITLE);
-        doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
-        doc.text('Job Notes', x, cursorY + 4);
-        cursorY  +=  JOBNOTES_TITLE_HEIGHT_MM;
+        doc.setFontSize(FONT_SIZE_WARNING_TITLE);
+        var titleLines  =  doc.splitTextToSize(titleText, contentWidth - (WARNING_BOX_PADDING_MM * 2));
 
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(FONT_SIZE_NOTES_BODY);
-        doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
+        doc.setFontSize(FONT_SIZE_WARNING_BODY);
+        var bodyLines  =  doc.splitTextToSize(bodyText, contentWidth - (WARNING_BOX_PADDING_MM * 2));
 
-        var maxTextWidth  =  contentWidth;
-        var splitLines    =  doc.splitTextToSize(notesText, maxTextWidth);
-        doc.text(splitLines, x, cursorY + 3);
-        cursorY  +=  splitLines.length * JOBNOTES_LINE_HEIGHT_MM;
+        var boxHeight  =  WARNING_BOX_PADDING_MM
+                       + (titleLines.length * WARNING_TITLE_HEIGHT_MM)
+                       + (bodyLines.length * WARNING_LINE_HEIGHT_MM)
+                       + WARNING_BOX_PADDING_MM;
 
-        return cursorY;
+        doc.setFillColor(colours.warningBg[0], colours.warningBg[1], colours.warningBg[2]);
+        doc.setDrawColor(colours.warningBorder[0], colours.warningBorder[1], colours.warningBorder[2]);
+        doc.setLineWidth(LINE_WIDTH_THIN_MM);
+        doc.roundedRect(x, y, contentWidth, boxHeight, 1, 1, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(FONT_SIZE_WARNING_TITLE);
+        doc.setTextColor(colours.warningTitle[0], colours.warningTitle[1], colours.warningTitle[2]);
+        doc.text(titleLines, x + WARNING_BOX_PADDING_MM, y + WARNING_BOX_PADDING_MM + 3.5);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(FONT_SIZE_WARNING_BODY);
+        doc.setTextColor(colours.warningText[0], colours.warningText[1], colours.warningText[2]);
+        doc.text(bodyLines, x + WARNING_BOX_PADDING_MM, y + WARNING_BOX_PADDING_MM + (titleLines.length * WARNING_TITLE_HEIGHT_MM) + 2.5);
+
+        return y + boxHeight;
     }
     // ------------------------------------------------------------
 
@@ -632,201 +665,54 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Warning Box Rendering
+// REGION | Main Export Pipeline
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Extract Active Warnings from Assembly
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__ExtractActiveWarnings(assembly) {
-        var warningsCfg  =  assembly['Assembly__Warnings__Config'] || {};
-        return warningsCfg['Assembly__Warnings__Config__ActiveWarnings'] || [];
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Calculate Warning Box Height for Measurement
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__MeasureWarningBoxHeight(doc, activeWarnings, contentWidth) {
-        if (!activeWarnings || activeWarnings.length === 0) return 0;
-
-        var totalHeight  =  0;
-        var innerWidth   =  contentWidth - (WARNING_BOX_PADDING_MM * 2);
-
-        for (var w = 0; w < activeWarnings.length; w++) {
-            var warning     =  activeWarnings[w];
-            var docWarning  =  warning.DocumentWarning || {};
-            var warnMsg     =  docWarning.Message || warning.WarningMessage || '';
-
-            totalHeight  +=  WARNING_GAP_ABOVE_MM;
-            totalHeight  +=  WARNING_BOX_PADDING_MM;
-            totalHeight  +=  WARNING_TITLE_HEIGHT_MM;
-
-            doc.setFontSize(FONT_SIZE_WARNING_BODY);
-            var msgLines  =  doc.splitTextToSize(warnMsg, innerWidth);
-            totalHeight  +=  msgLines.length * WARNING_LINE_HEIGHT_MM;
-
-            totalHeight  +=  WARNING_BOX_PADDING_MM;
-            totalHeight  +=  WARNING_GAP_BELOW_MM;
-        }
-
-        return totalHeight;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Render Warning Boxes into PDF
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__RenderWarningBoxes(doc, activeWarnings, x, y, contentWidth) {
-        if (!activeWarnings || activeWarnings.length === 0) return y;
-
-        var cursorY    =  y;
-        var innerWidth =  contentWidth - (WARNING_BOX_PADDING_MM * 2);
-
-        for (var w = 0; w < activeWarnings.length; w++) {
-            var warning     =  activeWarnings[w];
-            var docWarning  =  warning.DocumentWarning || {};
-            var warnTitle   =  docWarning.Title   || 'Warning';
-            var warnMsg     =  docWarning.Message  || warning.WarningMessage || '';
-
-            cursorY  +=  WARNING_GAP_ABOVE_MM;
-
-            doc.setFontSize(FONT_SIZE_WARNING_BODY);
-            var msgLines  =  doc.splitTextToSize(warnMsg, innerWidth);
-            var boxH      =  WARNING_BOX_PADDING_MM
-                           + WARNING_TITLE_HEIGHT_MM
-                           + (msgLines.length * WARNING_LINE_HEIGHT_MM)
-                           + WARNING_BOX_PADDING_MM;
-
-            doc.setFillColor(COLOUR_WARNING_BG[0], COLOUR_WARNING_BG[1], COLOUR_WARNING_BG[2]);
-            doc.setDrawColor(COLOUR_WARNING_BORDER[0], COLOUR_WARNING_BORDER[1], COLOUR_WARNING_BORDER[2]);
-            doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
-            doc.roundedRect(x, cursorY, contentWidth, boxH, 1, 1, 'FD');
-
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(FONT_SIZE_WARNING_TITLE);
-            doc.setTextColor(COLOUR_WARNING_TITLE[0], COLOUR_WARNING_TITLE[1], COLOUR_WARNING_TITLE[2]);
-            doc.text('\u26A0 ' + warnTitle, x + WARNING_BOX_PADDING_MM, cursorY + WARNING_BOX_PADDING_MM + 3.5);
-
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(FONT_SIZE_WARNING_BODY);
-            doc.setTextColor(COLOUR_WARNING_TEXT[0], COLOUR_WARNING_TEXT[1], COLOUR_WARNING_TEXT[2]);
-            doc.text(msgLines, x + WARNING_BOX_PADDING_MM, cursorY + WARNING_BOX_PADDING_MM + WARNING_TITLE_HEIGHT_MM + 2);
-
-            cursorY  +=  boxH + WARNING_GAP_BELOW_MM;
-        }
-
-        return cursorY;
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Measurement Pass
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Calculate Total Document Height in mm
-    // ------------------------------------------------------------
-    function ValeSpec__PdfExporter__MeasureTotalHeight(assemblies, jobNotes, pdfConfig, doc) {
-        var pad     =  pdfConfig.pagePaddingMm;
-        var height  =  pad;
-
-        height  +=  BRANDING_TOTAL_HEIGHT_MM;
-
-        var contentWidth  =  pdfConfig.pageWidthMm - (pad * 2);
-        var labelColW     =  contentWidth * 0.40;
-        var valueColW     =  contentWidth * 0.60;
-
-        for (var i = 0; i < assemblies.length; i++) {
-            height  +=  ASSEMBLY_TITLE_HEIGHT_MM;
-            height  +=  DRAWING_MAX_HEIGHT_MM + DRAWING_GAP_BELOW_MM;
-
-            var specRows  =  ValeSpec__PdfExporter__ExtractSpecRows(assemblies[i]);
-            height  +=  TABLE_HEADER_HEIGHT_MM;
-            for (var r = 0; r < specRows.length; r++) {
-                height  +=  ValeSpec__PdfExporter__CalcSpecTableBodyRowHeight(doc, specRows[r], labelColW, valueColW);
-            }
-
-            var activeWarnings  =  ValeSpec__PdfExporter__ExtractActiveWarnings(assemblies[i]);
-            height  +=  ValeSpec__PdfExporter__MeasureWarningBoxHeight(doc, activeWarnings, contentWidth);
-
-            if (i < assemblies.length - 1) {
-                height  +=  ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM + ASSEMBLY_SECTION_RULE_GAP_AFTER_MM;
-            } else {
-                height  +=  SECTION_GAP_MM;
-            }
-        }
-
-        if (jobNotes) {
-            height  +=  JOBNOTES_TOP_GAP_MM + 4 + JOBNOTES_TITLE_HEIGHT_MM;
-            var contentWidth  =  pdfConfig.pageWidthMm - (pad * 2);
-            doc.setFontSize(FONT_SIZE_NOTES_BODY);
-            var splitLines  =  doc.splitTextToSize(jobNotes, contentWidth);
-            height  +=  splitLines.length * JOBNOTES_LINE_HEIGHT_MM;
-        }
-
-        height  +=  pad;
-        return Math.max(height, 100);
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Main Export Function
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Export Document Preview as PDF
+    // FUNCTION | Export Current Document Preview as PDF
     // ------------------------------------------------------------
     async function ValeSpec__PdfExporter__Export() {
-
         var JsPDF  =  (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
         if (!JsPDF) {
-            console.error('[ValeSpec__PdfExporter] jsPDF not found. Ensure jspdf.umd.js is loaded.');
             alert('PDF Export failed — jsPDF library not loaded.');
             return;
         }
 
-        var pdfConfig     =  ValeSpec__PdfExporter__ResolveConfig();
-        var colours       =  ValeSpec__PdfExporter__ResolveColours();           // <-- Read brand/table colours from Na__DocPreview__Config.json via app state
+        var context  =  ValeSpec__PdfExporter__GetRenderContext();
+        if (!context) {
+            alert('PDF Export failed — Document Preview context is unavailable.');
+            return;
+        }
 
-        COLOUR_BRAND_PRIMARY     =  colours.brandPrimary;                       // <-- Override fallback constants with config-driven values
-        COLOUR_RULE_LINE         =  colours.ruleLine;
-        COLOUR_TABLE_HEADER_BG   =  colours.tableHeaderBg;
-        COLOUR_TABLE_HEADER_FG   =  colours.tableHeaderFg;
-        COLOUR_TABLE_ALT_ROW     =  colours.tableAltRow;
-
-        var meta          =  ValeSpec__PdfExporter__GetProjectMeta();
-        var assemblies    =  ValeSpec__PdfExporter__GetAssemblies();
-        var jobNotes      =  ValeSpec__PdfExporter__GetJobNotes();
-        var hwIndex       =  ValeSpec__PdfExporter__GetHardwareIndex();
-        var logoPath      =  ValeSpec__PdfExporter__GetLogoPath();
-        var pad           =  pdfConfig.pagePaddingMm;
-        var contentWidth  =  pdfConfig.pageWidthMm - (pad * 2);
+        var pdfConfig    =  ValeSpec__PdfExporter__ResolvePdfConfig();
+        var colours      =  ValeSpec__PdfExporter__ResolveColours();
+        var model        =  context.model;
+        var viewState    =  context.viewState;
+        var styleTokens  =  context.styleTokens;
+        var hardwareIdx  =  ValeSpec__PdfExporter__GetHardwareIndex();
+        var logoPath     =  ValeSpec__PdfExporter__GetLogoPath();
+        var paddingMm    =  pdfConfig.pagePaddingMm;
+        var contentW     =  pdfConfig.pageWidthMm - (paddingMm * 2);
 
         var exportBtn  =  document.getElementById('ValeSpec__DocPreview__BtnExport');
         if (exportBtn) {
-            exportBtn.disabled   =  true;
-            exportBtn.textContent  =  'Generating PDF\u2026';
+            exportBtn.disabled     =  true;
+            exportBtn.textContent  =  'Generating PDF…';
         }
 
         try {
-
-            // Create a temporary doc for measurement (splitTextToSize needs a doc instance)
-            // ----------------------------------------------------------------
+            // Measure pass
+            // ------------------------------------------------------------
             var measureDoc  =  new JsPDF({
-                orientation    : 'portrait',
-                unit           : 'mm',
-                format         : [pdfConfig.pageWidthMm, 200],
-                compress       : pdfConfig.compress
+                orientation : 'portrait',
+                unit        : 'mm',
+                format      : [pdfConfig.pageWidthMm, 200],
+                compress    : pdfConfig.compress
             });
 
-            var totalHeight  =  ValeSpec__PdfExporter__MeasureTotalHeight(assemblies, jobNotes, pdfConfig, measureDoc);
+            var totalHeight  =  ValeSpec__PdfExporter__MeasureTotalHeight(context, pdfConfig, colours, measureDoc);
 
-            // Create the real document with the measured height
-            // ----------------------------------------------------------------
+            // Render pass
+            // ------------------------------------------------------------
             var doc  =  new JsPDF({
                 orientation    : 'portrait',
                 unit           : 'mm',
@@ -835,102 +721,159 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
                 floatPrecision : pdfConfig.floatPrecision
             });
 
-            var cursorY  =  pad;
-            var x        =  pad;
+            var cursorY  =  paddingMm;
+            var cursorX  =  paddingMm;
+            var logoDataUrl  =  await ValeSpec__PdfExporter__LoadImageAsDataUrl(logoPath, 220, 62);
 
-            // Load logo image
-            // ----------------------------------------------------------------
-            var logoDataUrl  =  await ValeSpec__PdfExporter__LoadImageAsDataUrl(logoPath, 200, 56);
+            cursorY  =  ValeSpec__PdfExporter__RenderBranding(doc, model.metadata || {}, logoDataUrl, cursorX, cursorY, contentW, colours);
 
-            // Render branding header
-            // ----------------------------------------------------------------
-            cursorY  =  ValeSpec__PdfExporter__RenderBranding(doc, meta, logoDataUrl, x, cursorY, contentWidth);
+            // Section 01 | Full Ironmongery Schedule
+            // ------------------------------------------------------------
+            if (viewState.showFullSchedule) {
+                cursorY  =  ValeSpec__PdfExporter__RenderSectionHeading(doc, styleTokens.sectionTitle01, cursorX, cursorY, contentW, colours);
 
-            // Render each assembly block
-            // ----------------------------------------------------------------
-            var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
+                if (!model.orderedAssemblies.length) {
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(FONT_SIZE_TABLE_BODY);
+                    doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
+                    doc.text('No configured assemblies available.', cursorX, cursorY + 4);
+                    cursorY += TABLE_ROW_MIN_HEIGHT_MM + SECTION_BOTTOM_GAP_MM;
+                } else {
+                    var RenderPipeline  =  window.ValeSpec__SvgDrawing__RenderPipeline;
+                    var targetDrawingH  =  ValeSpec__PdfExporter__GetDiagramHeightByMode(viewState.diagramMode);
 
-            for (var i = 0; i < assemblies.length; i++) {
-                var assembly  =  assemblies[i];
+                    for (var a = 0; a < model.orderedAssemblies.length; a++) {
+                        var assemblyInfo  =  model.orderedAssemblies[a];
+                        var assemblyData  =  assemblyInfo.assemblyData;
 
-                var title  =  ValeSpec__PdfExporter__BuildAssemblyTitle(assembly);
-                cursorY    =  ValeSpec__PdfExporter__RenderAssemblyTitle(doc, title, x, cursorY);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(FONT_SIZE_ASSEMBLY_TITLE);
+                        doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
+                        doc.text(assemblyInfo.title || 'Assembly', cursorX, cursorY + 4);
+                        cursorY += ASSEMBLY_TITLE_HEIGHT_MM;
 
-                // Rasterise SVG drawing
-                // ------------------------------------------------------------
-                if (RenderPipeline) {
-                    var svgMarkup  =  null;
-                    try {
-                        svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assembly, hwIndex);
-                    } catch (e) {
-                        console.warn('[ValeSpec__PdfExporter] SVG render error for assembly ' + i + ':', e);
-                    }
-
-                    if (svgMarkup) {
-                        var aspectRatio    =  ValeSpec__PdfExporter__GetSvgAspectRatio(svgMarkup);
-                        var drawingWidthMm   =  contentWidth;
-                        var drawingHeightMm  =  drawingWidthMm / aspectRatio;
-
-                        if (drawingHeightMm > DRAWING_MAX_HEIGHT_MM) {
-                            drawingHeightMm  =  DRAWING_MAX_HEIGHT_MM;
-                            drawingWidthMm   =  drawingHeightMm * aspectRatio;
-                        }
-
-                        var ppm       =  pdfConfig.targetDpi / 25.4;
-                        var rasterW   =  Math.round(drawingWidthMm * ppm);
-                        var rasterH   =  Math.round(drawingHeightMm * ppm);
-
-                        var drawingDataUrl  =  await ValeSpec__PdfExporter__RasteriseSvg(svgMarkup, rasterW, rasterH, pdfConfig.jpegQuality);
-                        if (drawingDataUrl) {
-                            var imgX  =  x + (contentWidth - drawingWidthMm) / 2;
+                        if (viewState.diagramMode !== 'none' && RenderPipeline) {
                             try {
-                                doc.addImage(drawingDataUrl, 'JPEG', imgX, cursorY, drawingWidthMm, drawingHeightMm);
-                            } catch (e) {
-                                console.warn('[ValeSpec__PdfExporter] addImage failed for assembly ' + i + ':', e);
+                                var svgMarkup  =  null;
+                                if (viewState.diagramMode === 'small') {
+                                    svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assemblyData, hardwareIdx, 420, 220);
+                                } else {
+                                    svgMarkup  =  RenderPipeline.ValeSpec__RenderPipeline__RenderThumbnail(assemblyData, hardwareIdx);
+                                }
+
+                                if (svgMarkup) {
+                                    var aspect         =  ValeSpec__PdfExporter__GetSvgAspectRatio(svgMarkup);
+                                    var drawWidthMm    =  contentW;
+                                    var drawHeightMm   =  drawWidthMm / aspect;
+                                    if (drawHeightMm > targetDrawingH) {
+                                        drawHeightMm  =  targetDrawingH;
+                                        drawWidthMm   =  drawHeightMm * aspect;
+                                    }
+
+                                    var pxPerMm  =  pdfConfig.targetDpi / 25.4;
+                                    var rasterW  =  Math.max(1, Math.round(drawWidthMm * pxPerMm));
+                                    var rasterH  =  Math.max(1, Math.round(drawHeightMm * pxPerMm));
+                                    var jpegUrl  =  await ValeSpec__PdfExporter__RasteriseSvg(svgMarkup, rasterW, rasterH, pdfConfig.jpegQuality);
+
+                                    if (jpegUrl) {
+                                        var imgX  =  cursorX + ((contentW - drawWidthMm) / 2);
+                                        doc.addImage(jpegUrl, 'JPEG', imgX, cursorY, drawWidthMm, drawHeightMm);
+                                    }
+                                }
+                            } catch (drawErr) {
+                                console.warn('[ValeSpec__PdfExporter] Drawing render failed for assembly index ' + a + ':', drawErr);
                             }
+
+                            cursorY += targetDrawingH + DRAWING_GAP_BELOW_MM;
                         }
-                        cursorY  +=  drawingHeightMm + DRAWING_GAP_BELOW_MM;
-                    } else {
-                        cursorY  +=  DRAWING_MAX_HEIGHT_MM + DRAWING_GAP_BELOW_MM;
+
+                        var specRows       =  assemblyInfo.specRows || [];
+                        var specTableRows  =  [];
+                        for (var sr = 0; sr < specRows.length; sr++) {
+                            var specRow  =  specRows[sr] || {};
+                            var label    =  specRow.label || '—';
+                            var value    =  specRow.value;
+                            if (value === null || value === undefined || value === '') value  =  '—';
+                            specTableRows.push([String(label), String(value)]);
+                        }
+
+                        var specWidths  =  [contentW * 0.40, contentW * 0.60];
+                        cursorY         =  ValeSpec__PdfExporter__RenderTable(
+                                            doc,
+                                            ['SPECIFICATION ITEM', 'DETAIL'],
+                                            specTableRows,
+                                            specWidths,
+                                            cursorX,
+                                            cursorY,
+                                            colours
+                                          );
+                        cursorY += ASSEMBLY_BLOCK_GAP_MM;
                     }
-                } else {
-                    cursorY  +=  DRAWING_MAX_HEIGHT_MM + DRAWING_GAP_BELOW_MM;
-                }
 
-                // Render spec table
-                // ------------------------------------------------------------
-                var specRows  =  ValeSpec__PdfExporter__ExtractSpecRows(assembly);
-                cursorY       =  ValeSpec__PdfExporter__RenderSpecTable(doc, specRows, x, cursorY, contentWidth);
-
-                // Render warning boxes (if any active warnings)
-                // ------------------------------------------------------------
-                var pdfWarnings  =  ValeSpec__PdfExporter__ExtractActiveWarnings(assembly);
-                cursorY          =  ValeSpec__PdfExporter__RenderWarningBoxes(doc, pdfWarnings, x, cursorY, contentWidth);
-
-                if (i < assemblies.length - 1) {
-                    cursorY  +=  ASSEMBLY_SECTION_RULE_GAP_BEFORE_MM;
-                    doc.setDrawColor(COLOUR_RULE_LINE[0], COLOUR_RULE_LINE[1], COLOUR_RULE_LINE[2]);
-                    doc.setLineWidth(LINE_WIDTH_RULE_1PX_MM);
-                    doc.line(x, cursorY, x + contentWidth, cursorY);
-                    cursorY  +=  ASSEMBLY_SECTION_RULE_GAP_AFTER_MM;
-                } else {
-                    cursorY  +=  SECTION_GAP_MM;
+                    cursorY += SECTION_BOTTOM_GAP_MM;
                 }
             }
 
-            // Render job notes
-            // ----------------------------------------------------------------
-            cursorY  =  ValeSpec__PdfExporter__RenderJobNotes(doc, jobNotes, x, cursorY, contentWidth);
+            // Section 02 | Summary
+            // ------------------------------------------------------------
+            if (viewState.showSummary) {
+                cursorY  =  ValeSpec__PdfExporter__RenderSectionHeading(doc, styleTokens.sectionTitle02, cursorX, cursorY, contentW, colours);
 
-            // Save the PDF
-            // ----------------------------------------------------------------
-            var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName'] || 'ValeSpec_Document';
-            var safeName     =  projectName.replace(/[^a-zA-Z0-9_\- ]/g, '').replace(/\s+/g, '_');
+                var summaryRows  =  model.summaryRows && model.summaryRows.length
+                    ? model.summaryRows.map(function(row) {
+                        return [
+                            String(row.itemName || 'N/A'),
+                            String(row.detail || 'N/A'),
+                            String(row.supplier || 'N/A'),
+                            String(row.finish || 'N/A'),
+                            String(row.totalQuantity || 'N/A')
+                        ];
+                    })
+                    : [['N/A', 'N/A', 'N/A', 'N/A', 'N/A']];
+
+                var summaryWidths  =  [contentW * 0.24, contentW * 0.26, contentW * 0.16, contentW * 0.16, contentW * 0.18];
+                cursorY            =  ValeSpec__PdfExporter__RenderTable(
+                                        doc,
+                                        ['SPECIFICATION ITEM', 'DETAIL', 'SUPPLIER', 'FINISH', 'TOTAL QTY'],
+                                        summaryRows,
+                                        summaryWidths,
+                                        cursorX,
+                                        cursorY,
+                                        colours
+                                      );
+                cursorY += SECTION_BOTTOM_GAP_MM;
+            }
+
+            // Section 03 | Warnings
+            // ------------------------------------------------------------
+            if (model.warningRows && model.warningRows.length) {
+                cursorY  =  ValeSpec__PdfExporter__RenderSectionHeading(doc, styleTokens.sectionTitle03, cursorX, cursorY, contentW, colours);
+
+                for (var w = 0; w < model.warningRows.length; w++) {
+                    cursorY  =  ValeSpec__PdfExporter__RenderWarningBox(doc, model.warningRows[w], cursorX, cursorY, contentW, colours);
+                    cursorY += WARNING_BOX_GAP_MM;
+                }
+
+                cursorY += SECTION_BOTTOM_GAP_MM;
+            }
+
+            // Section 04 | Special Job Notes
+            // ------------------------------------------------------------
+            if (viewState.showJobNotes && model.jobNotes) {
+                cursorY  =  ValeSpec__PdfExporter__RenderSectionHeading(doc, styleTokens.sectionTitle04, cursorX, cursorY, contentW, colours);
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(FONT_SIZE_NOTES_BODY);
+                doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
+                var notesLines  =  doc.splitTextToSize(model.jobNotes, contentW);
+                doc.text(notesLines, cursorX, cursorY + 3);
+                cursorY += (notesLines.length * NOTES_LINE_HEIGHT_MM) + SECTION_BOTTOM_GAP_MM;
+            }
+
+            var projectName  =  (model.metadata && model.metadata['ValeSpec__ProjectFile__Metadata__ProjectName']) || 'ValeSpec_Document';
+            var safeName     =  String(projectName).replace(/[^a-zA-Z0-9_\- ]/g, '').replace(/\s+/g, '_');
             var filename     =  'ValeSpec__' + safeName + '__.pdf';
-
             doc.save(filename);
-
-            console.log('[ValeSpec__PdfExporter] PDF exported: ' + filename);
 
         } catch (err) {
             console.error('[ValeSpec__PdfExporter] Export failed:', err);
@@ -952,6 +895,7 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
     return {
         ValeSpec__PdfExporter__Export  : ValeSpec__PdfExporter__Export
     };
+    // ------------------------------------------------------------
 
 })();
 

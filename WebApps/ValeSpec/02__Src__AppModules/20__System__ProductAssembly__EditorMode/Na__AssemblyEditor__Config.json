@@ -181,6 +181,17 @@
                     "Title"    : "Hinge Projection Warning",
                     "Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification."
                 }
+            },
+            {
+                "RuleId"               : "WARN_NON_COMPLEMENTARY_HARDWARE",
+                "ObjectType"           : "AnyDoor",
+                "Condition"            : "SelectedHardwareHasNonComplementary",
+                "Severity"             : "Warning",
+                "EditorNotification"   : "Selected hardware includes non-complementary items. Ensure the client is quoted, invoiced, and aware of cost upgrades prior to order.",
+                "DocumentWarning"      : {
+                    "Title"    : "Cost Upgrade Warning",
+                    "Message"  : "Selected hardware includes non-complementary items. Confirm quotation and client approval for upgraded costs before ordering."
+                }
             }
         ]
     }

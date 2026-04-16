@@ -94,6 +94,50 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 // REGION | Warning Rule Evaluation Engine
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Resolve Hardware Item by Name from Loaded Index
+    // ------------------------------------------------------------
+    function ValeSpec__WarningSystem__ResolveHardwareItemByName(hardwareIndex, desiredName) {
+        if (!hardwareIndex || !desiredName) return null;
+        if (hardwareIndex[desiredName]) return hardwareIndex[desiredName];
+
+        var desiredLower  =  String(desiredName).toLowerCase().trim();
+        var keys          =  Object.keys(hardwareIndex);
+        for (var i = 0; i < keys.length; i++) {
+            var item      =  hardwareIndex[keys[i]];
+            var itemName  =  item ? item['HardwareItem__Name'] : '';
+            if (String(itemName || '').toLowerCase().trim() === desiredLower) {
+                return item;
+            }
+        }
+
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Selected Hardware Items for Rule Evaluation
+    // ------------------------------------------------------------
+    function ValeSpec__WarningSystem__ResolveSelectedHardwareItems(assembly) {
+        var resolvedItems  =  [];
+        var StateManager   =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager || !assembly) return resolvedItems;
+
+        var state         =  StateManager.ValeSpec__StateManager__GetState() || {};
+        var hardwareIndex =  state.hardwareIndex || null;
+        if (!hardwareIndex) return resolvedItems;
+
+        var leverCfg    =  assembly['Assembly__Lever__Config'] || {};
+        var handleName  =  leverCfg['Assembly__Lever__Config__Type'] || state.globalHandleType || '';
+        if (!handleName || String(handleName).toLowerCase().trim() === 'none') return resolvedItems;
+
+        var item  =  ValeSpec__WarningSystem__ResolveHardwareItemByName(hardwareIndex, handleName);
+        if (item) resolvedItems.push(item);
+
+        return resolvedItems;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Resolve Object Type Match Against Door Type String
     // ------------------------------------------------------------
     function ValeSpec__WarningSystem__MatchesObjectType(ruleObjectType, doorType) {
@@ -141,6 +185,15 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             if (thresholdVal === undefined || thresholdVal === null) return false;
             return assemblyValues.hingeProjection == thresholdVal;             // <-- Loose equality for string/number interop
         }
+        if (condition === 'SelectedHardwareHasNonComplementary') {
+            var selectedItems  =  assemblyValues.selectedHardwareItems || [];
+            for (var i = 0; i < selectedItems.length; i++) {
+                if (selectedItems[i] && selectedItems[i]['HardwareItem__IsComplementary'] === false) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         return false;
     }
@@ -153,12 +206,21 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
         var dimsCfg   =  assembly['Assembly__Dimensions__Config']  || {};
         var doorCfg   =  assembly['Assembly__DoorType__Config']    || {};
         var hingeCfg  =  assembly['Assembly__Hinge__Config']       || {};
+        var selectedHardwareItems  =  ValeSpec__WarningSystem__ResolveSelectedHardwareItems(assembly);
+        var selectedHardwareNames  =  [];
+
+        for (var i = 0; i < selectedHardwareItems.length; i++) {
+            var itemName  =  selectedHardwareItems[i] ? selectedHardwareItems[i]['HardwareItem__Name'] : '';
+            if (itemName) selectedHardwareNames.push(itemName);
+        }
 
         return {
             doorType         :  doorCfg['Assembly__DoorType__Config__Type']         || '',
             widthMm          :  parseInt(dimsCfg['Assembly__Dimensions__Config__WidthMm'], 10)  || 0,
             heightMm         :  parseInt(dimsCfg['Assembly__Dimensions__Config__HeightMm'], 10) || 0,
-            hingeProjection  :  hingeCfg['Assembly__Hinge__Config__Projection']     || null
+            hingeProjection  :  hingeCfg['Assembly__Hinge__Config__Projection']     || null,
+            selectedHardwareItems : selectedHardwareItems,
+            selectedHardwareNames : selectedHardwareNames
         };
     }
     // ------------------------------------------------------------
@@ -184,6 +246,7 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             if (condition === 'WidthOver' || condition === 'WidthUnder')   triggeredValue  =  values.widthMm;
             if (condition === 'HeightOver' || condition === 'HeightUnder') triggeredValue  =  values.heightMm;
             if (condition === 'HingeProjectionEquals')                     triggeredValue  =  values.hingeProjection;
+            if (condition === 'SelectedHardwareHasNonComplementary')       triggeredValue  =  (values.selectedHardwareNames || []).join(', ');
 
             activeWarnings.push({
                 RuleId           :  rule['RuleId']             || '',

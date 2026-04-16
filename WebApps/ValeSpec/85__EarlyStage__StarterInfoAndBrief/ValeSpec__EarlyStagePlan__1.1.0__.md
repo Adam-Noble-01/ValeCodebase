@@ -443,20 +443,122 @@ ValeSpec__Data__HardwareIndex__.json  =  The Hardware Index File with all Hardwa
 
 
 --------------------------------------
-### 7.4 |  Ironmongery Schedule Output
+### 7.4 |  Document Preview Mode
+- This mode shows the final document as it will be produced.
+- Gives the option to configure the document display settings prior to export.
+  - Sometimes summaries might only be required (Collates everything into a single section for easy reading)
+  - Sometimes a table only export is required (removes the preview images)
 - All configuration data files fpr the assemblies are loaded.
 - Logic then builds a series of document sections broken down and detailed below. 
 - A standardised company branded manufacturing specification sheet is generated.
 - The Tool contains clearly defined sections and subsections for each assembly with clear tables and diagrams.
+- Features a PDF Export Button to export the document as a PDF.
+- Must Use a single point of truth for the document preview mode and the PDF export styling to prevent any inconsistencies or errors in the styling of the document.
+
+### Aim Of The Document Preview Mode
+- To allow the end user to preview the end document and easily switch the level of detail and information displayed in the document.
+- For Technical department auditing its usefull to have all the detail but the factory buying department often only need just a summary table of all hardware required their combined quantities for all assemblies, suppliers and all critical warnings and job specific notes.
+- The aim is to create a simple intuitive pipeline for creating different standardised manufacturing specification sheets for different departments and roles.
+- Templates may be added in the future to allow the user to toggle the view states even faster, but this is a future idea.
+-
+
+#### Preview Image Size Options
+- Small Diagrams = Displays the images inline with the tables. (On By Default)
+- Large Diagrams = Stacks the images over the tables like currently.
+- No Diagrams    = Removes the preview images completely, only tables are displayed.
+- Use a toggle switch similar to the one used in the assembly editor to toggle between the two options.
+
+#### Document Sections Toggles
+- Toggle to show or hide the full ironmongery schedule.
+1. Full Ironmongery Schedule      =  Default On if off, does not render Section 01 | Full Ironmongery Schedule.
+2. Ironmongery Schedule Summary   =  Default On if off, does not render Section 02 | Ironmongery Schedule Summary.
+3. Warnings Section               =  ALWAYS ON - Most jobs wont have warnings, butut if they do, they MUST be displayed 
+4. Special Job Notes Section      =  Default On if off, does not render Section 04 | Special Job Notes Section.
+
+#### Warnings Section Styling
+- The warnings must be collated and rendered and the warning per {{Assembly__Identity__Config__Title}} listed and its respective warning messages listed in a table.
+- This section styled to make them stand out clearly like we already did with the document editor and assembly system.
+- on the PDF they should be in a red box just like with the document editor and assembly system.
+- This is conditional on the warning data and system already in use, If no warnings exist, this section is not rendered.
+- But its critical it is if warning exists to help other members of staff to understand the job and the potential issues and reduce errors when ordering the the required hardware and manufacturing.
+
+#### Auto Emailing System
+**!MAKE A PLACEHOLDER BUTTON FOR NOW!**
+- In the future i will use the system already created for ValeVision 3D Which uses a Microsoft Graph API to send emails to the user.
+- Our previous email system loaded and auto-filled email address etc for inter company email alerts etc.
 
 
+--------------------------------------
+### 7.5 |  Document Preview Mode - Example Outputs
+- Depending which assemblies exist in the document, the following outputs will be generated.
+- The are to be in this order if all types exist in the document.
+    1. Bi-Fold Door Set
+    2. Double Doors 
+    3. Single Doors
+    4. Windows
+- Examples shown below are indicative of the output and layout when in Small Diagrams Mode (Default)
 
-#### Bi-Fold Schedule Output
------------------           | Specification Item                 | Specification Item  |
-| Preview Image | <Padding> | ---------------------------------- | ------------------- |
-----------------            | {{Keys Specific To The Assembly}}  |
+--------------------------------------
+# DOCUMENT HEADER SECTION WITH LOGO AND KEY DETAILS ETC
+--------------------------------------
+## Section 01 |  Full Ironmongery Schedule
+### Bifold Door Set {{##}} |  {{Assembly__Identity__Config__Title}}
+-----------------           | Specification Item                 | Detail                            |
+| Preview Image | <Padding> | ---------------------------------- | --------------------------------- |
+----------------            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            
+<HR>
 
+### Double Door Set {{##}} |  {{Assembly__Identity__Config__Title}}
+-----------------           | Specification Item                 | Detail                            |
+| Preview Image | <Padding> | ---------------------------------- | --------------------------------- |
+----------------            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
 
+<HR>
+
+### Single Door {{##}} |  {{Assembly__Identity__Config__Title}}
+-----------------           | Specification Item                 | Detail                            |
+| Preview Image | <Padding> | ---------------------------------- | --------------------------------- |
+----------------            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+<HR>
+
+### Window {{##}} |  {{Assembly__Identity__Config__Title}}
+-----------------           | Specification Item                 | Detail                            |
+| Preview Image | <Padding> | ---------------------------------- | --------------------------------- |
+----------------            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+                            | {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} |
+
+<HR>
+
+## Section 02 |  Ironmongery Schedule Summary
+| Specification Item                 | Detail                            | Supplier       | Total Quantity      |
+| ---------------------------------- | --------------------------------- | ------------------------------------ |
+| {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} | {{{Supplier}}} | {{Total Quantity}}  |
+| {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} | {{{Supplier}}} | {{Total Quantity}}  |
+| {{Keys Specific To The Assembly}}  | {{Keys Specific To The Assembly}} | {{{Supplier}}} | {{Total Quantity}}  |
+
+<HR>
+
+## Section 03 |  Warnings Section
+{{IF ANY : Collates and presents all warnings - See Warning System in place and the json data for the warnings}}.
+
+<HR>
+
+## Section 04 |  Special Job Notes Section
+{{IF ANY : Collates and presents all special job notes - See Special Job Notes System in place and the json data for the  job notes}}.
+
+<HR>
+
+End Of Document
+
+--------------------------------------
 
 - Hinge Requirement: Calculated type and size. Note: Internal doors require 4x4 Butts.
 - Lever Type & Quantity: Aggregated list across all door rows.
@@ -489,17 +591,3 @@ ValeSpec__Data__HardwareIndex__.json  =  The Hardware Index File with all Hardwa
 
 
 
-## EXPERT RUBY SCRIPT DEVELOPER
-- Your an expert SketchUp Ruby Script Developer.
-- You write Plugins for Architects/Engineers/Hobbyists using SketchUp 2026.1
-- The SketchUp Plugin API is documented here: https://ruby.sketchup.com/
-
-**IMPORTANT:** The Ruby API 2026 is famously brittle and version dependent.
-- As such if your unsure you must **ALWAYS** check the API documentation for the exact method you are using.
-- **NEVER** assume a method exists, or that it works as expected. 
-- "Layers" in the RubyAPI Now refer to "Tags" which are often used for users to control the visibility of objects.
-- SketchUp uses Nested sets of "Groups" "Components" and "Entities" etc so ensure you understand the hierarchy and how to navigate it.
-- Sketchup uses a {{research this}} coordinate system for positioning objects.
-
-**SKETCHUP OBJECT MODEL**
-SketchUp’s object model is hierarchical: a `Model` exposes top-level `Entities`, and within that collection you’ll encounter raw geometry plus nested `Group` and `ComponentInstance` objects, both of which point to a `ComponentDefinition` whose own `entities` collection contains the nested contents; for plugin developers, traversal therefore usually means recursively walking `model.entities`, then descending through `group.definition.entities` or `component_instance.definition.entities`, while using `active_entities`, `active_path`, and transforms when you need to respect the user’s current edit context.

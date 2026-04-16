@@ -3,6 +3,38 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.2 - 16-Apr-2026
+### Server — Conservative Heartbeat + Console Restart Flags + Log Housekeeping
+
+**Overview**
+- Brought ValeSpec server and connection monitor in line with ValePlanner's latest conservative server parity changes.
+- Cleaned up server console output: health pings suppressed, timestamp format made human-readable.
+
+**Connection Monitor (`ValeSpec__AppNotifications__ServerConnectionMonitor__.js`)**
+- Replaced periodic `setInterval` heartbeat (every 6 seconds) with click-based health probing (20-second cooldown).
+- Added `IsHealthCheckInFlight` guard to prevent overlapping health requests.
+- Updated `ReportApiFailure` to suppress the `lost` state until the server has been confirmed stable at least once (matches ValePlanner early-return approach).
+- Updated `InitializeMonitor` config to accept `clickHealthCooldownMs` (with backward-compatible `healthIntervalMs` fallback).
+
+**Server (`ValeSpec__FlaskServer__Localhost__.py`)**
+- `log_message` now suppresses all `api/system/health` requests from console output — health pings are infrastructure noise and do not belong in the request log.
+- `log_message` timestamp changed from verbose UTC ISO format to readable local time: `16-Apr-2026 - 12:30`.
+- Added `REGION | Console Flags - Runtime Restart Commands`:
+  - `NA__SERVER__RESTART_FLAG_TOKENS` — accepted restart tokens (`--r`, `--R`, `--restart`, `--Restart`).
+  - `Na__Server__ConsoleCommandReader` — daemon thread reads stdin and queues commands.
+  - `Na__Server__TryHandleQueuedConsoleCommands` — drains queue and signals restart.
+  - `Na__Server__RunHttpLoopWithConsoleCommands` — replaces `serve_forever()` with a restartable `handle_request()` loop.
+- Updated `main()`:
+  - Prints restart flags hint in startup banner (non-silent mode only).
+  - Spawns command reader thread when running interactively (non-silent + isatty).
+  - Server now runs in a restart loop; typing a restart flag in the console restarts the handler without killing the process.
+  - `finally` block ensures the command reader stop event is always signalled on exit.
+
+**Files Changed**
+- `02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionMonitor__.js`
+- `ValeSpec__FlaskServer__Localhost__.py`
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.1 - 15-Apr-2026
 
 ### Assembly Editor — Progress persistence, save action UX, and naming-style correction

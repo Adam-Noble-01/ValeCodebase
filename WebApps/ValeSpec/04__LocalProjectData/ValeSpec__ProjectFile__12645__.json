@@ -6,14 +6,14 @@
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery Project",
         "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Pending Approval",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
-        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-16",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
         "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
-        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Plain Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Satin Nickel",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
     "ValeSpec__ProjectFile__Assemblies": [
@@ -94,15 +94,15 @@
             },
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
-                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Handles": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "misc"
+                "Assembly__ProgressState__Config__ActiveStepId": "handles"
             }
         },
         {

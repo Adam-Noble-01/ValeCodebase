@@ -4620,3 +4620,15 @@
 [REQUEST] 127.0.0.1 | "GET /api/system/health?naHeartbeatTs=1776251214549 HTTP/1.1" 200 -
 [REQUEST] 127.0.0.1 | "GET /api/system/health?naHeartbeatTs=1776251274552 HTTP/1.1" 200 -
 [REQUEST] 127.0.0.1 | "GET /api/system/health?naHeartbeatTs=1776251334544 HTTP/1.1" 200 -
+=============================================================================
+ VALEPLANNER - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValePlanner\Na__ValePlannerServer__Startup.log
+=============================================================================
+=============================================================================
+ VALEPLANNER - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValePlanner
+ Local URL      : http://127.0.0.1:8001/index.html
+ LAN URL        : http://192.168.9.80:8001/index.html
+ Press Ctrl+C to stop server
+=============================================================================
+[REQUEST] 2026-04-16T10:00:04.847036+00:00 | 127.0.0.1 | "GET /api/system/health?naHeartbeatTs=1776333604845 HTTP/1.1" 200 -

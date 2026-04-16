@@ -30,16 +30,23 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     const PREVIEW_CONTAINER_ID  =  'ValeSpec__DocPreview__Container';
     const MENU_ICON_BASE_PATH   =  '01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/';
     const MENU_SECTION_DEFAULT_STATE  =  {
-        navigation : true,
         diagrams   : true,
         sections   : true,
         actions    : true
     };
     var ValeSpec__PageRenderer__MenuSectionState  =  {
-        navigation : MENU_SECTION_DEFAULT_STATE.navigation,
         diagrams   : MENU_SECTION_DEFAULT_STATE.diagrams,
         sections   : MENU_SECTION_DEFAULT_STATE.sections,
         actions    : MENU_SECTION_DEFAULT_STATE.actions
+    };
+    var ValeSpec__PageRenderer__MenuPositionState  =  {
+        left : null,
+        top  : null
+    };
+    var ValeSpec__PageRenderer__MenuDragState  =  {
+        isDragging : false,
+        offsetX    : 0,
+        offsetY    : 0
     };
     // ------------------------------------------------------------
 
@@ -99,7 +106,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         var ariaExpanded  =  isOpen ? 'true' : 'false';
 
         var html  =  '<section class="ValeSpec__DocPreview__MenuSection">';
-        html     +=      '<button class="ValeSpec__DocPreview__MenuSectionToggle ' + openClass + '" data-menu-section-toggle="' + sectionKey + '" aria-expanded="' + ariaExpanded + '">';
+        html     +=      '<button type="button" class="ValeSpec__DocPreview__MenuSectionToggle ' + openClass + '" data-menu-section-toggle="' + sectionKey + '" aria-expanded="' + ariaExpanded + '">';
         html     +=          '<img class="ValeSpec__DocPreview__MenuIcon" src="' + ValeSpec__PageRenderer__GetMenuIconPath(iconFileName) + '" alt="" />';
         html     +=          '<span class="ValeSpec__DocPreview__MenuSectionLabel">' + ValeSpec__PageRenderer__EscapeHtml(titleText) + '</span>';
         html     +=          '<span class="ValeSpec__DocPreview__MenuSectionArrow">▾</span>';
@@ -119,9 +126,10 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         var modeSmallClass  =  viewState.diagramMode === 'small' ? 'ValeSpec__DocPreview__SegmentBtn--active' : '';
         var modeLargeClass  =  viewState.diagramMode === 'large' ? 'ValeSpec__DocPreview__SegmentBtn--active' : '';
         var modeNoneClass   =  viewState.diagramMode === 'none'  ? 'ValeSpec__DocPreview__SegmentBtn--active' : '';
-
-        var navigationBody  =  '';
-        navigationBody     +=      '<button class="ValeSpec__DocPreview__MenuAction ValeSpec__DocPreview__MenuAction--primary ValeSpec__DocPreview__BtnBack" id="ValeSpec__DocPreview__BtnBack">&larr; Back to Editor</button>';
+        var menuInlineStyle =  '';
+        if (typeof ValeSpec__PageRenderer__MenuPositionState.left === 'number' && typeof ValeSpec__PageRenderer__MenuPositionState.top === 'number') {
+            menuInlineStyle  =  ' style="left:' + Math.round(ValeSpec__PageRenderer__MenuPositionState.left) + 'px; top:' + Math.round(ValeSpec__PageRenderer__MenuPositionState.top) + 'px; right:auto;"';
+        }
 
         var diagramBody  =  '';
         diagramBody     +=      '<div class="ValeSpec__DocPreview__ToolbarGroup">';
@@ -151,14 +159,14 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         actionsBody     +=      '<button class="ValeSpec__DocPreview__MenuAction ValeSpec__DocPreview__MenuAction--secondary ValeSpec__DocPreview__BtnEmailPlaceholder" id="ValeSpec__DocPreview__BtnEmailPlaceholder">Auto Email (Coming Soon)</button>';
         actionsBody     +=      '<button class="ValeSpec__DocPreview__MenuAction ValeSpec__DocPreview__MenuAction--primary ValeSpec__DocPreview__BtnExport" id="ValeSpec__DocPreview__BtnExport">Export PDF</button>';
 
-        var html  =  '<aside class="ValeSpec__DocPreview__SideMenuColumn">';
+        var html  =  '<aside class="ValeSpec__DocPreview__SideMenuColumn"' + menuInlineStyle + '>';
         html     +=      '<div class="ValeSpec__DocPreview__SideMenuCard">';
         html     +=          '<div class="ValeSpec__DocPreview__SideMenuHeader">';
         html     +=              '<img class="ValeSpec__DocPreview__MenuIcon ValeSpec__DocPreview__MenuIcon--header" src="' + ValeSpec__PageRenderer__GetMenuIconPath('Icon__ToolsMenu__MainMenuIcon__540p__.png') + '" alt="" />';
         html     +=              '<span class="ValeSpec__DocPreview__SideMenuHeaderLabel">Preview Tools &amp; Sections</span>';
+        html     +=              '<button type="button" class="ValeSpec__DocPreview__MenuDragHandle" id="ValeSpec__DocPreview__MenuDragHandle" title="Drag menu">⋮⋮</button>';
         html     +=          '</div>';
         html     +=          '<div class="ValeSpec__DocPreview__SideMenuSections">';
-        html     +=              ValeSpec__PageRenderer__BuildSideMenuSection('navigation', 'Icon__ToolsMenu__CameraSettings__540p__.png', 'Navigation', navigationBody);
         html     +=              ValeSpec__PageRenderer__BuildSideMenuSection('diagrams',   'Icon__ToolsMenu__ElevationView__540p__.png', 'Diagram Layout', diagramBody);
         html     +=              ValeSpec__PageRenderer__BuildSideMenuSection('sections',   'Icon__ToolsMenu__ViewModelLayers__540p__.png', 'Document Sections', sectionsBody);
         html     +=              ValeSpec__PageRenderer__BuildSideMenuSection('actions',    'Icon__ToolsMenu__ExportImage__540p__.png', 'Actions', actionsBody);
@@ -417,19 +425,78 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Bind Toolbar Event Listeners
+    // SUB FUNCTION | Stop Floating Menu Drag
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__StopMenuDrag() {
+        ValeSpec__PageRenderer__MenuDragState.isDragging  =  false;
+        document.removeEventListener('mousemove', ValeSpec__PageRenderer__OnMenuDragMove);
+        document.removeEventListener('mouseup', ValeSpec__PageRenderer__StopMenuDrag);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Process Floating Menu Drag Move
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__OnMenuDragMove(event) {
+        if (!ValeSpec__PageRenderer__MenuDragState.isDragging) return;
+
+        var menuColumn  =  document.querySelector('.ValeSpec__DocPreview__SideMenuColumn');
+        if (!menuColumn) return;
+
+        var menuRect       =  menuColumn.getBoundingClientRect();
+        var menuWidth      =  menuRect.width  || 320;
+        var menuHeight     =  menuRect.height || 420;
+        var viewportWidth  =  window.innerWidth  || 0;
+        var viewportHeight =  window.innerHeight || 0;
+
+        var minLeft  =  8;
+        var minTop   =  8;
+        var maxLeft  =  Math.max(minLeft, viewportWidth  - menuWidth  - 8);
+        var maxTop   =  Math.max(minTop,  viewportHeight - menuHeight - 8);
+
+        var nextLeft  =  event.clientX - ValeSpec__PageRenderer__MenuDragState.offsetX;
+        var nextTop   =  event.clientY - ValeSpec__PageRenderer__MenuDragState.offsetY;
+        if (nextLeft < minLeft) nextLeft  =  minLeft;
+        if (nextLeft > maxLeft) nextLeft  =  maxLeft;
+        if (nextTop  < minTop)  nextTop   =  minTop;
+        if (nextTop  > maxTop)  nextTop   =  maxTop;
+
+        ValeSpec__PageRenderer__MenuPositionState.left  =  Math.round(nextLeft);
+        ValeSpec__PageRenderer__MenuPositionState.top   =  Math.round(nextTop);
+        menuColumn.style.left   =  ValeSpec__PageRenderer__MenuPositionState.left + 'px';
+        menuColumn.style.top    =  ValeSpec__PageRenderer__MenuPositionState.top + 'px';
+        menuColumn.style.right  =  'auto';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Bind Floating Menu Drag Handle Events
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__BindMenuDragEvents() {
+        var dragHandle  =  document.getElementById('ValeSpec__DocPreview__MenuDragHandle');
+        var menuColumn  =  document.querySelector('.ValeSpec__DocPreview__SideMenuColumn');
+        if (!dragHandle || !menuColumn) return;
+
+        dragHandle.addEventListener('mousedown', function(event) {
+            if (event.button !== 0) return;
+            event.preventDefault();
+            var menuRect  =  menuColumn.getBoundingClientRect();
+            ValeSpec__PageRenderer__MenuDragState.isDragging  =  true;
+            ValeSpec__PageRenderer__MenuDragState.offsetX     =  event.clientX - menuRect.left;
+            ValeSpec__PageRenderer__MenuDragState.offsetY     =  event.clientY - menuRect.top;
+            document.addEventListener('mousemove', ValeSpec__PageRenderer__OnMenuDragMove);
+            document.addEventListener('mouseup', ValeSpec__PageRenderer__StopMenuDrag);
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Bind Side Menu Event Listeners
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BindEvents() {
         var DocumentState  =  window.ValeSpec__DocPreview__DocumentState;
         ValeSpec__PageRenderer__BindMenuSectionEvents();
-
-        var backBtn  =  document.getElementById('ValeSpec__DocPreview__BtnBack');
-        if (backBtn) {
-            backBtn.addEventListener('click', function() {
-                var ModeManager  =  window.ValeSpec__AppCore__ModeManager;
-                if (ModeManager) ModeManager.ValeSpec__ModeManager__NavigateBack();  // <-- Return to previous mode
-            });
-        }
+        ValeSpec__PageRenderer__BindMenuDragEvents();
 
         var exportBtn  =  document.getElementById('ValeSpec__DocPreview__BtnExport');
         if (exportBtn) {
@@ -562,8 +629,8 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
         html     +=          '</div>';
         html     +=      '</div>';
-        html     +=      ValeSpec__PageRenderer__BuildSideMenu(viewState);
         html     +=  '</div>';
+        html     +=  ValeSpec__PageRenderer__BuildSideMenu(viewState);
 
         container.innerHTML  =  html;
 

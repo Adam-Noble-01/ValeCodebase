@@ -37,10 +37,11 @@
     /* CANVAS | Grey Background Scroll Area */
     /* ------------------------------------------------------------ */
     #ValeSpec__DocPreview__Container {
-        background                         : var(--ValeSpec_PreviewBackground);
+        background                         : #d6dbe0;
         min-height                         : 100%;
         padding                            : var(--Vale_Spacing_Large);
         overflow-y                         : auto;
+        position                           : relative;
     }
     /* ------------------------------------------------------------ */
 
@@ -48,18 +49,12 @@
     /* LAYOUT | Split Shell for Document + Side Menu */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__LayoutShell {
-        display                            : flex;
-        align-items                        : flex-start;
-        gap                                : var(--Vale_Spacing_Large);
-        max-width                          : 1240px;
+        width                              : 100%;
         margin                             : 0 auto;
     }
 
     .ValeSpec__DocPreview__DocumentColumn {
-        flex                               : 1;
-        min-width                          : 0;
-        display                            : flex;
-        justify-content                    : center;
+        width                              : 100%;
     }
     /* ------------------------------------------------------------ */
 
@@ -69,6 +64,7 @@
     .ValeSpec__DocPreview__Paper {
         width                              : 100%;
         max-width                          : 794px;
+        margin                             : 0 auto;
         background                         : var(--Vale_BackgroundWhite);
         padding                            : 56px;
         box-shadow                         : 0 12px 40px var(--ValeSpec_PreviewPaperShadow);
@@ -87,9 +83,10 @@
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__SideMenuColumn {
         width                              : 320px;
-        flex-shrink                        : 0;
-        position                           : sticky;
-        top                                : var(--Vale_Spacing_Large);
+        position                           : fixed;
+        top                                : calc(var(--Vale_HeaderHeight) + 20px);
+        right                              : 24px;
+        z-index                            : 1001;
     }
 
     .ValeSpec__DocPreview__SideMenuCard {
@@ -105,11 +102,12 @@
     /* SIDE MENU | Header */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__SideMenuHeader {
+        position                           : relative;
         display                            : flex;
         align-items                        : center;
         gap                                : 8px;
         padding-top                        : 10px;
-        padding-right                      : 14px;
+        padding-right                      : 36px;
         padding-bottom                     : 10px;
         padding-left                       : 8px;
         border-bottom                      : 1px solid rgba(0, 0, 0, 0.08);
@@ -120,6 +118,26 @@
 
     .ValeSpec__DocPreview__SideMenuHeaderLabel {
         flex                               : 1;
+    }
+
+    .ValeSpec__DocPreview__MenuDragHandle {
+        position                           : absolute;
+        top                                : 8px;
+        right                              : 8px;
+        width                              : 22px;
+        height                             : 22px;
+        border                             : 1px solid rgba(0, 0, 0, 0.12);
+        border-radius                      : 4px;
+        background                         : rgba(255, 255, 255, 0.9);
+        color                              : var(--Vale_PrimaryBrand);
+        font-size                          : 11px;
+        font-weight                        : 700;
+        line-height                        : 1;
+        cursor                             : move;
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : 0;
     }
     /* ------------------------------------------------------------ */
 
@@ -221,7 +239,9 @@
     }
 
     .ValeSpec__DocPreview__SegmentControl {
-        display                            : inline-flex;
+        display                            : grid;
+        grid-template-columns              : repeat(3, minmax(0, 1fr));
+        width                              : 100%;
         border                             : 1px solid var(--Vale_BorderLight);
         border-radius                      : var(--Vale_BorderRadius);
         overflow                           : hidden;
@@ -229,7 +249,7 @@
     }
 
     .ValeSpec__DocPreview__SegmentBtn {
-        padding                            : 7px 12px;
+        padding                            : 7px 6px;
         border                             : none;
         border-right                       : 1px solid var(--Vale_BorderLight);
         background                         : var(--Vale_BackgroundWhite);
@@ -238,6 +258,8 @@
         font-family                        : var(--Vale_FontFamily);
         font-size                          : var(--Vale_FontSize_Small);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-align                         : center;
+        white-space                        : nowrap;
         transition                         : background var(--Vale_Transition_Fast), color var(--Vale_Transition_Fast);
     }
 
@@ -742,14 +764,12 @@
  * ----------------------------------------------------------------------------- */
 
     @media (max-width: 1280px) {
-        .ValeSpec__DocPreview__LayoutShell {
-            flex-direction                 : column-reverse;
-            max-width                      : 860px;
-        }
-
         .ValeSpec__DocPreview__SideMenuColumn {
-            width                          : 100%;
+            width                          : min(680px, 100%);
             position                       : static;
+            right                          : auto;
+            top                            : auto;
+            margin                         : 0 auto var(--Vale_Spacing_Large) auto;
         }
 
         .ValeSpec__DocPreview__SideMenuCard {

@@ -3,6 +3,50 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.3 - 16-Apr-2026
+### Progressive Web App (Planner parity)
+
+**Overview**
+- ValeSpec is now installable as a PWA using the same baseline pattern as ValePlanner: Web App Manifest, service worker registration, and a minimal service worker lifecycle (no offline asset precache or `fetch` interception).
+- PWA wiring lives in a dedicated feature folder; install icons are ValeSpec-specific PNGs derived from the shared Vale SVG.
+
+**Manifest and install metadata (`02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest`)**
+- `id` and `start_url`: `/ValeSpec__App__.html` (matches the documented local server entry URL).
+- `scope`: `/`; `display`: `standalone`; `theme_color` / `background_color`: `#172b3a`; `launch_handler.client_mode`: `navigate-existing` (Planner-aligned).
+- Icons: `192x192` and `512x512` PNG under `01__AppAssets__ValeSpec/` (paths relative to manifest file).
+
+**Service worker registration (`Na__Feature__AppInstallability__ServiceWorkerRegistration__.js`)**
+- Exposes `window.ValeSpec__Feature__AppInstallability.ValeSpec__AppInstallability__RegisterServiceWorkerAsync`.
+- Registers only when `navigator.serviceWorker` exists and the page is a secure context or on `localhost` / `127.0.0.1` (same guard idea as ValePlanner).
+- Script URL: `./Na__ServiceWorker__ValeSpec.js`; scope `./` (app root next to `ValeSpec__App__.html`).
+
+**Service worker (`Na__ServiceWorker__ValeSpec.js`, app root)**
+- `install`: `skipWaiting()` so updates can activate without waiting for all tabs to close.
+- `activate`: delete any Cache Storage entries prefixed `na-valespec-cache-` (legacy cleanup hook), then `clients.claim()`.
+- No `fetch` handler — installability without changing caching or API behaviour.
+
+**Bootstrap wiring**
+- `ValeSpec__App__.html` — `<link rel="manifest" …>`; favicon / `apple-touch-icon` point at the new PNGs; registration script loaded before `ValeSpec__AppCore__Init__.js`.
+- `ValeSpec__AppCore__Init__.js` — calls `ValeSpec__AppInstallability__RegisterServiceWorkerAsync()` during startup (after connection monitor/banner init).
+
+**Local server (`ValeSpec__FlaskServer__Localhost__.py`)**
+- Request handler `extensions_map` includes `.webmanifest` → `application/manifest+json` so browsers receive the correct manifest MIME type (matches ValePlanner `server.py`).
+
+**Icons**
+- Source: `../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg`.
+- Outputs: `01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png`, `Na__ValeSpecApp__Icon__512x512.png` (rasterised via `resvg-py` where Cairo is unavailable).
+
+**Files added or touched (PWA)**
+- `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest` *(new)*
+- `02__Src__AppModules/62__Feature__AppInstallability/Na__Feature__AppInstallability__ServiceWorkerRegistration__.js` *(new)*
+- `Na__ServiceWorker__ValeSpec.js` *(new)*
+- `01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__192x192.png` *(new)*
+- `01__AppAssets__ValeSpec/Na__ValeSpecApp__Icon__512x512.png` *(new)*
+- `ValeSpec__App__.html`
+- `02__Src__AppModules/01__AppCore/ValeSpec__AppCore__Init__.js`
+- `ValeSpec__FlaskServer__Localhost__.py`
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.2 - 16-Apr-2026
 ### Server — Conservative Heartbeat + Console Restart Flags + Log Housekeeping
 

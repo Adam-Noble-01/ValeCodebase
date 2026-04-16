@@ -33,9 +33,14 @@ from typing import Any, Tuple
 NA__SERVER__APP_ROOT_PATH         = Path(__file__).resolve().parent
 NA__SERVER__SHARED_ASSETS_ROOT_PATH = (NA__SERVER__APP_ROOT_PATH.parent / "assets__CommonApplicationAssets").resolve()
 NA__SERVER__PROJECT_DATA_PATH     = (NA__SERVER__APP_ROOT_PATH / "04__LocalProjectData").resolve()
+NA__SERVER__USER_MENU_DATA_PATH   = (NA__SERVER__APP_ROOT_PATH / "05__LocalUserData").resolve()
+NA__SERVER__MAIN_APP_CONFIG_PATH  = (NA__SERVER__APP_ROOT_PATH / "02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json").resolve()
 NA__SERVER__OUTPUT_LOG_HANDLE     = None
 
 NA__SERVER__PROJECT_CODE_PATTERN  = re.compile(r'^[A-Za-z0-9_\-]{1,64}$')   # Allowlist for safe project codes
+NA__SERVER__USER_SLUG_PATTERN     = re.compile(r'^[A-Za-z0-9_\-]{1,64}$')   # Allowlist for safe user slugs
+NA__SERVER__USER_MENU_SYNC_USER_SLUG = "AdamW"
+NA__SERVER__USER_MENU_APP_DEFAULTS_SECTION_KEY = "ValeSpec__UserMenu__AppDefaults__Config"
 
 # endregion ----------------------------------------------------
 
@@ -95,11 +100,84 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         return code
     # ------------------------------------------------------------
 
+    # SUB FUNCTION | Resolve user slug from an /api/user-menu-config/{slug} path
+    # ------------------------------------------------------------
+    def Na__Server__ParseUserSlug(self, request_path: str) -> str | None:
+        prefix = "/api/user-menu-config/"
+        if not request_path.startswith(prefix):
+            return None
+        user_slug = request_path[len(prefix):].rstrip("/")
+        if not user_slug or not NA__SERVER__USER_SLUG_PATTERN.match(user_slug):
+            return None
+        return user_slug
+    # ------------------------------------------------------------
+
     # SUB FUNCTION | Resolve path for a project data file
     # ------------------------------------------------------------
     def Na__Server__GetProjectFilePath(self, project_code: str) -> Path:
         filename = f"ValeSpec__ProjectFile__{project_code}__.json"
         return NA__SERVER__PROJECT_DATA_PATH / filename
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Resolve path for a per-user menu config file
+    # ------------------------------------------------------------
+    def Na__Server__GetUserMenuConfigFilePath(self, user_slug: str) -> Path:
+        filename = f"ValeSpec__AppData__UserMenuConfig__{user_slug}__.json"
+        return NA__SERVER__USER_MENU_DATA_PATH / filename
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Build Main App Defaults Section from User Menu Config
+    # ------------------------------------------------------------
+    def Na__Server__BuildUserMenuAppDefaultsSection(self, user_slug: str, menu_config_data: dict) -> dict:
+        preview_config = menu_config_data.get("ValeSpec__UserMenu__ModeDocumentPreview__Config", {})
+        return {
+            "ValeSpec__UserMenu__AppDefaults__Config__Description"             : "Application-wide default menu settings mirrored from AdamW. Used when no user override config exists.",
+            "ValeSpec__UserMenu__AppDefaults__Config__SourceUserSlug"          : user_slug,
+            "ValeSpec__UserMenu__AppDefaults__Config__OverrideEnabled"         : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__OverrideEnabled", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__MenuPositionX"           : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionX", None),
+            "ValeSpec__UserMenu__AppDefaults__Config__MenuPositionY"           : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionY", None),
+            "ValeSpec__UserMenu__AppDefaults__Config__MenuSectionDiagramsOpen" : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionDiagramsOpen", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__MenuSectionDocumentOpen" : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionDocumentOpen", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__MenuSectionActionsOpen"  : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionActionsOpen", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__DiagramMode"             : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__DiagramMode", "small"),
+            "ValeSpec__UserMenu__AppDefaults__Config__ShowFullSchedule"        : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__ShowFullSchedule", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__ShowSummary"             : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__ShowSummary", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__ShowJobNotes"            : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__ShowJobNotes", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__PersistMenuPosition"     : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__PersistMenuPosition", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__PersistMenuSectionState" : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__PersistMenuSectionState", True),
+            "ValeSpec__UserMenu__AppDefaults__Config__PersistViewState"        : preview_config.get("ValeSpec__UserMenu__ModeDocumentPreview__Config__PersistViewState", True)
+        }
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Sync AdamW User Menu Defaults into Main App Config
+    # ------------------------------------------------------------
+    def Na__Server__SyncMainAppDefaultsFromUserMenu(self, user_slug: str, menu_config_data: dict) -> bool:
+        if user_slug != NA__SERVER__USER_MENU_SYNC_USER_SLUG:
+            return True
+
+        if not NA__SERVER__MAIN_APP_CONFIG_PATH.is_file():
+            print(f"[WARN] Main app config missing: {NA__SERVER__MAIN_APP_CONFIG_PATH}")
+            return False
+
+        try:
+            main_config_data = json.loads(NA__SERVER__MAIN_APP_CONFIG_PATH.read_text(encoding="utf-8"))
+            if not isinstance(main_config_data, dict):
+                print("[WARN] Main app config is not a JSON object.")
+                return False
+
+            app_defaults_section = self.Na__Server__BuildUserMenuAppDefaultsSection(user_slug, menu_config_data)
+            main_config_data[NA__SERVER__USER_MENU_APP_DEFAULTS_SECTION_KEY] = app_defaults_section
+
+            NA__SERVER__MAIN_APP_CONFIG_PATH.write_text(
+                json.dumps(main_config_data, indent=4, ensure_ascii=False),
+                encoding="utf-8"
+            )
+            print("[USER_MENU] Synced AdamW defaults into ValeSpec__AppConfig__Main__.json")
+            return True
+
+        except Exception as sync_error:
+            print(f"[WARN] Failed syncing AdamW defaults to main app config: {sync_error}")
+            return False
     # ------------------------------------------------------------
 
     # SUB FUNCTION | Handle GET requests
@@ -130,6 +208,11 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Na__Server__HandleProjectLoad(project_code)
             return
 
+        user_slug = self.Na__Server__ParseUserSlug(request_path)
+        if user_slug:
+            self.Na__Server__HandleUserMenuConfigLoad(user_slug)
+            return
+
         super().do_GET()
     # ------------------------------------------------------------
 
@@ -142,6 +225,11 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         project_code = self.Na__Server__ParseProjectCode(request_path)
         if project_code:
             self.Na__Server__HandleProjectSave(project_code)
+            return
+
+        user_slug = self.Na__Server__ParseUserSlug(request_path)
+        if user_slug:
+            self.Na__Server__HandleUserMenuConfigSave(user_slug)
             return
 
         self.send_error(404, "Not Found")
@@ -272,6 +360,50 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Na__Server__WriteJsonResponse(200, {"ok": True})
         except Exception as delete_error:
             self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(delete_error)})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Load a single user menu config file from disk
+    # ------------------------------------------------------------
+    def Na__Server__HandleUserMenuConfigLoad(self, user_slug: str) -> None:
+        file_path = self.Na__Server__GetUserMenuConfigFilePath(user_slug)
+        if not file_path.is_file():
+            self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": "User menu config not found"})
+            return
+        try:
+            menu_config_data = json.loads(file_path.read_text(encoding="utf-8"))
+            self.Na__Server__WriteJsonResponse(200, {"ok": True, "data": menu_config_data})
+        except Exception as load_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(load_error)})
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Save user menu config JSON body to disk
+    # ------------------------------------------------------------
+    def Na__Server__HandleUserMenuConfigSave(self, user_slug: str) -> None:
+        content_length = int(self.headers.get("Content-Length", 0))
+        if content_length <= 0:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Empty body"})
+            return
+
+        try:
+            raw_body = self.rfile.read(content_length)
+            menu_config_data = json.loads(raw_body.decode("utf-8"))
+        except Exception as parse_error:
+            self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": f"Invalid JSON: {parse_error}"})
+            return
+
+        NA__SERVER__USER_MENU_DATA_PATH.mkdir(parents=True, exist_ok=True)
+        file_path = self.Na__Server__GetUserMenuConfigFilePath(user_slug)
+
+        try:
+            file_path.write_text(json.dumps(menu_config_data, indent=4, ensure_ascii=False), encoding="utf-8")
+            print(f"[USER_MENU] Saved: {file_path.name}")
+            sync_ok = self.Na__Server__SyncMainAppDefaultsFromUserMenu(user_slug, menu_config_data)
+            if not sync_ok:
+                self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": "Saved user menu config but failed to sync app defaults"})
+                return
+            self.Na__Server__WriteJsonResponse(200, {"ok": True})
+        except Exception as write_error:
+            self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(write_error)})
     # ------------------------------------------------------------
 
     # SUB FUNCTION | Write JSON HTTP response body

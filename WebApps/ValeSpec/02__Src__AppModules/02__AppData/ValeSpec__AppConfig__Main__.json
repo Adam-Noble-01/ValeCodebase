@@ -41,5 +41,23 @@
     "ValeSpec__Validation__Config": {
         "ValeSpec__Validation__Config__Description"              : "Validation thresholds and tolerance values for cross-assembly checks.",
         "ValeSpec__Validation__Config__HeightMismatchToleranceMm": 15
+    },
+
+    "ValeSpec__UserMenu__AppDefaults__Config": {
+        "ValeSpec__UserMenu__AppDefaults__Config__Description"             : "Application-wide default menu settings mirrored from AdamW. Used when no user override config exists.",
+        "ValeSpec__UserMenu__AppDefaults__Config__SourceUserSlug"          : "AdamW",
+        "ValeSpec__UserMenu__AppDefaults__Config__OverrideEnabled"         : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__MenuPositionX"           : 1809,
+        "ValeSpec__UserMenu__AppDefaults__Config__MenuPositionY"           : 115,
+        "ValeSpec__UserMenu__AppDefaults__Config__MenuSectionDiagramsOpen" : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__MenuSectionDocumentOpen" : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__MenuSectionActionsOpen"  : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__DiagramMode"             : "small",
+        "ValeSpec__UserMenu__AppDefaults__Config__ShowFullSchedule"        : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__ShowSummary"             : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__ShowJobNotes"            : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__PersistMenuPosition"     : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__PersistMenuSectionState" : true,
+        "ValeSpec__UserMenu__AppDefaults__Config__PersistViewState"        : true
     }
 }

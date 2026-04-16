@@ -1,0 +1,41 @@
+{
+    "ValeSpec__UserMenu__Meta__Config": {
+        "ValeSpec__UserMenu__Meta__Config__Description"            : "Default metadata and schema controls for per-user menu persistence.",
+        "ValeSpec__UserMenu__Meta__Config__SchemaVersion"          : "1.0.0",
+        "ValeSpec__UserMenu__Meta__Config__DefaultUserSlug"        : "AdamW",
+        "ValeSpec__UserMenu__Meta__Config__StorageMode"            : "disk_json_flask",
+        "ValeSpec__UserMenu__Meta__Config__SaveDebounceMs"         : 350
+    },
+
+    "ValeSpec__UserMenu__ModeDocManagement__Config": {
+        "ValeSpec__UserMenu__ModeDocManagement__Config__Description" : "Placeholder defaults for future Doc Management menu persistence.",
+        "ValeSpec__UserMenu__ModeDocManagement__Config__Enabled"     : false
+    },
+
+    "ValeSpec__UserMenu__ModeDocumentEditor__Config": {
+        "ValeSpec__UserMenu__ModeDocumentEditor__Config__Description" : "Placeholder defaults for future Document Editor menu persistence.",
+        "ValeSpec__UserMenu__ModeDocumentEditor__Config__Enabled"     : false
+    },
+
+    "ValeSpec__UserMenu__ModeAssemblyEditor__Config": {
+        "ValeSpec__UserMenu__ModeAssemblyEditor__Config__Description" : "Placeholder defaults for future Assembly Editor menu persistence.",
+        "ValeSpec__UserMenu__ModeAssemblyEditor__Config__Enabled"     : false
+    },
+
+    "ValeSpec__UserMenu__ModeDocumentPreview__Config": {
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__Description"                 : "Persisted user preferences for Document Preview floating menu and view state.",
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__OverrideEnabled"             : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionX"               : null,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionY"               : null,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionDiagramsOpen"     : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionDocumentOpen"     : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionActionsOpen"      : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__DiagramMode"                 : "small",
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__ShowFullSchedule"            : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__ShowSummary"                 : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__ShowJobNotes"                : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__PersistMenuPosition"         : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__PersistMenuSectionState"     : true,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__PersistViewState"            : true
+    }
+}

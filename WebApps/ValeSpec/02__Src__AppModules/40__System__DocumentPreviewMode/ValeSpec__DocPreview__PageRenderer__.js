@@ -98,6 +98,56 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Persisted Menu State Override
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__ResolvePersistedMenuStateOverride() {
+        var MenuDataHandler  =  window.ValeSpec__DocPreview__MenuDataHandler;
+        if (!MenuDataHandler) return null;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__IsDataLoaded) return null;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__IsDataLoaded()) return null;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__GetDocPreviewMenuStateOverride) return null;
+        return MenuDataHandler.ValeSpec__MenuDataHandler__GetDocPreviewMenuStateOverride();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Apply Persisted Menu State Override
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__ApplyPersistedMenuStateOverride() {
+        var menuOverride  =  ValeSpec__PageRenderer__ResolvePersistedMenuStateOverride();
+        if (!menuOverride) return;
+
+        if (menuOverride.persistSectionState) {
+            ValeSpec__PageRenderer__MenuSectionState.diagrams  =  !!menuOverride.sectionDiagramsOpen;
+            ValeSpec__PageRenderer__MenuSectionState.sections  =  !!menuOverride.sectionDocumentOpen;
+            ValeSpec__PageRenderer__MenuSectionState.actions   =  !!menuOverride.sectionActionsOpen;
+        }
+
+        if (menuOverride.persistMenuPosition) {
+            ValeSpec__PageRenderer__MenuPositionState.left  =  (typeof menuOverride.menuPositionX === 'number') ? Math.round(menuOverride.menuPositionX) : null;
+            ValeSpec__PageRenderer__MenuPositionState.top   =  (typeof menuOverride.menuPositionY === 'number') ? Math.round(menuOverride.menuPositionY) : null;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Queue Persisted Menu State Save
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__QueuePersistedMenuStateSave() {
+        var MenuDataHandler  =  window.ValeSpec__DocPreview__MenuDataHandler;
+        if (!MenuDataHandler) return;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__QueuePersistDocPreviewMenuPatch) return;
+        MenuDataHandler.ValeSpec__MenuDataHandler__QueuePersistDocPreviewMenuPatch({
+            menuPositionX       : ValeSpec__PageRenderer__MenuPositionState.left,
+            menuPositionY       : ValeSpec__PageRenderer__MenuPositionState.top,
+            sectionDiagramsOpen : ValeSpec__PageRenderer__MenuSectionState.diagrams,
+            sectionDocumentOpen : ValeSpec__PageRenderer__MenuSectionState.sections,
+            sectionActionsOpen  : ValeSpec__PageRenderer__MenuSectionState.actions
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build Side Menu Section HTML
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BuildSideMenuSection(sectionKey, iconFileName, titleText, bodyHtml) {
@@ -178,30 +228,54 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Document Status CSS Modifier Class
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__GetStatusModifier(statusText) {
+        var normalised  =  String(statusText || '').toLowerCase().replace(/\s+/g, '');
+        if (normalised === 'approved')   return 'ValeSpec__DocPreview__StatusBadge--approved';
+        if (normalised === 'completed')  return 'ValeSpec__DocPreview__StatusBadge--completed';
+        if (normalised === 'inprogress') return 'ValeSpec__DocPreview__StatusBadge--inProgress';
+        if (normalised === 'pending' || normalised === 'pendingapproval') return 'ValeSpec__DocPreview__StatusBadge--pending';
+        return 'ValeSpec__DocPreview__StatusBadge--draft';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build Branding Header HTML
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BuildBrandingHeader(meta) {
-        var logoPath     =  ValeSpec__PageRenderer__GetLogoPath();
-        var projectName  =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__ProjectName']  || 'Untitled Project');
-        var docName      =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__DocumentName'] || 'Untitled Document');
-        var revision     =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__RevisionCode'] || '');
-        var dateAuthored =  ValeSpec__PageRenderer__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
+        var logoPath      =  ValeSpec__PageRenderer__GetLogoPath();
+        var projectName   =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__ProjectName']    || 'Untitled Project');
+        var projectCode   =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__ProjectCode']    || '—');
+        var docName       =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__DocumentName']   || 'Untitled Document');
+        var revision      =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__RevisionCode']   || '—');
+        var author        =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__Author']         || '—');
+        var status        =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__DocumentStatus'] || 'Draft');
+        var dateRevision  =  ValeSpec__PageRenderer__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateModified']   || meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
+        var statusClass   =  ValeSpec__PageRenderer__GetStatusModifier(status);
 
         var html  =  '<div class="ValeSpec__DocPreview__BrandingHeader">';
 
+        html  +=      '<div class="ValeSpec__DocPreview__HeaderIdentity">';
         if (logoPath) {
             html  +=      '<img class="ValeSpec__DocPreview__BrandingLogo" src="' + logoPath + '" alt="Vale Logo" />';
         }
-
-        html  +=      '<div class="ValeSpec__DocPreview__BrandingMeta">';
-        html  +=          '<div class="ValeSpec__DocPreview__BrandingProjectName">' + projectName + '</div>';
-        html  +=          '<div class="ValeSpec__DocPreview__BrandingDocName">' + docName;
-        if (revision) html  +=  ' — Rev ' + revision;
+        html  +=          '<div class="ValeSpec__DocPreview__HeaderProjectInfo">';
+        html  +=              '<div class="ValeSpec__DocPreview__HeaderProjectName">' + projectName + '</div>';
+        html  +=              '<div class="ValeSpec__DocPreview__HeaderProjectCode">Project ' + projectCode + '</div>';
         html  +=          '</div>';
         html  +=      '</div>';
 
-        html  +=      '<div style="text-align:right; font-size:var(--Vale_FontSize_Small); color:var(--Vale_TextMuted);">';
-        html  +=          dateAuthored;
+        html  +=      '<div class="ValeSpec__DocPreview__HeaderDocControl">';
+        html  +=          '<div class="ValeSpec__DocPreview__HeaderDocControlTitle">Document Control</div>';
+        html  +=          '<table class="ValeSpec__DocPreview__HeaderDocControlTable">';
+        html  +=              '<tr><td class="ValeSpec__DocPreview__DcLabel">Document</td><td class="ValeSpec__DocPreview__DcValue">'  + docName      + '</td>';
+        html  +=                  '<td class="ValeSpec__DocPreview__DcLabel">Revision</td><td class="ValeSpec__DocPreview__DcValue ValeSpec__DocPreview__DcValue--revision">'  + revision     + '</td></tr>';
+        html  +=              '<tr><td class="ValeSpec__DocPreview__DcLabel">Author</td><td class="ValeSpec__DocPreview__DcValue">'    + author       + '</td>';
+        html  +=                  '<td class="ValeSpec__DocPreview__DcLabel">Status</td><td class="ValeSpec__DocPreview__DcValue"><span class="ValeSpec__DocPreview__StatusBadge ' + statusClass + '">'  + status + '</span></td></tr>';
+        html  +=              '<tr><td class="ValeSpec__DocPreview__DcLabel">Rev Date</td><td class="ValeSpec__DocPreview__DcValue">'  + dateRevision + '</td>';
+        html  +=                  '<td class="ValeSpec__DocPreview__DcLabel"></td><td class="ValeSpec__DocPreview__DcValue"></td></tr>';
+        html  +=          '</table>';
         html  +=      '</div>';
 
         html  +=  '</div>';
@@ -419,6 +493,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
                 e.currentTarget.classList.toggle('is-open', nextOpenState);
                 e.currentTarget.setAttribute('aria-expanded', nextOpenState ? 'true' : 'false');
+                ValeSpec__PageRenderer__QueuePersistedMenuStateSave();
             });
         }
     }
@@ -428,9 +503,13 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // SUB FUNCTION | Stop Floating Menu Drag
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__StopMenuDrag() {
+        var wasDragging  =  ValeSpec__PageRenderer__MenuDragState.isDragging;
         ValeSpec__PageRenderer__MenuDragState.isDragging  =  false;
         document.removeEventListener('mousemove', ValeSpec__PageRenderer__OnMenuDragMove);
         document.removeEventListener('mouseup', ValeSpec__PageRenderer__StopMenuDrag);
+        if (wasDragging) {
+            ValeSpec__PageRenderer__QueuePersistedMenuStateSave();
+        }
     }
     // ------------------------------------------------------------
 
@@ -558,6 +637,26 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Subscribe to User Menu Config Loaded Event
+    // ------------------------------------------------------------
+    function ValeSpec__PageRenderer__SubscribeToUserMenuConfigLoaded() {
+        var MenuDataHandler  =  window.ValeSpec__DocPreview__MenuDataHandler;
+        if (MenuDataHandler && MenuDataHandler.ValeSpec__MenuDataHandler__EnsureLoaded) {
+            MenuDataHandler.ValeSpec__MenuDataHandler__EnsureLoaded();
+        }
+
+        window.addEventListener('ValeSpec__UserMenuConfigLoaded', function() {
+            var StateManager  =  window.ValeSpec__AppCore__StateManager;
+            if (!StateManager) return;
+            var state  =  StateManager.ValeSpec__StateManager__GetState();
+            if (state && state.currentMode === 'DocumentPreview') {
+                ValeSpec__PageRenderer__Render();
+            }
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Apply Shared Style Tokens as CSS Variables
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__ApplyStyleTokens(container, styleTokens) {
@@ -594,6 +693,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         var styleTokens =  DocumentState.ValeSpec__DocumentState__GetStyleTokens();
         var meta        =  model.metadata || {};
 
+        ValeSpec__PageRenderer__ApplyPersistedMenuStateOverride();
         ValeSpec__PageRenderer__ApplyStyleTokens(container, styleTokens);
 
         var html  =  '<div class="ValeSpec__DocPreview__LayoutShell">';
@@ -657,6 +757,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // BOOT | Initial Subscription
     // ------------------------------------------------------------
     ValeSpec__PageRenderer__SubscribeToModeChange();
+    ValeSpec__PageRenderer__SubscribeToUserMenuConfigLoaded();
     // ------------------------------------------------------------
 
 

@@ -3,6 +3,44 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.4 - 16-Apr-2026
+### Document Preview — Floating tools menu, per-user menu persistence, and app-defaults mirror (AdamW)
+
+**Overview**
+- Replaced the old disjoint preview toolbar with a **right-side floating, draggable** tools panel styled like ValeVision 3D (nested collapsible sections: Diagram Layout, Document Sections, Actions), using copied **`Icon__ToolsMenu__*__540p__.png`** assets under `01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/`.
+- Introduced **per-user menu and view-state persistence** separate from rigid main app config: static defaults JSON, disk-backed JSON per user slug via the local server API, and a **`MenuDataHandler`** module that loads, sanitises, debounced-saves, and exposes overrides for **`DocumentState`** and **`PageRenderer`**.
+- Added **`ValeSpec__UserMenu__AppDefaults__Config`** inside **`ValeSpec__AppConfig__Main__.json`** so **application-wide defaults** can track the “studio baseline” Doc Preview menu position and toggles. **Only user slug `AdamW`** dual-writes: each successful save updates both `05__LocalUserData/ValeSpec__AppData__UserMenuConfig__AdamW__.json` **and** the corresponding block in the main app config. **All other users** persist **only** their own file under `05__LocalUserData/`.
+- **Load priority (client):** packaged defaults JSON → **main app `AppDefaults` section** (values mapped onto `ValeSpec__UserMenu__ModeDocumentPreview__Config` keys) → **per-user file** from GET `/api/user-menu-config/{slug}` if present. User data overrides app defaults; if there is no user file, app defaults apply.
+
+**Server (`ValeSpec__FlaskServer__Localhost__.py`)**
+- `GET` / `POST` **`/api/user-menu-config/<userSlug>`** — read/write `ValeSpec__AppData__UserMenuConfig__<slug>__.json` under `05__LocalUserData/`.
+- On **`POST`** for **`AdamW`**, after writing the user file, **sync** `ValeSpec__UserMenu__AppDefaults__Config` in **`02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json`** from the saved Document Preview section (mirrored keys: menu X/Y, section open states, diagram mode, schedule/summary/job-notes toggles, persist flags). Non-AdamW POSTs do not modify main app config.
+
+**Client modules**
+- **`ValeSpec__DocPreview__MenuDataHandler__.js`** — Fetches defaults + main app config for the App Defaults section, merges user API payload, sanitises types, debounces POST saves, dispatches **`ValeSpec__UserMenuConfigLoaded`** for re-hydration.
+- **`ValeSpec__DocPreview__DocumentState__.js`** — Applies persisted view overrides when enabled; queues patches back through MenuDataHandler on change.
+- **`ValeSpec__DocPreview__PageRenderer__.js`** — Applies persisted floating-menu position and section-open state; saves after drag and section toggles; re-renders when user menu config finishes loading.
+- **`ValeSpec__App__.html`** — Script order: MenuDataHandler before DocumentState / PageRenderer.
+
+**Defaults and seed data**
+- **`ValeSpec__AppData__UserMenuConfig__Defaults__.json`** — Meta + placeholders for four app modes; Document Preview object populated with initial toggles and persistence flags.
+
+**Files touched (this release)**
+- `01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/*` *(ValeVision tool icons copied for ValeSpec)*
+- `02__Src__AppModules/02__AppData/ValeSpec__AppData__UserMenuConfig__Defaults__.json`
+- `02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json` *(adds `ValeSpec__UserMenu__AppDefaults__Config`)*
+- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__MenuDataHandler__.js`
+- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentState__.js`
+- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js`
+- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__Styles__Main__.css`
+- `ValeSpec__App__.html`
+- `ValeSpec__FlaskServer__Localhost__.py`
+- `05__LocalUserData/ValeSpec__AppData__UserMenuConfig__<UserSlug>__.json` *(per user; created at runtime)*
+
+**Result**
+- Preview tools stay aligned with ValeVision UX, positions and toggles survive sessions per user, new machines without a user file still get sensible defaults from main app config, and AdamW’s adjustments remain the **checked-in baseline** for the team without other users overwriting shared JSON.
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.3 - 16-Apr-2026
 ### Progressive Web App (Planner parity)
 

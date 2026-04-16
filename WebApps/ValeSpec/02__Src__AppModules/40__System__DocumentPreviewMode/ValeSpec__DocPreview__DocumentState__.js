@@ -56,6 +56,7 @@ const ValeSpec__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
     let ValeSpec__DocumentState__ViewState      =  null;
     let ValeSpec__DocumentState__IsInitialised  =  false;
+    let ValeSpec__DocumentState__IsMenuEventBound = false;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -107,6 +108,79 @@ const ValeSpec__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Persisted View-State Overrides
+    // ------------------------------------------------------------
+    function ValeSpec__DocumentState__ResolvePersistedViewStateOverride() {
+        var MenuDataHandler  =  window.ValeSpec__DocPreview__MenuDataHandler;
+        if (!MenuDataHandler) return null;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__IsDataLoaded) return null;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__IsDataLoaded()) return null;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__GetDocPreviewViewStateOverride) return null;
+        return MenuDataHandler.ValeSpec__MenuDataHandler__GetDocPreviewViewStateOverride();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Apply Persisted Overrides to View-State
+    // ------------------------------------------------------------
+    function ValeSpec__DocumentState__ApplyPersistedViewStateOverride(targetViewState) {
+        var persistedOverride  =  ValeSpec__DocumentState__ResolvePersistedViewStateOverride();
+        if (!persistedOverride) return targetViewState;
+        targetViewState.diagramMode       =  ValeSpec__DocumentState__NormaliseDiagramMode(persistedOverride.diagramMode);
+        targetViewState.showFullSchedule  =  ValeSpec__DocumentState__ToBool(persistedOverride.showFullSchedule, targetViewState.showFullSchedule);
+        targetViewState.showSummary       =  ValeSpec__DocumentState__ToBool(persistedOverride.showSummary, targetViewState.showSummary);
+        targetViewState.showJobNotes      =  ValeSpec__DocumentState__ToBool(persistedOverride.showJobNotes, targetViewState.showJobNotes);
+        return targetViewState;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Queue Persisted View-State Save
+    // ------------------------------------------------------------
+    function ValeSpec__DocumentState__QueuePersistedViewStateSave() {
+        var MenuDataHandler  =  window.ValeSpec__DocPreview__MenuDataHandler;
+        if (!MenuDataHandler) return;
+        if (!MenuDataHandler.ValeSpec__MenuDataHandler__QueuePersistDocPreviewViewPatch) return;
+        MenuDataHandler.ValeSpec__MenuDataHandler__QueuePersistDocPreviewViewPatch({
+            diagramMode       : ValeSpec__DocumentState__ViewState.diagramMode,
+            showFullSchedule  : ValeSpec__DocumentState__ViewState.showFullSchedule,
+            showSummary       : ValeSpec__DocumentState__ViewState.showSummary,
+            showJobNotes      : ValeSpec__DocumentState__ViewState.showJobNotes
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Subscribe to User Menu Config Loaded Event
+    // ------------------------------------------------------------
+    function ValeSpec__DocumentState__SubscribeToMenuConfigLoadEvent() {
+        if (ValeSpec__DocumentState__IsMenuEventBound) return;
+        ValeSpec__DocumentState__IsMenuEventBound  =  true;
+
+        var MenuDataHandler  =  window.ValeSpec__DocPreview__MenuDataHandler;
+        if (MenuDataHandler && MenuDataHandler.ValeSpec__MenuDataHandler__EnsureLoaded) {
+            MenuDataHandler.ValeSpec__MenuDataHandler__EnsureLoaded();
+        }
+
+        window.addEventListener('ValeSpec__UserMenuConfigLoaded', function() {
+            var wasInitialised = ValeSpec__DocumentState__IsInitialised;
+            if (!wasInitialised) return;
+            ValeSpec__DocumentState__IsInitialised  =  false;
+            ValeSpec__DocumentState__ViewState      =  null;
+            ValeSpec__DocumentState__GetViewState();
+
+            var StateManager  =  window.ValeSpec__AppCore__StateManager;
+            var PageRenderer  =  window.ValeSpec__DocPreview__PageRenderer;
+            if (!StateManager || !PageRenderer) return;
+            var state  =  StateManager.ValeSpec__StateManager__GetState();
+            if (state && state.currentMode === 'DocumentPreview') {
+                PageRenderer.ValeSpec__PageRenderer__Render();
+            }
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Ensure View-State Is Initialised
     // ------------------------------------------------------------
     function ValeSpec__DocumentState__EnsureInitialised() {
@@ -132,6 +206,7 @@ const ValeSpec__DocPreview__DocumentState = (function() {
                                     DEFAULT_VIEW_STATE.showJobNotes
                                 )
         };
+        ValeSpec__DocumentState__ApplyPersistedViewStateOverride(ValeSpec__DocumentState__ViewState);
 
         ValeSpec__DocumentState__IsInitialised  =  true;
     }
@@ -249,6 +324,7 @@ const ValeSpec__DocPreview__DocumentState = (function() {
             ValeSpec__DocumentState__ViewState.showJobNotes  =  !!patch.showJobNotes;
         }
 
+        ValeSpec__DocumentState__QueuePersistedViewStateSave();
         return ValeSpec__DocumentState__GetViewState();
     }
     // ------------------------------------------------------------
@@ -283,6 +359,17 @@ const ValeSpec__DocPreview__DocumentState = (function() {
         ValeSpec__DocumentState__ResetToDefaults       : ValeSpec__DocumentState__ResetToDefaults,
         ValeSpec__DocumentState__GetStyleTokens        : ValeSpec__DocumentState__GetStyleTokens
     };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Boot
+// -----------------------------------------------------------------------------
+
+    // BOOT | Bind Menu Config Load Event Subscription
+    // ------------------------------------------------------------
+    ValeSpec__DocumentState__SubscribeToMenuConfigLoadEvent();
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

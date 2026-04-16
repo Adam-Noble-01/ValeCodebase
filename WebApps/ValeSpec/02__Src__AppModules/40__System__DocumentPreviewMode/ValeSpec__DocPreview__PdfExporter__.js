@@ -45,6 +45,11 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
     const BRANDING_LOGO_HEIGHT_MM         =  10;
     const BRANDING_RULE_GAP_MM            =  3;
     const BRANDING_BLOCK_BOTTOM_GAP_MM    =  6;
+    const DC_BOX_WIDTH_MM                 =  78;
+    const DC_ROW_HEIGHT_MM                =  4.5;
+    const DC_HEADER_HEIGHT_MM             =  5;
+    const DC_LABEL_WIDTH_MM               =  20;
+    const DC_PADDING_H_MM                 =  2;
     const SECTION_HEADING_HEIGHT_MM       =  7;
     const SECTION_HEADING_BOTTOM_GAP_MM   =  4;
     const SECTION_BOTTOM_GAP_MM           =  8;
@@ -73,9 +78,13 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 
     // MODULE CONSTANTS | Font Sizes (pt)
     // ------------------------------------------------------------
-    const FONT_SIZE_PROJECT_NAME   =  14;
+    const FONT_SIZE_PROJECT_NAME   =  13;
+    const FONT_SIZE_PROJECT_CODE   =  8;
     const FONT_SIZE_DOC_NAME       =  10;
     const FONT_SIZE_META_DATE      =  8;
+    const FONT_SIZE_DC_HEADER      =  7;
+    const FONT_SIZE_DC_LABEL       =  7;
+    const FONT_SIZE_DC_VALUE       =  7.5;
     const FONT_SIZE_SECTION_TITLE  =  11;
     const FONT_SIZE_ASSEMBLY_TITLE =  10;
     const FONT_SIZE_TABLE_HEADER   =  8;
@@ -425,7 +434,9 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
         var contentW    =  pdfConfig.pageWidthMm - (pdfConfig.pagePaddingMm * 2);
         var cursorY     =  pdfConfig.pagePaddingMm;
 
-        cursorY += BRANDING_LOGO_HEIGHT_MM + BRANDING_RULE_GAP_MM + BRANDING_BLOCK_BOTTOM_GAP_MM;
+        var dcTotalH_measure     =  DC_HEADER_HEIGHT_MM + (3 * DC_ROW_HEIGHT_MM);
+        var brandingH_measure    =  Math.max(BRANDING_LOGO_HEIGHT_MM, dcTotalH_measure);
+        cursorY += brandingH_measure + BRANDING_RULE_GAP_MM + BRANDING_BLOCK_BOTTOM_GAP_MM;
 
         if (viewState.showFullSchedule) {
             cursorY += SECTION_HEADING_HEIGHT_MM + SECTION_HEADING_BOTTOM_GAP_MM;
@@ -502,6 +513,83 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
 // REGION | Internal Helpers - Rendering
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Render Document Control Box
+    // ------------------------------------------------------------
+    function ValeSpec__PdfExporter__RenderDocControlBox(doc, meta, dcX, dcY, colours) {
+        var docName       =  meta['ValeSpec__ProjectFile__Metadata__DocumentName']   || 'Untitled Document';
+        var revisionCode  =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode']   || '—';
+        var author        =  meta['ValeSpec__ProjectFile__Metadata__Author']         || '—';
+        var status        =  meta['ValeSpec__ProjectFile__Metadata__DocumentStatus'] || 'Draft';
+        var dateRevision  =  ValeSpec__PdfExporter__FormatDate(
+                                 meta['ValeSpec__ProjectFile__Metadata__DateModified']
+                              || meta['ValeSpec__ProjectFile__Metadata__DateCreated']
+                             );
+
+        var dcRows  =  [
+            ['Document', docName,      'Revision', revisionCode],
+            ['Author',   author,       'Status',   status],
+            ['Rev Date', dateRevision,  '',         '']
+        ];
+
+        var colMidX       =  dcX + (DC_BOX_WIDTH_MM / 2);
+        var boxTotalH     =  DC_HEADER_HEIGHT_MM + (dcRows.length * DC_ROW_HEIGHT_MM);
+        var valueColW     =  (DC_BOX_WIDTH_MM / 2) - DC_LABEL_WIDTH_MM;
+
+        doc.setDrawColor(COLOUR_BORDER_LIGHT[0], COLOUR_BORDER_LIGHT[1], COLOUR_BORDER_LIGHT[2]);
+        doc.setLineWidth(LINE_WIDTH_THIN_MM);
+        doc.roundedRect(dcX, dcY, DC_BOX_WIDTH_MM, boxTotalH, 0.6, 0.6, 'S');
+
+        doc.setFillColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
+        doc.rect(dcX, dcY, DC_BOX_WIDTH_MM, DC_HEADER_HEIGHT_MM, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(FONT_SIZE_DC_HEADER);
+        doc.setTextColor(255, 255, 255);
+        doc.text('DOCUMENT CONTROL', dcX + DC_PADDING_H_MM, dcY + 3.5);
+
+        var rowY  =  dcY + DC_HEADER_HEIGHT_MM;
+        for (var r = 0; r < dcRows.length; r++) {
+            var label1  =  dcRows[r][0];
+            var value1  =  dcRows[r][1];
+            var label2  =  dcRows[r][2];
+            var value2  =  dcRows[r][3];
+
+            doc.setFillColor(245, 245, 245);
+            doc.rect(dcX, rowY, DC_LABEL_WIDTH_MM, DC_ROW_HEIGHT_MM, 'F');
+            if (label2) {
+                doc.rect(colMidX, rowY, DC_LABEL_WIDTH_MM, DC_ROW_HEIGHT_MM, 'F');
+            }
+
+            doc.setDrawColor(COLOUR_BORDER_LIGHT[0], COLOUR_BORDER_LIGHT[1], COLOUR_BORDER_LIGHT[2]);
+            doc.setLineWidth(LINE_WIDTH_THIN_MM);
+            if (r < dcRows.length - 1) {
+                doc.line(dcX, rowY + DC_ROW_HEIGHT_MM, dcX + DC_BOX_WIDTH_MM, rowY + DC_ROW_HEIGHT_MM);
+            }
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(FONT_SIZE_DC_LABEL);
+            doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
+            if (label1) doc.text(label1, dcX + DC_PADDING_H_MM, rowY + 3.2);
+            if (label2) doc.text(label2, colMidX + DC_PADDING_H_MM, rowY + 3.2);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(FONT_SIZE_DC_VALUE);
+            doc.setTextColor(COLOUR_TEXT_PRIMARY[0], COLOUR_TEXT_PRIMARY[1], COLOUR_TEXT_PRIMARY[2]);
+            if (value1) doc.text(String(value1), dcX + DC_LABEL_WIDTH_MM + DC_PADDING_H_MM, rowY + 3.2);
+
+            if (label2 === 'Revision') {
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
+            }
+            if (value2) doc.text(String(value2), colMidX + DC_LABEL_WIDTH_MM + DC_PADDING_H_MM, rowY + 3.2);
+
+            rowY += DC_ROW_HEIGHT_MM;
+        }
+
+        return boxTotalH;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Render Branding Block
     // ------------------------------------------------------------
     function ValeSpec__PdfExporter__RenderBranding(doc, meta, logoDataUrl, x, y, contentWidth, colours) {
@@ -515,26 +603,27 @@ const ValeSpec__DocPreview__PdfExporter = (function() {
             }
         }
 
-        var textX  =  x + BRANDING_LOGO_WIDTH_MM + 4;
+        var textX        =  x + BRANDING_LOGO_WIDTH_MM + 4;
         var projectName  =  meta['ValeSpec__ProjectFile__Metadata__ProjectName'] || 'Untitled Project';
-        var docName      =  meta['ValeSpec__ProjectFile__Metadata__DocumentName'] || 'Untitled Document';
-        var revisionCode =  meta['ValeSpec__ProjectFile__Metadata__RevisionCode'] || '';
-        var dateText     =  ValeSpec__PdfExporter__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
+        var projectCode  =  meta['ValeSpec__ProjectFile__Metadata__ProjectCode'] || '—';
 
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(FONT_SIZE_PROJECT_NAME);
         doc.setTextColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
         doc.text(projectName, textX, cursorY + 5);
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(FONT_SIZE_DOC_NAME);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(FONT_SIZE_PROJECT_CODE);
         doc.setTextColor(COLOUR_TEXT_SECONDARY[0], COLOUR_TEXT_SECONDARY[1], COLOUR_TEXT_SECONDARY[2]);
-        doc.text(revisionCode ? (docName + ' — Rev ' + revisionCode) : docName, textX, cursorY + 10);
+        doc.text('Project ' + projectCode, textX, cursorY + 9);
 
-        doc.setFontSize(FONT_SIZE_META_DATE);
-        doc.text(dateText, x + contentWidth, cursorY + 5, { align: 'right' });
+        var dcX  =  x + contentWidth - DC_BOX_WIDTH_MM;
+        ValeSpec__PdfExporter__RenderDocControlBox(doc, meta, dcX, cursorY, colours);
 
-        cursorY += BRANDING_LOGO_HEIGHT_MM + BRANDING_RULE_GAP_MM;
+        var dcTotalH  =  DC_HEADER_HEIGHT_MM + (3 * DC_ROW_HEIGHT_MM);
+        var brandingHeight  =  Math.max(BRANDING_LOGO_HEIGHT_MM, dcTotalH);
+        cursorY += brandingHeight + BRANDING_RULE_GAP_MM;
+
         doc.setDrawColor(colours.brandPrimary[0], colours.brandPrimary[1], colours.brandPrimary[2]);
         doc.setLineWidth(LINE_WIDTH_MEDIUM_MM);
         doc.line(x, cursorY, x + contentWidth, cursorY);

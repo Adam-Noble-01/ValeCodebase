@@ -398,6 +398,14 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
             metadataCfg['ValeSpec__ProjectFile__Metadata__RevisionCode']  =  'A';
             didMutate  =  true;
         }
+        if (metadataCfg['ValeSpec__ProjectFile__Metadata__DateIssued'] === undefined || metadataCfg['ValeSpec__ProjectFile__Metadata__DateIssued'] === null) {
+            metadataCfg['ValeSpec__ProjectFile__Metadata__DateIssued']  =  '';
+            didMutate  =  true;
+        }
+        if (metadataCfg['ValeSpec__ProjectFile__Metadata__Author'] === undefined || metadataCfg['ValeSpec__ProjectFile__Metadata__Author'] === null) {
+            metadataCfg['ValeSpec__ProjectFile__Metadata__Author']  =  '';
+            didMutate  =  true;
+        }
 
         var globalCfg       =  clonedProject['ValeSpec__ProjectFile__GlobalSettings'];
         var normalLeverType =  ValeSpec__SchemaValidator__NormaliseLeverType(globalCfg['ValeSpec__ProjectFile__GlobalSettings__LeverType']);

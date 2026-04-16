@@ -187,7 +187,9 @@
     .ValeSpec__DocEditor__SectionBodyRow {
         display                            : flex;
         gap                                : var(--Vale_Spacing_Large);
-        align-items                        : flex-start;
+        align-items                        : stretch;
+        --ValeSpec_DocEditor_SectionBodyGap : var(--Vale_Spacing_Large);
+        --ValeSpec_DocEditor_ThumbBaseWidth : 350px;
     }
     /* ------------------------------------------------------------ */
 
@@ -195,13 +197,17 @@
     /* SECTION | Thumbnail SVG Container */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__Thumbnail {
-        width                              : 350px;
-        height                             : 200px;
+        /* Widen preview: prior table column flex space × 25% added to 350px base */
+        width                              : calc(
+                                                var(--ValeSpec_DocEditor_ThumbBaseWidth)
+                                              + (100% - var(--ValeSpec_DocEditor_ThumbBaseWidth) - var(--ValeSpec_DocEditor_SectionBodyGap)) * 0.20
+                                              );
+        height                             : 350px;
         flex-shrink                        : 0;
         display                            : flex;
         align-items                        : center;
         justify-content                    : center;
-        background                         : var(--Vale_BackgroundLight);
+        background                         : #fcfcfc;
         border-radius                      : var(--Vale_BorderRadius);
         overflow                           : hidden;
     }
@@ -217,8 +223,15 @@
     /* SECTION | Content Area (Spec Table) */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocEditor__SectionContent {
-        flex                               : 1;
+        /* Table column 25% narrower vs former flex-fill: 75% of row minus thumb + gap */
+        flex                               : 0 0
+                                              calc(
+                                                (100% - var(--ValeSpec_DocEditor_ThumbBaseWidth) - var(--ValeSpec_DocEditor_SectionBodyGap)) * 0.75
+                                              );
         min-width                          : 0;
+        max-width                          : calc(
+                                                (100% - var(--ValeSpec_DocEditor_ThumbBaseWidth) - var(--ValeSpec_DocEditor_SectionBodyGap)) * 0.75
+                                              );
     }
     /* ------------------------------------------------------------ */
 

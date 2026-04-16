@@ -25,9 +25,9 @@
 
     "DocPreview__Section__Config": {
         "DocPreview__Section__Config__Description" : "Section heading labels and ordering used by preview and PDF export.",
-        "DocPreview__Section__Config__Section01Title": "Section 01 | Full Ironmongery Schedule",
-        "DocPreview__Section__Config__Section02Title": "Section 02 | Ironmongery Schedule Summary",
-        "DocPreview__Section__Config__Section03Title": "Section 03 | Warnings Section",
+        "DocPreview__Section__Config__Section01Title": "Section 01 | Ironmongery Schedule Summary & Totals",
+        "DocPreview__Section__Config__Section02Title": "Section 02 | Warnings Section",
+        "DocPreview__Section__Config__Section03Title": "Section 03 | Full Ironmongery Schedule Per Assembly",
         "DocPreview__Section__Config__Section04Title": "Section 04 | Special Job Notes Section"
     },
 

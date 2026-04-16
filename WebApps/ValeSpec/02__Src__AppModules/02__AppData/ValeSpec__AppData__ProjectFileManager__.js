@@ -306,7 +306,9 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
                 'ValeSpec__ProjectFile__Metadata__DocumentStatus'  : 'Draft',
                 'ValeSpec__ProjectFile__Metadata__DateCreated'     : now,
                 'ValeSpec__ProjectFile__Metadata__DateModified'    : now,
-                'ValeSpec__ProjectFile__Metadata__RevisionCode'    : 'A'
+                'ValeSpec__ProjectFile__Metadata__DateIssued'      : '',
+                'ValeSpec__ProjectFile__Metadata__RevisionCode'    : 'A',
+                'ValeSpec__ProjectFile__Metadata__Author'          : ''
             },
             'ValeSpec__ProjectFile__GlobalSettings': {
                 'ValeSpec__ProjectFile__GlobalSettings__Description'        : 'Document-wide settings that cascade to all assemblies.',

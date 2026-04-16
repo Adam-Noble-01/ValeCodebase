@@ -266,15 +266,15 @@ const ValeSpec__DocPreview__DocumentState = (function() {
                                 ),
             sectionTitle01    : ValeSpec__DocumentState__ResolveToken(
                                     sectionCfg['DocPreview__Section__Config__Section01Title'],
-                                    'Section 01 | Full Ironmongery Schedule'
+                                    'Section 01 | Ironmongery Schedule Summary & Totals'
                                 ),
             sectionTitle02    : ValeSpec__DocumentState__ResolveToken(
                                     sectionCfg['DocPreview__Section__Config__Section02Title'],
-                                    'Section 02 | Ironmongery Schedule Summary'
+                                    'Section 02 | Warnings Section'
                                 ),
             sectionTitle03    : ValeSpec__DocumentState__ResolveToken(
                                     sectionCfg['DocPreview__Section__Config__Section03Title'],
-                                    'Section 03 | Warnings Section'
+                                    'Section 03 | Full Ironmongery Schedule Per Assembly'
                                 ),
             sectionTitle04    : ValeSpec__DocumentState__ResolveToken(
                                     sectionCfg['DocPreview__Section__Config__Section04Title'],

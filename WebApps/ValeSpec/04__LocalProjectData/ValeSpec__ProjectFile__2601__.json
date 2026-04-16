@@ -6,9 +6,10 @@
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery",
         "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
-        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-15",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-16",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
-        "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
+        "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble",
+        "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-16"
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
@@ -62,6 +63,18 @@
                 "Assembly__Miscellaneous__Config__Items": [
                     "Misc_CatFlap"
                 ]
+            },
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "doorType"
             }
         },
         {
@@ -85,6 +98,18 @@
             "Assembly__Lever__Config": {
                 "Assembly__Lever__Config__Type": "Scroll Lever Handle",
                 "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "doorType"
             }
         }
     ]

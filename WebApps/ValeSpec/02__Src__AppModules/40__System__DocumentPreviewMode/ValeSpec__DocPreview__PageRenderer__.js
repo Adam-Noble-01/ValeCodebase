@@ -252,6 +252,9 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         var author        =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__Author']         || '—');
         var status        =  ValeSpec__PageRenderer__EscapeHtml(meta['ValeSpec__ProjectFile__Metadata__DocumentStatus'] || 'Draft');
         var dateRevision  =  ValeSpec__PageRenderer__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateModified']   || meta['ValeSpec__ProjectFile__Metadata__DateCreated']);
+        var dateIssued    =  meta['ValeSpec__ProjectFile__Metadata__DateIssued']
+                                ? ValeSpec__PageRenderer__FormatDate(meta['ValeSpec__ProjectFile__Metadata__DateIssued'])
+                                : '—';
         var statusClass   =  ValeSpec__PageRenderer__GetStatusModifier(status);
 
         var html  =  '<div class="ValeSpec__DocPreview__BrandingHeader">';
@@ -274,7 +277,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         html  +=              '<tr><td class="ValeSpec__DocPreview__DcLabel">Author</td><td class="ValeSpec__DocPreview__DcValue">'    + author       + '</td>';
         html  +=                  '<td class="ValeSpec__DocPreview__DcLabel">Status</td><td class="ValeSpec__DocPreview__DcValue"><span class="ValeSpec__DocPreview__StatusBadge ' + statusClass + '">'  + status + '</span></td></tr>';
         html  +=              '<tr><td class="ValeSpec__DocPreview__DcLabel">Rev Date</td><td class="ValeSpec__DocPreview__DcValue">'  + dateRevision + '</td>';
-        html  +=                  '<td class="ValeSpec__DocPreview__DcLabel"></td><td class="ValeSpec__DocPreview__DcValue"></td></tr>';
+        html  +=                  '<td class="ValeSpec__DocPreview__DcLabel">Issued</td><td class="ValeSpec__DocPreview__DcValue">'    + dateIssued   + '</td></tr>';
         html  +=          '</table>';
         html  +=      '</div>';
 
@@ -331,7 +334,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BuildFullScheduleSection(model, styleTokens) {
         var html  =  '<section class="ValeSpec__DocPreview__Section ValeSpec__DocPreview__Section--fullSchedule">';
-        html     +=      ValeSpec__PageRenderer__BuildSectionHeading(styleTokens.sectionTitle01);
+        html     +=      ValeSpec__PageRenderer__BuildSectionHeading(styleTokens.sectionTitle03);
 
         if (!model.orderedAssemblies.length) {
             html  +=  '<div class="ValeSpec__DocPreview__InlineEmptyState">No configured assemblies available.</div>';
@@ -357,11 +360,10 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
     function ValeSpec__PageRenderer__BuildSummarySection(model, styleTokens) {
         var html  =  '<section class="ValeSpec__DocPreview__Section ValeSpec__DocPreview__Section--summary">';
-        html     +=      ValeSpec__PageRenderer__BuildSectionHeading(styleTokens.sectionTitle02);
+        html     +=      ValeSpec__PageRenderer__BuildSectionHeading(styleTokens.sectionTitle01);
         html     +=      '<table class="ValeSpec__DocPreview__SummaryTable">';
         html     +=          '<thead><tr>';
         html     +=              '<th>Specification Item</th>';
-        html     +=              '<th>Detail</th>';
         html     +=              '<th>Supplier</th>';
         html     +=              '<th>Finish</th>';
         html     +=              '<th>Total Quantity</th>';
@@ -370,14 +372,13 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
         if (!model.summaryRows.length) {
             html  +=          '<tr>';
-            html  +=              '<td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td>';
+            html  +=              '<td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td>';
             html  +=          '</tr>';
         } else {
             for (var i = 0; i < model.summaryRows.length; i++) {
                 var row  =  model.summaryRows[i] || {};
                 html    +=      '<tr>';
                 html    +=          '<td>' + ValeSpec__PageRenderer__EscapeHtml(row.itemName || 'N/A') + '</td>';
-                html    +=          '<td>' + ValeSpec__PageRenderer__EscapeHtml(row.detail || 'N/A') + '</td>';
                 html    +=          '<td>' + ValeSpec__PageRenderer__EscapeHtml(row.supplier || 'N/A') + '</td>';
                 html    +=          '<td>' + ValeSpec__PageRenderer__EscapeHtml(row.finish || 'N/A') + '</td>';
                 html    +=          '<td>' + ValeSpec__PageRenderer__EscapeHtml(row.totalQuantity || 'N/A') + '</td>';
@@ -399,7 +400,7 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
         if (!model.warningRows.length) return '';
 
         var html  =  '<section class="ValeSpec__DocPreview__Section ValeSpec__DocPreview__Section--warnings">';
-        html     +=      ValeSpec__PageRenderer__BuildSectionHeading(styleTokens.sectionTitle03);
+        html     +=      ValeSpec__PageRenderer__BuildSectionHeading(styleTokens.sectionTitle02);
         html     +=      '<div class="ValeSpec__DocPreview__WarningsTableWrap">';
         html     +=          '<table class="ValeSpec__DocPreview__WarningsTable">';
         html     +=              '<thead><tr><th>Assembly</th><th>Warning</th><th>Message</th></tr></thead>';
@@ -703,11 +704,6 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
         var renderedSectionCount  =  0;
 
-        if (viewState.showFullSchedule) {
-            html  +=  ValeSpec__PageRenderer__BuildFullScheduleSection(model, styleTokens);
-            renderedSectionCount++;
-        }
-
         if (viewState.showSummary) {
             html  +=  ValeSpec__PageRenderer__BuildSummarySection(model, styleTokens);
             renderedSectionCount++;
@@ -715,6 +711,11 @@ const ValeSpec__DocPreview__PageRenderer = (function() {
 
         if (model.warningRows && model.warningRows.length > 0) {
             html  +=  ValeSpec__PageRenderer__BuildWarningsSection(model, styleTokens);
+            renderedSectionCount++;
+        }
+
+        if (viewState.showFullSchedule) {
+            html  +=  ValeSpec__PageRenderer__BuildFullScheduleSection(model, styleTokens);
             renderedSectionCount++;
         }
 

@@ -293,18 +293,78 @@ const ValeSpec__DocPreview__DocumentModel = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build a Generic Summary Record
+    // ------------------------------------------------------------
+    function ValeSpec__DocumentModel__BuildSummaryRecord(itemName, supplier, finishText, quantity, sourceAssembly, sourceType) {
+        var quantityValue  =  ValeSpec__DocumentModel__ParseOptionalQuantity(quantity);
+        return {
+            itemName           : ValeSpec__DocumentModel__ToSummaryText(itemName),
+            detail             : '',
+            supplier           : ValeSpec__DocumentModel__ToSummaryText(supplier),
+            finish             : ValeSpec__DocumentModel__ToSummaryText(finishText),
+            quantityText       : quantityValue === null ? FALLBACK_NA : String(quantityValue),
+            quantityNumeric    : quantityValue,
+            isComplementary    : null,
+            sourceAssembly     : sourceAssembly,
+            sourceType         : sourceType
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Hardware Records for One Assembly
     // ------------------------------------------------------------
     function ValeSpec__DocumentModel__BuildAssemblyHardwareRecords(orderedAssembly, globalSettings, hardwareIndex) {
-        var records  =  [];
-        var handleRecord  =  ValeSpec__DocumentModel__BuildHandleSelectionRecord(
-            orderedAssembly.assemblyData,
-            orderedAssembly.title,
-            globalSettings,
-            hardwareIndex
-        );
+        var records       =  [];
+        var assembly      =  orderedAssembly.assemblyData;
+        var assemblyTitle =  orderedAssembly.title;
+        var finishText    =  ValeSpec__DocumentModel__ResolveAssemblyFinish(globalSettings);
 
+        // --- Handle ---
+        var handleRecord  =  ValeSpec__DocumentModel__BuildHandleSelectionRecord(assembly, assemblyTitle, globalSettings, hardwareIndex);
         if (handleRecord) records.push(handleRecord);
+
+        // --- Locking Hardware ---
+        var lockCfg   =  assembly['Assembly__Locking__Config'] || {};
+        var lockType  =  lockCfg['Assembly__Locking__Config__Type'] || 'None';
+        if (lockType !== 'None') {
+            var lockPoints  =  lockCfg['Assembly__Locking__Config__Points'];
+            var lockLabel   =  lockType + (lockPoints ? ' (' + lockPoints + '-point)' : '');
+            records.push(ValeSpec__DocumentModel__BuildSummaryRecord(lockLabel, '', finishText, 1, assemblyTitle, 'Locking'));
+        }
+
+        // --- Cylinder ---
+        if (lockType !== 'None') {
+            records.push(ValeSpec__DocumentModel__BuildSummaryRecord('Euro Cylinder', '', finishText, 1, assemblyTitle, 'Cylinder'));
+        }
+
+        // --- Hinges ---
+        var hingeCfg        =  assembly['Assembly__Hinge__Config'] || {};
+        var hingesPerLeaf   =  parseInt(hingeCfg['Assembly__Hinge__Config__HingesPerLeaf'], 10);
+        var hingeProjection =  hingeCfg['Assembly__Hinge__Config__Projection'];
+        if (!isNaN(hingesPerLeaf) && hingesPerLeaf > 0) {
+            var doorCfg      =  assembly['Assembly__DoorType__Config'] || {};
+            var doorType     =  (doorCfg['Assembly__DoorType__Config__Type'] || '').toLowerCase();
+            var leafCount    =  (doorType === 'double doors' || doorType === 'bifold doors') ? 2 : 1;
+            var totalHinges  =  hingesPerLeaf * leafCount;
+            var hingeLabel   =  hingeProjection ? (hingeProjection + '" Hinge') : 'Hinge';
+            records.push(ValeSpec__DocumentModel__BuildSummaryRecord(hingeLabel, '', finishText, totalHinges, assemblyTitle, 'Hinge'));
+        }
+
+        // --- Cabin Hooks ---
+        var hooksCfg   =  assembly['Assembly__CabinHooks__Config'] || {};
+        var hookCount  =  parseInt(hooksCfg['Assembly__CabinHooks__Config__HookCount'], 10);
+        var eyeCount   =  parseInt(hooksCfg['Assembly__CabinHooks__Config__EyeCount'], 10);
+        var hookSize   =  hooksCfg['Assembly__CabinHooks__Config__Size'] || '';
+        if (!isNaN(hookCount) && hookCount > 0) {
+            var hookLabel  =  hookSize ? (hookSize + ' Cabin Hook') : 'Cabin Hook';
+            records.push(ValeSpec__DocumentModel__BuildSummaryRecord(hookLabel, '', finishText, hookCount, assemblyTitle, 'CabinHook'));
+        }
+        if (!isNaN(eyeCount) && eyeCount > 0) {
+            var eyeLabel  =  hookSize ? (hookSize + ' Cabin Hook Eye') : 'Cabin Hook Eye';
+            records.push(ValeSpec__DocumentModel__BuildSummaryRecord(eyeLabel, '', finishText, eyeCount, assemblyTitle, 'CabinHookEye'));
+        }
+
         return records;
     }
     // ------------------------------------------------------------
@@ -321,7 +381,7 @@ const ValeSpec__DocPreview__DocumentModel = (function() {
 
             for (var r = 0; r < records.length; r++) {
                 var record  =  records[r];
-                var key     =  [record.itemName, record.detail, record.supplier, record.finish].join('||');
+                var key     =  [record.itemName, record.supplier, record.finish].join('||');
 
                 if (!summaryMap[key]) {
                     summaryMap[key]  = {

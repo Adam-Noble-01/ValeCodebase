@@ -82,6 +82,7 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(file_size))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         with shared_target_path.open("rb") as shared_file:
             self.copyfile(shared_file, self.wfile)

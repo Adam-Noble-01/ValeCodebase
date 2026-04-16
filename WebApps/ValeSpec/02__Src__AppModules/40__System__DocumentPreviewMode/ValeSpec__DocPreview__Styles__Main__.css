@@ -374,8 +374,9 @@
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__HeaderIdentity {
         display                            : flex;
+        flex-direction                     : column;
         align-items                        : flex-start;
-        gap                                : var(--Vale_Spacing_Medium);
+        gap                                : 6px;
         flex-shrink                        : 0;
     }
     /* ------------------------------------------------------------ */
@@ -384,10 +385,9 @@
     /* BRANDING | Logo Image */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__BrandingLogo {
-        height                             : 42px;
+        height                             : 28px;
         width                              : auto;
         flex-shrink                        : 0;
-        margin-top                         : 2px;
     }
     /* ------------------------------------------------------------ */
 
@@ -405,10 +405,11 @@
     /* BRANDING | Project Name */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__HeaderProjectName {
-        font-size                          : calc(20px * var(--Vale_UIScale));
+        font-size                          : calc(22px * var(--Vale_UIScale));
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_PrimaryBrand);
         line-height                        : 1.2;
+        padding-top                        : 10px;
     }
     /* ------------------------------------------------------------ */
 
@@ -416,7 +417,7 @@
     /* BRANDING | Project Code */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__HeaderProjectCode {
-        font-size                          : var(--Vale_FontSize_Small);
+        font-size                          : calc(14px * var(--Vale_UIScale));
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextSecondary);
         letter-spacing                     : 0.03em;
@@ -716,7 +717,7 @@
     /* SECTION | Wrapper + Heading */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__Section {
-        margin-top                         : var(--Vale_Spacing_XLarge);
+        margin-top                         : calc(var(--Vale_Spacing_XLarge) * 2);
     }
 
     .ValeSpec__DocPreview__SectionHeading {
@@ -862,8 +863,8 @@
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__JobNotes {
         margin-top                         : var(--Vale_Spacing_XLarge);
-        padding-top                        : var(--Vale_Spacing_Large);
-        border-top                         : 1px solid var(--Vale_BorderLight);
+        padding-top                        : 0;
+        border-top                         : none;
     }
     /* ------------------------------------------------------------ */
 
@@ -883,7 +884,7 @@
     /* ------------------------------------------------------------ */
     .ValeSpec__DocPreview__JobNotesContent {
         font-size                          : var(--Vale_FontSize_Standard);
-        color                              : var(--Vale_TextSecondary);
+        color                              : var(--Vale_TextPrimary);
         line-height                        : 1.6;
         white-space                        : pre-wrap;
     }

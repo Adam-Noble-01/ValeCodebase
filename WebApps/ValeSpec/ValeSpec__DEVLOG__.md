@@ -3,42 +3,153 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.5 - 16-Apr-2026
+### Document Preview — Header, PDF export, summary, and layout
+
+Document preview gains a formal header and Issued workflow, native A4 PDF via jsPDF (no canvas snapshot of the header), richer summary totals, reordered sections, and tighter pagination behaviour.
+
+#### Preview header and Issued
+
+- Left: Vale logo, project name, project code. Right: Document Control grid (document name, section, revision, author, status badge, revision date, Issued).
+- On PDF finalisation, `ValeSpec__DocPreview__DocIssueHandler__.js` stamps `ValeSpec__ProjectFile__Metadata__DateIssued` (ISO), saves via `ProjectFileManager.SaveProject`, with a placeholder for a future email path. Stamp runs before the export model; `PageRenderer` runs after so the Issued cell updates.
+- Fix: `DocIssueHandler` reads `state.currentProject` (not an unused `projectData` reference).
+
+#### PDF — branding and blocks
+
+- Rasterising the HTML header (`foreignObject` → canvas → `toDataURL`) caused `SecurityError: Tainted canvases may not be exported`. Export now uses `RenderBrandingNative` (jsPDF only): logo via `fetch` + blob → data URL, plus drawn text, rects, and lines. Layout parity is intentional, not a DOM screenshot.
+- Document Control in the PDF matches the on-screen grid (column widths, row heights, vertical dividers, padding).
+- Warnings use `ValeSpec__PdfExporter__RenderWarningsTable` (rounded panel, red text on light red, row dividers), not a solid red header bar.
+
+#### PDF — pagination and spacing
+
+- A4 (`210 × 297 mm`), footer reserve, page label `Page 01 of NN` bottom-right.
+- If a table fits on one page but not in the space left on the current page, the whole table moves to the next page. Very tall tables may still break across pages with repeated headers.
+- `ensureSpace` can print centred grey “Continued on next page...” when a break leaves a large blank tail (~20 mm+).
+- Section 03 pre-measures each assembly (title, diagram, full spec table) and combines with the section heading where possible to reduce orphan headings.
+- Section gap: `SECTION_BOTTOM_GAP_MM` doubled in the exporter; preview sections use doubled top margin (`--Vale_Spacing_XLarge`).
+
+#### Section order (preview + PDF)
+
+1. Ironmongery Schedule Summary & Totals  
+2. Warnings Section  
+3. Full Ironmongery Schedule Per Assembly  
+4. Special Job Notes Section  
+
+Config: `Na__DocPreview__Config.json`; fallbacks in `DocumentState`; render order in `PageRenderer` and the exporter.
+
+#### Summary table
+
+- `ValeSpec__DocumentModel__BuildAssemblyHardwareRecords` aggregates handles, locking hardware, euro cylinders, hinges (with projection where relevant), cabin hooks, and cabin hook eyes.
+- `BuildSummaryRows` collation no longer uses a Detail key. The Detail column was removed from preview and PDF.
+
+#### Colour, fonts, metadata, cleanup
+
+- `ValeSpec__PdfExporter__CssRgbToTriplet` composites `rgba()` over white for soft tints.
+- Open Sans Regular / SemiBold TTF via `ValeSpec__PdfExporter__LoadAndRegisterFonts`, with Helvetica fallback.
+- `ValeSpec__DocPreview__PdfMetadataResolver__.js` fills jsPDF document properties from `StateManager.currentProject`. Script order in `ValeSpec__App__.html`: DocIssueHandler → PdfMetadataResolver → PdfExporter.
+- Removed unused measurement / legacy warning-box helpers in the exporter.
+- jsPDF: bundled `jspdf.umd.js` under `02__Src__AppModules/41__SystemHelper__PdfExportLibrary__VersionLocked/` (local copy; not loaded from a CDN).
+
+#### Project metadata (seed + migration)
+
+- `ValeSpec__AppData__ProjectFileManager__.js` — new projects seed `DateIssued` and `Author` (empty) under `ValeSpec__ProjectFile__Metadata`.
+- `ValeSpec__AppUtils__ProjectSchemaValidator__.js` — older projects get missing fields normalised to `''`.
+
+#### On-screen preview and CSS
+
+- `ValeSpec__DocPreview__PageRenderer__.js` — Document Control with Issued; sections and summary without Detail.
+- `ValeSpec__DocPreview__Styles__Main__.css` — header stack, doc-control chrome, badges, print rules, section spacing.
+
+#### Local server
+
+- `ValeSpec__FlaskServer__Localhost__.py` — `Na__Server__TryHandleSharedAssetRead` sends `Access-Control-Allow-Origin: *` for shared assets so logo `fetch` is not blocked by opaque CORS.
+
+#### Result
+
+Preview and PDF stay aligned on document control and section flow. PDFs avoid canvas taint, match DC and warnings visually, carry more useful summary totals, use clearer spacing, and paginate tables more predictably, with continuation text when a break leaves a large gap.
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| PDF export | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfExporter__.js` |
+| Issued stamp | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocIssueHandler__.js` *(new)* |
+| PDF metadata | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfMetadataResolver__.js` *(new)* |
+| Preview | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js` |
+| Model | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentModel__.js` |
+| State | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentState__.js` |
+| Config | `40__System__DocumentPreviewMode/Na__DocPreview__Config.json` |
+| Styles | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__Styles__Main__.css` |
+| App data | `02__AppData/ValeSpec__AppData__ProjectFileManager__.js` |
+| Schema | `03__AppUtils/ValeSpec__AppUtils__ProjectSchemaValidator__.js` |
+| jsPDF | `41__SystemHelper__PdfExportLibrary__VersionLocked/jspdf.umd.js` *(bundled)* |
+| Bootstrap | `ValeSpec__App__.html` |
+| Server | `ValeSpec__FlaskServer__Localhost__.py` |
+
+#### Note (replaces older PDF description)
+
+The older *Document Preview — PDF Export* entry below describes the original pageless export. **v0.1.5** is the reference for A4 pagination, footers, native branding, and summary/section layout.
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.4 - 16-Apr-2026
-### Document Preview — Floating tools menu, per-user menu persistence, and app-defaults mirror (AdamW)
+### Document Preview — Floating tools and saved menu state
 
-**Overview**
-- Replaced the old disjoint preview toolbar with a **right-side floating, draggable** tools panel styled like ValeVision 3D (nested collapsible sections: Diagram Layout, Document Sections, Actions), using copied **`Icon__ToolsMenu__*__540p__.png`** assets under `01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/`.
-- Introduced **per-user menu and view-state persistence** separate from rigid main app config: static defaults JSON, disk-backed JSON per user slug via the local server API, and a **`MenuDataHandler`** module that loads, sanitises, debounced-saves, and exposes overrides for **`DocumentState`** and **`PageRenderer`**.
-- Added **`ValeSpec__UserMenu__AppDefaults__Config`** inside **`ValeSpec__AppConfig__Main__.json`** so **application-wide defaults** can track the “studio baseline” Doc Preview menu position and toggles. **Only user slug `AdamW`** dual-writes: each successful save updates both `05__LocalUserData/ValeSpec__AppData__UserMenuConfig__AdamW__.json` **and** the corresponding block in the main app config. **All other users** persist **only** their own file under `05__LocalUserData/`.
-- **Load priority (client):** packaged defaults JSON → **main app `AppDefaults` section** (values mapped onto `ValeSpec__UserMenu__ModeDocumentPreview__Config` keys) → **per-user file** from GET `/api/user-menu-config/{slug}` if present. User data overrides app defaults; if there is no user file, app defaults apply.
+Document preview gets a ValeVision-style floating tools panel, per-user persistence for menu position and toggles, and optional “studio baseline” defaults in main app config for one designated user slug.
 
-**Server (`ValeSpec__FlaskServer__Localhost__.py`)**
-- `GET` / `POST` **`/api/user-menu-config/<userSlug>`** — read/write `ValeSpec__AppData__UserMenuConfig__<slug>__.json` under `05__LocalUserData/`.
-- On **`POST`** for **`AdamW`**, after writing the user file, **sync** `ValeSpec__UserMenu__AppDefaults__Config` in **`02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json`** from the saved Document Preview section (mirrored keys: menu X/Y, section open states, diagram mode, schedule/summary/job-notes toggles, persist flags). Non-AdamW POSTs do not modify main app config.
+#### UI — floating tools
 
-**Client modules**
-- **`ValeSpec__DocPreview__MenuDataHandler__.js`** — Fetches defaults + main app config for the App Defaults section, merges user API payload, sanitises types, debounces POST saves, dispatches **`ValeSpec__UserMenuConfigLoaded`** for re-hydration.
-- **`ValeSpec__DocPreview__DocumentState__.js`** — Applies persisted view overrides when enabled; queues patches back through MenuDataHandler on change.
-- **`ValeSpec__DocPreview__PageRenderer__.js`** — Applies persisted floating-menu position and section-open state; saves after drag and section toggles; re-renders when user menu config finishes loading.
-- **`ValeSpec__App__.html`** — Script order: MenuDataHandler before DocumentState / PageRenderer.
+- Replaces the old preview toolbar with a right-side floating, draggable panel: nested sections for Diagram Layout, Document Sections, and Actions.
+- Icons: copied `Icon__ToolsMenu__*__540p__.png` into `01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/`.
 
-**Defaults and seed data**
-- **`ValeSpec__AppData__UserMenuConfig__Defaults__.json`** — Meta + placeholders for four app modes; Document Preview object populated with initial toggles and persistence flags.
+#### Persistence model
 
-**Files touched (this release)**
-- `01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/*` *(ValeVision tool icons copied for ValeSpec)*
-- `02__Src__AppModules/02__AppData/ValeSpec__AppData__UserMenuConfig__Defaults__.json`
-- `02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json` *(adds `ValeSpec__UserMenu__AppDefaults__Config`)*
-- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__MenuDataHandler__.js`
-- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentState__.js`
-- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js`
-- `02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__Styles__Main__.css`
-- `ValeSpec__App__.html`
-- `ValeSpec__FlaskServer__Localhost__.py`
-- `05__LocalUserData/ValeSpec__AppData__UserMenuConfig__<UserSlug>__.json` *(per user; created at runtime)*
+- Static defaults JSON plus disk-backed JSON per user slug via the local server API.
+- `ValeSpec__DocPreview__MenuDataHandler__.js` loads, sanitises, debounced-saves, and exposes overrides for `DocumentState` and `PageRenderer`.
+- `ValeSpec__UserMenu__AppDefaults__Config` in `ValeSpec__AppConfig__Main__.json` holds application-wide defaults for the Doc Preview “studio baseline” (menu position, toggles).
+- User slug `AdamW` dual-writes: each save updates `05__LocalUserData/ValeSpec__AppData__UserMenuConfig__AdamW__.json` and the matching block in the main app config. All other users write only their own file under `05__LocalUserData/`.
 
-**Result**
-- Preview tools stay aligned with ValeVision UX, positions and toggles survive sessions per user, new machines without a user file still get sensible defaults from main app config, and AdamW’s adjustments remain the **checked-in baseline** for the team without other users overwriting shared JSON.
+#### Client load order
+
+1. Packaged defaults JSON  
+2. Main app `AppDefaults` section (mapped onto `ValeSpec__UserMenu__ModeDocumentPreview__Config` keys)  
+3. Per-user file from `GET /api/user-menu-config/{slug}` when present  
+
+User file overrides app defaults; if there is no per-user file, app defaults apply.
+
+#### Server (`ValeSpec__FlaskServer__Localhost__.py`)
+
+- `GET` / `POST` `/api/user-menu-config/<userSlug>` — read/write `ValeSpec__AppData__UserMenuConfig__<slug>__.json` under `05__LocalUserData/`.
+- On `POST` for `AdamW`, after writing the user file, sync `ValeSpec__UserMenu__AppDefaults__Config` in `02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json` from the saved Document Preview section (menu X/Y, section open states, diagram mode, schedule/summary/job-notes toggles, persist flags). Other users’ POSTs do not change main app config.
+
+#### Client modules
+
+- `ValeSpec__DocPreview__MenuDataHandler__.js` — merges defaults, main app config, and user API payload; debounced POST; dispatches `ValeSpec__UserMenuConfigLoaded` for re-hydration.
+- `ValeSpec__DocPreview__DocumentState__.js` — applies persisted view overrides when enabled; pushes changes back through MenuDataHandler.
+- `ValeSpec__DocPreview__PageRenderer__.js` — applies floating-menu position and section-open state; saves after drag and toggles; re-renders when user menu config finishes loading.
+- `ValeSpec__App__.html` — MenuDataHandler before DocumentState and PageRenderer.
+
+#### Defaults seed
+
+- `ValeSpec__AppData__UserMenuConfig__Defaults__.json` — meta and placeholders for four app modes; Document Preview populated with initial toggles and persistence flags.
+
+#### Result
+
+Preview tools match ValeVision-style UX; positions and toggles survive per user; machines without a user file still get defaults from main app config; AdamW’s saves remain the checked-in team baseline without other users overwriting shared JSON.
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| Icons | `01__AppAssets__ValeSpec/UiIcons__MenuIcons__ToolsMenu/*` *(from ValeVision)* |
+| Defaults | `02__Src__AppModules/02__AppData/ValeSpec__AppData__UserMenuConfig__Defaults__.json` |
+| App config | `02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json` *(adds `ValeSpec__UserMenu__AppDefaults__Config`)* |
+| Menu handler | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__MenuDataHandler__.js` |
+| State | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentState__.js` |
+| Preview | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__PageRenderer__.js` |
+| Styles | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__Styles__Main__.css` |
+| Bootstrap | `ValeSpec__App__.html` |
+| Server | `ValeSpec__FlaskServer__Localhost__.py` |
+| Runtime data | `05__LocalUserData/ValeSpec__AppData__UserMenuConfig__<UserSlug>__.json` *(per user)* |
 
 # ---------------------------------------------------------
 ## ValeSpec v0.1.3 - 16-Apr-2026
@@ -330,7 +441,7 @@
 **Overview**
 - Added full **Export PDF** from Document Preview: users download a final specification PDF aligned with on-screen preview content.
 - **Library:** Vendored **jsPDF v4.1.0** UMD build (`jspdf.umd.js`) copied from ValeVision3D into `02__Src__AppModules/41__SystemHelper__PdfExportLibrary__VersionLocked/` — version-locked, CDN independent, loaded via `<script>` before preview modules; accessed as `window.jspdf.jsPDF`.
-- **Exporter:** `ValeSpec__DocPreview__PdfExporter__.js` — async pipeline: resolves `DocPreview__PdfExport__Config` from app config (with fallbacks: 300 DPI, JPEG 0.92, 210 mm width, 15 mm padding, FlateEncode compression); single **pageless** PDF page (`format: [210, totalHeightMm]`); assembly SVGs rasterised to **JPEG at 300 DPI** via offscreen canvas; branding, assembly titles, eight-row spec tables, and job notes rendered as **selectable vector text** (`doc.text()`); logo embedded from same path as preview; filename `ValeSpec__{ProjectName}__.pdf` (sanitised).
+- **Exporter (as of this version):** `ValeSpec__DocPreview__PdfExporter__.js` — async pipeline: resolves `DocPreview__PdfExport__Config` from app config (with fallbacks: 300 DPI, JPEG 0.92, 210 mm width, 15 mm padding, FlateEncode compression); single **pageless** PDF page (`format: [210, totalHeightMm]`); assembly SVGs rasterised to **JPEG at 300 DPI** via offscreen canvas; branding, assembly titles, eight-row spec tables, and job notes rendered as **selectable vector text** (`doc.text()`); logo embedded from same path as preview; filename `ValeSpec__{ProjectName}__.pdf` (sanitised). **Superseded:** see **ValeSpec v0.1.5** for A4 multi-page export, footers, metadata, and Date Issued stamping.
 - **Config:** `Na__DocPreview__Config.json` — new `DocPreview__PdfExport__Config` section (`TargetDpi`, `JpegQuality`, `PageWidthMm`, `PagePaddingMm`, `Compress`, `FloatPrecision`).
 - **UI:** `ValeSpec__DocPreview__PageRenderer__.js` — enabled **Export PDF** button (`#ValeSpec__DocPreview__BtnExport`), click calls `ValeSpec__PdfExporter__Export()`; loading state disables button and shows “Generating PDF…”.
 - **Styles:** `ValeSpec__DocPreview__Styles__Main__.css` — export button styled as primary (matches Back); `:disabled` state for generation feedback.

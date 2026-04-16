@@ -266,6 +266,12 @@
         StateManager.ValeSpec__StateManager__On('globalHandleTypeChanged', function() {
             ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:globalHandleTypeChanged'); // <-- Batch rapid updates into a single autosave write
         });
+
+        StateManager.ValeSpec__StateManager__On('dirtyStateChanged', function(isDirty) {
+            if (isDirty) {
+                ValeSpec__AppCore__ScheduleAutosaveCurrentProject('autosave:dirtyStateChanged'); // <-- Persist MarkDirty paths (job notes, doc header, section manager)
+            }
+        });
     }
     // ------------------------------------------------------------
 

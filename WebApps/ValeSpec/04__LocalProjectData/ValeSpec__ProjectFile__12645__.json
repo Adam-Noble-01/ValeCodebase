@@ -13,7 +13,7 @@
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
         "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Plain Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
     },
     "ValeSpec__ProjectFile__Assemblies": [
@@ -116,7 +116,7 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1200,
+                "Assembly__Dimensions__Config__WidthMm": 1113,
                 "Assembly__Dimensions__Config__HeightMm": 2200
             },
             "Assembly__Hinge__Config": {
@@ -142,7 +142,7 @@
                 ]
             },
             "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__Type": "Plain Lever Handle",
                 "Assembly__Lever__Config__HeightMm": 1000
             },
             "Handing": "Left",
@@ -161,7 +161,7 @@
                             "Title": "Door Width Warning",
                             "Message": "Doors above 1050mm width are subject to approval by Senior Technical Manager."
                         },
-                        "TriggeredAtValue": 1200,
+                        "TriggeredAtValue": 1113,
                         "Acknowledged": false
                     }
                 ]
@@ -176,7 +176,7 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "dimensions"
+                "Assembly__ProgressState__Config__ActiveStepId": "handles"
             }
         }
     ]

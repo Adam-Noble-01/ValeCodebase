@@ -7,7 +7,7 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
  // MODULE CONSTANTS | Health Route and Status Tokens
  // ------------------------------------------------------------
  const Na__ServerConnection__DefaultHealthPath = 'api/system/health';
- const Na__ServerConnection__DefaultHealthIntervalMs = 6000;
+ const Na__ServerConnection__DefaultClickHealthCooldownMs = 20000;
  const Na__ServerConnection__StatusUnknown = 'unknown';
  const Na__ServerConnection__StatusStable = 'stable';
  const Na__ServerConnection__StatusLost = 'lost';
@@ -17,8 +17,9 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
  // MODULE VARIABLES | Runtime Monitor State
  // ------------------------------------------------------------
  let Na__ServerConnection__HealthPath = Na__ServerConnection__DefaultHealthPath;
- let Na__ServerConnection__HealthIntervalMs = Na__ServerConnection__DefaultHealthIntervalMs;
- let Na__ServerConnection__HealthIntervalId = null;
+ let Na__ServerConnection__ClickHealthCooldownMs = Na__ServerConnection__DefaultClickHealthCooldownMs;
+ let Na__ServerConnection__LastClickHealthProbeAtMs = 0;
+ let Na__ServerConnection__IsHealthCheckInFlight = false;
  let Na__ServerConnection__IsInitialized = false;
  const Na__ServerConnection__Subscribers = new Set();
  const Na__ServerConnection__StatusState = {
@@ -32,7 +33,7 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
  // ------------------------------------------------------------
 
 
- // FUNCTION | Initialize Connection Monitor and Heartbeat Loop
+ // FUNCTION | Initialize Connection Monitor and Event Probes
  // ------------------------------------------------------------
  export function Na__ServerConnection__InitializeMonitor(config = {}) {
      if (Na__ServerConnection__IsInitialized) return;
@@ -41,8 +42,10 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
      if (typeof config.healthPath === 'string' && config.healthPath.trim()) {
          Na__ServerConnection__HealthPath = config.healthPath.trim();
      }
-     if (Number.isFinite(config.healthIntervalMs) && config.healthIntervalMs >= 2000) {
-         Na__ServerConnection__HealthIntervalMs = Number(config.healthIntervalMs);
+     if (Number.isFinite(config.clickHealthCooldownMs) && config.clickHealthCooldownMs >= 2000) {
+         Na__ServerConnection__ClickHealthCooldownMs = Number(config.clickHealthCooldownMs);
+     } else if (Number.isFinite(config.healthIntervalMs) && config.healthIntervalMs >= 2000) {
+         Na__ServerConnection__ClickHealthCooldownMs = Number(config.healthIntervalMs);
      }
 
      if (!Na__System__IsRunningOnLocalhost()) return;
@@ -55,11 +58,11 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
          Na__ServerConnection__ReportApiFailure('browser-offline');
      });
 
-     void Na__ServerConnection__RunHealthCheckAsync('initial-health');
+     window.addEventListener('click', () => {
+         Na__ServerConnection__RunClickHealthProbeWithCooldown();
+     });
 
-     Na__ServerConnection__HealthIntervalId = window.setInterval(() => {
-         void Na__ServerConnection__RunHealthCheckAsync('heartbeat');
-     }, Na__ServerConnection__HealthIntervalMs);
+     void Na__ServerConnection__RunHealthCheckAsync('initial-health');
  }
  // ------------------------------------------------------------
 
@@ -137,21 +140,38 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
  // ------------------------------------------------------------
 
 
+ // HELPER FUNCTION | Run Click-Sourced Health Probe With Cooldown
+ // ------------------------------------------------------------
+ function Na__ServerConnection__RunClickHealthProbeWithCooldown() {
+     const nowTimestampMs = Date.now();
+     const elapsedSinceLastProbeMs = nowTimestampMs - Na__ServerConnection__LastClickHealthProbeAtMs;
+     if (elapsedSinceLastProbeMs < Na__ServerConnection__ClickHealthCooldownMs) {
+         return;
+     }
+
+     Na__ServerConnection__LastClickHealthProbeAtMs = nowTimestampMs;
+     void Na__ServerConnection__RunHealthCheckAsync('ui-click');
+ }
+ // ------------------------------------------------------------
+
+
  // HELPER FUNCTION | Execute Health Ping Against Local API
  // ------------------------------------------------------------
  async function Na__ServerConnection__RunHealthCheckAsync(signalSource) {
      if (!Na__System__IsRunningOnLocalhost()) return;
+     if (Na__ServerConnection__IsHealthCheckInFlight) return;
 
+     Na__ServerConnection__IsHealthCheckInFlight = true;
      try {
-        const cacheBypassJoinChar = Na__ServerConnection__HealthPath.includes('?') ? '&' : '?';
-        const healthRequestUrl = `${Na__ServerConnection__HealthPath}${cacheBypassJoinChar}naHeartbeatTs=${Date.now()}`;
-        const responseValue = await fetch(healthRequestUrl, {
+         const cacheBypassJoinChar = Na__ServerConnection__HealthPath.includes('?') ? '&' : '?';
+         const healthRequestUrl = `${Na__ServerConnection__HealthPath}${cacheBypassJoinChar}naHeartbeatTs=${Date.now()}`;
+         const responseValue = await fetch(healthRequestUrl, {
              method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Cache-Control': 'no-cache',
-                Pragma: 'no-cache'
-            },
+             headers: {
+                 Accept: 'application/json',
+                 'Cache-Control': 'no-cache',
+                 Pragma: 'no-cache'
+             },
              cache: 'no-store'
          });
 
@@ -169,6 +189,8 @@ import { Na__System__IsRunningOnLocalhost } from './Na__System__DevTools__Localh
          Na__ServerConnection__ReportApiSuccess(signalSource);
      } catch (errorValue) {
          Na__ServerConnection__ReportApiFailure(signalSource);
+     } finally {
+         Na__ServerConnection__IsHealthCheckInFlight = false;
      }
  }
  // ------------------------------------------------------------

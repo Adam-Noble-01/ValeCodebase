@@ -15,9 +15,11 @@ import json
 import os
 import socket
 import sys
+import threading
 from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from queue import Empty, SimpleQueue
 from urllib.parse import urlparse
 from typing import Tuple
 
@@ -206,7 +208,77 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
     def log_message(self, format: str, *args) -> None:
         client_ip = self.client_address[0]
         message = format % args
-        print(f"[REQUEST] {client_ip} | {message}")
+        request_utc_iso = datetime.now(timezone.utc).isoformat()
+        print(f"[REQUEST] {request_utc_iso} | {client_ip} | {message}")
+    # ------------------------------------------------------------
+
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Console Flags - Runtime Restart Commands
+# -----------------------------------------------------------------------------
+
+NA__SERVER__RESTART_FLAG_TOKENS = {
+    "--r",
+    "--R",
+    "--restart",
+    "--Restart"
+}
+
+
+def Na__Server__ConsoleCommandReader(command_queue: SimpleQueue, stop_event: threading.Event) -> None:
+    # HELPER FUNCTION | Read Console Commands and Queue Them
+    # ------------------------------------------------------------
+    while not stop_event.is_set():
+        try:
+            command_value = input().strip()
+        except EOFError:
+            return
+        except KeyboardInterrupt:
+            return
+
+        if not command_value:
+            continue
+        command_queue.put(command_value)
+    # ------------------------------------------------------------
+
+
+def Na__Server__TryHandleQueuedConsoleCommands(command_queue: SimpleQueue) -> bool:
+    # HELPER FUNCTION | Process Queued Console Commands
+    # ------------------------------------------------------------
+    should_restart_server = False
+    while True:
+        try:
+            command_value = command_queue.get_nowait()
+        except Empty:
+            break
+
+        if command_value in NA__SERVER__RESTART_FLAG_TOKENS:
+            print("=============================================================================")
+            print(f" VALEPLANNER - RESTART FLAG RECEIVED ({command_value})")
+            print(" Restarting server...")
+            print("=============================================================================")
+            should_restart_server = True
+            break
+
+        print(f' [WARN] Unknown console command: "{command_value}"')
+        print(" [WARN] Supported restart flags: --r | --R | --restart | --Restart")
+    return should_restart_server
+    # ------------------------------------------------------------
+
+
+def Na__Server__RunHttpLoopWithConsoleCommands(httpd: ThreadingHTTPServer, command_queue: SimpleQueue | None) -> bool:
+    # HELPER FUNCTION | Run Request Loop and Check Console Commands
+    # ------------------------------------------------------------
+    httpd.timeout = 0.50
+    while True:
+        httpd.handle_request()
+        if command_queue is None:
+            continue
+        if Na__Server__TryHandleQueuedConsoleCommands(command_queue):
+            return True
     # ------------------------------------------------------------
 
 
@@ -312,11 +384,33 @@ def main() -> int:
     print(f" Local URL      : {server_url}")
     print(f" LAN URL        : {lan_url}")
     print(" Press Ctrl+C to stop server")
+    if not args.silent:
+        print(" Restart flags  : --r | --R | --restart | --Restart")
     print("=============================================================================")
 
+    command_queue = None
+    command_reader_stop_event = None
+    command_reader_thread = None
+    if not args.silent and sys.stdin and sys.stdin.isatty():
+        command_queue = SimpleQueue()
+        command_reader_stop_event = threading.Event()
+        command_reader_thread = threading.Thread(
+            target=Na__Server__ConsoleCommandReader,
+            args=(command_queue, command_reader_stop_event),
+            daemon=True
+        )
+        command_reader_thread.start()
+
     try:
-        httpd = ThreadingHTTPServer((args.host, args.port), Na__Server__RequestHandler)
-        httpd.serve_forever()
+        while True:
+            httpd = ThreadingHTTPServer((args.host, args.port), Na__Server__RequestHandler)
+            should_restart_server = Na__Server__RunHttpLoopWithConsoleCommands(httpd, command_queue)
+            httpd.server_close()
+            if not should_restart_server:
+                break
+            print("=============================================================================")
+            print(" VALEPLANNER - SERVER RESTARTED")
+            print("=============================================================================")
     except KeyboardInterrupt:
         print("\n=============================================================================")
         print(" VALEPLANNER - SERVER STOPPED")
@@ -328,6 +422,9 @@ def main() -> int:
         print("=============================================================================")
         print(f" Failed to bind to {args.host}:{args.port} -> {os_error}")
         return 1
+    finally:
+        if command_reader_stop_event is not None:
+            command_reader_stop_event.set()
 
 
 if __name__ == "__main__":

@@ -3,10 +3,16 @@ alwaysApply: true
 ---
 **Global Naming Convention**
 - This convention is mandatory and is intended to clearly distinguish Noble Architecture code from third-party libraries.
-- Prefix all custom functions, classes, methods, and related identifiers with a project-specific namespace: 
+- Prefix all custom functions, classes, methods, and related identifiers with a project-specific namespace.
+- Preferred project namespace prefixes for new code:
+  - `ValeSpec__`
+  - `ValePlanner__`
+  - `ValeVision3D__`
+  - `Whitecardopedia__`
+- Keep legacy Noble Architecture prefixes for existing modules when needed:
   - `Na__`
   - `Na_`
-  - `na_`, 
-- Selected according to the target language’s naming conventions and syntax. 
+  - `na_`
+- Prefer double-underscore delimiters (`__`) for new code naming.
 - This improves long-term maintainability, readability, and collision avoidance.
 

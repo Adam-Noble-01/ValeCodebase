@@ -4,11 +4,17 @@ alwaysApply: true
 ---
 **Global Naming Convention**
 - This convention is mandatory and is intended to clearly distinguish Noble Architecture code from third-party libraries.
-- Prefix all custom functions, classes, methods, and related identifiers with a project-specific namespace: 
+- Prefix all custom functions, classes, methods, and related identifiers with a project-specific namespace.
+- Preferred project namespace prefixes for new code:
+  - `ValeSpec__`
+  - `ValePlanner__`
+  - `ValeVision3D__`
+  - `Whitecardopedia__`
+- Keep legacy Noble Architecture prefixes for existing modules when needed:
   - `Na__`
   - `Na_`
-  - `na_`, 
-- Selected according to the target language’s naming conventions and syntax. 
+  - `na_`
+- Prefer double-underscore delimiters (`__`) for new code naming.
 - This improves long-term maintainability, readability, and collision avoidance.
 - Align constant and config names with source data keys where possible.
 - Avoid legacy `VV_` prefixes in new or updated code.
@@ -22,9 +28,10 @@ alwaysApply: true
   - `FeatureName__DataDescription__.json`
 
 # Code Naming Convention
-- Prefix all custom identifiers with `Na__`, `Na_`, or `na_` as appropriate to the language.
-- **Module Functions:** Use three-part naming: `Na__Domain__FunctionName`
-  - Examples: `Na__Canvas__ResetView()`, `Na__Menu__ShowMainMenu()`, `Na__Toolbar__Toggle()`
+- Prefix custom identifiers with project namespaces (for example: `ValeSpec__`, `ValePlanner__`, `ValeVision3D__`, `Whitecardopedia__`).
+- Legacy identifiers with `Na__`, `Na_`, and `na_` are allowed in existing code paths for compatibility.
+- **Module Functions:** Use three-part naming: `<ProjectNamespace>__Domain__FunctionName`
+  - Examples: `ValePlanner__ServerConnection__SubscribeStatusChange()`, `ValeSpec__DocPreview__RenderSpecTable()`, `Na__Canvas__ResetView()` (legacy)
   - Domain identifies the system (Canvas, Menu, Toolbar, Tutorial, Archive, etc.)
   - Provides clear domain recognition and prevents naming conflicts
 - Align constant and config names with source data keys where possible.

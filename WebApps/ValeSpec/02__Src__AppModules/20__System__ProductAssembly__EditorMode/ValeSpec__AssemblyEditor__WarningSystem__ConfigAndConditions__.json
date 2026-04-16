@@ -1,0 +1,230 @@
+{
+
+    "WarningSystem__GlobalConfig": {
+        "WarningSystem__GlobalConfig__Description"                    : "Global settings for the data-driven warning system. PanelCountMap maps door-type strings to panel/leaf counts. 'FromAssembly' means the count is read from the assembly data (e.g. bifold configurator output). DefaultPanelCount is the fallback when a door type is absent from the map.",
+        "WarningSystem__GlobalConfig__CentredNotificationDurationMs"  : 4000,
+        "WarningSystem__GlobalConfig__HingeProjection8ModalMessage"   : "8-inch hinge projection is non-standard and requires senior architect approval before specification. Confirm to proceed or cancel to select a different projection.",
+        "WarningSystem__GlobalConfig__HeightMismatchModalMessage"     : "Assembly heights differ by more than 15 mm. Mismatched door heights on the same elevation may cause visual inconsistency. Review before finalising.",
+        "WarningSystem__GlobalConfig__PanelCountMap": {
+            "Single Door"    : 1,
+            "Double Doors"   : 2,
+            "Bifold Doors"   : "FromAssembly"
+        },
+        "WarningSystem__GlobalConfig__DefaultPanelCount"              : 1
+    },
+
+    "WarningSystem__Rules": [
+
+        {
+            "RuleId"               : "WARN_PANEL_WIDTH_OVER_1050",
+            "Scope"                : "PerPanel",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "WidthOver",
+            "ThresholdMm"          : 1050,
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "EditorNotification"   : "Door panel exceeds 1050 mm width. Subject to approval by Senior Technical Manager.",
+            "DocumentWarning"      : {
+                "Title"    : "Door Panel Width Warning",
+                "Message"  : "One or more door panels exceed 1050 mm width. Subject to approval by Senior Technical Manager."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_WIDE_LEAF_HINGE_REVIEW",
+            "Scope"                : "PerPanel",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "WidthOver",
+            "ThresholdMm"          : 1000,
+            "Severity"             : "Caution",
+            "Enabled"              : true,
+            "EditorNotification"   : "Panel over 1000 mm wide requires double-top hinge arrangement. Subject to review — may require double-top and double-bottom (5 hinges total) or a pivot system.",
+            "DocumentWarning"      : {
+                "Title"    : "Wide Leaf Hinge Review",
+                "Message"  : "One or more panels exceed 1000 mm width and require a double-top hinge arrangement. Subject to review: may require double-top and double-bottom (5 hinges total) or a pivot system."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_BIFOLD_PANEL_WIDTH_OVER_1000",
+            "Scope"                : "PerPanel",
+            "ObjectType"           : "BifoldDoor",
+            "Condition"            : "WidthOver",
+            "ThresholdMm"          : 1000,
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "RequiresConfirmation" : true,
+            "EditorNotification"   : "Bifold leaf is wider than 1000 mm. Are you sure this configuration is correct?",
+            "DocumentWarning"      : {
+                "Title"    : "Bifold Panel Width Warning",
+                "Message"  : "One or more bifold leaves exceed 1000 mm width. Verify the panel configuration is intentional."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_DOOR_HEIGHT_OVER_2400",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "HeightOver",
+            "ThresholdMm"          : 2400,
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "EditorNotification"   : "Doors above 2400 mm height require non-standard hinge specification.",
+            "DocumentWarning"      : {
+                "Title"    : "Door Height Warning",
+                "Message"  : "Doors above 2400 mm height require non-standard hinge specification."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_DOOR_HEIGHT_OVER_2650",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "HeightOver",
+            "ThresholdMm"          : 2650,
+            "Severity"             : "Critical",
+            "Enabled"              : true,
+            "RequiresConfirmation" : true,
+            "EditorNotification"   : "Extreme door height — doors above 2650 mm are a special case and require written approval from a Senior Architect before specification. Do not proceed without confirmation.",
+            "DocumentWarning"      : {
+                "Title"    : "Extreme Door Height — Special Approval Required",
+                "Message"  : "Door height exceeds 2650 mm. This is an extreme specification and requires written approval from a Senior Architect prior to order. Ensure approval is documented before finalising."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_TALL_DOOR_TOP_BOLT_REVIEW",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "SingleDoor",
+            "Condition"            : "HeightOver",
+            "ThresholdMm"          : 2200,
+            "Severity"             : "Caution",
+            "Enabled"              : true,
+            "EditorNotification"   : "Tall single doors may benefit from an additional top bolt for security. Subject to senior review.",
+            "DocumentWarning"      : {
+                "Title"    : "Tall Door Top Bolt Review",
+                "Message"  : "Single door exceeds 2200 mm height. Consider an additional top bolt — subject to senior review."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_HINGE_PROJECTION_8",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "HingeProjectionEquals",
+            "ThresholdValue"       : 8,
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "RequiresConfirmation" : true,
+            "EditorNotification"   : "8-inch hinge projection is non-standard and requires senior architect approval.",
+            "DocumentWarning"      : {
+                "Title"    : "Hinge Projection Warning",
+                "Message"  : "8-inch hinge projection is non-standard and requires senior architect approval before specification."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_NON_COMPLEMENTARY_HARDWARE",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "SelectedHardwareHasNonComplementary",
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "EditorNotification"   : "Selected hardware includes non-complementary items. Ensure the client is quoted, invoiced, and aware of cost upgrades prior to order.",
+            "DocumentWarning"      : {
+                "Title"    : "Cost Upgrade Warning",
+                "Message"  : "Selected hardware includes non-complementary items. Confirm quotation and client approval for upgraded costs before ordering."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_WINDOW_MOTORISED_OVERRIDE",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyWindow",
+            "Condition"            : "IsMotorised",
+            "Severity"             : "Caution",
+            "Enabled"              : false,
+            "EditorNotification"   : "Motorised window selected — standard hardware generation is overridden.",
+            "DocumentWarning"      : {
+                "Title"    : "Motorised Window Override",
+                "Message"  : "Motorised window selected. Standard hardware and fastener generation has been overridden."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_WINDOW_ISOLATED_OVERRIDE",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyWindow",
+            "Condition"            : "IsIsolated",
+            "Severity"             : "Caution",
+            "Enabled"              : false,
+            "EditorNotification"   : "Isolated window — fastener inclusion is overridden throughout configuration.",
+            "DocumentWarning"      : {
+                "Title"    : "Isolated Window Override",
+                "Message"  : "Window is isolated (individual, pencil, pitch window, etc.). Fastener inclusion has been overridden."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_WINDOW_CENTRAL_GB_FASTENER_CONFLICT",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "SashWindow",
+            "Condition"            : "HasCentralVerticalGB",
+            "Severity"             : "Warning",
+            "Enabled"              : false,
+            "EditorNotification"   : "Central vertical glazing bar prevents a single central fastener — 2x fasteners are required.",
+            "DocumentWarning"      : {
+                "Title"    : "Glazing Bar Fastener Conflict",
+                "Message"  : "Central vertical glazing bar detected. A singular central fastener cannot be placed; 2x fasteners are required."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_SIDE_HUNG_TALL_DOUBLE_FASTENER",
+            "Scope"                : "PerPanel",
+            "ObjectType"           : "SideHungCasement",
+            "Condition"            : "HeightOver",
+            "ThresholdMm"          : 1200,
+            "Severity"             : "Caution",
+            "Enabled"              : false,
+            "EditorNotification"   : "Side hung casement over 1200 mm high with traditional fasteners requires 2x fasteners per sash.",
+            "DocumentWarning"      : {
+                "Title"    : "Side Hung Fastener Warning",
+                "Message"  : "Side hung casement exceeds 1200 mm height. 2x fasteners per sash are required with traditional fastener specification."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_TOP_HUNG_NARROW_TALL_DOUBLE_FASTENER",
+            "Scope"                : "PerPanel",
+            "ObjectType"           : "TopHungCasement",
+            "Condition"            : "WidthUnderAndHeightOver",
+            "ThresholdMm"          : 650,
+            "ThresholdHeightMm"    : 850,
+            "Severity"             : "Caution",
+            "Enabled"              : false,
+            "EditorNotification"   : "Narrow top hung casement over 850 mm tall requires 2x fasteners.",
+            "DocumentWarning"      : {
+                "Title"    : "Top Hung Fastener Warning",
+                "Message"  : "Top hung casement is narrower than 650 mm and taller than 850 mm. 2x fasteners are required."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_SASH_WIDE_DOUBLE_FASTENER",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "SashWindow",
+            "Condition"            : "WidthOver",
+            "ThresholdMm"          : 800,
+            "Severity"             : "Caution",
+            "Enabled"              : false,
+            "EditorNotification"   : "Sash window over 800 mm wide requires 2x sliding sash fasteners.",
+            "DocumentWarning"      : {
+                "Title"    : "Sash Window Fastener Warning",
+                "Message"  : "Sash window exceeds 800 mm width. 2x sliding sash fasteners are required per instance."
+            }
+        }
+
+    ]
+
+}

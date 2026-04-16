@@ -704,6 +704,19 @@
     line-height                          : 1.45;
 }
 
+.ValeSpec__AssemblyEditor__WarningSection--caution {
+    background-color                     : var(--Vale_EditorWarningBg);
+    border-color                         : var(--Vale_EditorWarningBorder);
+}
+
+.ValeSpec__AssemblyEditor__WarningSection--caution .ValeSpec__AssemblyEditor__WarningSection__Title {
+    color                                : var(--Vale_EditorWarningColour);
+}
+
+.ValeSpec__AssemblyEditor__WarningSection--caution .ValeSpec__AssemblyEditor__WarningSection__Message {
+    color                                : var(--Vale_EditorWarningColour);
+}
+
 /* #endregion ----------------------------------------------------------------- */
 
 

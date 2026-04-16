@@ -34,7 +34,7 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
     // MODULE CONSTANTS | Config Path and Defaults
     // ------------------------------------------------------------
-    const CONFIG_PATH                         =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json';
+    const CONFIG_PATH                         =  '02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__WarningSystem__ConfigAndConditions__.json';
     const HEIGHT_THRESHOLD                    =  15;                           // <-- Max mm difference before height mismatch warning
     const TOAST_DURATION_MS                   =  4000;                         // <-- Toast display duration
     const DEFAULT_CENTRED_NOTIFICATION_MS     =  4000;                         // <-- Centred notification auto-dismiss duration
@@ -48,6 +48,8 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     let ValeSpec__WarningSystem__ConfigLoaded                  =  false;        // <-- Config load flag
     let ValeSpec__WarningSystem__WarningRules                  =  [];           // <-- Cached warning rules array from config
     let ValeSpec__WarningSystem__CentredNotificationDurationMs =  DEFAULT_CENTRED_NOTIFICATION_MS;
+    let ValeSpec__WarningSystem__PanelCountMap                 =  {};           // <-- Door type → panel count mapping
+    let ValeSpec__WarningSystem__DefaultPanelCount             =  1;            // <-- Fallback panel count when type is not in map
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -66,19 +68,25 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             if (!response.ok) return;
             var data      =  await response.json();
 
-            var rulesConfig  =  data['AssemblyEditor__WarningRules__Config'] || {};
+            var globalConfig  =  data['WarningSystem__GlobalConfig'] || {};
 
-            ValeSpec__WarningSystem__HingeWarningMsg    =  rulesConfig['AssemblyEditor__WarningRules__Config__HingeProjection8ModalMessage']
+            ValeSpec__WarningSystem__HingeWarningMsg    =  globalConfig['WarningSystem__GlobalConfig__HingeProjection8ModalMessage']
                                                         || 'Non-standard hinge projection selected.';
-            ValeSpec__WarningSystem__HeightMismatchMsg   =  rulesConfig['AssemblyEditor__WarningRules__Config__HeightMismatchModalMessage']
+            ValeSpec__WarningSystem__HeightMismatchMsg   =  globalConfig['WarningSystem__GlobalConfig__HeightMismatchModalMessage']
                                                         || 'Assembly heights differ significantly.';
 
-            var centredMs  =  parseInt(rulesConfig['AssemblyEditor__WarningRules__Config__CentredNotificationDurationMs'], 10);
+            var centredMs  =  parseInt(globalConfig['WarningSystem__GlobalConfig__CentredNotificationDurationMs'], 10);
             if (!isNaN(centredMs) && centredMs > 0) {
                 ValeSpec__WarningSystem__CentredNotificationDurationMs  =  centredMs;
             }
 
-            ValeSpec__WarningSystem__WarningRules  =  rulesConfig['AssemblyEditor__WarningRules__Config__Rules'] || [];
+            ValeSpec__WarningSystem__PanelCountMap      =  globalConfig['WarningSystem__GlobalConfig__PanelCountMap'] || {};
+            var defaultPanels  =  parseInt(globalConfig['WarningSystem__GlobalConfig__DefaultPanelCount'], 10);
+            if (!isNaN(defaultPanels) && defaultPanels > 0) {
+                ValeSpec__WarningSystem__DefaultPanelCount  =  defaultPanels;
+            }
+
+            ValeSpec__WarningSystem__WarningRules  =  data['WarningSystem__Rules'] || [];
 
             ValeSpec__WarningSystem__ConfigLoaded  =  true;
         } catch (e) {
@@ -138,18 +146,44 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Panel Count for a Given Door Type and Assembly
+    // ------------------------------------------------------------
+    function ValeSpec__WarningSystem__ResolvePanelCount(doorType, assembly) {
+        var mapped  =  ValeSpec__WarningSystem__PanelCountMap[doorType];
+
+        if (mapped === 'FromAssembly') {
+            var bifoldCfg    =  assembly ? (assembly['Assembly__BifoldConfig'] || {}) : {};
+            var fromAsm      =  parseInt(bifoldCfg['Assembly__BifoldConfig__PanelCount'], 10);
+            if (!isNaN(fromAsm) && fromAsm > 0) return fromAsm;
+            return ValeSpec__WarningSystem__DefaultPanelCount;
+        }
+
+        var numeric  =  parseInt(mapped, 10);
+        if (!isNaN(numeric) && numeric > 0) return numeric;
+
+        return ValeSpec__WarningSystem__DefaultPanelCount;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Resolve Object Type Match Against Door Type String
     // ------------------------------------------------------------
     function ValeSpec__WarningSystem__MatchesObjectType(ruleObjectType, doorType) {
-        if (!ruleObjectType || ruleObjectType === 'AnyDoor') return true;
+        if (!ruleObjectType) return true;
 
         var lower  =  (doorType || '').toLowerCase();
-        if (ruleObjectType === 'SingleDoor') {
-            return lower.indexOf('single') !== -1;
-        }
-        if (ruleObjectType === 'DoubleDoor') {
-            return lower.indexOf('double') !== -1 || lower.indexOf('bifold') !== -1;
-        }
+        var isDoor    =  lower.indexOf('door') !== -1;
+        var isWindow  =  lower.indexOf('window') !== -1;
+
+        if (ruleObjectType === 'AnyDoor')          return isDoor;
+        if (ruleObjectType === 'SingleDoor')        return lower.indexOf('single') !== -1;
+        if (ruleObjectType === 'DoubleDoor')        return lower.indexOf('double') !== -1;
+        if (ruleObjectType === 'BifoldDoor')        return lower.indexOf('bifold') !== -1;
+        if (ruleObjectType === 'AnyWindow')         return isWindow;
+        if (ruleObjectType === 'SashWindow')        return lower.indexOf('sash') !== -1;
+        if (ruleObjectType === 'SideHungCasement')  return lower.indexOf('side hung') !== -1 || lower.indexOf('side-hung') !== -1;
+        if (ruleObjectType === 'TopHungCasement')   return lower.indexOf('top hung') !== -1  || lower.indexOf('top-hung') !== -1;
+
         return true;
     }
     // ------------------------------------------------------------
@@ -159,16 +193,18 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
     function ValeSpec__WarningSystem__EvaluateCondition(rule, assemblyValues) {
         var condition  =  rule['Condition'] || '';
+        var isPerPanel =  rule['Scope'] === 'PerPanel';
+        var effWidth   =  isPerPanel ? assemblyValues.panelWidthMm : assemblyValues.widthMm;
 
         if (condition === 'WidthOver') {
             var threshold  =  parseInt(rule['ThresholdMm'], 10);
             if (isNaN(threshold)) return false;
-            return assemblyValues.widthMm >= threshold;
+            return effWidth >= threshold;
         }
         if (condition === 'WidthUnder') {
             var threshold  =  parseInt(rule['ThresholdMm'], 10);
             if (isNaN(threshold)) return false;
-            return assemblyValues.widthMm <= threshold;
+            return effWidth <= threshold;
         }
         if (condition === 'HeightOver') {
             var threshold  =  parseInt(rule['ThresholdMm'], 10);
@@ -179,6 +215,12 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             var threshold  =  parseInt(rule['ThresholdMm'], 10);
             if (isNaN(threshold)) return false;
             return assemblyValues.heightMm <= threshold;
+        }
+        if (condition === 'WidthUnderAndHeightOver') {
+            var wThreshold  =  parseInt(rule['ThresholdMm'], 10);
+            var hThreshold  =  parseInt(rule['ThresholdHeightMm'], 10);
+            if (isNaN(wThreshold) || isNaN(hThreshold)) return false;
+            return effWidth <= wThreshold && assemblyValues.heightMm >= hThreshold;
         }
         if (condition === 'HingeProjectionEquals') {
             var thresholdVal  =  rule['ThresholdValue'];
@@ -214,13 +256,21 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             if (itemName) selectedHardwareNames.push(itemName);
         }
 
+        var doorType      =  doorCfg['Assembly__DoorType__Config__Type']                       || '';
+        var widthMm       =  parseInt(dimsCfg['Assembly__Dimensions__Config__WidthMm'], 10)    || 0;
+        var heightMm      =  parseInt(dimsCfg['Assembly__Dimensions__Config__HeightMm'], 10)   || 0;
+        var panelCount    =  ValeSpec__WarningSystem__ResolvePanelCount(doorType, assembly);
+        var panelWidthMm  =  panelCount > 0 ? Math.round(widthMm / panelCount) : widthMm;
+
         return {
-            doorType         :  doorCfg['Assembly__DoorType__Config__Type']         || '',
-            widthMm          :  parseInt(dimsCfg['Assembly__Dimensions__Config__WidthMm'], 10)  || 0,
-            heightMm         :  parseInt(dimsCfg['Assembly__Dimensions__Config__HeightMm'], 10) || 0,
-            hingeProjection  :  hingeCfg['Assembly__Hinge__Config__Projection']     || null,
-            selectedHardwareItems : selectedHardwareItems,
-            selectedHardwareNames : selectedHardwareNames
+            doorType              :  doorType,
+            widthMm               :  widthMm,
+            heightMm              :  heightMm,
+            panelCount            :  panelCount,
+            panelWidthMm          :  panelWidthMm,
+            hingeProjection       :  hingeCfg['Assembly__Hinge__Config__Projection']     || null,
+            selectedHardwareItems :  selectedHardwareItems,
+            selectedHardwareNames :  selectedHardwareNames
         };
     }
     // ------------------------------------------------------------
@@ -238,15 +288,23 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
         for (var i = 0; i < rules.length; i++) {
             var rule  =  rules[i];
 
+            if (rule['Enabled'] === false) continue;
             if (!ValeSpec__WarningSystem__MatchesObjectType(rule['ObjectType'], values.doorType)) continue;
             if (!ValeSpec__WarningSystem__EvaluateCondition(rule, values)) continue;
 
+            var isPerPanel      =  rule['Scope'] === 'PerPanel';
             var triggeredValue  =  0;
             var condition       =  rule['Condition'] || '';
-            if (condition === 'WidthOver' || condition === 'WidthUnder')   triggeredValue  =  values.widthMm;
-            if (condition === 'HeightOver' || condition === 'HeightUnder') triggeredValue  =  values.heightMm;
-            if (condition === 'HingeProjectionEquals')                     triggeredValue  =  values.hingeProjection;
-            if (condition === 'SelectedHardwareHasNonComplementary')       triggeredValue  =  (values.selectedHardwareNames || []).join(', ');
+
+            if (condition === 'WidthOver' || condition === 'WidthUnder') {
+                triggeredValue  =  isPerPanel
+                    ? (values.panelWidthMm + ' mm/panel (' + values.panelCount + ' panels, ' + values.widthMm + ' mm total)')
+                    : values.widthMm;
+            }
+            if (condition === 'HeightOver' || condition === 'HeightUnder')                triggeredValue  =  values.heightMm;
+            if (condition === 'WidthUnderAndHeightOver')                                  triggeredValue  =  values.panelWidthMm + ' mm wide x ' + values.heightMm + ' mm tall';
+            if (condition === 'HingeProjectionEquals')                                    triggeredValue  =  values.hingeProjection;
+            if (condition === 'SelectedHardwareHasNonComplementary')                      triggeredValue  =  (values.selectedHardwareNames || []).join(', ');
 
             activeWarnings.push({
                 RuleId           :  rule['RuleId']             || '',
@@ -393,6 +451,9 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 
             var section  =  document.createElement('div');
             section.className  =  'ValeSpec__AssemblyEditor__WarningSection';
+            if (warning.Severity === 'Caution') {
+                section.classList.add('ValeSpec__AssemblyEditor__WarningSection--caution');
+            }
 
             var titleEl  =  document.createElement('div');
             titleEl.className  =  'ValeSpec__AssemblyEditor__WarningSection__Title';
@@ -413,6 +474,16 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
                 containerEl.appendChild(section);
             }
         }
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Restore Persisted Warnings into a Step Body on Re-open
+    // ------------------------------------------------------------
+    function ValeSpec__WarningSystem__RestoreWarningsFromAssembly(assembly, stepBodyEl) {
+        if (!assembly || !stepBodyEl) return;
+        var warningCfg      =  assembly['Assembly__Warnings__Config'] || {};
+        var activeWarnings  =  warningCfg['Assembly__Warnings__Config__ActiveWarnings'] || [];
+        ValeSpec__WarningSystem__RenderInlineWarnings(stepBodyEl, activeWarnings);
     }
     // ------------------------------------------------------------
 
@@ -577,15 +648,16 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__WarningSystem__EnsureConfig                  : ValeSpec__WarningSystem__EnsureConfig,
-        ValeSpec__WarningSystem__EvaluateWarnings               : ValeSpec__WarningSystem__EvaluateWarnings,
-        ValeSpec__WarningSystem__ApplyWarningsToAssembly        : ValeSpec__WarningSystem__ApplyWarningsToAssembly,
-        ValeSpec__WarningSystem__GetWarningRules                : ValeSpec__WarningSystem__GetWarningRules,
-        ValeSpec__WarningSystem__ShowCentredNotification        : ValeSpec__WarningSystem__ShowCentredNotification,
-        ValeSpec__WarningSystem__RenderInlineWarnings           : ValeSpec__WarningSystem__RenderInlineWarnings,
-        ValeSpec__WarningSystem__ShowHingeProjectionWarning     : ValeSpec__WarningSystem__ShowHingeProjectionWarning,
-        ValeSpec__WarningSystem__ShowHeightMismatchWarning      : ValeSpec__WarningSystem__ShowHeightMismatchWarning,
-        ValeSpec__WarningSystem__ShowWarningToast               : ValeSpec__WarningSystem__ShowWarningToast
+        ValeSpec__WarningSystem__EnsureConfig                      : ValeSpec__WarningSystem__EnsureConfig,
+        ValeSpec__WarningSystem__EvaluateWarnings                  : ValeSpec__WarningSystem__EvaluateWarnings,
+        ValeSpec__WarningSystem__ApplyWarningsToAssembly           : ValeSpec__WarningSystem__ApplyWarningsToAssembly,
+        ValeSpec__WarningSystem__RestoreWarningsFromAssembly       : ValeSpec__WarningSystem__RestoreWarningsFromAssembly,
+        ValeSpec__WarningSystem__GetWarningRules                   : ValeSpec__WarningSystem__GetWarningRules,
+        ValeSpec__WarningSystem__ShowCentredNotification           : ValeSpec__WarningSystem__ShowCentredNotification,
+        ValeSpec__WarningSystem__RenderInlineWarnings              : ValeSpec__WarningSystem__RenderInlineWarnings,
+        ValeSpec__WarningSystem__ShowHingeProjectionWarning        : ValeSpec__WarningSystem__ShowHingeProjectionWarning,
+        ValeSpec__WarningSystem__ShowHeightMismatchWarning         : ValeSpec__WarningSystem__ShowHeightMismatchWarning,
+        ValeSpec__WarningSystem__ShowWarningToast                  : ValeSpec__WarningSystem__ShowWarningToast
     };
 
 })();

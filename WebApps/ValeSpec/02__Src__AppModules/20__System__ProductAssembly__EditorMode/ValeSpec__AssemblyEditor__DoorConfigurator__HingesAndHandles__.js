@@ -358,6 +358,11 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
             }
         }
 
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly) {
+            WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly(assemblyData, ValeSpec__HingesAndHandles__StepHingeBodyEl);
+            WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly(assemblyData, ValeSpec__HingesAndHandles__StepHandleBodyEl);
+        }
     }
     // ------------------------------------------------------------
 

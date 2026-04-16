@@ -1023,6 +1023,11 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 
         var warningCfg  =  assemblyData['Assembly__DoorCondition__Config'] || {};
         ValeSpec__DoorTypeAndDimensions__LastDoorConditionCode  =  warningCfg['Assembly__DoorCondition__Config__ConditionCode'] || null;
+
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly) {
+            WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly(assemblyData, ValeSpec__DoorTypeAndDimensions__Step2BodyEl);
+        }
     }
     // ------------------------------------------------------------
 

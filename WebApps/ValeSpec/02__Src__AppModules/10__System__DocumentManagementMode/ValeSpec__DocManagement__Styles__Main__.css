@@ -34,6 +34,13 @@
     /* HEADER | Title and Actions Row */
     /* ------------------------------------------------------------ */
     #ValeSpec__DocManagement__Header {
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+    /* TOOLBAR | Search and Actions Row */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__Toolbar {
         display                            : flex;
         align-items                        : center;
         justify-content                    : space-between;
@@ -87,6 +94,39 @@
     }
     /* ------------------------------------------------------------ */
 
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Search Input
+ * ----------------------------------------------------------------------------- */
+
+    /* SEARCH | Container */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__SearchContainer {
+        display                            : flex;
+        align-items                        : center;
+    }
+    /* ------------------------------------------------------------ */
+
+    /* SEARCH | Input Field */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocManagement__SearchInput {
+        padding                            : 8px 12px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        width                              : 300px;
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .ValeSpec__DocManagement__SearchInput:focus {
+        outline                            : none;
+        border-color                       : var(--ValeSpec_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
 
 /* #endregion ------------------------------------------------------------------- */
 

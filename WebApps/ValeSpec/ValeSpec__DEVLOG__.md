@@ -3,6 +3,45 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.9 - 17-Apr-2026
+### Product Index Module, Live Search Filtering, and Global Hotkeys
+
+A major feature update introducing a comprehensive hardware product index, real-time search filtering across the application, and a global hotkey navigation system mirroring Whitecardopedia.
+
+#### Product Index Module (`50__System__ProductIndex`)
+- **Main Index Table:** Added a new tab and mode (`ProductIndex`) to view all available hardware items in a sortable, adaptive data table.
+- **Dynamic SVG Previews:** The table fetches individual hardware JSON files asynchronously and renders their vector paths using the existing `SvgDrawing__IronmongeryRenderer`.
+- **Material Integration:** SVG fills dynamically read the `HexColor` from `ValeSpec__AppConfig__Main__.json` based on the item's `AvailableFinishes` (e.g., mapping `GenericGrey` to `#999999` and falling back to Brass `#c0ae8a`).
+- **Detail View:** Clicking a hardware thumbnail opens a comprehensive breakdown view (`ValeSpec__ProductIndex__DetailView__.js`), displaying a large SVG preview alongside formatted tables for `Item Metadata`, `Vector Metadata`, and a dedicated `Bounding Box` table.
+- **Copy Action:** Added a "Copy URL" button to easily grab the raw JSON data path for any hardware item.
+
+#### Real-time Search Filtering
+- **Project Documents:** Added a live search input to the Document Management mode that instantly filters the projects table by Project Code, Project Name, Document Name, or Status.
+- **Product Index:** Added a live search input to the new Product Index mode that filters hardware items by Product Code, Product Name, Item Type, or Supplier.
+- **UX Polish:** Search inputs maintain focus and cursor position during React-style vanilla DOM re-renders, ensuring a seamless typing experience. The "New Project" button was also moved down to align perfectly with the new search bar in the toolbar row.
+
+#### Global Hotkey Navigation
+- **HotkeyHandler Utility:** Ported the `Na__AppUtils__HotkeyHandler.js` system from Whitecardopedia to `ValeSpec__AppUtils__HotkeyHandler__.js`.
+- **Bindings:** Added `ValeSpec__AppData__Hotkeys__Main__.json` to define global shortcuts.
+- **Navigation:** Users can now use `Alt + Left Arrow` or `Alt + Backspace` to navigate back through their mode history (e.g., returning to the Projects list from the Document Editor), significantly speeding up workflow.
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| Product Index | `50__System__ProductIndex/ValeSpec__ProductIndex__Main__.js` *(new)* |
+| Product Detail | `50__System__ProductIndex/ValeSpec__ProductIndex__DetailView__.js` *(new)* |
+| Product Styles | `50__System__ProductIndex/ValeSpec__ProductIndex__Styles__Main__.css` *(new)* |
+| Project Search | `10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectList__.js` |
+| Project Styles | `10__System__DocumentManagementMode/ValeSpec__DocManagement__Styles__Main__.css` |
+| Hotkey Handler | `03__AppUtils/ValeSpec__AppUtils__HotkeyHandler__.js` *(new)* |
+| Hotkey Config | `02__AppData/ValeSpec__AppData__Hotkeys__Main__.json` *(new)* |
+| App Config | `02__AppData/ValeSpec__AppConfig__Main__.json` |
+| App Core | `01__AppCore/ValeSpec__AppCore__Init__.js`, `ValeSpec__AppCore__ModeManager__.js` |
+| HTML Shell | `ValeSpec__App__.html` |
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.8 - 17-Apr-2026
 ### Ironmongery finish fills, materials SSOT (MAT600), DevTools plugin, CAD viewer tools
 

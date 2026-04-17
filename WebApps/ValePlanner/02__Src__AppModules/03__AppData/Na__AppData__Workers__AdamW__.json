@@ -878,6 +878,14 @@
           "endTime": "14:00",
           "title": "Dev |  ValeSpec",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776423314306",
+          "date": "2026-04-17",
+          "startTime": "08:00",
+          "endTime": "12:00",
+          "title": "Index System",
+          "color": "na-shift-color-rose"
         }
       ]
     }

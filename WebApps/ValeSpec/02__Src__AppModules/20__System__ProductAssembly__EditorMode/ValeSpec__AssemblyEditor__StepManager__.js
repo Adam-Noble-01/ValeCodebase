@@ -30,9 +30,9 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
         { Id: 'doorType',    Number: 1,  Title: 'Door Type',              ShortTitle: 'Door Type'  },
         { Id: 'dimensions',  Number: 2,  Title: 'Dimensions',             ShortTitle: 'Dimensions' },
         { Id: 'finish',      Number: 3,  Title: 'Ironmongery Finish',     ShortTitle: 'Finish'     },
-        { Id: 'handles',     Number: 4,  Title: 'Handle Specification',   ShortTitle: 'Handles'    },
-        { Id: 'hinges',      Number: 5,  Title: 'Hinge Projection',       ShortTitle: 'Hinges'     },
-        { Id: 'hooks',       Number: 6,  Title: 'Cabin Hooks',            ShortTitle: 'Hooks'      },
+        { Id: 'handles',     Number: 4,  Title: 'Handle Specifications',   ShortTitle: 'Handle Specs'    },
+        { Id: 'hinges',      Number: 5,  Title: 'Hinge Specifications',    ShortTitle: 'Hinge Specs'     },
+        { Id: 'hooks',       Number: 6,  Title: 'Cabin Hook Specifications', ShortTitle: 'Hook Specs'      },
         { Id: 'misc',        Number: 7,  Title: 'Miscellaneous',          ShortTitle: 'Misc'       }
     ];
     // ------------------------------------------------------------

@@ -29,6 +29,7 @@ const ValeSpec__AppCore__ModeManager = (function() {
     const MODE_ASSEMBLY_EDITOR  =  'AssemblyEditor';
     const MODE_DOC_EDITOR       =  'DocumentEditor';
     const MODE_DOC_PREVIEW      =  'DocumentPreview';
+    const MODE_PRODUCT_INDEX    =  'ProductIndex';
     // ------------------------------------------------------------
 
 
@@ -38,7 +39,8 @@ const ValeSpec__AppCore__ModeManager = (function() {
         'DocManagement'    : 'ValeSpec__App__ModeDocManagement',
         'AssemblyEditor'   : 'ValeSpec__App__ModeAssemblyEditor',
         'DocumentEditor'   : 'ValeSpec__App__ModeDocEditor',
-        'DocumentPreview'  : 'ValeSpec__App__ModeDocPreview'
+        'DocumentPreview'  : 'ValeSpec__App__ModeDocPreview',
+        'ProductIndex'     : 'ValeSpec__App__ModeProductIndex'
     };
     // ------------------------------------------------------------
 
@@ -140,6 +142,7 @@ const ValeSpec__AppCore__ModeManager = (function() {
         MODE_ASSEMBLY_EDITOR                   : MODE_ASSEMBLY_EDITOR,
         MODE_DOC_EDITOR                        : MODE_DOC_EDITOR,
         MODE_DOC_PREVIEW                       : MODE_DOC_PREVIEW,
+        MODE_PRODUCT_INDEX                     : MODE_PRODUCT_INDEX,
         ValeSpec__ModeManager__SwitchToMode    : ValeSpec__ModeManager__SwitchToMode,
         ValeSpec__ModeManager__NavigateBack    : ValeSpec__ModeManager__NavigateBack,
         ValeSpec__ModeManager__GetCurrentMode  : ValeSpec__ModeManager__GetCurrentMode,

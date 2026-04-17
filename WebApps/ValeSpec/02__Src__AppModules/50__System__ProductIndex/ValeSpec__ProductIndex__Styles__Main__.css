@@ -1,0 +1,374 @@
+/* =============================================================================
+   VALESPEC - PRODUCT INDEX STYLES
+   =============================================================================
+
+   FILE       : ValeSpec__ProductIndex__Styles__Main__.css
+   NAMESPACE  : ValeSpec
+   MODULE     : ProductIndex - Styles
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Styles for the dynamically generated hardware product index table
+   CREATED    : 17-Apr-2026
+
+   DESCRIPTION:
+   - Defines layout and styling for the 4-column product index table
+   - Provides styles for the SVG preview containers
+   - Provides styles for the action buttons (e.g., Copy URL)
+
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Product Index Table Styles                               */
+/* ----------------------------------------------------------------- */
+
+    /* Section Name: Table Container */
+    .ValeSpec__ProductIndex__Container {
+        width                                : max-content;
+        max-width                            : 100%;
+        margin                               : 0 auto;
+        padding                              : var(--Vale_Spacing_Large, 24px);
+        box-sizing                           : border-box;
+        overflow-x                           : auto;
+    }
+
+    /* Section Name: Header Block */
+    .ValeSpec__ProductIndex__Header {
+        display                              : flex;
+        align-items                          : center;
+        justify-content                      : space-between;
+        margin-bottom                        : var(--Vale_Spacing_Large, 24px);
+    }
+
+    /* Section Name: Search Container */
+    .ValeSpec__ProductIndex__SearchContainer {
+        display                              : flex;
+        align-items                          : center;
+    }
+
+    .ValeSpec__ProductIndex__SearchInput {
+        padding                              : 8px 12px;
+        font-family                          : var(--Vale_FontFamily, sans-serif);
+        font-size                            : var(--Vale_FontSize_Standard, 14px);
+        border                               : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        border-radius                        : var(--Vale_BorderRadius, 4px);
+        width                                : 250px;
+        transition                           : border-color 0.2s ease;
+    }
+
+    .ValeSpec__ProductIndex__SearchInput:focus {
+        outline                              : none;
+        border-color                         : var(--ValeSpec_AccentBlue, #336699);
+    }
+
+    /* Section Name: Title */
+    .ValeSpec__ProductIndex__Title {
+        font-size                            : var(--Vale_FontSize_Heading, 24px);
+        font-weight                          : var(--Vale_FontWeight_SemiBold, 600);
+        color                                : var(--Vale_TextPrimary, #172b3a);
+        margin                               : 0;
+    }
+
+    /* Section Name: Main Table */
+    .ValeSpec__ProductIndex__Table {
+        width                                : 100%;
+        border-collapse                      : collapse;
+        background                           : var(--Vale_BackgroundWhite, #ffffff);
+        border-radius                        : var(--Vale_BorderRadius, 4px);
+        overflow                             : hidden;
+        box-shadow                           : 0 2px 8px rgba(0, 0, 0, 0.06);
+        font-family                          : var(--Vale_FontFamily, sans-serif);
+        font-size                            : var(--Vale_FontSize_Standard, 14px);
+        color                                : var(--Vale_TextPrimary, #172b3a);
+    }
+
+    /* Section Name: Table Headers */
+    .ValeSpec__ProductIndex__Table th {
+        background                           : var(--Vale_PrimaryBrand, #172b3a);
+        color                                : var(--Vale_TextLight, #ffffff);
+        font-weight                          : var(--Vale_FontWeight_SemiBold, 600);
+        font-size                            : var(--Vale_FontSize_Small, 12px);
+        text-transform                       : uppercase;
+        letter-spacing                       : 0.04em;
+        text-align                           : left;
+        padding                              : var(--Vale_Spacing_Medium, 16px) var(--Vale_Spacing_XLarge, 32px);
+        white-space                          : nowrap;
+    }
+
+    /* Section Name: Sortable Header Cell */
+    .ValeSpec__ProductIndex__SortableHeader {
+        cursor                               : pointer;
+        user-select                          : none;
+        transition                           : background var(--Vale_Transition_Fast, 0.2s ease);
+    }
+
+    .ValeSpec__ProductIndex__SortableHeader:hover {
+        background                           : #0f1e28;
+    }
+
+    .ValeSpec__ProductIndex__SortableHeader--active {
+        background                           : #0f1e28;
+    }
+
+    /* Section Name: Table Cells */
+    .ValeSpec__ProductIndex__Table td {
+        padding                              : var(--Vale_Spacing_Medium, 16px) var(--Vale_Spacing_XLarge, 32px);
+        border-bottom                        : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        vertical-align                       : middle;
+    }
+
+    /* Section Name: Table Row Hover */
+    .ValeSpec__ProductIndex__Table tbody tr:hover {
+        background                           : var(--Vale_HoverBackground, #f9fbfd);
+    }
+
+    /* Section Name: Alternating Row Background */
+    .ValeSpec__ProductIndex__Table tbody tr:nth-child(even) {
+        background                           : var(--Vale_BackgroundLight, #f4f6f8);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | SVG Preview Container Styles                             */
+/* ----------------------------------------------------------------- */
+
+    /* Section Name: SVG Wrapper */
+    .ValeSpec__ProductIndex__SvgPreview {
+        width                                : 120px;
+        height                               : 120px;
+        background-color                     : #f8f8f8;
+        border                               : 1px solid #e0e0e0;
+        border-radius                        : 4px;
+        display                              : flex;
+        align-items                          : center;
+        justify-content                      : center;
+        overflow                             : hidden;
+        position                             : relative;
+        cursor                               : pointer;
+        transition                           : border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ValeSpec__ProductIndex__SvgPreview:hover {
+        border-color                         : var(--ValeSpec_AccentBlue, #336699);
+        box-shadow                           : 0 0 0 2px rgba(51, 102, 153, 0.2);
+    }
+
+    /* Section Name: SVG Element */
+    .ValeSpec__ProductIndex__SvgPreview svg {
+        width                                : 100%;
+        height                               : 100%;
+        display                              : block;
+    }
+
+    /* Section Name: Loading State */
+    .ValeSpec__ProductIndex__SvgPreview--loading::after {
+        content                              : "Loading...";
+        font-size                            : 11px;
+        color                                : #888888;
+        position                             : absolute;
+    }
+
+    /* Section Name: Error State */
+    .ValeSpec__ProductIndex__SvgPreview--error::after {
+        content                              : "Error";
+        font-size                            : 11px;
+        color                                : #cc3333;
+        position                             : absolute;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Action Button Styles                                     */
+/* ----------------------------------------------------------------- */
+
+    /* Section Name: Copy Button */
+    .ValeSpec__ProductIndex__ActionBtn {
+        padding                              : 4px var(--Vale_Spacing_Small, 8px);
+        background                           : transparent;
+        color                                : var(--ValeSpec_AccentBlue, #336699);
+        border                               : 1px solid var(--ValeSpec_AccentBlue, #336699);
+        border-radius                        : var(--Vale_BorderRadius, 4px);
+        font-family                          : var(--Vale_FontFamily, sans-serif);
+        font-size                            : var(--Vale_FontSize_Small, 12px);
+        cursor                               : pointer;
+        transition                           : all var(--Vale_Transition_Fast, 0.2s ease);
+        white-space                          : nowrap;
+    }
+
+    /* Section Name: Copy Button Hover */
+    .ValeSpec__ProductIndex__ActionBtn:hover {
+        background                           : var(--ValeSpec_AccentBlue, #336699);
+        color                                : var(--Vale_TextLight, #ffffff);
+    }
+
+    /* Section Name: Copy Button Active/Success */
+    .ValeSpec__ProductIndex__ActionBtn--success {
+        background                           : #e8f5e9;
+        color                                : #2e7d32;
+        border-color                         : #81c784;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Detail View Styles                                       */
+/* ----------------------------------------------------------------- */
+
+    /* Section Name: Detail Container */
+    .ValeSpec__ProductIndex__DetailContainer {
+        max-width                            : var(--Vale_MaxContentWidth, 1200px);
+        margin                               : 0 auto;
+        padding                              : var(--Vale_Spacing_Large, 24px);
+        box-sizing                           : border-box;
+    }
+
+    /* Section Name: Detail Header */
+    .ValeSpec__ProductIndex__DetailHeader {
+        display                              : flex;
+        align-items                          : center;
+        margin-bottom                        : var(--Vale_Spacing_Large, 24px);
+        gap                                  : var(--Vale_Spacing_Medium, 16px);
+    }
+
+    /* Section Name: Back Button */
+    .ValeSpec__ProductIndex__BackBtn {
+        padding                              : 8px 16px;
+        background                           : var(--Vale_BackgroundLight, #f4f6f8);
+        color                                : var(--Vale_TextPrimary, #172b3a);
+        border                               : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        border-radius                        : var(--Vale_BorderRadius, 4px);
+        font-family                          : var(--Vale_FontFamily, sans-serif);
+        font-size                            : var(--Vale_FontSize_Standard, 14px);
+        font-weight                          : var(--Vale_FontWeight_SemiBold, 600);
+        cursor                               : pointer;
+        transition                           : all var(--Vale_Transition_Fast, 0.2s ease);
+    }
+
+    .ValeSpec__ProductIndex__BackBtn:hover {
+        background                           : var(--Vale_HoverBackground, #e2e6ea);
+        border-color                         : var(--Vale_BorderDark, #cccccc);
+    }
+
+    /* Section Name: Detail Title */
+    .ValeSpec__ProductIndex__DetailTitle {
+        font-size                            : var(--Vale_FontSize_Heading, 24px);
+        font-weight                          : var(--Vale_FontWeight_SemiBold, 600);
+        color                                : var(--Vale_TextPrimary, #172b3a);
+        margin                               : 0;
+    }
+
+    .ValeSpec__ProductIndex__DetailCode {
+        font-size                            : var(--Vale_FontSize_Standard, 14px);
+        color                                : var(--Vale_TextSecondary, #68788c);
+        font-weight                          : normal;
+        margin-left                          : 8px;
+    }
+
+    /* Section Name: Detail Layout */
+    .ValeSpec__ProductIndex__DetailLayout {
+        display                              : flex;
+        gap                                  : var(--Vale_Spacing_XLarge, 32px);
+        align-items                          : flex-start;
+    }
+
+    /* Section Name: Detail Left (SVG) */
+    .ValeSpec__ProductIndex__DetailLeft {
+        flex                                 : 0 0 400px;
+        background                           : var(--Vale_BackgroundWhite, #ffffff);
+        border                               : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        border-radius                        : var(--Vale_BorderRadius, 4px);
+        padding                              : var(--Vale_Spacing_Large, 24px);
+        box-shadow                           : 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .ValeSpec__ProductIndex__DetailSvgWrapper {
+        width                                : 100%;
+        aspect-ratio                         : 1;
+        display                              : flex;
+        align-items                          : center;
+        justify-content                      : center;
+    }
+
+    .ValeSpec__ProductIndex__DetailSvgWrapper svg {
+        width                                : 100%;
+        height                               : 100%;
+        display                              : block;
+    }
+
+    /* Section Name: Detail Right (Data) */
+    .ValeSpec__ProductIndex__DetailRight {
+        flex                                 : 1;
+        background                           : var(--Vale_BackgroundWhite, #ffffff);
+        border                               : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        border-radius                        : var(--Vale_BorderRadius, 4px);
+        padding                              : var(--Vale_Spacing_Large, 24px);
+        box-shadow                           : 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Section Name: Detail Section Title */
+    .ValeSpec__ProductIndex__DetailSectionTitle {
+        font-size                            : var(--Vale_FontSize_SubHeading, 18px);
+        font-weight                          : var(--Vale_FontWeight_SemiBold, 600);
+        color                                : var(--Vale_PrimaryBrand, #172b3a);
+        margin-top                           : 0;
+        margin-bottom                        : var(--Vale_Spacing_Medium, 16px);
+        padding-bottom                       : 8px;
+        border-bottom                        : 2px solid var(--Vale_BorderLight, #e0e0e0);
+    }
+
+    /* Section Name: Detail Table */
+    .ValeSpec__ProductIndex__DetailTable {
+        width                                : 100%;
+        border-collapse                      : collapse;
+        margin-bottom                        : var(--Vale_Spacing_XLarge, 32px);
+        font-family                          : var(--Vale_FontFamily, sans-serif);
+        font-size                            : var(--Vale_FontSize_Standard, 14px);
+    }
+
+    .ValeSpec__ProductIndex__DetailTable th {
+        width                                : 35%;
+        text-align                           : left;
+        padding                              : 12px 16px;
+        background                           : var(--Vale_BackgroundLight, #f4f6f8);
+        color                                : var(--Vale_TextPrimary, #172b3a);
+        font-weight                          : var(--Vale_FontWeight_SemiBold, 600);
+        border-bottom                        : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        vertical-align                       : top;
+    }
+
+    .ValeSpec__ProductIndex__DetailTable td {
+        padding                              : 12px 16px;
+        color                                : var(--Vale_TextSecondary, #444444);
+        border-bottom                        : 1px solid var(--Vale_BorderLight, #e0e0e0);
+        vertical-align                       : top;
+    }
+
+    /* Section Name: Detail Preformatted Text */
+    .ValeSpec__ProductIndex__DetailPre {
+        margin                               : 0;
+        padding                              : 8px;
+        background                           : #f8f9fa;
+        border                               : 1px solid #e9ecef;
+        border-radius                        : 4px;
+        font-family                          : monospace;
+        font-size                            : 12px;
+        white-space                          : pre-wrap;
+        word-wrap                            : break-word;
+    }
+
+    /* Section Name: Detail Loading/Error */
+    .ValeSpec__ProductIndex__DetailLoading,
+    .ValeSpec__ProductIndex__DetailError {
+        padding                              : 40px;
+        text-align                           : center;
+        font-size                            : var(--Vale_FontSize_Standard, 14px);
+        color                                : var(--Vale_TextSecondary, #68788c);
+    }
+
+    .ValeSpec__ProductIndex__DetailError {
+        color                                : #cc3333;
+    }
+
+/* endregion ----------------------------------------------------------------- */

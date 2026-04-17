@@ -174,7 +174,7 @@ Document may contain multiple door sets.
 --------------------------
 [ VALE LOGO HEADER       ]
 [ DATE AUTHORED          ]
-[ DATE PUBLISHED ON PDF  ]
+[ DATE PUBLISHED ON PDF  ]  
 [ REVISION CODE          ]
 [ STATUS CARD            ] <- In Progress, Pending Approval, Approved, etc (traffic light system.)
 --------------------------

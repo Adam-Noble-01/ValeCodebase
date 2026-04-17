@@ -13,7 +13,7 @@
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
-        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Satin Nickel",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
         "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": "Warning, site has footballs strewn EVEYWHERE! the guys is football crazy! "
     },
@@ -35,10 +35,10 @@
             "Handing": "Left",
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
-                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
-                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": true,
                     "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": true,
                     "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false

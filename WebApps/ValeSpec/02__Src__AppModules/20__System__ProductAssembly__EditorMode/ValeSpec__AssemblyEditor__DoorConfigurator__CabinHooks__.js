@@ -6,11 +6,11 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - DoorConfigurator - CabinHooks
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Step 6 (Cabin Hooks) controls and persistence
+   PURPOSE    : Step 6 (Cabin Hook Specifications) controls and persistence
    CREATED    : 15-Apr-2026
 
    DESCRIPTION:
-   - Renders cabin hook size, hook count, and eye count controls
+   - Wizard step title: Cabin Hook Specifications; renders cabin hook size, hook count, and eye count controls
    - Sources options and defaults from Na__AssemblyEditor__Config.json
    - Persists updates to Assembly__CabinHooks__Config via StateManager
    - Registers hooks summary callback with StepManager
@@ -19,7 +19,7 @@
    ============================================================================= */
 
 // =============================================================================
-// REGION | Cabin Hooks Module
+// REGION | Cabin Hook Specifications Module
 // =============================================================================
 
 const ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks = (function() {
@@ -129,7 +129,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Cabin Hooks Step Controls
+    // HELPER FUNCTION | Build Cabin Hook Specifications Step Controls
     // ------------------------------------------------------------
     function ValeSpec__CabinHooks__BuildStep() {
         var uiCfg  =  ValeSpec__CabinHooks__GetResolvedUiConfig();
@@ -296,7 +296,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Initialise Cabin Hooks Step
+    // FUNCTION | Initialise Cabin Hook Specifications Step
     // ------------------------------------------------------------
     async function ValeSpec__CabinHooks__Init(stepBodyEl) {
         ValeSpec__CabinHooks__StepBodyEl  =  stepBodyEl;

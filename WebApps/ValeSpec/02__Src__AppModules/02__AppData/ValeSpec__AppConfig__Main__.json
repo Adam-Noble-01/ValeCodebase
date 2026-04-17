@@ -24,6 +24,11 @@
                 "Name": "Bronze",
                 "MatCode": "MAT613__Metal__Ironmongery__Bronze",
                 "HexColor": "#433d37"
+            },
+            {
+                "Name": "GenericGrey",
+                "MatCode": "MAT600__Metal__Generic",
+                "HexColor": "#999999"
             }
         ],
         "ValeSpec__Ironmongery__GlobalDefaults__Config__DefaultLeverHeightMm": 1000

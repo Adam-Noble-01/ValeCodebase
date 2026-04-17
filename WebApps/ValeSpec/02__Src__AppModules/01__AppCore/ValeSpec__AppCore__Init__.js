@@ -84,10 +84,35 @@
         ValeSpec__AppCore__InitNavigationBar();
         ValeSpec__AppCore__InitModeLifecycle();
         ValeSpec__AppCore__InitProjectLifecycle();
+        ValeSpec__AppCore__InitHotkeys();
 
         ModeManager.ValeSpec__ModeManager__SwitchToMode(ModeManager.MODE_DOC_MANAGEMENT, false);
 
         console.log('[ValeSpec__Init] Application ready.');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialize Global Hotkeys
+    // ------------------------------------------------------------
+    function ValeSpec__AppCore__InitHotkeys() {
+        var HotkeyHandler  =  window.ValeSpec__AppUtils__HotkeyHandler;
+        var ModeManager    =  window.ValeSpec__AppCore__ModeManager;
+
+        if (HotkeyHandler && ModeManager) {
+            HotkeyHandler.ValeSpec__HotkeyHandler__Init({
+                'NAVIGATE_BACK': function() {
+                    if (ModeManager.ValeSpec__ModeManager__CanGoBack()) {
+                        ModeManager.ValeSpec__ModeManager__NavigateBack();
+                    }
+                },
+                'NAVIGATE_FORWARD': function() {
+                    // Forward navigation is not natively supported by the stack yet,
+                    // but we map the action so it doesn't throw a warning.
+                    console.log('[ValeSpec__Hotkeys] NAVIGATE_FORWARD triggered');
+                }
+            });
+        }
     }
     // ------------------------------------------------------------
 
@@ -138,6 +163,20 @@
         }
         if (modeId === 'DocumentPreview') {
             ValeSpec__AppCore__RenderDocumentPreview();
+        }
+        if (modeId === 'ProductIndex') {
+            ValeSpec__AppCore__RenderProductIndex();
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Product Index Mode
+    // ------------------------------------------------------------
+    function ValeSpec__AppCore__RenderProductIndex() {
+        var ProductIndex  =  window.ValeSpec__System__ProductIndex;
+        if (ProductIndex && ProductIndex.ValeSpec__ProductIndex__Render) {
+            ProductIndex.ValeSpec__ProductIndex__Render('ValeSpec__ProductIndex__RootContainer');
         }
     }
     // ------------------------------------------------------------
@@ -293,7 +332,7 @@
                 tab.classList.remove('ValeSpec__App__NavTab--entryViaButtonOnly');
             }
 
-            if (mode === 'DocManagement') continue;
+            if (mode === 'DocManagement' || mode === 'ProductIndex') continue;
 
             if (hasProject) {
                 tab.classList.remove('ValeSpec__App__NavTab--disabled');

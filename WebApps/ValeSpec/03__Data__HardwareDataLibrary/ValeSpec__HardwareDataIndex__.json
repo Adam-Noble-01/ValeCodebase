@@ -84,5 +84,33 @@
             }
         },
         "HardwareItem__AvailableFinishes": []
+    },
+    "Vale Ghost Guy": {
+        "HardwareItem__Name": "Vale Ghost Guy",
+        "HardwareItem__Code": "VG_IRN999_",
+        "HardwareItem__Type": "Evil Spirit",
+        "HardwareItem__Description": "A spooky ghost guy  that haunts the ValeSpec software.",
+        "HardwareItem__Notes": "This is a spooky ghost guy that haunts the ValeSpec software.",
+        "HardwareItem__DataFile": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0900__Ironmongery__Misc/VG_IRN999__DoorHandle__GhostGuy__.json",
+        "HardwareItem__IsComplementary": false,
+        "HardwareItem__Supplier": "Mail Order Ghost's 4u Ltd",
+        "HardwareItem__SupplierProductCode": "",
+        "HardwareItem__SupplierPrice__GBP": "",
+        "HardwareItem__PanelPlacement": {
+            "DefaultHeightFromOrigin_mm": null,
+            "RightHand__Transform": {
+                "OffsetX_mm": null,
+                "OffsetY_mm": null,
+                "ScaleX": null
+            },
+            "LeftHand__Transform": {
+                "OffsetX_mm": null,
+                "OffsetY_mm": null,
+                "ScaleX": null
+            }
+        },
+        "HardwareItem__AvailableFinishes": [
+            "GenericGrey"
+        ]
     }
 }

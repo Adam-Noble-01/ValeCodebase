@@ -56,6 +56,8 @@
         <button class="ValeSpec__App__NavTab ValeSpec__App__NavTab--disabled" data-mode="AssemblyEditor">Assembly Editor</button>
         <span class="ValeSpec__App__NavSeparator">/</span>
         <button class="ValeSpec__App__NavTab ValeSpec__App__NavTab--disabled" data-mode="DocumentPreview">Preview & Send</button>
+        <div class="ValeSpec__App__NavSpacer"></div>
+        <button class="ValeSpec__App__NavTab" data-mode="ProductIndex">Product Index</button>
     </nav>
     <!-- endregion ----------------------------------------------------------------- -->
 
@@ -73,6 +75,9 @@
             <div id="ValeSpec__DocManagement__Container">
                 <div id="ValeSpec__DocManagement__Header">
                     <h2 id="ValeSpec__DocManagement__Title">Project Documents</h2>
+                </div>
+                <div class="ValeSpec__DocManagement__Toolbar">
+                    <div id="ValeSpec__DocManagement__SearchWrapper"></div>
                     <div id="ValeSpec__DocManagement__Actions"></div>
                 </div>
                 <div id="ValeSpec__DocManagement__TableContainer"></div>
@@ -118,6 +123,15 @@
         <!-- ----------------------------------------------------------------- -->
 
 
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Product Index Mode                                   -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="ValeSpec__App__ModeProductIndex" class="ValeSpec__App__ModePanel">
+            <div id="ValeSpec__ProductIndex__RootContainer"></div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
     </main>
     <!-- endregion ----------------------------------------------------------------- -->
 
@@ -150,6 +164,7 @@
     <script src="02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__DateFormatter__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__AutofillGuard__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__ProjectSchemaValidator__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/ValeSpec__AppUtils__HotkeyHandler__.js"></script>
 
     <!-- Math Engines (no dependencies) -->
     <script src="02__Src__AppModules/04__MathUtils/ValeSpec__MathUtils__HingeCalculator__.js"></script>
@@ -209,6 +224,10 @@
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocIssueHandler__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfMetadataResolver__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/ValeSpec__DocPreview__PdfExporter__.js"></script>
+
+    <!-- System: Product Index Mode -->
+    <script src="02__Src__AppModules/50__System__ProductIndex/ValeSpec__ProductIndex__DetailView__.js"></script>
+    <script src="02__Src__AppModules/50__System__ProductIndex/ValeSpec__ProductIndex__Main__.js"></script>
 
     <!-- App Notifications (connection monitor must precede banner) -->
     <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/ValeSpec__AppNotifications__ServerConnectionMonitor__.js"></script>

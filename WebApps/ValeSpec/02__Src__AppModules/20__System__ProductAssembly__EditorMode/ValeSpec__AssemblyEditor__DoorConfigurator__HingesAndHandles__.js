@@ -6,12 +6,12 @@
    NAMESPACE  : ValeSpec
    MODULE     : AssemblyEditor - DoorConfigurator - HingesAndHandles
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Hinge Projection step and Handle Specification step for the wizard
+   PURPOSE    : Hinge Specifications step and Handle Specifications step for the wizard
    CREATED    : 15-Apr-2026
 
-  DESCRIPTION:
-   - Hinge step: Hinge Projection dropdown (4/5/6/8 inch options)
-   - Handle step: Handle Type dropdown (global), Handle Height input
+   DESCRIPTION:
+   - Hinge specifications step: Hinge Projection dropdown (4/5/6/8 inch options)
+   - Handle specifications step: Handle Type dropdown (global), Handle Height input
    - Selecting 8-inch projection triggers WarningSystem
    - Handle selection is global — applies to all assemblies
    - Registers summary callbacks with StepManager
@@ -38,8 +38,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
 
     // MODULE VARIABLES | DOM References
     // ------------------------------------------------------------
-    let ValeSpec__HingesAndHandles__StepHingeBodyEl   =  null;   // <-- Hinge Projection step card body
-    let ValeSpec__HingesAndHandles__StepHandleBodyEl   =  null;   // <-- Handle Specification step card body
+    let ValeSpec__HingesAndHandles__StepHingeBodyEl   =  null;   // <-- Hinge Specifications step card body
+    let ValeSpec__HingesAndHandles__StepHandleBodyEl   =  null;   // <-- Handle Specifications step card body
     let ValeSpec__HingesAndHandles__HingeProjectionSel =  null;   // <-- Hinge projection dropdown
     let ValeSpec__HingesAndHandles__HandleTypeSelect   =  null;   // <-- Handle type dropdown
     let ValeSpec__HingesAndHandles__HandleHeightInput  =  null;   // <-- Handle height numeric input
@@ -207,7 +207,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Hinge Projection Step
+    // HELPER FUNCTION | Build Hinge Specifications Step
     // ------------------------------------------------------------
     function ValeSpec__HingesAndHandles__BuildHingeStep() {
         var group  =  document.createElement('div');
@@ -246,7 +246,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles = (function()
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Handle Specification Step
+    // HELPER FUNCTION | Build Handle Specifications Step
     // ------------------------------------------------------------
     function ValeSpec__HingesAndHandles__BuildHandleStep() {
         var handleGroup  =  document.createElement('div');

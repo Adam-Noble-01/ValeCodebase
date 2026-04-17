@@ -73,6 +73,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
     let ValeSpec__ProjectList__SortField      =  DEFAULT_SORT_FIELD;
     let ValeSpec__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;
+    let ValeSpec__ProjectList__SearchQuery    =  '';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -215,6 +216,22 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__BuildSortedProjects(projects) {
         var list  =  Array.isArray(projects) ? projects.slice() : [];
+
+        // Apply Search Filter
+        if (ValeSpec__ProjectList__SearchQuery) {
+            var query  =  ValeSpec__ProjectList__SearchQuery.toLowerCase();
+            list  =  list.filter(function(project) {
+                var code     =  String(project.projectCode || '').toLowerCase();
+                var name     =  String(project.projectName || '').toLowerCase();
+                var docName  =  String(project.documentName || '').toLowerCase();
+                var status   =  String(project.status || '').toLowerCase();
+                return code.indexOf(query) !== -1 ||
+                       name.indexOf(query) !== -1 ||
+                       docName.indexOf(query) !== -1 ||
+                       status.indexOf(query) !== -1;
+            });
+        }
+
         if (!ValeSpec__ProjectList__IsSortableField(ValeSpec__ProjectList__SortField)) {
             ValeSpec__ProjectList__SortField      =  DEFAULT_SORT_FIELD;
             ValeSpec__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;
@@ -305,6 +322,8 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__Render() {
         var container  =  document.getElementById(TABLE_CONTAINER_ID);
+        var searchWrapper  =  document.getElementById('ValeSpec__DocManagement__SearchWrapper');
+        
         if (!container) {
             console.warn('[ValeSpec__ProjectList] Container not found: #' + TABLE_CONTAINER_ID);
             return;
@@ -314,6 +333,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         if (!ProjectFileManager) {
             console.error('[ValeSpec__ProjectList] ProjectFileManager not available.');
             container.innerHTML  =  ValeSpec__ProjectList__BuildEmptyState();
+            if (searchWrapper) searchWrapper.innerHTML = '';
             return;
         }
 
@@ -321,21 +341,60 @@ const ValeSpec__DocManagement__ProjectList = (function() {
 
         if (!projects || projects.length === 0) {
             container.innerHTML  =  ValeSpec__ProjectList__BuildEmptyState();               // <-- Show empty state when no projects
+            if (searchWrapper) searchWrapper.innerHTML = '';
             return;
         }
 
         var sortedProjects  =  ValeSpec__ProjectList__BuildSortedProjects(projects);         // <-- Apply active table sort without mutating source array
 
+        var searchWrapper  =  document.getElementById('ValeSpec__DocManagement__SearchWrapper');
+        if (searchWrapper) {
+            var searchHtml  =  '<div class="ValeSpec__DocManagement__SearchContainer">';
+            searchHtml     +=      '<input type="text" id="ValeSpec__DocManagement__SearchInput" class="ValeSpec__DocManagement__SearchInput" placeholder="Search projects..." value="' + ValeSpec__ProjectList__SearchQuery.replace(/"/g, '&quot;') + '">';
+            searchHtml     +=  '</div>';
+            searchWrapper.innerHTML  =  searchHtml;
+
+            var searchInput  =  document.getElementById('ValeSpec__DocManagement__SearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    ValeSpec__ProjectList__SearchQuery  =  e.target.value;
+                    ValeSpec__ProjectList__Render();
+                });
+                // Restore focus to end of input if we just re-rendered
+                if (document.activeElement !== searchInput && ValeSpec__ProjectList__SearchQuery.length > 0) {
+                    searchInput.focus();
+                    var val = searchInput.value;
+                    searchInput.value = '';
+                    searchInput.value = val;
+                }
+            }
+        }
+
         var html  =  '<table class="ValeSpec__DocManagement__Table">';
         html     +=  ValeSpec__ProjectList__BuildTableHeader();
         html     +=  '<tbody>';
-        for (var i = 0; i < sortedProjects.length; i++) {
-            html  +=  ValeSpec__ProjectList__BuildTableRow(sortedProjects[i]);              // <-- Append each project row
+        
+        if (sortedProjects.length === 0) {
+            html +=      '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--Vale_TextSecondary);">No projects match your search.</td></tr>';
+        } else {
+            for (var i = 0; i < sortedProjects.length; i++) {
+                html  +=  ValeSpec__ProjectList__BuildTableRow(sortedProjects[i]);              // <-- Append each project row
+            }
         }
+        
         html     +=  '</tbody>';
         html     +=  '</table>';
 
         container.innerHTML  =  html;
+
+        // Bind Sortable Headers
+        var headers  =  container.querySelectorAll('.ValeSpec__DocManagement__SortableHeader');
+        for (var h = 0; h < headers.length; h++) {
+            headers[h].addEventListener('click', function(e) {
+                var fieldName  =  e.currentTarget.getAttribute('data-sort-field');
+                ValeSpec__ProjectList__ToggleSortByField(fieldName);
+            });
+        }
     }
     // ------------------------------------------------------------
 

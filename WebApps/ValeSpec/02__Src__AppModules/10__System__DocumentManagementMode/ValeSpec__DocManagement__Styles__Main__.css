@@ -141,27 +141,6 @@
     /* ------------------------------------------------------------ */
 
 
-    /* TABLE | Sortable Header Inner Content and Indicator */
-    /* ------------------------------------------------------------ */
-    .ValeSpec__DocManagement__SortableHeaderContent {
-        display                            : inline-flex;
-        align-items                        : center;
-        gap                                : 6px;
-    }
-
-    .ValeSpec__DocManagement__SortIndicator {
-        display                            : inline-flex;
-        font-size                          : 12px;
-        line-height                        : 1;
-        opacity                            : 1;
-    }
-
-    .ValeSpec__DocManagement__SortIndicator--inactive {
-        opacity                            : 0.55;
-    }
-    /* ------------------------------------------------------------ */
-
-
     /* TABLE | Body Rows */
     /* ------------------------------------------------------------ */
     .ValeSpec__DocManagement__Table tbody td {

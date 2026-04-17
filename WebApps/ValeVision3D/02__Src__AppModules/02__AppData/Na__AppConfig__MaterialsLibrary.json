@@ -2,8 +2,8 @@
     "meta": {
         "fileName"        : "Na__AppConfig__MaterialsLibrary.json",
         "description"     : "Single source of truth for standard indexed materials and their PBR render settings. Used by both the SketchUp GLB exporter and the ValeVision3D WebApp renderer for dynamic material swapping.",
-        "version"         : "2.1.0",
-        "lastUpdated"     : "2026-02-23",
+        "version"         : "2.1.1",
+        "lastUpdated"     : "17-Apr-2026",
         "namingConvention": "Materials are identified by SketchUpName which must match the SketchUp material display_name. Format: MAT{NNN}__{Category}__{Variant}. The prefix MAT + 3 digits + __ is required for the lookup system to recognise a material as indexed.",
         "defaults"        : "MAT001__Default is the reference template showing ALL possible keys with their default values. Other materials only need to specify keys that differ from these defaults. Omitted keys inherit the default value at render time."
     },

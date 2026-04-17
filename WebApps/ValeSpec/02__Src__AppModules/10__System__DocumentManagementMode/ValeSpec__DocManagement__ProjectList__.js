@@ -12,6 +12,7 @@
    DESCRIPTION:
    - Reads project manifest via ProjectFileManager.ValeSpec__ProjectFileManager__ListProjects()
    - Renders a full HTML table with project metadata columns
+   - Sortable column headers (view-level sort; default newest Date Created first)
    - Status column renders a colour-coded pill badge
    - Each row provides Open and Delete action buttons
    - Renders an empty state placeholder when no projects exist
@@ -24,6 +25,10 @@
 // =============================================================================
 
 const ValeSpec__DocManagement__ProjectList = (function() {
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants — DOM Target, Status Map, and Sort Configuration
+// -----------------------------------------------------------------------------
 
     // MODULE CONSTANTS | DOM Target ID
     // ------------------------------------------------------------
@@ -42,7 +47,8 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     };
     // ------------------------------------------------------------
 
-    // MODULE CONSTANTS | Sortable Column Definitions
+
+    // MODULE CONSTANTS | Sortable Column Field Keys and Defaults
     // ------------------------------------------------------------
     const SORT_FIELD_PROJECT_CODE   =  'projectCode';
     const SORT_FIELD_PROJECT_NAME   =  'projectName';
@@ -62,12 +68,19 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     };
     // ------------------------------------------------------------
 
+
     // MODULE VARIABLES | Current Table Sort State
     // ------------------------------------------------------------
     let ValeSpec__ProjectList__SortField      =  DEFAULT_SORT_FIELD;
     let ValeSpec__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Display Helpers — Status Badge and Date Formatting
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Build Status Badge HTML
     // ------------------------------------------------------------
@@ -89,6 +102,13 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Sort Comparators — Field Validation, Primitives, and Row Compare
+// -----------------------------------------------------------------------------
+
     // HELPER FUNCTION | Check Whether Sort Field is Allowed
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__IsSortableField(fieldName) {
@@ -103,6 +123,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+
     // HELPER FUNCTION | Compare Text Values with Numeric Awareness
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__CompareText(leftValue, rightValue) {
@@ -111,6 +132,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         return leftText.localeCompare(rightText, undefined, { numeric: true, sensitivity: 'base' });
     }
     // ------------------------------------------------------------
+
 
     // HELPER FUNCTION | Convert Date Text to Sort Value
     // ------------------------------------------------------------
@@ -122,6 +144,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+
     // HELPER FUNCTION | Compare Date Values
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__CompareDates(leftDateText, rightDateText) {
@@ -131,6 +154,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         return leftValue > rightValue ? 1 : -1;
     }
     // ------------------------------------------------------------
+
 
     // HELPER FUNCTION | Compare Status Values by Workflow Order
     // ------------------------------------------------------------
@@ -143,6 +167,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         return leftRank > rightRank ? 1 : -1;
     }
     // ------------------------------------------------------------
+
 
     // HELPER FUNCTION | Compare Two Project Records by Active Field
     // ------------------------------------------------------------
@@ -160,18 +185,12 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
-    // HELPER FUNCTION | Build Sort Indicator Symbol for a Header
-    // ------------------------------------------------------------
-    function ValeSpec__ProjectList__BuildSortIndicatorHtml(fieldName) {
-        if (ValeSpec__ProjectList__SortField !== fieldName) {
-            return '<span class="ValeSpec__DocManagement__SortIndicator ValeSpec__DocManagement__SortIndicator--inactive">&#8597;</span>';
-        }
-        if (ValeSpec__ProjectList__SortDirection === 'asc') {
-            return '<span class="ValeSpec__DocManagement__SortIndicator">&#8593;</span>';
-        }
-        return '<span class="ValeSpec__DocManagement__SortIndicator">&#8595;</span>';
-    }
-    // ------------------------------------------------------------
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Sortable Header Cell Markup
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Build Sortable Header Cell HTML
     // ------------------------------------------------------------
@@ -181,16 +200,16 @@ const ValeSpec__DocManagement__ProjectList = (function() {
             ? 'ValeSpec__DocManagement__SortableHeader ValeSpec__DocManagement__SortableHeader--active'
             : 'ValeSpec__DocManagement__SortableHeader';
 
-        return (
-            '<th class="' + headerClass + '" data-sort-field="' + fieldName + '">' +
-                '<span class="ValeSpec__DocManagement__SortableHeaderContent">' +
-                    '<span class="ValeSpec__DocManagement__SortableHeaderText">' + labelText + '</span>' +
-                    ValeSpec__ProjectList__BuildSortIndicatorHtml(fieldName) +
-                '</span>' +
-            '</th>'
-        );
+        return '<th class="' + headerClass + '" data-sort-field="' + fieldName + '">' + labelText + '</th>';
     }
     // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Sorted Manifest and Table Fragment Builders
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Build Sorted Copy of Project Array
     // ------------------------------------------------------------
@@ -275,6 +294,12 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Render Pipeline, State Subscription, and Sort Toggle
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Render Project Table into DOM
     // ------------------------------------------------------------
@@ -326,6 +351,7 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+
     // FUNCTION | Toggle Sort by Field and Re-render Table
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__ToggleSortByField(fieldName) {
@@ -348,6 +374,12 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     ValeSpec__ProjectList__SubscribeToStateEvents();
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public API — Exposed Module Surface
+// -----------------------------------------------------------------------------
 
     // PUBLIC API
     // ------------------------------------------------------------
@@ -355,6 +387,8 @@ const ValeSpec__DocManagement__ProjectList = (function() {
         ValeSpec__ProjectList__Render              : ValeSpec__ProjectList__Render,
         ValeSpec__ProjectList__ToggleSortByField   : ValeSpec__ProjectList__ToggleSortByField
     };
+
+// endregion -------------------------------------------------------------------
 
 })();
 

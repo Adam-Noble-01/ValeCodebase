@@ -3,6 +3,56 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.7 - 17-Apr-2026
+### Document Management — Sortable headers without glyphs; REGION layout
+
+Follow-up to the sortable Projects table (v0.1.6): **sort direction arrows are removed** from column headers. Sorting behaviour is unchanged; **hover** and **active-column** styling on `.ValeSpec__DocManagement__SortableHeader` still show which column drives the order and that headers are interactive.
+
+`ValeSpec__DocManagement__ProjectList__.js` is structured with **ValeDesignSuite-style `REGION` blocks** (constants, comparators, header cell builder, table fragments, render/events, public API). Sortable `<th>` markup is simplified to label text plus `data-sort-field` (no nested spans or indicator helper).
+
+`ValeSpec__DocManagement__Styles__Main__.css` drops **SortIndicator**, **SortIndicator--inactive**, and **SortableHeaderContent** (previously used for label + glyph layout).
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| Project table | `10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectList__.js` |
+| Styles | `10__System__DocumentManagementMode/ValeSpec__DocManagement__Styles__Main__.css` |
+
+
+# ---------------------------------------------------------
+## ValeSpec v0.1.6 - 17-Apr-2026
+### Document Management — Sortable Projects table
+
+The Projects list (Document Management mode) is now an interactive table: column headers sort the manifest rows without changing underlying storage order. Default view is **newest Date Created first** (descending).
+
+#### Behaviour
+
+- **Default load:** sort field `dateCreated`, direction `desc`.
+- **Clickable headers:** Project Code, Project Name, Document Name, Status, Date Created, Last Modified. Actions column is not sortable.
+- **Toggle:** repeated clicks on the same column flip ascending / descending. Clicking a different column selects that field and starts **ascending**, then toggles on further clicks.
+- **Indicators:** active column shows up/down arrow; inactive sortable columns show a dimmed bidirectional hint.
+- **Data layer:** `ValeSpec__ProjectFileManager__ListProjects()` is unchanged; sorting applies to a copied array inside `ProjectList` render only.
+
+#### Implementation
+
+- `ValeSpec__DocManagement__ProjectList__.js` — module state for `sortField` / `sortDirection`, comparators for text (numeric-aware `localeCompare`), ISO dates (`Date.parse`), and status (workflow order then label). `ValeSpec__ProjectList__ToggleSortByField` exposed for delegation.
+- `ValeSpec__DocManagement__ProjectActions__.js` — existing `#ValeSpec__DocManagement__TableContainer` click delegate handles `.ValeSpec__DocManagement__SortableHeader` before row Open/Delete buttons.
+- `ValeSpec__DocManagement__Styles__Main__.css` — pointer, hover, active header chrome; flex row for label + sort glyph.
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| Project table | `10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectList__.js` |
+| Row + header actions | `10__System__DocumentManagementMode/ValeSpec__DocManagement__ProjectActions__.js` |
+| Styles | `10__System__DocumentManagementMode/ValeSpec__DocManagement__Styles__Main__.css` |
+
+#### Note
+
+`Na__DocManagement__Config.json` still documents `DefaultSortField` / `DefaultSortDirection` for **DateModified**; the live UI default for the table is **Date Created desc** as above. Align config in a future pass if other consumers should read it.
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.5 - 16-Apr-2026
 ### Document Preview — Header, PDF export, summary, and layout
 

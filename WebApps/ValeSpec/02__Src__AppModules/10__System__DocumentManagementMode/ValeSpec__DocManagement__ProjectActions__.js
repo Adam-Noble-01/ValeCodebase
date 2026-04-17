@@ -246,6 +246,16 @@ const ValeSpec__DocManagement__ProjectActions = (function() {
         if (!tableContainer) return;
 
         tableContainer.addEventListener('click', function(e) {
+            var sortableHeader = e.target.closest('.ValeSpec__DocManagement__SortableHeader');
+            if (sortableHeader) {
+                var sortField  =  sortableHeader.dataset.sortField;
+                var ProjectListModule  =  window.ValeSpec__DocManagement__ProjectList;
+                if (ProjectListModule && ProjectListModule.ValeSpec__ProjectList__ToggleSortByField) {
+                    ProjectListModule.ValeSpec__ProjectList__ToggleSortByField(sortField);
+                }
+                return;
+            }
+
             var btn  =  e.target.closest('.ValeSpec__DocManagement__RowBtn');
             if (!btn) return;
 

@@ -854,6 +854,30 @@
           "endTime": "15:30",
           "title": "Meeting |  SB",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1776410025518",
+          "date": "2026-04-16",
+          "startTime": "10:15",
+          "endTime": "12:00",
+          "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776410043525",
+          "date": "2026-04-16",
+          "startTime": "15:30",
+          "endTime": "18:00",
+          "title": "Research |  API Digital Ocean",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1776410086721",
+          "date": "2026-04-16",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-slate"
         }
       ]
     }

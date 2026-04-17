@@ -42,6 +42,32 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     };
     // ------------------------------------------------------------
 
+    // MODULE CONSTANTS | Sortable Column Definitions
+    // ------------------------------------------------------------
+    const SORT_FIELD_PROJECT_CODE   =  'projectCode';
+    const SORT_FIELD_PROJECT_NAME   =  'projectName';
+    const SORT_FIELD_DOCUMENT_NAME  =  'documentName';
+    const SORT_FIELD_STATUS         =  'status';
+    const SORT_FIELD_DATE_CREATED   =  'dateCreated';
+    const SORT_FIELD_DATE_MODIFIED  =  'dateModified';
+    const DEFAULT_SORT_FIELD        =  SORT_FIELD_DATE_CREATED;
+    const DEFAULT_SORT_DIRECTION    =  'desc';
+
+    const STATUS_SORT_ORDER = {
+        'Draft'              : 1,
+        'In Progress'        : 2,
+        'Pending Approval'   : 3,
+        'Approved'           : 4,
+        'Completed'          : 5
+    };
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Current Table Sort State
+    // ------------------------------------------------------------
+    let ValeSpec__ProjectList__SortField      =  DEFAULT_SORT_FIELD;
+    let ValeSpec__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;
+    // ------------------------------------------------------------
+
 
     // HELPER FUNCTION | Build Status Badge HTML
     // ------------------------------------------------------------
@@ -63,17 +89,142 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | Check Whether Sort Field is Allowed
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__IsSortableField(fieldName) {
+        return (
+            fieldName === SORT_FIELD_PROJECT_CODE  ||
+            fieldName === SORT_FIELD_PROJECT_NAME  ||
+            fieldName === SORT_FIELD_DOCUMENT_NAME ||
+            fieldName === SORT_FIELD_STATUS        ||
+            fieldName === SORT_FIELD_DATE_CREATED  ||
+            fieldName === SORT_FIELD_DATE_MODIFIED
+        );
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Compare Text Values with Numeric Awareness
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__CompareText(leftValue, rightValue) {
+        var leftText   =  String(leftValue  || '').trim();
+        var rightText  =  String(rightValue || '').trim();
+        return leftText.localeCompare(rightText, undefined, { numeric: true, sensitivity: 'base' });
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Convert Date Text to Sort Value
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__BuildDateSortValue(dateText) {
+        if (!dateText) return 0;
+        var parsedValue  =  Date.parse(dateText);
+        if (isNaN(parsedValue)) return 0;
+        return parsedValue;
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Compare Date Values
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__CompareDates(leftDateText, rightDateText) {
+        var leftValue   =  ValeSpec__ProjectList__BuildDateSortValue(leftDateText);
+        var rightValue  =  ValeSpec__ProjectList__BuildDateSortValue(rightDateText);
+        if (leftValue === rightValue) return 0;
+        return leftValue > rightValue ? 1 : -1;
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Compare Status Values by Workflow Order
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__CompareStatus(leftStatus, rightStatus) {
+        var leftRank   =  STATUS_SORT_ORDER[leftStatus]  || 0;
+        var rightRank  =  STATUS_SORT_ORDER[rightStatus] || 0;
+        if (leftRank === rightRank) {
+            return ValeSpec__ProjectList__CompareText(leftStatus, rightStatus);
+        }
+        return leftRank > rightRank ? 1 : -1;
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Compare Two Project Records by Active Field
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__CompareProjectsByField(leftProject, rightProject, fieldName) {
+        var left   =  leftProject  || {};
+        var right  =  rightProject || {};
+
+        if (fieldName === SORT_FIELD_DATE_CREATED || fieldName === SORT_FIELD_DATE_MODIFIED) {
+            return ValeSpec__ProjectList__CompareDates(left[fieldName], right[fieldName]);
+        }
+        if (fieldName === SORT_FIELD_STATUS) {
+            return ValeSpec__ProjectList__CompareStatus(left[fieldName], right[fieldName]);
+        }
+        return ValeSpec__ProjectList__CompareText(left[fieldName], right[fieldName]);
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Build Sort Indicator Symbol for a Header
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__BuildSortIndicatorHtml(fieldName) {
+        if (ValeSpec__ProjectList__SortField !== fieldName) {
+            return '<span class="ValeSpec__DocManagement__SortIndicator ValeSpec__DocManagement__SortIndicator--inactive">&#8597;</span>';
+        }
+        if (ValeSpec__ProjectList__SortDirection === 'asc') {
+            return '<span class="ValeSpec__DocManagement__SortIndicator">&#8593;</span>';
+        }
+        return '<span class="ValeSpec__DocManagement__SortIndicator">&#8595;</span>';
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Build Sortable Header Cell HTML
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__BuildSortableHeaderCell(labelText, fieldName) {
+        var isActive      =  (ValeSpec__ProjectList__SortField === fieldName);
+        var headerClass   =  isActive
+            ? 'ValeSpec__DocManagement__SortableHeader ValeSpec__DocManagement__SortableHeader--active'
+            : 'ValeSpec__DocManagement__SortableHeader';
+
+        return (
+            '<th class="' + headerClass + '" data-sort-field="' + fieldName + '">' +
+                '<span class="ValeSpec__DocManagement__SortableHeaderContent">' +
+                    '<span class="ValeSpec__DocManagement__SortableHeaderText">' + labelText + '</span>' +
+                    ValeSpec__ProjectList__BuildSortIndicatorHtml(fieldName) +
+                '</span>' +
+            '</th>'
+        );
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Build Sorted Copy of Project Array
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__BuildSortedProjects(projects) {
+        var list  =  Array.isArray(projects) ? projects.slice() : [];
+        if (!ValeSpec__ProjectList__IsSortableField(ValeSpec__ProjectList__SortField)) {
+            ValeSpec__ProjectList__SortField      =  DEFAULT_SORT_FIELD;
+            ValeSpec__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;
+        }
+
+        var sortDirectionFactor  =  (ValeSpec__ProjectList__SortDirection === 'asc') ? 1 : -1;
+        list.sort(function(leftProject, rightProject) {
+            var compareResult  =  ValeSpec__ProjectList__CompareProjectsByField(
+                leftProject,
+                rightProject,
+                ValeSpec__ProjectList__SortField
+            );
+            return compareResult * sortDirectionFactor;
+        });
+        return list;
+    }
+    // ------------------------------------------------------------
+
 
     // HELPER FUNCTION | Build Table Header Row HTML
     // ------------------------------------------------------------
     function ValeSpec__ProjectList__BuildTableHeader() {
         var html  =  '<thead><tr>';
-        html     +=  '<th>Project Code</th>';
-        html     +=  '<th>Project Name</th>';
-        html     +=  '<th>Document Name</th>';
-        html     +=  '<th>Status</th>';
-        html     +=  '<th>Date Created</th>';
-        html     +=  '<th>Last Modified</th>';
+        html     +=  ValeSpec__ProjectList__BuildSortableHeaderCell('Project Code', SORT_FIELD_PROJECT_CODE);
+        html     +=  ValeSpec__ProjectList__BuildSortableHeaderCell('Project Name', SORT_FIELD_PROJECT_NAME);
+        html     +=  ValeSpec__ProjectList__BuildSortableHeaderCell('Document Name', SORT_FIELD_DOCUMENT_NAME);
+        html     +=  ValeSpec__ProjectList__BuildSortableHeaderCell('Status', SORT_FIELD_STATUS);
+        html     +=  ValeSpec__ProjectList__BuildSortableHeaderCell('Date Created', SORT_FIELD_DATE_CREATED);
+        html     +=  ValeSpec__ProjectList__BuildSortableHeaderCell('Last Modified', SORT_FIELD_DATE_MODIFIED);
         html     +=  '<th>Actions</th>';
         html     +=  '</tr></thead>';
         return html;
@@ -148,11 +299,13 @@ const ValeSpec__DocManagement__ProjectList = (function() {
             return;
         }
 
+        var sortedProjects  =  ValeSpec__ProjectList__BuildSortedProjects(projects);         // <-- Apply active table sort without mutating source array
+
         var html  =  '<table class="ValeSpec__DocManagement__Table">';
         html     +=  ValeSpec__ProjectList__BuildTableHeader();
         html     +=  '<tbody>';
-        for (var i = 0; i < projects.length; i++) {
-            html  +=  ValeSpec__ProjectList__BuildTableRow(projects[i]);                    // <-- Append each project row
+        for (var i = 0; i < sortedProjects.length; i++) {
+            html  +=  ValeSpec__ProjectList__BuildTableRow(sortedProjects[i]);              // <-- Append each project row
         }
         html     +=  '</tbody>';
         html     +=  '</table>';
@@ -173,6 +326,22 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Toggle Sort by Field and Re-render Table
+    // ------------------------------------------------------------
+    function ValeSpec__ProjectList__ToggleSortByField(fieldName) {
+        if (!ValeSpec__ProjectList__IsSortableField(fieldName)) return;
+
+        if (ValeSpec__ProjectList__SortField === fieldName) {
+            ValeSpec__ProjectList__SortDirection  =  (ValeSpec__ProjectList__SortDirection === 'asc') ? 'desc' : 'asc';
+        } else {
+            ValeSpec__ProjectList__SortField      =  fieldName;
+            ValeSpec__ProjectList__SortDirection  =  'asc';
+        }
+
+        ValeSpec__ProjectList__Render();
+    }
+    // ------------------------------------------------------------
+
 
     // BOOT | Initial Subscription
     // ------------------------------------------------------------
@@ -183,7 +352,8 @@ const ValeSpec__DocManagement__ProjectList = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__ProjectList__Render  : ValeSpec__ProjectList__Render
+        ValeSpec__ProjectList__Render              : ValeSpec__ProjectList__Render,
+        ValeSpec__ProjectList__ToggleSortByField   : ValeSpec__ProjectList__ToggleSortByField
     };
 
 })();

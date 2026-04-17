@@ -1,0 +1,96 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "2614",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Bergkamp",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Door Replacement",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-17",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-17",
+        "ValeSpec__ProjectFile__Metadata__DateIssued": "",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
+        "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": "Warning, site has footballs strewn EVEYWHERE! the guys is football crazy! "
+    },
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_016532",
+                "Assembly__Identity__Config__Title": "Kitchen Doors",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward"
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 2200,
+                "Assembly__Dimensions__Config__HeightMm": 2350
+            },
+            "Handing": "Left",
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "doorType"
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Double Top"
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Warnings__Config": {
+                "Assembly__Warnings__Config__ActiveWarnings": [
+                    {
+                        "RuleId": "WARN_PANEL_WIDTH_OVER_1050",
+                        "Severity": "Warning",
+                        "WarningMessage": "Door panel exceeds 1050 mm width. Subject to approval by Senior Technical Manager.",
+                        "DocumentWarning": {
+                            "Title": "Door Panel Width Warning",
+                            "Message": "One or more door panels exceed 1050 mm width. Subject to approval by Senior Technical Manager."
+                        },
+                        "TriggeredAtValue": "1100 mm/panel (2 panels, 2200 mm total)",
+                        "Acknowledged": false
+                    },
+                    {
+                        "RuleId": "WARN_WIDE_LEAF_HINGE_REVIEW",
+                        "Severity": "Caution",
+                        "WarningMessage": "Panel over 1000 mm wide requires double-top hinge arrangement. Subject to review — may require double-top and double-bottom (5 hinges total) or a pivot system.",
+                        "DocumentWarning": {
+                            "Title": "Wide Leaf Hinge Review",
+                            "Message": "One or more panels exceed 1000 mm width and require a double-top hinge arrangement. Subject to review: may require double-top and double-bottom (5 hinges total) or a pivot system."
+                        },
+                        "TriggeredAtValue": "1100 mm/panel (2 panels, 2200 mm total)",
+                        "Acknowledged": false
+                    }
+                ]
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            }
+        }
+    ]
+}

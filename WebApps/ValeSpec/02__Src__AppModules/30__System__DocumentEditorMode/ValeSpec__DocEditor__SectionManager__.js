@@ -332,8 +332,11 @@ const ValeSpec__DocEditor__SectionManager = (function() {
 
         var clone     =  JSON.parse(JSON.stringify(assemblies[index]));
         var identity  =  clone['Assembly__Identity__Config'] || {};
+        var sourceTitle = (identity['Assembly__Identity__Config__Title'] || '').trim();
         identity['Assembly__Identity__Config__Id']         =  'asm_' + String(Date.now()).slice(-6);
-        identity['Assembly__Identity__Config__Title']      =  (identity['Assembly__Identity__Config__Title'] || '') + ' (Copy)';
+        identity['Assembly__Identity__Config__Title']      =  sourceTitle
+            ? sourceTitle + ' (DUPLICATE - Rename Me!)'
+            : 'DUPLICATE - Rename Me!';
         identity['Assembly__Identity__Config__SortOrder']  =  assemblies.length;
         clone['Assembly__Identity__Config']  =  identity;
         clone['Assembly__ProgressState__Config']  =  ValeSpec__SectionManager__BuildDefaultProgressState(); // <-- Duplicates start unconfigured in workflow progress

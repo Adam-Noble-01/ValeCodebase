@@ -36,6 +36,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
     let ValeSpec__DoorTypeAndDimensions__Step1BodyEl                 =  null;   // <-- Step 1 card body (Door Type)
     let ValeSpec__DoorTypeAndDimensions__Step2BodyEl                 =  null;   // <-- Step 2 card body (Dimensions)
+    let ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput          =  null;   // <-- Assembly identity title input
     let ValeSpec__DoorTypeAndDimensions__OpeningDirectionOutward     =  null;   // <-- Outward Opening radio button
     let ValeSpec__DoorTypeAndDimensions__OpeningDirectionInward      =  null;   // <-- Inward Opening radio button
     let ValeSpec__DoorTypeAndDimensions__DoorTypeSelect              =  null;   // <-- Door type dropdown
@@ -428,6 +429,35 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
 // REGION | Assembly State Change Handlers
 // -----------------------------------------------------------------------------
 
+    // FUNCTION | Commit Assembly Name Input to Current Assembly
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__CommitAssemblyTitleToAssembly() {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (!StateManager || !ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput) return;
+
+        var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+        if (!assembly) return;
+
+        var identityConfig  =  assembly['Assembly__Identity__Config'] || {};
+        var currentTitle    =  (identityConfig['Assembly__Identity__Config__Title'] || '').trim();
+        var nextTitle       =  ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.value.trim();
+        if (nextTitle === currentTitle) return;
+
+        identityConfig['Assembly__Identity__Config__Title']  =  nextTitle;
+        assembly['Assembly__Identity__Config']               =  identityConfig;
+        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Handle Assembly Name Input Change
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__OnAssemblyTitleInputChanged() {
+        ValeSpec__DoorTypeAndDimensions__CommitAssemblyTitleToAssembly();
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Handle Dimension Change - Recalculate Hinges and Locking
     // ------------------------------------------------------------
     function ValeSpec__DoorTypeAndDimensions__OnDimensionChange(options) {
@@ -643,6 +673,27 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
     function ValeSpec__DoorTypeAndDimensions__BuildDoorTypeStep() {
         var footerEl  =  ValeSpec__DoorTypeAndDimensions__Step1BodyEl.querySelector('.ValeSpec__AssemblyEditor__StepCard__Footer');
+
+        // ASSEMBLY NAME INPUT
+        var titleGroup  =  document.createElement('div');
+        titleGroup.className  =  'ValeSpec__AssemblyEditor__FormGroup';
+
+        var titleLabel  =  document.createElement('label');
+        titleLabel.textContent  =  'Assembly Name';
+        titleLabel.setAttribute('for', 'ValeSpec__AssemblyEditor__AssemblyTitle');
+
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput       =  document.createElement('input');
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.type  =  'text';
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.id    =  'ValeSpec__AssemblyEditor__AssemblyTitle';
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.placeholder  =  'Enter a name for this assembly';
+
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.addEventListener('input',  ValeSpec__DoorTypeAndDimensions__OnAssemblyTitleInputChanged);
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.addEventListener('change', ValeSpec__DoorTypeAndDimensions__OnAssemblyTitleInputChanged);
+        ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.addEventListener('blur',   ValeSpec__DoorTypeAndDimensions__OnAssemblyTitleInputChanged);
+
+        titleGroup.appendChild(titleLabel);
+        titleGroup.appendChild(ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput);
+        ValeSpec__DoorTypeAndDimensions__Step1BodyEl.insertBefore(titleGroup, footerEl);
 
         // DOOR TYPE DROPDOWN
         var typeGroup  =  document.createElement('div');
@@ -962,14 +1013,23 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     function ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData) {
         if (!assemblyData) return;
 
+        var identityCfg  =  assemblyData['Assembly__Identity__Config'] || {};
         var doorCfg  =  assemblyData['Assembly__DoorType__Config']   || {};
         var dimsCfg  =  assemblyData['Assembly__Dimensions__Config'] || {};
 
+        var assemblyTitle      =  identityCfg['Assembly__Identity__Config__Title']             || '';
         var doorType          =  doorCfg['Assembly__DoorType__Config__Type']             || '';
         var openingDirection  =  doorCfg['Assembly__DoorType__Config__OpeningDirection'] || 'Outward';
         var handing           =  assemblyData['Handing'] || ValeSpec__DoorTypeAndDimensions__GetDefaultDoorHanding();
         var width             =  dimsCfg['Assembly__Dimensions__Config__WidthMm']        || 1800;
         var height            =  dimsCfg['Assembly__Dimensions__Config__HeightMm']       || 2100;
+
+        if (
+            ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput &&
+            document.activeElement !== ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput
+        ) {
+            ValeSpec__DoorTypeAndDimensions__AssemblyTitleInput.value  =  assemblyTitle;
+        }
 
         if (ValeSpec__DoorTypeAndDimensions__OpeningDirectionOutward && ValeSpec__DoorTypeAndDimensions__OpeningDirectionInward) {
             if (openingDirection === 'Inward') {

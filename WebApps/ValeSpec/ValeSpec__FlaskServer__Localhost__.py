@@ -38,6 +38,9 @@ NA__SERVER__MAIN_APP_CONFIG_PATH  = (NA__SERVER__APP_ROOT_PATH / "02__Src__AppMo
 NA__SERVER__OUTPUT_LOG_HANDLE     = None
 
 NA__SERVER__PROJECT_CODE_PATTERN  = re.compile(r'^[A-Za-z0-9_\-]{1,64}$')   # Allowlist for safe project codes
+NA__SERVER__PROJECT_FILE_NAME_PATTERN = re.compile(
+    r'^ValeSpec__ProjectFile__(?P<projectCode>[A-Za-z0-9_\-]{1,64})__(?:(?P<projectName>.+?)__)?\.json$'
+)                                                                               # Supports legacy and name-suffixed project files
 NA__SERVER__USER_SLUG_PATTERN     = re.compile(r'^[A-Za-z0-9_\-]{1,64}$')   # Allowlist for safe user slugs
 NA__SERVER__USER_MENU_SYNC_USER_SLUG = "AdamW"
 NA__SERVER__USER_MENU_APP_DEFAULTS_SECTION_KEY = "ValeSpec__UserMenu__AppDefaults__Config"
@@ -113,11 +116,84 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         return user_slug
     # ------------------------------------------------------------
 
-    # SUB FUNCTION | Resolve path for a project data file
+    # SUB FUNCTION | Build Safe Project Name Segment for File Names
     # ------------------------------------------------------------
-    def Na__Server__GetProjectFilePath(self, project_code: str) -> Path:
+    def Na__Server__SanitizeProjectNameForFilename(self, project_name: str) -> str:
+        raw_name = str(project_name or "").strip()
+        if not raw_name:
+            return "UnnamedProject"
+
+        safe_name = re.sub(r"[^A-Za-z0-9\-]+", "_", raw_name)
+        safe_name = re.sub(r"_+", "_", safe_name).strip("_")
+        if not safe_name:
+            return "UnnamedProject"
+        return safe_name[:96]
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Extract Project Code from Project File Name
+    # ------------------------------------------------------------
+    def Na__Server__ExtractProjectCodeFromFileName(self, file_name: str) -> str | None:
+        match = NA__SERVER__PROJECT_FILE_NAME_PATTERN.match(file_name or "")
+        if not match:
+            return None
+        return match.group("projectCode")
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Resolve legacy path for a project data file
+    # ------------------------------------------------------------
+    def Na__Server__GetLegacyProjectFilePath(self, project_code: str) -> Path:
         filename = f"ValeSpec__ProjectFile__{project_code}__.json"
         return NA__SERVER__PROJECT_DATA_PATH / filename
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Resolve canonical path for a project data file
+    # ------------------------------------------------------------
+    def Na__Server__GetProjectFilePath(self, project_code: str, project_name: str) -> Path:
+        safe_project_name = self.Na__Server__SanitizeProjectNameForFilename(project_name)
+        filename = f"ValeSpec__ProjectFile__{project_code}__{safe_project_name}__.json"
+        return NA__SERVER__PROJECT_DATA_PATH / filename
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | List All File Variants for a Project Code
+    # ------------------------------------------------------------
+    def Na__Server__ListProjectFileCandidates(self, project_code: str) -> list[Path]:
+        file_pattern = f"ValeSpec__ProjectFile__{project_code}__*.json"
+        candidates = list(NA__SERVER__PROJECT_DATA_PATH.glob(file_pattern))
+        candidates.sort(
+            key=lambda path_obj: path_obj.stat().st_mtime if path_obj.exists() else 0.0,
+            reverse=True
+        )
+        return candidates
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Resolve Existing Project File Path by Project Code
+    # ------------------------------------------------------------
+    def Na__Server__ResolveProjectFilePath(self, project_code: str, project_name: str | None = None) -> Path:
+        if project_name:
+            canonical_path = self.Na__Server__GetProjectFilePath(project_code, project_name)
+            if canonical_path.is_file():
+                return canonical_path
+
+        candidates = self.Na__Server__ListProjectFileCandidates(project_code)
+        if candidates:
+            return candidates[0]
+
+        if project_name:
+            return self.Na__Server__GetProjectFilePath(project_code, project_name)
+        return self.Na__Server__GetLegacyProjectFilePath(project_code)
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Remove Non-Canonical File Variants for a Project
+    # ------------------------------------------------------------
+    def Na__Server__DeleteStaleProjectFileVariants(self, project_code: str, keep_file_path: Path) -> None:
+        for candidate_path in self.Na__Server__ListProjectFileCandidates(project_code):
+            if candidate_path == keep_file_path:
+                continue
+            try:
+                candidate_path.unlink()
+                print(f"[PROJECT] Removed stale file variant: {candidate_path.name}")
+            except Exception as remove_error:
+                print(f"[WARN] Failed removing stale variant {candidate_path.name}: {remove_error}")
     # ------------------------------------------------------------
 
     # SUB FUNCTION | Resolve path for a per-user menu config file
@@ -255,13 +331,26 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
     def Na__Server__HandleProjectList(self) -> None:
         NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
         projects = []
+        seen_project_codes = set()
+        all_project_files = sorted(
+            NA__SERVER__PROJECT_DATA_PATH.glob("ValeSpec__ProjectFile__*__.json"),
+            key=lambda path_obj: path_obj.stat().st_mtime if path_obj.exists() else 0.0,
+            reverse=True
+        )
 
-        for file_path in sorted(NA__SERVER__PROJECT_DATA_PATH.glob("ValeSpec__ProjectFile__*__.json")):
+        for file_path in all_project_files:
             try:
                 raw_data    = json.loads(file_path.read_text(encoding="utf-8"))
                 metadata    = raw_data.get("ValeSpec__ProjectFile__Metadata", {})
+                project_code = metadata.get("ValeSpec__ProjectFile__Metadata__ProjectCode", "")
+                if not project_code:
+                    project_code = self.Na__Server__ExtractProjectCodeFromFileName(file_path.name) or ""
+                if not project_code or project_code in seen_project_codes:
+                    continue
+
+                seen_project_codes.add(project_code)
                 projects.append({
-                    "projectCode"  : metadata.get("ValeSpec__ProjectFile__Metadata__ProjectCode", ""),
+                    "projectCode"  : project_code,
                     "projectName"  : metadata.get("ValeSpec__ProjectFile__Metadata__ProjectName", ""),
                     "documentName" : metadata.get("ValeSpec__ProjectFile__Metadata__DocumentName", ""),
                     "status"       : metadata.get("ValeSpec__ProjectFile__Metadata__DocumentStatus", "Draft"),
@@ -277,7 +366,7 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Load a single project file from disk
     # ------------------------------------------------------------
     def Na__Server__HandleProjectLoad(self, project_code: str) -> None:
-        file_path = self.Na__Server__GetProjectFilePath(project_code)
+        file_path = self.Na__Server__ResolveProjectFilePath(project_code)
         if not file_path.is_file():
             self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
@@ -308,9 +397,11 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         if code_in_body != project_code:
             self.Na__Server__WriteJsonResponse(400, {"ok": False, "error": "Project code mismatch"})
             return
+        project_name = metadata.get("ValeSpec__ProjectFile__Metadata__ProjectName", "")
 
         update_source = self.headers.get("X-ValeSpec-UpdateSource", "unspecified")
-        file_path = self.Na__Server__GetProjectFilePath(project_code)
+        file_path = self.Na__Server__ResolveProjectFilePath(project_code)
+        target_file_path = self.Na__Server__GetProjectFilePath(project_code, project_name)
         existing_project_data = None
 
         if file_path.is_file():
@@ -341,8 +432,11 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
 
         NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
         try:
-            file_path.write_text(json.dumps(project_data, indent=4, ensure_ascii=False), encoding="utf-8")
-            print(f"[PROJECT] Saved: {file_path.name}")
+            target_file_path.write_text(json.dumps(project_data, indent=4, ensure_ascii=False), encoding="utf-8")
+            if file_path.is_file() and file_path != target_file_path:
+                print(f"[PROJECT] Filename updated: {file_path.name} -> {target_file_path.name}")
+            self.Na__Server__DeleteStaleProjectFileVariants(project_code, target_file_path)
+            print(f"[PROJECT] Saved: {target_file_path.name}")
             self.Na__Server__WriteJsonResponse(200, {"ok": True})
         except Exception as write_error:
             self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(write_error)})
@@ -351,13 +445,14 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Delete a project file from disk
     # ------------------------------------------------------------
     def Na__Server__HandleProjectDelete(self, project_code: str) -> None:
-        file_path = self.Na__Server__GetProjectFilePath(project_code)
-        if not file_path.is_file():
+        file_candidates = self.Na__Server__ListProjectFileCandidates(project_code)
+        if not file_candidates:
             self.Na__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
         try:
-            file_path.unlink()
-            print(f"[PROJECT] Deleted: {file_path.name}")
+            for file_path in file_candidates:
+                file_path.unlink()
+                print(f"[PROJECT] Deleted: {file_path.name}")
             self.Na__Server__WriteJsonResponse(200, {"ok": True})
         except Exception as delete_error:
             self.Na__Server__WriteJsonResponse(500, {"ok": False, "error": str(delete_error)})

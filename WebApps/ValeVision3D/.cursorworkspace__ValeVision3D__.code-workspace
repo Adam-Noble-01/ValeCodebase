@@ -17,10 +17,11 @@
         "path": "D:/10_CoreLib__ValeCodebase/WebApps/Whitecardopedia"
 	  },
 	  {
-        "name": "Noble Architecture TrueVision 3D - Cousin Project",
+        "name": "REFERENCE ONLY!! : Cousin Project - Noble Architecture Apps",
         "Description": "This is the cousin project to ValeVision3D. Noble Architecture TrueVision 3D is a similar App that branched off of ValeVision3D and is now a standalone project. its listed here for reference purposes only, DO NOT EDIT TRUEVISION 3D CODE HERE, IT IS A SEPARATE PROJECT.",
-        "path": "D:/11_RefLib__SudioRepository__RemoteSystem/NaWeb/na-apps"
+        "path": "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
 	  }
+      
 	],
 	"settings": {
 	  "editor.tabSize": 4,

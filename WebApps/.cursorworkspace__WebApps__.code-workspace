@@ -34,7 +34,13 @@
 		"path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins",
         "name"         : "SketchUp Plugins - Reference Project Folder",
         "description"  : "Some of the WebApps rely on exporters such as the SketchUp to GLB Exporter, some other helpful code is contained here such as SketchUp HTML Window UI code which is helpful for the ValeVision3D and other projects that utilise the HTML Window UI for the user interface, there is also a SVG Generator which in the SketchUp Window Configuration plugin and this can be studied and utilised for other projects."
+	  },
+      {
+        "name": "REFERENCE ONLY!! : Cousin Project - Noble Architecture Apps",
+        "Description": "This is the cousin project to ValeVision3D. Noble Architecture TrueVision 3D is a similar App that branched off of ValeVision3D and is now a standalone project. its listed here for reference purposes only, DO NOT EDIT TRUEVISION 3D CODE HERE, IT IS A SEPARATE PROJECT.",
+        "path": "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
 	  }
+      
 	],
 	"settings": {
 	  "editor.tabSize": 4,

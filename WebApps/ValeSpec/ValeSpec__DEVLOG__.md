@@ -3,6 +3,53 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.1.8 - 17-Apr-2026
+### Ironmongery finish fills, materials SSOT (MAT600), DevTools plugin, CAD viewer tools
+
+End-to-end work tying **SketchUp vector export**, **app config**, **SVG ironmongery rendering**, and the **TrueVision materials library** so assembly previews can show **filled handle regions** coloured by the user’s **global ironmongery finish**, plus standalone **CAD Object Viewer** inspection tools.
+
+#### Ironmongery — fills and finish colour in ValeSpec
+
+- **Feasibility:** Fills need **face** geometry, not edge-only data. The CAD exporter now emits `PathType: "Polygon"` from selected **loose faces** (outer loop vertices in mm), ahead of arcs/lines in `Paths` so SVG draws fills under strokes.
+- **`ValeSpec__AppConfig__Main__.json`:** `ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes` is a structured list of `{ Name, MatCode, HexColor }` (e.g. Brass / Satin Nickel / Bronze) so the UI and renderer share one mapping from finish name to preview colour.
+- **`ValeSpec__SvgDrawing__IronmongeryRenderer__.js`:** `RenderPaths` draws polygons first with a `fillColor`, then lines as before.
+- **`ValeSpec__SvgDrawing__RenderPipeline__.js`:** Reads `globalIronmongeryFinish` from `StateManager`, resolves `HexColor` from config, passes it into `RenderIronmongery` (assembly + thumbnail paths).
+- **`ValeSpec__AssemblyEditor__SvgPreview__.js`:** Listens for `globalFinishChanged` and re-renders the preview so finish changes update immediately.
+
+#### Materials library — SSOT and MAT600 series
+
+- **Authoritative file:** `NaWeb/.../02__AppData/Na__AppConfig__MaterialsLibrary.json` (3-digit `MAT{NNN}__Category__Variant` names). **ValeVision3D** carries a **mirrored** copy for local/web renderer use.
+- **v2.2.1 (2026-04-17):** Root key aligned to `Na__AppConfig__MaterialsLibrary`; **`MAT600__MetalSeries__`** added (generic metals **MAT600–MAT603**; ironmongery **MAT611** Chrome, **MAT612** Brass, **MAT613** Bronze, **MAT614** SatinNickle) with `BaseColor` aligned to SketchUp RGB samples where supplied.
+- **Cursor rule:** `NaWeb/.../.cursor/rules/materials-library-single-source-of-truth.mdc` — registration workflow and naming; use **Matte** (not “Matt”) in material copy.
+
+#### SketchUp — `Na__DevTools` plugin
+
+- New **Noble Architecture DevTools** extension: loader, hotkey/menu binder, `HtmlDialog` shell (tabs aligned with **Na__EdgeUtil** style), and **`Na__DevUtil__LoadMaterials__`** — on-demand port of the web materials library loader (preview cubes in the active model). Lives under the SketchUp **Plugins** tree beside other NA extensions.
+
+#### CAD Object Viewer (`65__Dev__CadObjectBuilder`)
+
+- **Faces** toolbar control (**off** by default): toggles semi-transparent polygon fills for exported `Polygon` paths; **P** shortcut.
+- **Measure** tool: vertex snap (screen-space tolerance scales with zoom), two-point distance readout on an SVG overlay; **M** shortcut; clears path selection while active.
+- Path list / inspector support polygon rows and detail.
+- **Fix:** Stylesheet `href` was corrected from `...Main__.csss` to `...Main__.css` in the standalone viewer HTML files so the external CSS loads. If interactions still fail, check the browser console for script errors.
+
+#### Files touched (representative)
+
+| Area | Path |
+|------|------|
+| CAD export | `65__Dev__CadObjectBuilder/ValeSpec__CadObjectBuilder__JsonExporter__.rb` |
+| App config | `02__Src__AppModules/02__AppData/ValeSpec__AppConfig__Main__.json` |
+| SVG ironmongery | `02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__IronmongeryRenderer__.js` |
+| Render pipeline | `02__Src__AppModules/05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__RenderPipeline__.js` |
+| Assembly preview | `02__Src__AppModules/20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__SvgPreview__.js` |
+| Materials SSOT | `NaWeb/.../Na__AppConfig__MaterialsLibrary.json` |
+| Materials mirror | `ValeVision3D/.../Na__AppConfig__MaterialsLibrary.json` |
+| Materials rule | `NaWeb/.../.cursor/rules/materials-library-single-source-of-truth.mdc` |
+| DevTools plugin | `SketchUp 2026/Plugins/Na__DevTools__*.rb`, `Na__DevTools__Modules__/*` |
+| CAD viewer | `65__Dev__CadObjectBuilder/ValeSpec__CadObjectViewer__.html`, optional `...AppMain__.html`, `...StyleSheet__Main__.css` |
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.7 - 17-Apr-2026
 ### Document Management — Sortable headers without glyphs; REGION layout
 

@@ -28,9 +28,27 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
 
     // HELPER FUNCTION | Render Vector Line Paths as SVG Markup
     // ------------------------------------------------------------
-    function ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth) {
+    function ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth, fillColor) {
         var svg  =  '';
 
+        // Render polygons first so they appear under the linework
+        for (var i = 0; i < paths.length; i++) {
+            var path  =  paths[i];
+            if (path.PathType !== 'Polygon') continue;
+
+            var pointsStr = '';
+            for (var j = 0; j < path.Vertices_mm.length; j++) {
+                var v = path.Vertices_mm[j];
+                pointsStr += v.X + ',' + (-v.Y) + ' ';
+            }
+
+            svg += '<polygon'
+                + ' points="' + pointsStr.trim() + '"'
+                + ' fill="' + (fillColor || 'none') + '"'
+                + ' />';
+        }
+
+        // Render lines on top
         for (var i = 0; i < paths.length; i++) {
             var path  =  paths[i];
             if (path.PathType !== 'Line') continue;
@@ -89,7 +107,7 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
 
     // FUNCTION | Render Ironmongery onto Panels
     // ------------------------------------------------------------
-    function ValeSpec__IronmongeryRenderer__RenderIronmongery(panels, hardwareData, leverHeight_mm, config) {
+    function ValeSpec__IronmongeryRenderer__RenderIronmongery(panels, hardwareData, leverHeight_mm, config, fillColor) {
         if (!panels || !panels.length) return '';
         if (!hardwareData) return '';
 
@@ -105,7 +123,7 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
         var strokeWidth  =  ironConfig['SvgDrawing__Ironmongery__Config__StrokeWidthMm'] || 1.2;
         var paths        =  vectorData['Paths'];
 
-        var pathsSvg  =  ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth);
+        var pathsSvg  =  ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth, fillColor);
 
         var svg  =  '';
 

@@ -244,6 +244,22 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
         var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
+        var StateManager    =  window.ValeSpec__AppCore__StateManager;
+        var globalFinish    =  StateManager ? StateManager.ValeSpec__StateManager__GetState().globalIronmongeryFinish : null;
+        var ConfigLoader    =  window.ValeSpec__AppCore__ConfigLoader;
+        var ironmongeryDefaults = ConfigLoader ? ConfigLoader.ValeSpec__ConfigLoader__GetSection('IronmongeryDefaults') : null;
+        var availableFinishes = ironmongeryDefaults ? ironmongeryDefaults['ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes'] : [];
+        
+        var fillColor = null;
+        if (globalFinish && availableFinishes && availableFinishes.length) {
+            for (var i = 0; i < availableFinishes.length; i++) {
+                if (availableFinishes[i].Name === globalFinish) {
+                    fillColor = availableFinishes[i].HexColor;
+                    break;
+                }
+            }
+        }
+
         var panelResult  =  ValeSpec__RenderPipeline__PanelRenderer.ValeSpec__DoorPanelRenderer__RenderPanels(doorType, dims.width_mm, dims.height_mm, panelConfig, handing);
 
         var svg  =  '';
@@ -267,7 +283,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         svg += '</g>';
 
         svg += '<g id="ValeSpec__SvgDrawing__LayerIronmongery">';
-        svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig);
+        svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig, fillColor);
         svg += '</g>';
 
         if (ValeSpec__RenderPipeline__PanelRoleLabelRenderer) {
@@ -311,6 +327,22 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var viewportPadding  =  ValeSpec__RenderPipeline__ResolveViewportPadding(vpConfig);
         var viewBox          =  ValeSpec__RenderPipeline__ComputeViewBox(dims.width_mm, dims.height_mm, viewportPadding);
 
+        var StateManager    =  window.ValeSpec__AppCore__StateManager;
+        var globalFinish    =  StateManager ? StateManager.ValeSpec__StateManager__GetState().globalIronmongeryFinish : null;
+        var ConfigLoader    =  window.ValeSpec__AppCore__ConfigLoader;
+        var ironmongeryDefaults = ConfigLoader ? ConfigLoader.ValeSpec__ConfigLoader__GetSection('IronmongeryDefaults') : null;
+        var availableFinishes = ironmongeryDefaults ? ironmongeryDefaults['ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes'] : [];
+        
+        var fillColor = null;
+        if (globalFinish && availableFinishes && availableFinishes.length) {
+            for (var i = 0; i < availableFinishes.length; i++) {
+                if (availableFinishes[i].Name === globalFinish) {
+                    fillColor = availableFinishes[i].HexColor;
+                    break;
+                }
+            }
+        }
+
         var widthAttr   =  maxWidth  ? ' width="'  + maxWidth  + '"' : '';
         var heightAttr  =  maxHeight ? ' height="' + maxHeight + '"' : '';
 
@@ -337,7 +369,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         svg += '</g>';
 
         svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerIronmongery">';
-        svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig);
+        svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig, fillColor);
         svg += '</g>';
 
         if (ValeSpec__RenderPipeline__PanelRoleLabelRenderer) {

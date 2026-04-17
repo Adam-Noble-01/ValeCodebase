@@ -359,6 +359,16 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Handle Global Finish Changed Event
+    // ------------------------------------------------------------
+    function ValeSpec__SvgPreview__OnGlobalFinishChanged(finish) {
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var assembly      =  StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
+        ValeSpec__SvgPreview__Render(assembly);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Perform Initial Render on First Load
     // ------------------------------------------------------------
     function ValeSpec__SvgPreview__DoInitialRender() {
@@ -422,6 +432,7 @@ const ValeSpec__AssemblyEditor__SvgPreview = (function() {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (StateManager) {
             StateManager.ValeSpec__StateManager__On('assemblyUpdated', ValeSpec__SvgPreview__OnAssemblyUpdated);
+            StateManager.ValeSpec__StateManager__On('globalFinishChanged', ValeSpec__SvgPreview__OnGlobalFinishChanged);
         }
 
         ValeSpec__SvgPreview__DoInitialRender();

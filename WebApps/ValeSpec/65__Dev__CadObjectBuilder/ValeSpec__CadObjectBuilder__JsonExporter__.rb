@@ -10,19 +10,20 @@
 #           HardwareItem__VectorData from the model, ValeSpec-style indentation.
 # CREATED : Apr-2026
 #
-# DESCRIPTION:
-# - Select all loose edges (2D linework) plus the 00__OriginPoint group.
-# - Paste this script into the SketchUp Ruby Console and press Enter.
-# - A Save dialog appears. Default filename is pre-filled; edit if needed.
-# - The JSON is printed to the console AND written to the chosen file path.
-# - Top-level metadata keys are present with empty / null placeholders for you
-#   to fill or merge from another tool; vector paths and bbox come from SketchUp.
-# - Arcs and circles export as arc primitives (center, radius, angles).
-# - Straight edges export as individual line segments.
-#
-# SELECTION REQUIREMENTS:
-# - Loose edges only. No faces required, no other groups.
-# - One group named and tagged "00__OriginPoint".
+    # DESCRIPTION:
+    # - Select all loose edges/faces (2D linework/fills) plus the 00__OriginPoint group.
+    # - Paste this script into the SketchUp Ruby Console and press Enter.
+    # - A Save dialog appears. Default filename is pre-filled; edit if needed.
+    # - The JSON is printed to the console AND written to the chosen file path.
+    # - Top-level metadata keys are present with empty / null placeholders for you
+    #   to fill or merge from another tool; vector paths and bbox come from SketchUp.
+    # - Arcs and circles export as arc primitives (center, radius, angles).
+    # - Straight edges export as individual line segments.
+    # - Faces export as Polygon primitives (outer loop vertices).
+    #
+    # SELECTION REQUIREMENTS:
+    # - Loose edges and faces only. No other groups.
+    # - One group named and tagged "00__OriginPoint".
 #   The bounding box centre of this group becomes local 0,0.
 #
 # COORDINATE SYSTEM (OUTPUT):
@@ -192,12 +193,32 @@
     # ---------------------------------------------------------------
 
 
+    # SUB FUNCTION | Extract Faces as Polygons
+    # ---------------------------------------------------------------
+    # Iterates faces and extracts outer loop vertices.
+    # Returns an array of polygon data hashes.
+    def vale_extract_faces(faces, origin_pt)
+        polygons = []
+        faces.each do |face|
+            vertices_mm = face.outer_loop.vertices.map do |v|
+                vale_pt_mm(v.position, origin_pt)
+            end
+            polygons << {
+                "PathType"    => "Polygon",
+                "VertexName"  => "",
+                "Vertices_mm" => vertices_mm
+            }
+        end
+        polygons
+    end
+    # ---------------------------------------------------------------
+
     # SUB FUNCTION | Calculate the Tight Bounding Box Across All Extracted Paths
     # ---------------------------------------------------------------
-    # Collects all X/Y extremes from line endpoints and arc extents.
+    # Collects all X/Y extremes from line endpoints, arc extents, and polygon vertices.
     # Arc bounding boxes are computed conservatively using center +/- radius.
     # Returns a hash with MinX, MaxX, MinY, MaxY, Width, Height all in mm.
-    def vale_calc_bbox(arcs, lines)
+    def vale_calc_bbox(arcs, lines, polygons)
         xs  =  []
         ys  =  []
 
@@ -212,6 +233,13 @@
             cy  =  a["Center_mm"]["Y"]
             xs  <<  (cx - r)  <<  (cx + r)   # <-- Conservative arc extent (full circle bounds)
             ys  <<  (cy - r)  <<  (cy + r)
+        end
+
+        polygons.each do |p|
+            p["Vertices_mm"].each do |v|
+                xs  <<  v["X"]
+                ys  <<  v["Y"]
+            end
         end
 
         return {} if xs.empty?
@@ -408,23 +436,27 @@
         origin_pt  =  origin_group.bounds.center
         puts "\n>> Origin found  : #{origin_pt.x.round(4)}\", #{origin_pt.y.round(4)}\", #{origin_pt.z.round(4)}\" (inches)"
 
-        # Collect loose edges only - the origin group itself is excluded
+        # Collect loose edges and faces - the origin group itself is excluded
         loose_edges  =  selection.select { |e| e.is_a?(Sketchup::Edge) }
+        loose_faces  =  selection.select { |e| e.is_a?(Sketchup::Face) }
         puts ">> Loose edges   : #{loose_edges.size}"
+        puts ">> Loose faces   : #{loose_faces.size}"
 
-        # Classify geometry into arcs and straight lines
+        # Classify geometry into arcs, straight lines, and polygons
         arcs, arc_curve_ids  =  vale_extract_arcs(loose_edges, origin_pt)
         lines                =  vale_extract_lines(loose_edges, origin_pt, arc_curve_ids)
-        bbox                 =  vale_calc_bbox(arcs, lines)
+        polygons             =  vale_extract_faces(loose_faces, origin_pt)
+        bbox                 =  vale_calc_bbox(arcs, lines, polygons)
 
         arc_edge_count       =  loose_edges.count { |e| e.curve.is_a?(Sketchup::ArcCurve) }
         straight_edge_count  =  loose_edges.size - arc_edge_count
 
         puts ">> Arcs/Circles  : #{arcs.size}  (from #{arc_edge_count} arc edges)"
         puts ">> Line segments : #{lines.size} (from #{straight_edge_count} straight edges)"
+        puts ">> Polygons      : #{polygons.size} (from #{loose_faces.size} faces)"
 
         # Assemble full document: placeholder metadata + vector data from the model
-        all_paths     =  arcs + lines
+        all_paths     =  polygons + arcs + lines
         vector_block  =  {
             "OriginNote"    =>  "Local 0,0 = centre of 00__OriginPoint group (e.g. handle spindle). Right-hand orientation.",
             "CoordSystem"   =>  "XY plane | X=right, Y=up | Units=mm | Z discarded",
@@ -432,6 +464,7 @@
             "EdgeCount"     =>  loose_edges.size,
             "ArcCount"      =>  arcs.size,
             "LineCount"     =>  lines.size,
+            "PolygonCount"  =>  polygons.size,
             "Paths"         =>  all_paths
         }
 

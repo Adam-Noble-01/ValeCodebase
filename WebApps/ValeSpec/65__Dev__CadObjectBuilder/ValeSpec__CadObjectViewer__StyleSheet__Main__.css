@@ -1,0 +1,426 @@
+﻿/* CSS Variables - ValeSpec CAD Viewer */
+:root {
+    --bg-app                 : #141416;
+    --bg-panel               : #1e1e22;
+    --bg-surface             : #28282e;
+    --bg-surface-hover       : #32323a;
+    --bg-input               : #1a1a20;
+    --border                 : #3a3a44;
+    --border-subtle          : #2a2a32;
+
+    --text-primary           : #e2e2e8;
+    --text-secondary         : #8888a0;
+    --text-dim               : #55556a;
+    --text-accent            : #a78bfa;
+
+    --col-line               : #4dabf7;
+    --col-arc                : #ffa94d;
+    --col-circle             : #69db7c;
+    --col-polygon            : rgba(167, 139, 250, 0.25);
+    --col-origin             : #ff6b6b;
+    --col-measure-line       : #ff4081;
+    --col-measure-node       : #ff4081;
+    --col-measure-text       : #ff80ab;
+    --col-bbox               : rgba(200, 90, 90, 0.72);
+    --col-grid-minor         : rgba(255,255,255,0.04);
+    --col-grid-axis          : rgba(255,255,255,0.22);
+    --col-highlight          : #fff176;
+    --col-selected           : #ffffff;
+
+    --btn-bg                 : #2e2e38;
+    --btn-bg-hover           : #3c3c48;
+    --btn-bg-active          : #a78bfa;
+
+    font-size                : 16px;
+}
+
+/* Base Reset */
+*, *::before, *::after { box-sizing : border-box; margin : 0; padding : 0; }
+
+html, body {
+    width                    : 100%;
+    height                   : 100%;
+    overflow                 : hidden;
+    background               : var(--bg-app);
+    color                    : var(--text-primary);
+    font-family              : 'Segoe UI', system-ui, sans-serif;
+    font-size                : var(--font-size);
+}
+
+/* App Layout */
+#ValeSpec__CadObjectViewer__RootApp {
+    display                  : grid;
+    grid-template-rows       : 54px 1fr 34px;
+    grid-template-columns    : 1fr 350px;
+    grid-template-areas      : "header  header"
+                               "viewer  inspector"
+                               "status  inspector";
+    width                    : 100%;
+    height                   : 100%;
+}
+
+
+/* ---------------------------------------------------------------- */
+/* Header Bar                                                       */
+/* ---------------------------------------------------------------- */
+#ValeSpec__CadObjectViewer__HeaderBar {
+    grid-area                : header;
+    display                  : flex;
+    align-items              : center;
+    gap                      : 10px;
+    padding                  : 0 17px;
+    background               : var(--bg-panel);
+    border-bottom            : 1px solid var(--border);
+    user-select              : none;
+}
+
+#ValeSpec__CadObjectViewer__HeaderBar .ValeSpec__CadObjectViewer__HeaderBrand {
+    font-size                : 0.85rem;
+    font-weight              : 600;
+    color                    : var(--text-accent);
+    letter-spacing           : 0.06em;
+    margin-right             : 6px;
+    white-space              : nowrap;
+}
+
+#ValeSpec__CadObjectViewer__HeaderBar .ValeSpec__CadObjectViewer__HeaderDivider {
+    width                    : 1px;
+    height                   : 20px;
+    background               : var(--border);
+    flex-shrink              : 0;
+}
+
+.ValeSpec__CadObjectViewer__ToolbarButton {
+    display                  : flex;
+    align-items              : center;
+    gap                      : 5px;
+    padding                  : 6px 13px;
+    background               : var(--btn-bg);
+    border                   : 1px solid var(--border);
+    border-radius            : 5px;
+    color                    : var(--text-primary);
+    font-size                : 0.78rem;
+    cursor                   : pointer;
+    white-space              : nowrap;
+    transition               : background 0.12s, border-color 0.12s;
+}
+.ValeSpec__CadObjectViewer__ToolbarButton:hover           { background : var(--btn-bg-hover); border-color : #555560; }
+.ValeSpec__CadObjectViewer__ToolbarButton.ValeSpec__CadObjectViewer__StateActive          { background : var(--btn-bg-active); color : #fff; border-color : var(--btn-bg-active); }
+.ValeSpec__CadObjectViewer__ToolbarButton svg             { width : 13px; height : 13px; flex-shrink : 0; }
+
+#ValeSpec__CadObjectViewer__ButtonLoadJson                    { background : #2d2050; border-color : #5a3ea0; color : #c4b5fd; }
+#ValeSpec__CadObjectViewer__ButtonLoadJson:hover              { background : #3d2c70; }
+
+#ValeSpec__CadObjectViewer__InputFileJson                  { display : none; }
+
+#ValeSpec__CadObjectViewer__HeaderBar .ValeSpec__CadObjectViewer__HeaderSpacer              { flex : 1; }
+
+#legend {
+    display                  : flex;
+    align-items              : center;
+    gap                      : 12px;
+    padding-right            : 4px;
+}
+.ValeSpec__CadObjectViewer__LegendItem {
+    display                  : flex;
+    align-items              : center;
+    gap                      : 5px;
+    font-size                : 0.72rem;
+    color                    : var(--text-secondary);
+}
+.ValeSpec__CadObjectViewer__LegendSwatch {
+    width                    : 8px;
+    height                   : 2px;
+    border-radius            : 1px;
+}
+
+
+/* ---------------------------------------------------------------- */
+/* SVG Viewport                                                     */
+/* ---------------------------------------------------------------- */
+#ValeSpec__CadObjectViewer__Viewport {
+    grid-area                : viewer;
+    position                 : relative;
+    overflow                 : hidden;
+    background               : var(--bg-app);
+    cursor                   : grab;
+}
+#ValeSpec__CadObjectViewer__Viewport.ValeSpec__CadObjectViewer__StateDragging             { cursor : grabbing; }
+
+#ValeSpec__CadObjectViewer__SvgCanvas {
+    width                    : 100%;
+    height                   : 100%;
+    display                  : block;
+}
+
+/* Drop Zone Overlay */
+#ValeSpec__CadObjectViewer__DropZoneOverlay {
+    position                 : absolute;
+    inset                    : 0;
+    display                  : flex;
+    flex-direction           : column;
+    align-items              : center;
+    justify-content          : center;
+    gap                      : 12px;
+    background               : rgba(20,20,22,0.96);
+    pointer-events           : none;
+    transition               : opacity 0.2s;
+}
+#ValeSpec__CadObjectViewer__DropZoneOverlay.ValeSpec__CadObjectViewer__StateHidden            { opacity : 0; pointer-events : none; }
+#ValeSpec__CadObjectViewer__DropZoneOverlay.ValeSpec__CadObjectViewer__StateDragOver         { background : rgba(40,28,70,0.97); }
+
+#ValeSpec__CadObjectViewer__DropZoneOverlay .ValeSpec__CadObjectViewer__DropZoneIcon        { font-size : 2.4rem; opacity : 0.3; }
+#ValeSpec__CadObjectViewer__DropZoneOverlay .ValeSpec__CadObjectViewer__DropZoneTitle       { font-size : 1.1rem; color : var(--text-secondary); }
+#ValeSpec__CadObjectViewer__DropZoneOverlay .ValeSpec__CadObjectViewer__DropZoneSubtitle         { font-size : 0.78rem; color : var(--text-dim); }
+
+
+/* ---------------------------------------------------------------- */
+/* Status Bar                                                       */
+/* ---------------------------------------------------------------- */
+#ValeSpec__CadObjectViewer__StatusBar {
+    grid-area                : status;
+    display                  : flex;
+    align-items              : center;
+    gap                      : 16px;
+    padding                  : 0 15px;
+    background               : var(--bg-panel);
+    border-top               : 1px solid var(--border);
+    font-size                : 0.72rem;
+    color                    : var(--text-secondary);
+    user-select              : none;
+}
+#ValeSpec__CadObjectViewer__StatusBar span              { display : flex; align-items : center; gap : 5px; }
+#ValeSpec__CadObjectViewer__StatusBar .ValeSpec__CadObjectViewer__FieldLabel            { color : var(--text-dim); }
+#ValeSpec__CadObjectViewer__ReadoutCursor               { font-variant-numeric : tabular-nums; min-width : 140px; }
+#ValeSpec__CadObjectViewer__ReadoutZoom                { font-variant-numeric : tabular-nums; min-width : 50px; }
+
+
+/* ---------------------------------------------------------------- */
+/* Inspector Panel                                                  */
+/* ---------------------------------------------------------------- */
+#ValeSpec__CadObjectViewer__InspectorPanel {
+    grid-area                : inspector;
+    display                  : flex;
+    flex-direction           : column;
+    background               : var(--bg-panel);
+    border-left              : 1px solid var(--border);
+    overflow                 : hidden;
+}
+
+.ValeSpec__CadObjectViewer__PanelSection {
+    border-bottom            : 1px solid var(--border-subtle);
+    flex-shrink              : 0;
+}
+
+.ValeSpec__CadObjectViewer__PanelHeading {
+    padding                  : 9px 12px 7px;
+    font-size                : 0.68rem;
+    font-weight              : 600;
+    letter-spacing           : 0.1em;
+    color                    : var(--text-dim);
+    text-transform           : uppercase;
+    background               : var(--bg-panel);
+}
+
+/* File Info */
+#ValeSpec__CadObjectViewer__InfoGridStats {
+    display                  : grid;
+    grid-template-columns    : 1fr 1fr;
+    gap                      : 1px;
+    background               : var(--border-subtle);
+    margin                   : 0 12px 10px;
+    border-radius            : 5px;
+    overflow                 : hidden;
+}
+.ValeSpec__CadObjectViewer__InfoCell {
+    background               : var(--bg-surface);
+    padding                  : 7px 9px;
+}
+.ValeSpec__CadObjectViewer__InfoCell .ValeSpec__CadObjectViewer__FieldLabel            { font-size : 0.65rem; color : var(--text-dim); margin-bottom : 2px; }
+.ValeSpec__CadObjectViewer__InfoCell .ValeSpec__CadObjectViewer__InfoValue            { font-size : 0.82rem; color : var(--text-primary); font-variant-numeric : tabular-nums; }
+.ValeSpec__CadObjectViewer__InfoCell .ValeSpec__CadObjectViewer__InfoValue.ValeSpec__CadObjectViewer__InfoValueHardwareName { font-variant-numeric : normal; word-break : break-word; }
+
+/* Hardware meta row (ValeSpec__HardwareItemData or ValeSpec__Data__HardwareIndex__) */
+#ValeSpec__CadObjectViewer__InfoRowHardware {
+    display                  : grid;
+    grid-template-columns    : 1fr 1fr;
+    gap                      : 1px;
+    background               : var(--border-subtle);
+    margin                   : 0 12px 10px;
+    border-radius            : 5px;
+    overflow                 : hidden;
+}
+
+/* Bbox Row */
+#ValeSpec__CadObjectViewer__InfoRowBbox {
+    display                  : grid;
+    grid-template-columns    : 1fr 1fr;
+    gap                      : 1px;
+    background               : var(--border-subtle);
+    margin                   : 0 12px 10px;
+    border-radius            : 5px;
+    overflow                 : hidden;
+}
+
+/* Path List */
+#ValeSpec__CadObjectViewer__PathListScrollArea {
+    flex                     : 1;
+    overflow-y               : auto;
+    min-height               : 0;
+}
+
+#ValeSpec__CadObjectViewer__PathList {
+    list-style               : none;
+}
+#ValeSpec__CadObjectViewer__PathList li {
+    display                  : flex;
+    align-items              : center;
+    gap                      : 8px;
+    padding                  : 6px 12px;
+    cursor                   : pointer;
+    font-size                : 0.76rem;
+    color                    : var(--text-secondary);
+    border-bottom            : 1px solid var(--border-subtle);
+    transition               : background 0.1s;
+}
+#ValeSpec__CadObjectViewer__PathList li:hover          { background : var(--bg-surface-hover); color : var(--text-primary); }
+#ValeSpec__CadObjectViewer__PathList li.ValeSpec__CadObjectViewer__PathListItemSelected       { background : var(--bg-surface); color : var(--text-primary); }
+#ValeSpec__CadObjectViewer__PathList li.ValeSpec__CadObjectViewer__PathListItemHighlighted    { color : var(--col-highlight); }
+
+.ValeSpec__CadObjectViewer__PathListTypeDot {
+    width                    : 7px;
+    height                   : 7px;
+    border-radius            : 50%;
+    flex-shrink              : 0;
+}
+.ValeSpec__CadObjectViewer__PathListTypeLabel             { flex : 1; }
+.ValeSpec__CadObjectViewer__PathListDetail            { font-size : 0.68rem; color : var(--text-dim); }
+
+/* Scrollbar */
+::-webkit-scrollbar          { width : 5px; }
+::-webkit-scrollbar-track    { background : transparent; }
+::-webkit-scrollbar-thumb    { background : #3a3a44; border-radius : 3px; }
+
+/* SVG Geometry â€” visible strokes (pointer-events on wide .ValeSpec__CadObjectViewer__GeometryHit overlay) */
+.ValeSpec__CadObjectViewer__GeometryLine    { stroke : var(--col-line);   stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+.ValeSpec__CadObjectViewer__GeometryArc     { stroke : var(--col-arc);    stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+.ValeSpec__CadObjectViewer__GeometryCircle  { stroke : var(--col-circle); stroke-width : 0.4; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+
+/* Invisible pick target â€” constant ~screen px thickness for easier hover/select */
+.ValeSpec__CadObjectViewer__GeometryHit     { stroke : transparent; stroke-width : 18px; fill : none; vector-effect : non-scaling-stroke; pointer-events : stroke; }
+
+.ValeSpec__CadObjectViewer__GeometrySegment:hover { cursor : pointer; }
+.ValeSpec__CadObjectViewer__GeometrySegment:hover > .ValeSpec__CadObjectViewer__GeometryLine,
+.ValeSpec__CadObjectViewer__GeometrySegment:hover > .ValeSpec__CadObjectViewer__GeometryArc,
+.ValeSpec__CadObjectViewer__GeometrySegment:hover > .ValeSpec__CadObjectViewer__GeometryCircle {
+    stroke-width             : 2;
+}
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Highlighted > .ValeSpec__CadObjectViewer__GeometryLine,
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Highlighted > .ValeSpec__CadObjectViewer__GeometryArc,
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Highlighted > .ValeSpec__CadObjectViewer__GeometryCircle {
+    stroke                   : var(--col-highlight) !important;
+    stroke-width             : 2 !important;
+}
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Selected > .ValeSpec__CadObjectViewer__GeometryLine,
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Selected > .ValeSpec__CadObjectViewer__GeometryArc,
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Selected > .ValeSpec__CadObjectViewer__GeometryCircle {
+    stroke                   : var(--col-selected) !important;
+    stroke-width             : 2.5 !important;
+}
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Dimmed > .ValeSpec__CadObjectViewer__GeometryLine,
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Dimmed > .ValeSpec__CadObjectViewer__GeometryArc,
+.ValeSpec__CadObjectViewer__GeometrySegment.ValeSpec__CadObjectViewer__Dimmed > .ValeSpec__CadObjectViewer__GeometryCircle {
+    opacity                  : 0.2;
+}
+
+.ValeSpec__CadObjectViewer__GridMinor  { stroke : var(--col-grid-minor); stroke-width : 0.3; vector-effect : non-scaling-stroke; }
+.ValeSpec__CadObjectViewer__GridAxis   { stroke : var(--col-grid-axis);  stroke-width : 1.2; vector-effect : non-scaling-stroke; }
+.ValeSpec__CadObjectViewer__OriginRing { stroke : var(--col-origin); stroke-width : 1; fill : none; vector-effect : non-scaling-stroke; }
+.ValeSpec__CadObjectViewer__OriginCross { stroke : var(--col-origin); stroke-width : 0.7; vector-effect : non-scaling-stroke; opacity : 0.7; }
+.ValeSpec__CadObjectViewer__BboxRect   { stroke : var(--col-bbox); stroke-width : 0.65; fill : none; stroke-dasharray : 6 5; vector-effect : non-scaling-stroke; }
+
+/* Single stroke + color for all dimension geometry (ext, dimension line, 45° ticks) */
+.ValeSpec__CadObjectViewer__BboxDim       { stroke : var(--col-bbox); stroke-width : 0.6; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+.ValeSpec__CadObjectViewer__BboxDimText    { fill : var(--col-bbox); font-family : 'Segoe UI', system-ui, sans-serif; font-weight : 300; vector-effect : non-scaling-stroke; pointer-events : none; }
+
+.ValeSpec__CadObjectViewer__GeometryPolygon { fill : var(--col-polygon); stroke : none; pointer-events : none; }
+.ValeSpec__CadObjectViewer__GeometryPolygonHit { stroke : transparent; stroke-width : 2px; fill : transparent; pointer-events : all; }
+
+.ValeSpec__CadObjectViewer__MeasureNode { fill : var(--col-measure-node); stroke : #fff; stroke-width : 0.5px; vector-effect : non-scaling-stroke; pointer-events : none; }
+.ValeSpec__CadObjectViewer__MeasureLine { stroke : var(--col-measure-line); stroke-width : 0.75; stroke-dasharray : 2 2; fill : none; vector-effect : non-scaling-stroke; pointer-events : none; }
+.ValeSpec__CadObjectViewer__MeasureText { fill : var(--col-measure-text); font-family : 'Segoe UI', system-ui, sans-serif; font-weight : 600; font-size : 6px; pointer-events : none; }
+
+
+/* ---------------------------------------------------------------- */
+/* Floating Selection Panel                                         */
+/* ---------------------------------------------------------------- */
+#ValeSpec__CadObjectViewer__FloatingSelectionPanel {
+    position                 : absolute;
+    top                      : 10px;
+    left                     : 10px;
+    z-index                  : 10;
+    width                    : 240px;
+    background               : var(--bg-panel);
+    border                   : 1px solid var(--border);
+    border-radius            : 6px;
+    overflow                 : hidden;
+    box-shadow               : 0 4px 18px rgba(0,0,0,0.45);
+    transition               : max-height 0.22s ease, opacity 0.18s ease;
+    max-height               : 400px;
+    opacity                  : 1;
+    pointer-events           : all;
+}
+
+#ValeSpec__CadObjectViewer__FloatingSelectionPanel.ValeSpec__CadObjectViewer__StateCollapsed {
+    max-height               : 0;
+    opacity                  : 0;
+    pointer-events           : none;
+    border-color             : transparent;
+    box-shadow               : none;
+}
+
+.ValeSpec__CadObjectViewer__FloatingPanelHeader {
+    display                  : flex;
+    align-items              : center;
+    justify-content          : space-between;
+    padding                  : 7px 10px 6px;
+    background               : var(--bg-surface);
+    border-bottom            : 1px solid var(--border-subtle);
+    user-select              : none;
+}
+
+.ValeSpec__CadObjectViewer__FloatingPanelTitle {
+    font-size                : 0.68rem;
+    font-weight              : 600;
+    letter-spacing           : 0.1em;
+    color                    : var(--text-dim);
+    text-transform           : uppercase;
+}
+
+.ValeSpec__CadObjectViewer__FloatingPanelClose {
+    font-size                : 0.72rem;
+    color                    : var(--text-dim);
+    cursor                   : pointer;
+    line-height              : 1;
+    padding                  : 1px 3px;
+    border-radius            : 3px;
+    transition               : color 0.12s, background 0.12s;
+}
+.ValeSpec__CadObjectViewer__FloatingPanelClose:hover {
+    color                    : var(--text-primary);
+    background               : var(--bg-surface-hover);
+}
+
+#ValeSpec__CadObjectViewer__FloatingDetailContent {
+    padding                  : 8px 10px 10px;
+    font-size                : 0.72rem;
+    color                    : var(--text-secondary);
+}
+#ValeSpec__CadObjectViewer__FloatingDetailContent .ValeSpec__CadObjectViewer__DetailRow {
+    display                  : flex;
+    justify-content          : space-between;
+    padding                  : 3px 0;
+    border-bottom            : 1px solid var(--border-subtle);
+}
+#ValeSpec__CadObjectViewer__FloatingDetailContent .ValeSpec__CadObjectViewer__DetailKey   { color : var(--text-dim); }
+#ValeSpec__CadObjectViewer__FloatingDetailContent .ValeSpec__CadObjectViewer__DetailValue { color : var(--text-primary); font-variant-numeric : tabular-nums; }

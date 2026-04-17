@@ -29,7 +29,7 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 2124,
+                "Assembly__Dimensions__Config__WidthMm": 1848,
                 "Assembly__Dimensions__Config__HeightMm": 3000
             },
             "Assembly__Lever__Config": {
@@ -52,12 +52,12 @@
             "Handing": "Right",
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
-                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__Hanging": "Standard",
                 "Assembly__Hinge__Config__Projection": 4
             },
             "Assembly__DoorCondition__Config": {
-                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
-                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__ConditionCode": "TALL_STANDARD_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors greater than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 4 hinges per leaf.",
                 "Assembly__DoorCondition__Config__AppliesWarning": false
             },
             "Assembly__Locking__Config": {
@@ -69,28 +69,6 @@
             },
             "Assembly__Warnings__Config": {
                 "Assembly__Warnings__Config__ActiveWarnings": [
-                    {
-                        "RuleId": "WARN_PANEL_WIDTH_OVER_1050",
-                        "Severity": "Warning",
-                        "WarningMessage": "Door panel exceeds 1050 mm width. Subject to approval by Senior Technical Manager.",
-                        "DocumentWarning": {
-                            "Title": "Door Panel Width Warning",
-                            "Message": "One or more door panels exceed 1050 mm width. Subject to approval by Senior Technical Manager."
-                        },
-                        "TriggeredAtValue": "1062 mm/panel (2 panels, 2124 mm total)",
-                        "Acknowledged": false
-                    },
-                    {
-                        "RuleId": "WARN_WIDE_LEAF_HINGE_REVIEW",
-                        "Severity": "Caution",
-                        "WarningMessage": "Panel over 1000 mm wide requires double-top hinge arrangement. Subject to review — may require double-top and double-bottom (5 hinges total) or a pivot system.",
-                        "DocumentWarning": {
-                            "Title": "Wide Leaf Hinge Review",
-                            "Message": "One or more panels exceed 1000 mm width and require a double-top hinge arrangement. Subject to review: may require double-top and double-bottom (5 hinges total) or a pivot system."
-                        },
-                        "TriggeredAtValue": "1062 mm/panel (2 panels, 2124 mm total)",
-                        "Acknowledged": false
-                    },
                     {
                         "RuleId": "WARN_DOOR_HEIGHT_OVER_2400",
                         "Severity": "Warning",

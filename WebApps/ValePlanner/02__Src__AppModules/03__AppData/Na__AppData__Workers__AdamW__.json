@@ -838,6 +838,22 @@
           "endTime": "16:15",
           "title": "Dev |  CAD to Json System",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1776409594527",
+          "date": "2026-04-16",
+          "startTime": "12:00",
+          "endTime": "13:00",
+          "title": "Lunch",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1776409616960",
+          "date": "2026-04-16",
+          "startTime": "14:00",
+          "endTime": "15:30",
+          "title": "Meeting |  SB",
+          "color": "na-shift-color-amber"
         }
       ]
     }

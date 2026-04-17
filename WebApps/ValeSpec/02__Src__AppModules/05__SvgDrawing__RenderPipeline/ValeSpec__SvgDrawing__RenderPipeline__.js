@@ -163,6 +163,41 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Extract Hinge Config and Look Up Hinge Data
+    // ------------------------------------------------------------
+    function ValeSpec__RenderPipeline__ExtractHingeData(assemblyData, hardwareIndex) {
+        var hingeSection  =  assemblyData['Assembly__Hinge__Config'] || {};
+        var hingeStyle    =  hingeSection['Assembly__Hinge__Config__Style'] || 'Decorative';
+        var hingeCount    =  hingeSection['Assembly__Hinge__Config__HingesPerLeaf'] || 0;
+        
+        var dims = ValeSpec__RenderPipeline__ExtractDimensions(assemblyData);
+        var height_mm = dims.height_mm;
+        
+        var hingePositions_mm = [];
+        var HingeCalculator = window.ValeSpec__MathUtils__HingeCalculator;
+        if (HingeCalculator && HingeCalculator.ValeSpec__HingeCalculator__CalculateHingePositions && height_mm > 0 && hingeCount > 0) {
+            hingePositions_mm = HingeCalculator.ValeSpec__HingeCalculator__CalculateHingePositions(height_mm, hingeCount);
+        }
+        
+        var hardwareData = null;
+        if (hardwareIndex) {
+            var keys = Object.keys(hardwareIndex);
+            var searchName = hingeStyle === 'Basic' ? 'Standard Hinge' : 'Standard Hinge with Urns';
+            
+            for (var i = 0; i < keys.length; i++) {
+                var item = hardwareIndex[keys[i]];
+                if (item && item['HardwareItem__Name'] === searchName) {
+                    hardwareData = item;
+                    break;
+                }
+            }
+        }
+        
+        return { hardwareData: hardwareData, hingePositions_mm: hingePositions_mm };
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Extract Opening Config from Assembly Data
     // ------------------------------------------------------------
     function ValeSpec__RenderPipeline__ExtractOpeningConfig(assemblyData) {
@@ -231,6 +266,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var handing   =  ValeSpec__RenderPipeline__ExtractDoorHanding(assemblyData);
         if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
+        var hingeResult = ValeSpec__RenderPipeline__ExtractHingeData(assemblyData, hardwareIndex);
 
         var frameConfig      =  config['SvgDrawing__Frame__Config']            || {};
         var panelConfig      =  config['SvgDrawing__Panel__Config']            || {};
@@ -284,6 +320,9 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         svg += '<g id="ValeSpec__SvgDrawing__LayerIronmongery">';
         svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig, fillColor);
+        if (ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderHinges) {
+            svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderHinges(panelResult.panels, hingeResult.hardwareData, hingeResult.hingePositions_mm, ironConfig, fillColor);
+        }
         svg += '</g>';
 
         if (ValeSpec__RenderPipeline__PanelRoleLabelRenderer) {
@@ -294,6 +333,9 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         svg += '<g id="ValeSpec__SvgDrawing__LayerDimensions">';
         svg += ValeSpec__RenderPipeline__DimensionRenderer.ValeSpec__DimensionRenderer__RenderDimensions(dims.width_mm, dims.height_mm, dimConfig);
+        if (ValeSpec__RenderPipeline__DimensionRenderer.ValeSpec__DimensionRenderer__RenderHingeDimensions) {
+            svg += ValeSpec__RenderPipeline__DimensionRenderer.ValeSpec__DimensionRenderer__RenderHingeDimensions(dims.width_mm, dims.height_mm, hingeResult.hingePositions_mm, dimConfig);
+        }
         svg += '</g>';
 
         svg += '</svg>';
@@ -315,6 +357,7 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
         var handing   =  ValeSpec__RenderPipeline__ExtractDoorHanding(assemblyData);
         if (!ValeSpec__RenderPipeline__IsDoorTypeConfigured(doorType)) return '';
         var hwResult  =  ValeSpec__RenderPipeline__ExtractHardwareData(assemblyData, hardwareIndex);
+        var hingeResult = ValeSpec__RenderPipeline__ExtractHingeData(assemblyData, hardwareIndex);
 
         var frameConfig      =  config['SvgDrawing__Frame__Config']            || {};
         var panelConfig      =  config['SvgDrawing__Panel__Config']            || {};
@@ -370,6 +413,9 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         svg += '<g id="ValeSpec__SvgDrawing__ThumbLayerIronmongery">';
         svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderIronmongery(panelResult.panels, hwResult.hardwareData, hwResult.leverHeight_mm, ironConfig, fillColor);
+        if (ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderHinges) {
+            svg += ValeSpec__RenderPipeline__IronmongeryRenderer.ValeSpec__IronmongeryRenderer__RenderHinges(panelResult.panels, hingeResult.hardwareData, hingeResult.hingePositions_mm, ironConfig, fillColor);
+        }
         svg += '</g>';
 
         if (ValeSpec__RenderPipeline__PanelRoleLabelRenderer) {

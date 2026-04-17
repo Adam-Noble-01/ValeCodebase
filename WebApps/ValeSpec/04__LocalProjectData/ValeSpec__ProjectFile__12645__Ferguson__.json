@@ -9,12 +9,12 @@
         "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-17",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
         "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble",
-        "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-16"
+        "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-17"
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
-        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Bronze",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Newton Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": "Client owns an evil dog, it will bark at you, it will bite you. But worse of all, it will judge you! "
     },
     "ValeSpec__ProjectFile__Assemblies": [
@@ -33,7 +33,7 @@
                 "Assembly__Dimensions__Config__HeightMm": 3000
             },
             "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
                 "Assembly__Lever__Config__HeightMm": 1000
             },
             "Assembly__Miscellaneous__Config": {
@@ -53,7 +53,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Standard",
-                "Assembly__Hinge__Config__Projection": 4
+                "Assembly__Hinge__Config__Projection": 5,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "TALL_STANDARD_4_HINGES",
@@ -95,15 +96,15 @@
             },
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
-                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Handles": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "misc"
+                "Assembly__ProgressState__Config__ActiveStepId": "handles"
             }
         },
         {
@@ -136,7 +137,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 5
+                "Assembly__Hinge__Config__Projection": 5,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
@@ -211,7 +213,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 5
+                "Assembly__Hinge__Config__Projection": 5,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
@@ -273,7 +276,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 4
+                "Assembly__Hinge__Config__Projection": 4,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",

@@ -1,0 +1,21 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "2410",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Epstein",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Epstein Doors",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-17",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-17",
+        "ValeSpec__ProjectFile__Metadata__DateIssued": "",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
+        "ValeSpec__ProjectFile__Metadata__Author": ""
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "ValeSpec__ProjectFile__Assemblies": []
+}

@@ -85,6 +85,58 @@
         },
         "HardwareItem__AvailableFinishes": []
     },
+    "Standard Hinge": {
+        "HardwareItem__Name": "Standard Hinge",
+        "HardwareItem__Code": "VG_IRN0101",
+        "HardwareItem__Type": "Hinge",
+        "HardwareItem__Description": "A standard hinge for a door / window.",
+        "HardwareItem__Notes": "A standard hinge for a door / window.",
+        "HardwareItem__DataFile": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0101__Hinge__StandardHinge__.json",
+        "HardwareItem__IsComplementary": true,
+        "HardwareItem__Supplier": "TBC",
+        "HardwareItem__SupplierProductCode": "",
+        "HardwareItem__SupplierPrice__GBP": "",
+        "HardwareItem__PanelPlacement": {
+            "DefaultHeightFromOrigin_mm": null,
+            "RightHand__Transform": {
+                "OffsetX_mm": null,
+                "OffsetY_mm": null,
+                "ScaleX": null
+            },
+            "LeftHand__Transform": {
+                "OffsetX_mm": null,
+                "OffsetY_mm": null,
+                "ScaleX": null
+            }
+        },
+        "HardwareItem__AvailableFinishes": []
+    },
+    "Standard Hinge with Urns": {
+        "HardwareItem__Name": "Standard Hinge with Urns",
+        "HardwareItem__Code": "VG_IRN0102",
+        "HardwareItem__Type": "Hinge",
+        "HardwareItem__Description": "A standard hinge for a door / window with urns.",
+        "HardwareItem__Notes": "A standard hinge for a door / window with urns.",
+        "HardwareItem__DataFile": "https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeSpec/03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0102__Hinge__StandardHinge__WithUrns__.json",
+        "HardwareItem__IsComplementary": true,
+        "HardwareItem__Supplier": "TBC",
+        "HardwareItem__SupplierProductCode": "",
+        "HardwareItem__SupplierPrice__GBP": "",
+        "HardwareItem__PanelPlacement": {
+            "DefaultHeightFromOrigin_mm": null,
+            "RightHand__Transform": {
+                "OffsetX_mm": null,
+                "OffsetY_mm": null,
+                "ScaleX": null
+            },
+            "LeftHand__Transform": {
+                "OffsetX_mm": null,
+                "OffsetY_mm": null,
+                "ScaleX": null
+            }
+        },
+        "HardwareItem__AvailableFinishes": []
+    },
     "Vale Ghost Guy": {
         "HardwareItem__Name": "Vale Ghost Guy",
         "HardwareItem__Code": "VG_IRN999_",

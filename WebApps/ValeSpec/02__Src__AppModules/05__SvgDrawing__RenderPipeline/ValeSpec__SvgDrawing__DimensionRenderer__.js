@@ -243,6 +243,92 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Hinge Dimension Rendering
+// -----------------------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Hinge Dimensions to Right of Frame
+    // ------------------------------------------------------------
+    function ValeSpec__DimensionRenderer__RenderHingeDimensions(width_mm, height_mm, hingePositions_mm, config) {
+        if (!hingePositions_mm || hingePositions_mm.length === 0) return '';
+        
+        var lineColor    =  '#e69999'; // Less saturated version of #cc3333
+        var textColor    =  '#e69999';
+        var scaleFactor  =  config['SvgDrawing__Dimension__Config__FontSizeScaleFactor'] || 0.02;
+        var tickSize     =  config['SvgDrawing__Dimension__Config__TickSizeMm']          || 15;
+        var offset       =  config['SvgDrawing__Dimension__Config__OffsetFromFrameMm']   || 60;
+        var pastDimMm    =  ValeSpec__DimensionRenderer__ParseMm(config['SvgDrawing__Dimension__Config__ExtensionPastDimensionLineMm'], 22);
+        var cornerInset  =  ValeSpec__DimensionRenderer__ParseMm(config['SvgDrawing__Dimension__Config__ExtensionInsetFromCornerMm'], 10);
+        var lineWidth    =  2;
+
+        var fontSize   =  ValeSpec__DimensionRenderer__CalcFontSize(height_mm, scaleFactor) * 0.75; // 25% smaller
+        var dimX       =  width_mm + offset;               // <-- Right of the frame
+        
+        var svg  =  '';
+        
+        // Sort positions from bottom to top (0 to height_mm)
+        var sortedPositions = hingePositions_mm.slice().sort(function(a, b) { return a - b; });
+        
+        // Add top and bottom of frame to the list of points to dimension between
+        var allPoints = [0].concat(sortedPositions).concat([height_mm]);
+        
+        // Draw the main vertical line
+        var svgTopY = -height_mm;
+        var svgBotY = 0;
+        svg += '<line'
+            + ' x1="' + dimX + '" y1="' + svgTopY + '"'
+            + ' x2="' + dimX + '" y2="' + svgBotY + '"'
+            + ' stroke="'       + lineColor + '"'
+            + ' stroke-width="' + lineWidth + '"'
+            + ' />';
+            
+        // Draw witnesses and ticks for each point
+        for (var i = 0; i < allPoints.length; i++) {
+            var y = allPoints[i];
+            var svgY = -y;
+            
+            // Witness line
+            var witnessStartX = width_mm + cornerInset;
+            var witnessEndX   = dimX + pastDimMm;
+            svg += ValeSpec__DimensionRenderer__RenderLineSegment(witnessStartX, svgY, witnessEndX, svgY, lineColor, lineWidth);
+            
+            // Tick
+            svg += ValeSpec__DimensionRenderer__RenderTick(dimX, svgY, tickSize, lineColor, lineWidth);
+        }
+        
+        // Draw labels between points
+        for (var i = 0; i < allPoints.length - 1; i++) {
+            var y1 = allPoints[i];
+            var y2 = allPoints[i+1];
+            var dist = y2 - y1;
+            
+            var midY = y1 + (dist / 2);
+            var svgMidY = -midY;
+            
+            var labelX    =  dimX + fontSize + 8;              // <-- Position text right of dimension line
+            var labelY    =  svgMidY;                          // <-- Centre between the two points
+            var rotation  =  -90;                              // <-- Rotate text for vertical reading
+            
+            svg += '<text'
+                + ' x="'               + labelX     + '"'
+                + ' y="'               + labelY     + '"'
+                + ' font-size="'       + fontSize   + '"'
+                + ' fill="'            + textColor  + '"'
+                + ' text-anchor="middle"'
+                + ' dominant-baseline="middle"'
+                + ' transform="rotate(' + rotation + ' ' + labelX + ' ' + labelY + ')"'
+                + ' style="cursor:pointer;"'
+                + '>' + Math.round(dist) + ' mm</text>';
+        }
+
+        return svg;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Public Render Entry Point and Exports
 // -----------------------------------------------------------------------------
 
@@ -264,7 +350,8 @@ const ValeSpec__SvgDrawing__DimensionRenderer = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__DimensionRenderer__RenderDimensions  : ValeSpec__DimensionRenderer__RenderDimensions
+        ValeSpec__DimensionRenderer__RenderDimensions       : ValeSpec__DimensionRenderer__RenderDimensions,
+        ValeSpec__DimensionRenderer__RenderHingeDimensions  : ValeSpec__DimensionRenderer__RenderHingeDimensions
     };
 
 })();

@@ -359,6 +359,17 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
             didMutate  =  true;
         }
 
+        var hingeCfg  =  assembly['Assembly__Hinge__Config'];
+        if (!hingeCfg) {
+            assembly['Assembly__Hinge__Config'] = {};
+            hingeCfg = assembly['Assembly__Hinge__Config'];
+            didMutate = true;
+        }
+        if (!hingeCfg['Assembly__Hinge__Config__Style']) {
+            hingeCfg['Assembly__Hinge__Config__Style'] = 'Decorative';
+            didMutate = true;
+        }
+
         var progressResult  =  ValeSpec__SchemaValidator__NormaliseAssemblyProgressState(assembly['Assembly__ProgressState__Config']);
         assembly['Assembly__ProgressState__Config']  =  progressResult.ProgressState || ValeSpec__SchemaValidator__BuildDefaultAssemblyProgressState();
         if (progressResult.DidMutate) didMutate  =  true;

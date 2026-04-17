@@ -3,6 +3,50 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.2.0 - 17-Apr-2026
+### Hinge Configuration Refactor, SVG Dimensions, and Schedule Accuracy
+
+A significant update to the door configurator, separating hinge and handle specifications, introducing hinge styles, rendering dynamic hinge dimensions on the SVG preview, and ensuring accurate hinge counting across the application.
+
+#### Hinge and Handle Separation (`20__System__ProductAssembly__EditorMode`)
+- **Split UI Modules:** Separated `ValeSpec__AssemblyEditor__DoorConfigurator__HingesAndHandles__.js` into two distinct files: `Handles__.js` and `Hinges__.js` for better maintainability and clearer step progression.
+- **Hinge Style Toggle:** Added a new "Hinge Style" toggle to the Hinge Specifications step, allowing users to choose between "Decorative" (default, maps to `VG_IRN0102` with urns) and "Basic" (maps to `VG_IRN0101`).
+- **Spacing Display:** Added a read-only display area in the Hinge step that calculates and shows the exact vertical spacing (C/C dimensions) of each hinge from bottom to top.
+
+#### Hinge Logic and Data (`04__MathUtils`, `03__Data__HardwareDataLibrary`)
+- **Updated Thresholds:** Refined `ValeSpec__MathUtils__HingeCalculator__.js` with new width and height thresholds for determining the required number of hinges per leaf (e.g., Single doors >= 1000mm wide require 4 hinges / Double Top).
+- **Position Calculation:** Added `ValeSpec__HingeCalculator__CalculateHingePositions` to calculate the exact Y-coordinates for hinges (top hinge at `height - 201mm`, bottom at `251mm`, with remaining hinges evenly distributed).
+- **Hardware Data Finishes:** Updated the JSON data files for `VG_IRN0101` and `VG_IRN0102` to include the standard available finishes (`Unlacquered Brass`, `Satin Nickel`, `Bronze`).
+
+#### SVG Rendering Pipeline (`05__SvgDrawing__RenderPipeline`)
+- **Hinge SVG Rendering:** Added `ValeSpec__IronmongeryRenderer__RenderHinges` and `BuildHingeTransform` to `IronmongeryRenderer__.js` to dynamically draw the selected hinge vector data at the calculated Y-positions on the door panels.
+- **Hinge Dimensions:** Added `ValeSpec__DimensionRenderer__RenderHingeDimensions` to `DimensionRenderer__.js`. This draws a vertical dimension line on the right side of the frame, with ticks at each hinge position and text labels showing the C/C distances. The hinge dimensions are styled with a less saturated red (`#e69999`) and a 25% smaller font size to distinguish them from the main overall dimensions.
+- **Pipeline Integration:** Updated `ValeSpec__SvgDrawing__RenderPipeline__.js` to extract the hinge data based on the selected style and call the new hinge rendering and dimensioning functions for both the main assembly view and the document thumbnails.
+
+#### Document Preview and Schema (`40__System__DocumentPreviewMode`, `03__AppUtils`)
+- **Accurate Hinge Counting:** Fixed a bug in `ValeSpec__DocPreview__DocumentModel__.js` where bifold door leaf counts were hardcoded to 2. It now correctly reads `Assembly__BifoldConfig__PanelCount` to calculate the total number of hinges for the summary table.
+- **Assembly Schedule Updates:** Added `ValeSpec__SpecTableRenderer__GetTotalHinges` to `SpecTableRenderer__.js` using the same accurate leaf count logic. Added new rows for "Total Hinges" and "Hinge Style" to the "Full Ironmongery Schedule Per Assembly" table.
+- **Schema Validation:** Updated `ValeSpec__AppUtils__ProjectSchemaValidator__.js` to ensure the `Assembly__Hinge__Config__Style` property is retained during project load/save and defaults to 'Decorative' if missing.
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| Assembly Editor | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Handles__.js` *(new)* |
+| Assembly Editor | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Hinges__.js` *(new)* |
+| Assembly Editor | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Main__.js` |
+| Math Utils | `04__MathUtils/ValeSpec__MathUtils__HingeCalculator__.js` |
+| Hardware Data | `03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0101__Hinge__StandardHinge__.json` |
+| Hardware Data | `03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0102__Hinge__StandardHinge__WithUrns__.json` |
+| SVG Rendering | `05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__IronmongeryRenderer__.js` |
+| SVG Rendering | `05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__DimensionRenderer__.js` |
+| SVG Rendering | `05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__RenderPipeline__.js` |
+| Document Preview | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__DocumentModel__.js` |
+| Document Preview | `40__System__DocumentPreviewMode/ValeSpec__DocPreview__SpecTableRenderer__.js` |
+| App Utils | `03__AppUtils/ValeSpec__AppUtils__ProjectSchemaValidator__.js` |
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.1.9 - 17-Apr-2026
 ### Product Index Module, Live Search Filtering, and Global Hotkeys
 

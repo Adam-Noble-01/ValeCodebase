@@ -4,7 +4,7 @@
         "ValeSpec__ProjectFile__Metadata__ProjectCode": "2601",
         "ValeSpec__ProjectFile__Metadata__ProjectName": "Derekson",
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery",
-        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Completed",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
         "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-17",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
@@ -35,7 +35,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 3,
                 "Assembly__Hinge__Config__Hanging": "Standard",
-                "Assembly__Hinge__Config__Projection": 5
+                "Assembly__Hinge__Config__Projection": 5,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
@@ -110,6 +111,9 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
                 "Assembly__ProgressState__Config__ActiveStepId": "doorType"
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__Style": "Decorative"
             }
         }
     ]

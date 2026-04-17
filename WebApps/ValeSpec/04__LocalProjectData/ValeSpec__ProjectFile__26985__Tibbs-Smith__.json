@@ -35,7 +35,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 4
+                "Assembly__Hinge__Config__Projection": 4,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
@@ -98,7 +99,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 6
+                "Assembly__Hinge__Config__Projection": 6,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
@@ -160,7 +162,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 4
+                "Assembly__Hinge__Config__Projection": 4,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
@@ -223,7 +226,8 @@
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 4
+                "Assembly__Hinge__Config__Projection": 4,
+                "Assembly__Hinge__Config__Style": "Decorative"
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",

@@ -345,7 +345,14 @@ const ValeSpec__DocPreview__DocumentModel = (function() {
         if (!isNaN(hingesPerLeaf) && hingesPerLeaf > 0) {
             var doorCfg      =  assembly['Assembly__DoorType__Config'] || {};
             var doorType     =  (doorCfg['Assembly__DoorType__Config__Type'] || '').toLowerCase();
-            var leafCount    =  (doorType === 'double doors' || doorType === 'bifold doors') ? 2 : 1;
+            var leafCount    =  1;
+            if (doorType === 'double doors') {
+                leafCount = 2;
+            } else if (doorType === 'bifold doors') {
+                var bifoldCfg = assembly['Assembly__BifoldConfig'] || {};
+                var fromAsm = parseInt(bifoldCfg['Assembly__BifoldConfig__PanelCount'], 10);
+                leafCount = (!isNaN(fromAsm) && fromAsm > 0) ? fromAsm : 2;
+            }
             var totalHinges  =  hingesPerLeaf * leafCount;
             var hingeLabel   =  hingeProjection ? (hingeProjection + '" Hinge') : 'Hinge';
             records.push(ValeSpec__DocumentModel__BuildSummaryRecord(hingeLabel, '', finishText, totalHinges, assemblyTitle, 'Hinge'));

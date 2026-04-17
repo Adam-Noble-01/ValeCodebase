@@ -149,6 +149,30 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Extract Total Hinges
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetTotalHinges(assembly) {
+        var hingeConfig  =  assembly['Assembly__Hinge__Config'] || {};
+        var count        =  parseInt(hingeConfig['Assembly__Hinge__Config__HingesPerLeaf'], 10);
+        if (isNaN(count) || count <= 0) return '—';
+        
+        var doorCfg      =  assembly['Assembly__DoorType__Config'] || {};
+        var doorType     =  (doorCfg['Assembly__DoorType__Config__Type'] || '').toLowerCase();
+        
+        var leafCount    =  1;
+        if (doorType === 'double doors') {
+            leafCount = 2;
+        } else if (doorType === 'bifold doors') {
+            var bifoldCfg = assembly['Assembly__BifoldConfig'] || {};
+            var fromAsm = parseInt(bifoldCfg['Assembly__BifoldConfig__PanelCount'], 10);
+            leafCount = (!isNaN(fromAsm) && fromAsm > 0) ? fromAsm : 2;
+        }
+        
+        return String(count * leafCount);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Extract Hinge Projection
     // ------------------------------------------------------------
     function ValeSpec__SpecTableRenderer__GetHingeProjection(assembly) {
@@ -156,6 +180,15 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
         var projection   =  hingeConfig['Assembly__Hinge__Config__Projection']    || '—';
         if (projection === '—') return projection;
         return projection + '"';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Hinge Style
+    // ------------------------------------------------------------
+    function ValeSpec__SpecTableRenderer__GetHingeStyle(assembly) {
+        var hingeConfig  =  assembly['Assembly__Hinge__Config'] || {};
+        return hingeConfig['Assembly__Hinge__Config__Style'] || 'Decorative';
     }
     // ------------------------------------------------------------
 
@@ -326,7 +359,9 @@ const ValeSpec__DocPreview__SpecTableRenderer = (function() {
         rows.push({ label: 'Locking Points',       value: ValeSpec__SpecTableRenderer__GetLockingPoints(assembly) });
         rows.push({ label: 'Cylinder Requirement', value: ValeSpec__SpecTableRenderer__GetCylinderDesc(assembly) });
         rows.push({ label: 'Hinges Per Leaf',      value: ValeSpec__SpecTableRenderer__GetHingesPerLeaf(assembly) });
+        rows.push({ label: 'Total Hinges',         value: ValeSpec__SpecTableRenderer__GetTotalHinges(assembly) });
         rows.push({ label: 'Hinge Projection',     value: ValeSpec__SpecTableRenderer__GetHingeProjection(assembly) });
+        rows.push({ label: 'Hinge Style',          value: ValeSpec__SpecTableRenderer__GetHingeStyle(assembly) });
         rows.push({ label: 'Hinge Hand',           value: ValeSpec__SpecTableRenderer__GetHingeHand(assembly) });
         rows.push({ label: 'Cabin Hook Type',      value: ValeSpec__SpecTableRenderer__GetCabinHookType(assembly) });
         rows.push({ label: 'Cabin Hooks No.',      value: ValeSpec__SpecTableRenderer__GetCabinHooksNo(assembly) });

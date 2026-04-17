@@ -141,10 +141,68 @@ const ValeSpec__SvgDrawing__IronmongeryRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build SVG Transform for Hinge Placement on a Panel
+    // ------------------------------------------------------------
+    function ValeSpec__IronmongeryRenderer__BuildHingeTransform(panel, hingeY_mm) {
+        var panelHand   =  panel && panel.hand ? panel.hand : 'right';
+        var isLeftPanel =  (panelHand === 'left');
+
+        var panelOriginSvgY  =  -panel.y - panel.height;
+
+        if (isLeftPanel) {
+            var anchorX  =  panel.x;
+            var anchorY  =  panelOriginSvgY + (panel.height - hingeY_mm);
+            return 'translate(' + anchorX + ',' + anchorY + ') scale(-1,1)';
+        }
+
+        var anchorX  =  panel.x + panel.width;
+        var anchorY  =  panelOriginSvgY + (panel.height - hingeY_mm);
+        return 'translate(' + anchorX + ',' + anchorY + ')';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render Hinges onto Panels
+    // ------------------------------------------------------------
+    function ValeSpec__IronmongeryRenderer__RenderHinges(panels, hingeData, hingePositions_mm, config, fillColor) {
+        if (!panels || !panels.length) return '';
+        if (!hingeData) return '';
+        if (!hingePositions_mm || !hingePositions_mm.length) return '';
+
+        var vectorData  =  hingeData['HardwareItem__VectorData'];
+        if (!vectorData || !vectorData['Paths'] || !vectorData['Paths'].length) return '';
+
+        var ironConfig   =  config || {};
+        var strokeColor  =  ironConfig['SvgDrawing__Ironmongery__Config__StrokeColor']   || '#172b3a';
+        var strokeWidth  =  ironConfig['SvgDrawing__Ironmongery__Config__StrokeWidthMm'] || 1.2;
+        var paths        =  vectorData['Paths'];
+
+        var pathsSvg  =  ValeSpec__IronmongeryRenderer__RenderPaths(paths, strokeColor, strokeWidth, fillColor);
+
+        var svg  =  '';
+
+        for (var p = 0; p < panels.length; p++) {
+            var panel = panels[p];
+            for (var h = 0; h < hingePositions_mm.length; h++) {
+                var hingeY_mm = hingePositions_mm[h];
+                var transform = ValeSpec__IronmongeryRenderer__BuildHingeTransform(panel, hingeY_mm);
+                
+                svg += '<g transform="' + transform + '">';
+                svg += pathsSvg;
+                svg += '</g>';
+            }
+        }
+
+        return svg;
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__IronmongeryRenderer__RenderIronmongery  : ValeSpec__IronmongeryRenderer__RenderIronmongery
+        ValeSpec__IronmongeryRenderer__RenderIronmongery  : ValeSpec__IronmongeryRenderer__RenderIronmongery,
+        ValeSpec__IronmongeryRenderer__RenderHinges       : ValeSpec__IronmongeryRenderer__RenderHinges
     };
 
 })();

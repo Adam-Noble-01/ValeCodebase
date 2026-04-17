@@ -160,6 +160,11 @@
         display                              : block;
     }
 
+    .ValeSpec__ProductIndex__SvgPreview svg * {
+        vector-effect                        : non-scaling-stroke;
+        stroke-width                         : 0.6px;
+    }
+
     /* Section Name: Loading State */
     .ValeSpec__ProductIndex__SvgPreview--loading::after {
         content                              : "Loading...";
@@ -295,6 +300,11 @@
         width                                : 100%;
         height                               : 100%;
         display                              : block;
+    }
+
+    .ValeSpec__ProductIndex__DetailSvgWrapper svg * {
+        vector-effect                        : non-scaling-stroke;
+        stroke-width                         : 0.5px;
     }
 
     /* Section Name: Detail Right (Data) */

@@ -12,9 +12,10 @@
    DESCRIPTION:
    - Determines hinge count and hanging arrangement based on door type,
      width, and height dimensions
-   - Single doors use 949mm/950mm standard-vs-wide thresholds
-   - Double doors use 1899mm/1900mm standard-vs-wide thresholds
+   - Single doors use 1000mm standard-vs-wide thresholds
+   - Double doors use 1800mm standard-vs-wide thresholds
    - Returns { count, hanging } for each leaf
+   - Calculates hinge vertical positions
 
    ============================================================================= */
 
@@ -26,11 +27,9 @@ const ValeSpec__MathUtils__HingeCalculator = (function() {
 
     // MODULE CONSTANTS | Threshold Values
     // ------------------------------------------------------------
-    const SINGLE_WIDTH_MAX_STANDARD  =  949;                                // <-- Max single width for standard (3/4 hinge) rules
-    const DOUBLE_WIDTH_MAX_STANDARD  =  1899;                               // <-- Max double-set width for standard (3/4 hinge) rules
-    const WIDE_SINGLE_THRESHOLD      =  950;                                // <-- Single width at/above requires Double Top
-    const WIDE_DOUBLE_THRESHOLD      =  1900;                               // <-- Double overall width at/above requires Double Top
-    const TALL_DOOR_THRESHOLD        =  2250;                               // <-- Height threshold for 4-hinge standard
+    const WIDE_SINGLE_THRESHOLD      =  1000;                               // <-- Single width at/above requires Double Top
+    const WIDE_DOUBLE_THRESHOLD      =  1800;                               // <-- Double overall width at/above requires Double Top
+    const TALL_DOOR_THRESHOLD        =  2200;                               // <-- Height threshold for 4-hinge standard
     // ------------------------------------------------------------
 
 
@@ -40,18 +39,17 @@ const ValeSpec__MathUtils__HingeCalculator = (function() {
         var safeDoorType  =  (doorType || '').toLowerCase();
         var isSingleDoor  =  safeDoorType.indexOf('single') !== -1;
 
-        var widthStandardMax  =  isSingleDoor ? SINGLE_WIDTH_MAX_STANDARD : DOUBLE_WIDTH_MAX_STANDARD;
         var wideThreshold     =  isSingleDoor ? WIDE_SINGLE_THRESHOLD     : WIDE_DOUBLE_THRESHOLD;
 
         if (width_mm >= wideThreshold) {
             return { count: 4, hanging: 'Double Top', condition: 'DOUBLE_TOP_4_HINGES' }; // <-- Wide door rule (leaf basis)
         }
 
-        if (height_mm > TALL_DOOR_THRESHOLD && width_mm <= widthStandardMax) {
+        if (height_mm >= TALL_DOOR_THRESHOLD && width_mm < wideThreshold) {
             return { count: 4, hanging: 'Standard', condition: 'TALL_STANDARD_4_HINGES' }; // <-- Tall but not wide
         }
 
-        if (height_mm <= TALL_DOOR_THRESHOLD && width_mm <= widthStandardMax) {
+        if (height_mm < TALL_DOOR_THRESHOLD && width_mm < wideThreshold) {
             return { count: 3, hanging: 'Standard', condition: 'STANDARD_3_HINGES' };      // <-- Standard 3-hinge condition
         }
 
@@ -60,10 +58,37 @@ const ValeSpec__MathUtils__HingeCalculator = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Calculate Hinge Positions
+    // ------------------------------------------------------------
+    function ValeSpec__HingeCalculator__CalculateHingePositions(height_mm, hingeCount) {
+        var positions = [];
+        if (hingeCount < 2) return positions;
+
+        var topY = height_mm - 201;
+        var bottomY = 251;
+        
+        positions.push(topY);
+        
+        var remainingHinges = hingeCount - 2;
+        if (remainingHinges > 0) {
+            var spacing = (topY - bottomY) / (remainingHinges + 1);
+            for (var i = 1; i <= remainingHinges; i++) {
+                positions.push(topY - (spacing * i));
+            }
+        }
+        
+        positions.push(bottomY);
+        
+        return positions;
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__HingeCalculator__CalculateHingesPerLeaf  : ValeSpec__HingeCalculator__CalculateHingesPerLeaf
+        ValeSpec__HingeCalculator__CalculateHingesPerLeaf  : ValeSpec__HingeCalculator__CalculateHingesPerLeaf,
+        ValeSpec__HingeCalculator__CalculateHingePositions : ValeSpec__HingeCalculator__CalculateHingePositions
     };
 
 })();

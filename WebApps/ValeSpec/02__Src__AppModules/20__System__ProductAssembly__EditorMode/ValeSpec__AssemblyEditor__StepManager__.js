@@ -13,8 +13,17 @@
    - Manages ordered step state (active, completed, collapsed)
    - Renders horizontal progress bar with numbered step pills
    - Creates collapsible step card containers for each configurator section
-   - Handles expand/collapse transitions and auto-advance on selection
+   - Handles expand/collapse transitions; optional config-driven behaviours (auto-advance disabled in Na__AssemblyEditor__Config)
    - Provides API for sub-modules to register step cards and summaries
+
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - JSON-driven step validation (Na__AssemblyEditor__Config) with field highlighter class
+   - ValidateStep delegates dimensions and handles steps to DoorTypeAndDimensions / Handles modules
+   - Missing required DOM ids fail validation; dimensions/handles config arrays empty in JSON (validators own those steps)
+   - Finish step auto-marked complete when global or assembly ironmongery finish is set; optional skip to handles on Next
 
    ============================================================================= */
 
@@ -49,6 +58,7 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
     let ValeSpec__StepManager__NextProgressedSteps = {};   // <-- Map of stepId -> true when Next button used
     let ValeSpec__StepManager__SummaryCallbacks =  {};     // <-- Map of stepId -> function returning summary text
     let ValeSpec__StepManager__StateChangeListeners = [];  // <-- Listeners notified on step state changes
+    let ValeSpec__StepManager__ValidationConfig =  null;   // <-- Validation config
     let ValeSpec__StepManager__Initialised      =  false;  // <-- Prevents double-init
     // ------------------------------------------------------------
 
@@ -283,12 +293,116 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Load Validation Config
+    // ------------------------------------------------------------
+    async function ValeSpec__StepManager__LoadValidationConfig() {
+        try {
+            var response  =  await fetch('02__Src__AppModules/20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json');
+            if (!response.ok) return;
+            var data  =  await response.json();
+            ValeSpec__StepManager__ValidationConfig  =  data['AssemblyEditor__Validation__Config'] || null;
+        } catch (e) {
+            console.warn('[ValeSpec__StepManager] Validation config load failed:', e);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Validate Step Fields
+    // ------------------------------------------------------------
+    function ValeSpec__StepManager__ValidateStep(stepId) {
+        if (stepId === 'dimensions') {
+            var DoorDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
+            if (DoorDims && DoorDims.ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance) {
+                return DoorDims.ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance();
+            }
+            return false;
+        }
+        if (stepId === 'handles') {
+            var HandlesMod  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Handles;
+            if (HandlesMod && HandlesMod.ValeSpec__Handles__ValidateHandlesStepForAdvance) {
+                return HandlesMod.ValeSpec__Handles__ValidateHandlesStepForAdvance();
+            }
+            return false;
+        }
+
+        if (!ValeSpec__StepManager__ValidationConfig) return true;
+        var requiredFields  =  ValeSpec__StepManager__ValidationConfig['AssemblyEditor__Validation__Config__RequiredFields'] || {};
+        var fieldsToValidate  =  requiredFields[stepId] || [];
+        var isValid  =  true;
+
+        for (var i = 0; i < fieldsToValidate.length; i++) {
+            var fieldId  =  fieldsToValidate[i];
+            var fieldEl  =  document.getElementById(fieldId);
+            if (!fieldEl) {
+                isValid  =  false;
+                continue;
+            }
+
+            var val  =  fieldEl.value;
+            if (typeof val === 'string') val = val.trim();
+
+            if (!val) {
+                isValid  =  false;
+                fieldEl.classList.add('ValeSpec__ValidationError');
+
+                var clearError  =  function(e) {
+                    e.target.classList.remove('ValeSpec__ValidationError');
+                    e.target.removeEventListener('input', clearError);
+                    e.target.removeEventListener('change', clearError);
+                };
+                fieldEl.addEventListener('input', clearError);
+                fieldEl.addEventListener('change', clearError);
+            } else {
+                fieldEl.classList.remove('ValeSpec__ValidationError');
+            }
+        }
+        return isValid;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Handle Next Button Click from a Step
     // ------------------------------------------------------------
     function ValeSpec__StepManager__HandleNextButtonClick(currentStepId, nextStepId) {
+        if (!ValeSpec__StepManager__ValidateStep(currentStepId)) {
+            return;
+        }
         ValeSpec__StepManager__NextProgressedSteps[currentStepId]  =  true;
         ValeSpec__StepManager__MarkCompleted(currentStepId, true);
-        ValeSpec__StepManager__GoToStep(nextStepId);
+        
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (StateManager) {
+            var state = StateManager.ValeSpec__StateManager__GetState();
+            var globalFinish = state.globalIronmongeryFinish;
+            var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+            var assemblyFinish = '';
+            if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                assemblyFinish = assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+            }
+            if (globalFinish || assemblyFinish) {
+                ValeSpec__StepManager__NextProgressedSteps['finish']  =  true;
+                ValeSpec__StepManager__MarkCompleted('finish', true);
+            }
+        }
+        
+        var targetStepId = nextStepId;
+        if (targetStepId === 'finish') {
+            if (StateManager) {
+                var state = StateManager.ValeSpec__StateManager__GetState();
+                var globalFinish = state.globalIronmongeryFinish;
+                var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                var assemblyFinish = '';
+                if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                    assemblyFinish = assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+                }
+                if (globalFinish || assemblyFinish) {
+                    targetStepId = 'handles';
+                }
+            }
+        }
+        
+        ValeSpec__StepManager__GoToStep(targetStepId);
     }
     // ------------------------------------------------------------
 
@@ -371,11 +485,12 @@ const ValeSpec__AssemblyEditor__StepManager = (function() {
 
     // FUNCTION | Initialise Step Manager
     // ------------------------------------------------------------
-    function ValeSpec__StepManager__Init(container) {
+    async function ValeSpec__StepManager__Init(container) {
         if (ValeSpec__StepManager__Initialised) return;
         ValeSpec__StepManager__ContainerEl  =  container;
         if (!ValeSpec__StepManager__ContainerEl) return;
 
+        await ValeSpec__StepManager__LoadValidationConfig();
         ValeSpec__StepManager__BuildProgressBar();
         ValeSpec__StepManager__BuildStepsWrapper();
 

@@ -8,7 +8,7 @@
     },
     "ValeSpec__Ironmongery__GlobalDefaults__Config": {
         "ValeSpec__Ironmongery__GlobalDefaults__Config__Description": "Default selections applied globally across all assemblies in a new project document.",
-        "ValeSpec__Ironmongery__GlobalDefaults__Config__DefaultFinish": "Unlacquered Brass",
+        "ValeSpec__Ironmongery__GlobalDefaults__Config__DefaultFinish": "",
         "ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes": [
             {
                 "Name": "Unlacquered Brass",

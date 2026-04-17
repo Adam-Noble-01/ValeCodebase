@@ -17,6 +17,12 @@
    - Each layer wrapped in a named <g> group for DOM targeting
    - Provides RenderThumbnail for smaller document editor previews
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Ironmongery fill colour resolves assembly-specific Assembly__IronmongeryFinish__Config__Finish before global StateManager finish (RenderAssembly and RenderThumbnail)
+
    ============================================================================= */
 
 // =============================================================================
@@ -282,14 +288,18 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         var StateManager    =  window.ValeSpec__AppCore__StateManager;
         var globalFinish    =  StateManager ? StateManager.ValeSpec__StateManager__GetState().globalIronmongeryFinish : null;
+        var finishCfg       =  assemblyData['Assembly__IronmongeryFinish__Config'] || {};
+        var assemblyFinish  =  finishCfg['Assembly__IronmongeryFinish__Config__Finish'];
+        var activeFinish    =  assemblyFinish || globalFinish;
+
         var ConfigLoader    =  window.ValeSpec__AppCore__ConfigLoader;
         var ironmongeryDefaults = ConfigLoader ? ConfigLoader.ValeSpec__ConfigLoader__GetSection('IronmongeryDefaults') : null;
         var availableFinishes = ironmongeryDefaults ? ironmongeryDefaults['ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes'] : [];
         
         var fillColor = null;
-        if (globalFinish && availableFinishes && availableFinishes.length) {
+        if (activeFinish && availableFinishes && availableFinishes.length) {
             for (var i = 0; i < availableFinishes.length; i++) {
-                if (availableFinishes[i].Name === globalFinish) {
+                if (availableFinishes[i].Name === activeFinish) {
                     fillColor = availableFinishes[i].HexColor;
                     break;
                 }
@@ -372,14 +382,18 @@ const ValeSpec__SvgDrawing__RenderPipeline = (function() {
 
         var StateManager    =  window.ValeSpec__AppCore__StateManager;
         var globalFinish    =  StateManager ? StateManager.ValeSpec__StateManager__GetState().globalIronmongeryFinish : null;
+        var finishCfg       =  assemblyData['Assembly__IronmongeryFinish__Config'] || {};
+        var assemblyFinish  =  finishCfg['Assembly__IronmongeryFinish__Config__Finish'];
+        var activeFinish    =  assemblyFinish || globalFinish;
+
         var ConfigLoader    =  window.ValeSpec__AppCore__ConfigLoader;
         var ironmongeryDefaults = ConfigLoader ? ConfigLoader.ValeSpec__ConfigLoader__GetSection('IronmongeryDefaults') : null;
         var availableFinishes = ironmongeryDefaults ? ironmongeryDefaults['ValeSpec__Ironmongery__GlobalDefaults__Config__AvailableFinishes'] : [];
         
         var fillColor = null;
-        if (globalFinish && availableFinishes && availableFinishes.length) {
+        if (activeFinish && availableFinishes && availableFinishes.length) {
             for (var i = 0; i < availableFinishes.length; i++) {
-                if (availableFinishes[i].Name === globalFinish) {
+                if (availableFinishes[i].Name === activeFinish) {
                     fillColor = availableFinishes[i].HexColor;
                     break;
                 }

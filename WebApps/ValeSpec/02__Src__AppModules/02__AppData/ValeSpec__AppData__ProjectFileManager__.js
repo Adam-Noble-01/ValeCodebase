@@ -18,6 +18,12 @@
    - IMPORTANT: all create/load/save/sync paths normalise project JSON via AppUtils ProjectSchemaValidator
    - IMPORTANT: do not add IO paths that bypass schema normalisation
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - New projects: ValeSpec__ProjectFile__GlobalSettings IronmongeryFinish and LeverType initialised to empty strings (no implicit Unlacquered Brass / Scroll defaults)
+
    ============================================================================= */
 
 // =============================================================================
@@ -312,8 +318,8 @@ const ValeSpec__AppData__ProjectFileManager = (function() {
             },
             'ValeSpec__ProjectFile__GlobalSettings': {
                 'ValeSpec__ProjectFile__GlobalSettings__Description'        : 'Document-wide settings that cascade to all assemblies.',
-                'ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'  : 'Unlacquered Brass',
-                'ValeSpec__ProjectFile__GlobalSettings__LeverType'          : 'Scroll',
+                'ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'  : '',
+                'ValeSpec__ProjectFile__GlobalSettings__LeverType'          : '',
                 'ValeSpec__ProjectFile__GlobalSettings__JobNotes'           : ''
             },
             'ValeSpec__ProjectFile__Assemblies': []

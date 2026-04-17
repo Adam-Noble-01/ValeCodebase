@@ -15,6 +15,12 @@
    - Selecting 8-inch projection triggers WarningSystem
    - Registers summary callbacks with StepManager
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Removed auto-advance to next wizard step on hinge selection (progression via Next only)
+
    ============================================================================= */
 
 // =============================================================================
@@ -123,11 +129,6 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Hinges = (function() {
         }
 
         ValeSpec__Hinges__UpdateAssemblyHinge();
-
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) {
-            StepManager.ValeSpec__StepManager__AdvanceFromStep('hinges');
-        }
     }
     // ------------------------------------------------------------
 

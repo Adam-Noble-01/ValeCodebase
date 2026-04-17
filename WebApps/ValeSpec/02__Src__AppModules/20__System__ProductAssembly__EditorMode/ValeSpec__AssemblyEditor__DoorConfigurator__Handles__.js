@@ -10,10 +10,18 @@
    CREATED    : 15-Apr-2026
 
    DESCRIPTION:
-   - Handle specifications step: Handle Type dropdown (global), Handle Height input
-   - Handle selection is global — applies to all assemblies
+   - Handle specifications step: Handle Type dropdown, Handle Height input
+   - First choice sets project global handle type; differing choice can stay assembly-only (LeverMismatch modal)
    - Registers summary callbacks with StepManager
    - Assembly JSON continues to use Assembly__Lever__Config keys for file compatibility
+
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Handle type placeholder option no longer disabled so empty selection stays valid in the DOM (browsers were selecting first real option)
+   - ValeSpec__Handles__ValidateHandlesStepForAdvance for StepManager Next validation and ValeSpec__ValidationError styling
+   - Global vs assembly handle type with optional LeverMismatch modal (WarningSystem); explicit SvgPreview refresh after changes
 
    ============================================================================= */
 
@@ -93,26 +101,74 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Handles = (function() {
         if (!handleName) return; // <-- Placeholder row — no persistence until a product is chosen
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var WarningSystem =  window.ValeSpec__AssemblyEditor__WarningSystem;
         if (!StateManager) return;
 
-        StateManager.ValeSpec__StateManager__SetGlobalHandleType(handleName);
-
+        var state = StateManager.ValeSpec__StateManager__GetState();
+        var globalHandleType = state.globalHandleType;
         var assembly  =  StateManager.ValeSpec__StateManager__GetCurrentAssembly();
         if (!assembly) return;
 
-        if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
-        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  handleName;
-        assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__Handles__HandleHeightInput.value, 10) || 1000;
+        if (!globalHandleType) {
+            StateManager.ValeSpec__StateManager__SetGlobalHandleType(handleName);
+            if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
+            assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  handleName;
+            assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__Handles__HandleHeightInput.value, 10) || 1000;
+            StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+        } else if (globalHandleType !== handleName) {
+            if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ShowLeverMismatchWarning) {
+                WarningSystem.ValeSpec__WarningSystem__ShowLeverMismatchWarning().then(function(confirmed) {
+                    if (confirmed) {
+                        StateManager.ValeSpec__StateManager__SetGlobalHandleType(handleName);
+                        var currentAssembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                        if (currentAssembly) {
+                            if (!currentAssembly['Assembly__Lever__Config']) currentAssembly['Assembly__Lever__Config'] = {};
+                            currentAssembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type'] = handleName;
+                            currentAssembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm'] = parseInt(ValeSpec__Handles__HandleHeightInput.value, 10) || 1000;
+                            StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(currentAssembly);
+                            if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                                var activeWarnings = WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(currentAssembly);
+                                if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__Handles__StepHandleBodyEl) {
+                                    WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__Handles__StepHandleBodyEl, activeWarnings);
+                                }
+                            }
+                        }
+                    } else {
+                        var currentAssembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                        if (currentAssembly) {
+                            if (!currentAssembly['Assembly__Lever__Config']) currentAssembly['Assembly__Lever__Config'] = {};
+                            currentAssembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type'] = handleName;
+                            currentAssembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm'] = parseInt(ValeSpec__Handles__HandleHeightInput.value, 10) || 1000;
+                            StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(currentAssembly);
+                            if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                                var activeWarnings = WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(currentAssembly);
+                                if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__Handles__StepHandleBodyEl) {
+                                    WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__Handles__StepHandleBodyEl, activeWarnings);
+                                }
+                            }
+                        }
+                    }
+                });
+                return;
+            } else {
+                if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
+                assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  handleName;
+                assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__Handles__HandleHeightInput.value, 10) || 1000;
+                StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+            }
+        } else {
+            if (!assembly['Assembly__Lever__Config']) assembly['Assembly__Lever__Config'] = {};
+            assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type']      =  handleName;
+            assembly['Assembly__Lever__Config']['Assembly__Lever__Config__HeightMm']  =  parseInt(ValeSpec__Handles__HandleHeightInput.value, 10) || 1000;
+            StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+        }
 
-        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
         if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
             var activeWarnings  =  WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
             if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__Handles__StepHandleBodyEl) {
                 WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__Handles__StepHandleBodyEl, activeWarnings);
             }
         }
-
-        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
     }
     // ------------------------------------------------------------
 
@@ -157,7 +213,6 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Handles = (function() {
         var handlePlaceholder          =  document.createElement('option');
         handlePlaceholder.value        =  '';
         handlePlaceholder.textContent  =  'Please select field';
-        handlePlaceholder.disabled     =  true;
         handlePlaceholder.selected     =  true;
         ValeSpec__Handles__HandleTypeSelect.appendChild(handlePlaceholder);
 
@@ -247,6 +302,32 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Handles = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Validate Handle Type Before Advancing Step
+    // ------------------------------------------------------------
+    function ValeSpec__Handles__ValidateHandlesStepForAdvance() {
+        var sel  =  ValeSpec__Handles__HandleTypeSelect;
+        if (!sel) return false;
+
+        var val  =  sel.value;
+        if (typeof val === 'string') val = val.trim();
+
+        var clearError  =  function(e) {
+            e.target.classList.remove('ValeSpec__ValidationError');
+            e.target.removeEventListener('change', clearError);
+        };
+
+        if (!val) {
+            sel.classList.add('ValeSpec__ValidationError');
+            sel.addEventListener('change', clearError);
+            return false;
+        }
+
+        sel.classList.remove('ValeSpec__ValidationError');
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Register Summaries with StepManager
     // ------------------------------------------------------------
     function ValeSpec__Handles__RegisterSummaries() {
@@ -275,8 +356,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Handles = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__Handles__Init                : ValeSpec__Handles__Init,
-        ValeSpec__Handles__RefreshFromAssembly : ValeSpec__Handles__RefreshFromAssembly
+        ValeSpec__Handles__Init                           : ValeSpec__Handles__Init,
+        ValeSpec__Handles__RefreshFromAssembly            : ValeSpec__Handles__RefreshFromAssembly,
+        ValeSpec__Handles__ValidateHandlesStepForAdvance  : ValeSpec__Handles__ValidateHandlesStepForAdvance
     };
 
 })();

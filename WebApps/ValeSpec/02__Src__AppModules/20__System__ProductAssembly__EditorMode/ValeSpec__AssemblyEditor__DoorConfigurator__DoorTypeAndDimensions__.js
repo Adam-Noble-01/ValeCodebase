@@ -15,8 +15,17 @@
    - Opening Direction stored as separate Assembly__DoorType__Config__OpeningDirection field
    - On dimension change: calls HingeCalculator and LockingCalculator
    - Registers summary callbacks with StepManager for collapsed display
-   - Auto-advances to next step on primary selection change
+   - Wizard progression via step Next buttons (no auto-skip between steps)
    - Expects canonical assembly schema values normalised by AppUtils ProjectSchemaValidator
+
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Dimensions step: DimensionsStepUserEngaged — set on width/height slider or committed text input; reset on door type change
+   - RefreshFromAssembly syncs engagement when saved width/height differ from door-type profile defaults
+   - ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance for StepManager (blocks Next until user confirms dimensions vs untouched defaults)
+   - Auto-advance from this module removed (wizard progression via Next only)
 
    ============================================================================= */
 
@@ -58,6 +67,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     let ValeSpec__DoorTypeAndDimensions__DimensionCommitTimer        =  null;   // <-- Pending debounce timer for typed commits
     let ValeSpec__DoorTypeAndDimensions__LastCommitSignature         =  '';     // <-- Suppress duplicate blur/change commits
     let ValeSpec__DoorTypeAndDimensions__LastCommitTimestampMs       =  0;      // <-- Last commit timestamp used with signature guard
+    let ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged   =  false;  // <-- True once user adjusts dims or saved dims differ from profile defaults
     // ------------------------------------------------------------
 
 
@@ -217,6 +227,25 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Sync Dimensions-Step Engagement vs Profile Defaults
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__SyncDimensionsStepEngagementFromDefaults(doorType, widthMm, heightMm) {
+        var profile  =  ValeSpec__DoorTypeAndDimensions__GetDoorPanelProfile(doorType);
+        var wDef     =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__WidthDefaultMm'], 10)   || 1800;
+        var hDef     =  parseInt(profile['AssemblyEditor__DoorPanelDefaults__Config__HeightDefaultMm'], 10)  || 2100;
+        var w        =  parseInt(widthMm, 10);
+        var h        =  parseInt(heightMm, 10);
+        if (isNaN(w)) w  =  wDef;
+        if (isNaN(h)) h  =  hDef;
+        if (w !== wDef || h !== hDef) {
+            ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged  =  true;
+        } else {
+            ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged  =  false;
+        }
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -266,6 +295,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         var isDelayedCommit  =  (commitReason === 'delayed');
 
         if (elapsedMs < 80 && signature === ValeSpec__DoorTypeAndDimensions__LastCommitSignature) return;
+
+        ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged  =  true;
 
         ValeSpec__DoorTypeAndDimensions__OnDimensionChange({
             suppressTextInputWriteback : isDelayedCommit && ValeSpec__DoorTypeAndDimensions__IsDimensionInputBeingEdited()
@@ -557,17 +588,16 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // ------------------------------------------------------------
     function ValeSpec__DoorTypeAndDimensions__OnDoorTypeChange() {
         var doorType  =  ValeSpec__DoorTypeAndDimensions__DoorTypeSelect ? ValeSpec__DoorTypeAndDimensions__DoorTypeSelect.value : '';
+        ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged  =  false;
+
         ValeSpec__DoorTypeAndDimensions__ApplyDoorTypeDimensionProfile(doorType, null, null, true);
         ValeSpec__DoorTypeAndDimensions__UpdateFixedPanelVisibility();
         ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
 
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (StepManager) {
-            if (ValeSpec__DoorTypeAndDimensions__IsDoorTypeConfigured(doorType)) {
-                StepManager.ValeSpec__StepManager__AdvanceFromStep('doorType');
-            } else {
+            if (!ValeSpec__DoorTypeAndDimensions__IsDoorTypeConfigured(doorType)) {
                 StepManager.ValeSpec__StepManager__MarkCompleted('doorType', false);
-                StepManager.ValeSpec__StepManager__GoToStep('doorType');
             }
         }
     }
@@ -948,6 +978,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
             ValeSpec__DoorTypeAndDimensions__CommitDimensionInputsNow('change');
         });
         ValeSpec__DoorTypeAndDimensions__WidthSlider.addEventListener('input', function() {
+            ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged  =  true;
             ValeSpec__DoorTypeAndDimensions__WidthInput.value  =  ValeSpec__DoorTypeAndDimensions__WidthSlider.value;
             ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
         });
@@ -967,6 +998,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
             ValeSpec__DoorTypeAndDimensions__CommitDimensionInputsNow('change');
         });
         ValeSpec__DoorTypeAndDimensions__HeightSlider.addEventListener('input', function() {
+            ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged  =  true;
             ValeSpec__DoorTypeAndDimensions__HeightInput.value  =  ValeSpec__DoorTypeAndDimensions__HeightSlider.value;
             ValeSpec__DoorTypeAndDimensions__OnDimensionChange();
         });
@@ -1071,7 +1103,8 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         }
 
         if (!ValeSpec__DoorTypeAndDimensions__IsDimensionInputBeingEdited()) {
-            ValeSpec__DoorTypeAndDimensions__ApplyDoorTypeDimensionProfile(doorType, width, height, false, width, height);
+            var appliedDims  =  ValeSpec__DoorTypeAndDimensions__ApplyDoorTypeDimensionProfile(doorType, width, height, false, width, height);
+            ValeSpec__DoorTypeAndDimensions__SyncDimensionsStepEngagementFromDefaults(doorType, appliedDims.WidthMm, appliedDims.HeightMm);
         }
 
         var openingCfg  =  assemblyData['Assembly__Opening__Config'] || {};
@@ -1088,6 +1121,44 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
         if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly) {
             WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly(assemblyData, ValeSpec__DoorTypeAndDimensions__Step2BodyEl);
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Validate Dimensions Step Before Advancing
+    // ------------------------------------------------------------
+    function ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance() {
+        var wEl  =  ValeSpec__DoorTypeAndDimensions__WidthInput;
+        var hEl  =  ValeSpec__DoorTypeAndDimensions__HeightInput;
+
+        var clearErrW  =  function(e) {
+            e.target.classList.remove('ValeSpec__ValidationError');
+            e.target.removeEventListener('input', clearErrW);
+            e.target.removeEventListener('change', clearErrW);
+        };
+        var clearErrH  =  function(e) {
+            e.target.classList.remove('ValeSpec__ValidationError');
+            e.target.removeEventListener('input', clearErrH);
+            e.target.removeEventListener('change', clearErrH);
+        };
+
+        if (ValeSpec__DoorTypeAndDimensions__DimensionsStepUserEngaged) {
+            if (wEl) wEl.classList.remove('ValeSpec__ValidationError');
+            if (hEl) hEl.classList.remove('ValeSpec__ValidationError');
+            return true;
+        }
+
+        if (wEl) {
+            wEl.classList.add('ValeSpec__ValidationError');
+            wEl.addEventListener('input', clearErrW);
+            wEl.addEventListener('change', clearErrW);
+        }
+        if (hEl) {
+            hEl.classList.add('ValeSpec__ValidationError');
+            hEl.addEventListener('input', clearErrH);
+            hEl.addEventListener('change', clearErrH);
+        }
+        return false;
     }
     // ------------------------------------------------------------
 
@@ -1130,8 +1201,9 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions = (funct
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__DoorTypeAndDimensions__Init                : ValeSpec__DoorTypeAndDimensions__Init,
-        ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly : ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly
+        ValeSpec__DoorTypeAndDimensions__Init                              : ValeSpec__DoorTypeAndDimensions__Init,
+        ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly               : ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly,
+        ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance  : ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance
     };
 
 // endregion -------------------------------------------------------------------

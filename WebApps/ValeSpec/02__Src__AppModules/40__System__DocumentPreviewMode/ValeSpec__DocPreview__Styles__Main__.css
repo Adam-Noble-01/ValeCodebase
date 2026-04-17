@@ -631,6 +631,15 @@
         max-height                         : 360px;
     }
 
+    /* ASSEMBLY | Spec table wrap — full width under large diagram (column flex + align-items:flex-start) */
+    /* ------------------------------------------------------------ */
+    .ValeSpec__DocPreview__AssemblyBlock--diagramLarge .ValeSpec__DocPreview__SpecTableWrap {
+        width                              : 100%;
+        max-width                          : 100%;
+        box-sizing                         : border-box;
+    }
+    /* ------------------------------------------------------------ */
+
     .ValeSpec__DocPreview__AssemblyBlock--diagramNone .ValeSpec__DocPreview__AssemblyContentRow {
         display                            : block;
     }

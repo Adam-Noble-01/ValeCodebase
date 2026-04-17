@@ -16,6 +16,12 @@
    - Registers hooks summary callback with StepManager
    - Exposes FlushToAssembly() for explicit save pipeline sync
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Selecting a hook size auto-suggests hook and eye counts from door type (single 1+1, double/bifold 2+2); counts remain user-editable
+
    ============================================================================= */
 
 // =============================================================================
@@ -98,7 +104,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks = (function() {
 
     // HELPER FUNCTION | Persist Hooks Controls to Current Assembly
     // ------------------------------------------------------------
-    function ValeSpec__CabinHooks__PushUpdate() {
+    function ValeSpec__CabinHooks__PushUpdate(e) {
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
         if (!StateManager) return;
 
@@ -116,11 +122,29 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks = (function() {
         var nextHookCount  =  ValeSpec__CabinHooks__ClampInteger(ValeSpec__CabinHooks__HookCountInput ? ValeSpec__CabinHooks__HookCountInput.value : hookCountDef, hookCountMin, hookCountMax, hookCountDef);
         var nextEyeCount   =  ValeSpec__CabinHooks__ClampInteger(ValeSpec__CabinHooks__EyeCountInput ? ValeSpec__CabinHooks__EyeCountInput.value : eyeCountDef, eyeCountMin, eyeCountMax, eyeCountDef);
 
+        var isSizeChange = e && e.target === ValeSpec__CabinHooks__CabinHookSelect;
+        var selectedSize = ValeSpec__CabinHooks__CabinHookSelect ? (ValeSpec__CabinHooks__CabinHookSelect.value || '') : '';
+        
+        if (isSizeChange && selectedSize && nextHookCount === 0 && nextEyeCount === 0) {
+            var doorType = '';
+            if (assembly['Assembly__DoorType__Config'] && assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Type']) {
+                doorType = assembly['Assembly__DoorType__Config']['Assembly__DoorType__Config__Type'].toLowerCase();
+            }
+            
+            if (doorType.indexOf('single') !== -1) {
+                nextHookCount = 1;
+                nextEyeCount = 1;
+            } else if (doorType.indexOf('double') !== -1 || doorType.indexOf('bifold') !== -1) {
+                nextHookCount = 2;
+                nextEyeCount = 2;
+            }
+        }
+
         if (ValeSpec__CabinHooks__HookCountInput) ValeSpec__CabinHooks__HookCountInput.value  =  nextHookCount;
         if (ValeSpec__CabinHooks__EyeCountInput)  ValeSpec__CabinHooks__EyeCountInput.value   =  nextEyeCount;
 
         if (!assembly['Assembly__CabinHooks__Config']) assembly['Assembly__CabinHooks__Config'] = {};
-        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__Size']       =  ValeSpec__CabinHooks__CabinHookSelect ? (ValeSpec__CabinHooks__CabinHookSelect.value || '') : '';
+        assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__Size']       =  selectedSize;
         assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__HookCount']  =  nextHookCount;
         assembly['Assembly__CabinHooks__Config']['Assembly__CabinHooks__Config__EyeCount']   =  nextEyeCount;
 

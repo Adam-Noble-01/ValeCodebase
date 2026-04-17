@@ -18,6 +18,12 @@
    - IMPORTANT: single source of truth for project schema compatibility + legacy migration
    - IMPORTANT: intended call paths are ProjectFileManager create/load/save/sync
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Normalisation defaults for project global ironmongery finish and lever type, and assembly lever type, use empty string instead of hardcoded brass/scroll labels where missing
+
    ============================================================================= */
 
 // =============================================================================
@@ -162,7 +168,7 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
             .replace(/\s+/g, ' ')
             .trim();
 
-        if (!cleaned) return 'Scroll Lever Handle';
+        if (!cleaned) return '';
         if (cleaned === 'scroll') return 'Scroll Lever Handle';
         if (cleaned === 'plain') return 'Plain Lever Handle';
         if (cleaned === 'newton') return 'Newton Lever Handle';
@@ -340,7 +346,7 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
 
         var leverCfg  =  assembly['Assembly__Lever__Config'];
         if (!leverCfg['Assembly__Lever__Config__Type']) {
-            leverCfg['Assembly__Lever__Config__Type']  =  'Scroll Lever Handle';
+            leverCfg['Assembly__Lever__Config__Type']  =  '';
             didMutate  =  true;
         }
         var leverHeight  =  Math.max(1, ValeSpec__SchemaValidator__ToInt(leverCfg['Assembly__Lever__Config__HeightMm'], 1000));
@@ -425,7 +431,11 @@ const ValeSpec__AppUtils__ProjectSchemaValidator = (function() {
             didMutate  =  true;
         }
         if (!globalCfg['ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish']) {
-            globalCfg['ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish']  =  'Unlacquered Brass';
+            globalCfg['ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish']  =  '';
+            didMutate  =  true;
+        }
+        if (!globalCfg['ValeSpec__ProjectFile__GlobalSettings__LeverType']) {
+            globalCfg['ValeSpec__ProjectFile__GlobalSettings__LeverType']  =  '';
             didMutate  =  true;
         }
         if (globalCfg['ValeSpec__ProjectFile__GlobalSettings__JobNotes'] === undefined || globalCfg['ValeSpec__ProjectFile__GlobalSettings__JobNotes'] === null) {

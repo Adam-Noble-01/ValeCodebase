@@ -3,6 +3,78 @@
 
 
 # ---------------------------------------------------------
+## ValeSpec v0.2.1 - 17-Apr-2026
+### Assembly wizard validation, ironmongery global vs assembly, schema blanks, warning modals, SVG finish resolution
+
+Large UX and data-integrity pass on the assembly **step wizard**: **Next** is the primary progression control; required fields get **`ValeSpec__ValidationError`** styling; **dimensions** and **handle type** cannot be advanced on untouched defaults or a broken placeholder `<select>`; **project** ironmongery finish and lever type start **blank** so steps are not pre-completed; **per-assembly** overrides use **WarningSystem** rules and approval modals; **SVG** ironmongery colour prefers **assembly** finish when set.
+
+#### Config (`Na__AssemblyEditor__Config.json`)
+- **`AssemblyEditor__Steps__Config__AutoAdvanceOnSelection: false`** — no auto-jump between steps on dropdown/toggle alone.
+- **`AssemblyEditor__Validation__Config`** / **`RequiredFields`** — maps steps **`doorType`**, **`finish`**, **`hinges`**, **`hooks`** to control ids (assembly title, door type, global finish, hinge projection, cabin hook size, etc.); **`dimensions`** and **`handles`** use **empty** arrays because validators live in JS.
+
+#### Step manager (`ValeSpec__AssemblyEditor__StepManager__.js`)
+- Loads validation JSON at init (`fetch` **`Na__AssemblyEditor__Config.json`**).
+- **`ValidateStep`**: on **Next**, **`dimensions`** → **`ValeSpec__DoorTypeAndDimensions__ValidateDimensionsStepForAdvance`**; **`handles`** → **`ValeSpec__Handles__ValidateHandlesStepForAdvance`** (fail-closed if missing); generic path uses config id list; **missing `getElementById`** fails; empty values add error class and clear on **input**/**change**.
+- **`HandleNextButtonClick`**: after validation, marks step complete; if **global** or **assembly** finish already set, marks **`finish`** complete; navigating **to** **`finish`** can **skip** to **`handles`** when finish is already satisfied.
+
+#### Door type & dimensions (`ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js`)
+- Removed **`AdvanceFromStep('doorType')`**.
+- **`DimensionsStepUserEngaged`**: true after slider moves or dimension text commits (**`CommitDimensionInputsNow`**); false after **door type** change; **`RefreshFromAssembly`** + **`SyncDimensionsStepEngagementFromDefaults`** sets true when saved sizes differ from **panel profile** defaults.
+- **`ValidateDimensionsStepForAdvance`**: blocks **Next** until engaged (red width/height).
+
+#### Handles (`ValeSpec__AssemblyEditor__DoorConfigurator__Handles__.js`)
+- No **`AdvanceFromStep`** on handle change.
+- Placeholder option: **`value=""`**, **not** `disabled` (fixes browser selecting first real handle).
+- **`OnHandleTypeChange`**: **LeverMismatch** modal when global handle differs; async **`return`** to avoid double updates; **`SvgPreview` render** after updates.
+- **`ValidateHandlesStepForAdvance`**: non-empty handle **`select`**.
+
+#### Hinges (`ValeSpec__AssemblyEditor__DoorConfigurator__Hinges__.js`)
+- Removed **`AdvanceFromStep('hinges')`**.
+
+#### Cabin hooks (`ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks__.js`)
+- **`PushUpdate`**: on **hook size** change with counts at 0, suggests hook/eye counts from **door type** (single 1+1, double/bifold 2+2, etc.); still optional for validation.
+
+#### Global settings (`ValeSpec__AssemblyEditor__GlobalSettings__.js`)
+- Finish / other: **IronmongeryMismatch** modal; update-all vs assembly-only **`Assembly__IronmongeryFinish__Config__Finish`**; **`SvgPreview`**, **`UpdateStepCompletion`**, no **`AdvanceFromStep('finish')`**.
+- **`RefreshFromAssembly`**: **`SvgPreview` render** on assembly switch.
+
+#### Warning system (`ValeSpec__AssemblyEditor__WarningSystem__.js`, `...WarningSystem__ConfigAndConditions__.json`)
+- JSON: global modal strings; rules **`WARN_IRONMONGERY_MISMATCH`**, **`WARN_LEVER_MISMATCH`**; conditions **`IronmongeryMismatch`**, **`LeverMismatch`**.
+- JS: **`ExtractAssemblyValues`** / **`EvaluateCondition`** / **`EvaluateWarnings`**; **`ShowIronmongeryMismatchWarning`**, **`ShowLeverMismatchWarning`**; **`ShowModal`** → **`document.body`**.
+
+#### SVG (`ValeSpec__SvgDrawing__RenderPipeline__.js`)
+- **`RenderAssembly`** / **`RenderThumbnail`**: resolve finish **`HexColor`** with **assembly** finish first, then **global**, then config **`AvailableFinishes`**.
+
+#### State & schema (`ValeSpec__AppCore__StateManager__.js`, `ValeSpec__AppData__ProjectFileManager__.js`, `ValeSpec__AppUtils__ProjectSchemaValidator__.js`)
+- Empty-string defaults for **global** finish / lever and **assembly** lever **type** on create, hydrate, and normalise (no implied brass/scroll).
+
+#### Styles (`ValeSpec__AssemblyEditor__Styles__Main__.css`)
+- **`.ValeSpec__ValidationError`** for invalid controls.
+
+#### Documentation
+- Module file-header **DEVELOPMENT LOG** entries + this section.
+
+#### Files touched
+
+| Area | Path |
+|------|------|
+| Assembly editor config | `20__System__ProductAssembly__EditorMode/Na__AssemblyEditor__Config.json` |
+| Step manager | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__StepManager__.js` |
+| Door type & dimensions | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions__.js` |
+| Handles | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Handles__.js` |
+| Hinges | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__Hinges__.js` |
+| Cabin hooks | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks__.js` |
+| Global settings | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__GlobalSettings__.js` |
+| Warning system | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__WarningSystem__.js` |
+| Warning config | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__WarningSystem__ConfigAndConditions__.json` |
+| Assembly editor styles | `20__System__ProductAssembly__EditorMode/ValeSpec__AssemblyEditor__Styles__Main__.css` |
+| SVG render pipeline | `05__SvgDrawing__RenderPipeline/ValeSpec__SvgDrawing__RenderPipeline__.js` |
+| State manager | `01__AppCore/ValeSpec__AppCore__StateManager__.js` |
+| Project file manager | `02__AppData/ValeSpec__AppData__ProjectFileManager__.js` |
+| Project schema validator | `03__AppUtils/ValeSpec__AppUtils__ProjectSchemaValidator__.js` |
+
+
+# ---------------------------------------------------------
 ## ValeSpec v0.2.0 - 17-Apr-2026
 ### Hinge Configuration Refactor, SVG Dimensions, and Schedule Accuracy
 

@@ -18,7 +18,14 @@
    - ValeSpec__WarningSystem__ShowHeightMismatchWarning() compares all assembly heights (>15mm diff)
    - ValeSpec__WarningSystem__ShowWarningToast() for non-blocking toast notifications
    - ValeSpec__WarningSystem__GetWarningRules() returns cached warning rules array
-   - Uses #ValeSpec__Modal__Root for modal dialog DOM
+   - Approval modals append to document.body
+
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - IronmongeryMismatch and LeverMismatch rule conditions; modal copy from WarningSystem JSON global config
+   - Approval modals append to document.body; ShowIronmongeryMismatchWarning / ShowLeverMismatchWarning for global vs per-assembly updates
 
    ============================================================================= */
 
@@ -45,6 +52,8 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
     let ValeSpec__WarningSystem__HingeWarningMsg              =  null;         // <-- 8-inch hinge warning text
     let ValeSpec__WarningSystem__HeightMismatchMsg             =  null;         // <-- Height mismatch warning text
+    let ValeSpec__WarningSystem__IronmongeryMismatchMsg        =  null;         // <-- Ironmongery mismatch warning text
+    let ValeSpec__WarningSystem__LeverMismatchMsg              =  null;         // <-- Lever mismatch warning text
     let ValeSpec__WarningSystem__ConfigLoaded                  =  false;        // <-- Config load flag
     let ValeSpec__WarningSystem__WarningRules                  =  [];           // <-- Cached warning rules array from config
     let ValeSpec__WarningSystem__CentredNotificationDurationMs =  DEFAULT_CENTRED_NOTIFICATION_MS;
@@ -74,6 +83,10 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
                                                         || 'Non-standard hinge projection selected.';
             ValeSpec__WarningSystem__HeightMismatchMsg   =  globalConfig['WarningSystem__GlobalConfig__HeightMismatchModalMessage']
                                                         || 'Assembly heights differ significantly.';
+            ValeSpec__WarningSystem__IronmongeryMismatchMsg = globalConfig['WarningSystem__GlobalConfig__IronmongeryMismatchModalMessage']
+                                                        || 'The Ironmongery for this assembly is different to the others on the project. Would you like to update all others to match this finish?';
+            ValeSpec__WarningSystem__LeverMismatchMsg = globalConfig['WarningSystem__GlobalConfig__LeverMismatchModalMessage']
+                                                        || 'The Handle Type for this assembly is different to the others on the project. Would you like to update all others to match this handle?';
 
             var centredMs  =  parseInt(globalConfig['WarningSystem__GlobalConfig__CentredNotificationDurationMs'], 10);
             if (!isNaN(centredMs) && centredMs > 0) {
@@ -236,6 +249,12 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             }
             return false;
         }
+        if (condition === 'IronmongeryMismatch') {
+            return assemblyValues.assemblyFinish && assemblyValues.globalFinish && assemblyValues.assemblyFinish !== assemblyValues.globalFinish;
+        }
+        if (condition === 'LeverMismatch') {
+            return assemblyValues.assemblyHandle && assemblyValues.globalHandle && assemblyValues.assemblyHandle !== assemblyValues.globalHandle;
+        }
 
         return false;
     }
@@ -248,8 +267,15 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
         var dimsCfg   =  assembly['Assembly__Dimensions__Config']  || {};
         var doorCfg   =  assembly['Assembly__DoorType__Config']    || {};
         var hingeCfg  =  assembly['Assembly__Hinge__Config']       || {};
+        var finishCfg =  assembly['Assembly__IronmongeryFinish__Config'] || {};
         var selectedHardwareItems  =  ValeSpec__WarningSystem__ResolveSelectedHardwareItems(assembly);
         var selectedHardwareNames  =  [];
+
+        var StateManager = window.ValeSpec__AppCore__StateManager;
+        var globalFinish = StateManager ? (StateManager.ValeSpec__StateManager__GetState().globalIronmongeryFinish || null) : null;
+        var assemblyFinish = finishCfg['Assembly__IronmongeryFinish__Config__Finish'] || null;
+        var globalHandle = StateManager ? (StateManager.ValeSpec__StateManager__GetState().globalHandleType || null) : null;
+        var assemblyHandle = assembly['Assembly__Lever__Config'] ? (assembly['Assembly__Lever__Config']['Assembly__Lever__Config__Type'] || null) : null;
 
         for (var i = 0; i < selectedHardwareItems.length; i++) {
             var itemName  =  selectedHardwareItems[i] ? selectedHardwareItems[i]['HardwareItem__Name'] : '';
@@ -270,7 +296,11 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             panelWidthMm          :  panelWidthMm,
             hingeProjection       :  hingeCfg['Assembly__Hinge__Config__Projection']     || null,
             selectedHardwareItems :  selectedHardwareItems,
-            selectedHardwareNames :  selectedHardwareNames
+            selectedHardwareNames :  selectedHardwareNames,
+            globalFinish          :  globalFinish,
+            assemblyFinish        :  assemblyFinish,
+            globalHandle          :  globalHandle,
+            assemblyHandle        :  assemblyHandle
         };
     }
     // ------------------------------------------------------------
@@ -305,6 +335,8 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
             if (condition === 'WidthUnderAndHeightOver')                                  triggeredValue  =  values.panelWidthMm + ' mm wide x ' + values.heightMm + ' mm tall';
             if (condition === 'HingeProjectionEquals')                                    triggeredValue  =  values.hingeProjection;
             if (condition === 'SelectedHardwareHasNonComplementary')                      triggeredValue  =  (values.selectedHardwareNames || []).join(', ');
+            if (condition === 'IronmongeryMismatch')                                      triggeredValue  =  values.assemblyFinish;
+            if (condition === 'LeverMismatch')                                            triggeredValue  =  values.assemblyHandle;
 
             activeWarnings.push({
                 RuleId           :  rule['RuleId']             || '',
@@ -494,17 +526,7 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
 // REGION | Modal Dialogs (Existing)
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Get or Create Modal Root Element
     // ------------------------------------------------------------
-    function ValeSpec__WarningSystem__GetModalRoot() {
-        var root  =  document.getElementById('ValeSpec__Modal__Root');
-        if (!root) {
-            root     =  document.createElement('div');
-            root.id  =  'ValeSpec__Modal__Root';
-            document.body.appendChild(root);
-        }
-        return root;
-    }
     // ------------------------------------------------------------
 
 
@@ -551,10 +573,9 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
     function ValeSpec__WarningSystem__ShowModal(title, message) {
         return new Promise(function(resolve) {
-            var modalRoot  =  ValeSpec__WarningSystem__GetModalRoot();
             var modal      =  ValeSpec__WarningSystem__CreateModal(title, message);
 
-            modalRoot.appendChild(modal.overlay);
+            document.body.appendChild(modal.overlay);
 
             requestAnimationFrame(function() {
                 modal.overlay.classList.add('ValeSpec__Modal__Overlay--visible');
@@ -609,6 +630,26 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Show Ironmongery Mismatch Warning
+    // ------------------------------------------------------------
+    async function ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning() {
+        await ValeSpec__WarningSystem__EnsureConfig();
+        var msg  =  ValeSpec__WarningSystem__IronmongeryMismatchMsg || 'The Ironmongery for this assembly is different to the others on the project. Would you like to update all others to match this finish?';
+        return ValeSpec__WarningSystem__ShowModal('Ironmongery Finish Mismatch', msg);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show Lever Mismatch Warning
+    // ------------------------------------------------------------
+    async function ValeSpec__WarningSystem__ShowLeverMismatchWarning() {
+        await ValeSpec__WarningSystem__EnsureConfig();
+        var msg  =  ValeSpec__WarningSystem__LeverMismatchMsg || 'The Handle Type for this assembly is different to the others on the project. Would you like to update all others to match this handle?';
+        return ValeSpec__WarningSystem__ShowModal('Handle Type Mismatch', msg);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -657,6 +698,8 @@ const ValeSpec__AssemblyEditor__WarningSystem = (function() {
         ValeSpec__WarningSystem__RenderInlineWarnings              : ValeSpec__WarningSystem__RenderInlineWarnings,
         ValeSpec__WarningSystem__ShowHingeProjectionWarning        : ValeSpec__WarningSystem__ShowHingeProjectionWarning,
         ValeSpec__WarningSystem__ShowHeightMismatchWarning         : ValeSpec__WarningSystem__ShowHeightMismatchWarning,
+        ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning    : ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning,
+        ValeSpec__WarningSystem__ShowLeverMismatchWarning          : ValeSpec__WarningSystem__ShowLeverMismatchWarning,
         ValeSpec__WarningSystem__ShowWarningToast                  : ValeSpec__WarningSystem__ShowWarningToast
     };
 

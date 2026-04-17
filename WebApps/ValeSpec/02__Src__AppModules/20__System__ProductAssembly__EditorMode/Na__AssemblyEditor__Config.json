@@ -21,7 +21,7 @@
 
     "AssemblyEditor__Steps__Config": {
         "AssemblyEditor__Steps__Config__Description"             : "Step wizard configuration for the sequential door configurator.",
-        "AssemblyEditor__Steps__Config__AutoAdvanceOnSelection"  : true,
+        "AssemblyEditor__Steps__Config__AutoAdvanceOnSelection"  : false,
         "AssemblyEditor__Steps__Config__Steps": [
             { "Id": "doorType",   "Number": 1, "Title": "Door Type",                 "ShortTitle": "Door Type"          },
             { "Id": "dimensions", "Number": 2, "Title": "Dimensions",                "ShortTitle": "Dimensions"         },
@@ -31,6 +31,19 @@
             { "Id": "hooks",      "Number": 6, "Title": "Cabin Hook Specifications", "ShortTitle": "Hook Specs"         },
             { "Id": "misc",       "Number": 7, "Title": "Miscellaneous",             "ShortTitle": "Misc"               }
         ]
+    },
+
+    "AssemblyEditor__Validation__Config": {
+        "AssemblyEditor__Validation__Config__Description": "Maps step IDs to DOM element IDs for validation before advancing. Steps dimensions and handles use module validators in JS (user must confirm defaults / pick handle type); keep RequiredFields empty for those IDs here.",
+        "AssemblyEditor__Validation__Config__RequiredFields": {
+            "doorType": ["ValeSpec__AssemblyEditor__AssemblyTitle", "ValeSpec__AssemblyEditor__DoorType"],
+            "dimensions": [],
+            "finish": ["ValeSpec__AssemblyEditor__GlobalFinish"],
+            "handles": [],
+            "hinges": ["ValeSpec__AssemblyEditor__HingeProjection"],
+            "hooks": ["ValeSpec__AssemblyEditor__CabinHookSize"],
+            "misc": []
+        }
     },
 
     "AssemblyEditor__DoorPanelDefaults__Config": {

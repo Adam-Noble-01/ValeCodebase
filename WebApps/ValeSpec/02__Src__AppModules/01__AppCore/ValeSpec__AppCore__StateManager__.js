@@ -15,6 +15,12 @@
    - Event emitter pattern for reactive UI updates
    - No direct DOM manipulation — UI modules subscribe to state changes
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - globalIronmongeryFinish and globalHandleType default to empty strings; SetCurrentProject reads blanks from ValeSpec__ProjectFile__GlobalSettings so new jobs do not fake completed wizard steps
+
    ============================================================================= */
 
 // =============================================================================
@@ -30,8 +36,8 @@ const ValeSpec__AppCore__StateManager = (function() {
         hardwareIndex          : null,                    // <-- Parsed ValeSpec__HardwareDataIndex__.json
         currentProject         : null,                    // <-- Currently loaded project data
         currentAssemblyIndex   : -1,                      // <-- Index of assembly being edited (-1 = none)
-        globalIronmongeryFinish: 'Unlacquered Brass',     // <-- Cascading finish selection
-        globalHandleType       : 'Scroll',                // <-- Cascading handle type selection (persisted as LeverType in project JSON)
+        globalIronmongeryFinish: '',                      // <-- Cascading finish selection
+        globalHandleType       : '',                      // <-- Cascading handle type selection (persisted as LeverType in project JSON)
         isDirty                : false,                   // <-- Unsaved changes flag
         currentMode            : 'DocManagement'          // <-- Active UI mode
     };
@@ -108,8 +114,8 @@ const ValeSpec__AppCore__StateManager = (function() {
         if (projectData) {
             var globalSettings  =  projectData['ValeSpec__ProjectFile__GlobalSettings'];
             if (globalSettings) {
-                ValeSpec__StateManager__State.globalIronmongeryFinish  =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'] || 'Unlacquered Brass';
-                ValeSpec__StateManager__State.globalHandleType         =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__LeverType'] || 'Scroll';
+                ValeSpec__StateManager__State.globalIronmongeryFinish  =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish'] || '';
+                ValeSpec__StateManager__State.globalHandleType         =  globalSettings['ValeSpec__ProjectFile__GlobalSettings__LeverType'] || '';
             }
         }
         ValeSpec__StateManager__Emit('projectChanged', projectData);

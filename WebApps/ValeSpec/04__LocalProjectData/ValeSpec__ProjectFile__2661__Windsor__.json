@@ -1,15 +1,15 @@
 {
     "ValeSpec__ProjectFile__Metadata": {
         "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
-        "ValeSpec__ProjectFile__Metadata__ProjectCode": "2410",
-        "ValeSpec__ProjectFile__Metadata__ProjectName": "Epstein",
-        "ValeSpec__ProjectFile__Metadata__DocumentName": "Epstein Doors",
-        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "2661",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Windsor",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "In Progress",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-17",
         "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-17",
-        "ValeSpec__ProjectFile__Metadata__DateIssued": "",
+        "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-17",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
-        "ValeSpec__ProjectFile__Metadata__Author": ""
+        "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
     },
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
@@ -20,8 +20,8 @@
     "ValeSpec__ProjectFile__Assemblies": [
         {
             "Assembly__Identity__Config": {
-                "Assembly__Identity__Config__Id": "asm_661483",
-                "Assembly__Identity__Config__Title": "Kitchen Doors",
+                "Assembly__Identity__Config__Id": "asm_709445",
+                "Assembly__Identity__Config__Title": "Front Elevation",
                 "Assembly__Identity__Config__SortOrder": 0
             },
             "Assembly__DoorType__Config": {
@@ -29,8 +29,8 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1800,
-                "Assembly__Dimensions__Config__HeightMm": 2100
+                "Assembly__Dimensions__Config__WidthMm": 1600,
+                "Assembly__Dimensions__Config__HeightMm": 2000
             },
             "Handing": "Left",
             "Assembly__ProgressState__Config": {
@@ -43,13 +43,13 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "dimensions"
+                "Assembly__ProgressState__Config__ActiveStepId": "doorType"
             },
             "Assembly__Hinge__Config": {
-                "Assembly__Hinge__Config__HingesPerLeaf": 4,
-                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__Hanging": "Standard",
                 "Assembly__Hinge__Config__Style": "Decorative",
-                "Assembly__Hinge__Config__Projection": 4
+                "Assembly__Hinge__Config__Projection": 5
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
@@ -66,8 +66,12 @@
             "Assembly__Opening__Config": {
                 "Assembly__Opening__Config__FixedPanel": "none"
             },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
             "Assembly__CabinHooks__Config": {
-                "Assembly__CabinHooks__Config__Size": "4\"",
+                "Assembly__CabinHooks__Config__Size": "10\"",
                 "Assembly__CabinHooks__Config__HookCount": 2,
                 "Assembly__CabinHooks__Config__EyeCount": 2
             },
@@ -75,16 +79,12 @@
                 "Assembly__Miscellaneous__Config__Items": [
                     "Misc_NA"
                 ]
-            },
-            "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
-                "Assembly__Lever__Config__HeightMm": 1000
             }
         },
         {
             "Assembly__Identity__Config": {
-                "Assembly__Identity__Config__Id": "asm_911489",
-                "Assembly__Identity__Config__Title": "Side Door",
+                "Assembly__Identity__Config__Id": "asm_851677",
+                "Assembly__Identity__Config__Title": "Left Door",
                 "Assembly__Identity__Config__SortOrder": 1
             },
             "Assembly__DoorType__Config": {
@@ -93,7 +93,7 @@
             },
             "Assembly__Dimensions__Config": {
                 "Assembly__Dimensions__Config__WidthMm": 900,
-                "Assembly__Dimensions__Config__HeightMm": 2100
+                "Assembly__Dimensions__Config__HeightMm": 2203
             },
             "Handing": "Left",
             "Assembly__ProgressState__Config": {
@@ -106,13 +106,13 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "misc"
+                "Assembly__ProgressState__Config__ActiveStepId": "finish"
             },
             "Assembly__Hinge__Config": {
-                "Assembly__Hinge__Config__HingesPerLeaf": 3,
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
                 "Assembly__Hinge__Config__Hanging": "Standard",
-                "Assembly__Hinge__Config__Projection": 4,
-                "Assembly__Hinge__Config__Style": "Decorative"
+                "Assembly__Hinge__Config__Style": "Decorative",
+                "Assembly__Hinge__Config__Projection": 4
             },
             "Assembly__DoorCondition__Config": {
                 "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
@@ -120,7 +120,41 @@
                 "Assembly__DoorCondition__Config__AppliesWarning": false
             },
             "Assembly__Warnings__Config": {
-                "Assembly__Warnings__Config__ActiveWarnings": []
+                "Assembly__Warnings__Config__ActiveWarnings": [
+                    {
+                        "RuleId": "WARN_TALL_DOOR_TOP_BOLT_REVIEW",
+                        "Severity": "Caution",
+                        "WarningMessage": "Tall single doors may benefit from an additional top bolt for security. Subject to senior review.",
+                        "DocumentWarning": {
+                            "Title": "Tall Door Top Bolt Review",
+                            "Message": "Single door exceeds 2200 mm height. Consider an additional top bolt — subject to senior review."
+                        },
+                        "TriggeredAtValue": 2203,
+                        "Acknowledged": false
+                    },
+                    {
+                        "RuleId": "WARN_IRONMONGERY_MISMATCH",
+                        "Severity": "Warning",
+                        "WarningMessage": "The Ironmongery for this assembly is different to the others on the project.",
+                        "DocumentWarning": {
+                            "Title": "Ironmongery Finish Mismatch",
+                            "Message": "The Ironmongery for this assembly is different to the others on the project."
+                        },
+                        "TriggeredAtValue": "Satin Nickel",
+                        "Acknowledged": false
+                    },
+                    {
+                        "RuleId": "WARN_LEVER_MISMATCH",
+                        "Severity": "Warning",
+                        "WarningMessage": "The Handle Type for this assembly is different to the others on the project.",
+                        "DocumentWarning": {
+                            "Title": "Handle Type Mismatch",
+                            "Message": "The Handle Type for this assembly is different to the others on the project."
+                        },
+                        "TriggeredAtValue": "Newton Lever Handle",
+                        "Acknowledged": false
+                    }
+                ]
             },
             "Assembly__Locking__Config": {
                 "Assembly__Locking__Config__Points": 3,
@@ -142,23 +176,26 @@
                 "Assembly__Miscellaneous__Config__Items": [
                     "Misc_NA"
                 ]
+            },
+            "Assembly__IronmongeryFinish__Config": {
+                "Assembly__IronmongeryFinish__Config__Finish": "Satin Nickel"
             }
         },
         {
             "Assembly__Identity__Config": {
-                "Assembly__Identity__Config__Id": "asm_087585",
-                "Assembly__Identity__Config__Title": "Right Side Doors",
+                "Assembly__Identity__Config__Id": "asm_936444",
+                "Assembly__Identity__Config__Title": "Right Door",
                 "Assembly__Identity__Config__SortOrder": 2
             },
             "Assembly__DoorType__Config": {
-                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__Type": "Single Door",
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 2000,
-                "Assembly__Dimensions__Config__HeightMm": 2300
+                "Assembly__Dimensions__Config__WidthMm": 900,
+                "Assembly__Dimensions__Config__HeightMm": 2203
             },
-            "Handing": "Left",
+            "Handing": "Right",
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
                     "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
@@ -169,30 +206,30 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "misc"
+                "Assembly__ProgressState__Config__ActiveStepId": "dimensions"
             },
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
-                "Assembly__Hinge__Config__Hanging": "Double Top",
-                "Assembly__Hinge__Config__Projection": 6,
-                "Assembly__Hinge__Config__Style": "Decorative"
+                "Assembly__Hinge__Config__Hanging": "Standard",
+                "Assembly__Hinge__Config__Style": "Decorative",
+                "Assembly__Hinge__Config__Projection": 4
             },
             "Assembly__DoorCondition__Config": {
-                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
-                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
                 "Assembly__DoorCondition__Config__AppliesWarning": false
             },
             "Assembly__Warnings__Config": {
                 "Assembly__Warnings__Config__ActiveWarnings": [
                     {
-                        "RuleId": "WARN_WIDE_LEAF_HINGE_REVIEW",
+                        "RuleId": "WARN_TALL_DOOR_TOP_BOLT_REVIEW",
                         "Severity": "Caution",
-                        "WarningMessage": "Panel over 1000 mm wide requires double-top hinge arrangement. Subject to review — may require double-top and double-bottom (5 hinges total) or a pivot system.",
+                        "WarningMessage": "Tall single doors may benefit from an additional top bolt for security. Subject to senior review.",
                         "DocumentWarning": {
-                            "Title": "Wide Leaf Hinge Review",
-                            "Message": "One or more panels exceed 1000 mm width and require a double-top hinge arrangement. Subject to review: may require double-top and double-bottom (5 hinges total) or a pivot system."
+                            "Title": "Tall Door Top Bolt Review",
+                            "Message": "Single door exceeds 2200 mm height. Consider an additional top bolt — subject to senior review."
                         },
-                        "TriggeredAtValue": "1000 mm/panel (2 panels, 2000 mm total)",
+                        "TriggeredAtValue": 2203,
                         "Acknowledged": false
                     },
                     {
@@ -209,7 +246,7 @@
                 ]
             },
             "Assembly__Locking__Config": {
-                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Points": 3,
                 "Assembly__Locking__Config__Type": "Multi-Point"
             },
             "Assembly__Opening__Config": {
@@ -220,9 +257,9 @@
                 "Assembly__Lever__Config__HeightMm": 1000
             },
             "Assembly__CabinHooks__Config": {
-                "Assembly__CabinHooks__Config__Size": "6\"",
-                "Assembly__CabinHooks__Config__HookCount": 2,
-                "Assembly__CabinHooks__Config__EyeCount": 2
+                "Assembly__CabinHooks__Config__Size": "10\"",
+                "Assembly__CabinHooks__Config__HookCount": 1,
+                "Assembly__CabinHooks__Config__EyeCount": 1
             },
             "Assembly__Miscellaneous__Config": {
                 "Assembly__Miscellaneous__Config__Items": [

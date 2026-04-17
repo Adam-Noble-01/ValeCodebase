@@ -15,6 +15,12 @@
    - Sequential step progress bar and collapsible step cards
    - Form group controls, sliders, warnings, and modals
 
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - ValeSpec__ValidationError styles for StepManager required-field highlighting (inputs and selects)
+
    ============================================================================= */
 
 
@@ -936,6 +942,8 @@
 /* #endregion ----------------------------------------------------------------- */
 
 
+/* #endregion ----------------------------------------------------------------- */
+
 /* #region ----------------------------------------------------------------------
  * COMPONENT | Disabled Future Door Type Options
  * ----------------------------------------------------------------------------- */
@@ -943,6 +951,19 @@
 .ValeSpec__AssemblyEditor__FormGroup select option:disabled {
     color                                : var(--Vale_EditorDisabledColour);
     font-style                           : italic;
+}
+
+/* #endregion ----------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Validation Errors
+ * ----------------------------------------------------------------------------- */
+
+.ValeSpec__ValidationError {
+    border-color                         : #d32f2f !important;
+    background-color                     : #ffebee !important;
+    box-shadow                           : 0 0 0 2px rgba(211, 47, 47, 0.2) !important;
 }
 
 /* #endregion ----------------------------------------------------------------- */

@@ -124,6 +124,34 @@
         },
 
         {
+            "RuleId"               : "WARN_IRONMONGERY_MISMATCH",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "IronmongeryMismatch",
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "EditorNotification"   : "The Ironmongery for this assembly is different to the others on the project.",
+            "DocumentWarning"      : {
+                "Title"    : "Ironmongery Finish Mismatch",
+                "Message"  : "The Ironmongery for this assembly is different to the others on the project."
+            }
+        },
+
+        {
+            "RuleId"               : "WARN_LEVER_MISMATCH",
+            "Scope"                : "PerAssembly",
+            "ObjectType"           : "AnyDoor",
+            "Condition"            : "LeverMismatch",
+            "Severity"             : "Warning",
+            "Enabled"              : true,
+            "EditorNotification"   : "The Handle Type for this assembly is different to the others on the project.",
+            "DocumentWarning"      : {
+                "Title"    : "Handle Type Mismatch",
+                "Message"  : "The Handle Type for this assembly is different to the others on the project."
+            }
+        },
+
+        {
             "RuleId"               : "WARN_NON_COMPLEMENTARY_HARDWARE",
             "Scope"                : "PerAssembly",
             "ObjectType"           : "AnyDoor",

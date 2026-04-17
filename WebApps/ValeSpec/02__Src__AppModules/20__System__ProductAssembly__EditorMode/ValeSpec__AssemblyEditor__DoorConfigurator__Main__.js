@@ -85,7 +85,7 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
             return;
         }
 
-        StepManager.ValeSpec__StepManager__Init(ValeSpec__DoorConfigurator__ContainerEl);
+        await StepManager.ValeSpec__StepManager__Init(ValeSpec__DoorConfigurator__ContainerEl);
 
         var step1Body  =  StepManager.ValeSpec__StepManager__CreateStep('doorType');
         var step2Body  =  StepManager.ValeSpec__StepManager__CreateStep('dimensions');
@@ -157,12 +157,14 @@ const ValeSpec__AssemblyEditor__DoorConfigurator__Main = (function() {
         if (!assemblyData) return;
 
         var DoorTypeDims  =  window.ValeSpec__AssemblyEditor__DoorConfigurator__DoorTypeAndDimensions;
+        var GlobalSettings =  window.ValeSpec__AssemblyEditor__GlobalSettings;
         var Handles       =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Handles;
         var Hinges        =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Hinges;
         var CabinHooks    =  window.ValeSpec__AssemblyEditor__DoorConfigurator__CabinHooks;
         var Miscellaneous =  window.ValeSpec__AssemblyEditor__DoorConfigurator__Miscellaneous;
 
         if (DoorTypeDims) DoorTypeDims.ValeSpec__DoorTypeAndDimensions__RefreshFromAssembly(assemblyData);
+        if (GlobalSettings) GlobalSettings.ValeSpec__GlobalSettings__RefreshFromAssembly(assemblyData);
         if (Hinges) Hinges.ValeSpec__Hinges__RefreshFromAssembly(assemblyData);
         if (Handles) Handles.ValeSpec__Handles__RefreshFromAssembly(assemblyData);
         if (CabinHooks) CabinHooks.ValeSpec__CabinHooks__RefreshFromAssembly(assemblyData);

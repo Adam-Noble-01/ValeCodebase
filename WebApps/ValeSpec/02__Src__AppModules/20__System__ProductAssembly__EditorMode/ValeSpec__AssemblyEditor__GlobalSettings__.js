@@ -12,9 +12,17 @@
    DESCRIPTION:
    - Renders global finish selector as a dedicated step card section
    - Options: Unlacquered Brass, Satin Nickel, Bronze, Other (free text)
-   - On change calls StateManager.ValeSpec__StateManager__SetGlobalFinish()
-   - Cascades finish to all assemblies in the project
+   - On change calls StateManager.ValeSpec__StateManager__SetGlobalFinish() and can store per-assembly override when finish differs from project global
+   - Project JSON stores a single global finish; mismatch path can apply finish to one assembly only
    - Registers StepManager summary and completion state for finish step
+
+   =============================================================================
+
+   DEVELOPMENT LOG:
+   17-Apr-2026
+   - Ironmongery finish: first selection sets project global; differing choice prompts mismatch modal — update all assemblies or store per-assembly override only
+   - SvgPreview render forced after finish changes and assembly refresh so preview colour stays in sync
+   - Step completion tracks global or assembly-specific finish; auto-advance removed (Next-driven wizard)
 
    ============================================================================= */
 
@@ -135,6 +143,20 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
         if (!StepManager) return;
         StepManager.ValeSpec__StepManager__MarkCompleted('finish', !!isComplete);
+        
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        if (StateManager) {
+            var state = StateManager.ValeSpec__StateManager__GetState();
+            var globalFinish = state.globalIronmongeryFinish;
+            var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+            var assemblyFinish = '';
+            if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                assemblyFinish = assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+            }
+            if (globalFinish || assemblyFinish) {
+                StepManager.ValeSpec__StepManager__MarkCompleted('finish', true);
+            }
+        }
     }
     // ------------------------------------------------------------
 
@@ -169,14 +191,86 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         ValeSpec__GlobalSettings__OtherInput.value          =  '';
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var WarningSystem =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        
         if (StateManager) {
-            StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+            var state = StateManager.ValeSpec__StateManager__GetState();
+            var globalFinish = state.globalIronmongeryFinish;
+            
+            if (!globalFinish) {
+                StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+            } else if (globalFinish !== value) {
+                if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning) {
+                    WarningSystem.ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning().then(function(confirmed) {
+                        if (confirmed) {
+                            // Update all others (set global finish, clear assembly specific)
+                            StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+                            var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                            if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                                delete assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+                                StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                                if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                                    WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                                }
+                            }
+                        } else {
+                            // Keep as assembly specific
+                            var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                            if (assembly) {
+                                if (!assembly['Assembly__IronmongeryFinish__Config']) assembly['Assembly__IronmongeryFinish__Config'] = {};
+                                assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'] = value;
+                                StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                                if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                                    WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                                }
+                            }
+                        }
+                        ValeSpec__GlobalSettings__UserConfirmed  =  true;
+                        ValeSpec__GlobalSettings__UpdateStepCompletion(true);
+                        
+                        var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
+                        var currentAssembly = StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
+                        if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render && currentAssembly) {
+                            SvgPreview.ValeSpec__SvgPreview__Render(currentAssembly);
+                        }
+                    });
+                    return;
+                } else {
+                    var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                    if (assembly) {
+                        if (!assembly['Assembly__IronmongeryFinish__Config']) assembly['Assembly__IronmongeryFinish__Config'] = {};
+                        assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'] = value;
+                        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                            var activeWarnings = WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                            if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__GlobalSettings__ContainerEl) {
+                                WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__GlobalSettings__ContainerEl, activeWarnings);
+                            }
+                        }
+                    }
+                }
+            } else {
+                var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                    delete assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+                    StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                    if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                        var activeWarnings = WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                        if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__GlobalSettings__ContainerEl) {
+                            WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__GlobalSettings__ContainerEl, activeWarnings);
+                        }
+                    }
+                }
+            }
         }
 
         ValeSpec__GlobalSettings__UserConfirmed  =  !!value;
         ValeSpec__GlobalSettings__UpdateStepCompletion(ValeSpec__GlobalSettings__UserConfirmed);
-        if (StepManager && value) {
-            StepManager.ValeSpec__StepManager__AdvanceFromStep('finish');
+        
+        var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
+        var assembly = StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
+        if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render && assembly) {
+            SvgPreview.ValeSpec__SvgPreview__Render(assembly);
         }
     }
     // ------------------------------------------------------------
@@ -193,16 +287,147 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
         }
 
         var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var WarningSystem =  window.ValeSpec__AssemblyEditor__WarningSystem;
+
         if (StateManager) {
-            StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+            var state = StateManager.ValeSpec__StateManager__GetState();
+            var globalFinish = state.globalIronmongeryFinish;
+            
+            if (!globalFinish) {
+                StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+            } else if (globalFinish !== value) {
+                if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning) {
+                    WarningSystem.ValeSpec__WarningSystem__ShowIronmongeryMismatchWarning().then(function(confirmed) {
+                        if (confirmed) {
+                            StateManager.ValeSpec__StateManager__SetGlobalFinish(value);
+                            var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                            if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                                delete assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+                                StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                                if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                                    WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                                }
+                            }
+                        } else {
+                            var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                            if (assembly) {
+                                if (!assembly['Assembly__IronmongeryFinish__Config']) assembly['Assembly__IronmongeryFinish__Config'] = {};
+                                assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'] = value;
+                                StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                                if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                                    WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                                }
+                            }
+                        }
+                        ValeSpec__GlobalSettings__UserConfirmed  =  true;
+                        ValeSpec__GlobalSettings__UpdateStepCompletion(true);
+                        
+                        var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
+                        var currentAssembly = StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
+                        if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render && currentAssembly) {
+                            SvgPreview.ValeSpec__SvgPreview__Render(currentAssembly);
+                        }
+                    });
+                    return;
+                } else {
+                    var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                    if (assembly) {
+                        if (!assembly['Assembly__IronmongeryFinish__Config']) assembly['Assembly__IronmongeryFinish__Config'] = {};
+                        assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'] = value;
+                        StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                            var activeWarnings = WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                            if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__GlobalSettings__ContainerEl) {
+                                WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__GlobalSettings__ContainerEl, activeWarnings);
+                            }
+                        }
+                    }
+                }
+            } else {
+                var assembly = StateManager.ValeSpec__StateManager__GetCurrentAssembly();
+                if (assembly && assembly['Assembly__IronmongeryFinish__Config']) {
+                    delete assembly['Assembly__IronmongeryFinish__Config']['Assembly__IronmongeryFinish__Config__Finish'];
+                    StateManager.ValeSpec__StateManager__UpdateCurrentAssembly(assembly);
+                    if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly) {
+                        var activeWarnings = WarningSystem.ValeSpec__WarningSystem__ApplyWarningsToAssembly(assembly);
+                        if (WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings && ValeSpec__GlobalSettings__ContainerEl) {
+                            WarningSystem.ValeSpec__WarningSystem__RenderInlineWarnings(ValeSpec__GlobalSettings__ContainerEl, activeWarnings);
+                        }
+                    }
+                }
+            }
         }
 
         ValeSpec__GlobalSettings__UserConfirmed  =  true;
         ValeSpec__GlobalSettings__UpdateStepCompletion(ValeSpec__GlobalSettings__UserConfirmed);
+        
+        var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
+        var assembly = StateManager ? StateManager.ValeSpec__StateManager__GetCurrentAssembly() : null;
+        if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render && assembly) {
+            SvgPreview.ValeSpec__SvgPreview__Render(assembly);
+        }
+    }
+    // ------------------------------------------------------------
 
-        var StepManager  =  window.ValeSpec__AssemblyEditor__StepManager;
-        if (StepManager) {
-            StepManager.ValeSpec__StepManager__AdvanceFromStep('finish');
+
+    // FUNCTION | Refresh Controls from Assembly Data
+    // ------------------------------------------------------------
+    function ValeSpec__GlobalSettings__RefreshFromAssembly(assemblyData) {
+        if (!assemblyData) return;
+
+        var StateManager  =  window.ValeSpec__AppCore__StateManager;
+        var globalFinish = '';
+        if (StateManager) {
+            var state = StateManager.ValeSpec__StateManager__GetState();
+            globalFinish = state.globalIronmongeryFinish || '';
+        }
+
+        var assemblyFinish = '';
+        var finishCfg = assemblyData['Assembly__IronmongeryFinish__Config'];
+        if (finishCfg && finishCfg['Assembly__IronmongeryFinish__Config__Finish']) {
+            assemblyFinish = finishCfg['Assembly__IronmongeryFinish__Config__Finish'];
+        }
+
+        var targetFinish = assemblyFinish || globalFinish;
+
+        if (targetFinish && ValeSpec__GlobalSettings__FinishSelect) {
+            var matchFound  =  false;
+            for (var j = 0; j < FINISH_OPTIONS.length; j++) {
+                if (FINISH_OPTIONS[j].Value === targetFinish) {
+                    matchFound  =  true;
+                    break;
+                }
+            }
+            if (matchFound) {
+                ValeSpec__GlobalSettings__FinishSelect.value  =  targetFinish;
+                ValeSpec__GlobalSettings__OtherInput.style.display = 'none';
+            } else {
+                ValeSpec__GlobalSettings__FinishSelect.value  =  'Other';
+                ValeSpec__GlobalSettings__OtherInput.value    =  targetFinish;
+                ValeSpec__GlobalSettings__OtherInput.style.display = '';
+            }
+            ValeSpec__GlobalSettings__UserConfirmed = true;
+            ValeSpec__GlobalSettings__UpdateStepCompletion(true);
+        } else {
+            if (ValeSpec__GlobalSettings__FinishSelect) {
+                ValeSpec__GlobalSettings__FinishSelect.value = '';
+            }
+            if (ValeSpec__GlobalSettings__OtherInput) {
+                ValeSpec__GlobalSettings__OtherInput.value = '';
+                ValeSpec__GlobalSettings__OtherInput.style.display = 'none';
+            }
+            ValeSpec__GlobalSettings__UserConfirmed = false;
+            ValeSpec__GlobalSettings__UpdateStepCompletion(false);
+        }
+        
+        var SvgPreview  =  window.ValeSpec__AssemblyEditor__SvgPreview;
+        if (SvgPreview && SvgPreview.ValeSpec__SvgPreview__Render) {
+            SvgPreview.ValeSpec__SvgPreview__Render(assemblyData);
+        }
+
+        var WarningSystem  =  window.ValeSpec__AssemblyEditor__WarningSystem;
+        if (WarningSystem && WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly) {
+            WarningSystem.ValeSpec__WarningSystem__RestoreWarningsFromAssembly(assemblyData, ValeSpec__GlobalSettings__ContainerEl);
         }
     }
     // ------------------------------------------------------------
@@ -227,7 +452,8 @@ const ValeSpec__AssemblyEditor__GlobalSettings = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        ValeSpec__GlobalSettings__Init  : ValeSpec__GlobalSettings__Init
+        ValeSpec__GlobalSettings__Init  : ValeSpec__GlobalSettings__Init,
+        ValeSpec__GlobalSettings__RefreshFromAssembly : ValeSpec__GlobalSettings__RefreshFromAssembly
     };
 
 })();

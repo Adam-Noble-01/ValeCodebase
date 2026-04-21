@@ -1,25 +1,72 @@
 {
-    "projectName": "Thompson",
-    "projectCode": "63076",
-    "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -1046,
+            "Camera__DefaultPos__PosY": 2492,
+            "Camera__DefaultPos__PosZ": 9031
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0156,
+            "Camera__DefaultRotation__RotY": -0.5191,
+            "Camera__DefaultRotation__RotZ": -0.0077
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
     },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -23848
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 25777
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 7703,
+        "OrbitHelperCube__Position__PosY": 2253,
+        "OrbitHelperCube__Position__PosZ": -6282
+    },
+    "ProjectType": "Blockout",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/63076__Thompson",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Apr-2026.png"
+    ],
+    "folderId": "2026/63076__Thompson",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Apr-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "None standard Job, Took a little longer than expected.",
+        "conceptArtist": "Steph",
+        "input": "CAD File"
+    },
+    "projectCode": "63076",
+    "projectName": "Thompson",
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
         "dateFulfilled": "21-Apr-2026",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "21-Apr-2026",
+        "timeAllocated": 2.5,
+        "timeTaken": 3
     },
     "sketchUpModel": {
         "url": "Nil"
     },
-    "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__21-Apr-2026.png"
-    ],
-    "ProjectType": "Blockout",
-    "basePath": "Projects/2026/63076__Thompson",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63076__Thompson/Thompson__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63076__Thompson/Thompson__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
@@ -28,26 +75,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63076__Thompson/Thompson__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63076__Thompson/Thompson__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63076__Thompson/Thompson__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "valeVision_Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
-        "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -5000,
-            "Camera__DefaultPos__PosY": 2800,
-            "Camera__DefaultPos__PosZ": 3250
-        },
-        "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX": -1250,
-            "Camera__DefaultTarget__TargetY": 2570,
-            "Camera__DefaultTarget__TargetZ": -350
-        },
-        "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.073,
-            "Camera__DefaultRotation__RotY": -0.8346,
-            "Camera__DefaultRotation__RotZ": -0.0541
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
-        }
-    }
+    ]
 }

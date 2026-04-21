@@ -1,58 +1,140 @@
 // -----------------------------------------------------------------------------
 // REGION | PhotoMeasurePro Ortho Warp And Export Engine
 // -----------------------------------------------------------------------------
+// Thin orchestration: builds the planar homography + bounds for the selected
+// plane, drives the canvas renderer for both the live preview and the PNG
+// export (so the export is pixel-identical to the preview, optionally cropped).
+// -----------------------------------------------------------------------------
 const PhotoMeasurePro__System__OrthoWarpAndExport__Engine = (function() {
 
     // FUNCTION | Get Plane Label For UI
     // ------------------------------------------------------------
-    function PhotoMeasurePro__OrthoWarpAndExport__GetPlaneLabel(planeCode) {
-        if (planeCode === "XY") return "Facade (XY)";
-        if (planeCode === "XZ") return "Floor (XZ)";
-        return "Side (YZ)";
+    function PhotoMeasurePro__OrthoWarpAndExport__GetPlaneLabel(semanticPlane) {
+        const coordinateSpace = window.PhotoMeasurePro__MathUtils__CoordinateSpace;
+        const planeDefinition = coordinateSpace.PhotoMeasurePro__CoordinateSpace__GetPlaneDefinition(semanticPlane);
+        return semanticPlane + " (" + planeDefinition.planeCode + ")";
     }
     // ------------------------------------------------------------
 
-    // FUNCTION | Export Current Image And Overlay As PNG
+    // FUNCTION | Build Ortho Geometry Bundle (Homography + Bounds)
     // ------------------------------------------------------------
-    function PhotoMeasurePro__OrthoWarpAndExport__ExportPng(domRefs) {
-        const sourceImage = domRefs.PhotoMeasurePro__OrthoWarpAndExport__BaseImageElement;
-        const sourceSvg = domRefs.PhotoMeasurePro__OrthoWarpAndExport__OverlaySvgElement;
-        if (!sourceImage || !sourceImage.src || !sourceSvg) return;
+    function PhotoMeasurePro__OrthoWarpAndExport__BuildOrthoGeometry(currentState, derivedData) {
+        const perspectiveData = derivedData && derivedData.perspectiveData;
+        if (!perspectiveData || !perspectiveData.basis || !perspectiveData.f) return null;
+
+        const planeScaleEntry = derivedData.scalesByPlane && derivedData.scalesByPlane[currentState.measurePlane];
+        const planeScale = planeScaleEntry && planeScaleEntry.value;
+        if (!planeScale) return null;
+
+        const homographyUtils = window.PhotoMeasurePro__MathUtils__PlanarHomography;
+        const homography = homographyUtils.PhotoMeasurePro__PlanarHomography__BuildImageToPlaneHomography(
+            perspectiveData.basis,
+            currentState.measurePlane,
+            perspectiveData.f,
+            perspectiveData.cx,
+            perspectiveData.cy,
+            planeScale
+        );
+        if (!homography) return null;
+
+        const planeBounds = homographyUtils.PhotoMeasurePro__PlanarHomography__ComputePlaneBoundsForImage(
+            homography,
+            currentState.imgSize.w,
+            currentState.imgSize.h
+        );
+        if (!planeBounds) return null;
+
+        return {
+            homography: homography,
+            planeBounds: planeBounds,
+            planeScale: planeScale,
+            planeScaleSource: planeScaleEntry.source
+        };
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Render Ortho Preview Canvas
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__OrthoWarpAndExport__RenderPreview(targetCanvas, currentState, derivedData) {
+        const orthoGeometry = PhotoMeasurePro__OrthoWarpAndExport__BuildOrthoGeometry(currentState, derivedData);
+        if (!orthoGeometry || !currentState.imageUrl) return Promise.resolve(null);
+
+        const canvasRenderer = window.PhotoMeasurePro__System__OrthoWarpAndExport__CanvasRenderer;
+        return canvasRenderer.PhotoMeasurePro__OrthoCanvasRenderer__RenderOrthoCanvas({
+            targetCanvas: targetCanvas,
+            sourceImageUrl: currentState.imageUrl,
+            perspectiveData: derivedData.perspectiveData,
+            semanticPlane: currentState.measurePlane,
+            planeScale: orthoGeometry.planeScale,
+            planeBounds: orthoGeometry.planeBounds,
+            homography: orthoGeometry.homography,
+            maxLongEdgePx: 1600
+        });
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Export Rectified Plane (Optionally Cropped) As PNG
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__OrthoWarpAndExport__ExportPng(domRefs, currentState, derivedData) {
+        const orthoGeometry = PhotoMeasurePro__OrthoWarpAndExport__BuildOrthoGeometry(currentState, derivedData);
+        if (!orthoGeometry || !currentState.imageUrl) {
+            window.alert("Set a constraint (or anchor + any constraint) so the selected plane has a scale before exporting.");
+            return;
+        }
 
         const exportCanvas = document.createElement("canvas");
-        exportCanvas.width = sourceImage.naturalWidth || sourceImage.width;
-        exportCanvas.height = sourceImage.naturalHeight || sourceImage.height;
-        const canvasContext = exportCanvas.getContext("2d");
-        if (!canvasContext) return;
+        const canvasRenderer = window.PhotoMeasurePro__System__OrthoWarpAndExport__CanvasRenderer;
 
-        canvasContext.drawImage(sourceImage, 0, 0, exportCanvas.width, exportCanvas.height);
+        const boundsForExport = PhotoMeasurePro__OrthoWarpAndExport__ApplyCropToBounds(orthoGeometry.planeBounds, currentState.orthoCrop);
 
-        const svgMarkup = new XMLSerializer().serializeToString(sourceSvg).replace(
-            "<svg",
-            "<svg width=\"" + exportCanvas.width + "\" height=\"" + exportCanvas.height + "\""
-        );
-
-        const svgBlob = new Blob([svgMarkup], { type: "image/svg+xml;charset=utf-8" });
-        const blobUrl = URL.createObjectURL(svgBlob);
-        const overlayImage = new Image();
-
-        overlayImage.onload = function() {
-            canvasContext.drawImage(overlayImage, 0, 0, exportCanvas.width, exportCanvas.height);
-            URL.revokeObjectURL(blobUrl);
-
+        canvasRenderer.PhotoMeasurePro__OrthoCanvasRenderer__RenderOrthoCanvas({
+            targetCanvas: exportCanvas,
+            sourceImageUrl: currentState.imageUrl,
+            perspectiveData: derivedData.perspectiveData,
+            semanticPlane: currentState.measurePlane,
+            planeScale: orthoGeometry.planeScale,
+            planeBounds: boundsForExport,
+            homography: orthoGeometry.homography,
+            maxLongEdgePx: Math.max(currentState.imgSize.w, currentState.imgSize.h)
+        }).then(function(renderResult) {
+            if (!renderResult) return;
             const downloadLink = document.createElement("a");
             downloadLink.href = exportCanvas.toDataURL("image/png");
-            downloadLink.download = "PhotoMeasurePro__Export.png";
+            const cropSuffix = currentState.orthoCrop ? "__Cropped" : "";
+            downloadLink.download = "PhotoMeasurePro__Ortho__" + currentState.measurePlane + cropSuffix + ".png";
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
+        });
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Apply Crop Rectangle To Plane Bounds
+    // ------------------------------------------------------------
+    // orthoCrop is stored in plane-local mm coordinates. If it clips the full
+    // bounds, we use the intersection so the export respects the user's crop.
+    function PhotoMeasurePro__OrthoWarpAndExport__ApplyCropToBounds(planeBounds, orthoCrop) {
+        if (!orthoCrop) return planeBounds;
+        const clippedMinRight = Math.max(planeBounds.minRight, orthoCrop.minRight);
+        const clippedMaxRight = Math.min(planeBounds.maxRight, orthoCrop.maxRight);
+        const clippedMinUp    = Math.max(planeBounds.minUp,    orthoCrop.minUp);
+        const clippedMaxUp    = Math.min(planeBounds.maxUp,    orthoCrop.maxUp);
+        if (clippedMaxRight - clippedMinRight <= 0 || clippedMaxUp - clippedMinUp <= 0) return planeBounds;
+        return {
+            minRight: clippedMinRight,
+            maxRight: clippedMaxRight,
+            minUp:    clippedMinUp,
+            maxUp:    clippedMaxUp,
+            width:    clippedMaxRight - clippedMinRight,
+            height:   clippedMaxUp - clippedMinUp
         };
-        overlayImage.src = blobUrl;
     }
     // ------------------------------------------------------------
 
     return {
         PhotoMeasurePro__OrthoWarpAndExport__GetPlaneLabel: PhotoMeasurePro__OrthoWarpAndExport__GetPlaneLabel,
+        PhotoMeasurePro__OrthoWarpAndExport__BuildOrthoGeometry: PhotoMeasurePro__OrthoWarpAndExport__BuildOrthoGeometry,
+        PhotoMeasurePro__OrthoWarpAndExport__RenderPreview: PhotoMeasurePro__OrthoWarpAndExport__RenderPreview,
         PhotoMeasurePro__OrthoWarpAndExport__ExportPng: PhotoMeasurePro__OrthoWarpAndExport__ExportPng
     };
 })();

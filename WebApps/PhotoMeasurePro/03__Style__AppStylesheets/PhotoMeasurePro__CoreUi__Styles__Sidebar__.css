@@ -8,8 +8,9 @@
 
 #PhotoMeasurePro__Sidebar__HeaderBar {
     display          : flex;
-    align-items      : center;
-    justify-content  : space-between;
+    flex-direction   : column;
+    align-items      : stretch;
+    gap              : 8px;
     padding          : 12px 14px;
     border-bottom    : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
 }
@@ -17,6 +18,12 @@
 #PhotoMeasurePro__Sidebar__TitleText {
     margin           : 0;
     font-size        : 18px;
+}
+
+#PhotoMeasurePro__Sidebar__HeaderButtonRow {
+    display          : flex;
+    flex-wrap        : wrap;
+    gap              : 6px;
 }
 
 #PhotoMeasurePro__Sidebar__ButtonHiddenAlign {
@@ -38,10 +45,328 @@
 #PhotoMeasurePro__Sidebar__SetupPanel,
 #PhotoMeasurePro__Sidebar__ConstraintPanel,
 #PhotoMeasurePro__Sidebar__MeasurementPanel,
+#PhotoMeasurePro__Sidebar__OrthoPanel,
 #PhotoMeasurePro__Sidebar__SelectionPanel,
-#PhotoMeasurePro__Sidebar__ExportPanel {
+#PhotoMeasurePro__Sidebar__ExportPanel,
+#PhotoMeasurePro__Sidebar__ProjectsPanel,
+#PhotoMeasurePro__VisualSettings__Panel,
+#PhotoMeasurePro__Diagnostics__Panel {
     padding          : 12px 14px;
     border-bottom    : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+}
+
+#PhotoMeasurePro__Sidebar__ProjectsPanel h2 {
+    margin           : 0 0 8px 0;
+    font-size        : 14px;
+}
+
+#PhotoMeasurePro__Projects__CurrentText {
+    margin           : 0 0 8px 0;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-size        : 12px;
+    font-family      : Consolas, monospace;
+}
+
+#PhotoMeasurePro__Projects__ActionRow,
+#PhotoMeasurePro__Projects__ActionRowSecondary {
+    display          : grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap              : 6px;
+    margin-bottom    : 6px;
+}
+
+#PhotoMeasurePro__Projects__ActionRow button,
+#PhotoMeasurePro__Projects__ActionRowSecondary button,
+#PhotoMeasurePro__Projects__ImportLabel {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 6px;
+    padding          : 7px 4px;
+    cursor           : pointer;
+    font-size        : 11px;
+    text-align       : center;
+}
+
+#PhotoMeasurePro__Projects__InputImportJson {
+    display          : none;
+}
+
+#PhotoMeasurePro__Projects__ManifestList {
+    list-style       : none;
+    padding          : 0;
+    margin           : 8px 0 0 0;
+    max-height       : 180px;
+    overflow         : auto;
+    font-size        : 11px;
+}
+
+.PhotoMeasurePro__Projects__ManifestItem {
+    display          : flex;
+    justify-content  : space-between;
+    align-items      : center;
+    padding          : 6px 8px;
+    margin-bottom    : 4px;
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    border-radius    : 6px;
+    border           : 1px solid transparent;
+}
+
+.PhotoMeasurePro__Projects__ManifestItem span {
+    cursor           : pointer;
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    flex             : 1;
+    margin-right     : 6px;
+    white-space      : nowrap;
+    overflow         : hidden;
+    text-overflow    : ellipsis;
+    font-family      : Consolas, monospace;
+}
+
+.PhotoMeasurePro__Projects__ManifestItem--active {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+.PhotoMeasurePro__Projects__DeleteButton {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : transparent;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 4px;
+    padding          : 3px 8px;
+    cursor           : pointer;
+    font-size        : 10px;
+}
+
+.PhotoMeasurePro__Projects__DeleteButton:hover {
+    border-color     : var(--PhotoMeasurePro__ColorDanger);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+}
+
+#PhotoMeasurePro__Measurement__SubModeRow {
+    display          : grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap              : 6px;
+    margin           : 8px 0;
+}
+
+.PhotoMeasurePro__Measurement__SubModeButton {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 6px;
+    padding          : 6px 4px;
+    cursor           : pointer;
+    font-size        : 11px;
+}
+
+.PhotoMeasurePro__Measurement__SubModeButton--active {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+    color            : #ffffff;
+    background       : var(--PhotoMeasurePro__ColorAccentBlueSoft);
+}
+
+#PhotoMeasurePro__Measurement__GuideAxisRow {
+    display          : grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap              : 6px;
+    margin           : 6px 0 8px 0;
+}
+
+.PhotoMeasurePro__Measurement__GuideAxisButton {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 6px;
+    padding          : 6px 4px;
+    cursor           : pointer;
+    font-size        : 10px;
+}
+
+.PhotoMeasurePro__Measurement__GuideAxisButton--active {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+    color            : #ffffff;
+    background       : var(--PhotoMeasurePro__ColorAccentBlueSoft);
+}
+
+.PhotoMeasurePro__UiState__Hidden {
+    display          : none !important;
+}
+
+#PhotoMeasurePro__Measurement__AngleHintText {
+    margin           : 4px 0 8px 0;
+    font-size        : 11px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-style       : italic;
+}
+
+#PhotoMeasurePro__VisualSettings__Panel h2 {
+    margin           : 0 0 10px 0;
+    font-size        : 14px;
+}
+
+.PhotoMeasurePro__VisualSettings__SliderLabel {
+    display          : grid;
+    grid-template-columns: 1fr auto;
+    grid-column-gap  : 8px;
+    align-items      : center;
+    font-size        : 12px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    margin           : 6px 0;
+}
+
+.PhotoMeasurePro__VisualSettings__SliderLabel input {
+    grid-column      : 1 / 3;
+    margin-top       : 4px;
+}
+
+.PhotoMeasurePro__VisualSettings__SliderLabel span {
+    grid-row         : 1;
+    grid-column      : 2;
+    font-family      : Consolas, monospace;
+}
+
+.PhotoMeasurePro__VisualSettings__Panel--hidden {
+    display          : none !important;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__ToolbarRow {
+    display          : grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap              : 6px;
+    margin-top       : 10px;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__ToolbarRow button {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 6px;
+    padding          : 8px 4px;
+    cursor           : pointer;
+    font-size        : 11px;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__ToolbarRow button:hover {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+#PhotoMeasurePro__Sidebar__ButtonVisualSettingsToggle {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : transparent;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 6px;
+    padding          : 6px 8px;
+    cursor           : pointer;
+}
+
+#PhotoMeasurePro__Sidebar__ButtonVisualSettingsToggle:hover {
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+#PhotoMeasurePro__Sidebar__ButtonDiagnosticsToggle {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : transparent;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 6px;
+    padding          : 6px 8px;
+    cursor           : pointer;
+}
+
+#PhotoMeasurePro__Sidebar__ButtonDiagnosticsToggle:hover {
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+.PhotoMeasurePro__ScaleConstraint__StatusList {
+    list-style       : none;
+    padding          : 0;
+    margin           : 10px 0;
+    font-size        : 11px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+}
+
+.PhotoMeasurePro__ScaleConstraint__StatusList li {
+    padding          : 4px 6px;
+    border-radius    : 6px;
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    margin-bottom    : 4px;
+    font-family      : Consolas, monospace;
+}
+
+#PhotoMeasurePro__ScaleConstraint__ClearButtonRow {
+    display          : grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap              : 6px;
+    margin           : 8px 0 12px 0;
+}
+
+#PhotoMeasurePro__ScaleConstraint__ClearButtonRow button {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : transparent;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 6px;
+    padding          : 6px 4px;
+    cursor           : pointer;
+    font-size        : 10px;
+}
+
+#PhotoMeasurePro__ScaleConstraint__ClearButtonRow button:hover {
+    border-color     : var(--PhotoMeasurePro__ColorDanger);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+}
+
+#PhotoMeasurePro__ScaleConstraint__AnchorSection {
+    margin-top       : 10px;
+    padding-top      : 10px;
+    border-top       : 1px dashed var(--PhotoMeasurePro__ColorBorderMain);
+}
+
+#PhotoMeasurePro__ScaleConstraint__AnchorSection h3 {
+    margin           : 0 0 6px 0;
+    font-size        : 13px;
+}
+
+#PhotoMeasurePro__ScaleConstraint__AnchorButtonRow {
+    display          : grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap              : 6px;
+    margin           : 8px 0;
+}
+
+#PhotoMeasurePro__ScaleConstraint__AnchorButtonRow button {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 6px;
+    padding          : 8px;
+    cursor           : pointer;
+    font-size        : 12px;
+}
+
+#PhotoMeasurePro__ScaleConstraint__AnchorStatusText {
+    margin           : 4px 0 0 0;
+    font-size        : 11px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-family      : Consolas, monospace;
+}
+
+#PhotoMeasurePro__Diagnostics__Panel h2 {
+    margin           : 0 0 8px 0;
+    font-size        : 14px;
+}
+
+#PhotoMeasurePro__Diagnostics__Panel p {
+    margin           : 2px 0;
+    font-size        : 11px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-family      : Consolas, monospace;
+    white-space      : pre-wrap;
+    word-break       : break-all;
+}
+
+.PhotoMeasurePro__Diagnostics__Panel--hidden {
+    display          : none !important;
 }
 
 #PhotoMeasurePro__Sidebar__UploadIntroText,

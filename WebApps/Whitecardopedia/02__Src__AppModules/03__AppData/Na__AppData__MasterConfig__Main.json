@@ -419,6 +419,10 @@
         {
             "folderId": "2026/63148__Marsh",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63076__Thompson",
+            "enabled": true
         }
     ]
 }

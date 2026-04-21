@@ -42,6 +42,12 @@ const PhotoMeasurePro__AppCore__ModeManager = (function() {
         );
 
         domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
+            domRefs.PhotoMeasurePro__ModeManager__OrthoSidebarPanel,
+            currentState.mode !== "ortho",
+            "PhotoMeasurePro__Sidebar__ModeSection--hidden"
+        );
+
+        domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
             domRefs.PhotoMeasurePro__ModeManager__OrthoPanel,
             currentState.mode !== "ortho",
             "PhotoMeasurePro__OrthoWarpAndExport__Panel--hidden"

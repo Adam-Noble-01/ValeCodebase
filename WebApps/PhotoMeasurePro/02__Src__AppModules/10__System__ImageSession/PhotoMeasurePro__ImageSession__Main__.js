@@ -37,19 +37,33 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
         const loadedImage = await PhotoMeasurePro__ImageSession__ReadImageMetadata(objectUrl);
         const fitTransform = PhotoMeasurePro__ImageSession__ComputeFitTransform(loadedImage.width, loadedImage.height, domRefs);
 
+        const canvasRenderer = window.PhotoMeasurePro__System__OrthoWarpAndExport__CanvasRenderer;
+        if (canvasRenderer && canvasRenderer.PhotoMeasurePro__OrthoCanvasRenderer__ResetSourceCache) {
+            canvasRenderer.PhotoMeasurePro__OrthoCanvasRenderer__ResetSourceCache();
+        }
+        const orthoStage = window.PhotoMeasurePro__System__CanvasViewport__OrthoStage;
+        if (orthoStage && orthoStage.PhotoMeasurePro__OrthoStage__InvalidateCaches) {
+            orthoStage.PhotoMeasurePro__OrthoStage__InvalidateCaches();
+        }
+
         window.PhotoMeasurePro__AppCore__StateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
             const defaultLines = PhotoMeasurePro__ImageSession__BuildDefaultSetupLines(loadedImage.width, loadedImage.height);
-            const retainedNonSetupLines = previousState.lines.filter(function(lineItem) {
-                return lineItem.type !== "x" && lineItem.type !== "y" && lineItem.type !== "z";
-            });
+            const previousLengths = previousState.constraintsByPlane || {};
             return {
                 imageUrl: objectUrl,
                 imageName: imageFile.name || "Unnamed",
                 imgSize: { w: loadedImage.width, h: loadedImage.height },
-                lines: defaultLines.concat(retainedNonSetupLines),
+                lines: defaultLines,
                 mode: "setup",
                 selectedLineId: null,
-                transform: fitTransform
+                transform: fitTransform,
+                constraintsByPlane: {
+                    Facade: { lineId: null, lengthMm: (previousLengths.Facade && previousLengths.Facade.lengthMm) || 1000 },
+                    Side:   { lineId: null, lengthMm: (previousLengths.Side   && previousLengths.Side.lengthMm)   || 1000 },
+                    Ground: { lineId: null, lengthMm: (previousLengths.Ground && previousLengths.Ground.lengthMm) || 1000 }
+                },
+                anchorPoint: null,
+                awaitingAnchorClick: false
             };
         });
 
@@ -95,14 +109,18 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
 
     // HELPER FUNCTION | Build Setup Lines For New Image
     // ------------------------------------------------------------
+    // Under Z-up:
+    //   FacadeHorizontal -> X (red)   horizontal features along the facade
+    //   SideHorizontal   -> Y (green) horizontal features receding along the side wall
+    //   Vertical         -> Z (blue)  vertical features (wall corners)
     function PhotoMeasurePro__ImageSession__BuildDefaultSetupLines(imageWidth, imageHeight) {
         return [
-            { id: "x1", type: "x", start: { x: imageWidth * 0.1, y: imageHeight * 0.7 }, end: { x: imageWidth * 0.9, y: imageHeight * 0.75 } },
-            { id: "x2", type: "x", start: { x: imageWidth * 0.1, y: imageHeight * 0.3 }, end: { x: imageWidth * 0.9, y: imageHeight * 0.25 } },
-            { id: "y1", type: "y", start: { x: imageWidth * 0.2, y: imageHeight * 0.1 }, end: { x: imageWidth * 0.18, y: imageHeight * 0.9 } },
-            { id: "y2", type: "y", start: { x: imageWidth * 0.8, y: imageHeight * 0.1 }, end: { x: imageWidth * 0.82, y: imageHeight * 0.9 } },
-            { id: "z1", type: "z", start: { x: imageWidth * 0.6, y: imageHeight * 0.8 }, end: { x: imageWidth * 0.9, y: imageHeight * 0.9 } },
-            { id: "z2", type: "z", start: { x: imageWidth * 0.6, y: imageHeight * 0.4 }, end: { x: imageWidth * 0.8, y: imageHeight * 0.6 } }
+            { id: "facadeH1", type: "FacadeHorizontal", start: { x: imageWidth * 0.1, y: imageHeight * 0.7 }, end: { x: imageWidth * 0.9, y: imageHeight * 0.75 } },
+            { id: "facadeH2", type: "FacadeHorizontal", start: { x: imageWidth * 0.1, y: imageHeight * 0.3 }, end: { x: imageWidth * 0.9, y: imageHeight * 0.25 } },
+            { id: "sideH1",   type: "SideHorizontal",   start: { x: imageWidth * 0.6, y: imageHeight * 0.8 }, end: { x: imageWidth * 0.9, y: imageHeight * 0.9 } },
+            { id: "sideH2",   type: "SideHorizontal",   start: { x: imageWidth * 0.6, y: imageHeight * 0.4 }, end: { x: imageWidth * 0.8, y: imageHeight * 0.6 } },
+            { id: "vert1",    type: "Vertical",         start: { x: imageWidth * 0.2, y: imageHeight * 0.1 }, end: { x: imageWidth * 0.18, y: imageHeight * 0.9 } },
+            { id: "vert2",    type: "Vertical",         start: { x: imageWidth * 0.8, y: imageHeight * 0.1 }, end: { x: imageWidth * 0.82, y: imageHeight * 0.9 } }
         ];
     }
     // ------------------------------------------------------------
@@ -126,6 +144,8 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
     // ------------------------------------------------------------
     function PhotoMeasurePro__ImageSession__ApplyHiddenAlign() {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
+        const coordinateSpace = window.PhotoMeasurePro__MathUtils__CoordinateSpace;
+
         stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
             if (!previousState.imageUrl) {
                 return { showDepthMap: !previousState.showDepthMap };
@@ -134,16 +154,16 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
             const width = previousState.imgSize.w;
             const height = previousState.imgSize.h;
             const nonSetupLines = previousState.lines.filter(function(lineItem) {
-                return lineItem.type !== "x" && lineItem.type !== "y" && lineItem.type !== "z";
+                return !coordinateSpace.PhotoMeasurePro__CoordinateSpace__GetAxisLetterForLineType(lineItem.type);
             });
 
             const hiddenAlignLines = [
-                { id: "x1", type: "x", start: { x: width * 0.1, y: height * 0.7 }, end: { x: width * 0.9, y: height * 0.75 } },
-                { id: "x2", type: "x", start: { x: width * 0.1, y: height * 0.3 }, end: { x: width * 0.9, y: height * 0.25 } },
-                { id: "y1", type: "y", start: { x: width * 0.6, y: height * 0.8 }, end: { x: width * 0.9, y: height * 0.9 } },
-                { id: "y2", type: "y", start: { x: width * 0.6, y: height * 0.4 }, end: { x: width * 0.8, y: height * 0.6 } },
-                { id: "z1", type: "z", start: { x: width * 0.2, y: height * 0.1 }, end: { x: width * 0.18, y: height * 0.9 } },
-                { id: "z2", type: "z", start: { x: width * 0.8, y: height * 0.1 }, end: { x: width * 0.82, y: height * 0.9 } }
+                { id: "facadeH1", type: "FacadeHorizontal", start: { x: width * 0.1, y: height * 0.7 }, end: { x: width * 0.9, y: height * 0.75 } },
+                { id: "facadeH2", type: "FacadeHorizontal", start: { x: width * 0.1, y: height * 0.3 }, end: { x: width * 0.9, y: height * 0.25 } },
+                { id: "sideH1",   type: "SideHorizontal",   start: { x: width * 0.6, y: height * 0.8 }, end: { x: width * 0.9, y: height * 0.9 } },
+                { id: "sideH2",   type: "SideHorizontal",   start: { x: width * 0.6, y: height * 0.4 }, end: { x: width * 0.8, y: height * 0.6 } },
+                { id: "vert1",    type: "Vertical",         start: { x: width * 0.2, y: height * 0.1 }, end: { x: width * 0.18, y: height * 0.9 } },
+                { id: "vert2",    type: "Vertical",         start: { x: width * 0.8, y: height * 0.1 }, end: { x: width * 0.82, y: height * 0.9 } }
             ];
 
             return {

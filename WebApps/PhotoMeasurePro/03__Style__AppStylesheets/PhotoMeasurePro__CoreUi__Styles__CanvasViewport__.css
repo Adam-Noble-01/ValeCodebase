@@ -54,20 +54,46 @@
 #PhotoMeasurePro__OrthoWarpAndExport__Panel {
     position         : absolute;
     inset            : 0;
-    display          : flex;
-    justify-content  : center;
-    align-items      : center;
-    perspective      : 1000px;
     background       : rgba(2, 6, 23, 0.92);
+    overflow         : hidden;
 }
 
 #PhotoMeasurePro__OrthoWarpAndExport__Panel.PhotoMeasurePro__OrthoWarpAndExport__Panel--hidden {
     display          : none;
 }
 
-#PhotoMeasurePro__OrthoWarpAndExport__ImageTarget {
-    max-width        : none;
-    opacity          : 0.9;
+#PhotoMeasurePro__OrthoWarpAndExport__Viewport {
+    position         : absolute;
+    inset            : 0;
+    overflow         : hidden;
+    cursor           : grab;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__Stage {
+    position         : absolute;
+    transform-origin : top left;
+    width            : 1px;
+    height           : 1px;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__CanvasTarget,
+#PhotoMeasurePro__OrthoWarpAndExport__SvgOverlay {
+    position         : absolute;
+    left             : 0;
+    top              : 0;
+    width            : 100%;
+    height           : 100%;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__CanvasTarget {
+    background       : #0f172a;
+    box-shadow       : 0 4px 24px rgba(0, 0, 0, 0.55);
+    image-rendering  : auto;
+    pointer-events   : none;
+}
+
+#PhotoMeasurePro__OrthoWarpAndExport__SvgOverlay {
+    pointer-events   : none;
 }
 
 #PhotoMeasurePro__OrthoWarpAndExport__InfoCard {

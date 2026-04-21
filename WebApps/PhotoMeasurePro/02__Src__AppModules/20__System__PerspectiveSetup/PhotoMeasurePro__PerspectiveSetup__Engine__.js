@@ -3,14 +3,24 @@
 // -----------------------------------------------------------------------------
 const PhotoMeasurePro__System__PerspectiveSetup__Engine = (function() {
 
+    // HELPER FUNCTION | Group Perspective Lines By World Axis Letter
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__PerspectiveSetup__GetLinesByAxis(lineList, axisLetter) {
+        const coordinateSpace = window.PhotoMeasurePro__MathUtils__CoordinateSpace;
+        return lineList.filter(function(lineItem) {
+            return coordinateSpace.PhotoMeasurePro__CoordinateSpace__GetAxisLetterForLineType(lineItem.type) === axisLetter;
+        });
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Compute Perspective Data Bundle
     // ------------------------------------------------------------
     function PhotoMeasurePro__PerspectiveSetup__ComputePerspectiveData(currentState) {
         const mathUtils = window.PhotoMeasurePro__MathUtils__PerspectiveMath;
 
-        const xLines = currentState.lines.filter(function(lineItem) { return lineItem.type === "x"; });
-        const yLines = currentState.lines.filter(function(lineItem) { return lineItem.type === "y"; });
-        const zLines = currentState.lines.filter(function(lineItem) { return lineItem.type === "z"; });
+        const xLines = PhotoMeasurePro__PerspectiveSetup__GetLinesByAxis(currentState.lines, "X");
+        const yLines = PhotoMeasurePro__PerspectiveSetup__GetLinesByAxis(currentState.lines, "Y");
+        const zLines = PhotoMeasurePro__PerspectiveSetup__GetLinesByAxis(currentState.lines, "Z");
 
         const vanishingX = xLines.length >= 2 ? mathUtils.PhotoMeasurePro__PerspectiveMath__GetLineIntersection(xLines[0], xLines[1]) : null;
         const vanishingY = yLines.length >= 2 ? mathUtils.PhotoMeasurePro__PerspectiveMath__GetLineIntersection(yLines[0], yLines[1]) : null;
@@ -20,30 +30,40 @@ const PhotoMeasurePro__System__PerspectiveSetup__Engine = (function() {
         const principalY = currentState.imgSize.h / 2;
 
         let focalLength = null;
-        if (vanishingX && vanishingY) {
-            focalLength = mathUtils.PhotoMeasurePro__PerspectiveMath__CalculateFocalLength(vanishingX, vanishingY, principalX, principalY);
-        }
-        if (!focalLength && vanishingX && vanishingZ) {
-            focalLength = mathUtils.PhotoMeasurePro__PerspectiveMath__CalculateFocalLength(vanishingX, vanishingZ, principalX, principalY);
-        }
-        if (!focalLength) {
-            focalLength = currentState.metadataFocalPixels || Math.max(currentState.imgSize.w, currentState.imgSize.h);
+        let focalSource = "unresolved";
+        let pairFocalLengths = { XY: null, XZ: null, YZ: null };
+
+        if (currentState.metadataFocalPixels && Number.isFinite(currentState.metadataFocalPixels)) {
+            focalLength = currentState.metadataFocalPixels;
+            focalSource = "exif";
         }
 
-        const basis = mathUtils.PhotoMeasurePro__PerspectiveMath__GetOrthogonalBasis(
-            vanishingX,
-            vanishingY,
-            vanishingZ,
-            focalLength,
+        const robustFocal = mathUtils.PhotoMeasurePro__PerspectiveMath__CalculateFocalLengthRobust(
+            { VPx: vanishingX, VPy: vanishingY, VPz: vanishingZ },
             principalX,
             principalY
         );
+        pairFocalLengths = robustFocal.pairFocalLengths;
+
+        if (!focalLength && robustFocal.focalLength) {
+            focalLength = robustFocal.focalLength;
+            focalSource = "pairs";
+        }
+
+        const basis = focalLength
+            ? mathUtils.PhotoMeasurePro__PerspectiveMath__GetOrthogonalBasis(
+                vanishingX, vanishingY, vanishingZ,
+                focalLength, principalX, principalY
+            )
+            : null;
 
         return {
             VPx: vanishingX,
             VPy: vanishingY,
             VPz: vanishingZ,
             f: focalLength,
+            focalSource: focalSource,
+            pairFocalLengths: pairFocalLengths,
             cx: principalX,
             cy: principalY,
             basis: basis
@@ -51,39 +71,22 @@ const PhotoMeasurePro__System__PerspectiveSetup__Engine = (function() {
     }
     // ------------------------------------------------------------
 
-    // FUNCTION | Compute Ortho Matrix Style
+    // FUNCTION | Basis Orthogonality Diagnostic
     // ------------------------------------------------------------
-    function PhotoMeasurePro__PerspectiveSetup__ComputeOrthoTransformStyle(currentState, perspectiveData) {
-        if (currentState.mode !== "ortho") return null;
-        if (!perspectiveData || !perspectiveData.basis) return null;
-
-        const axisX = perspectiveData.basis.Rx;
-        const axisY = perspectiveData.basis.Ry;
-        const axisZ = perspectiveData.basis.Rz;
-
-        let column1 = [axisX[0], axisX[1], axisX[2], 0];
-        let column2 = [axisY[0], axisY[1], axisY[2], 0];
-        let column3 = [axisZ[0], axisZ[1], axisZ[2], 0];
-
-        if (currentState.measurePlane === "XZ") {
-            column2 = [-axisZ[0], -axisZ[1], -axisZ[2], 0];
-            column3 = [axisY[0], axisY[1], axisY[2], 0];
-        } else if (currentState.measurePlane === "YZ") {
-            column1 = [-axisZ[0], -axisZ[1], -axisZ[2], 0];
-            column3 = [axisX[0], axisX[1], axisX[2], 0];
-        }
-
-        const matrixValues = [].concat(column1, column2, column3, [0, 0, 0, 1]);
+    function PhotoMeasurePro__PerspectiveSetup__ComputeBasisOrthogonality(basis) {
+        if (!basis) return null;
+        const mathUtils = window.PhotoMeasurePro__MathUtils__PerspectiveMath;
         return {
-            transform: "translateZ(-" + perspectiveData.f + "px) matrix3d(" + matrixValues.join(",") + ")",
-            transformOrigin: perspectiveData.cx + "px " + perspectiveData.cy + "px"
+            xDotY: mathUtils.PhotoMeasurePro__PerspectiveMath__Dot(basis.Rx, basis.Ry),
+            xDotZ: mathUtils.PhotoMeasurePro__PerspectiveMath__Dot(basis.Rx, basis.Rz),
+            yDotZ: mathUtils.PhotoMeasurePro__PerspectiveMath__Dot(basis.Ry, basis.Rz)
         };
     }
     // ------------------------------------------------------------
 
     return {
         PhotoMeasurePro__PerspectiveSetup__ComputePerspectiveData: PhotoMeasurePro__PerspectiveSetup__ComputePerspectiveData,
-        PhotoMeasurePro__PerspectiveSetup__ComputeOrthoTransformStyle: PhotoMeasurePro__PerspectiveSetup__ComputeOrthoTransformStyle
+        PhotoMeasurePro__PerspectiveSetup__ComputeBasisOrthogonality: PhotoMeasurePro__PerspectiveSetup__ComputeBasisOrthogonality
     };
 })();
 

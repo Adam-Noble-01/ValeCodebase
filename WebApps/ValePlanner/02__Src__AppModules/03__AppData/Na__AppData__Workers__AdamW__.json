@@ -886,6 +886,46 @@
           "endTime": "12:00",
           "title": "Index System",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1776755634977",
+          "date": "2026-04-21",
+          "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Admin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776755655774",
+          "date": "2026-04-21",
+          "startTime": "08:30",
+          "endTime": "10:00",
+          "title": "CGI |  Appleton",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1776762165053",
+          "date": "2026-04-21",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776762175598",
+          "date": "2026-04-21",
+          "startTime": "11:00",
+          "endTime": "14:15",
+          "title": "Stephcard |  Thompson",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1776766026143",
+          "date": "2026-04-21",
+          "startTime": "10:15",
+          "endTime": "11:00",
+          "title": "Dev |  Measurment Tool Added",
+          "color": "na-shift-color-slate"
         }
       ]
     }

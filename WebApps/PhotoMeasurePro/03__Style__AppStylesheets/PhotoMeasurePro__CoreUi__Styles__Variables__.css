@@ -1,0 +1,17 @@
+:root {
+    --PhotoMeasurePro__ColorBackgroundMain         : #020617;
+    --PhotoMeasurePro__ColorBackgroundPanel        : #0f172a;
+    --PhotoMeasurePro__ColorBackgroundPanelAlt     : #111827;
+    --PhotoMeasurePro__ColorBorderMain             : #1e293b;
+    --PhotoMeasurePro__ColorTextPrimary            : #e2e8f0;
+    --PhotoMeasurePro__ColorTextMuted              : #94a3b8;
+    --PhotoMeasurePro__ColorAccentBlue             : #2563eb;
+    --PhotoMeasurePro__ColorAccentBlueSoft         : #1d4ed8;
+    --PhotoMeasurePro__ColorWarning                : #f59e0b;
+    --PhotoMeasurePro__ColorDanger                 : #dc2626;
+    --PhotoMeasurePro__ColorLineX                  : #ef4444;
+    --PhotoMeasurePro__ColorLineY                  : #22c55e;
+    --PhotoMeasurePro__ColorLineZ                  : #3b82f6;
+    --PhotoMeasurePro__ColorLineConstraint         : #06b6d4;
+    --PhotoMeasurePro__ColorLineMeasure            : #f97316;
+}

@@ -1,0 +1,169 @@
+#PhotoMeasurePro__Sidebar__RootPanel {
+    border-right     : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanel);
+    display          : flex;
+    flex-direction   : column;
+    overflow         : auto;
+}
+
+#PhotoMeasurePro__Sidebar__HeaderBar {
+    display          : flex;
+    align-items      : center;
+    justify-content  : space-between;
+    padding          : 12px 14px;
+    border-bottom    : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+}
+
+#PhotoMeasurePro__Sidebar__TitleText {
+    margin           : 0;
+    font-size        : 18px;
+}
+
+#PhotoMeasurePro__Sidebar__ButtonHiddenAlign {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : transparent;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 6px;
+    padding          : 6px 8px;
+    cursor           : pointer;
+}
+
+#PhotoMeasurePro__Sidebar__ButtonHiddenAlign:hover {
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+#PhotoMeasurePro__Sidebar__UploadPanel,
+#PhotoMeasurePro__Sidebar__ModePanel,
+#PhotoMeasurePro__Sidebar__SetupPanel,
+#PhotoMeasurePro__Sidebar__ConstraintPanel,
+#PhotoMeasurePro__Sidebar__MeasurementPanel,
+#PhotoMeasurePro__Sidebar__SelectionPanel,
+#PhotoMeasurePro__Sidebar__ExportPanel {
+    padding          : 12px 14px;
+    border-bottom    : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+}
+
+#PhotoMeasurePro__Sidebar__UploadIntroText,
+#PhotoMeasurePro__Sidebar__ExifStatusText {
+    margin           : 0 0 10px 0;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-size        : 13px;
+}
+
+#PhotoMeasurePro__Sidebar__UploadLabel {
+    display          : flex;
+    justify-content  : center;
+    align-items      : center;
+    min-height       : 56px;
+    border           : 2px dashed var(--PhotoMeasurePro__ColorBorderMain);
+    border-radius    : 8px;
+    cursor           : pointer;
+    margin-bottom    : 10px;
+}
+
+#PhotoMeasurePro__Sidebar__UploadLabel input {
+    display          : none;
+}
+
+.PhotoMeasurePro__Sidebar__ModeButton {
+    display          : block;
+    width            : 100%;
+    margin-bottom    : 8px;
+    padding          : 10px;
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 8px;
+    text-align       : left;
+    cursor           : pointer;
+}
+
+.PhotoMeasurePro__Sidebar__ModeButton:last-child {
+    margin-bottom    : 0;
+}
+
+.PhotoMeasurePro__Sidebar__ModeButton--active {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+    background       : var(--PhotoMeasurePro__ColorAccentBlueSoft);
+}
+
+.PhotoMeasurePro__Sidebar__ModeSection h2 {
+    margin           : 0 0 8px 0;
+    font-size        : 14px;
+}
+
+.PhotoMeasurePro__Sidebar__ModeSection p {
+    margin           : 0;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-size        : 13px;
+}
+
+.PhotoMeasurePro__Sidebar__ModeSection--hidden {
+    display          : none;
+}
+
+#PhotoMeasurePro__ScaleConstraint__PlaneButtonRow,
+#PhotoMeasurePro__Measurement__PlaneButtonRow {
+    display          : grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap              : 8px;
+    margin           : 10px 0;
+}
+
+.PhotoMeasurePro__ScaleConstraint__PlaneButton,
+.PhotoMeasurePro__Measurement__PlaneButton {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : #0b1220;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 8px;
+    padding          : 8px 6px;
+    cursor           : pointer;
+    font-size        : 11px;
+}
+
+.PhotoMeasurePro__ScaleConstraint__PlaneButton--active,
+.PhotoMeasurePro__Measurement__PlaneButton--active {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+    color            : #ffffff;
+    background       : var(--PhotoMeasurePro__ColorAccentBlueSoft);
+}
+
+#PhotoMeasurePro__ScaleConstraint__LengthLabel,
+#PhotoMeasurePro__Measurement__DimensionLabel {
+    display          : block;
+    font-size        : 12px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+}
+
+#PhotoMeasurePro__ScaleConstraint__LengthLabel input,
+#PhotoMeasurePro__Measurement__DimensionLabel input {
+    width            : 100%;
+    margin-top       : 8px;
+}
+
+#PhotoMeasurePro__Measurement__WarningText {
+    margin-top       : 10px;
+    color            : var(--PhotoMeasurePro__ColorWarning);
+    font-size        : 12px;
+}
+
+#PhotoMeasurePro__Sidebar__ButtonDeleteSelected,
+#PhotoMeasurePro__OrthoWarpAndExport__ButtonExportPng {
+    width            : 100%;
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    border-radius    : 8px;
+    padding          : 10px;
+    cursor           : pointer;
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+}
+
+#PhotoMeasurePro__Sidebar__ButtonDeleteSelected:disabled {
+    opacity          : 0.5;
+    cursor           : not-allowed;
+}
+
+#PhotoMeasurePro__Sidebar__ButtonDeleteSelected:not(:disabled):hover {
+    border-color     : var(--PhotoMeasurePro__ColorDanger);
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles                      -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>PhotoMeasurePro | Perspective Measurement</title>
+    <link rel="stylesheet" href="03__Style__AppStylesheets/PhotoMeasurePro__CoreUi__Styles__Index__.css">
+</head>
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Body - Application Shell                        -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+
+    <div id="PhotoMeasurePro__App__RootLayout">
+
+        <aside id="PhotoMeasurePro__Sidebar__RootPanel">
+            <header id="PhotoMeasurePro__Sidebar__HeaderBar">
+                <h1 id="PhotoMeasurePro__Sidebar__TitleText">PhotoMeasurePro</h1>
+                <button id="PhotoMeasurePro__Sidebar__ButtonHiddenAlign" title="Auto Align + Depth Preview">Auto Align</button>
+            </header>
+
+            <section id="PhotoMeasurePro__Sidebar__UploadPanel">
+                <p id="PhotoMeasurePro__Sidebar__UploadIntroText">Upload a building/object photo to start measuring.</p>
+                <label id="PhotoMeasurePro__Sidebar__UploadLabel">
+                    <span>Choose Image</span>
+                    <input id="PhotoMeasurePro__Sidebar__InputImageFile" type="file" accept="image/*">
+                </label>
+                <p id="PhotoMeasurePro__Sidebar__ExifStatusText">Exif focal length: Not loaded</p>
+            </section>
+
+            <section id="PhotoMeasurePro__Sidebar__ModePanel">
+                <button id="PhotoMeasurePro__Sidebar__ButtonModeSetup" data-mode="setup" class="PhotoMeasurePro__Sidebar__ModeButton PhotoMeasurePro__Sidebar__ModeButton--active">1. Setup Perspective</button>
+                <button id="PhotoMeasurePro__Sidebar__ButtonModeConstraint" data-mode="constraint" class="PhotoMeasurePro__Sidebar__ModeButton">2. Set Scale Constraint</button>
+                <button id="PhotoMeasurePro__Sidebar__ButtonModeMeasure" data-mode="measure" class="PhotoMeasurePro__Sidebar__ModeButton">3. Measure</button>
+                <button id="PhotoMeasurePro__Sidebar__ButtonModeOrtho" data-mode="ortho" class="PhotoMeasurePro__Sidebar__ModeButton">4. Warp To Ortho</button>
+            </section>
+
+            <section id="PhotoMeasurePro__Sidebar__SetupPanel" class="PhotoMeasurePro__Sidebar__ModeSection">
+                <h2>Setup</h2>
+                <p>Align Red (X), Green (Y), and Blue (Z) lines to parallel features.</p>
+            </section>
+
+            <section id="PhotoMeasurePro__Sidebar__ConstraintPanel" class="PhotoMeasurePro__Sidebar__ModeSection PhotoMeasurePro__Sidebar__ModeSection--hidden">
+                <h2>Constraint</h2>
+                <p>Draw one known-length line and provide the length in mm.</p>
+                <div id="PhotoMeasurePro__ScaleConstraint__PlaneButtonRow">
+                    <button data-plane="XZ" class="PhotoMeasurePro__ScaleConstraint__PlaneButton PhotoMeasurePro__ScaleConstraint__PlaneButton--active">Floor (XZ)</button>
+                    <button data-plane="XY" class="PhotoMeasurePro__ScaleConstraint__PlaneButton">Facade (XY)</button>
+                    <button data-plane="YZ" class="PhotoMeasurePro__ScaleConstraint__PlaneButton">Side (YZ)</button>
+                </div>
+                <label id="PhotoMeasurePro__ScaleConstraint__LengthLabel">
+                    Constraint Length (mm)
+                    <input id="PhotoMeasurePro__ScaleConstraint__InputLengthMm" type="number" min="0" step="1" value="1000">
+                </label>
+            </section>
+
+            <section id="PhotoMeasurePro__Sidebar__MeasurementPanel" class="PhotoMeasurePro__Sidebar__ModeSection PhotoMeasurePro__Sidebar__ModeSection--hidden">
+                <h2>Measurement</h2>
+                <div id="PhotoMeasurePro__Measurement__PlaneButtonRow">
+                    <button data-plane="XZ" class="PhotoMeasurePro__Measurement__PlaneButton PhotoMeasurePro__Measurement__PlaneButton--active">Floor (XZ)</button>
+                    <button data-plane="XY" class="PhotoMeasurePro__Measurement__PlaneButton">Facade (XY)</button>
+                    <button data-plane="YZ" class="PhotoMeasurePro__Measurement__PlaneButton">Side (YZ)</button>
+                </div>
+                <label id="PhotoMeasurePro__Measurement__DimensionLabel">
+                    Dimension Text Size
+                    <input id="PhotoMeasurePro__Measurement__InputDimensionSize" type="range" min="10" max="80" value="20">
+                </label>
+                <p id="PhotoMeasurePro__Measurement__WarningText" class="PhotoMeasurePro__Measurement__WarningText">Warning: measuring in perspective units (u) until a valid constraint is set.</p>
+            </section>
+
+            <section id="PhotoMeasurePro__Sidebar__SelectionPanel">
+                <button id="PhotoMeasurePro__Sidebar__ButtonDeleteSelected" disabled>Delete Selected Line</button>
+            </section>
+
+            <section id="PhotoMeasurePro__Sidebar__ExportPanel">
+                <button id="PhotoMeasurePro__OrthoWarpAndExport__ButtonExportPng">Export PNG</button>
+            </section>
+        </aside>
+
+        <main id="PhotoMeasurePro__CanvasViewport__ViewportRoot">
+            <div id="PhotoMeasurePro__CanvasViewport__DropHint">Drag and drop a photo here to begin</div>
+
+            <div id="PhotoMeasurePro__CanvasViewport__StageWrapper">
+                <div id="PhotoMeasurePro__CanvasViewport__StageSurface">
+                    <img id="PhotoMeasurePro__CanvasViewport__ImageTarget" alt="Target image">
+                    <svg id="PhotoMeasurePro__CanvasViewport__SvgOverlay" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+            </div>
+
+            <div id="PhotoMeasurePro__OrthoWarpAndExport__Panel" class="PhotoMeasurePro__OrthoWarpAndExport__Panel--hidden">
+                <img id="PhotoMeasurePro__OrthoWarpAndExport__ImageTarget" alt="Ortho projection">
+                <div id="PhotoMeasurePro__OrthoWarpAndExport__InfoCard">
+                    Orthographic projection preview
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- REGION | JavaScript Module Loading                                 -->
+    <!-- ================================================================= -->
+    <!-- App utils -->
+    <script src="02__Src__AppModules/03__AppUtils/PhotoMeasurePro__AppUtils__DomHelpers__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/PhotoMeasurePro__AppUtils__IdGenerator__.js"></script>
+
+    <!-- Math utils -->
+    <script src="02__Src__AppModules/04__MathUtils/PhotoMeasurePro__MathUtils__PerspectiveMath__.js"></script>
+
+    <!-- App data -->
+    <script src="02__Src__AppModules/02__AppData/PhotoMeasurePro__AppData__ConfigInline__.js"></script>
+    <script src="02__Src__AppModules/02__AppData/PhotoMeasurePro__AppData__ConfigLoader__.js"></script>
+
+    <!-- App core -->
+    <script src="02__Src__AppModules/01__AppCore/PhotoMeasurePro__AppCore__StateManager__.js"></script>
+    <script src="02__Src__AppModules/01__AppCore/PhotoMeasurePro__AppCore__ModeManager__.js"></script>
+
+    <!-- Systems -->
+    <script src="02__Src__AppModules/10__System__ImageSession/PhotoMeasurePro__ImageSession__Main__.js"></script>
+    <script src="02__Src__AppModules/20__System__PerspectiveSetup/PhotoMeasurePro__PerspectiveSetup__Engine__.js"></script>
+    <script src="02__Src__AppModules/30__System__ScaleConstraint/PhotoMeasurePro__ScaleConstraint__Engine__.js"></script>
+    <script src="02__Src__AppModules/40__System__Measurement/PhotoMeasurePro__Measurement__Engine__.js"></script>
+    <script src="02__Src__AppModules/50__System__OrthoWarpAndExport/PhotoMeasurePro__OrthoWarpAndExport__Engine__.js"></script>
+    <script src="02__Src__AppModules/60__System__CanvasViewport/PhotoMeasurePro__CanvasViewport__Main__.js"></script>
+
+    <!-- Init -->
+    <script src="02__Src__AppModules/01__AppCore/PhotoMeasurePro__AppCore__Init__.js"></script>
+</body>
+</html>

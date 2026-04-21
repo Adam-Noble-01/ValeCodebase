@@ -48,6 +48,12 @@ const PhotoMeasurePro__AppCore__ModeManager = (function() {
         );
 
         domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
+            domRefs.PhotoMeasurePro__ModeManager__Scene3dSidebarPanel,
+            currentState.mode !== "3d",
+            "PhotoMeasurePro__Sidebar__ModeSection--hidden"
+        );
+
+        domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
             domRefs.PhotoMeasurePro__ModeManager__OrthoPanel,
             currentState.mode !== "ortho",
             "PhotoMeasurePro__OrthoWarpAndExport__Panel--hidden"
@@ -55,7 +61,13 @@ const PhotoMeasurePro__AppCore__ModeManager = (function() {
 
         domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
             domRefs.PhotoMeasurePro__ModeManager__StageWrapper,
-            currentState.mode === "ortho",
+            currentState.mode === "ortho" || currentState.mode === "3d",
+            "PhotoMeasurePro__UiState__Hidden"
+        );
+
+        domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
+            domRefs.PhotoMeasurePro__ModeManager__ThreeViewportRoot,
+            currentState.mode !== "3d",
             "PhotoMeasurePro__UiState__Hidden"
         );
     }

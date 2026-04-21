@@ -10,6 +10,14 @@
     <meta name="theme-color" content="#0f172a">
     <title>PhotoMeasurePro | Perspective Measurement</title>
     <link rel="stylesheet" href="03__Style__AppStylesheets/PhotoMeasurePro__CoreUi__Styles__Index__.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://esm.sh/three@0.160.0",
+            "three/addons/": "https://esm.sh/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
 </head>
 
 <!-- ----------------------------------------------------------------- -->
@@ -73,6 +81,7 @@
                 <button id="PhotoMeasurePro__Sidebar__ButtonModeConstraint" data-mode="constraint" class="PhotoMeasurePro__Sidebar__ModeButton">2. Set Scale Constraint</button>
                 <button id="PhotoMeasurePro__Sidebar__ButtonModeMeasure" data-mode="measure" class="PhotoMeasurePro__Sidebar__ModeButton">3. Measure</button>
                 <button id="PhotoMeasurePro__Sidebar__ButtonModeOrtho" data-mode="ortho" class="PhotoMeasurePro__Sidebar__ModeButton">4. Warp To Ortho</button>
+                <button id="PhotoMeasurePro__Sidebar__ButtonMode3d" data-mode="3d" class="PhotoMeasurePro__Sidebar__ModeButton">5. 3D Measure</button>
             </section>
 
             <section id="PhotoMeasurePro__Sidebar__SetupPanel" class="PhotoMeasurePro__Sidebar__ModeSection">
@@ -148,12 +157,91 @@
                 </div>
             </section>
 
+            <section id="PhotoMeasurePro__Sidebar__Scene3DPanel" class="PhotoMeasurePro__Sidebar__ModeSection PhotoMeasurePro__Sidebar__ModeSection--hidden">
+                <h2>3D Measure</h2>
+                <p>Build an analytical 3D scene from calibrated planes, then optionally enhance with depth + segmentation.</p>
+                <div id="PhotoMeasurePro__Scene3D__ActionRow">
+                    <button id="PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg">Generate Depth + Seg</button>
+                    <button id="PhotoMeasurePro__Scene3D__ButtonBuildScene">Build Scene</button>
+                </div>
+                <p id="PhotoMeasurePro__Scene3D__StatusText">3D status: idle</p>
+
+                <label id="PhotoMeasurePro__Scene3D__SnapTargetLabel">
+                    Snap target
+                    <select id="PhotoMeasurePro__Scene3D__SelectSnapTarget">
+                        <option value="analytical">Analytical planes</option>
+                        <option value="depthMesh">Depth mesh</option>
+                        <option value="both">Both</option>
+                    </select>
+                </label>
+
+                <label id="PhotoMeasurePro__Scene3D__ViewModeLabel">
+                    View mode
+                    <select id="PhotoMeasurePro__Scene3D__SelectViewMode">
+                        <option value="3dOnly">3D only</option>
+                        <option value="split">Split</option>
+                        <option value="overlay">Overlay</option>
+                    </select>
+                </label>
+
+                <div id="PhotoMeasurePro__Scene3D__OffsetPlaneEditor">
+                    <h3>Offset Planes</h3>
+                    <div id="PhotoMeasurePro__Scene3D__OffsetPlaneInputRow">
+                        <input id="PhotoMeasurePro__Scene3D__InputOffsetPlaneName" type="text" placeholder="Name (e.g. Bay)">
+                        <select id="PhotoMeasurePro__Scene3D__SelectOffsetPlaneParent">
+                            <option value="Facade">Facade</option>
+                            <option value="Side">Side</option>
+                            <option value="Ground">Ground</option>
+                        </select>
+                        <input id="PhotoMeasurePro__Scene3D__InputOffsetPlaneMm" type="number" step="1" value="600">
+                        <button id="PhotoMeasurePro__Scene3D__ButtonAddOffsetPlane">Add</button>
+                    </div>
+                    <ul id="PhotoMeasurePro__Scene3D__OffsetPlaneList"></ul>
+                </div>
+            </section>
+
             <section id="PhotoMeasurePro__Sidebar__SelectionPanel">
+                <button type="button" id="PhotoMeasurePro__Sidebar__ButtonSelectMode" class="PhotoMeasurePro__Sidebar__ButtonSelectMode" title="Select only (no draw). Shortcut: S">Select mode</button>
                 <button id="PhotoMeasurePro__Sidebar__ButtonDeleteSelected" disabled>Delete Selected Line</button>
             </section>
 
             <section id="PhotoMeasurePro__Sidebar__ExportPanel">
-                <button id="PhotoMeasurePro__OrthoWarpAndExport__ButtonExportPng">Export Rectified PNG</button>
+                <h2>Export Settings</h2>
+                <p>Toggle which overlay elements are included in exported PNG files.</p>
+                <div id="PhotoMeasurePro__ExportSettings__ToggleGrid">
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__TogglePerspective" data-export-toggle="perspectiveLines" checked>
+                        Perspective Lines
+                    </label>
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__ToggleMeasurements" data-export-toggle="measurements" checked>
+                        Measurements
+                    </label>
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__ToggleConstraints" data-export-toggle="constraints" checked>
+                        Constraints
+                    </label>
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__ToggleGuides" data-export-toggle="guides" checked>
+                        Guides
+                    </label>
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__ToggleAngles" data-export-toggle="angles" checked>
+                        Angles
+                    </label>
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__ToggleAnchor" data-export-toggle="anchor" checked>
+                        Anchor Marker
+                    </label>
+                    <label class="PhotoMeasurePro__ExportSettings__ToggleLabel">
+                        <input type="checkbox" id="PhotoMeasurePro__ExportSettings__ToggleCrop" data-export-toggle="crop" checked>
+                        Ortho Crop Box
+                    </label>
+                </div>
+                <div id="PhotoMeasurePro__ExportSettings__ActionRow">
+                    <button id="PhotoMeasurePro__Sidebar__ButtonExportMainView">Export Main View PNG</button>
+                    <button id="PhotoMeasurePro__OrthoWarpAndExport__ButtonExportPng">Export Rectified PNG</button>
+                </div>
             </section>
 
             <section id="PhotoMeasurePro__Diagnostics__Panel" class="PhotoMeasurePro__Diagnostics__Panel--hidden">
@@ -185,6 +273,11 @@
                 </div>
                 <div id="PhotoMeasurePro__OrthoWarpAndExport__InfoCard">Orthographic projection preview</div>
             </div>
+
+            <div id="PhotoMeasurePro__ThreeViewport__Root" class="PhotoMeasurePro__UiState__Hidden">
+                <canvas id="PhotoMeasurePro__ThreeViewport__Canvas"></canvas>
+                <div id="PhotoMeasurePro__ThreeViewport__Hud"></div>
+            </div>
         </main>
     </div>
 
@@ -209,6 +302,7 @@
     <!-- App core -->
     <script src="02__Src__AppModules/01__AppCore/PhotoMeasurePro__AppCore__StateManager__.js"></script>
     <script src="02__Src__AppModules/01__AppCore/PhotoMeasurePro__AppCore__ModeManager__.js"></script>
+    <script src="02__Src__AppModules/61__System__HotkeysSelectAndHistory/PhotoMeasurePro__HotkeysSelectAndHistory__Main__.js"></script>
 
     <!-- Systems -->
     <script src="02__Src__AppModules/10__System__ImageSession/PhotoMeasurePro__ImageSession__Main__.js"></script>
@@ -220,6 +314,12 @@
     <script src="02__Src__AppModules/70__System__Guides/PhotoMeasurePro__Guides__Engine__.js"></script>
     <script src="02__Src__AppModules/60__System__CanvasViewport/PhotoMeasurePro__CanvasViewport__Main__.js"></script>
     <script src="02__Src__AppModules/60__System__CanvasViewport/PhotoMeasurePro__CanvasViewport__OrthoStage__.js"></script>
+    <script src="02__Src__AppModules/80__System__SceneReconstruction3D/PhotoMeasurePro__SceneReconstruction3D__WorldOriginSolver__.js"></script>
+    <script src="02__Src__AppModules/80__System__SceneReconstruction3D/PhotoMeasurePro__SceneReconstruction3D__DepthMapScaler__.js"></script>
+    <script src="02__Src__AppModules/80__System__SceneReconstruction3D/PhotoMeasurePro__SceneReconstruction3D__PlaneOffsetManager__.js"></script>
+    <script src="02__Src__AppModules/82__System__Measurement3D/PhotoMeasurePro__Measurement3D__Engine__.js"></script>
+    <script type="module" src="02__Src__AppModules/81__System__ThreeViewport/PhotoMeasurePro__ThreeViewport__Main__.js"></script>
+    <script src="02__Src__AppModules/81__System__ThreeViewport/PhotoMeasurePro__ThreeViewport__OverlayHud__.js"></script>
 
     <!-- Init -->
     <script src="02__Src__AppModules/01__AppCore/PhotoMeasurePro__AppCore__Init__.js"></script>

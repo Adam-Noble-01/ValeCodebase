@@ -68,7 +68,7 @@ const PhotoMeasurePro__System__OrthoWarpAndExport__Engine = (function() {
             planeScale: orthoGeometry.planeScale,
             planeBounds: orthoGeometry.planeBounds,
             homography: orthoGeometry.homography,
-            maxLongEdgePx: 1600
+            maxLongEdgePx: 4096
         });
     }
     // ------------------------------------------------------------
@@ -98,13 +98,54 @@ const PhotoMeasurePro__System__OrthoWarpAndExport__Engine = (function() {
             maxLongEdgePx: Math.max(currentState.imgSize.w, currentState.imgSize.h)
         }).then(function(renderResult) {
             if (!renderResult) return;
-            const downloadLink = document.createElement("a");
-            downloadLink.href = exportCanvas.toDataURL("image/png");
-            const cropSuffix = currentState.orthoCrop ? "__Cropped" : "";
-            downloadLink.download = "PhotoMeasurePro__Ortho__" + currentState.measurePlane + cropSuffix + ".png";
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            PhotoMeasurePro__OrthoWarpAndExport__DrawDimensionsOnExportCanvas(exportCanvas, renderResult, orthoGeometry, boundsForExport, currentState, derivedData)
+                .catch(function() {
+                    // If overlay rasterisation fails we still export the base rectified bitmap.
+                })
+                .finally(function() {
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = exportCanvas.toDataURL("image/png");
+                    const cropSuffix = currentState.orthoCrop ? "__Cropped" : "";
+                    downloadLink.download = "PhotoMeasurePro__Ortho__" + currentState.measurePlane + cropSuffix + ".png";
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                });
+        });
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Draw Ortho Dimension Overlay Onto Export Canvas
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__OrthoWarpAndExport__DrawDimensionsOnExportCanvas(exportCanvas, renderResult, orthoGeometry, boundsForExport, currentState, derivedData) {
+        const orthoStage = window.PhotoMeasurePro__System__CanvasViewport__OrthoStage;
+        if (!orthoStage || !orthoStage.PhotoMeasurePro__OrthoStage__BuildOverlaySvgDocument) {
+            return Promise.resolve();
+        }
+
+        const exportGeometry = Object.assign({}, orthoGeometry, {
+            planeBounds: boundsForExport
+        });
+        const svgDocument = orthoStage.PhotoMeasurePro__OrthoStage__BuildOverlaySvgDocument(
+            renderResult,
+            exportGeometry,
+            currentState,
+            derivedData,
+            currentState.exportVisibility || {}
+        );
+        if (!svgDocument) return Promise.resolve();
+
+        return new Promise(function(resolvePromise, rejectPromise) {
+            const overlayImage = new Image();
+            overlayImage.onload = function() {
+                const exportContext = exportCanvas.getContext("2d");
+                exportContext.drawImage(overlayImage, 0, 0, renderResult.outputWidth, renderResult.outputHeight);
+                resolvePromise();
+            };
+            overlayImage.onerror = function(error) {
+                rejectPromise(error);
+            };
+            overlayImage.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgDocument);
         });
     }
     // ------------------------------------------------------------

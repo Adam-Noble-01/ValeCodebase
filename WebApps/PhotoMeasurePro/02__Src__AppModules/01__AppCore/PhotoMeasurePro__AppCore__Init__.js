@@ -9,12 +9,16 @@
     const measurementConfig = appConfig.PhotoMeasurePro__Measurement__Config || {};
     window.PhotoMeasurePro__AppCore__StateManager.PhotoMeasurePro__StateManager__Initialize(applicationConfig, measurementConfig);
 
+    await window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__Initialize(domRefs);
+
     PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs);
-    PhotoMeasurePro__AppCore__InitializeHotkeys();
     window.PhotoMeasurePro__System__ImageSession__Main.PhotoMeasurePro__ImageSession__Initialize(domRefs);
     window.PhotoMeasurePro__System__CanvasViewport__Main.PhotoMeasurePro__CanvasViewport__Initialize(domRefs);
     if (window.PhotoMeasurePro__System__CanvasViewport__OrthoStage) {
         window.PhotoMeasurePro__System__CanvasViewport__OrthoStage.PhotoMeasurePro__OrthoStage__Initialize(domRefs);
+    }
+    if (window.PhotoMeasurePro__System__ThreeViewport__Main) {
+        window.PhotoMeasurePro__System__ThreeViewport__Main.PhotoMeasurePro__ThreeViewport__Initialize(domRefs);
     }
 
     let previousDirtySnapshot = PhotoMeasurePro__AppCore__BuildDirtySnapshot(
@@ -61,8 +65,10 @@ function PhotoMeasurePro__AppCore__ResolveDomReferences() {
         PhotoMeasurePro__ModeManager__ConstraintPanel: domById("PhotoMeasurePro__Sidebar__ConstraintPanel"),
         PhotoMeasurePro__ModeManager__MeasurementPanel: domById("PhotoMeasurePro__Sidebar__MeasurementPanel"),
         PhotoMeasurePro__ModeManager__OrthoSidebarPanel: domById("PhotoMeasurePro__Sidebar__OrthoPanel"),
+        PhotoMeasurePro__ModeManager__Scene3dSidebarPanel: domById("PhotoMeasurePro__Sidebar__Scene3DPanel"),
         PhotoMeasurePro__ModeManager__OrthoPanel: domById("PhotoMeasurePro__OrthoWarpAndExport__Panel"),
         PhotoMeasurePro__ModeManager__StageWrapper: domById("PhotoMeasurePro__CanvasViewport__StageWrapper"),
+        PhotoMeasurePro__ModeManager__ThreeViewportRoot: domById("PhotoMeasurePro__ThreeViewport__Root"),
 
         PhotoMeasurePro__ImageSession__FileInput: domById("PhotoMeasurePro__Sidebar__InputImageFile"),
         PhotoMeasurePro__ImageSession__ViewportRoot: domById("PhotoMeasurePro__CanvasViewport__ViewportRoot"),
@@ -77,6 +83,9 @@ function PhotoMeasurePro__AppCore__ResolveDomReferences() {
         PhotoMeasurePro__CanvasViewport__OrthoInfoCard: domById("PhotoMeasurePro__OrthoWarpAndExport__InfoCard"),
         PhotoMeasurePro__CanvasViewport__OrthoSvgOverlay: domById("PhotoMeasurePro__OrthoWarpAndExport__SvgOverlay"),
         PhotoMeasurePro__CanvasViewport__OrthoStage: domById("PhotoMeasurePro__OrthoWarpAndExport__Stage"),
+        PhotoMeasurePro__ThreeViewport__Root: domById("PhotoMeasurePro__ThreeViewport__Root"),
+        PhotoMeasurePro__ThreeViewport__Canvas: domById("PhotoMeasurePro__ThreeViewport__Canvas"),
+        PhotoMeasurePro__ThreeViewport__Hud: domById("PhotoMeasurePro__ThreeViewport__Hud"),
         PhotoMeasurePro__OrthoWarpAndExport__Viewport: domById("PhotoMeasurePro__OrthoWarpAndExport__Viewport"),
         PhotoMeasurePro__OrthoWarpAndExport__ButtonCropToggle: domById("PhotoMeasurePro__OrthoWarpAndExport__ButtonCropToggle"),
         PhotoMeasurePro__OrthoWarpAndExport__ButtonCropClear: domById("PhotoMeasurePro__OrthoWarpAndExport__ButtonCropClear"),
@@ -98,8 +107,12 @@ function PhotoMeasurePro__AppCore__ResolveDomReferences() {
         PhotoMeasurePro__ScaleConstraint__AnchorStatusText: domById("PhotoMeasurePro__ScaleConstraint__AnchorStatusText"),
         PhotoMeasurePro__Measurement__DimensionSlider: domById("PhotoMeasurePro__Measurement__InputDimensionSize"),
         PhotoMeasurePro__Measurement__WarningText: domById("PhotoMeasurePro__Measurement__WarningText"),
+        PhotoMeasurePro__HotkeysSelectAndHistory__SelectModeButton: domById("PhotoMeasurePro__Sidebar__ButtonSelectMode"),
+        PhotoMeasurePro__Measurement__SubModeRow: domById("PhotoMeasurePro__Measurement__SubModeRow"),
         PhotoMeasurePro__AppCore__DeleteButton: domById("PhotoMeasurePro__Sidebar__ButtonDeleteSelected"),
+        PhotoMeasurePro__AppCore__ExportMainViewButton: domById("PhotoMeasurePro__Sidebar__ButtonExportMainView"),
         PhotoMeasurePro__AppCore__ExportButton: domById("PhotoMeasurePro__OrthoWarpAndExport__ButtonExportPng"),
+        PhotoMeasurePro__ExportSettings__ToggleInputs: Array.from(document.querySelectorAll("#PhotoMeasurePro__ExportSettings__ToggleGrid input[data-export-toggle]")),
         PhotoMeasurePro__AppCore__ConstraintPlaneButtons: Array.from(document.querySelectorAll(".PhotoMeasurePro__ScaleConstraint__PlaneButton")),
         PhotoMeasurePro__AppCore__MeasurePlaneButtons: Array.from(document.querySelectorAll(".PhotoMeasurePro__Measurement__PlaneButton")),
 
@@ -122,7 +135,18 @@ function PhotoMeasurePro__AppCore__ResolveDomReferences() {
         PhotoMeasurePro__Projects__ButtonSaveAs: domById("PhotoMeasurePro__Projects__ButtonSaveAs"),
         PhotoMeasurePro__Projects__ButtonExportJson: domById("PhotoMeasurePro__Projects__ButtonExportJson"),
         PhotoMeasurePro__Projects__InputImportJson: domById("PhotoMeasurePro__Projects__InputImportJson"),
-        PhotoMeasurePro__Projects__ManifestList: domById("PhotoMeasurePro__Projects__ManifestList")
+        PhotoMeasurePro__Projects__ManifestList: domById("PhotoMeasurePro__Projects__ManifestList"),
+
+        PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg: domById("PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg"),
+        PhotoMeasurePro__Scene3D__ButtonBuildScene: domById("PhotoMeasurePro__Scene3D__ButtonBuildScene"),
+        PhotoMeasurePro__Scene3D__StatusText: domById("PhotoMeasurePro__Scene3D__StatusText"),
+        PhotoMeasurePro__Scene3D__SelectSnapTarget: domById("PhotoMeasurePro__Scene3D__SelectSnapTarget"),
+        PhotoMeasurePro__Scene3D__SelectViewMode: domById("PhotoMeasurePro__Scene3D__SelectViewMode"),
+        PhotoMeasurePro__Scene3D__InputOffsetPlaneName: domById("PhotoMeasurePro__Scene3D__InputOffsetPlaneName"),
+        PhotoMeasurePro__Scene3D__SelectOffsetPlaneParent: domById("PhotoMeasurePro__Scene3D__SelectOffsetPlaneParent"),
+        PhotoMeasurePro__Scene3D__InputOffsetPlaneMm: domById("PhotoMeasurePro__Scene3D__InputOffsetPlaneMm"),
+        PhotoMeasurePro__Scene3D__ButtonAddOffsetPlane: domById("PhotoMeasurePro__Scene3D__ButtonAddOffsetPlane"),
+        PhotoMeasurePro__Scene3D__OffsetPlaneList: domById("PhotoMeasurePro__Scene3D__OffsetPlaneList")
     };
 }
 // endregion ----------------------------------------------------
@@ -172,6 +196,7 @@ function PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs) {
     domRefs.PhotoMeasurePro__ScaleConstraint__ClearButtons.forEach(function(clearButtonElement) {
         clearButtonElement.addEventListener("click", function() {
             const planeToClear = clearButtonElement.dataset.plane;
+            window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__RecordBeforeChange();
             scaleEngine.PhotoMeasurePro__ScaleConstraint__ClearConstraintForPlane(planeToClear);
         });
     });
@@ -183,6 +208,7 @@ function PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs) {
     });
 
     domRefs.PhotoMeasurePro__ScaleConstraint__ButtonClearAnchor.addEventListener("click", function() {
+        window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__RecordBeforeChange();
         stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
             return { anchorPoint: null, awaitingAnchorClick: false };
         });
@@ -196,32 +222,34 @@ function PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs) {
     });
 
     domRefs.PhotoMeasurePro__AppCore__DeleteButton.addEventListener("click", function() {
-        const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
-        if (!currentState.selectedLineId) return;
-
-        stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
-            const deletedLineId = previousState.selectedLineId;
-            const remainingLines = previousState.lines.filter(function(lineItem) {
-                return lineItem.id !== deletedLineId;
-            });
-            const updatedConstraints = Object.assign({}, previousState.constraintsByPlane);
-            Object.keys(updatedConstraints).forEach(function(planeKey) {
-                if (updatedConstraints[planeKey].lineId === deletedLineId) {
-                    updatedConstraints[planeKey] = Object.assign({}, updatedConstraints[planeKey], { lineId: null });
-                }
-            });
-            return {
-                lines: remainingLines,
-                constraintsByPlane: updatedConstraints,
-                selectedLineId: null
-            };
-        });
+        window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__DeleteSelected();
     });
+
+    if (domRefs.PhotoMeasurePro__AppCore__ExportMainViewButton) {
+        domRefs.PhotoMeasurePro__AppCore__ExportMainViewButton.addEventListener("click", function() {
+            PhotoMeasurePro__AppCore__ExportMainView(domRefs);
+        });
+    }
 
     domRefs.PhotoMeasurePro__AppCore__ExportButton.addEventListener("click", function() {
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
         const derivedData = PhotoMeasurePro__AppCore__ComputeDerivedData(currentState);
         window.PhotoMeasurePro__System__OrthoWarpAndExport__Engine.PhotoMeasurePro__OrthoWarpAndExport__ExportPng(domRefs, currentState, derivedData);
+    });
+
+    domRefs.PhotoMeasurePro__ExportSettings__ToggleInputs.forEach(function(toggleInputElement) {
+        toggleInputElement.addEventListener("change", function(changeEvent) {
+            const toggleKey = changeEvent.target.dataset.exportToggle;
+            if (!toggleKey) return;
+            const nextValue = Boolean(changeEvent.target.checked);
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return {
+                    exportVisibility: Object.assign({}, previousState.exportVisibility, {
+                        [toggleKey]: nextValue
+                    })
+                };
+            });
+        });
     });
 
     domRefs.PhotoMeasurePro__Diagnostics__ToggleButton.addEventListener("click", function() {
@@ -294,6 +322,101 @@ function PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs) {
             });
         });
     });
+
+    if (domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget) {
+        domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget.addEventListener("change", function(changeEvent) {
+            const nextValue = changeEvent.target.value;
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return {
+                    scene3d: Object.assign({}, previousState.scene3d, { snapTarget: nextValue })
+                };
+            });
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__SelectViewMode) {
+        domRefs.PhotoMeasurePro__Scene3D__SelectViewMode.addEventListener("change", function(changeEvent) {
+            const nextValue = changeEvent.target.value;
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return {
+                    scene3d: Object.assign({}, previousState.scene3d, { viewMode: nextValue })
+                };
+            });
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__ButtonAddOffsetPlane) {
+        domRefs.PhotoMeasurePro__Scene3D__ButtonAddOffsetPlane.addEventListener("click", function() {
+            const offsetName = (domRefs.PhotoMeasurePro__Scene3D__InputOffsetPlaneName.value || "").trim();
+            const parentPlane = domRefs.PhotoMeasurePro__Scene3D__SelectOffsetPlaneParent.value;
+            const offsetMm = Number(domRefs.PhotoMeasurePro__Scene3D__InputOffsetPlaneMm.value);
+            if (!offsetName || !Number.isFinite(offsetMm)) return;
+            const offsetManager = window.PhotoMeasurePro__System__SceneReconstruction3D__PlaneOffsetManager;
+            if (!offsetManager) return;
+            offsetManager.PhotoMeasurePro__PlaneOffsetManager__AddOffsetPlane(offsetName, parentPlane, offsetMm);
+            domRefs.PhotoMeasurePro__Scene3D__InputOffsetPlaneName.value = "";
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg) {
+        domRefs.PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg.addEventListener("click", function() {
+            const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
+            const projectCode = currentState.currentProjectCode;
+            if (!projectCode) {
+                window.alert("Save the project first so 3D cache can be keyed by ProjectCode.");
+                return;
+            }
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return {
+                    scene3d: Object.assign({}, previousState.scene3d, { status: "generating" })
+                };
+            });
+            const projectFileManager = window.PhotoMeasurePro__AppData__ProjectFileManager;
+            Promise.all([
+                projectFileManager.PhotoMeasurePro__ProjectFileManager__GenerateDepthForProject(projectCode),
+                projectFileManager.PhotoMeasurePro__ProjectFileManager__GenerateSegmentationForProject(projectCode)
+            ]).then(function(resultList) {
+                const depthResult = resultList[0] || {};
+                const segmentationResult = resultList[1] || {};
+                if (!depthResult.ok || !segmentationResult.ok) {
+                    throw new Error((depthResult.error || segmentationResult.error || "Scene3D generation failed"));
+                }
+                stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                    return {
+                        scene3d: Object.assign({}, previousState.scene3d, {
+                            status: "ready",
+                            depthCacheUrl: depthResult.data && depthResult.data.cacheUrl || null,
+                            segmentationCacheUrl: segmentationResult.data && segmentationResult.data.cacheUrl || null
+                        })
+                    };
+                });
+            }).catch(function(scene3dError) {
+                stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                    return {
+                        scene3d: Object.assign({}, previousState.scene3d, { status: "error" })
+                    };
+                });
+                window.alert("Depth/seg generation failed: " + (scene3dError.message || scene3dError));
+            });
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__ButtonBuildScene) {
+        domRefs.PhotoMeasurePro__Scene3D__ButtonBuildScene.addEventListener("click", function() {
+            const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
+            const reconstructed = window.PhotoMeasurePro__System__SceneReconstruction3D__WorldOriginSolver
+                .PhotoMeasurePro__SceneReconstruction3D__BuildAnalyticalScene(currentState);
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return {
+                    scene3d: Object.assign({}, previousState.scene3d, {
+                        worldOrigin: reconstructed.worldOrigin,
+                        analyticalSceneReady: Boolean(reconstructed.ready),
+                        status: reconstructed.ready ? "ready" : "error"
+                    })
+                };
+            });
+        });
+    }
 
     PhotoMeasurePro__AppCore__InitializeProjectsPanelEvents(domRefs);
 }
@@ -405,6 +528,19 @@ function PhotoMeasurePro__AppCore__BuildProjectFromState(currentState) {
             PhotoMeasurePro__ProjectFile__OrthoView: {
                 SelectedPlane: currentState.measurePlane,
                 Crop: currentState.orthoCrop
+            },
+            PhotoMeasurePro__ProjectFile__Scene3D: {
+                DepthCacheUrl: currentState.scene3d.depthCacheUrl,
+                SegmentationCacheUrl: currentState.scene3d.segmentationCacheUrl,
+                DepthScaling: currentState.scene3d.depthScaling,
+                WorldOrigin: currentState.scene3d.worldOrigin,
+                OffsetPlanes: currentState.scene3d.offsetPlanes || [],
+                SnapTarget: currentState.scene3d.snapTarget || "analytical",
+                ViewMode: currentState.scene3d.viewMode || "3dOnly",
+                CameraState: currentState.scene3d.cameraState || null
+            },
+            PhotoMeasurePro__ProjectFile__Measurements3D: {
+                Lines: currentState.measurements3d || []
             }
         };
         return validator
@@ -426,18 +562,81 @@ function PhotoMeasurePro__AppCore__FetchImageAsDataUrl(imageSourceUrl) {
     });
 }
 
+function PhotoMeasurePro__AppCore__LoadImageElementFromUrl(imageSourceUrl) {
+    return new Promise(function(resolvePromise, rejectPromise) {
+        const imageElement = new Image();
+        imageElement.crossOrigin = "anonymous";
+        imageElement.onload = function() { resolvePromise(imageElement); };
+        imageElement.onerror = function(error) { rejectPromise(error); };
+        imageElement.src = imageSourceUrl;
+    });
+}
+
+function PhotoMeasurePro__AppCore__ExportMainView(domRefs) {
+    const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
+    const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
+    if (!currentState.imageUrl) {
+        window.alert("Load an image first.");
+        return;
+    }
+
+    const exportWidth = Math.max(1, Math.round(currentState.imgSize.w || 1));
+    const exportHeight = Math.max(1, Math.round(currentState.imgSize.h || 1));
+    const derivedData = PhotoMeasurePro__AppCore__ComputeDerivedData(currentState);
+    const canvasViewport = window.PhotoMeasurePro__System__CanvasViewport__Main;
+    let overlaySvgDocument = "";
+    if (canvasViewport && canvasViewport.PhotoMeasurePro__CanvasViewport__BuildOverlaySvgDocumentForExport) {
+        overlaySvgDocument = canvasViewport.PhotoMeasurePro__CanvasViewport__BuildOverlaySvgDocumentForExport(
+            currentState,
+            derivedData,
+            currentState.exportVisibility || {}
+        );
+    }
+    if (!overlaySvgDocument) {
+        overlaySvgDocument = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + exportWidth + "\" height=\"" + exportHeight +
+            "\" viewBox=\"0 0 " + exportWidth + " " + exportHeight + "\" preserveAspectRatio=\"none\"></svg>";
+    }
+    const overlaySvgDataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(overlaySvgDocument);
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = exportWidth;
+    exportCanvas.height = exportHeight;
+    const exportContext = exportCanvas.getContext("2d");
+
+    Promise.all([
+        PhotoMeasurePro__AppCore__LoadImageElementFromUrl(currentState.imageUrl),
+        PhotoMeasurePro__AppCore__LoadImageElementFromUrl(overlaySvgDataUrl)
+    ]).then(function(loadedImages) {
+        exportContext.clearRect(0, 0, exportWidth, exportHeight);
+        exportContext.drawImage(loadedImages[0], 0, 0, exportWidth, exportHeight);
+        exportContext.drawImage(loadedImages[1], 0, 0, exportWidth, exportHeight);
+
+        const downloadLink = document.createElement("a");
+        downloadLink.href = exportCanvas.toDataURL("image/png");
+        downloadLink.download = "PhotoMeasurePro__MainView__WithDimensions.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }).catch(function(exportError) {
+        window.alert("Main view export failed: " + (exportError && exportError.message ? exportError.message : exportError));
+    });
+}
+
 function PhotoMeasurePro__AppCore__HydrateStateFromProject(projectData, domRefs) {
     const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
     const canvasRenderer = window.PhotoMeasurePro__System__OrthoWarpAndExport__CanvasRenderer;
     const orthoStage = window.PhotoMeasurePro__System__CanvasViewport__OrthoStage;
+
+    window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__ResetStacks();
 
     const metadata = projectData.PhotoMeasurePro__ProjectFile__Metadata || {};
     const imageEntry = projectData.PhotoMeasurePro__ProjectFile__Image || {};
     const perspective = projectData.PhotoMeasurePro__ProjectFile__Perspective || { Lines: [] };
     const calibration = projectData.PhotoMeasurePro__ProjectFile__Calibration || {};
     const measurements = projectData.PhotoMeasurePro__ProjectFile__Measurements || { Lines: [] };
+    const measurements3d = projectData.PhotoMeasurePro__ProjectFile__Measurements3D || { Lines: [] };
     const visuals = projectData.PhotoMeasurePro__ProjectFile__VisualSettings || {};
     const orthoView = projectData.PhotoMeasurePro__ProjectFile__OrthoView || {};
+    const scene3d = projectData.PhotoMeasurePro__ProjectFile__Scene3D || {};
 
     if (canvasRenderer && canvasRenderer.PhotoMeasurePro__OrthoCanvasRenderer__ResetSourceCache) {
         canvasRenderer.PhotoMeasurePro__OrthoCanvasRenderer__ResetSourceCache();
@@ -480,7 +679,22 @@ function PhotoMeasurePro__AppCore__HydrateStateFromProject(projectData, domRefs)
             orthoCropMode: false,
             currentProjectCode: metadata.ProjectCode || null,
             currentProjectName: metadata.ProjectName || "",
-            currentProjectDirty: false
+            currentProjectDirty: false,
+            canvasSelectMode: false,
+            scene3d: Object.assign({}, previousState.scene3d, {
+                status: "idle",
+                depthCacheUrl: scene3d.DepthCacheUrl || null,
+                segmentationCacheUrl: scene3d.SegmentationCacheUrl || null,
+                depthScaling: scene3d.DepthScaling || null,
+                worldOrigin: scene3d.WorldOrigin || null,
+                offsetPlanes: Array.isArray(scene3d.OffsetPlanes) ? scene3d.OffsetPlanes : [],
+                snapTarget: scene3d.SnapTarget || "analytical",
+                viewMode: scene3d.ViewMode || "3dOnly",
+                cameraState: scene3d.CameraState || null,
+                analyticalSceneReady: Boolean(scene3d.WorldOrigin),
+                depthMeshReady: Boolean(scene3d.DepthCacheUrl)
+            }),
+            measurements3d: Array.isArray(measurements3d.Lines) ? measurements3d.Lines : []
         };
     });
 }
@@ -529,57 +743,9 @@ function PhotoMeasurePro__AppCore__BuildDirtySnapshot(currentState) {
         visual: currentState.visualSettings,
         dimSize: currentState.dimensionSize,
         crop: currentState.orthoCrop,
-        measurePlane: currentState.measurePlane
-    });
-}
-// endregion ----------------------------------------------------
-
-// -----------------------------------------------------------------------------
-// REGION | Hotkeys
-// -----------------------------------------------------------------------------
-function PhotoMeasurePro__AppCore__InitializeHotkeys() {
-    const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
-
-    document.addEventListener("keydown", function(keyEvent) {
-        const targetTag = keyEvent.target && keyEvent.target.tagName;
-        if (targetTag === "INPUT" || targetTag === "TEXTAREA") return;
-
-        const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
-        const keyValue = keyEvent.key.toLowerCase();
-
-        if (keyValue === "escape") {
-            stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
-                return { drawingAngle: null, awaitingAnchorClick: false, orthoCropMode: false };
-            });
-            return;
-        }
-
-        if (currentState.mode !== "measure") return;
-
-        if (keyValue === "g") {
-            stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
-                return { measureSubMode: "guide", drawingAngle: null };
-            });
-            return;
-        }
-        if (keyValue === "a") {
-            stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
-                return { measureSubMode: "angle", drawingAngle: null };
-            });
-            return;
-        }
-        if (keyValue === "l") {
-            stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
-                return { measureSubMode: "line", drawingAngle: null };
-            });
-            return;
-        }
-
-        if (currentState.measureSubMode === "guide" && (keyValue === "x" || keyValue === "y" || keyValue === "z")) {
-            stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
-                return { guideAxis: keyValue.toUpperCase() };
-            });
-        }
+        measurePlane: currentState.measurePlane,
+        scene3d: currentState.scene3d,
+        measurements3d: currentState.measurements3d
     });
 }
 // endregion ----------------------------------------------------
@@ -660,8 +826,20 @@ function PhotoMeasurePro__AppCore__RenderAll(currentState, domRefs) {
     PhotoMeasurePro__AppCore__RenderDiagnosticsPanel(domRefs, currentState, derivedData);
     PhotoMeasurePro__AppCore__RenderVisualSettingsPanel(domRefs, currentState);
     PhotoMeasurePro__AppCore__RenderOrthoToolbar(domRefs, currentState);
+    PhotoMeasurePro__AppCore__RenderExportSettings(domRefs, currentState);
     PhotoMeasurePro__AppCore__RenderMeasurementSubModeUi(domRefs, currentState);
     PhotoMeasurePro__AppCore__RenderProjectsPanel(domRefs, currentState);
+    PhotoMeasurePro__AppCore__RenderScene3dPanel(domRefs, currentState);
+
+    if (window.PhotoMeasurePro__System__ThreeViewport__Main) {
+        window.PhotoMeasurePro__System__ThreeViewport__Main.PhotoMeasurePro__ThreeViewport__Render(
+            domRefs,
+            currentState,
+            derivedData
+        );
+    }
+
+    window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__SyncSelectModeButton(currentState);
 }
 // endregion ----------------------------------------------------
 
@@ -747,6 +925,16 @@ function PhotoMeasurePro__AppCore__RenderOrthoToolbar(domRefs, currentState) {
     if (domRefs.PhotoMeasurePro__OrthoWarpAndExport__ButtonCropToggle) {
         domRefs.PhotoMeasurePro__OrthoWarpAndExport__ButtonCropToggle.textContent = currentState.orthoCropMode ? "Cancel Crop" : "Crop";
     }
+}
+
+function PhotoMeasurePro__AppCore__RenderExportSettings(domRefs, currentState) {
+    const exportVisibility = currentState.exportVisibility || {};
+    domRefs.PhotoMeasurePro__ExportSettings__ToggleInputs.forEach(function(toggleInputElement) {
+        const toggleKey = toggleInputElement.dataset.exportToggle;
+        if (!toggleKey) return;
+        if (document.activeElement === toggleInputElement) return;
+        toggleInputElement.checked = exportVisibility[toggleKey] !== false;
+    });
 }
 
 function PhotoMeasurePro__AppCore__RenderMeasurementSubModeUi(domRefs, currentState) {
@@ -876,5 +1064,41 @@ function PhotoMeasurePro__AppCore__RenderDiagnosticsPanel(domRefs, currentState,
     domRefs.PhotoMeasurePro__Diagnostics__AnchorText.textContent = currentState.anchorPoint
         ? "Anchor: (" + currentState.anchorPoint.x.toFixed(0) + ", " + currentState.anchorPoint.y.toFixed(0) + ")"
         : "Anchor: not set";
+}
+
+function PhotoMeasurePro__AppCore__RenderScene3dPanel(domRefs, currentState) {
+    if (!domRefs.PhotoMeasurePro__Scene3D__StatusText) return;
+    const scene3dState = currentState.scene3d || {};
+    const sceneStatus = scene3dState.status || "idle";
+    const analyticalReady = scene3dState.analyticalSceneReady ? "yes" : "no";
+    const depthReady = scene3dState.depthCacheUrl ? "yes" : "no";
+    domRefs.PhotoMeasurePro__Scene3D__StatusText.textContent =
+        "3D status: " + sceneStatus + " | analytical: " + analyticalReady + " | depth: " + depthReady;
+
+    if (domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget && document.activeElement !== domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget) {
+        domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget.value = scene3dState.snapTarget || "analytical";
+    }
+    if (domRefs.PhotoMeasurePro__Scene3D__SelectViewMode && document.activeElement !== domRefs.PhotoMeasurePro__Scene3D__SelectViewMode) {
+        domRefs.PhotoMeasurePro__Scene3D__SelectViewMode.value = scene3dState.viewMode || "3dOnly";
+    }
+    if (!domRefs.PhotoMeasurePro__Scene3D__OffsetPlaneList) return;
+    const offsetPlaneListElement = domRefs.PhotoMeasurePro__Scene3D__OffsetPlaneList;
+    offsetPlaneListElement.innerHTML = "";
+    (scene3dState.offsetPlanes || []).forEach(function(offsetPlaneItem) {
+        const listItem = document.createElement("li");
+        listItem.className = "PhotoMeasurePro__Scene3D__OffsetPlaneItem";
+        const textNode = document.createElement("span");
+        textNode.textContent = offsetPlaneItem.name + " [" + offsetPlaneItem.parentPlane + "] " + offsetPlaneItem.offsetMm + " mm";
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "PhotoMeasurePro__Scene3D__OffsetPlaneDelete";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", function() {
+            window.PhotoMeasurePro__System__SceneReconstruction3D__PlaneOffsetManager
+                .PhotoMeasurePro__PlaneOffsetManager__RemoveOffsetPlane(offsetPlaneItem.id);
+        });
+        listItem.appendChild(textNode);
+        listItem.appendChild(deleteButton);
+        offsetPlaneListElement.appendChild(listItem);
+    });
 }
 // endregion ----------------------------------------------------

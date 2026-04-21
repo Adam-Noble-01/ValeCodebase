@@ -162,14 +162,22 @@ const PhotoMeasurePro__System__CanvasViewport__OrthoStage = (function() {
 
     // HELPER FUNCTION | Build Overlay SVG Markup (Measurements + Crop)
     // ------------------------------------------------------------
-    function PhotoMeasurePro__OrthoStage__BuildOverlayMarkup(svgOverlay, renderResult, orthoGeometry, currentState, derivedData) {
+    function PhotoMeasurePro__OrthoStage__BuildOverlayMarkup(svgOverlay, renderResult, orthoGeometry, currentState, derivedData, displayScaleOverride, overlayVisibilityOptions) {
         const measurementEngine = window.PhotoMeasurePro__System__Measurement__Engine;
         const coordinateSpace = window.PhotoMeasurePro__MathUtils__CoordinateSpace;
         const visualSettings = currentState.visualSettings || {};
         const dimThickness = visualSettings.dimensionLineThickness || 1.5;
         const orthoTransform = currentState.orthoTransform || { scale: 1 };
-        const displayScale = (orthoTransform && orthoTransform.scale) || 1;
+        const displayScale = Number.isFinite(displayScaleOverride)
+            ? Math.max(displayScaleOverride, 0.01)
+            : ((orthoTransform && orthoTransform.scale) || 1);
         const dimensionFontSize = (currentState.dimensionSize / displayScale);
+        const overlayVisibility = overlayVisibilityOptions || {};
+        const showMeasurements = overlayVisibility.measurements !== false;
+        const showConstraints = overlayVisibility.constraints !== false;
+        const showGuides = overlayVisibility.guides !== false;
+        const showAngles = overlayVisibility.angles !== false;
+        const showCrop = overlayVisibility.crop !== false;
 
         const measureColor = coordinateSpace.PhotoMeasurePro__CoordinateSpace__GetColorForLineType("measure");
         const constraintColor = coordinateSpace.PhotoMeasurePro__CoordinateSpace__GetColorForLineType("constraint");
@@ -180,6 +188,7 @@ const PhotoMeasurePro__System__CanvasViewport__OrthoStage = (function() {
 
         currentState.lines.forEach(function(lineItem) {
             if (lineItem.type === "guide") {
+                if (!showGuides) return;
                 const guideAxisLetter = lineItem.axis;
                 const guideIsOnPlane = (guideAxisLetter === activePlaneDefinition.rightAxis || guideAxisLetter === activePlaneDefinition.upAxis);
                 if (!guideIsOnPlane) return;
@@ -195,6 +204,7 @@ const PhotoMeasurePro__System__CanvasViewport__OrthoStage = (function() {
             }
 
             if (lineItem.type === "angle") {
+                if (!showAngles) return;
                 if (lineItem.plane && lineItem.plane !== currentState.measurePlane) return;
                 if (!lineItem.vertex || !lineItem.armA || !lineItem.armB) return;
                 const vertexCanvas = PhotoMeasurePro__OrthoStage__ImagePointToCanvasPixel(lineItem.vertex, orthoGeometry, renderResult);
@@ -218,6 +228,8 @@ const PhotoMeasurePro__System__CanvasViewport__OrthoStage = (function() {
             }
 
             if (lineItem.type !== "measure" && lineItem.type !== "constraint") return;
+            if (lineItem.type === "measure" && !showMeasurements) return;
+            if (lineItem.type === "constraint" && !showConstraints) return;
             if (lineItem.plane && lineItem.plane !== currentState.measurePlane) return;
 
             const startCanvas = PhotoMeasurePro__OrthoStage__ImagePointToCanvasPixel(lineItem.start, orthoGeometry, renderResult);
@@ -247,14 +259,40 @@ const PhotoMeasurePro__System__CanvasViewport__OrthoStage = (function() {
             }
         });
 
-        markupBuffer += PhotoMeasurePro__OrthoStage__BuildCropRectangleMarkup(
-            currentState,
-            orthoGeometry,
-            renderResult,
-            displayScale
-        );
+        if (showCrop) {
+            markupBuffer += PhotoMeasurePro__OrthoStage__BuildCropRectangleMarkup(
+                currentState,
+                orthoGeometry,
+                renderResult,
+                displayScale
+            );
+        }
 
         svgOverlay.innerHTML = markupBuffer;
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Build A Standalone SVG Document For Ortho Overlay Export
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__OrthoStage__BuildOverlaySvgDocument(renderResult, orthoGeometry, currentState, derivedData, overlayVisibilityOptions) {
+        if (!renderResult || !orthoGeometry || !currentState || !derivedData) return "";
+        const temporarySvgOverlay = { innerHTML: "" };
+        PhotoMeasurePro__OrthoStage__BuildOverlayMarkup(
+            temporarySvgOverlay,
+            renderResult,
+            orthoGeometry,
+            currentState,
+            derivedData,
+            1,
+            overlayVisibilityOptions || {}
+        );
+        const widthValue = renderResult.outputWidth;
+        const heightValue = renderResult.outputHeight;
+        const safeMarkup = temporarySvgOverlay.innerHTML || "";
+        return "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + widthValue + "\" height=\"" + heightValue +
+            "\" viewBox=\"0 0 " + widthValue + " " + heightValue + "\" preserveAspectRatio=\"none\">" +
+            safeMarkup +
+            "</svg>";
     }
     // ------------------------------------------------------------
 
@@ -608,7 +646,8 @@ const PhotoMeasurePro__System__CanvasViewport__OrthoStage = (function() {
     return {
         PhotoMeasurePro__OrthoStage__Initialize: PhotoMeasurePro__OrthoStage__Initialize,
         PhotoMeasurePro__OrthoStage__Render: PhotoMeasurePro__OrthoStage__Render,
-        PhotoMeasurePro__OrthoStage__InvalidateCaches: PhotoMeasurePro__OrthoStage__InvalidateCaches
+        PhotoMeasurePro__OrthoStage__InvalidateCaches: PhotoMeasurePro__OrthoStage__InvalidateCaches,
+        PhotoMeasurePro__OrthoStage__BuildOverlaySvgDocument: PhotoMeasurePro__OrthoStage__BuildOverlaySvgDocument
     };
 })();
 

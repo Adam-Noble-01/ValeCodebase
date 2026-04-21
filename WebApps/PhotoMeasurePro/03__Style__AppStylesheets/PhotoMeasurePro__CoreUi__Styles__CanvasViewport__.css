@@ -106,3 +106,34 @@
     background       : rgba(15, 23, 42, 0.8);
     font-size        : 12px;
 }
+
+#PhotoMeasurePro__ThreeViewport__Root {
+    position         : absolute;
+    inset            : 0;
+    background       : #020617;
+}
+
+#PhotoMeasurePro__ThreeViewport__Canvas {
+    position         : absolute;
+    inset            : 0;
+    width            : 100%;
+    height           : 100%;
+    display          : block;
+}
+
+#PhotoMeasurePro__ThreeViewport__Hud {
+    position         : absolute;
+    top              : 14px;
+    right            : 14px;
+    min-width        : 220px;
+    max-width        : 360px;
+    max-height       : 45%;
+    overflow         : auto;
+    padding          : 10px;
+    border-radius    : 8px;
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : rgba(15, 23, 42, 0.8);
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-size        : 11px;
+    font-family      : Consolas, monospace;
+}

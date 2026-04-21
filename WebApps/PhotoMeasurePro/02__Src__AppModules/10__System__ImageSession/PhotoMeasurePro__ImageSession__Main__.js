@@ -46,6 +46,8 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
             orthoStage.PhotoMeasurePro__OrthoStage__InvalidateCaches();
         }
 
+        window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__ResetStacks();
+
         window.PhotoMeasurePro__AppCore__StateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
             const defaultLines = PhotoMeasurePro__ImageSession__BuildDefaultSetupLines(loadedImage.width, loadedImage.height);
             const previousLengths = previousState.constraintsByPlane || {};
@@ -63,7 +65,8 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
                     Ground: { lineId: null, lengthMm: (previousLengths.Ground && previousLengths.Ground.lengthMm) || 1000 }
                 },
                 anchorPoint: null,
-                awaitingAnchorClick: false
+                awaitingAnchorClick: false,
+                canvasSelectMode: false
             };
         });
 
@@ -145,6 +148,11 @@ const PhotoMeasurePro__System__ImageSession__Main = (function() {
     function PhotoMeasurePro__ImageSession__ApplyHiddenAlign() {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const coordinateSpace = window.PhotoMeasurePro__MathUtils__CoordinateSpace;
+
+        const snapshotBefore = stateManager.PhotoMeasurePro__StateManager__GetState();
+        if (snapshotBefore.imageUrl) {
+            window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main.PhotoMeasurePro__HotkeysSelectAndHistory__RecordBeforeChange();
+        }
 
         stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
             if (!previousState.imageUrl) {

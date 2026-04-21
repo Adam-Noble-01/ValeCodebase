@@ -57,6 +57,31 @@ const PhotoMeasurePro__AppCore__StateManager = (function() {
             currentProjectName: "",
             currentProjectDirty: false,
             projectsPanelOpen: true,
+            canvasSelectMode: false,
+            exportVisibility: {
+                perspectiveLines: true,
+                measurements: true,
+                constraints: true,
+                guides: true,
+                angles: true,
+                anchor: true,
+                crop: true
+            },
+            scene3d: {
+                status: "idle",
+                depthCacheUrl: null,
+                segmentationCacheUrl: null,
+                depthScaling: null,
+                worldOrigin: null,
+                offsetPlanes: [],
+                snapTarget: "analytical",
+                viewMode: "3dOnly",
+                cameraState: null,
+                analyticalSceneReady: false,
+                depthMeshReady: false,
+                pendingMeasurementPoint: null
+            },
+            measurements3d: [],
             appConfig: applicationConfig,
             measurementConfig: measurementConfig
         };

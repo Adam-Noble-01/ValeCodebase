@@ -1,0 +1,8 @@
+{
+    "PhotoMeasurePro__HotkeysSelectAndHistory__Config": {
+        "PhotoMeasurePro__HotkeysSelectAndHistory__MaxUndoDepth"  : 80,
+        "PhotoMeasurePro__HotkeysSelectAndHistory__SelectModeKey" : "s",
+        "PhotoMeasurePro__HotkeysSelectAndHistory__UndoKey"       : "z",
+        "PhotoMeasurePro__HotkeysSelectAndHistory__RedoKey"       : "y"
+    }
+}

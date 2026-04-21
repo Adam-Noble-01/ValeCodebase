@@ -46,6 +46,7 @@
 #PhotoMeasurePro__Sidebar__ConstraintPanel,
 #PhotoMeasurePro__Sidebar__MeasurementPanel,
 #PhotoMeasurePro__Sidebar__OrthoPanel,
+#PhotoMeasurePro__Sidebar__Scene3DPanel,
 #PhotoMeasurePro__Sidebar__SelectionPanel,
 #PhotoMeasurePro__Sidebar__ExportPanel,
 #PhotoMeasurePro__Sidebar__ProjectsPanel,
@@ -473,7 +474,33 @@
     font-size        : 12px;
 }
 
+#PhotoMeasurePro__Sidebar__ButtonSelectMode {
+    width            : 100%;
+    margin-bottom    : 8px;
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    border-radius    : 8px;
+    padding          : 10px;
+    cursor           : pointer;
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+}
+
+#PhotoMeasurePro__Sidebar__ButtonSelectMode:hover {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+.PhotoMeasurePro__Sidebar__ButtonSelectMode--active {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue) !important;
+    background       : var(--PhotoMeasurePro__ColorAccentBlueSoft) !important;
+}
+
+#PhotoMeasurePro__Measurement__SubModeRow--selectBlocked {
+    opacity          : 0.45;
+    pointer-events   : none;
+}
+
 #PhotoMeasurePro__Sidebar__ButtonDeleteSelected,
+#PhotoMeasurePro__Sidebar__ButtonExportMainView,
 #PhotoMeasurePro__OrthoWarpAndExport__ButtonExportPng {
     width            : 100%;
     border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
@@ -491,4 +518,150 @@
 
 #PhotoMeasurePro__Sidebar__ButtonDeleteSelected:not(:disabled):hover {
     border-color     : var(--PhotoMeasurePro__ColorDanger);
+}
+
+#PhotoMeasurePro__Sidebar__ExportPanel h2 {
+    margin           : 0 0 8px 0;
+    font-size        : 14px;
+}
+
+#PhotoMeasurePro__Sidebar__ExportPanel p {
+    margin           : 0;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-size        : 12px;
+}
+
+#PhotoMeasurePro__ExportSettings__ToggleGrid {
+    display          : grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap              : 6px;
+    margin           : 10px 0;
+}
+
+.PhotoMeasurePro__ExportSettings__ToggleLabel {
+    display          : flex;
+    align-items      : center;
+    gap              : 6px;
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    border-radius    : 6px;
+    padding          : 6px 8px;
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    font-size        : 11px;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    cursor           : pointer;
+}
+
+.PhotoMeasurePro__ExportSettings__ToggleLabel input {
+    margin           : 0;
+    accent-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+#PhotoMeasurePro__ExportSettings__ActionRow {
+    display          : grid;
+    grid-template-columns: 1fr;
+    gap              : 6px;
+}
+
+#PhotoMeasurePro__ExportSettings__ActionRow button:hover {
+    border-color     : var(--PhotoMeasurePro__ColorAccentBlue);
+}
+
+#PhotoMeasurePro__Scene3D__ActionRow {
+    display          : grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap              : 6px;
+    margin           : 8px 0;
+}
+
+#PhotoMeasurePro__Scene3D__ActionRow button {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 6px;
+    padding          : 8px 4px;
+    cursor           : pointer;
+    font-size        : 11px;
+}
+
+#PhotoMeasurePro__Scene3D__StatusText {
+    margin           : 0 0 8px 0 !important;
+    font-size        : 11px !important;
+    font-family      : Consolas, monospace !important;
+}
+
+#PhotoMeasurePro__Scene3D__SnapTargetLabel,
+#PhotoMeasurePro__Scene3D__ViewModeLabel {
+    display          : block;
+    margin           : 8px 0;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    font-size        : 12px;
+}
+
+#PhotoMeasurePro__Scene3D__SnapTargetLabel select,
+#PhotoMeasurePro__Scene3D__ViewModeLabel select {
+    margin-top       : 4px;
+    width            : 100%;
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 6px;
+    padding          : 6px;
+}
+
+#PhotoMeasurePro__Scene3D__OffsetPlaneEditor {
+    margin-top       : 10px;
+    padding-top      : 10px;
+    border-top       : 1px dashed var(--PhotoMeasurePro__ColorBorderMain);
+}
+
+#PhotoMeasurePro__Scene3D__OffsetPlaneEditor h3 {
+    margin           : 0 0 6px 0;
+    font-size        : 13px;
+}
+
+#PhotoMeasurePro__Scene3D__OffsetPlaneInputRow {
+    display          : grid;
+    grid-template-columns: 1fr 1fr;
+    gap              : 6px;
+}
+
+#PhotoMeasurePro__Scene3D__OffsetPlaneInputRow input,
+#PhotoMeasurePro__Scene3D__OffsetPlaneInputRow select,
+#PhotoMeasurePro__Scene3D__OffsetPlaneInputRow button {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    color            : var(--PhotoMeasurePro__ColorTextPrimary);
+    border-radius    : 6px;
+    padding          : 6px;
+    font-size        : 11px;
+}
+
+#PhotoMeasurePro__Scene3D__OffsetPlaneList {
+    list-style       : none;
+    padding          : 0;
+    margin           : 8px 0 0 0;
+    max-height       : 120px;
+    overflow         : auto;
+}
+
+.PhotoMeasurePro__Scene3D__OffsetPlaneItem {
+    display          : flex;
+    justify-content  : space-between;
+    align-items      : center;
+    gap              : 8px;
+    margin-bottom    : 4px;
+    padding          : 6px 8px;
+    border-radius    : 6px;
+    background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
+    font-size        : 11px;
+    font-family      : Consolas, monospace;
+}
+
+.PhotoMeasurePro__Scene3D__OffsetPlaneDelete {
+    border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
+    background       : transparent;
+    color            : var(--PhotoMeasurePro__ColorTextMuted);
+    border-radius    : 4px;
+    padding          : 2px 6px;
+    cursor           : pointer;
 }

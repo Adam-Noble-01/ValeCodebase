@@ -23,11 +23,11 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         });
 
         viewportRoot.addEventListener("pointerup", function(pointerEvent) {
-            PhotoMeasurePro__CanvasViewport__HandlePointerUp(pointerEvent);
+            PhotoMeasurePro__CanvasViewport__HandlePointerUp(pointerEvent, domRefs);
         });
 
         viewportRoot.addEventListener("pointerleave", function(pointerEvent) {
-            PhotoMeasurePro__CanvasViewport__HandlePointerUp(pointerEvent);
+            PhotoMeasurePro__CanvasViewport__HandlePointerUp(pointerEvent, domRefs);
         });
     }
     // ------------------------------------------------------------
@@ -74,7 +74,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
 
     // HELPER FUNCTION | Build SVG Overlay Markup
     // ------------------------------------------------------------
-    function PhotoMeasurePro__CanvasViewport__BuildSvgMarkup(currentState, derivedData, measurementEngine) {
+    function PhotoMeasurePro__CanvasViewport__BuildSvgMarkup(currentState, derivedData, measurementEngine, overlayVisibilityOptions) {
         const perspectiveData = derivedData.perspectiveData;
         const coordinateSpace = window.PhotoMeasurePro__MathUtils__CoordinateSpace;
         const axisColors = coordinateSpace.PhotoMeasurePro__CoordinateSpace__AxisColors;
@@ -86,10 +86,17 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const visualSettings = currentState.visualSettings || {};
         const axisThickness = visualSettings.axisLineThickness || 1.5;
         const dimThickness = visualSettings.dimensionLineThickness || 1.5;
+        const overlayVisibility = overlayVisibilityOptions || {};
+        const showPerspectiveLines = overlayVisibility.perspectiveLines !== false;
+        const showMeasurements = overlayVisibility.measurements !== false;
+        const showConstraints = overlayVisibility.constraints !== false;
+        const showGuides = overlayVisibility.guides !== false;
+        const showAngles = overlayVisibility.angles !== false;
+        const showAnchor = overlayVisibility.anchor !== false;
 
         let markupBuffer = "";
 
-        if (currentState.mode === "setup" && perspectiveData) {
+        if (currentState.mode === "setup" && perspectiveData && showPerspectiveLines) {
             markupBuffer += "<g opacity=\"0.3\">";
             markupBuffer += PhotoMeasurePro__CanvasViewport__BuildVpGuideMarkup("X", perspectiveData.VPx, axisColors.X, currentState.lines, axisThickness);
             markupBuffer += PhotoMeasurePro__CanvasViewport__BuildVpGuideMarkup("Y", perspectiveData.VPy, axisColors.Y, currentState.lines, axisThickness);
@@ -99,17 +106,26 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
 
         allLines.forEach(function(lineItem) {
             if (lineItem.type === "angle") {
+                if (!showAngles) return;
                 markupBuffer += PhotoMeasurePro__CanvasViewport__BuildAngleMarkup(
                     lineItem, currentState, perspectiveData, crosshairSize, textSizeFull, dimThickness, measurementEngine
                 );
                 return;
             }
             if (lineItem.type === "guide") {
+                if (!showGuides) return;
                 markupBuffer += PhotoMeasurePro__CanvasViewport__BuildGuideLineMarkup(
                     lineItem, currentState, perspectiveData, crosshairSize, textSizeSmall, axisThickness
                 );
                 return;
             }
+            if (lineItem.type === "measure" && !showMeasurements) return;
+            if (lineItem.type === "constraint" && !showConstraints) return;
+            const isPerspectiveLineType =
+                lineItem.type === "FacadeHorizontal" ||
+                lineItem.type === "SideHorizontal" ||
+                lineItem.type === "Vertical";
+            if (isPerspectiveLineType && !showPerspectiveLines) return;
 
             const strokeColor = measurementEngine.PhotoMeasurePro__Measurement__GetStrokeColor(lineItem.type);
             const isAxisLine = Boolean(coordinateSpace.PhotoMeasurePro__CoordinateSpace__GetAxisLetterForLineType(lineItem.type));
@@ -147,17 +163,37 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
             markupBuffer += "</g>";
         });
 
-        if (currentState.drawingAngle) {
+        if (currentState.drawingAngle && showAngles) {
             markupBuffer += PhotoMeasurePro__CanvasViewport__BuildAngleMarkup(
                 currentState.drawingAngle, currentState, perspectiveData, crosshairSize, textSizeFull, dimThickness, measurementEngine
             );
         }
 
-        if (currentState.anchorPoint) {
+        if (currentState.anchorPoint && showAnchor) {
             markupBuffer += PhotoMeasurePro__CanvasViewport__BuildAnchorMarkerMarkup(currentState.anchorPoint, crosshairSize, textSizeSmall);
         }
 
         return markupBuffer;
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Build Main Overlay SVG Document For Export
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__CanvasViewport__BuildOverlaySvgDocumentForExport(currentState, derivedData, overlayVisibilityOptions) {
+        const measurementEngine = window.PhotoMeasurePro__System__Measurement__Engine;
+        if (!currentState || !measurementEngine || !currentState.imgSize) return "";
+        const exportWidth = Math.max(1, Number(currentState.imgSize.w) || 1);
+        const exportHeight = Math.max(1, Number(currentState.imgSize.h) || 1);
+        const markup = PhotoMeasurePro__CanvasViewport__BuildSvgMarkup(
+            currentState,
+            derivedData,
+            measurementEngine,
+            overlayVisibilityOptions || {}
+        );
+        return "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + exportWidth + "\" height=\"" + exportHeight +
+            "\" viewBox=\"0 0 " + exportWidth + " " + exportHeight + "\" preserveAspectRatio=\"none\">" +
+            markup +
+            "</svg>";
     }
     // ------------------------------------------------------------
 
@@ -421,16 +457,136 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | Point To Segment Distance (Image Space)
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__CanvasViewport__DistancePointToSegment(pointX, pointY, segStartX, segStartY, segEndX, segEndY) {
+        const deltaX = segEndX - segStartX;
+        const deltaY = segEndY - segStartY;
+        const lengthSquared = deltaX * deltaX + deltaY * deltaY;
+        if (lengthSquared < 1e-12) {
+            return Math.hypot(pointX - segStartX, pointY - segStartY);
+        }
+        let projectionT = ((pointX - segStartX) * deltaX + (pointY - segStartY) * deltaY) / lengthSquared;
+        projectionT = Math.max(0, Math.min(1, projectionT));
+        const nearestX = segStartX + projectionT * deltaX;
+        const nearestY = segStartY + projectionT * deltaY;
+        return Math.hypot(pointX - nearestX, pointY - nearestY);
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Find Nearest Line By Body / Endpoint / Anchor Hit
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__CanvasViewport__FindNearestSelectableLineId(svgPoint, currentState, perspectiveData, hitRadius) {
+        const guidesEngine = window.PhotoMeasurePro__System__Guides__Engine;
+        const lineList = currentState.lines || [];
+        let bestLineId = null;
+        let bestDistance = hitRadius;
+
+        function consider(lineId, distanceValue, priorityBias) {
+            const effectiveDistance = distanceValue - (priorityBias || 0);
+            if (effectiveDistance <= bestDistance) {
+                bestDistance = effectiveDistance;
+                bestLineId = lineId;
+            }
+        }
+
+        lineList.forEach(function(lineItem) {
+            if (lineItem.type === "angle") {
+                if (lineItem.vertex) {
+                    const vertexDistance = Math.hypot(lineItem.vertex.x - svgPoint.x, lineItem.vertex.y - svgPoint.y);
+                    consider(lineItem.id, vertexDistance, hitRadius * 0.04);
+                }
+                if (lineItem.armA) {
+                    const armADistance = Math.hypot(lineItem.armA.x - svgPoint.x, lineItem.armA.y - svgPoint.y);
+                    consider(lineItem.id, armADistance, 0);
+                    if (lineItem.vertex) {
+                        const segA = PhotoMeasurePro__CanvasViewport__DistancePointToSegment(
+                            svgPoint.x, svgPoint.y,
+                            lineItem.vertex.x, lineItem.vertex.y,
+                            lineItem.armA.x, lineItem.armA.y
+                        );
+                        consider(lineItem.id, segA, 0);
+                    }
+                }
+                if (lineItem.armB) {
+                    const armBDistance = Math.hypot(lineItem.armB.x - svgPoint.x, lineItem.armB.y - svgPoint.y);
+                    consider(lineItem.id, armBDistance, 0);
+                    if (lineItem.vertex) {
+                        const segB = PhotoMeasurePro__CanvasViewport__DistancePointToSegment(
+                            svgPoint.x, svgPoint.y,
+                            lineItem.vertex.x, lineItem.vertex.y,
+                            lineItem.armB.x, lineItem.armB.y
+                        );
+                        consider(lineItem.id, segB, 0);
+                    }
+                }
+                return;
+            }
+
+            if (lineItem.type === "guide") {
+                const refreshedLine = perspectiveData
+                    ? guidesEngine.PhotoMeasurePro__Guides__RefreshGuideEndpoints(lineItem, perspectiveData, currentState.imgSize)
+                    : lineItem;
+                if (lineItem.anchor) {
+                    const anchorDistance = Math.hypot(lineItem.anchor.x - svgPoint.x, lineItem.anchor.y - svgPoint.y);
+                    consider(lineItem.id, anchorDistance, hitRadius * 0.02);
+                }
+                const segmentDistance = PhotoMeasurePro__CanvasViewport__DistancePointToSegment(
+                    svgPoint.x, svgPoint.y,
+                    refreshedLine.start.x, refreshedLine.start.y,
+                    refreshedLine.end.x, refreshedLine.end.y
+                );
+                consider(lineItem.id, segmentDistance, 0);
+                return;
+            }
+
+            if (lineItem.start && lineItem.end) {
+                const segmentDistance = PhotoMeasurePro__CanvasViewport__DistancePointToSegment(
+                    svgPoint.x, svgPoint.y,
+                    lineItem.start.x, lineItem.start.y,
+                    lineItem.end.x, lineItem.end.y
+                );
+                const endpointA = Math.hypot(lineItem.start.x - svgPoint.x, lineItem.start.y - svgPoint.y);
+                const endpointB = Math.hypot(lineItem.end.x - svgPoint.x, lineItem.end.y - svgPoint.y);
+                consider(lineItem.id, Math.min(segmentDistance, endpointA, endpointB), 0);
+            }
+        });
+
+        return bestLineId;
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Record Undo Snapshot If History Module Loaded
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__CanvasViewport__RecordHistoryBeforeChange() {
+        const historyModule = window.PhotoMeasurePro__System__HotkeysSelectAndHistory__Main;
+        if (historyModule && historyModule.PhotoMeasurePro__HotkeysSelectAndHistory__RecordBeforeChange) {
+            historyModule.PhotoMeasurePro__HotkeysSelectAndHistory__RecordBeforeChange();
+        }
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Ignore Main Pointer Handlers During Ortho Interactions
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState) {
+        const orthoPanelElement = domRefs && domRefs.PhotoMeasurePro__ModeManager__OrthoPanel;
+        if (currentState.mode !== "ortho" || !orthoPanelElement || !pointerEvent.target) return false;
+        return orthoPanelElement.contains(pointerEvent.target);
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Handle Pointer Down
     // ------------------------------------------------------------
     function PhotoMeasurePro__CanvasViewport__HandlePointerDown(pointerEvent, domRefs) {
-        pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
         pointerEvent.preventDefault();
 
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const idGenerator = window.PhotoMeasurePro__AppUtils__IdGenerator;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
         if (!currentState.imageUrl) return;
+        if (PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState)) return;
+
+        pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
 
         if (pointerEvent.button === 1 || pointerEvent.button === 2) {
             stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
@@ -445,6 +601,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const svgPoint = PhotoMeasurePro__CanvasViewport__GetImageSpacePoint(pointerEvent.clientX, pointerEvent.clientY, domRefs, currentState);
 
         if (currentState.awaitingAnchorClick) {
+            PhotoMeasurePro__CanvasViewport__RecordHistoryBeforeChange();
             stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
                 return {
                     anchorPoint: svgPoint,
@@ -455,10 +612,35 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         }
 
         const hitRadius = (currentState.measurementConfig.PhotoMeasurePro__Measurement__HitRadiusPixels || 30) / currentState.transform.scale;
-        const draggableLines = currentState.lines.filter(function(lineItem) { return lineItem.type !== "guide" && lineItem.type !== "angle"; });
+        const perspectiveEngine = window.PhotoMeasurePro__System__PerspectiveSetup__Engine;
+        const perspectiveData = perspectiveEngine.PhotoMeasurePro__PerspectiveSetup__ComputePerspectiveData(currentState);
+
+        if (currentState.canvasSelectMode) {
+            const pickedLineId = PhotoMeasurePro__CanvasViewport__FindNearestSelectableLineId(
+                svgPoint, currentState, perspectiveData, hitRadius
+            );
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
+                return { selectedLineId: pickedLineId };
+            });
+            return;
+        }
+
+        const draggableLines = currentState.lines.filter(function(lineItem) {
+            if (lineItem.type === "guide" || lineItem.type === "angle") return false;
+
+            const isPerspectiveLine =
+                lineItem.type === "FacadeHorizontal" ||
+                lineItem.type === "SideHorizontal" ||
+                lineItem.type === "Vertical";
+            if (isPerspectiveLine && currentState.mode !== "setup") return false;
+
+            if (lineItem.type === "constraint" && currentState.mode !== "constraint") return false;
+            return true;
+        });
         const nearestPoint = PhotoMeasurePro__CanvasViewport__FindNearestLineEndpoint(svgPoint, draggableLines, hitRadius);
 
         if (nearestPoint) {
+            PhotoMeasurePro__CanvasViewport__RecordHistoryBeforeChange();
             stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
                 return { draggingPoint: nearestPoint, selectedLineId: nearestPoint.lineId };
             });
@@ -511,6 +693,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
         if (!currentState.imageUrl) return;
+        if (PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState)) return;
 
         if (currentState.isPanning) {
             const deltaX = pointerEvent.clientX - currentState.lastPan.x;
@@ -529,7 +712,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         }
 
         const svgPoint = PhotoMeasurePro__CanvasViewport__GetImageSpacePoint(pointerEvent.clientX, pointerEvent.clientY, domRefs, currentState);
-        if (currentState.draggingPoint) {
+        if (currentState.draggingPoint && !currentState.canvasSelectMode) {
             stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
                 const updatedLines = previousState.lines.map(function(lineItem) {
                     if (lineItem.id !== previousState.draggingPoint.lineId) return lineItem;
@@ -542,7 +725,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
             return;
         }
 
-        if (currentState.drawingLine) {
+        if (currentState.drawingLine && !currentState.canvasSelectMode) {
             const snappedEnd = PhotoMeasurePro__CanvasViewport__ApplyGuideSnap(svgPoint, currentState);
             stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
                 return {
@@ -552,7 +735,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
             return;
         }
 
-        if (currentState.drawingAngle && currentState.drawingAngle.awaitingArm) {
+        if (currentState.drawingAngle && currentState.drawingAngle.awaitingArm && !currentState.canvasSelectMode) {
             const snappedPoint = PhotoMeasurePro__CanvasViewport__ApplyGuideSnap(svgPoint, currentState);
             stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
                 const drawingAngle = previousState.drawingAngle;
@@ -582,6 +765,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         );
         if (!guideLine) return;
 
+        PhotoMeasurePro__CanvasViewport__RecordHistoryBeforeChange();
         stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
             return {
                 lines: previousState.lines.concat([guideLine]),
@@ -595,6 +779,10 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
     // ------------------------------------------------------------
     function PhotoMeasurePro__CanvasViewport__AdvanceAngleDrawing(svgPoint, stateManager, idGenerator, currentState) {
         const snappedPoint = PhotoMeasurePro__CanvasViewport__ApplyGuideSnap(svgPoint, currentState);
+        const drawingAngleBefore = currentState.drawingAngle;
+        if (drawingAngleBefore && drawingAngleBefore.awaitingArm === "armB") {
+            PhotoMeasurePro__CanvasViewport__RecordHistoryBeforeChange();
+        }
 
         stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
             const drawingAngle = previousState.drawingAngle;
@@ -650,14 +838,21 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
 
     // FUNCTION | Handle Pointer Up
     // ------------------------------------------------------------
-    function PhotoMeasurePro__CanvasViewport__HandlePointerUp(pointerEvent) {
-        if (pointerEvent.currentTarget.hasPointerCapture(pointerEvent.pointerId)) {
-            pointerEvent.currentTarget.releasePointerCapture(pointerEvent.pointerId);
-        }
-
+    function PhotoMeasurePro__CanvasViewport__HandlePointerUp(pointerEvent, domRefs) {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const scaleEngine = window.PhotoMeasurePro__System__ScaleConstraint__Engine;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
+
+        if (PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState)) {
+            if (pointerEvent.currentTarget.hasPointerCapture(pointerEvent.pointerId)) {
+                pointerEvent.currentTarget.releasePointerCapture(pointerEvent.pointerId);
+            }
+            return;
+        }
+
+        if (pointerEvent.currentTarget.hasPointerCapture(pointerEvent.pointerId)) {
+            pointerEvent.currentTarget.releasePointerCapture(pointerEvent.pointerId);
+        }
 
         if (pointerEvent.button === 1 || pointerEvent.button === 2) {
             stateManager.PhotoMeasurePro__StateManager__PatchState(function() { return { isPanning: false }; });
@@ -665,6 +860,13 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         }
 
         if (currentState.drawingLine) {
+            if (currentState.canvasSelectMode) {
+                stateManager.PhotoMeasurePro__StateManager__PatchState(function() {
+                    return { drawingLine: null, draggingPoint: null };
+                });
+                return;
+            }
+
             const threshold = currentState.measurementConfig.PhotoMeasurePro__Measurement__DragThresholdPixels || 10;
             const lineDistance = Math.hypot(
                 currentState.drawingLine.end.x - currentState.drawingLine.start.x,
@@ -672,6 +874,10 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
             );
 
             let registeredConstraintPayload = null;
+
+            if (lineDistance > threshold) {
+                PhotoMeasurePro__CanvasViewport__RecordHistoryBeforeChange();
+            }
 
             stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
                 let updatedLines = previousState.lines.slice();
@@ -786,7 +992,8 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
 
     return {
         PhotoMeasurePro__CanvasViewport__Initialize: PhotoMeasurePro__CanvasViewport__Initialize,
-        PhotoMeasurePro__CanvasViewport__Render: PhotoMeasurePro__CanvasViewport__Render
+        PhotoMeasurePro__CanvasViewport__Render: PhotoMeasurePro__CanvasViewport__Render,
+        PhotoMeasurePro__CanvasViewport__BuildOverlaySvgDocumentForExport: PhotoMeasurePro__CanvasViewport__BuildOverlaySvgDocumentForExport
     };
 })();
 

@@ -1,3 +1,42 @@
+---
+description: WhitecardVision first-party JS — ValeSpec-style code regions (line comments, fold rhythm)
+globs: "**/WhitecardVision/**/*.js"
+alwaysApply: false
+---
+
+# WhitecardVision — JS code regions (ValeSpec style)
+
+Applies to first-party modules under `WhitecardVision/`. **Exclude** anything under `WhitecardVision/00__ThirdParty__**/`, vendored bundles, and `node_modules`.
+
+## Rules
+
+1. **Regions use `//` line comments only** — do not use `/* REGION | … */` or `/* FUNCTION | … */` for structure.
+
+2. **File-level wrapper** (immediately after the file header block):
+   - Opening: three lines — `// =============================================================================`, `// REGION | <Short module title>`, `// =============================================================================` (use `=` rule lines, same as ValeSpec).
+   - After the main IIFE / module body, before `window.…` assignments: `// endregion ===================================================================` (double `=` line matches file scope).
+
+3. **Inner sections** (long files with distinct phases): use **narrow** rule lines, then `REGION |`, then the same rule line. Close with `// endregion -------------------------------------------------------------------` (dashes, same width as the opening `---` block). Match ValeSpec `DocumentModel`-style nesting.
+
+4. **Function- and block-level** (all sizes): use `// SCOPE | Title` (e.g. `// FUNCTION |`, `// HELPER FUNCTION |`, `// PUBLIC API`, `// MODULE CONSTANTS |`) and short dividers:
+   - `// ------------------------------------------------------------`  
+   Place one before and one after each logical function or return block (ValeSpec `StateManager` / `DocumentModel` rhythm).
+
+5. **Simpler modules** may use **only** file-level `// REGION` + function-level `// … |` blocks (no inner `// REGION` sections) when the file is a single concern.
+
+6. **Do not** change runtime behavior in a “regions-only” pass — comments and blank-line layout only.
+
+## Reference
+
+Copy patterns from `WebApps/ValeSpec/02__Src__AppModules/`, e.g. `ValeSpec__AppCore__StateManager__.js` and `ValeSpec__DocPreview__DocumentModel__.js`.
+
+## Anti-patterns
+
+```javascript
+/* REGION | … */
+/* FUNCTION | … */
+/* ------------------------------------------------------------ */
+```
 
 ## Preferred
 

@@ -6,6 +6,56 @@
 
 
 # -----------------------------------------------------------------------------
+## WhitecardVision - v0.3.3 - 22-Apr-2026 - Templates menu blacklist + folder label formatting
+
+### Summary
+Prompt Templates tree now supports a config-driven hide list so internal
+front-loaded prompt files can stay available to prompt-constructor scripts while
+being removed from the menu UI. Folder labels are now transformed for display:
+ordering prefixes are stripped, camel-case boundaries are spaced, and `__`
+segments render as ` - `.
+
+### Prompt template hide list (config)
+- Added `Wv__AppConfig__PromptConstructor__HiddenTemplatePaths` to the Prompt
+  Constructor config block.
+- Seeded with `01__FrontLoadedPrompts__CoreStandards` so this folder no longer
+  appears in the Prompt Templates panel tree.
+- Hide rules are tree-only; prompt generation still reads front-load files via
+  `FrontLoader__*` config keys and `/api/templates/read`.
+
+### Flask tree filtering
+- `Wv__Server__HandleTemplateTree()` now loads hidden template paths from app
+  config and passes them into tree construction.
+- Added path helpers:
+  - `Wv__Server__NormaliseTemplateRelativePath`
+  - `Wv__Server__ReadHiddenTemplatePathsFromAppConfig`
+  - `Wv__Server__ShouldHideTemplatePath`
+- `Wv__Server__BuildTemplateTreeNode(...)` now skips entries when either:
+  - the exact relative path is hidden, or
+  - the relative path is a descendant of a hidden folder.
+- `Wv__Server__HandleTemplateRead(...)` intentionally unchanged so hidden files
+  remain script-readable.
+
+### Templates panel folder-name formatting
+- Added `Wv__SharedElements__TemplatesPanel__FormatFolderDisplayName(...)`.
+- Folder summary labels now render from formatted names instead of raw disk
+  names.
+- Examples:
+  - `10__ValeStandards__ValePrompts` -> `Vale Standards - Vale Prompts`
+  - `02__ExteriorScenes` -> `Exterior Scenes`
+
+### Runtime verification note
+- Confirmed hide logic in code and endpoint output after Flask server restart.
+- Verified `/api/templates/tree` top-level output excludes
+  `01__FrontLoadedPrompts__CoreStandards`.
+
+### Files modified
+- `02__Src__AppModules/02__AppData/WhitecardVision__AppData__Config__Main__.json`
+- `05__FlaskServerScripts/WhitecardVision__FlaskServer__Main__.py`
+- `02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__TemplatesPanel__.js`
+
+
+# -----------------------------------------------------------------------------
 ## WhitecardVision - v0.3.2 - 22-Apr-2026 - Nav gating + Final Preview auto-init
 
 ### Summary

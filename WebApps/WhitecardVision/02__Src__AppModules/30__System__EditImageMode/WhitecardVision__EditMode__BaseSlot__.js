@@ -20,6 +20,7 @@
     function Wv__EditMode__BaseSlot__Install() {
         const uploadButtonEl = document.getElementById('Wv__Edit__BaseSlot__UploadBtn');
         const fileInputEl    = document.getElementById('Wv__Edit__BaseSlot__FileInput');
+        const fetchRenderBtn = document.getElementById('Wv__Edit__BaseSlot__FetchRenderBtn');
 
         uploadButtonEl.addEventListener('click', async () => {
             try {
@@ -30,6 +31,10 @@
                     window.Wv__AppUtils__Toast.Wv__Toast__Show(selectionError.message, 'error');
             }
         });
+
+        if (fetchRenderBtn) {
+            fetchRenderBtn.addEventListener('click', Wv__EditMode__BaseSlot__HandleFetchLatestRender);
+        }
 
         window.Wv__AppCore__StateManager.Wv__StateManager__On('activeProjectChanged', Wv__EditMode__BaseSlot__RefreshFromState);
     }
@@ -76,6 +81,38 @@
             projectTree.Wv__Project__ActiveEditIterationId = activeIteration.Wv__EditIteration__Id;
         }
         return activeIteration;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Pull latest render output into active iteration base image
+    // ------------------------------------------------------------
+    function Wv__EditMode__BaseSlot__HandleFetchLatestRender() {
+        const projectTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+        if (!projectTree) {
+            window.Wv__AppUtils__Toast.Wv__Toast__Show('Create or load a project first.', 'warning');
+            return;
+        }
+
+        const renderGroupBlock = projectTree.Wv__Project__RenderGroup || {};
+        const renderPathValue  = renderGroupBlock.Wv__Project__RenderGroup__LastOutputPath || '';
+        if (!renderPathValue) {
+            window.Wv__AppUtils__Toast.Wv__Toast__Show('No render output found yet.', 'warning');
+            return;
+        }
+
+        const activeIteration = Wv__EditMode__BaseSlot__ResolveOrCreateActiveIteration(projectTree);
+        const whitecardBlock  = renderGroupBlock.Wv__Project__RenderGroup__Whitecard || {};
+
+        activeIteration.Wv__EditIteration__BaseImagePath        = renderPathValue;
+        activeIteration.Wv__EditIteration__BaseWidthPx          = whitecardBlock.Wv__Whitecard__WidthPx || 0;
+        activeIteration.Wv__EditIteration__BaseHeightPx         = whitecardBlock.Wv__Whitecard__HeightPx || 0;
+        activeIteration.Wv__EditIteration__SnappedAspectRatio   = whitecardBlock.Wv__Whitecard__SnappedAspectRatio || '';
+        activeIteration.Wv__EditIteration__SnappedDeltaPct      = whitecardBlock.Wv__Whitecard__SnappedDeltaPct || 0;
+
+        window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
+        window.Wv__AppCore__StateManager.Wv__StateManager__Emit('activeProjectChanged', projectTree);
+        window.Wv__AppUtils__Toast.Wv__Toast__Show('Latest render applied as base image.', 'success');
     }
     // ------------------------------------------------------------
 

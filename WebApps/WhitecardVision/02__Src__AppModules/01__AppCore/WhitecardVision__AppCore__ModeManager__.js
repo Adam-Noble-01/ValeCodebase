@@ -71,10 +71,16 @@
     // FUNCTION | Switch the UI to a given mode id
     // ------------------------------------------------------------
     function Wv__ModeManager__SwitchToMode(targetModeId) {
+        const stateManager      = window.Wv__AppCore__StateManager;
+        const previousModeId    = stateManager.Wv__StateManager__GetActiveModeId();
         const appConfig        = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig();
         const registeredModes  = ((appConfig || {}).Wv__AppConfig__Modes || {}).Wv__AppConfig__Modes__Registered || [];
         const matchingMode     = registeredModes.find(entry => entry.modeId === targetModeId);
         if (!matchingMode) { console.warn('[ModeManager] unknown mode id:', targetModeId); return; }
+
+        if (previousModeId && previousModeId !== targetModeId) {
+            Wv__ModeManager__AutoSaveOnModeExit(previousModeId);
+        }
 
         for (const modeDescriptor of registeredModes) {
             const panelElement = document.getElementById(modeDescriptor.panelElementId);
@@ -92,6 +98,27 @@
         window.Wv__AppCore__StateManager.Wv__StateManager__SetActiveModeId(targetModeId);
 
         Wv__ModeManager__DispatchOnActivatedHook(targetModeId);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fire-and-forget autosave when leaving a mode
+    // ------------------------------------------------------------
+    function Wv__ModeManager__AutoSaveOnModeExit(previousModeId) {
+        const stateManager = window.Wv__AppCore__StateManager;
+        const fileManager  = window.Wv__AppData__ProjectFileManager;
+        if (!stateManager || !fileManager) return;
+        if (previousModeId === 'ProjectManager') return;
+
+        const activeTree = stateManager.Wv__StateManager__GetActiveProject();
+        if (!activeTree) return;
+
+        fileManager.Wv__ProjectFileManager__SaveActiveProject()
+            .catch((saveError) => {
+                if (window.Wv__AppUtils__Toast) {
+                    window.Wv__AppUtils__Toast.Wv__Toast__Show('Auto-save failed: ' + saveError.message, 'error');
+                }
+            });
     }
     // ------------------------------------------------------------
 

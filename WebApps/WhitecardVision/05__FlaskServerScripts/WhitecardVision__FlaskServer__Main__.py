@@ -70,6 +70,7 @@ from WhitecardVision__Google__GeminiClient__ import (
 WV__SERVER__APP_ROOT_PATH        = APP_ROOT
 WV__SERVER__PROJECT_DATA_PATH    = (APP_ROOT / "04__LocalProjectData").resolve()
 WV__SERVER__TEMPLATE_ROOT_PATH   = (APP_ROOT / "10__Local__PromptTemplates").resolve()
+WV__SERVER__APP_CONFIG_PATH      = (APP_ROOT / "02__Src__AppModules" / "02__AppData" / "WhitecardVision__AppData__Config__Main__.json").resolve()
 WV__SERVER__SECRETS_ENV_PATH     = (APP_ROOT / "06__ExernalApiAndWorkers" / "01__Secrets" / ".env").resolve()
 WV__SERVER__SHARED_ASSETS_ROOT   = (APP_ROOT.parent / "assets__CommonApplicationAssets").resolve()
 
@@ -156,6 +157,38 @@ def Wv__Server__PeekTemplateFrontMatter(markdown_path: Path) -> dict[str, str]: 
             front_matter_dict[key_text] = value_text
     return front_matter_dict
 # ------------------------------------------------------------
+
+
+def Wv__Server__NormaliseTemplateRelativePath(path_text: str) -> str:
+    return str(path_text or "").replace("\\", "/").strip().strip("/")
+
+
+def Wv__Server__ReadHiddenTemplatePathsFromAppConfig() -> set[str]:
+    if not WV__SERVER__APP_CONFIG_PATH.is_file():
+        return set()
+    try:
+        app_config_json = json.loads(WV__SERVER__APP_CONFIG_PATH.read_text(encoding="utf-8") or "{}")
+    except Exception:
+        return set()
+
+    prompt_constructor_block = app_config_json.get("Wv__AppConfig__PromptConstructor", {}) or {}
+    hidden_path_list_raw = prompt_constructor_block.get("Wv__AppConfig__PromptConstructor__HiddenTemplatePaths", []) or []
+    hidden_path_set: set[str] = set()
+    for hidden_path_raw in hidden_path_list_raw:
+        hidden_path_normalised = Wv__Server__NormaliseTemplateRelativePath(str(hidden_path_raw)).lower()
+        if hidden_path_normalised:
+            hidden_path_set.add(hidden_path_normalised)
+    return hidden_path_set
+
+
+def Wv__Server__ShouldHideTemplatePath(entry_relative_path: str, hidden_path_set: set[str]) -> bool:
+    entry_relative_path_normalised = Wv__Server__NormaliseTemplateRelativePath(entry_relative_path).lower()
+    for hidden_path in hidden_path_set:
+        if entry_relative_path_normalised == hidden_path:
+            return True
+        if entry_relative_path_normalised.startswith(hidden_path + "/"):
+            return True
+    return False
 
 
 # endregion ----------------------------------------------------
@@ -676,21 +709,28 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # ------------------------------------------------------------
     def Wv__Server__HandleTemplateTree(self) -> None:
         WV__SERVER__TEMPLATE_ROOT_PATH.mkdir(parents=True, exist_ok=True)
-        tree_root = self.Wv__Server__BuildTemplateTreeNode(WV__SERVER__TEMPLATE_ROOT_PATH, rel_prefix="")
+        hidden_path_set = Wv__Server__ReadHiddenTemplatePathsFromAppConfig()
+        tree_root = self.Wv__Server__BuildTemplateTreeNode(
+            WV__SERVER__TEMPLATE_ROOT_PATH,
+            rel_prefix="",
+            hidden_path_set=hidden_path_set,
+        )
         self.Wv__Server__WriteJsonResponse(200, {"ok": True, "data": tree_root})
     # ------------------------------------------------------------
 
 
     # HELPER FUNCTION | Recursive tree builder (also peeks front-matter per file)
     # ------------------------------------------------------------
-    def Wv__Server__BuildTemplateTreeNode(self, folder_path: Path, rel_prefix: str) -> dict[str, Any]:
+    def Wv__Server__BuildTemplateTreeNode(self, folder_path: Path, rel_prefix: str, hidden_path_set: set[str]) -> dict[str, Any]:
         children_entries: list[dict[str, Any]] = []
         for entry_path in sorted(folder_path.iterdir(), key=lambda p: p.name.lower()):
             if entry_path.name.startswith("."):
                 continue
             entry_relative = f"{rel_prefix}/{entry_path.name}".lstrip("/")
+            if Wv__Server__ShouldHideTemplatePath(entry_relative, hidden_path_set):
+                continue
             if entry_path.is_dir():
-                children_entries.append(self.Wv__Server__BuildTemplateTreeNode(entry_path, entry_relative))
+                children_entries.append(self.Wv__Server__BuildTemplateTreeNode(entry_path, entry_relative, hidden_path_set))
             elif entry_path.suffix.lower() == ".md":
                 children_entries.append({
                     "type"        : "file",

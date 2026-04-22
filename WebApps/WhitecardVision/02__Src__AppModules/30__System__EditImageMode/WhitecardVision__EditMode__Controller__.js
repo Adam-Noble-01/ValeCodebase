@@ -84,9 +84,28 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Called by ModeManager when the user navigates to Editor Mode
+    // ------------------------------------------------------------
+    function Wv__EditMode__Controller__OnActivated() {
+        const projectTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+        if (!projectTree) return;
+
+        const iterationsArray = projectTree.Wv__Project__EditIterations || [];
+        if (iterationsArray.length > 0) {
+            projectTree.Wv__Project__ActiveEditIterationId = iterationsArray[iterationsArray.length - 1].Wv__EditIteration__Id;
+        }
+
+        window.Wv__AppCore__StateManager.Wv__StateManager__Emit('activeProjectChanged', projectTree);
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
-    window.Wv__EditMode__Controller = { Wv__EditMode__Controller__Init };
+    window.Wv__EditMode__Controller = {
+        Wv__EditMode__Controller__Init,
+        Wv__EditMode__Controller__OnActivated
+    };
     // ------------------------------------------------------------
 
 })();

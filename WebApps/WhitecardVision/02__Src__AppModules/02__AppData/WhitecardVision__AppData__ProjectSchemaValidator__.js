@@ -113,16 +113,18 @@
     // HELPER FUNCTION | Build a blank edit iteration entry
     // ------------------------------------------------------------
     function Wv__ProjectSchemaValidator__BuildBlankEditIteration(index) {                                                       //<-- Used by Editor Mode when the user clicks New.
-        const iterationId = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 15) + 'Z';                                 //<-- e.g. 20260422T145730Z (safe for folder names).
+        const iterationId      = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 15) + 'Z';                            //<-- e.g. 20260422T145730Z (safe for folder names).
+        const versionNumber    = String(index + 1).padStart(2, '0');                                                             //<-- e.g. 01, 02, 03 ...
         return {
-            Wv__EditIteration__Id          : iterationId,
-            Wv__EditIteration__Label       : 'Iter ' + (index + 1),
-            Wv__EditIteration__BaseImagePath: '',
-            Wv__EditIteration__TargetPrompt: '',
-            Wv__EditIteration__PreservePrompt:
+            Wv__EditIteration__Id             : iterationId,
+            Wv__EditIteration__Label          : 'Iter ' + (index + 1),
+            Wv__EditIteration__Version        : 'Version-' + versionNumber,
+            Wv__EditIteration__BaseImagePath  : '',
+            Wv__EditIteration__TargetPrompt   : '',
+            Wv__EditIteration__PreservePrompt :
                 'Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.',
-            Wv__EditIteration__AvoidNotes  : '',
-            Wv__EditIteration__ImageSize   : '2K',
+            Wv__EditIteration__AvoidNotes     : '',
+            Wv__EditIteration__ImageSize      : '2K',
             Wv__EditIteration__LastOutputPath : '',
             Wv__EditIteration__DateCreatedUtc : new Date().toISOString()
         };

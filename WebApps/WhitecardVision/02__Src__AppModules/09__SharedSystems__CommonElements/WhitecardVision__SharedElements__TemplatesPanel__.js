@@ -92,7 +92,7 @@
                 folderBranchEl.dataset.wvFolderName = (childEntry.name || '').toLowerCase();
 
                 const summaryEl              = document.createElement('summary');
-                summaryEl.textContent        = childEntry.name;
+                summaryEl.textContent        = Wv__SharedElements__TemplatesPanel__FormatFolderDisplayName(childEntry.name);
                 folderBranchEl.appendChild(summaryEl);
 
                 const childrenWrapperEl      = document.createElement('div');
@@ -105,6 +105,25 @@
                 parentContainerEl.appendChild(Wv__SharedElements__TemplatesPanel__BuildFileEntry(childEntry, onInsertFn));
             }
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build a single tree row for a markdown file
+    // ------------------------------------------------------------
+    function Wv__SharedElements__TemplatesPanel__FormatFolderDisplayName(rawFolderNameText) {
+        const pathSegmentList = String(rawFolderNameText || '').split('__').filter(Boolean);
+        const displaySegmentList = [];
+        for (const pathSegment of pathSegmentList) {
+            if (/^\d+$/.test(pathSegment)) continue;                                                                         //<-- Ordering prefixes are hidden from display.
+            const spacedSegment = pathSegment
+                .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+                .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+            if (spacedSegment.trim()) {
+                displaySegmentList.push(spacedSegment.trim());
+            }
+        }
+        return displaySegmentList.join(' - ') || String(rawFolderNameText || '');
     }
     // ------------------------------------------------------------
 

@@ -128,13 +128,19 @@
     async function Wv__RenderMode__OutputPanel__HandleSendToEditor() {
         const projectTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
         if (!projectTree) return;
-        const latestRenderPath = (projectTree.Wv__Project__RenderGroup || {}).Wv__Project__RenderGroup__LastOutputPath;
+        const renderGroupBlock = projectTree.Wv__Project__RenderGroup || {};
+        const latestRenderPath = renderGroupBlock.Wv__Project__RenderGroup__LastOutputPath;
         if (!latestRenderPath) { window.Wv__AppUtils__Toast.Wv__Toast__Show('No render to send.', 'warning'); return; }
 
         const newIterationEntry = window.Wv__AppData__ProjectSchemaValidator.Wv__ProjectSchemaValidator__BuildBlankEditIteration(
             (projectTree.Wv__Project__EditIterations || []).length
         );
         newIterationEntry.Wv__EditIteration__BaseImagePath = latestRenderPath;
+        const whitecardBlock = renderGroupBlock.Wv__Project__RenderGroup__Whitecard || {};
+        newIterationEntry.Wv__EditIteration__BaseWidthPx        = whitecardBlock.Wv__Whitecard__WidthPx || 0;
+        newIterationEntry.Wv__EditIteration__BaseHeightPx       = whitecardBlock.Wv__Whitecard__HeightPx || 0;
+        newIterationEntry.Wv__EditIteration__SnappedAspectRatio = whitecardBlock.Wv__Whitecard__SnappedAspectRatio || '';
+        newIterationEntry.Wv__EditIteration__SnappedDeltaPct    = whitecardBlock.Wv__Whitecard__SnappedDeltaPct || 0;
         projectTree.Wv__Project__EditIterations.push(newIterationEntry);
         projectTree.Wv__Project__ActiveEditIterationId = newIterationEntry.Wv__EditIteration__Id;
         window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();

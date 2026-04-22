@@ -48,14 +48,17 @@
     }
     .Wv__Edit__IterationList__Item {
         flex                             : 0 0 auto;
-        padding                          : 6px 10px;
+        display                          : flex;
+        align-items                      : center;
+        gap                              : 8px;
+        padding                          : 6px 10px 6px 6px;
         border                           : 1px solid var(--Wv__Color__Border);
         border-radius                    : var(--Wv__Radius__Sm);
         cursor                           : pointer;
         background                       : var(--Wv__Color__BgElevated);
         font-size                        : 12.5px;
-        min-width                        : 110px;
-        max-width                        : 200px;
+        min-width                        : 140px;
+        max-width                        : 220px;
     }
     .Wv__Edit__IterationList__Item:hover {
         border-color                     : var(--Wv__Color__BorderStrong);
@@ -64,12 +67,46 @@
         border-color                     : var(--Wv__Color__Accent);
         background                       : var(--Wv__Color__BgRaised);
     }
+
+    .Wv__Edit__IterationList__Item__Thumb {
+        width                            : 48px;
+        height                           : 48px;
+        border-radius                    : 3px;
+        overflow                         : hidden;
+        background                       : var(--Wv__Color__BgPage);
+        border                           : 1px solid var(--Wv__Color__Border);
+        display                          : flex;
+        align-items                      : center;
+        justify-content                  : center;
+        flex-shrink                      : 0;
+    }
+    .Wv__Edit__IterationList__Item__Body {
+        display                          : flex;
+        flex-direction                   : column;
+        justify-content                  : center;
+        min-width                        : 0;
+        flex                             : 1 1 auto;
+    }
+    .Wv__Edit__IterationList__Item__Thumb img {
+        width                            : 100%;
+        height                           : 100%;
+        object-fit                       : cover;
+        display                          : block;
+    }
+    .Wv__Edit__IterationList__Item__Thumb__Empty {
+        font-size                        : 18px;
+        line-height                      : 1;
+        color                            : var(--Wv__Color__TextMuted);
+        opacity                          : 0.4;
+    }
+
     .Wv__Edit__IterationList__Item__Title {
         font-weight                      : 600;
         color                            : var(--Wv__Color__TextPrimary);
         white-space                      : nowrap;
         overflow                         : hidden;
         text-overflow                    : ellipsis;
+        line-height                      : 1.3;
     }
     .Wv__Edit__IterationList__Item__Meta {
         font-size                        : 10px;
@@ -78,6 +115,7 @@
         white-space                      : nowrap;
         overflow                         : hidden;
         text-overflow                    : ellipsis;
+        line-height                      : 1.2;
     }
 
     .Wv__Edit__IterationList__Controls {
@@ -86,6 +124,21 @@
         flex-wrap                        : wrap;
         flex                             : 0 0 auto;
         margin-left                      : auto;
+    }
+
+    .Wv__Edit__IterationList__Item__RenameInput {
+        width                            : 100%;
+        min-width                        : 0;
+        background                       : var(--Wv__Color__BgElevated);
+        border                           : 1px solid var(--Wv__Color__Accent);
+        border-radius                    : var(--Wv__Radius__Sm);
+        color                            : var(--Wv__Color__TextPrimary);
+        font-size                        : 12.5px;
+        font-weight                      : 600;
+        font-family                      : inherit;
+        padding                          : 1px 4px;
+        outline                          : none;
+        box-sizing                       : border-box;
     }
 
 /* endregion ----------------------------------------------------------------- */
@@ -141,7 +194,7 @@
 
     .Wv__Edit__BaseSlot {
         display                          : grid;
-        grid-template-columns            : 240px 1fr;
+        grid-template-columns            : 320px 1fr;
         gap                              : var(--Wv__Space__Md);
         align-items                      : start;
     }

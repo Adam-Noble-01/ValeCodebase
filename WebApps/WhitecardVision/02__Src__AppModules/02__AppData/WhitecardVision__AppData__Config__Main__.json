@@ -32,6 +32,9 @@
         "Wv__AppConfig__PromptConstructor__TokenImageLabel"        : "{{Wv__ImageLabel}}",
         "Wv__AppConfig__PromptConstructor__MaxReferenceImages"     : 10,
         "Wv__AppConfig__PromptConstructor__TemplatesRootRelPath"   : "10__Local__PromptTemplates",
+        "Wv__AppConfig__PromptConstructor__HiddenTemplatePaths"    : [
+            "01__FrontLoadedPrompts__CoreStandards"
+        ],
 
         "Wv__AppConfig__PromptConstructor__FrontLoader__Whitecard" : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/01__FrontLoad__CoreStandard__Whitecard__StructuralControlPrompt__.md",
         "Wv__AppConfig__PromptConstructor__FrontLoader__Material"  : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/02__FrontLoad__CoreStandard__MaterialReference__ReferenceControlPrompt__.md",

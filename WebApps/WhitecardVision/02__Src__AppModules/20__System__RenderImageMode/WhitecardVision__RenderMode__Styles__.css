@@ -270,7 +270,7 @@
     }
     .Wv__Render__Output__Canvas img {
         max-width                        : 100%;
-        max-height                       : 640px;
+        max-height                       : 800px;
         object-fit                       : contain;
     }
     .Wv__Render__Output__Controls {

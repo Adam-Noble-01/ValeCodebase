@@ -6,11 +6,12 @@
         "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
         "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
         "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T13:46:30.427267+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-22T15:53:25.108134+00:00"
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-22T16:29:16.216789+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {
             "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__08-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "",
             "Wv__Whitecard__Prompt": "The Interior of an Orangery, but its the home of a sad depressed clown family. It should be the empty space but decorative in crazy clown colours and be silly and goofy looking, whilst echoing utter despair and clown misery.",
             "Wv__Whitecard__WidthPx": 6000,
             "Wv__Whitecard__HeightPx": 4000,
@@ -23,35 +24,51 @@
                 "Wv__Reference__Type": "material",
                 "Wv__Reference__Label": "Walls",
                 "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/02__ImageInput__MaterialsReference/01__Material__Test.jpg",
+                "Wv__Reference__ThumbPath": "",
                 "Wv__Reference__Prompt": "Match the Style of walls shown in this reference, painted diamond shapes in depressed faded clown colors."
             }
         ],
         "Wv__Project__RenderGroup__StyleReferences": [],
         "Wv__Project__RenderGroup__AvoidNotes": "Adding People, Happiness, Cheer, Joy",
         "Wv__Project__RenderGroup__ImageSize": "4K",
-        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png"
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": ""
     },
     "Wv__Project__EditIterations": [
         {
             "Wv__EditIteration__Id": "202604221428221Z",
-            "Wv__EditIteration__Label": "Iter 1",
+            "Wv__EditIteration__Label": "WithClown",
+            "Wv__EditIteration__Version": "Version-01",
             "Wv__EditIteration__BaseImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png",
+            "Wv__EditIteration__BaseImageThumbPath": "",
+            "Wv__EditIteration__BaseWidthPx": 0,
+            "Wv__EditIteration__BaseHeightPx": 0,
+            "Wv__EditIteration__SnappedAspectRatio": "",
+            "Wv__EditIteration__SnappedDeltaPct": 0,
             "Wv__EditIteration__TargetPrompt": "Add a depressed middle age clown guy to looking out of the left window pensively holding onto a deflated balloon. He should be facing looking out towards the garden lamenting on how difficult his life as been since losing his job at the circus. He it looking out into the distance.",
             "Wv__EditIteration__PreservePrompt": "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
             "Wv__EditIteration__AvoidNotes": "",
             "Wv__EditIteration__ImageSize": "4K",
             "Wv__EditIteration__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/30__FinalExport__EditMode/202604221428221Z/20260422T143311Z__edit__.png",
+            "Wv__EditIteration__LastOutputThumbPath": "",
             "Wv__EditIteration__DateCreatedUtc": "2026-04-22T14:28:22.146Z"
         },
         {
             "Wv__EditIteration__Id": "202604221549077Z",
-            "Wv__EditIteration__Label": "Iter 1 (copy)",
+            "Wv__EditIteration__Label": "With Guy",
+            "Wv__EditIteration__Version": "Version-02",
             "Wv__EditIteration__BaseImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png",
+            "Wv__EditIteration__BaseImageThumbPath": "",
+            "Wv__EditIteration__BaseWidthPx": 0,
+            "Wv__EditIteration__BaseHeightPx": 0,
+            "Wv__EditIteration__SnappedAspectRatio": "",
+            "Wv__EditIteration__SnappedDeltaPct": 0,
             "Wv__EditIteration__TargetPrompt": "Add a depressed middle guy dressed in a cheap suit looking like the devil is looking out of the left window pensively holding onto a deflated balloon. He should be facing looking out towards the garden lamenting on how difficult his life as been since losing his job in Hell. He it looking out into the distance.",
             "Wv__EditIteration__PreservePrompt": "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
             "Wv__EditIteration__AvoidNotes": "",
             "Wv__EditIteration__ImageSize": "4K",
             "Wv__EditIteration__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/30__FinalExport__EditMode/202604221549077Z/20260422T155237Z__edit__.png",
+            "Wv__EditIteration__LastOutputThumbPath": "",
             "Wv__EditIteration__DateCreatedUtc": "2026-04-22T15:49:07.754Z"
         }
     ],

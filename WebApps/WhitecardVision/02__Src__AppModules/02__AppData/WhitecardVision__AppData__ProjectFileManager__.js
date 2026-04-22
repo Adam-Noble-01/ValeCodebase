@@ -88,6 +88,28 @@
             rawJson, projectName, yearFolder
         );
         window.Wv__AppCore__StateManager.Wv__StateManager__SetActiveProject(normalisedTree);
+
+        if (Wv__ProjectFileManager__ProjectTreeNeedsThumbBackfill(normalisedTree)) {
+            Wv__ProjectFileManager__BackfillProjectThumbnails(yearFolder, projectName)
+                .then(async () => {
+                    const refreshedRawJson = await Wv__ProjectFileManager__FetchJson(
+                        '/api/projects/' + encodeURIComponent(yearFolder) + '/' + encodeURIComponent(projectName),
+                        { method: 'GET' }
+                    );
+                    const refreshedTree = window.Wv__AppData__ProjectSchemaValidator.Wv__ProjectSchemaValidator__Normalise(
+                        refreshedRawJson, projectName, yearFolder
+                    );
+                    const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+                    if (!activeTree) return;
+                    const activeMeta = activeTree.Wv__ProjectFile__Metadata || {};
+                    if ((activeMeta.Wv__ProjectFile__Metadata__ProjectCode || '') !== projectName) return;
+                    if ((activeMeta.Wv__ProjectFile__Metadata__YearFolder || '') !== yearFolder) return;
+                    window.Wv__AppCore__StateManager.Wv__StateManager__SetActiveProject(refreshedTree);
+                })
+                .catch((backfillError) => {
+                    console.warn('[ProjectFileManager] thumbnail backfill failed:', backfillError);
+                });
+        }
         return normalisedTree;
     }
     // ------------------------------------------------------------
@@ -223,6 +245,7 @@
             if (apiLogger) {
                 apiLogger.Wv__SharedElements__ApiLogger__LogReceived('POST ' + relativeEndpoint, {
                     imagePathRel        : responseData.imagePathRel,
+                    thumbPathRel        : responseData.thumbPathRel,
                     appliedAspectRatio  : responseData.appliedAspectRatio,
                     appliedImageSize    : responseData.appliedImageSize,
                     modelId             : responseData.modelId
@@ -250,6 +273,47 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Trigger server-side thumbnail backfill for one project
+    // ------------------------------------------------------------
+    async function Wv__ProjectFileManager__BackfillProjectThumbnails(yearFolder, projectName) {
+        return await Wv__ProjectFileManager__FetchJson(
+            '/api/projects/' + encodeURIComponent(yearFolder) + '/' + encodeURIComponent(projectName) + '/thumbnails/backfill',
+            { method: 'POST' }
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Detect whether a project tree has missing thumb fields
+    // ------------------------------------------------------------
+    function Wv__ProjectFileManager__ProjectTreeNeedsThumbBackfill(projectTree) {
+        if (!projectTree) return false;
+        const renderGroup = projectTree.Wv__Project__RenderGroup || {};
+        const whitecard = renderGroup.Wv__Project__RenderGroup__Whitecard || {};
+
+        if (whitecard.Wv__Whitecard__ImagePath && !whitecard.Wv__Whitecard__ImageThumbPath) return true;
+        if (renderGroup.Wv__Project__RenderGroup__LastOutputPath && !renderGroup.Wv__Project__RenderGroup__LastOutputThumbPath) return true;
+
+        const materialRefs = renderGroup.Wv__Project__RenderGroup__MaterialReferences || [];
+        for (const materialRef of materialRefs) {
+            if (materialRef.Wv__Reference__ImagePath && !materialRef.Wv__Reference__ThumbPath) return true;
+        }
+
+        const styleRefs = renderGroup.Wv__Project__RenderGroup__StyleReferences || [];
+        for (const styleRef of styleRefs) {
+            if (styleRef.Wv__Reference__ImagePath && !styleRef.Wv__Reference__ThumbPath) return true;
+        }
+
+        const iterations = projectTree.Wv__Project__EditIterations || [];
+        for (const iteration of iterations) {
+            if (iteration.Wv__EditIteration__BaseImagePath && !iteration.Wv__EditIteration__BaseImageThumbPath) return true;
+            if (iteration.Wv__EditIteration__LastOutputPath && !iteration.Wv__EditIteration__LastOutputThumbPath) return true;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -264,7 +328,8 @@
         Wv__ProjectFileManager__RenameActiveProject,
         Wv__ProjectFileManager__UploadImage,
         Wv__ProjectFileManager__Generate,
-        Wv__ProjectFileManager__CurrentYearFolder
+        Wv__ProjectFileManager__CurrentYearFolder,
+        Wv__ProjectFileManager__BackfillProjectThumbnails
     };
     // ------------------------------------------------------------
 

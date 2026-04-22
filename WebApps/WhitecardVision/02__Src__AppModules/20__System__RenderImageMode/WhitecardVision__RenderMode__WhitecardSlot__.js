@@ -87,6 +87,7 @@
 
         const whitecardBlock = projectTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__Whitecard;
         whitecardBlock.Wv__Whitecard__ImagePath           = uploadResult.imagePathRel;
+        whitecardBlock.Wv__Whitecard__ImageThumbPath      = uploadResult.thumbPathRel || '';
         whitecardBlock.Wv__Whitecard__WidthPx             = uploadResult.aspectRatio.widthPx;
         whitecardBlock.Wv__Whitecard__HeightPx            = uploadResult.aspectRatio.heightPx;
         whitecardBlock.Wv__Whitecard__SnappedAspectRatio  = uploadResult.aspectRatio.snappedAspectRatio;

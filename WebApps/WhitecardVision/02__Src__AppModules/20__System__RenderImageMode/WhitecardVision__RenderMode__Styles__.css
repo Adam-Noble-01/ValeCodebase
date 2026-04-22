@@ -107,6 +107,9 @@
         border-radius                    : var(--Wv__Radius__Md);
         padding                          : var(--Wv__Space__Lg);
     }
+    #Wv__Render__Section__Output {
+        margin-bottom                    : calc(2 * var(--Wv__Space__Lg));
+    }
 
     .Wv__Render__WhitecardSlot {
         display                          : grid;

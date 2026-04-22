@@ -77,6 +77,7 @@
 
             const generationResult       = await window.Wv__AppData__ProjectFileManager.Wv__ProjectFileManager__Generate(false, geminiRequestShell, '');
             projectTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__LastOutputPath = generationResult.imagePathRel;
+            projectTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__LastOutputThumbPath = generationResult.thumbPathRel || '';
             window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
 
             window.Wv__RenderMode__OutputPanel.Wv__RenderMode__OutputPanel__DisplayImage(generationResult.imagePathRel);

@@ -136,6 +136,7 @@
             (projectTree.Wv__Project__EditIterations || []).length
         );
         newIterationEntry.Wv__EditIteration__BaseImagePath = latestRenderPath;
+        newIterationEntry.Wv__EditIteration__BaseImageThumbPath = renderGroupBlock.Wv__Project__RenderGroup__LastOutputThumbPath || '';
         const whitecardBlock = renderGroupBlock.Wv__Project__RenderGroup__Whitecard || {};
         newIterationEntry.Wv__EditIteration__BaseWidthPx        = whitecardBlock.Wv__Whitecard__WidthPx || 0;
         newIterationEntry.Wv__EditIteration__BaseHeightPx       = whitecardBlock.Wv__Whitecard__HeightPx || 0;

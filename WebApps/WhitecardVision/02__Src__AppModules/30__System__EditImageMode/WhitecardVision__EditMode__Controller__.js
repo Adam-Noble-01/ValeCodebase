@@ -68,6 +68,7 @@
             const generationResult      = await window.Wv__AppData__ProjectFileManager.Wv__ProjectFileManager__Generate(true, geminiRequestShell, activeIteration.Wv__EditIteration__Id);
 
             activeIteration.Wv__EditIteration__LastOutputPath = generationResult.imagePathRel;
+            activeIteration.Wv__EditIteration__LastOutputThumbPath = generationResult.thumbPathRel || '';
             window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
             window.Wv__EditMode__OutputPanel.Wv__EditMode__OutputPanel__DisplayImage(generationResult.imagePathRel);
             statusLineElement.textContent = `Edit generated at ${generationResult.appliedAspectRatio || '-'}, ${generationResult.appliedImageSize || '-'} (${generationResult.modelId}).`;

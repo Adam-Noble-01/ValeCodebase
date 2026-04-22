@@ -36,6 +36,7 @@
             Wv__Project__RenderGroup: {
                 Wv__Project__RenderGroup__Whitecard: {
                     Wv__Whitecard__ImagePath            : '',
+                    Wv__Whitecard__ImageThumbPath       : '',
                     Wv__Whitecard__Prompt               : '',
                     Wv__Whitecard__WidthPx              : 0,
                     Wv__Whitecard__HeightPx             : 0,
@@ -46,7 +47,8 @@
                 Wv__Project__RenderGroup__StyleReferences    : [],
                 Wv__Project__RenderGroup__AvoidNotes         : '',
                 Wv__Project__RenderGroup__ImageSize          : '2K',
-                Wv__Project__RenderGroup__LastOutputPath     : ''
+                Wv__Project__RenderGroup__LastOutputPath     : '',
+                Wv__Project__RenderGroup__LastOutputThumbPath: ''
             },
             Wv__Project__EditIterations        : [],
             Wv__Project__ActiveEditIterationId : ''
@@ -71,13 +73,21 @@
             defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__Whitecard,
             sourceRenderGroup.Wv__Project__RenderGroup__Whitecard || {}
         );
+        defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__Whitecard.Wv__Whitecard__ImageThumbPath =
+            defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__Whitecard.Wv__Whitecard__ImageThumbPath || '';
         defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__MaterialReferences =
             Array.isArray(sourceRenderGroup.Wv__Project__RenderGroup__MaterialReferences)
-                ? sourceRenderGroup.Wv__Project__RenderGroup__MaterialReferences
+                ? sourceRenderGroup.Wv__Project__RenderGroup__MaterialReferences.map((refEntry) => Object.assign(
+                    Wv__ProjectSchemaValidator__BuildBlankReference(String((refEntry || {}).Wv__Reference__Type || 'material')),
+                    refEntry || {}
+                ))
                 : [];
         defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__StyleReferences =
             Array.isArray(sourceRenderGroup.Wv__Project__RenderGroup__StyleReferences)
-                ? sourceRenderGroup.Wv__Project__RenderGroup__StyleReferences
+                ? sourceRenderGroup.Wv__Project__RenderGroup__StyleReferences.map((refEntry) => Object.assign(
+                    Wv__ProjectSchemaValidator__BuildBlankReference(String((refEntry || {}).Wv__Reference__Type || 'style')),
+                    refEntry || {}
+                ))
                 : [];
         defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__AvoidNotes =
             sourceRenderGroup.Wv__Project__RenderGroup__AvoidNotes || '';
@@ -85,9 +95,15 @@
             sourceRenderGroup.Wv__Project__RenderGroup__ImageSize || '2K';
         defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__LastOutputPath =
             sourceRenderGroup.Wv__Project__RenderGroup__LastOutputPath || '';
+        defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__LastOutputThumbPath =
+            sourceRenderGroup.Wv__Project__RenderGroup__LastOutputThumbPath || '';
 
-        defaultTree.Wv__Project__EditIterations         =
-            Array.isArray(safeSource.Wv__Project__EditIterations) ? safeSource.Wv__Project__EditIterations : [];
+        defaultTree.Wv__Project__EditIterations         = Array.isArray(safeSource.Wv__Project__EditIterations)
+            ? safeSource.Wv__Project__EditIterations.map((iterationEntry, index) => Object.assign(
+                Wv__ProjectSchemaValidator__BuildBlankEditIteration(index),
+                iterationEntry || {}
+            ))
+            : [];
         defaultTree.Wv__Project__ActiveEditIterationId  =
             safeSource.Wv__Project__ActiveEditIterationId || '';
 
@@ -104,6 +120,7 @@
             Wv__Reference__Type         : referenceTypeToken,                                                                   //<-- "material" or "style".
             Wv__Reference__Label        : '',
             Wv__Reference__ImagePath    : '',
+            Wv__Reference__ThumbPath    : '',
             Wv__Reference__Prompt       : ''
         };
     }
@@ -120,12 +137,18 @@
             Wv__EditIteration__Label          : 'Iter ' + (index + 1),
             Wv__EditIteration__Version        : 'Version-' + versionNumber,
             Wv__EditIteration__BaseImagePath  : '',
+            Wv__EditIteration__BaseImageThumbPath : '',
+            Wv__EditIteration__BaseWidthPx    : 0,
+            Wv__EditIteration__BaseHeightPx   : 0,
+            Wv__EditIteration__SnappedAspectRatio : '',
+            Wv__EditIteration__SnappedDeltaPct : 0,
             Wv__EditIteration__TargetPrompt   : '',
             Wv__EditIteration__PreservePrompt :
                 'Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.',
             Wv__EditIteration__AvoidNotes     : '',
             Wv__EditIteration__ImageSize      : '2K',
             Wv__EditIteration__LastOutputPath : '',
+            Wv__EditIteration__LastOutputThumbPath : '',
             Wv__EditIteration__DateCreatedUtc : new Date().toISOString()
         };
     }

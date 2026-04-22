@@ -15,7 +15,7 @@
  - Role-scoped image upload endpoints (whitecard / material / style / edit).
  - Gemini generation proxy that reads the API key from .env and never leaks
    it to the browser. Flash-image models are hard-blocked per spec.
- - Stdlib-only (ThreadingHTTPServer); zero pip deps required.
+ - Optional vendored Pillow integration for lightweight thumbnail generation.
 
  RUNS ON: http://127.0.0.1:8004/WhitecardVision__App__.html
 =============================================================================
@@ -44,12 +44,18 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 APP_ROOT   = SCRIPT_DIR.parent
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
+sys.path.insert(0, str(APP_ROOT / "00__ThirdParty__VersionLockedDependencies" / "02__Python__ImageUtils__Dependecies"))
 
 from WhitecardVision__FlaskServer__EnvLoader__ import Wv__EnvLoader__ReadEnvFile
 from WhitecardVision__FlaskServer__AspectRatio__ import (
     Wv__AspectRatio__ResolveForFile,
     Wv__AspectRatio__SnapToSupported,
     WV__ASPECT_RATIO__SUPPORTED_ENUM,
+)
+from WhitecardVision__FlaskServer__Thumbnails__ import (
+    Wv__Thumbnails__DeriveThumbPath,
+    Wv__Thumbnails__GenerateForFile,
+    Wv__Thumbnails__IsAvailable,
 )
 
 sys.path.insert(0, str(APP_ROOT / "06__ExernalApiAndWorkers" / "02__GoogleApis"))
@@ -216,6 +222,7 @@ def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str
         "Wv__Project__RenderGroup": {
             "Wv__Project__RenderGroup__Whitecard"           : {
                 "Wv__Whitecard__ImagePath"                  : "",
+                "Wv__Whitecard__ImageThumbPath"             : "",
                 "Wv__Whitecard__Prompt"                     : "",
                 "Wv__Whitecard__WidthPx"                    : 0,
                 "Wv__Whitecard__HeightPx"                   : 0,
@@ -227,6 +234,7 @@ def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str
             "Wv__Project__RenderGroup__AvoidNotes"         : "",
             "Wv__Project__RenderGroup__ImageSize"          : "2K",
             "Wv__Project__RenderGroup__LastOutputPath"     : "",
+            "Wv__Project__RenderGroup__LastOutputThumbPath": "",
         },
         "Wv__Project__EditIterations"                       : [],
         "Wv__Project__ActiveEditIterationId"                : "",
@@ -332,6 +340,12 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Wv__Server__HandleImageUpload(year_folder, project_name, role_name, query_parameters)
             return
 
+        backfill_tokens = self.Wv__Server__ParseProjectThumbBackfillPath(url_path)
+        if backfill_tokens:
+            year_folder, project_name = backfill_tokens
+            self.Wv__Server__HandleThumbBackfill(year_folder, project_name)
+            return
+
         if url_path == "/api/generate/render":
             self.Wv__Server__HandleGenerateRender()
             return
@@ -403,6 +417,15 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
         if not match_obj:
             return None
         return match_obj.group("year"), match_obj.group("name"), match_obj.group("role")
+
+    def Wv__Server__ParseProjectThumbBackfillPath(self, url_path: str) -> tuple[str, str] | None:
+        match_obj = re.match(
+            r'^/api/projects/(?P<year>Projects__\d{4})/(?P<name>[A-Za-z0-9][A-Za-z0-9_\-]{0,63})/thumbnails/backfill$',
+            url_path,
+        )
+        if not match_obj:
+            return None
+        return match_obj.group("year"), match_obj.group("name")
     # ------------------------------------------------------------
 
 
@@ -615,6 +638,159 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
 
 
 # -----------------------------------------------------------------------------
+# REGION | Handler - Thumbnail Backfill
+# -----------------------------------------------------------------------------
+
+
+    # SUB FUNCTION | Generate missing thumbs and update JSON thumb fields
+    # ------------------------------------------------------------
+    def Wv__Server__HandleThumbBackfill(self, year_folder_name: str, project_name: str) -> None:
+        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        if not project_dir.is_dir():
+            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
+            return
+
+        generated_count = self.Wv__Server__GenerateMissingProjectThumbFiles(project_dir)
+        updated_fields_count = self.Wv__Server__BackfillProjectJsonThumbPaths(project_dir, project_name)
+
+        self.Wv__Server__WriteJsonResponse(200, {
+            "ok": True,
+            "data": {
+                "thumbsGenerated": generated_count,
+                "jsonFieldsUpdated": updated_fields_count,
+                "pilAvailable": Wv__Thumbnails__IsAvailable(),
+            }
+        })
+    # ------------------------------------------------------------
+
+
+    # HELPER FUNCTION | Create thumb files for all project images if missing
+    # ------------------------------------------------------------
+    def Wv__Server__GenerateMissingProjectThumbFiles(self, project_dir: Path) -> int:
+        if not Wv__Thumbnails__IsAvailable():
+            return 0
+
+        image_roots = (
+            "01__ImageInput__WhitecardImage",
+            "02__ImageInput__MaterialsReference",
+            "03__ImageInput__StyleReference",
+            "10__ImageInput__EditModeImages",
+            "20__FinalExport__RenderMode",
+            "30__FinalExport__EditMode",
+        )
+        generated_count = 0
+        for root_name in image_roots:
+            root_path = project_dir / root_name
+            if not root_path.is_dir():
+                continue
+            for file_path in root_path.rglob("*"):
+                if not file_path.is_file():
+                    continue
+                if file_path.suffix.lower() not in (".png", ".jpg", ".jpeg"):
+                    continue
+                if file_path.name.endswith("__thumb240.jpg"):
+                    continue
+                thumb_path = Wv__Thumbnails__DeriveThumbPath(file_path)
+                if thumb_path.is_file():
+                    continue
+                if Wv__Thumbnails__GenerateForFile(file_path):
+                    generated_count += 1
+        return generated_count
+    # ------------------------------------------------------------
+
+
+    # HELPER FUNCTION | Ensure one relative image path has a valid thumb path
+    # ------------------------------------------------------------
+    def Wv__Server__EnsureThumbForRelativeImage(self, image_rel_path: str) -> str:
+        image_rel_path = str(image_rel_path or "").strip()
+        if not image_rel_path:
+            return ""
+        try:
+            Wv__Server__AssertSafeRelativePath(image_rel_path)
+        except ValueError:
+            return ""
+
+        source_file_path = (WV__SERVER__APP_ROOT_PATH / image_rel_path).resolve()
+        try:
+            source_file_path.relative_to(WV__SERVER__APP_ROOT_PATH)
+        except ValueError:
+            return ""
+        if not source_file_path.is_file():
+            return ""
+
+        thumb_path = Wv__Thumbnails__DeriveThumbPath(source_file_path)
+        if not thumb_path.is_file():
+            generated_thumb_path = Wv__Thumbnails__GenerateForFile(source_file_path)
+            if generated_thumb_path:
+                thumb_path = generated_thumb_path
+        if not thumb_path.is_file():
+            return ""
+        return thumb_path.relative_to(WV__SERVER__APP_ROOT_PATH).as_posix()
+    # ------------------------------------------------------------
+
+
+    # HELPER FUNCTION | Populate missing thumb fields in project JSON
+    # ------------------------------------------------------------
+    def Wv__Server__BackfillProjectJsonThumbPaths(self, project_dir: Path, project_name: str) -> int:
+        json_path = project_dir / f"{project_name}__WcVisData__.json"
+        if not json_path.is_file():
+            return 0
+
+        try:
+            project_json = json.loads(json_path.read_text(encoding="utf-8") or "{}")
+        except Exception:
+            return 0
+
+        updated_fields = 0
+        render_group = project_json.get("Wv__Project__RenderGroup", {}) or {}
+        whitecard_block = render_group.get("Wv__Project__RenderGroup__Whitecard", {}) or {}
+
+        whitecard_thumb = self.Wv__Server__EnsureThumbForRelativeImage(whitecard_block.get("Wv__Whitecard__ImagePath", ""))
+        if whitecard_thumb and not whitecard_block.get("Wv__Whitecard__ImageThumbPath"):
+            whitecard_block["Wv__Whitecard__ImageThumbPath"] = whitecard_thumb
+            updated_fields += 1
+
+        render_thumb = self.Wv__Server__EnsureThumbForRelativeImage(render_group.get("Wv__Project__RenderGroup__LastOutputPath", ""))
+        if render_thumb and not render_group.get("Wv__Project__RenderGroup__LastOutputThumbPath"):
+            render_group["Wv__Project__RenderGroup__LastOutputThumbPath"] = render_thumb
+            updated_fields += 1
+
+        for list_key in ("Wv__Project__RenderGroup__MaterialReferences", "Wv__Project__RenderGroup__StyleReferences"):
+            refs_array = render_group.get(list_key, []) or []
+            for ref_entry in refs_array:
+                ref_thumb = self.Wv__Server__EnsureThumbForRelativeImage(ref_entry.get("Wv__Reference__ImagePath", ""))
+                if ref_thumb and not ref_entry.get("Wv__Reference__ThumbPath"):
+                    ref_entry["Wv__Reference__ThumbPath"] = ref_thumb
+                    updated_fields += 1
+
+        project_json["Wv__Project__RenderGroup"] = render_group
+        render_group["Wv__Project__RenderGroup__Whitecard"] = whitecard_block
+
+        edit_iterations = project_json.get("Wv__Project__EditIterations", []) or []
+        for iteration_entry in edit_iterations:
+            base_thumb = self.Wv__Server__EnsureThumbForRelativeImage(iteration_entry.get("Wv__EditIteration__BaseImagePath", ""))
+            if base_thumb and not iteration_entry.get("Wv__EditIteration__BaseImageThumbPath"):
+                iteration_entry["Wv__EditIteration__BaseImageThumbPath"] = base_thumb
+                updated_fields += 1
+
+            output_thumb = self.Wv__Server__EnsureThumbForRelativeImage(iteration_entry.get("Wv__EditIteration__LastOutputPath", ""))
+            if output_thumb and not iteration_entry.get("Wv__EditIteration__LastOutputThumbPath"):
+                iteration_entry["Wv__EditIteration__LastOutputThumbPath"] = output_thumb
+                updated_fields += 1
+
+        if updated_fields > 0:
+            try:
+                json_path.write_text(json.dumps(project_json, indent=4, ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                return 0
+
+        return updated_fields
+    # ------------------------------------------------------------
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
 # REGION | Handler - Image Upload
 # -----------------------------------------------------------------------------
 
@@ -679,6 +855,11 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
 
         target_file.parent.mkdir(parents=True, exist_ok=True)
         target_file.write_bytes(image_bytes)
+        thumb_file_path = Wv__Thumbnails__GenerateForFile(target_file)
+        relative_thumb_path = (
+            thumb_file_path.relative_to(WV__SERVER__APP_ROOT_PATH).as_posix()
+            if thumb_file_path else ""
+        )
 
         try:
             aspect_ratio_info = Wv__AspectRatio__ResolveForFile(target_file)
@@ -692,6 +873,7 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             "ok": True,
             "data": {
                 "imagePathRel": relative_image_path,
+                "thumbPathRel": relative_thumb_path,
                 "aspectRatio" : aspect_ratio_info,
             }
         })
@@ -885,6 +1067,11 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
 
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file.write_bytes(image_bytes)
+        thumb_file_path = Wv__Thumbnails__GenerateForFile(output_file)
+        relative_thumb_path = (
+            thumb_file_path.relative_to(WV__SERVER__APP_ROOT_PATH).as_posix()
+            if thumb_file_path else ""
+        )
 
         relative_output_path = output_file.relative_to(WV__SERVER__APP_ROOT_PATH).as_posix()
         print(f"[GEN] {'edit' if is_edit_mode else 'render'} -> {relative_output_path}")
@@ -892,6 +1079,7 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             "ok": True,
             "data": {
                 "imagePathRel"         : relative_output_path,
+                "thumbPathRel"         : relative_thumb_path,
                 "mimeType"             : mime_type,
                 "iterationId"          : iteration_id if is_edit_mode else "",
                 "appliedAspectRatio"   : requested_aspect,
@@ -1079,6 +1267,7 @@ def main() -> int:
     print(f" LAN URL          : {app_url_lan}")
     print(f" Gemini API Key   : {'LOADED' if gemini_key_present else 'MISSING (generation will fail)'}")
     print(f" Model ID         : {env_values_on_boot.get('GEMINI_MODEL_ID', 'gemini-3-pro-image-preview')}")
+    print(f" Thumb Generator  : {'PIL AVAILABLE' if Wv__Thumbnails__IsAvailable() else 'DISABLED (Pillow missing)'}")
     print(" Restart flags    : --r | --R | --restart | --Restart")
     print("=============================================================================")
 

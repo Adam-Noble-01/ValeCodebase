@@ -57,6 +57,7 @@
         });
 
         activeIteration.Wv__EditIteration__BaseImagePath        = uploadResult.imagePathRel;
+        activeIteration.Wv__EditIteration__BaseImageThumbPath   = uploadResult.thumbPathRel || '';
         activeIteration.Wv__EditIteration__BaseWidthPx          = uploadResult.aspectRatio.widthPx;
         activeIteration.Wv__EditIteration__BaseHeightPx         = uploadResult.aspectRatio.heightPx;
         activeIteration.Wv__EditIteration__SnappedAspectRatio   = uploadResult.aspectRatio.snappedAspectRatio;
@@ -105,6 +106,7 @@
         const whitecardBlock  = renderGroupBlock.Wv__Project__RenderGroup__Whitecard || {};
 
         activeIteration.Wv__EditIteration__BaseImagePath        = renderPathValue;
+        activeIteration.Wv__EditIteration__BaseImageThumbPath   = renderGroupBlock.Wv__Project__RenderGroup__LastOutputThumbPath || '';
         activeIteration.Wv__EditIteration__BaseWidthPx          = whitecardBlock.Wv__Whitecard__WidthPx || 0;
         activeIteration.Wv__EditIteration__BaseHeightPx         = whitecardBlock.Wv__Whitecard__HeightPx || 0;
         activeIteration.Wv__EditIteration__SnappedAspectRatio   = whitecardBlock.Wv__Whitecard__SnappedAspectRatio || '';

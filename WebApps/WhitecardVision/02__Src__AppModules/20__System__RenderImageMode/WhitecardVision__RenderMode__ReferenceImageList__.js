@@ -111,8 +111,9 @@
 
         const thumbElement      = document.createElement('div');
         thumbElement.className  = 'Wv__Render__RefTile__Thumb';
-        thumbElement.innerHTML  = refEntry.Wv__Reference__ImagePath
-            ? `<img src="/${refEntry.Wv__Reference__ImagePath}?_t=${Date.now()}" />`
+        const thumbPathValue    = refEntry.Wv__Reference__ThumbPath || refEntry.Wv__Reference__ImagePath || '';
+        thumbElement.innerHTML  = thumbPathValue
+            ? `<img src="/${thumbPathValue}?_t=${Date.now()}" />`
             : Wv__RenderMode__ReferenceImageList__UploadCueHtml(referenceTypeToken);
 
         const Wv__RefTile__TriggerPicker = async () => {
@@ -230,6 +231,7 @@
             slotIndex  : tileIndex + 1
         });
         refEntry.Wv__Reference__ImagePath = uploadResult.imagePathRel;
+        refEntry.Wv__Reference__ThumbPath = uploadResult.thumbPathRel || '';
         refEntry.Wv__Reference__Label     = derivedLabel;
         window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
         Wv__RenderMode__ReferenceImageList__RerenderBothLists(window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject());

@@ -1,19 +1,26 @@
 /* =============================================================================
  WHITECARDVISION - PROMPT CONSTRUCTOR - BUILD IMAGE LIST
 =============================================================================
- PURPOSE : Produce the ordered image descriptor list used by
-           BuildStructuredPrompt and BuildFinalPayload.
+ FILE       : PromptConstructor__BuildImageList__.js
+ NAMESPACE  : Wv
+ MODULE     : PromptConstructor - BuildImageList
+ PURPOSE    : Produce the ordered image descriptor list used by
+              BuildStructuredPrompt and BuildFinalPayload.
 
  CRITICAL: Whitecard MUST be index 0. Materials follow, then Styles. Index
            is 1-based in the prompt text (the model reads positional text).
 ============================================================================= */
 
+// =============================================================================
+// REGION | PromptConstructor Build Image List Module
+// =============================================================================
+
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Assemble Render-mode descriptors (Whitecard + refs) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Assemble Render-mode descriptors (Whitecard + refs)
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildImageList__Render(projectTreeObject) {
         const renderGroup        = projectTreeObject.Wv__Project__RenderGroup || {};
         const whitecardBlock     = renderGroup.Wv__Project__RenderGroup__Whitecard || {};
@@ -54,11 +61,11 @@
         }
         return imageDescriptorList;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Assemble Edit-mode descriptors (base image only; no refs by default) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Assemble Edit-mode descriptors (base image only; no refs by default)
+    // ------------------------------------------------------------
     function Wv__PromptConstructor__BuildImageList__Edit(editIterationObject) {
         const descriptorList = [];
         if (editIterationObject.Wv__EditIteration__BaseImagePath) {
@@ -71,12 +78,17 @@
         }
         return descriptorList;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__PromptConstructor__BuildImageList = {
         Wv__PromptConstructor__BuildImageList__Render,
         Wv__PromptConstructor__BuildImageList__Edit
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

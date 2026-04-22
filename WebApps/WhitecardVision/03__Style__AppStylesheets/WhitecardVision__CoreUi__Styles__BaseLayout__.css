@@ -1,42 +1,134 @@
-/*
-=============================================================================
- WHITECARDVISION - BASE LAYOUT
-=============================================================================
-*/
-*, *::before, *::after { box-sizing: border-box; }
+/* =============================================================================
+   WHITECARDVISION - CORE UI - BASE LAYOUT
+   =============================================================================
 
-html, body {
-    height        : 100%;
-    margin        : 0;
-    padding       : 0;
-    background    : var(--Wv__Color__Bg);
-    color         : var(--Wv__Color__TextPrimary);
-    font-family   : var(--Wv__Font__Sans);
-    font-size     : 14px;
-    line-height   : 1.45;
-    -webkit-font-smoothing : antialiased;
-}
+   FILE       : WhitecardVision__CoreUi__Styles__BaseLayout__.css
+   NAMESPACE  : Wv
+   MODULE     : Core UI - Base layout, reset, scrollbars, links
+   PURPOSE    : Global box model, app shell grid, main as flex column, sticky
+                footer, scroll area, link colours
 
-.Wv__App__Body {
-    min-height       : 100vh;
-    display          : grid;
-    grid-template-rows: var(--Wv__Layout__HeaderHeight) var(--Wv__Layout__NavHeight) 1fr;
-}
+   ============================================================================= */
 
-.Wv__App__Main {
-    overflow-y        : auto;
-    padding           : var(--Wv__Space__Lg);
-    max-width         : var(--Wv__Layout__MaxContentWidth);
-    width             : 100%;
-    margin            : 0 auto;
-}
+/* ----------------------------------------------------------------- */
+/* REGION | Box Model Reset + Document Root                        */
+/* ----------------------------------------------------------------- */
 
-.Wv__App__ModePanel[hidden] { display: none !important; }
+    /* Section Name: universal box-sizing */
+    *, *::before, *::after {
+        box-sizing                       : border-box;
+    }
 
-a { color: var(--Wv__Color__Accent); text-decoration: none; }
-a:hover { color: var(--Wv__Color__AccentHover); }
+    /* Section Name: page shell */
+    html, body {
+        height                           : 100%;
+        margin                           : 0;
+        padding                          : 0;
+        background                       : var(--Wv__Color__Bg);
+        color                            : var(--Wv__Color__TextPrimary);
+        font-family                      : var(--Wv__Font__Sans);
+        font-size                        : 14px;
+        line-height                      : 1.45;
+        -webkit-font-smoothing           : antialiased;
+    }
 
-::-webkit-scrollbar              { width: 10px; height: 10px; }
-::-webkit-scrollbar-track        { background: var(--Wv__Color__BgElevated); }
-::-webkit-scrollbar-thumb        { background: var(--Wv__Color__BorderStrong); border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover  { background: var(--Wv__Color__Accent); }
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | App Shell - Grid + Main Column                         */
+/* ----------------------------------------------------------------- */
+
+    /* Section Name: two-row grid (header with inline nav, content) */
+    .Wv__App__Body {
+        min-height                       : 100vh;
+        display                          : grid;
+        grid-template-rows               : var(--Wv__Layout__HeaderHeight) 1fr;
+    }
+
+    /* Section Name: scrollable main — flex column so footer can stick to
+       the bottom of the viewport when page content is short (margin-top: auto) */
+    .Wv__App__Main {
+        display                          : flex;
+        flex-direction                   : column;
+        min-height                       : 0;
+        overflow-y                       : auto;
+        padding                          : var(--Wv__Space__Lg);
+        max-width                        : var(--Wv__Layout__MaxContentWidth);
+        width                            : 100%;
+        margin                           : 0 auto;
+    }
+
+    /* Section Name: hidden mode panels */
+    .Wv__App__ModePanel[hidden] {
+        display                          : none !important;
+    }
+
+    /* Section Name: app footer (below mode content, inside main) */
+    .Wv__App__Footer {
+        margin-top                       : auto;
+        flex-shrink                      : 0;
+        padding                          : calc(2 * var(--Wv__Space__Xl)) 0 var(--Wv__Space__Md) 0;
+    }
+
+    .Wv__App__Footer__Rule {
+        margin                           : 0 0 var(--Wv__Space__Sm) 0;
+        border                           : none;
+        border-top                       : 1px solid var(--Wv__Color__Border);
+    }
+
+    .Wv__App__Footer__Line {
+        margin                           : 0;
+        text-align                       : center;
+        font-size                        : 11px;
+        line-height                      : 1.4;
+        color                            : var(--Wv__Color__TextMuted);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Links and Scrollbars                                   */
+/* ----------------------------------------------------------------- */
+
+    a {
+        color                            : var(--Wv__Color__Accent);
+        text-decoration                  : none;
+    }
+    a:hover {
+        color                            : var(--Wv__Color__AccentHover);
+    }
+
+    /* Slim scrollbar — invisible at rest, JS stamps .Wv--IsScrolling to reveal */
+    ::-webkit-scrollbar {
+        width                            : 4px;
+        height                           : 4px;
+    }
+    ::-webkit-scrollbar-track {
+        background                       : transparent;
+    }
+
+    /* At rest: fade OUT slowly after the scroll class is removed */
+    ::-webkit-scrollbar-thumb {
+        background                       : transparent;
+        border-radius                    : 4px;
+        transition                       : background 550ms ease;
+    }
+
+    /* Active: fade IN quickly when the scroll class is added */
+    .Wv--IsScrolling::-webkit-scrollbar-thumb {
+        background                       : var(--Wv__Color__BorderStrong);
+        transition                       : background 100ms ease;
+    }
+
+    /* Standard scrollbar for Firefox (no transition support, best effort) */
+    * {
+        scrollbar-width                  : thin;
+        scrollbar-color                  : transparent transparent;
+    }
+    .Wv--IsScrolling {
+        scrollbar-color                  : var(--Wv__Color__BorderStrong) transparent;
+    }
+
+/* endregion ----------------------------------------------------------------- */

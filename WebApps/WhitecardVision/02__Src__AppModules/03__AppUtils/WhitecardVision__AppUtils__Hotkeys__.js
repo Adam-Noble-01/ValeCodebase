@@ -1,6 +1,15 @@
 /* =============================================================================
  WHITECARDVISION - HOTKEY HANDLER
+=============================================================================
+ FILE       : WhitecardVision__AppUtils__Hotkeys__.js
+ NAMESPACE  : Wv
+ MODULE     : AppUtils - Hotkeys
+ PURPOSE    : Global keydown registry for app-wide keyboard shortcuts.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Hotkeys Module
+// =============================================================================
 
 (function () {
     'use strict';
@@ -8,8 +17,8 @@
     const Wv__Hotkeys__Registry = [];
 
 
-    /* FUNCTION | Register a hotkey combo + handler */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Register a hotkey combo + handler
+    // ------------------------------------------------------------
     function Wv__Hotkeys__Register(comboString, handlerFunction, hotkeyDescription) {                                            //<-- combo eg "Ctrl+S", "Ctrl+Shift+E"
         Wv__Hotkeys__Registry.push({
             combo       : comboString.toLowerCase(),
@@ -17,11 +26,11 @@
             description : hotkeyDescription || ''
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Normalise a KeyboardEvent to "ctrl+shift+k" */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Normalise a KeyboardEvent to "ctrl+shift+k"
+    // ------------------------------------------------------------
     function Wv__Hotkeys__ComboFromEvent(keyboardEvent) {
         const tokens = [];
         if (keyboardEvent.ctrlKey  || keyboardEvent.metaKey) tokens.push('ctrl');
@@ -31,11 +40,11 @@
         if (keyToken && !['control','shift','alt','meta'].includes(keyToken)) tokens.push(keyToken);
         return tokens.join('+');
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Install the global keydown listener once */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Install the global keydown listener once
+    // ------------------------------------------------------------
     function Wv__Hotkeys__Install() {
         document.addEventListener('keydown', (keyboardEvent) => {
             const comboToken = Wv__Hotkeys__ComboFromEvent(keyboardEvent);
@@ -50,12 +59,17 @@
             }
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__AppUtils__Hotkeys = {
         Wv__Hotkeys__Register,
         Wv__Hotkeys__Install
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

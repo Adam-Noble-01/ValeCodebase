@@ -1,17 +1,25 @@
 /* =============================================================================
  WHITECARDVISION - SHARED ELEMENT - COMPILED PROMPT EXPORTER
 =============================================================================
- Produce a Markdown dump of the EXACT Gemini request we would POST for the
- current Render / Edit state (images omitted - the markdown carries the
- inlineData mimeType / byte length only so the file stays reviewable).
+ FILE       : WhitecardVision__SharedElements__CompiledPromptExporter__.js
+ NAMESPACE  : Wv
+ MODULE     : SharedElements - CompiledPromptExporter
+ PURPOSE    : Produce a Markdown dump of the EXACT Gemini request we would POST
+              for the current Render / Edit state (images omitted - the markdown
+              carries the inlineData mimeType / byte length only so the file
+              stays reviewable).
 ============================================================================= */
+
+// =============================================================================
+// REGION | Compiled Prompt Exporter Module
+// =============================================================================
 
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Download compiled prompt for Render mode */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Download compiled prompt for Render mode
+    // ------------------------------------------------------------
     async function Wv__SharedElements__CompiledPromptExporter__DownloadRender(projectTree) {
         if (!projectTree) { throw new Error('No active project to export.'); }
         const geminiRequestShell = await window.Wv__PromptConstructor__BuildFinalPayload.Wv__PromptConstructor__BuildFinalPayload__Render(projectTree);
@@ -26,11 +34,11 @@
             markdownFileContent
         );
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Download compiled prompt for Edit mode */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Download compiled prompt for Edit mode
+    // ------------------------------------------------------------
     async function Wv__SharedElements__CompiledPromptExporter__DownloadEdit(iterationObject, projectTree) {
         if (!iterationObject) { throw new Error('No active iteration to export.'); }
         const geminiRequestShell = await window.Wv__PromptConstructor__BuildFinalPayload.Wv__PromptConstructor__BuildFinalPayload__Edit(iterationObject);
@@ -47,11 +55,11 @@
             markdownFileContent
         );
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Assemble the full markdown body */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Assemble the full markdown body
+    // ------------------------------------------------------------
     function Wv__SharedElements__CompiledPromptExporter__BuildMarkdown(buildParams) {
         const projectMeta        = (buildParams.projectTree || {}).Wv__ProjectFile__Metadata || {};
         const partsArray         = ((buildParams.geminiRequestShell || {}).contents || [{}])[0].parts || [];
@@ -123,10 +131,11 @@
 
         return lines.join('\n');
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Build a safe filename */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Build a safe filename
+    // ------------------------------------------------------------
     function Wv__SharedElements__CompiledPromptExporter__BuildFilename(projectTree, modeDescriptor) {
         const projectName = (((projectTree || {}).Wv__ProjectFile__Metadata || {}).Wv__ProjectFile__Metadata__ProjectName || 'NoProject')
             .replace(/[^A-Za-z0-9_\-]+/g, '-');
@@ -134,10 +143,11 @@
         const safeMode     = modeDescriptor.replace(/[^A-Za-z0-9_\-]+/g, '-');
         return `${projectName}__CompiledPrompt__${safeMode}__${timestampTok}.md`;
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Kick the browser download */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Kick the browser download
+    // ------------------------------------------------------------
     function Wv__SharedElements__CompiledPromptExporter__TriggerDownload(filenameValue, markdownBody) {
         const blob         = new Blob([markdownBody], { type: 'text/markdown;charset=utf-8' });
         const objectUrl    = URL.createObjectURL(blob);
@@ -151,11 +161,17 @@
             anchorElement.remove();
         }, 0);
     }
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__SharedElements__CompiledPromptExporter = {
         Wv__SharedElements__CompiledPromptExporter__DownloadRender,
         Wv__SharedElements__CompiledPromptExporter__DownloadEdit
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

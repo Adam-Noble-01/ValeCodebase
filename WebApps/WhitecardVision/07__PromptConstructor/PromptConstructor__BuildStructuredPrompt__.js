@@ -1,22 +1,29 @@
 /* =============================================================================
  WHITECARDVISION - PROMPT CONSTRUCTOR - BUILD STRUCTURED PROMPT
 =============================================================================
- PURPOSE : Synthesise the final text prompt using the strict spec ordering:
-   1. Whitecard frontloader
-   2. Brief image index (dynamic)
-   3. Main prompt body
-   4. Per-Material frontloader + user prompt (for each material ref)
-   5. Per-Style    frontloader + user prompt (for each style ref)
-   6. AVOID suffix (standard markdown)
-   7. Special avoid notes (user-supplied free text)
+ FILE       : PromptConstructor__BuildStructuredPrompt__.js
+ NAMESPACE  : Wv
+ MODULE     : PromptConstructor - BuildStructuredPrompt
+ PURPOSE    : Synthesise the final text prompt using the strict spec ordering:
+              1. Whitecard frontloader
+              2. Brief image index (dynamic)
+              3. Main prompt body
+              4. Per-Material frontloader + user prompt (for each material ref)
+              5. Per-Style    frontloader + user prompt (for each style ref)
+              6. AVOID suffix (standard markdown)
+              7. Special avoid notes (user-supplied free text)
 ============================================================================= */
+
+// =============================================================================
+// REGION | PromptConstructor Build Structured Prompt Module
+// =============================================================================
 
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Render-mode prompt text builder */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Render-mode prompt text builder
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildStructuredPrompt__Render(projectTreeObject, imageDescriptorList) {
         const renderGroup        = projectTreeObject.Wv__Project__RenderGroup || {};
         const whitecardBlock     = renderGroup.Wv__Project__RenderGroup__Whitecard || {};
@@ -69,11 +76,11 @@
 
         return sections.join('\n\n');
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Edit-mode prompt text builder (target + preserve) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Edit-mode prompt text builder (target + preserve)
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildStructuredPrompt__Edit(editIterationObject, imageDescriptorList) {
         const loader      = window.Wv__PromptConstructor__LoadMarkdown;
         const sections    = [];
@@ -101,11 +108,11 @@
         }
         return sections.join('\n\n');
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Produce the dynamic "IMAGE INDEX" block */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Produce the dynamic "IMAGE INDEX" block
+    // ------------------------------------------------------------
     function Wv__PromptConstructor__BuildStructuredPrompt__BuildImageIndex(imageDescriptorList) {
         const indexLines = ['--- IMAGE INDEX (positional ordering; index is 1-based) ---'];
         imageDescriptorList.forEach((imageDescriptor, descriptorIndex) => {
@@ -115,12 +122,17 @@
         if (imageDescriptorList.length === 0) indexLines.push('  (no images supplied)');
         return indexLines.join('\n');
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__PromptConstructor__BuildStructuredPrompt = {
         Wv__PromptConstructor__BuildStructuredPrompt__Render,
         Wv__PromptConstructor__BuildStructuredPrompt__Edit
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

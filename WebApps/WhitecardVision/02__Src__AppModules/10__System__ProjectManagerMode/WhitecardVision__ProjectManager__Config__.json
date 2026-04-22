@@ -1,0 +1,26 @@
+{
+    "Wv__ProjectManager__Config__Metadata": {
+        "Wv__ProjectManager__Config__Metadata__SystemId"   : "ProjectManager",
+        "Wv__ProjectManager__Config__Metadata__SchemaVer"  : "0.1.0"
+    },
+
+    "Wv__ProjectManager__Config__Defaults": {
+        "Wv__ProjectManager__Config__Defaults__NewProjectSlugPrefix"  : "Untitled",
+        "Wv__ProjectManager__Config__Defaults__NewProjectDisplayName" : "Untitled Project",
+        "Wv__ProjectManager__Config__Defaults__SortColumn"            : "dateModifiedUtc",
+        "Wv__ProjectManager__Config__Defaults__SortDirection"         : "desc",
+        "Wv__ProjectManager__Config__Defaults__AutoOpenOnSingleMatch" : false
+    },
+
+    "Wv__ProjectManager__Config__Columns": [
+        { "key": "projectName",     "label": "Project",       "sortable": true,  "primary": true  },
+        { "key": "yearFolder",      "label": "Year",          "sortable": true,  "primary": false },
+        { "key": "description",     "label": "Description",   "sortable": true,  "primary": false },
+        { "key": "dateModifiedUtc", "label": "Modified",      "sortable": true,  "primary": false },
+        { "key": "dateCreatedUtc",  "label": "Created",       "sortable": true,  "primary": false }
+    ],
+
+    "Wv__ProjectManager__Config__Confirmations": {
+        "Wv__ProjectManager__Config__Confirmations__DeleteRequiresConfirm" : true
+    }
+}

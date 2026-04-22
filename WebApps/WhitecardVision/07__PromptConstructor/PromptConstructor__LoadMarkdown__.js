@@ -12,6 +12,10 @@
               still available to the Templates Panel via __GetFrontMatter.
 ============================================================================= */
 
+// =============================================================================
+// REGION | PromptConstructor Load Markdown Module
+// =============================================================================
+
 (function () {
     'use strict';
 
@@ -19,8 +23,8 @@
     const Wv__PromptConstructor__LoadMarkdown__FrontMatterCache = new Map();                                                    //<-- relPath -> parsed metadata.
 
 
-    /* FUNCTION | Read a markdown file (returns BODY only, front-matter stripped) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Read a markdown file (returns BODY only, front-matter stripped)
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__LoadMarkdown__ReadTemplate(relativePathToTemplatesRoot) {
         if (Wv__PromptConstructor__LoadMarkdown__BodyCache.has(relativePathToTemplatesRoot)) {
             return Wv__PromptConstructor__LoadMarkdown__BodyCache.get(relativePathToTemplatesRoot);
@@ -39,11 +43,11 @@
         Wv__PromptConstructor__LoadMarkdown__FrontMatterCache.set(relativePathToTemplatesRoot, parsedResult.frontMatter);
         return parsedResult.body;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Split `--- key = value ---` sentinels from the body */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Split `--- key = value ---` sentinels from the body
+    // ------------------------------------------------------------
     function Wv__PromptConstructor__LoadMarkdown__ParseFrontMatter(rawMarkdown) {
         const normalisedInput = (rawMarkdown || '').replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');                              //<-- strip BOM + normalise line endings.
         const frontMatterPattern = /^---\s*\n([\s\S]*?)\n---\s*\n?/;
@@ -64,19 +68,19 @@
         });
         return { frontMatter: frontMatterDict, body: normalisedInput.slice(matchResult[0].length) };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Lookup cached front-matter for a given relPath (may be empty) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Lookup cached front-matter for a given relPath (may be empty)
+    // ------------------------------------------------------------
     function Wv__PromptConstructor__LoadMarkdown__GetFrontMatter(relativePathToTemplatesRoot) {
         return Wv__PromptConstructor__LoadMarkdown__FrontMatterCache.get(relativePathToTemplatesRoot) || {};
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Resolve a config-key path (e.g. "...FrontLoader__Whitecard") */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Resolve a config-key path (e.g. "...FrontLoader__Whitecard")
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__LoadMarkdown__ByConfigKey(fullConfigKey) {
         const appConfig              = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig();
         const promptConstructorBlock = appConfig.Wv__AppConfig__PromptConstructor || {};
@@ -90,11 +94,11 @@
             : fullRelativePath;
         return await Wv__PromptConstructor__LoadMarkdown__ReadTemplate(relativeToTemplatesRoot);
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Substitute {{Wv__ImageNumber}} / {{Wv__ImageLabel}} tokens */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Substitute {{Wv__ImageNumber}} / {{Wv__ImageLabel}} tokens
+    // ------------------------------------------------------------
     function Wv__PromptConstructor__LoadMarkdown__ReplaceTokens(templateString, tokenMap) {
         const appConfig              = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig();
         const promptConstructorBlock = appConfig.Wv__AppConfig__PromptConstructor || {};
@@ -110,9 +114,11 @@
         }
         return resultString;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__PromptConstructor__LoadMarkdown = {
         Wv__PromptConstructor__LoadMarkdown__ReadTemplate,
         Wv__PromptConstructor__LoadMarkdown__ByConfigKey,
@@ -120,5 +126,9 @@
         Wv__PromptConstructor__LoadMarkdown__ParseFrontMatter,
         Wv__PromptConstructor__LoadMarkdown__GetFrontMatter
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================
+

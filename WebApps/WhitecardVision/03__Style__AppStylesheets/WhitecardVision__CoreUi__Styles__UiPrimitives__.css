@@ -1,98 +1,158 @@
-/*
-=============================================================================
- WHITECARDVISION - UI PRIMITIVES (Button / Input / Label / Hint / H2)
-=============================================================================
-*/
-.Wv__Ui__H2 {
-    margin            : 0 0 var(--Wv__Space__Md) 0;
-    font-size         : 13px;
-    font-weight       : 600;
-    color             : var(--Wv__Color__TextPrimary);
-    text-transform    : uppercase;
-    letter-spacing    : 0.06em;
-    padding-bottom    : 6px;
-    border-bottom     : 1px solid var(--Wv__Color__Border);
-}
+/* =============================================================================
+   WHITECARDVISION - CORE UI - UI PRIMITIVES
+   =============================================================================
 
-.Wv__Ui__Label {
-    display           : flex;
-    flex-direction    : column;
-    font-size         : 11px;
-    font-weight       : 600;
-    color             : var(--Wv__Color__TextSecondary);
-    text-transform    : uppercase;
-    letter-spacing    : 0.06em;
-    gap               : 4px;
-}
-.Wv__Ui__Label--Grow { flex: 1; }
+   FILE       : WhitecardVision__CoreUi__Styles__UiPrimitives__.css
+   NAMESPACE  : Wv
+   MODULE     : Core UI - headings, labels, inputs, buttons, hints
+   PURPOSE    : Reusable form and control chrome used across Systems
 
-.Wv__Ui__Input,
-.Wv__Ui__Textarea {
-    width             : 100%;
-    padding           : 8px 10px;
-    background        : var(--Wv__Color__BgElevated);
-    border            : 1px solid var(--Wv__Color__Border);
-    border-radius     : var(--Wv__Radius__Sm);
-    color             : var(--Wv__Color__TextPrimary);
-    font-family       : var(--Wv__Font__Sans);
-    font-size         : 13px;
-    transition        : border-color 120ms ease, box-shadow 120ms ease;
-    text-transform    : none;
-    letter-spacing    : normal;
-    font-weight       : 400;
-}
+   ============================================================================= */
 
-.Wv__Ui__Input:focus,
-.Wv__Ui__Textarea:focus {
-    outline           : none;
-    border-color      : var(--Wv__Color__Accent);
-    box-shadow        : 0 0 0 2px rgba(79,140,255,0.25);
-}
+/* ----------------------------------------------------------------- */
+/* REGION | Section Heading and Labels                              */
+/* ----------------------------------------------------------------- */
 
-.Wv__Ui__Textarea {
-    min-height        : 92px;
-    resize            : vertical;
-    line-height       : 1.5;
-}
+    .Wv__Ui__H2 {
+        margin                           : 0 0 var(--Wv__Space__Md) 0;
+        font-size                        : 13px;
+        font-weight                      : 600;
+        color                            : var(--Wv__Color__TextPrimary);
+        text-transform                   : uppercase;
+        letter-spacing                   : 0.06em;
+        padding-bottom                   : 6px;
+        border-bottom                    : 1px solid var(--Wv__Color__Border);
+    }
 
-.Wv__Ui__Button {
-    display           : inline-flex;
-    align-items       : center;
-    justify-content   : center;
-    padding           : 7px 14px;
-    background        : var(--Wv__Color__BgRaised);
-    color             : var(--Wv__Color__TextPrimary);
-    border            : 1px solid var(--Wv__Color__Border);
-    border-radius     : var(--Wv__Radius__Sm);
-    font-family       : var(--Wv__Font__Sans);
-    font-size         : 12.5px;
-    font-weight       : 500;
-    letter-spacing    : 0.02em;
-    cursor            : pointer;
-    transition        : background 120ms ease, border-color 120ms ease, color 120ms ease;
-    user-select       : none;
-}
+    .Wv__Ui__Label {
+        display                          : flex;
+        flex-direction                   : column;
+        font-size                        : 11px;
+        font-weight                      : 600;
+        color                            : var(--Wv__Color__TextSecondary);
+        text-transform                   : uppercase;
+        letter-spacing                   : 0.06em;
+        gap                              : 4px;
+    }
+    .Wv__Ui__Label--Grow {
+        flex                             : 1;
+    }
 
-.Wv__Ui__Button:hover   { background: var(--Wv__Color__BgPanel); border-color: var(--Wv__Color__BorderStrong); }
-.Wv__Ui__Button:active  { transform: translateY(1px); }
-.Wv__Ui__Button:disabled{ opacity: 0.4; cursor: not-allowed; }
+/* endregion ----------------------------------------------------------------- */
 
-.Wv__Ui__Button--Primary {
-    background        : var(--Wv__Color__Accent);
-    border-color      : var(--Wv__Color__Accent);
-    color             : #fff;
-}
-.Wv__Ui__Button--Primary:hover  { background: var(--Wv__Color__AccentHover); border-color: var(--Wv__Color__AccentHover); }
-.Wv__Ui__Button--Primary:active { background: var(--Wv__Color__AccentActive); border-color: var(--Wv__Color__AccentActive); }
 
-.Wv__Ui__Button--Ghost   { background: transparent; color: var(--Wv__Color__TextSecondary); }
-.Wv__Ui__Button--Ghost:hover { color: var(--Wv__Color__TextPrimary); }
+/* ----------------------------------------------------------------- */
+/* REGION | Text Inputs and Textareas                               */
+/* ----------------------------------------------------------------- */
 
-.Wv__Ui__Button--Danger  { color: var(--Wv__Color__Danger); border-color: var(--Wv__Color__Danger); }
-.Wv__Ui__Button--Danger:hover { background: var(--Wv__Color__Danger); color: #fff; }
+    .Wv__Ui__Input,
+    .Wv__Ui__Textarea {
+        width                            : 100%;
+        padding                          : 8px 10px;
+        background                       : var(--Wv__Color__BgElevated);
+        border                           : 1px solid var(--Wv__Color__Border);
+        border-radius                    : var(--Wv__Radius__Sm);
+        color                            : var(--Wv__Color__TextPrimary);
+        font-family                      : var(--Wv__Font__Sans);
+        font-size                        : 13px;
+        transition                       : border-color 120ms ease, box-shadow 120ms ease;
+        text-transform                   : none;
+        letter-spacing                   : normal;
+        font-weight                      : 400;
+    }
 
-.Wv__Ui__Hint {
-    margin            : 6px 0 0 0;
-    font-size         : 11px;
-    color             : var(--Wv__Color__TextMuted);
-}
+    .Wv__Ui__Input:focus,
+    .Wv__Ui__Textarea:focus {
+        outline                          : none;
+        border-color                     : var(--Wv__Color__Accent);
+        box-shadow                       : 0 0 0 2px rgba(79,140,255,0.25);
+    }
+
+    .Wv__Ui__Textarea {
+        min-height                       : 92px;
+        resize                           : vertical;
+        line-height                      : 1.5;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Buttons - Default, Primary, Ghost, Danger               */
+/* ----------------------------------------------------------------- */
+
+    .Wv__Ui__Button {
+        display                          : inline-flex;
+        align-items                      : center;
+        justify-content                  : center;
+        padding                          : 7px 14px;
+        background                       : var(--Wv__Color__BgRaised);
+        color                            : var(--Wv__Color__TextPrimary);
+        border                           : 1px solid var(--Wv__Color__Border);
+        border-radius                    : var(--Wv__Radius__Sm);
+        font-family                      : var(--Wv__Font__Sans);
+        font-size                        : 12.5px;
+        font-weight                      : 500;
+        letter-spacing                   : 0.02em;
+        cursor                           : pointer;
+        transition                       : background 120ms ease, border-color 120ms ease, color 120ms ease;
+        user-select                      : none;
+    }
+
+    .Wv__Ui__Button:hover {
+        background                       : var(--Wv__Color__BgPanel);
+        border-color                     : var(--Wv__Color__BorderStrong);
+    }
+    .Wv__Ui__Button:active {
+        transform                        : translateY(1px);
+    }
+    .Wv__Ui__Button:disabled {
+        opacity                          : 0.4;
+        cursor                           : not-allowed;
+    }
+
+    .Wv__Ui__Button--Primary {
+        background                       : var(--Wv__Color__Accent);
+        border-color                     : var(--Wv__Color__Accent);
+        color                            : #fff;
+    }
+    .Wv__Ui__Button--Primary:hover {
+        background                       : var(--Wv__Color__AccentHover);
+        border-color                     : var(--Wv__Color__AccentHover);
+    }
+    .Wv__Ui__Button--Primary:active {
+        background                       : var(--Wv__Color__AccentActive);
+        border-color                     : var(--Wv__Color__AccentActive);
+    }
+
+    .Wv__Ui__Button--Ghost {
+        background                       : transparent;
+        color                            : var(--Wv__Color__TextSecondary);
+    }
+    .Wv__Ui__Button--Ghost:hover {
+        color                            : var(--Wv__Color__TextPrimary);
+    }
+
+    .Wv__Ui__Button--Danger {
+        color                            : var(--Wv__Color__Danger);
+        border-color                     : var(--Wv__Color__Danger);
+    }
+    .Wv__Ui__Button--Danger:hover {
+        background                       : var(--Wv__Color__Danger);
+        color                            : #fff;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Hint Text                                                */
+/* ----------------------------------------------------------------- */
+
+    .Wv__Ui__Hint {
+        margin                           : 6px 0 0 0;
+        font-size                        : 11px;
+        color                            : var(--Wv__Color__TextMuted);
+    }
+
+/* endregion ----------------------------------------------------------------- */

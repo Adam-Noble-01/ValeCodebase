@@ -1,0 +1,238 @@
+/* =============================================================================
+   WHITECARDVISION - PROJECT MANAGER MODE (SYSTEM STYLESHEET)
+   =============================================================================
+
+   FILE       : WhitecardVision__ProjectManager__Styles__.css
+   NAMESPACE  : Wv
+   MODULE     : System - ProjectManagerMode
+   PURPOSE    : Toolbar, sortable/searchable project table, inline-rename input.
+
+   ============================================================================= */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Outer Layout (single unified card)                        */
+/* ----------------------------------------------------------------- */
+
+    .Wv__ProjectManager {
+        display                          : flex;
+        flex-direction                   : column;
+        background                       : var(--Wv__Color__BgPanel);
+        border                           : 1px solid var(--Wv__Color__Border);
+        border-radius                    : var(--Wv__Radius__Md);
+        overflow                         : hidden;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Toolbar (Search + Actions)                                */
+/* ----------------------------------------------------------------- */
+
+    .Wv__ProjectManager__Toolbar {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Wv__Space__Md);
+        padding                          : var(--Wv__Space__Md) var(--Wv__Space__Lg);
+        border-bottom                    : 1px solid var(--Wv__Color__Border);
+        flex-wrap                        : wrap;
+    }
+
+    .Wv__ProjectManager__Search {
+        flex                             : 1 1 320px;
+        min-width                        : 240px;
+        position                         : relative;
+    }
+
+    .Wv__ProjectManager__Search__Input {
+        width                            : 100%;
+        padding                          : 8px 12px 8px 34px;
+        border                           : 1px solid var(--Wv__Color__Border);
+        border-radius                    : var(--Wv__Radius__Sm);
+        background                       : var(--Wv__Color__BgField);
+        color                            : var(--Wv__Color__TextStrong);
+        font                             : inherit;
+    }
+    .Wv__ProjectManager__Search__Input:focus {
+        outline                          : none;
+        border-color                     : var(--Wv__Color__Accent);
+        box-shadow                       : 0 0 0 2px rgba(99, 102, 241, 0.15);
+    }
+
+    .Wv__ProjectManager__Search__Icon {
+        position                         : absolute;
+        left                             : 10px;
+        top                              : 50%;
+        transform                        : translateY(-50%);
+        pointer-events                   : none;
+        color                            : var(--Wv__Color__TextFaint);
+        font-size                        : 14px;
+    }
+
+    .Wv__ProjectManager__ToolbarActions {
+        display                          : flex;
+        gap                              : var(--Wv__Space__Sm);
+    }
+
+    .Wv__ProjectManager__Stat {
+        font-size                        : 0.85rem;
+        color                            : var(--Wv__Color__TextFaint);
+        margin-left                      : auto;
+        white-space                      : nowrap;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Project Table                                             */
+/* ----------------------------------------------------------------- */
+
+    .Wv__ProjectManager__TableWrap {
+        display                          : flex;
+        flex-direction                   : column;
+    }
+
+    .Wv__ProjectManager__TableScroller {
+        overflow                         : auto;
+        max-height                       : calc(100vh - var(--Wv__Layout__HeaderHeight) - var(--Wv__Layout__NavHeight) - 180px);
+    }
+
+    .Wv__ProjectManager__Table {
+        width                            : 100%;
+        border-collapse                  : collapse;
+        font-size                        : 0.9rem;
+    }
+
+    .Wv__ProjectManager__Table thead th {
+        position                         : sticky;
+        top                              : 0;
+        z-index                          : 1;
+        background                       : var(--Wv__Color__BgPanelStrong, var(--Wv__Color__BgPanel));
+        text-align                       : left;
+        padding                          : 10px 14px;
+        border-bottom                    : 1px solid var(--Wv__Color__Border);
+        color                            : var(--Wv__Color__TextStrong);
+        font-weight                      : 600;
+        user-select                      : none;
+        white-space                      : nowrap;
+    }
+
+    .Wv__ProjectManager__Table thead th[data-wv-sortable="1"] {
+        cursor                           : pointer;
+    }
+    .Wv__ProjectManager__Table thead th[data-wv-sortable="1"]:hover {
+        color                            : var(--Wv__Color__Accent);
+    }
+
+    .Wv__ProjectManager__Table__SortArrow {
+        display                          : inline-block;
+        margin-left                      : 6px;
+        opacity                          : 0.35;
+        font-size                        : 10px;
+    }
+    .Wv__ProjectManager__Table thead th[data-wv-sort-active="asc"]  .Wv__ProjectManager__Table__SortArrow,
+    .Wv__ProjectManager__Table thead th[data-wv-sort-active="desc"] .Wv__ProjectManager__Table__SortArrow {
+        opacity                          : 1;
+        color                            : var(--Wv__Color__Accent);
+    }
+
+    .Wv__ProjectManager__Table tbody td {
+        padding                          : 10px 14px;
+        border-bottom                    : 1px solid var(--Wv__Color__BorderFaint, var(--Wv__Color__Border));
+        color                            : var(--Wv__Color__TextStrong);
+        vertical-align                   : middle;
+    }
+
+    .Wv__ProjectManager__Table tbody tr:hover {
+        background                       : var(--Wv__Color__BgHover, rgba(99, 102, 241, 0.06));
+    }
+
+    .Wv__ProjectManager__Table tbody tr.Wv__ProjectManager__Row--Active {
+        background                       : rgba(99, 102, 241, 0.08);
+    }
+
+    .Wv__ProjectManager__Cell__ProjectName {
+        font-weight                      : 600;
+        color                            : var(--Wv__Color__Accent);
+        cursor                           : pointer;
+    }
+    .Wv__ProjectManager__Cell__ProjectName:hover {
+        text-decoration                  : underline;
+    }
+
+    .Wv__ProjectManager__Cell__Slug {
+        font-size                        : 0.75rem;
+        color                            : var(--Wv__Color__TextFaint);
+        font-family                      : var(--Wv__Font__Mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+        margin-top                       : 2px;
+    }
+
+    .Wv__ProjectManager__Cell__Description {
+        color                            : var(--Wv__Color__TextStrong);
+        max-width                        : 520px;
+        overflow                         : hidden;
+        text-overflow                    : ellipsis;
+        white-space                      : nowrap;
+    }
+
+    .Wv__ProjectManager__Cell__Date {
+        color                            : var(--Wv__Color__TextFaint);
+        white-space                      : nowrap;
+        font-variant-numeric             : tabular-nums;
+    }
+
+    .Wv__ProjectManager__Cell__Actions {
+        display                          : flex;
+        gap                              : 6px;
+        justify-content                  : flex-end;
+    }
+
+    .Wv__ProjectManager__RowAction {
+        border                           : 1px solid var(--Wv__Color__Border);
+        background                       : transparent;
+        color                            : var(--Wv__Color__TextStrong);
+        padding                          : 5px 10px;
+        font-size                        : 0.8rem;
+        border-radius                    : var(--Wv__Radius__Sm);
+        cursor                           : pointer;
+    }
+    .Wv__ProjectManager__RowAction:hover {
+        border-color                     : var(--Wv__Color__Accent);
+        color                            : var(--Wv__Color__Accent);
+    }
+    .Wv__ProjectManager__RowAction--Danger:hover {
+        border-color                     : var(--Wv__Color__Danger, #dc2626);
+        color                            : var(--Wv__Color__Danger, #dc2626);
+    }
+
+    .Wv__ProjectManager__Table__EmptyState {
+        padding                          : var(--Wv__Space__Xl) var(--Wv__Space__Lg);
+        text-align                       : center;
+        color                            : var(--Wv__Color__TextFaint);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Inline Rename Input                                       */
+/* ----------------------------------------------------------------- */
+
+    .Wv__ProjectManager__RenameInput {
+        width                            : 100%;
+        padding                          : 4px 8px;
+        border                           : 1px solid var(--Wv__Color__Accent);
+        border-radius                    : var(--Wv__Radius__Sm);
+        background                       : var(--Wv__Color__BgField);
+        color                            : var(--Wv__Color__TextStrong);
+        font                             : inherit;
+        font-weight                      : 600;
+    }
+    .Wv__ProjectManager__RenameInput:focus {
+        outline                          : none;
+        box-shadow                       : 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+/* endregion ----------------------------------------------------------------- */

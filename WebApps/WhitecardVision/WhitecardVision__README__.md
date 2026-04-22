@@ -99,10 +99,11 @@ WhitecardVision/
 │   ├── 02__AppData/                AppConfig JSON, ProjectFileManager, Validator
 │   ├── 03__AppUtils/               Toast, Clipboard, ImageUpload, DateFormat, Hotkeys
 │   ├── 04__MathUtils/              AspectRatio snap
-│   ├── 10__System__RenderImageMode/  ← own CSS + Config JSON + modules
-│   ├── 20__System__EditImageMode/    ← own CSS + Config JSON + modules
-│   ├── 30__System__FilterSuite/      ← placeholder
-│   └── 40__System__FinalPreview/
+│   ├── 10__System__ProjectManagerMode/ ← sortable/searchable project table (default tab)
+│   ├── 20__System__RenderImageMode/    ← own CSS + Config JSON + modules
+│   ├── 30__System__EditImageMode/      ← own CSS + Config JSON + modules
+│   ├── 40__System__FilterSuite/        ← placeholder
+│   └── 50__System__FinalPreview/
 ├── 03__Style__AppStylesheets/     core UI hub (imports per-System sheets)
 ├── 04__LocalProjectData/          Projects__YYYY/{name}__WcVisData/
 ├── 05__FlaskServerScripts/        Main, AspectRatio, EnvLoader

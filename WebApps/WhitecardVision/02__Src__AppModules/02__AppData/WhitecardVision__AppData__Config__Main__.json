@@ -40,12 +40,13 @@
     },
 
     "Wv__AppConfig__Modes": {
-        "Wv__AppConfig__Modes__DefaultModeId"   : "Render",
+        "Wv__AppConfig__Modes__DefaultModeId"   : "ProjectManager",
         "Wv__AppConfig__Modes__Registered"      : [
-            { "modeId": "Render",       "label": "Render Image",  "panelElementId": "Wv__App__ModeRender",       "configRelPath": "02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__Config__.json" },
-            { "modeId": "Editor",       "label": "Editor Mode",   "panelElementId": "Wv__App__ModeEditor",       "configRelPath": "02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__Config__.json" },
-            { "modeId": "FilterSuite",  "label": "Filter Suite",  "panelElementId": "Wv__App__ModeFilterSuite",  "configRelPath": "02__Src__AppModules/30__System__FilterSuite/WhitecardVision__FilterSuite__Config__.json" },
-            { "modeId": "FinalPreview", "label": "Final Preview", "panelElementId": "Wv__App__ModeFinalPreview", "configRelPath": "02__Src__AppModules/40__System__FinalPreview/WhitecardVision__FinalPreview__Config__.json" }
+            { "modeId": "ProjectManager", "label": "Projects",      "panelElementId": "Wv__App__ModeProjectManager", "configRelPath": "02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__Config__.json" },
+            { "modeId": "Render",         "label": "Render Image",  "panelElementId": "Wv__App__ModeRender",         "configRelPath": "02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__Config__.json" },
+            { "modeId": "Editor",         "label": "Editor Mode",   "panelElementId": "Wv__App__ModeEditor",         "configRelPath": "02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__Config__.json" },
+            { "modeId": "FilterSuite",    "label": "Filter Suite",  "panelElementId": "Wv__App__ModeFilterSuite",    "configRelPath": "02__Src__AppModules/40__System__FilterSuite/WhitecardVision__FilterSuite__Config__.json" },
+            { "modeId": "FinalPreview",   "label": "Final Preview", "panelElementId": "Wv__App__ModeFinalPreview",   "configRelPath": "02__Src__AppModules/50__System__FinalPreview/WhitecardVision__FinalPreview__Config__.json" }
         ]
     }
 }

@@ -1,43 +1,53 @@
-/*
-=============================================================================
- WHITECARDVISION - NAVIGATION BAR (text links separated by " / ")
-=============================================================================
-*/
-.Wv__App__NavigationBar {
-    display           : flex;
-    align-items       : center;
-    justify-content   : center;
-    gap               : var(--Wv__Space__Md);
-    padding           : 0 var(--Wv__Space__Lg);
-    background        : var(--Wv__Color__BgPanel);
-    border-bottom     : 1px solid var(--Wv__Color__Border);
-    font-size         : 13px;
-    letter-spacing    : 0.02em;
-}
+/* =============================================================================
+   WHITECARDVISION - CORE UI - NAVIGATION BAR
+   =============================================================================
 
-.Wv__App__NavTab {
-    padding           : 6px 12px;
-    border-radius     : var(--Wv__Radius__Sm);
-    color             : var(--Wv__Color__TextSecondary);
-    transition        : color 120ms ease, background 120ms ease;
-    user-select       : none;
-    cursor            : pointer;
-}
+   FILE       : WhitecardVision__CoreUi__Styles__NavigationBar__.css
+   NAMESPACE  : Wv
+   MODULE     : Core UI - mode tabs (text links with separators)
+   PURPOSE    : Nav tabs; lives inside the header (no own bar / border).
 
-.Wv__App__NavTab:hover {
-    color             : var(--Wv__Color__TextPrimary);
-    background        : var(--Wv__Color__BgRaised);
-    text-decoration   : none;
-}
+   ============================================================================= */
 
-.Wv__App__NavTab--Active {
-    color             : var(--Wv__Color__AccentHover);
-    background        : var(--Wv__Color__BgRaised);
-    text-decoration   : underline;
-    text-underline-offset : 4px;
-}
+/* ----------------------------------------------------------------- */
+/* REGION | Navigation Bar Container and Tabs                       */
+/* ----------------------------------------------------------------- */
 
-.Wv__App__NavSeparator {
-    color             : var(--Wv__Color__TextMuted);
-    user-select       : none;
-}
+    .Wv__App__NavigationBar {
+        gap                              : var(--Wv__Space__Md);
+        background                       : transparent;
+        border                           : none;
+        border-radius                    : 0;
+        padding                          : 0;
+        font-size                        : 13px;
+        letter-spacing                   : 0.02em;
+    }
+
+    .Wv__App__NavTab {
+        padding                          : 6px 12px;
+        border-radius                    : var(--Wv__Radius__Sm);
+        color                            : var(--Wv__Color__TextSecondary);
+        transition                       : color 120ms ease, background 120ms ease;
+        user-select                      : none;
+        cursor                           : pointer;
+    }
+
+    .Wv__App__NavTab:hover {
+        color                            : var(--Wv__Color__TextPrimary);
+        background                       : var(--Wv__Color__BgRaised);
+        text-decoration                  : none;
+    }
+
+    .Wv__App__NavTab--Active {
+        color                            : var(--Wv__Color__AccentHover);
+        background                       : var(--Wv__Color__BgRaised);
+        text-decoration                  : underline;
+        text-underline-offset            : 4px;
+    }
+
+    .Wv__App__NavSeparator {
+        color                            : var(--Wv__Color__TextMuted);
+        user-select                      : none;
+    }
+
+/* endregion ----------------------------------------------------------------- */

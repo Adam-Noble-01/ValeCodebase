@@ -1,0 +1,43 @@
+---
+description: WhitecardVision first-party CSS — ValeSpec-style file headers, regions, aligned declarations
+globs: "**/WhitecardVision/**/*.css"
+alwaysApply: false
+---
+
+# WhitecardVision — CSS structure (ValeSpec style)
+
+Applies to first-party stylesheets under `WhitecardVision/`. **Exclude** `WhitecardVision/00__ThirdParty__**/`.
+
+## File header
+
+Use a `/* … */` block with `= ` rule lines and fields: **FILE**, **NAMESPACE** (`Wv`), **MODULE**, **PURPOSE**, and **DESCRIPTION** when the sheet covers multiple features.
+
+## Regions (block comments)
+
+- Opening trio (same width as `ValeSpec__ProductIndex__Styles__Main__.css`):
+
+  `/* ----------------------------------------------------------------- */`  
+  `/* REGION | Short Title (pad so title ends near column 70)      */`  
+  `/* ----------------------------------------------------------------- */`
+
+- Close each region: `/* endregion ----------------------------------------------------------------- */` (flush left, not indented).
+
+- **Indent rules inside a region** with **4 spaces** before selectors; **8 spaces** before declarations so nested blocks read like ValeSpec Product Index.
+
+- Use `/* Section Name: … */` before clusters of related selectors when it helps scan-ability (optional; use where the region has multiple sub-areas).
+
+## Declarations
+
+- **Align colons** in a column within each rule block: pad between property name and `:` (Vale hand-formatting).
+- **Logical property order** within a rule: `display` / `position` → box model → typography → paint → misc.
+- Prefer **existing `var(--Wv__…`)** tokens from `WhitecardVision__CoreUi__Styles__Variables__.css`; keep **fallbacks** in `var()` when shared components still use legacy token names (e.g. templates panel fallbacks).
+
+## Reference
+
+- `WebApps/ValeSpec/02__Src__AppModules/50__System__ProductIndex/ValeSpec__ProductIndex__Styles__Main__.css`
+- `WebApps/Whitecardopedia/03__Style__AppStylesheets/Na__CoreUi__Styles__Variables__.css` (block-comment `* REGION` variant; Whitecard uses the ProductIndex dash style for consistency with ValeSpec first-party Wv modules).
+
+## Anti-patterns
+
+- Dropping the close `/* endregion … */` so regions are unclosed.
+- Mixing `=====` section banners in new work when the file already uses the ProductIndex `/* REGION | … */` pattern (keep one convention per file).

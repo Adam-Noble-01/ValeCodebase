@@ -9,24 +9,28 @@
               initialises. ZERO hardcoded API values.
 ============================================================================= */
 
+// =============================================================================
+// REGION | Config Loader Module
+// =============================================================================
+
 (function () {
     'use strict';
 
     const WV__CONFIG__MAIN_PATH = '02__Src__AppModules/02__AppData/WhitecardVision__AppData__Config__Main__.json';
 
 
-    /* FUNCTION | Fetch a JSON file relative to the app root */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Fetch a JSON file relative to the app root
+    // ------------------------------------------------------------
     async function Wv__ConfigLoader__FetchJson(relativePath) {
         const response = await fetch(relativePath + '?_t=' + Date.now());
         if (!response.ok) { throw new Error('Failed to load ' + relativePath + ': HTTP ' + response.status); }
         return await response.json();
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Load AppConfig + every system config referenced within it */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Load AppConfig + every system config referenced within it
+    // ------------------------------------------------------------
     async function Wv__ConfigLoader__LoadAllConfigs() {
         const appConfigObject = await Wv__ConfigLoader__FetchJson(WV__CONFIG__MAIN_PATH);
         window.Wv__AppCore__StateManager.Wv__StateManager__SetAppConfig(appConfigObject);
@@ -44,11 +48,11 @@
 
         return appConfigObject;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Poll /api/system/health and push into state */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Poll /api/system/health and push into state
+    // ------------------------------------------------------------
     async function Wv__ConfigLoader__RefreshServerHealth() {
         try {
             const appConfigObject = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig();
@@ -65,12 +69,17 @@
         window.Wv__AppCore__StateManager.Wv__StateManager__SetServerHealth(null);
         return null;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__AppCore__ConfigLoader = {
         Wv__ConfigLoader__LoadAllConfigs,
         Wv__ConfigLoader__RefreshServerHealth
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

@@ -1,9 +1,12 @@
 /* =============================================================================
  WHITECARDVISION - PROMPT CONSTRUCTOR - BUILD FINAL PAYLOAD
 =============================================================================
- PURPOSE : Compile the exact JSON body we forward to the Flask proxy, which
-           then forwards it verbatim to
-           POST {base_url}/models/{model_id}:generateContent.
+ FILE       : PromptConstructor__BuildFinalPayload__.js
+ NAMESPACE  : Wv
+ MODULE     : PromptConstructor - BuildFinalPayload
+ PURPOSE    : Compile the exact JSON body we forward to the Flask proxy, which
+              then forwards it verbatim to
+              POST {base_url}/models/{model_id}:generateContent.
 
  SHAPE (locked to Gemini docs):
    {
@@ -22,12 +25,16 @@
    }
 ============================================================================= */
 
+// =============================================================================
+// REGION | PromptConstructor Build Final Payload Module
+// =============================================================================
+
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Build the Gemini request body for Render mode */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Build the Gemini request body for Render mode
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildFinalPayload__Render(projectTreeObject, overrideImageSize) {
         const renderGroup           = projectTreeObject.Wv__Project__RenderGroup || {};
         const whitecardBlock        = renderGroup.Wv__Project__RenderGroup__Whitecard || {};
@@ -45,11 +52,11 @@
             imageSizeString           : overrideImageSize || renderGroup.Wv__Project__RenderGroup__ImageSize || '2K'
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Build the Gemini request body for Edit mode */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Build the Gemini request body for Edit mode
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildFinalPayload__Edit(editIterationObject, overrideImageSize) {
         if (!editIterationObject.Wv__EditIteration__BaseImagePath) {
             throw new Error('Upload a base image for this iteration first.');
@@ -69,11 +76,11 @@
             imageSizeString           : overrideImageSize || perIterationSize || editDefaultSize
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Common payload assembly logic */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Common payload assembly logic
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildFinalPayload__AssembleShell(assemblyParams) {
         const appConfig             = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig();
         const geminiConfigBlock     = appConfig.Wv__AppConfig__Gemini || {};
@@ -106,11 +113,11 @@
             generationConfig : generationConfigBlock
         };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Fetch an image from the Flask static server and base64 it */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Fetch an image from the Flask static server and base64 it
+    // ------------------------------------------------------------
     async function Wv__PromptConstructor__BuildFinalPayload__FetchInlineData(relativeImagePath) {
         const response = await fetch('/' + relativeImagePath + '?_t=' + Date.now());
         if (!response.ok) throw new Error('Could not fetch image: ' + relativeImagePath);
@@ -127,12 +134,17 @@
         });
         return { mimeType: mimeType, data: base64Data };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__PromptConstructor__BuildFinalPayload = {
         Wv__PromptConstructor__BuildFinalPayload__Render,
         Wv__PromptConstructor__BuildFinalPayload__Edit
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

@@ -6,12 +6,16 @@
  FILE       : WhitecardVision__App__.html
  NAMESPACE  : Wv
  MODULE     : Entry Shell
- PURPOSE    : Hosts the four app modes (Render / Editor / Filter Suite /
-              Final Preview) behind a text-link nav bar, loads the CSS hub
-              and all IIFE modules in dependency order.
+ PURPOSE    : Hosts the app shell with primary navigation in the header
+              and mode panels below; loads the CSS hub and all IIFE modules
+              in dependency order.
 =============================================================================
 -->
 <html lang="en-GB">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles, Links             -->
+<!-- ----------------------------------------------------------------- -->
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,46 +25,87 @@
     <link rel="icon" type="image/svg+xml" href="01__AppAssets/WhitecardVision__Icon__Favicon__.svg" />
     <link rel="stylesheet" href="03__Style__AppStylesheets/WhitecardVision__CoreUi__Styles__Index__.css" />
 </head>
+<!-- endregion ----------------------------------------------------------------- -->
 
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Body - Application Shell                        -->
+<!-- ----------------------------------------------------------------- -->
 <body class="Wv__App__Body">
 
-    <!-- ======================================================================
-         REGION | App Header
-         ================================================================== -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Application Header - Brand, Primary Nav, Status        -->
+    <!-- ----------------------------------------------------------------- -->
     <header class="Wv__App__Header" id="Wv__App__Header">
         <div class="Wv__App__Header__Brand">
             <span class="Wv__App__Header__Title">WhitecardVision</span>
         </div>
+        <nav class="Wv__App__NavigationBar" id="Wv__App__NavigationBar" aria-label="Primary">
+            <a href="#" class="Wv__App__NavTab Wv__App__NavTab--Active" data-wv-mode="ProjectManager">Projects</a>
+            <span class="Wv__App__NavSeparator">/</span>
+            <a href="#" class="Wv__App__NavTab" data-wv-mode="Render">Render Image</a>
+            <span class="Wv__App__NavSeparator">/</span>
+            <a href="#" class="Wv__App__NavTab" data-wv-mode="Editor">Editor Mode</a>
+            <span class="Wv__App__NavSeparator">/</span>
+            <a href="#" class="Wv__App__NavTab" data-wv-mode="FilterSuite">Filter Suite</a>
+            <span class="Wv__App__NavSeparator">/</span>
+            <a href="#" class="Wv__App__NavTab" data-wv-mode="FinalPreview">Final Preview</a>
+        </nav>
         <div class="Wv__App__Header__Status" id="Wv__App__Header__Status">
             <span class="Wv__App__Header__ProjectBadge" id="Wv__App__Header__ProjectBadge">No project loaded</span>
             <span class="Wv__App__Header__ServerBadge"  id="Wv__App__Header__ServerBadge">Server: ...</span>
         </div>
     </header>
-    <!-- endregion -->
+    <!-- endregion ----------------------------------------------------------------- -->
 
 
-    <!-- ======================================================================
-         REGION | Navigation Bar (text links separated by " / ")
-         ================================================================== -->
-    <nav class="Wv__App__NavigationBar" id="Wv__App__NavigationBar" aria-label="Primary">
-        <a href="#" class="Wv__App__NavTab Wv__App__NavTab--Active" data-wv-mode="Render">Render Image</a>
-        <span class="Wv__App__NavSeparator">/</span>
-        <a href="#" class="Wv__App__NavTab" data-wv-mode="Editor">Editor Mode</a>
-        <span class="Wv__App__NavSeparator">/</span>
-        <a href="#" class="Wv__App__NavTab" data-wv-mode="FilterSuite">Filter Suite</a>
-        <span class="Wv__App__NavSeparator">/</span>
-        <a href="#" class="Wv__App__NavTab" data-wv-mode="FinalPreview">Final Preview</a>
-    </nav>
-    <!-- endregion -->
-
-
-    <!-- ======================================================================
-         REGION | Main Content - Mode Panels
-         ================================================================== -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Main Content Area - Mode Panels & Footer               -->
+    <!-- ----------------------------------------------------------------- -->
     <main class="Wv__App__Main" id="Wv__App__Main">
 
-        <!-- RENDER MODE PANEL -->
-        <section id="Wv__App__ModeRender" class="Wv__App__ModePanel" data-wv-mode="Render">
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Project Manager (default landing tab)              -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="Wv__App__ModeProjectManager" class="Wv__App__ModePanel" data-wv-mode="ProjectManager">
+            <div class="Wv__ProjectManager">
+
+                <div class="Wv__ProjectManager__Toolbar">
+                    <div class="Wv__ProjectManager__Search">
+                        <span class="Wv__ProjectManager__Search__Icon" aria-hidden="true">&#128269;</span>
+                        <input type="text"
+                               id="Wv__ProjectManager__Search__Input"
+                               class="Wv__ProjectManager__Search__Input"
+                               placeholder="Search projects, descriptions, years..."
+                               autocomplete="off" />
+                    </div>
+                    <div class="Wv__ProjectManager__ToolbarActions">
+                        <button type="button" class="Wv__Ui__Button" id="Wv__ProjectManager__Toolbar__NewBtn">+ New Project</button>
+                        <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Ghost" id="Wv__ProjectManager__Toolbar__RefreshBtn">Refresh</button>
+                    </div>
+                    <span class="Wv__ProjectManager__Stat" id="Wv__ProjectManager__Stat">0 projects</span>
+                </div>
+
+                <div class="Wv__ProjectManager__TableWrap">
+                    <div class="Wv__ProjectManager__TableScroller">
+                        <table class="Wv__ProjectManager__Table" id="Wv__ProjectManager__Table">
+                            <thead>
+                                <tr id="Wv__ProjectManager__Table__HeadRow"></tr>
+                            </thead>
+                            <tbody id="Wv__ProjectManager__Table__Body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Render Image Mode                                  -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="Wv__App__ModeRender" class="Wv__App__ModePanel" data-wv-mode="Render" hidden>
 
             <div class="Wv__Render__ProjectMeta" id="Wv__Render__ProjectMeta">
                 <div class="Wv__Render__ProjectMeta__Row">
@@ -154,9 +199,12 @@
             </div>
 
         </section>
+        <!-- ----------------------------------------------------------------- -->
 
 
-        <!-- EDITOR MODE PANEL -->
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Editor Mode                                        -->
+        <!-- ----------------------------------------------------------------- -->
         <section id="Wv__App__ModeEditor" class="Wv__App__ModePanel" data-wv-mode="Editor" hidden>
 
             <div class="Wv__Edit__IterationBar" id="Wv__Edit__IterationBar">
@@ -234,9 +282,12 @@
             </div>
 
         </section>
+        <!-- ----------------------------------------------------------------- -->
 
 
-        <!-- FILTER SUITE MODE PANEL (placeholder) -->
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Filter Suite (placeholder)                         -->
+        <!-- ----------------------------------------------------------------- -->
         <section id="Wv__App__ModeFilterSuite" class="Wv__App__ModePanel" data-wv-mode="FilterSuite" hidden>
             <div class="Wv__FilterSuite__Placeholder">
                 <h2 class="Wv__Ui__H2">Filter Suite</h2>
@@ -248,38 +299,58 @@
                 </ul>
             </div>
         </section>
+        <!-- ----------------------------------------------------------------- -->
 
 
-        <!-- FINAL PREVIEW MODE PANEL -->
+        <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Final Preview                                      -->
+        <!-- ----------------------------------------------------------------- -->
         <section id="Wv__App__ModeFinalPreview" class="Wv__App__ModePanel" data-wv-mode="FinalPreview" hidden>
             <div class="Wv__FinalPreview__Wrapper">
-                <h2 class="Wv__Ui__H2">Final Preview</h2>
                 <div class="Wv__FinalPreview__Canvas" id="Wv__FinalPreview__Canvas">
                     <span class="Wv__FinalPreview__Placeholder">Nothing to preview yet</span>
                 </div>
-                <div class="Wv__FinalPreview__Controls">
+                <div class="Wv__FinalPreview__Sidebar" role="group" aria-label="Final preview actions">
+                    <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Primary" id="Wv__FinalPreview__DownloadPngBtn" disabled>Download PNG</button>
                     <button type="button" class="Wv__Ui__Button" id="Wv__FinalPreview__PickRenderBtn">Show Latest Render</button>
                     <button type="button" class="Wv__Ui__Button" id="Wv__FinalPreview__PickEditBtn">Show Active Edit</button>
                     <button type="button" class="Wv__Ui__Button" id="Wv__FinalPreview__DownloadPromptBtn">Download Compiled Prompt (.md)</button>
                 </div>
             </div>
         </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- REGION | Application Footer - Copyright & Structural Rule      -->
+        <!-- ----------------------------------------------------------------- -->
+        <footer class="Wv__App__Footer" id="Wv__App__Footer" aria-label="Site footer">
+            <hr class="Wv__App__Footer__Rule" />
+            <p class="Wv__App__Footer__Line">Copyright 2026 | Noble Architecture</p>
+        </footer>
+        <!-- endregion ----------------------------------------------------------------- -->
 
     </main>
-    <!-- endregion -->
+    <!-- endregion ----------------------------------------------------------------- -->
 
 
-    <!-- ======================================================================
-         REGION | Toasts + Modals Hosts
-         ================================================================== -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Toast Notification Host                                -->
+    <!-- ----------------------------------------------------------------- -->
     <div class="Wv__App__ToastHost" id="Wv__App__ToastHost" aria-live="polite"></div>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Modal Overlay Host                                       -->
+    <!-- ----------------------------------------------------------------- -->
     <div class="Wv__App__ModalHost" id="Wv__App__ModalHost" hidden></div>
-    <!-- endregion -->
+    <!-- endregion ----------------------------------------------------------------- -->
 
 
-    <!-- ======================================================================
-         REGION | Scripts - loaded in strict dependency order
-         ================================================================== -->
+    <!-- ================================================================= -->
+    <!-- REGION | JavaScript Module Loading                                 -->
+    <!-- ================================================================= -->
 
     <!-- 1. State, config, utils (core) -->
     <script src="02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__StateManager__.js"></script>
@@ -289,6 +360,8 @@
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__ImageUpload__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__DateFormat__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__Hotkeys__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__AutoResize__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__UiHelpers__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils/WhitecardVision__MathUtils__AspectRatio__.js"></script>
 
     <!-- 2. Data layer -->
@@ -311,27 +384,33 @@
     <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__TemplatesPanel__.js"></script>
     <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__CompiledPromptExporter__.js"></script>
 
-    <!-- 5. System - Render Mode -->
-    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__ProjectMetaPanel__.js"></script>
-    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__WhitecardSlot__.js"></script>
-    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__ReferenceImageList__.js"></script>
-    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__OutputPanel__.js"></script>
-    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__Controller__.js"></script>
+    <!-- 5. System - Project Manager Mode (default landing tab) -->
+    <script src="02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectList__.js"></script>
+    <script src="02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectActions__.js"></script>
+    <script src="02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__Controller__.js"></script>
 
-    <!-- 6. System - Editor Mode -->
-    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__IterationList__.js"></script>
-    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__BaseSlot__.js"></script>
-    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__PromptPanel__.js"></script>
-    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__OutputPanel__.js"></script>
-    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__Controller__.js"></script>
+    <!-- 6. System - Render Mode -->
+    <script src="02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__ProjectMetaPanel__.js"></script>
+    <script src="02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__WhitecardSlot__.js"></script>
+    <script src="02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__ReferenceImageList__.js"></script>
+    <script src="02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__OutputPanel__.js"></script>
+    <script src="02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__Controller__.js"></script>
 
-    <!-- 7. System - Filter Suite + Final Preview -->
-    <script src="02__Src__AppModules/30__System__FilterSuite/WhitecardVision__FilterSuite__Controller__.js"></script>
-    <script src="02__Src__AppModules/40__System__FinalPreview/WhitecardVision__FinalPreview__Controller__.js"></script>
+    <!-- 7. System - Editor Mode -->
+    <script src="02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__IterationList__.js"></script>
+    <script src="02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__BaseSlot__.js"></script>
+    <script src="02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__PromptPanel__.js"></script>
+    <script src="02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__OutputPanel__.js"></script>
+    <script src="02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__Controller__.js"></script>
+
+    <!-- 8. System - Filter Suite + Final Preview -->
+    <script src="02__Src__AppModules/40__System__FilterSuite/WhitecardVision__FilterSuite__Controller__.js"></script>
+    <script src="02__Src__AppModules/50__System__FinalPreview/WhitecardVision__FinalPreview__Controller__.js"></script>
 
     <!-- 8. App init (must be LAST) -->
     <script src="02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__Init__.js"></script>
-    <!-- endregion -->
+
+    <!-- endregion --------------------------------------------------------- -->
 
 </body>
 </html>

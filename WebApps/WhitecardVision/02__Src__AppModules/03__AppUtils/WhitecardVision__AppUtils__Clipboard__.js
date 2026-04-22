@@ -1,9 +1,17 @@
 /* =============================================================================
  WHITECARDVISION - CLIPBOARD / CARET UTILITY
 =============================================================================
- Tracks the most recently focused prompt textarea/input so that clicking a
- template tile can inject text exactly where the user last had focus.
+ FILE       : WhitecardVision__AppUtils__Clipboard__.js
+ NAMESPACE  : Wv
+ MODULE     : AppUtils - Clipboard
+ PURPOSE    : Tracks the most recently focused prompt textarea/input so that
+              clicking a template tile can inject text exactly where the user
+              last had focus.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Clipboard Module
+// =============================================================================
 
 (function () {
     'use strict';
@@ -11,8 +19,8 @@
     let Wv__Clipboard__LastFocusedField = null;
 
 
-    /* FUNCTION | Start tracking which prompt field last had focus */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Start tracking which prompt field last had focus
+    // ------------------------------------------------------------
     function Wv__Clipboard__InstallFocusTracker() {
         document.addEventListener('focusin', (focusEvent) => {
             const eventTarget = focusEvent.target;
@@ -22,17 +30,17 @@
             }
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Get the last focused field (or null) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Get the last focused field (or null)
+    // ------------------------------------------------------------
     function Wv__Clipboard__GetLastFocusedField() { return Wv__Clipboard__LastFocusedField; }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Copy a string to the clipboard and insert at caret */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Copy a string to the clipboard and insert at caret
+    // ------------------------------------------------------------
     async function Wv__Clipboard__CopyAndInsertAtCursor(textToInsert) {
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -57,13 +65,18 @@
         targetField.setSelectionRange(newCaretPos, newCaretPos);
         targetField.dispatchEvent(new Event('input', { bubbles: true }));
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__AppUtils__Clipboard = {
         Wv__Clipboard__InstallFocusTracker,
         Wv__Clipboard__GetLastFocusedField,
         Wv__Clipboard__CopyAndInsertAtCursor
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

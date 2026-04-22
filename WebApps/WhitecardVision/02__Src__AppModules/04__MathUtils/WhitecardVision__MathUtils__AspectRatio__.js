@@ -1,10 +1,17 @@
 /* =============================================================================
  WHITECARDVISION - ASPECT RATIO MATH UTIL
 =============================================================================
- PURPOSE : Snap a raw width/height pair to the nearest Gemini-supported
-           aspectRatio enum. Mirrors the Python server-side snapper so the
-           browser's UI preview matches what the server will accept.
+ FILE       : WhitecardVision__MathUtils__AspectRatio__.js
+ NAMESPACE  : Wv
+ MODULE     : MathUtils - AspectRatio
+ PURPOSE    : Snap a raw width/height pair to the nearest Gemini-supported
+              aspectRatio enum. Mirrors the Python server-side snapper so the
+              browser's UI preview matches what the server will accept.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Aspect Ratio Module
+// =============================================================================
 
 (function () {
     'use strict';
@@ -20,8 +27,8 @@
     ];
 
 
-    /* FUNCTION | Snap (widthPx, heightPx) to the closest enum entry (log distance) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Snap (widthPx, heightPx) to the closest enum entry (log distance)
+    // ------------------------------------------------------------
     function Wv__MathUtils__SnapToSupportedAspectRatio(widthPx, heightPx) {
         if (!widthPx || !heightPx) {
             return { rawRatio: 0, snappedAspectRatio: '', snappedDeltaPct: 0, widthPx: widthPx || 0, heightPx: heightPx || 0 };
@@ -52,12 +59,17 @@
             snappedDeltaPct      : Number(deltaPercentage.toFixed(3))
         };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__MathUtils__AspectRatio = {
         Wv__MathUtils__SnapToSupportedAspectRatio,
         WV__ASPECT_RATIO__SUPPORTED_ENUM
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

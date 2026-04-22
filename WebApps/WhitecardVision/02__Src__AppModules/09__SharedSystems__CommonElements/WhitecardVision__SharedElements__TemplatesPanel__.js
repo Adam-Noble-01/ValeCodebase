@@ -1,20 +1,28 @@
 /* =============================================================================
  WHITECARDVISION - SHARED ELEMENT - TEMPLATES PANEL
 =============================================================================
- Collapsible right-docked sidebar that renders the markdown prompt-template
- tree using native <details> folders (all collapsed by default). Each file row
- shows ONLY the PromptTitle and PromptSummary pulled from the markdown front
- matter. Filename is never displayed - if front matter is missing from the
- server tree response we lazy-fetch the body and re-render the row once parsed.
- A search bar flattens results into a list and bypasses folder collapse.
+ FILE       : WhitecardVision__SharedElements__TemplatesPanel__.js
+ NAMESPACE  : Wv
+ MODULE     : SharedElements - TemplatesPanel
+ PURPOSE    : Collapsible right-docked sidebar that renders the markdown prompt-
+              template tree using native <details> folders (all collapsed by
+              default). Each file row shows ONLY the PromptTitle and PromptSummary
+              pulled from the markdown front matter. Filename is never displayed -
+              if front matter is missing from the server tree response we lazy-
+              fetch the body and re-render the row once parsed. A search bar
+              flattens results into a list and bypasses folder collapse.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Templates Panel Module
+// =============================================================================
 
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Mount the panel into a host element */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Mount the panel into a host element
+    // ------------------------------------------------------------
     function Wv__SharedElements__TemplatesPanel__Mount(hostElement, mountOptions) {
         if (!hostElement) return;
         const onInsertFn = (mountOptions && mountOptions.onInsert) || Wv__SharedElements__TemplatesPanel__DefaultInsert;
@@ -49,11 +57,11 @@
 
         Wv__SharedElements__TemplatesPanel__LoadTree(hostElement, onInsertFn);
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Fetch tree JSON and render it */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Fetch tree JSON and render it
+    // ------------------------------------------------------------
     async function Wv__SharedElements__TemplatesPanel__LoadTree(hostElement, onInsertFn) {
         const treeHostEl = hostElement.querySelector('[data-wv-role="tree"]');
         try {
@@ -69,10 +77,11 @@
             treeHostEl.innerHTML = `<span class="Wv__Ui__Hint">Could not load templates: ${loadError.message}</span>`;
         }
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Recursively render folders and files using native <details> */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Recursively render folders and files using native <details>
+    // ------------------------------------------------------------
     function Wv__SharedElements__TemplatesPanel__RenderNode(parentContainerEl, nodeObject, depthLevel, onInsertFn) {
         if (!nodeObject) return;
         const children = nodeObject.children || [];
@@ -97,10 +106,11 @@
             }
         }
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Build a single tree row for a markdown file */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Build a single tree row for a markdown file
+    // ------------------------------------------------------------
     function Wv__SharedElements__TemplatesPanel__BuildFileEntry(fileDescriptor, onInsertFn) {
         const fileElement                = document.createElement('div');
         fileElement.className            = 'Wv__TemplatesPanel__File';
@@ -116,12 +126,13 @@
         }
         return fileElement;
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Paint (or repaint) a file row using front matter fields */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Paint (or repaint) a file row using front matter fields
+    // ------------------------------------------------------------
     function Wv__SharedElements__TemplatesPanel__PaintFileEntry(fileElement, frontMatterObject) {
-        const titleText            = (frontMatterObject.PromptTitle || frontMatterObject.PromptTile /* typo tolerance */ || '').trim();
+        const titleText            = (frontMatterObject.PromptTitle || frontMatterObject.PromptTile || '').trim(); // typo tolerance: PromptTile
         const summaryText          = (frontMatterObject.PromptSummary || '').trim();
         const flagsText            = (frontMatterObject.PromptFlags || '').trim();
         const dateText             = (frontMatterObject.DateCreated || '').trim();
@@ -140,10 +151,11 @@
             </div>` : ''}
         `;
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Lazy-fetch the markdown body so the loader parses front matter, then repaint */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Lazy-fetch the markdown body so the loader parses front matter, then repaint
+    // ------------------------------------------------------------
     async function Wv__SharedElements__TemplatesPanel__HydrateFrontMatter(fileElement, relativePathValue) {
         try {
             const loader = window.Wv__PromptConstructor__LoadMarkdown;
@@ -154,22 +166,24 @@
                 ? loader.Wv__PromptConstructor__LoadMarkdown__GetFrontMatter(relativePathValue)
                 : {}) || {};
             Wv__SharedElements__TemplatesPanel__PaintFileEntry(fileElement, frontMatterObject);
-        } catch (_err) { /* Silent - row keeps its placeholder label. */ }
+        } catch (_err) { /* row keeps placeholder label */ }
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Escape untrusted strings for safe innerHTML use */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Escape untrusted strings for safe innerHTML use
+    // ------------------------------------------------------------
     function Wv__SharedElements__TemplatesPanel__EscapeHtml(rawString) {
         return String(rawString)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Filter tree rows by the search query */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Filter tree rows by the search query
+    // ------------------------------------------------------------
     function Wv__SharedElements__TemplatesPanel__ApplyFilter(hostElement, rawQuery) {
         const trimmedQuery        = (rawQuery || '').trim().toLowerCase();
         const fileElements        = hostElement.querySelectorAll('.Wv__TemplatesPanel__File');
@@ -201,10 +215,11 @@
             }
         });
     }
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Default insert action (clipboard + caret insert) */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Default insert action (clipboard + caret insert)
+    // ------------------------------------------------------------
     async function Wv__SharedElements__TemplatesPanel__DefaultInsert(relativePathValue) {
         try {
             const markdownBody = await window.Wv__PromptConstructor__LoadMarkdown.Wv__PromptConstructor__LoadMarkdown__ReadTemplate(relativePathValue);
@@ -214,8 +229,14 @@
             window.Wv__AppUtils__Toast.Wv__Toast__Show('Template error: ' + insertError.message, 'error');
         }
     }
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__SharedElements__TemplatesPanel = { Wv__SharedElements__TemplatesPanel__Mount };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

@@ -444,8 +444,10 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
                     except Exception as read_error:
                         print(f"[WARN] Could not parse {json_path.name}: {read_error}")
 
+                display_name_raw = str(metadata_block.get("Wv__ProjectFile__Metadata__ProjectName", "") or "").strip()
                 collected_projects.append({
-                    "projectName"     : project_name,
+                    "projectName"     : display_name_raw or project_name,                                                        #<-- Prefer metadata display name; falls back to folder-derived slug.
+                    "projectSlug"     : project_name,                                                                            #<-- Stable folder-derived id used for URL paths.
                     "yearFolder"      : year_path.name,
                     "description"     : metadata_block.get("Wv__ProjectFile__Metadata__Description", ""),
                     "dateCreatedUtc"  : metadata_block.get("Wv__ProjectFile__Metadata__DateCreatedUtc", ""),

@@ -1,17 +1,24 @@
 /* =============================================================================
  WHITECARDVISION - IMAGE UPLOAD + PREVIEW UTILITY
 =============================================================================
- PURPOSE : Convert a File (from an <input type=file>) into
-           { base64Data, mimeType, widthPx, heightPx, objectUrl } so the
-           render slots and edit slots can preview + upload consistently.
+ FILE       : WhitecardVision__AppUtils__ImageUpload__.js
+ NAMESPACE  : Wv
+ MODULE     : AppUtils - ImageUpload
+ PURPOSE    : Convert a File (from an <input type=file>) into
+              { base64Data, mimeType, widthPx, heightPx, objectUrl } so the
+              render slots and edit slots can preview + upload consistently.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Image Upload Module
+// =============================================================================
 
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Read a File into a base64 data URL + natural dimensions */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Read a File into a base64 data URL + natural dimensions
+    // ------------------------------------------------------------
     function Wv__ImageUpload__ReadFile(fileHandle) {
         return new Promise((resolve, reject) => {
             if (!fileHandle) { reject(new Error('No file provided')); return; }
@@ -41,11 +48,11 @@
             fileReader.readAsDataURL(fileHandle);
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Open the native file picker and resolve the chosen file */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Open the native file picker and resolve the chosen file
+    // ------------------------------------------------------------
     function Wv__ImageUpload__PickFileViaInput(hiddenInputElement) {
         return new Promise((resolve, reject) => {
             if (!hiddenInputElement) { reject(new Error('Missing file input element')); return; }
@@ -60,12 +67,17 @@
             hiddenInputElement.click();
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__AppUtils__ImageUpload = {
         Wv__ImageUpload__ReadFile,
         Wv__ImageUpload__PickFileViaInput
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

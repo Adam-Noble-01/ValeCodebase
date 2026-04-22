@@ -9,14 +9,18 @@
               the input is completely absent.
 ============================================================================= */
 
+// =============================================================================
+// REGION | Project Schema Validator Module
+// =============================================================================
+
 (function () {
     'use strict';
 
     const WV__PROJECTSCHEMA__CURRENT_VERSION = '0.1.0';
 
 
-    /* FUNCTION | Build an empty project tree with every required key present */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Build an empty project tree with every required key present
+    // ------------------------------------------------------------
     function Wv__ProjectSchemaValidator__BuildDefault(projectName, yearFolder, description) {                                   //<-- Used when starting a brand-new project locally before first save.
         const currentIsoTimestamp = new Date().toISOString();
         return {
@@ -48,11 +52,11 @@
             Wv__Project__ActiveEditIterationId : ''
         };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Merge loaded JSON into the default shape (non-destructive) */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Merge loaded JSON into the default shape (non-destructive)
+    // ------------------------------------------------------------
     function Wv__ProjectSchemaValidator__Normalise(loadedJson, projectName, yearFolder) {                                       //<-- Tolerant merge so partial files still open cleanly.
         const defaultTree  = Wv__ProjectSchemaValidator__BuildDefault(projectName, yearFolder, '');
         const safeSource   = (loadedJson && typeof loadedJson === 'object') ? loadedJson : {};
@@ -89,11 +93,11 @@
 
         return defaultTree;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Build a blank reference image entry */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Build a blank reference image entry
+    // ------------------------------------------------------------
     function Wv__ProjectSchemaValidator__BuildBlankReference(referenceTypeToken) {                                              //<-- Used when the UI adds a new Material/Style reference tile.
         return {
             Wv__Reference__Id           : 'ref_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
@@ -103,11 +107,11 @@
             Wv__Reference__Prompt       : ''
         };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Build a blank edit iteration entry */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Build a blank edit iteration entry
+    // ------------------------------------------------------------
     function Wv__ProjectSchemaValidator__BuildBlankEditIteration(index) {                                                       //<-- Used by Editor Mode when the user clicks New.
         const iterationId = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 15) + 'Z';                                 //<-- e.g. 20260422T145730Z (safe for folder names).
         return {
@@ -123,9 +127,11 @@
             Wv__EditIteration__DateCreatedUtc : new Date().toISOString()
         };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__AppData__ProjectSchemaValidator = {
         Wv__ProjectSchemaValidator__BuildDefault,
         Wv__ProjectSchemaValidator__Normalise,
@@ -133,5 +139,8 @@
         Wv__ProjectSchemaValidator__BuildBlankEditIteration,
         WV__PROJECTSCHEMA__CURRENT_VERSION
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

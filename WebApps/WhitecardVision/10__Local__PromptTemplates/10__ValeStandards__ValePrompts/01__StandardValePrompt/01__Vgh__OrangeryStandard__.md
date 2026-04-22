@@ -6,7 +6,6 @@ PromptFlags   = vale, orangery, conservatory, realism, vgh, uk-country-home, bri
 ---
 
 **OBJECTIVE** 
-
 - Render the provided Whitecard Image as a highly realistic photograph.
 - The photograph should be indistinguishable from a high level Photograph.
 - The Photograph is of an empty newly constructed conservatory,
@@ -15,7 +14,6 @@ PromptFlags   = vale, orangery, conservatory, realism, vgh, uk-country-home, bri
 - Vale Garden Houses are the UK's premium UK Manufacturer of Conservatories and Orangeries in the UK and they are a established Luxury high end brand.
 
 **THE VIBE**
-
 - Realistic.
 - UK Country Home.
 - Focus on the interior space not the outside.

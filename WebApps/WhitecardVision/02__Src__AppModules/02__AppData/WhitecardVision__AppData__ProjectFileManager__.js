@@ -10,21 +10,29 @@
               - Keeps the in-memory active project in StateManager in sync.
 ============================================================================= */
 
+// =============================================================================
+// REGION | Project File Manager Module
+// =============================================================================
+
 (function () {
     'use strict';
 
 
-    /* FUNCTION | Derive endpoint root from loaded AppConfig */
-    /* ------------------------------------------------------------ */
+// -----------------------------------------------------------------------------
+// REGION | HTTP and endpoint root
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Derive endpoint root from loaded AppConfig
+    // ------------------------------------------------------------
     function Wv__ProjectFileManager__ServerBaseUrl() {                                                                          //<-- Empty string means "same origin", which is what Flask serves.
         const appConfig = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig();
         return (appConfig && appConfig.Wv__AppConfig__Server && appConfig.Wv__AppConfig__Server.Wv__AppConfig__Server__BaseUrl) || '';
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Wrap fetch with JSON parse + uniform error shape */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Wrap fetch with JSON parse + uniform error shape
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__FetchJson(relativeUrl, fetchOptions) {
         const response = await fetch(Wv__ProjectFileManager__ServerBaseUrl() + relativeUrl, fetchOptions);
         const payload  = await response.json().catch(() => ({ ok: false, error: 'Invalid JSON from server' }));
@@ -33,19 +41,25 @@
         }
         return payload.data;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
-    /* FUNCTION | List every project on disk (sorted newest first) */
-    /* ------------------------------------------------------------ */
+// -----------------------------------------------------------------------------
+// REGION | Project CRUD
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | List every project on disk (sorted newest first)
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__ListAllProjects() {
         return await Wv__ProjectFileManager__FetchJson('/api/projects', { method: 'GET' });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Create a new project folder + seed JSON */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Create a new project folder + seed JSON
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__CreateProject(projectName, description, yearFolder) {
         const seededData = await Wv__ProjectFileManager__FetchJson('/api/projects', {
             method  : 'POST',
@@ -59,11 +73,11 @@
         await Wv__ProjectFileManager__LoadProject(seededData.yearFolder, seededData.projectName);
         return seededData;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Load a project JSON from disk into StateManager */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Load a project JSON from disk into StateManager
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__LoadProject(yearFolder, projectName) {
         const rawJson = await Wv__ProjectFileManager__FetchJson(
             '/api/projects/' + encodeURIComponent(yearFolder) + '/' + encodeURIComponent(projectName),
@@ -75,11 +89,11 @@
         window.Wv__AppCore__StateManager.Wv__StateManager__SetActiveProject(normalisedTree);
         return normalisedTree;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Persist the currently-active project tree back to disk */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Persist the currently-active project tree back to disk
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__SaveActiveProject() {
         const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
         if (!activeTree) { throw new Error('No active project to save.'); }
@@ -99,11 +113,11 @@
         );
         return true;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Delete an entire project directory on disk */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Delete an entire project directory on disk
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__DeleteProject(yearFolder, projectName) {
         await Wv__ProjectFileManager__FetchJson(
             '/api/projects/' + encodeURIComponent(yearFolder) + '/' + encodeURIComponent(projectName),
@@ -111,11 +125,38 @@
         );
         return true;
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Upload a base64 image into a role slot */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Rename the currently-active project's DISPLAY name and persist
+    // ------------------------------------------------------------
+    //  The folder slug (URL-safe filesystem id) stays fixed for the lifetime of
+    //  the project; only the human-readable Metadata.ProjectName is rewritten.
+    // ------------------------------------------------------------
+    async function Wv__ProjectFileManager__RenameActiveProject(newDisplayName) {
+        const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+        if (!activeTree)          { throw new Error('No active project to rename.'); }
+        if (!newDisplayName)      { throw new Error('New display name is empty.'); }
+
+        const metadataBlock = activeTree.Wv__ProjectFile__Metadata || {};
+        metadataBlock.Wv__ProjectFile__Metadata__ProjectName = String(newDisplayName).trim();
+        activeTree.Wv__ProjectFile__Metadata = metadataBlock;
+
+        window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
+        await Wv__ProjectFileManager__SaveActiveProject();
+        return activeTree;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Image upload and Gemini proxy
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Upload a base64 image into a role slot
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__UploadImage(roleToken, uploadDescriptor) {                                           //<-- role: "whitecard" | "material" | "style" | "edit".
         const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
         if (!activeTree) { throw new Error('Create or load a project before uploading images.'); }
@@ -138,11 +179,11 @@
             }
         );
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Fire a render/edit generation against the Flask proxy */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Fire a render/edit generation against the Flask proxy
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__Generate(isEditModeBool, geminiRequestShell, iterationIdOrEmpty) {
         const activeTree        = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
         if (!activeTree) { throw new Error('No active project.'); }
@@ -192,26 +233,40 @@
             throw fetchError;
         }
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
-    /* FUNCTION | Compute current year folder token (Projects__YYYY) */
-    /* ------------------------------------------------------------ */
+// -----------------------------------------------------------------------------
+// REGION | Utilities
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Compute current year folder token (Projects__YYYY)
+    // ------------------------------------------------------------
     function Wv__ProjectFileManager__CurrentYearFolder() {
         return 'Projects__' + new Date().getFullYear();
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__AppData__ProjectFileManager = {
         Wv__ProjectFileManager__ListAllProjects,
         Wv__ProjectFileManager__CreateProject,
         Wv__ProjectFileManager__LoadProject,
         Wv__ProjectFileManager__SaveActiveProject,
         Wv__ProjectFileManager__DeleteProject,
+        Wv__ProjectFileManager__RenameActiveProject,
         Wv__ProjectFileManager__UploadImage,
         Wv__ProjectFileManager__Generate,
         Wv__ProjectFileManager__CurrentYearFolder
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

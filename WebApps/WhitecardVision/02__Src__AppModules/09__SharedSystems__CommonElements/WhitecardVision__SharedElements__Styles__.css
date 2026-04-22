@@ -1,307 +1,341 @@
-/*
-=============================================================================
- WHITECARDVISION - SHARED COMMON ELEMENT STYLES
-=============================================================================
- Covers: Resolution Picker, Loading Spinner overlay, Templates Panel.
-=============================================================================
-*/
+/* =============================================================================
+   WHITECARDVISION - SHARED COMMON ELEMENTS
+   =============================================================================
+
+   FILE       : WhitecardVision__SharedElements__Styles__.css
+   NAMESPACE  : Wv
+   MODULE     : Shared - Resolution Picker, Loading Spinner, Templates Panel
+   PURPOSE    : Styles for cross-System components mounted in sidebars
+   DESCRIPTION:
+   - Resolution picker, spinner overlay, and markdown template browser
+   - Some rules use var fallbacks for tokens not yet in Core Variables
+
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Resolution Picker - Segmented size control             */
+/* ----------------------------------------------------------------- */
+
+    .Wv__ResolutionPicker {
+        display                          : inline-flex;
+        align-items                      : center;
+        gap                              : 10px;
+        padding                          : 4px 10px;
+        border                           : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        border-radius                    : 6px;
+        background                       : var(--Wv__Color__SurfaceRaised, #171a20);
+        font-size                        : 12px;
+        color                            : var(--Wv__Color__TextMuted, #98a0ac);
+    }
+
+    .Wv__ResolutionPicker__Label {
+        letter-spacing                   : 0.04em;
+        text-transform                   : uppercase;
+        font-weight                      : 600;
+    }
+
+    .Wv__ResolutionPicker__Group {
+        display                          : inline-flex;
+        gap                              : 2px;
+        border                           : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        border-radius                    : 5px;
+        overflow                         : hidden;
+    }
+
+    .Wv__ResolutionPicker__Button {
+        appearance                       : none;
+        border                           : 0;
+        background                       : transparent;
+        color                            : var(--Wv__Color__TextPrimary, #e2e6ee);
+        padding                          : 4px 10px;
+        font-size                        : 12px;
+        font-weight                      : 600;
+        cursor                           : pointer;
+        transition                       : background 0.15s ease, color 0.15s ease;
+    }
+
+    .Wv__ResolutionPicker__Button:hover {
+        background                       : var(--Wv__Color__SurfaceHover, #1e232b);
+    }
+
+    .Wv__ResolutionPicker__Button--Active {
+        background                       : var(--Wv__Color__Primary, #3b82f6);
+        color                            : #ffffff;
+    }
+
+/* endregion ----------------------------------------------------------------- */
 
 
-/* ===== RESOLUTION PICKER ================================================ */
-.Wv__ResolutionPicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 10px;
-    border: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    border-radius: 6px;
-    background: var(--Wv__Color__SurfaceRaised, #171a20);
-    font-size: 12px;
-    color: var(--Wv__Color__TextMuted, #98a0ac);
-}
+/* ----------------------------------------------------------------- */
+/* REGION | Loading Spinner - Overlay, Ring, Keyframes            */
+/* ----------------------------------------------------------------- */
 
-.Wv__ResolutionPicker__Label {
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    font-weight: 600;
-}
+    .Wv__LoadingSpinner__Overlay {
+        position                         : absolute;
+        inset                            : 0;
+        display                          : flex;
+        flex-direction                   : column;
+        align-items                      : center;
+        justify-content                  : center;
+        gap                              : 12px;
+        background                       : rgba(10, 12, 16, 0.72);
+        backdrop-filter                  : blur(2px);
+        z-index                          : 20;
+        animation                        : Wv__LoadingSpinner__FadeIn 0.12s ease-out both;
+    }
 
-.Wv__ResolutionPicker__Group {
-    display: inline-flex;
-    gap: 2px;
-    border: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    border-radius: 5px;
-    overflow: hidden;
-}
+    @keyframes Wv__LoadingSpinner__FadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
 
-.Wv__ResolutionPicker__Button {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    color: var(--Wv__Color__TextPrimary, #e2e6ee);
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-}
+    .Wv__LoadingSpinner__Ring {
+        position                         : relative;
+        width                            : 60px;
+        height                           : 60px;
+    }
 
-.Wv__ResolutionPicker__Button:hover {
-    background: var(--Wv__Color__SurfaceHover, #1e232b);
-}
+    .Wv__LoadingSpinner__Ring span {
+        position                         : absolute;
+        inset                            : 0;
+        border                           : 3px solid transparent;
+        border-top-color                 : var(--Wv__Color__Primary, #3b82f6);
+        border-radius                    : 50%;
+        animation                        : Wv__LoadingSpinner__Spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+    .Wv__LoadingSpinner__Ring span:nth-child(1) { animation-delay: -0.45s; }
+    .Wv__LoadingSpinner__Ring span:nth-child(2) { animation-delay: -0.30s; }
+    .Wv__LoadingSpinner__Ring span:nth-child(3) { animation-delay: -0.15s; }
+    .Wv__LoadingSpinner__Ring span:nth-child(4) { animation-delay:  0s;    }
 
-.Wv__ResolutionPicker__Button--Active {
-    background: var(--Wv__Color__Primary, #3b82f6);
-    color: #ffffff;
-}
+    @keyframes Wv__LoadingSpinner__Spin {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
+    .Wv__LoadingSpinner__Label {
+        font-size                        : 13px;
+        font-weight                      : 600;
+        color                            : var(--Wv__Color__TextPrimary, #e2e6ee);
+        letter-spacing                   : 0.02em;
+    }
 
-/* ===== LOADING SPINNER OVERLAY ========================================== */
-.Wv__LoadingSpinner__Overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: rgba(10, 12, 16, 0.72);
-    backdrop-filter: blur(2px);
-    z-index: 20;
-    animation: Wv__LoadingSpinner__FadeIn 0.12s ease-out both;
-}
+    .Wv__LoadingSpinner__Elapsed {
+        font-size                        : 12px;
+        font-variant-numeric             : tabular-nums;
+        color                            : var(--Wv__Color__TextMuted, #98a0ac);
+    }
 
-@keyframes Wv__LoadingSpinner__FadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-.Wv__LoadingSpinner__Ring {
-    position: relative;
-    width: 60px;
-    height: 60px;
-}
-
-.Wv__LoadingSpinner__Ring span {
-    position: absolute;
-    inset: 0;
-    border: 3px solid transparent;
-    border-top-color: var(--Wv__Color__Primary, #3b82f6);
-    border-radius: 50%;
-    animation: Wv__LoadingSpinner__Spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-.Wv__LoadingSpinner__Ring span:nth-child(1) { animation-delay: -0.45s; }
-.Wv__LoadingSpinner__Ring span:nth-child(2) { animation-delay: -0.30s; }
-.Wv__LoadingSpinner__Ring span:nth-child(3) { animation-delay: -0.15s; }
-.Wv__LoadingSpinner__Ring span:nth-child(4) { animation-delay:  0s;    }
-
-@keyframes Wv__LoadingSpinner__Spin {
-    0%   { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.Wv__LoadingSpinner__Label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--Wv__Color__TextPrimary, #e2e6ee);
-    letter-spacing: 0.02em;
-}
-
-.Wv__LoadingSpinner__Elapsed {
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-    color: var(--Wv__Color__TextMuted, #98a0ac);
-}
+/* endregion ----------------------------------------------------------------- */
 
 
-/* ===== TEMPLATES PANEL =================================================== */
-.Wv__TemplatesPanel {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    background: var(--Wv__Color__Surface, #12151b);
-    border: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: max-width 0.25s ease;
-}
+/* ----------------------------------------------------------------- */
+/* REGION | Templates Panel - Container, Header, Search, Tree     */
+/* ----------------------------------------------------------------- */
 
-.Wv__TemplatesPanel__Header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    background: var(--Wv__Color__SurfaceRaised, #171a20);
-}
+    .Wv__TemplatesPanel {
+        display                          : flex;
+        flex-direction                   : column;
+        min-height                       : 0;
+        background                       : var(--Wv__Color__Surface, #12151b);
+        border                           : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        border-radius                    : 8px;
+        overflow                         : hidden;
+        transition                       : max-width 0.25s ease;
+    }
 
-.Wv__TemplatesPanel__Title {
-    margin: 0;
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
+    .Wv__TemplatesPanel__Header {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : 10px;
+        padding                          : 10px 12px;
+        border-bottom                    : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        background                       : var(--Wv__Color__SurfaceRaised, #171a20);
+    }
 
-.Wv__TemplatesPanel__ToggleBtn {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 6px 7px;
-    display: inline-flex;
-    flex-direction: column;
-    gap: 3px;
-}
+    .Wv__TemplatesPanel__Title {
+        margin                           : 0;
+        font-size                        : 13px;
+        letter-spacing                   : 0.04em;
+        text-transform                   : uppercase;
+    }
 
-.Wv__TemplatesPanel__Hamburger {
-    display: block;
-    width: 14px;
-    height: 2px;
-    background: var(--Wv__Color__TextPrimary, #e2e6ee);
-    border-radius: 1px;
-}
+    .Wv__TemplatesPanel__ToggleBtn {
+        appearance                       : none;
+        background                       : transparent;
+        border                           : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        border-radius                    : 4px;
+        cursor                           : pointer;
+        padding                          : 6px 7px;
+        display                          : inline-flex;
+        flex-direction                   : column;
+        gap                              : 3px;
+    }
 
-.Wv__TemplatesPanel__Body {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 12px;
-    overflow: hidden;
-    min-height: 0;
-    flex: 1 1 auto;
-}
+    .Wv__TemplatesPanel__Hamburger {
+        display                          : block;
+        width                            : 14px;
+        height                           : 2px;
+        background                       : var(--Wv__Color__TextPrimary, #e2e6ee);
+        border-radius                    : 1px;
+    }
 
-.Wv__TemplatesPanel__SearchWrap {
-    flex: 0 0 auto;
-}
+    .Wv__TemplatesPanel__Body {
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 8px;
+        padding                          : 10px 12px;
+        overflow                         : hidden;
+        min-height                       : 0;
+        flex                             : 1 1 auto;
+    }
 
-.Wv__TemplatesPanel__SearchInput {
-    width: 100%;
-    box-sizing: border-box;
-}
+    .Wv__TemplatesPanel__SearchWrap {
+        flex                             : 0 0 auto;
+    }
 
-.Wv__TemplatesPanel__Tree {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
+    .Wv__TemplatesPanel__SearchInput {
+        width                            : 100%;
+        box-sizing                       : border-box;
+    }
 
-.Wv__TemplatesPanel__File {
-    padding: 8px 10px;
-    border: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    border-radius: 6px;
-    background: var(--Wv__Color__SurfaceRaised, #171a20);
-    cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
+    .Wv__TemplatesPanel__Tree {
+        flex                             : 1 1 auto;
+        min-height                       : 0;
+        overflow-y                       : auto;
+        padding-right                    : 4px;
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 4px;
+    }
 
-.Wv__TemplatesPanel__File:hover {
-    border-color: var(--Wv__Color__Primary, #3b82f6);
-    background: var(--Wv__Color__SurfaceHover, #1e232b);
-}
+    .Wv__TemplatesPanel__File {
+        padding                          : 8px 10px;
+        border                           : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        border-radius                    : 6px;
+        background                       : var(--Wv__Color__SurfaceRaised, #171a20);
+        cursor                           : pointer;
+        transition                       : border-color 0.15s ease, background 0.15s ease;
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 3px;
+    }
 
-.Wv__TemplatesPanel__File__Title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--Wv__Color__TextPrimary, #e2e6ee);
-}
+    .Wv__TemplatesPanel__File:hover {
+        border-color                     : var(--Wv__Color__Primary, #3b82f6);
+        background                       : var(--Wv__Color__SurfaceHover, #1e232b);
+    }
 
-.Wv__TemplatesPanel__File__Placeholder {
-    font-style: italic;
-    color: var(--Wv__Color__TextFaint, #6a7280);
-    font-weight: 500;
-}
+    .Wv__TemplatesPanel__File__Title {
+        font-size                        : 13px;
+        font-weight                      : 600;
+        color                            : var(--Wv__Color__TextPrimary, #e2e6ee);
+    }
 
-.Wv__TemplatesPanel__File__Summary {
-    font-size: 11px;
-    color: var(--Wv__Color__TextMuted, #98a0ac);
-    line-height: 1.35;
-}
+    .Wv__TemplatesPanel__File__Placeholder {
+        font-style                       : italic;
+        color                            : var(--Wv__Color__TextFaint, #6a7280);
+        font-weight                      : 500;
+    }
 
-.Wv__TemplatesPanel__File__Meta {
-    display: flex;
-    gap: 8px;
-    font-size: 10px;
-    color: var(--Wv__Color__TextFaint, #6a7280);
-    flex-wrap: wrap;
-}
+    .Wv__TemplatesPanel__File__Summary {
+        font-size                        : 11px;
+        color                            : var(--Wv__Color__TextMuted, #98a0ac);
+        line-height                      : 1.35;
+    }
 
-.Wv__TemplatesPanel__File__Flags {
-    font-style: italic;
-}
+    .Wv__TemplatesPanel__File__Meta {
+        display                          : flex;
+        gap                              : 8px;
+        font-size                        : 10px;
+        color                            : var(--Wv__Color__TextFaint, #6a7280);
+        flex-wrap                        : wrap;
+    }
 
-.Wv__TemplatesPanel__Hint {
-    margin: 0;
-    font-size: 10px;
-}
+    .Wv__TemplatesPanel__File__Flags {
+        font-style                       : italic;
+    }
 
+    .Wv__TemplatesPanel__Hint {
+        margin                           : 0;
+        font-size                        : 10px;
+    }
 
-/* ===== TEMPLATES PANEL - COLLAPSED STATE ================================ */
-.Wv__TemplatesPanel--Collapsed .Wv__TemplatesPanel__Body,
-.Wv__TemplatesPanel--Collapsed .Wv__TemplatesPanel__Title { display: none; }
-
-.Wv__TemplatesPanel--Collapsed {
-    width: 44px;
-    min-width: 44px;
-    max-width: 44px;
-}
-
-.Wv__TemplatesPanel--Collapsed .Wv__TemplatesPanel__Header {
-    justify-content: center;
-    padding: 8px 6px;
-    border-bottom: 0;
-}
+/* endregion ----------------------------------------------------------------- */
 
 
-/* ===== TEMPLATE FOLDERS (native <details>) ============================== */
-.Wv__TemplatesPanel__FolderBranch {
-    margin: 4px 0;
-}
-.Wv__TemplatesPanel__FolderBranch > summary {
-    list-style: none;
-    cursor: pointer;
-    padding: 6px 8px;
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--Wv__Color__TextMuted, #98a0ac);
-    border: 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
-    border-radius: 5px;
-    background: var(--Wv__Color__SurfaceRaised, #171a20);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    user-select: none;
-}
-.Wv__TemplatesPanel__FolderBranch > summary::-webkit-details-marker { display: none; }
-.Wv__TemplatesPanel__FolderBranch > summary::before {
-    content: "\25B6";                                                                                                           /* right-pointing triangle */
-    display: inline-block;
-    font-size: 9px;
-    transition: transform 0.15s ease;
-    transform: rotate(0deg);
-    color: var(--Wv__Color__TextFaint, #6a7280);
-}
-.Wv__TemplatesPanel__FolderBranch[open] > summary::before {
-    transform: rotate(90deg);
-}
-.Wv__TemplatesPanel__FolderBranch > summary:hover {
-    border-color: var(--Wv__Color__BorderStrong, #3a4150);
-    color: var(--Wv__Color__TextPrimary, #e2e6ee);
-}
-.Wv__TemplatesPanel__FolderChildren {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px 0 6px 12px;
-    border-left: 1px dashed var(--Wv__Color__BorderSubtle, #2a2f38);
-    margin-left: 10px;
-}
+/* ----------------------------------------------------------------- */
+/* REGION | Templates Panel - Collapsed Rail                       */
+/* ----------------------------------------------------------------- */
+
+    .Wv__TemplatesPanel--Collapsed .Wv__TemplatesPanel__Body,
+    .Wv__TemplatesPanel--Collapsed .Wv__TemplatesPanel__Title {
+        display                          : none;
+    }
+
+    .Wv__TemplatesPanel--Collapsed {
+        width                            : 44px;
+        min-width                        : 44px;
+        max-width                        : 44px;
+    }
+
+    .Wv__TemplatesPanel--Collapsed .Wv__TemplatesPanel__Header {
+        justify-content                  : center;
+        padding                          : 8px 6px;
+        border-bottom                    : 0;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Template Folders - Native details/summary                */
+/* ----------------------------------------------------------------- */
+
+    .Wv__TemplatesPanel__FolderBranch {
+        margin                           : 4px 0;
+    }
+    .Wv__TemplatesPanel__FolderBranch > summary {
+        list-style                       : none;
+        cursor                           : pointer;
+        padding                          : 6px 8px;
+        font-size                        : 11px;
+        letter-spacing                   : 0.05em;
+        text-transform                   : uppercase;
+        color                            : var(--Wv__Color__TextMuted, #98a0ac);
+        border                           : 1px solid var(--Wv__Color__BorderSubtle, #2a2f38);
+        border-radius                    : 5px;
+        background                       : var(--Wv__Color__SurfaceRaised, #171a20);
+        display                          : flex;
+        align-items                      : center;
+        gap                              : 6px;
+        user-select                      : none;
+    }
+    .Wv__TemplatesPanel__FolderBranch > summary::-webkit-details-marker {
+        display                          : none;
+    }
+    .Wv__TemplatesPanel__FolderBranch > summary::before {
+        content                          : "\25B6";   /* right-pointing triangle */
+        display                          : inline-block;
+        font-size                        : 9px;
+        transition                       : transform 0.15s ease;
+        transform                        : rotate(0deg);
+        color                            : var(--Wv__Color__TextFaint, #6a7280);
+    }
+    .Wv__TemplatesPanel__FolderBranch[open] > summary::before {
+        transform                        : rotate(90deg);
+    }
+    .Wv__TemplatesPanel__FolderBranch > summary:hover {
+        border-color                     : var(--Wv__Color__BorderStrong, #3a4150);
+        color                            : var(--Wv__Color__TextPrimary, #e2e6ee);
+    }
+    .Wv__TemplatesPanel__FolderChildren {
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 4px;
+        padding                          : 6px 0 6px 12px;
+        border-left                      : 1px dashed var(--Wv__Color__BorderSubtle, #2a2f38);
+        margin-left                      : 10px;
+    }
+
+/* endregion ----------------------------------------------------------------- */

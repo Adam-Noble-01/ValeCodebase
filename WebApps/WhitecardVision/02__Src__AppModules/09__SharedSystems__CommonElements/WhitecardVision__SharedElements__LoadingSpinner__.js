@@ -1,9 +1,17 @@
 /* =============================================================================
  WHITECARDVISION - SHARED ELEMENT - LOADING SPINNER
 =============================================================================
- Drop an absolute-positioned overlay (dual-ring + status + elapsed counter)
- over any host element while a long-running operation is in flight.
+ FILE       : WhitecardVision__SharedElements__LoadingSpinner__.js
+ NAMESPACE  : Wv
+ MODULE     : SharedElements - LoadingSpinner
+ PURPOSE    : Drop an absolute-positioned overlay (dual-ring + status + elapsed
+              counter) over any host element while a long-running operation
+              is in flight.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Loading Spinner Module
+// =============================================================================
 
 (function () {
     'use strict';
@@ -12,8 +20,8 @@
     const Wv__SharedElements__LoadingSpinner__Registry = new WeakMap();                                                         //<-- host element -> { overlayEl, tickHandle, startedAtMs }.
 
 
-    /* FUNCTION | Show the spinner over a given host element */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Show the spinner over a given host element
+    // ------------------------------------------------------------
     function Wv__SharedElements__LoadingSpinner__ShowOver(hostElement, labelText) {
         if (!hostElement) return;
         Wv__SharedElements__LoadingSpinner__Hide(hostElement);                                                                  //<-- Defensive: never stack two overlays.
@@ -46,11 +54,11 @@
             startedAtMs : startedAtMs
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Hide the spinner for a given host element */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Hide the spinner for a given host element
+    // ------------------------------------------------------------
     function Wv__SharedElements__LoadingSpinner__Hide(hostElement) {
         if (!hostElement) return;
         const registryEntry = Wv__SharedElements__LoadingSpinner__Registry.get(hostElement);
@@ -61,24 +69,29 @@
         }
         Wv__SharedElements__LoadingSpinner__Registry.delete(hostElement);
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* FUNCTION | Update the label text while still running */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Update the label text while still running
+    // ------------------------------------------------------------
     function Wv__SharedElements__LoadingSpinner__UpdateLabel(hostElement, newLabelText) {
         const registryEntry = Wv__SharedElements__LoadingSpinner__Registry.get(hostElement);
         if (!registryEntry || !registryEntry.overlayEl) return;
         const labelElement = registryEntry.overlayEl.querySelector('.Wv__LoadingSpinner__Label');
         if (labelElement) labelElement.textContent = newLabelText || '';
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__SharedElements__LoadingSpinner = {
         Wv__SharedElements__LoadingSpinner__ShowOver,
         Wv__SharedElements__LoadingSpinner__Hide,
         Wv__SharedElements__LoadingSpinner__UpdateLabel
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

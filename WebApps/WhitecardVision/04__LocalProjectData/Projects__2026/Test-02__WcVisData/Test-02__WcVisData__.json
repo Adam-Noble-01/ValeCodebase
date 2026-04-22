@@ -1,0 +1,36 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Test-02",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Test-02",
+        "Wv__ProjectFile__Metadata__Description": "A Test Of the clown House Project",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T13:46:30.427267+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-22T13:54:48.008899+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__08-Apr-2026.png",
+            "Wv__Whitecard__Prompt": "The Interior of an Orangery, but its the home of a sad depressed clown family. It should be the empty space but decorative in crazy clown colours and be silly and goofy looking, whilst echoing utter despair and clown misery.",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [
+            {
+                "Wv__Reference__Id": "ref_moa41vy4_yxe68",
+                "Wv__Reference__Type": "material",
+                "Wv__Reference__Label": "Walls",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/02__ImageInput__MaterialsReference/01__Material__Test.jpg",
+                "Wv__Reference__Prompt": "Match the Style of walls shown in this reference, painted diamond shapes in depressed faded clown colors."
+            }
+        ],
+        "Wv__Project__RenderGroup__StyleReferences": [],
+        "Wv__Project__RenderGroup__AvoidNotes": "Adding People, Happiness, Cheer, Joy",
+        "Wv__Project__RenderGroup__ImageSize": "4K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png"
+    },
+    "Wv__Project__EditIterations": [],
+    "Wv__Project__ActiveEditIterationId": ""
+}

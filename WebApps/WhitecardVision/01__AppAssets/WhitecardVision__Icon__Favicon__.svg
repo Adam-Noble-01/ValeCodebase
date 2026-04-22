@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#171a21"/>
+  <!-- Whitecard rectangle (structural reference frame) -->
+  <rect x="5" y="8" width="15" height="16" rx="2" stroke="#303644" stroke-width="1.5" fill="#1d2129"/>
+  <!-- Image landscape pictogram inside the card -->
+  <rect x="7" y="10" width="11" height="8" rx="1" fill="#242935"/>
+  <circle cx="9.5" cy="12.5" r="1" fill="#4f8cff"/>
+  <polyline points="7,18 10,15 13,17 18,12 18,18" stroke="#4f8cff" stroke-width="1" stroke-linejoin="round" fill="none"/>
+  <!-- Upload arrow emerging from card  signals generation -->
+  <line x1="23" y1="21" x2="23" y2="13" stroke="#4f8cff" stroke-width="1.8" stroke-linecap="round"/>
+  <polyline points="20,16 23,13 26,16" stroke="#4f8cff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

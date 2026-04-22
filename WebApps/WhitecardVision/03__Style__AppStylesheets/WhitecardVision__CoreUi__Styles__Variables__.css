@@ -1,46 +1,67 @@
-/*
-=============================================================================
- WHITECARDVISION - STYLE VARIABLES
-=============================================================================
-*/
-:root {
-    --Wv__Color__Bg                : #0f1115;
-    --Wv__Color__BgElevated        : #171a21;
-    --Wv__Color__BgPanel           : #1d2129;
-    --Wv__Color__BgRaised          : #242935;
-    --Wv__Color__Border            : #303644;
-    --Wv__Color__BorderStrong      : #3d455a;
+/* =============================================================================
+   WHITECARDVISION - CORE UI - CSS VARIABLES
+   =============================================================================
 
-    --Wv__Color__TextPrimary       : #e7eaf2;
-    --Wv__Color__TextSecondary     : #a1a8b8;
-    --Wv__Color__TextMuted         : #6b7280;
+   FILE       : WhitecardVision__CoreUi__Styles__Variables__.css
+   NAMESPACE  : Wv
+   MODULE     : Core UI - Design Tokens
+   PURPOSE    : Global CSS custom properties (colour, spacing, typography, layout)
+   DESCRIPTION:
+   - Dark-theme tokens for WhitecardVision shell and all Systems
+   - Import first in the stylesheet index; no other rules here
 
-    --Wv__Color__Accent            : #4f8cff;
-    --Wv__Color__AccentHover       : #6aa0ff;
-    --Wv__Color__AccentActive      : #3a74e0;
+   ============================================================================= */
 
-    --Wv__Color__Success           : #2ea86f;
-    --Wv__Color__Warning           : #e2a23b;
-    --Wv__Color__Danger            : #e25b5b;
+/* ----------------------------------------------------------------- */
+/* REGION | Root Design Tokens - Colours, Space, Type, Layout        */
+/* ----------------------------------------------------------------- */
 
-    --Wv__Space__Xs                : 4px;
-    --Wv__Space__Sm                : 8px;
-    --Wv__Space__Md                : 12px;
-    --Wv__Space__Lg                : 20px;
-    --Wv__Space__Xl                : 32px;
+    :root {
+        /* Colour palette */
+        --Wv__Color__Bg                 : #0f1115;
+        --Wv__Color__BgElevated         : #171a21;
+        --Wv__Color__BgPanel            : #1d2129;
+        --Wv__Color__BgRaised           : #242935;
+        --Wv__Color__Border             : #303644;
+        --Wv__Color__BorderStrong       : #3d455a;
 
-    --Wv__Radius__Sm               : 4px;
-    --Wv__Radius__Md               : 8px;
-    --Wv__Radius__Lg               : 14px;
+        --Wv__Color__TextPrimary        : #e7eaf2;
+        --Wv__Color__TextSecondary      : #a1a8b8;
+        --Wv__Color__TextMuted          : #6b7280;
 
-    --Wv__Font__Sans               : -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --Wv__Font__Mono               : ui-monospace, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+        --Wv__Color__Accent             : #4f8cff;
+        --Wv__Color__AccentHover        : #6aa0ff;
+        --Wv__Color__AccentActive       : #3a74e0;
 
-    --Wv__Shadow__Panel            : 0 1px 3px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.25);
-    --Wv__Shadow__Toast            : 0 6px 18px rgba(0,0,0,0.55);
+        --Wv__Color__Success            : #2ea86f;
+        --Wv__Color__Warning            : #e2a23b;
+        --Wv__Color__Danger             : #e25b5b;
 
-    --Wv__Layout__HeaderHeight     : 56px;
-    --Wv__Layout__NavHeight        : 42px;
-    --Wv__Layout__MaxContentWidth  : 1680px;
-    --Wv__Layout__SidebarWidth     : 320px;
-}
+        /* Spacing scale */
+        --Wv__Space__Xs                 : 4px;
+        --Wv__Space__Sm                 : 8px;
+        --Wv__Space__Md                 : 12px;
+        --Wv__Space__Lg                 : 20px;
+        --Wv__Space__Xl                 : 32px;
+
+        /* Corners */
+        --Wv__Radius__Sm                : 4px;
+        --Wv__Radius__Md                : 8px;
+        --Wv__Radius__Lg                : 14px;
+
+        /* Typography */
+        --Wv__Font__Sans                : -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        --Wv__Font__Mono                : ui-monospace, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+
+        /* Elevation */
+        --Wv__Shadow__Panel             : 0 1px 3px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.25);
+        --Wv__Shadow__Toast            : 0 6px 18px rgba(0,0,0,0.55);
+
+        /* Layout (nav is inline in the header; NavHeight reserved for calcs = 0) */
+        --Wv__Layout__HeaderHeight      : 56px;
+        --Wv__Layout__NavHeight         : 0px;
+        --Wv__Layout__MaxContentWidth   : 1680px;
+        --Wv__Layout__SidebarWidth      : 320px;
+    }
+
+/* endregion ----------------------------------------------------------------- */

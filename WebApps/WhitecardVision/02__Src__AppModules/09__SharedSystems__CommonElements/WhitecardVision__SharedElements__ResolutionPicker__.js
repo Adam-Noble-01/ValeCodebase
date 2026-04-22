@@ -1,10 +1,17 @@
 /* =============================================================================
  WHITECARDVISION - SHARED ELEMENT - RESOLUTION PICKER
 =============================================================================
- 3-button pill [ 1K | 2K | 4K ] that writes back into a caller-provided
- setter. Aspect ratio is NOT exposed - it always inherits from the
- whitecard / base image elsewhere in the app.
+ FILE       : WhitecardVision__SharedElements__ResolutionPicker__.js
+ NAMESPACE  : Wv
+ MODULE     : SharedElements - ResolutionPicker
+ PURPOSE    : 3-button pill [ 1K | 2K | 4K ] that writes back into a caller-
+              provided setter. Aspect ratio is NOT exposed - it always inherits
+              from the whitecard / base image elsewhere in the app.
 ============================================================================= */
+
+// =============================================================================
+// REGION | Resolution Picker Module
+// =============================================================================
 
 (function () {
     'use strict';
@@ -13,8 +20,8 @@
     const WV__RESOLUTION_OPTIONS = ['1K', '2K', '4K'];
 
 
-    /* FUNCTION | Mount a picker into an arbitrary host element */
-    /* ------------------------------------------------------------ */
+    // FUNCTION | Mount a picker into an arbitrary host element
+    // ------------------------------------------------------------
     function Wv__SharedElements__ResolutionPicker__Mount(hostElement, options) {
         if (!hostElement) return;
         const getValueFn = options.getValue || (() => '2K');
@@ -47,11 +54,11 @@
             refresh : () => Wv__SharedElements__ResolutionPicker__PaintActive(hostElement, getValueFn() || '2K')
         };
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
-    /* HELPER FUNCTION | Highlight the active option */
-    /* ------------------------------------------------------------ */
+    // HELPER FUNCTION | Highlight the active option
+    // ------------------------------------------------------------
     function Wv__SharedElements__ResolutionPicker__PaintActive(hostElement, activeResolutionToken) {
         const buttonList = hostElement.querySelectorAll('.Wv__ResolutionPicker__Button');
         buttonList.forEach(btn => {
@@ -62,12 +69,17 @@
             }
         });
     }
-    /* ------------------------------------------------------------ */
+    // ------------------------------------------------------------
 
 
+    // PUBLIC API
+    // ------------------------------------------------------------
     window.Wv__SharedElements__ResolutionPicker = {
         Wv__SharedElements__ResolutionPicker__Mount,
         WV__RESOLUTION_OPTIONS
     };
+    // ------------------------------------------------------------
 
 })();
+
+// endregion ===================================================================

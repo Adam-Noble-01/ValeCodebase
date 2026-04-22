@@ -61,7 +61,7 @@ const PhotoMeasurePro__AppCore__ModeManager = (function() {
 
         domHelpers.PhotoMeasurePro__DomHelpers__SetHiddenByClass(
             domRefs.PhotoMeasurePro__ModeManager__StageWrapper,
-            currentState.mode === "ortho" || currentState.mode === "3d",
+            currentState.mode === "ortho" || (currentState.mode === "3d" && (!currentState.scene3d || currentState.scene3d.viewMode === "3dOnly")),
             "PhotoMeasurePro__UiState__Hidden"
         );
 

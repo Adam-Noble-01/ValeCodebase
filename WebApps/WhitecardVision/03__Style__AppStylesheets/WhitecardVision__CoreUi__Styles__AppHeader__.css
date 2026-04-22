@@ -1,0 +1,48 @@
+/*
+=============================================================================
+ WHITECARDVISION - APP HEADER
+=============================================================================
+*/
+.Wv__App__Header {
+    display           : flex;
+    align-items       : center;
+    justify-content   : space-between;
+    padding           : 0 var(--Wv__Space__Lg);
+    background        : var(--Wv__Color__BgElevated);
+    border-bottom     : 1px solid var(--Wv__Color__Border);
+    gap               : var(--Wv__Space__Lg);
+}
+
+.Wv__App__Header__Brand {
+    display           : flex;
+    align-items       : center;
+    line-height       : 1.1;
+}
+
+.Wv__App__Header__Title {
+    font-size         : 26px;
+    font-weight       : 600;
+    letter-spacing    : 0.01em;
+}
+
+.Wv__App__Header__Status {
+    display           : flex;
+    align-items       : center;
+    gap               : var(--Wv__Space__Md);
+    font-size         : 12px;
+    color             : var(--Wv__Color__TextSecondary);
+}
+
+.Wv__App__Header__ProjectBadge,
+.Wv__App__Header__ServerBadge {
+    padding           : 4px 10px;
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Sm);
+    background        : var(--Wv__Color__BgPanel);
+    font-family       : var(--Wv__Font__Mono);
+    font-size         : 11px;
+}
+
+.Wv__App__Header__ServerBadge--Healthy { color: var(--Wv__Color__Success); border-color: var(--Wv__Color__Success); }
+.Wv__App__Header__ServerBadge--Warn    { color: var(--Wv__Color__Warning); border-color: var(--Wv__Color__Warning); }
+.Wv__App__Header__ServerBadge--Down    { color: var(--Wv__Color__Danger);  border-color: var(--Wv__Color__Danger);  }

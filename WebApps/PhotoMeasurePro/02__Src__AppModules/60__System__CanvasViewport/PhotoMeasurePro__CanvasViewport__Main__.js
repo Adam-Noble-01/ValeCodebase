@@ -584,6 +584,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const idGenerator = window.PhotoMeasurePro__AppUtils__IdGenerator;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
         if (!currentState.imageUrl) return;
+        if (currentState.mode === "3d") return;
         if (PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState)) return;
 
         pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
@@ -693,6 +694,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
         if (!currentState.imageUrl) return;
+        if (currentState.mode === "3d") return;
         if (PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState)) return;
 
         if (currentState.isPanning) {
@@ -842,6 +844,12 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const scaleEngine = window.PhotoMeasurePro__System__ScaleConstraint__Engine;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
+        if (currentState.mode === "3d") {
+            if (pointerEvent.currentTarget.hasPointerCapture(pointerEvent.pointerId)) {
+                pointerEvent.currentTarget.releasePointerCapture(pointerEvent.pointerId);
+            }
+            return;
+        }
 
         if (PhotoMeasurePro__CanvasViewport__ShouldIgnorePointerEventInOrtho(pointerEvent, domRefs, currentState)) {
             if (pointerEvent.currentTarget.hasPointerCapture(pointerEvent.pointerId)) {
@@ -933,6 +941,7 @@ const PhotoMeasurePro__System__CanvasViewport__Main = (function() {
         const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
         const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
         if (!currentState.imageUrl) return;
+        if (currentState.mode === "3d") return;
 
         const viewportRect = domRefs.PhotoMeasurePro__CanvasViewport__ViewportRoot.getBoundingClientRect();
         const mouseX = wheelEvent.clientX - viewportRect.left;

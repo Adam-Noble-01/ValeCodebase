@@ -1,0 +1,64 @@
+/*
+=============================================================================
+ WHITECARDVISION - MODALS + TOASTS
+=============================================================================
+*/
+.Wv__App__ToastHost {
+    position          : fixed;
+    right             : var(--Wv__Space__Lg);
+    bottom            : var(--Wv__Space__Lg);
+    display           : flex;
+    flex-direction    : column;
+    gap               : var(--Wv__Space__Sm);
+    z-index           : 9000;
+    pointer-events    : none;
+}
+
+.Wv__Toast {
+    pointer-events    : auto;
+    min-width         : 260px;
+    max-width         : 380px;
+    padding           : 10px 14px;
+    background        : var(--Wv__Color__BgRaised);
+    color             : var(--Wv__Color__TextPrimary);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-left-width : 4px;
+    border-radius     : var(--Wv__Radius__Md);
+    box-shadow        : var(--Wv__Shadow__Toast);
+    font-size         : 12.5px;
+    line-height       : 1.4;
+    animation         : Wv__Toast__SlideIn 180ms ease-out;
+}
+.Wv__Toast--Info    { border-left-color: var(--Wv__Color__Accent);  }
+.Wv__Toast--Success { border-left-color: var(--Wv__Color__Success); }
+.Wv__Toast--Warning { border-left-color: var(--Wv__Color__Warning); }
+.Wv__Toast--Error   { border-left-color: var(--Wv__Color__Danger);  }
+
+@keyframes Wv__Toast__SlideIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to   { opacity: 1; transform: translateX(0);    }
+}
+
+.Wv__App__ModalHost {
+    position          : fixed;
+    inset             : 0;
+    background        : rgba(0,0,0,0.55);
+    display           : flex;
+    align-items       : center;
+    justify-content   : center;
+    z-index           : 8000;
+}
+.Wv__App__ModalHost[hidden] { display: none !important; }
+
+.Wv__Modal {
+    min-width         : 380px;
+    max-width         : 560px;
+    background        : var(--Wv__Color__BgPanel);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Lg);
+    padding           : var(--Wv__Space__Lg);
+    box-shadow        : var(--Wv__Shadow__Panel);
+}
+.Wv__Modal__Title    { font-size: 15px; font-weight: 600; margin-bottom: var(--Wv__Space__Md); }
+.Wv__Modal__Body     { color: var(--Wv__Color__TextSecondary); font-size: 13px; }
+.Wv__Modal__Actions  { display: flex; justify-content: flex-end; gap: var(--Wv__Space__Sm); margin-top: var(--Wv__Space__Lg); }

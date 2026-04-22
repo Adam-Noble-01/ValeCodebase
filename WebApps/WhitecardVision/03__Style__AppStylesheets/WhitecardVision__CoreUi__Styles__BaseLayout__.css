@@ -1,0 +1,42 @@
+/*
+=============================================================================
+ WHITECARDVISION - BASE LAYOUT
+=============================================================================
+*/
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    height        : 100%;
+    margin        : 0;
+    padding       : 0;
+    background    : var(--Wv__Color__Bg);
+    color         : var(--Wv__Color__TextPrimary);
+    font-family   : var(--Wv__Font__Sans);
+    font-size     : 14px;
+    line-height   : 1.45;
+    -webkit-font-smoothing : antialiased;
+}
+
+.Wv__App__Body {
+    min-height       : 100vh;
+    display          : grid;
+    grid-template-rows: var(--Wv__Layout__HeaderHeight) var(--Wv__Layout__NavHeight) 1fr;
+}
+
+.Wv__App__Main {
+    overflow-y        : auto;
+    padding           : var(--Wv__Space__Lg);
+    max-width         : var(--Wv__Layout__MaxContentWidth);
+    width             : 100%;
+    margin            : 0 auto;
+}
+
+.Wv__App__ModePanel[hidden] { display: none !important; }
+
+a { color: var(--Wv__Color__Accent); text-decoration: none; }
+a:hover { color: var(--Wv__Color__AccentHover); }
+
+::-webkit-scrollbar              { width: 10px; height: 10px; }
+::-webkit-scrollbar-track        { background: var(--Wv__Color__BgElevated); }
+::-webkit-scrollbar-thumb        { background: var(--Wv__Color__BorderStrong); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--Wv__Color__Accent); }

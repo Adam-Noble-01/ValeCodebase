@@ -1,0 +1,39 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Test-01",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Test-01",
+        "Wv__ProjectFile__Metadata__Description": "A Quick Test 22-Apr-2026",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T12:10:58.895194+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-22T12:14:13.431089+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Test-01__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__08-Apr-2026.png",
+            "Wv__Whitecard__Prompt": "**OBJECTIVE** \n\n- Render the provided Whitecard Image as a highly realistic photograph.\n- The photograph should be indistinguishable from a high level Photograph.\n- The Photograph is of an empty newly constructed conservatory,\n- The aim of the image is to show a client how the space will look.\n- You are producing the photograph for Vale Garden Houses.\n- Vale Garden Houses are the UK's premium UK Manufacturer of Conservatories and Orangeries in the UK and they are a established Luxury high end brand.\n\n**THE VIBE**\n\n- Realistic.\n- UK Country Home.\n- Focus on the interior space not the outside.\n- Create a rustic yet sophisticated aesthetic.\n",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [],
+        "Wv__Project__RenderGroup__StyleReferences": [],
+        "Wv__Project__RenderGroup__AvoidNotes": "",
+        "Wv__Project__RenderGroup__ImageSize": "2K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-01__WcVisData/20__FinalExport__RenderMode/20260422T121224Z__render__.png"
+    },
+    "Wv__Project__EditIterations": [
+        {
+            "Wv__EditIteration__Id": "202604221212599Z",
+            "Wv__EditIteration__Label": "Iter 1",
+            "Wv__EditIteration__BaseImagePath": "04__LocalProjectData/Projects__2026/Test-01__WcVisData/20__FinalExport__RenderMode/20260422T121224Z__render__.png",
+            "Wv__EditIteration__TargetPrompt": "Change the orangery paint to beige, so all joinery elements in the shot are a classical off white color.",
+            "Wv__EditIteration__PreservePrompt": "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
+            "Wv__EditIteration__AvoidNotes": "",
+            "Wv__EditIteration__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-01__WcVisData/30__FinalExport__EditMode/202604221212599Z/20260422T121413Z__edit__.png",
+            "Wv__EditIteration__DateCreatedUtc": "2026-04-22T12:12:59.955Z"
+        }
+    ],
+    "Wv__Project__ActiveEditIterationId": "202604221212599Z"
+}

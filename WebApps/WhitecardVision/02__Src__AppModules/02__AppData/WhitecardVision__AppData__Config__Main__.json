@@ -1,0 +1,51 @@
+{
+    "Wv__AppConfig__Metadata": {
+        "Wv__AppConfig__Metadata__SchemaVersion" : "0.1.0",
+        "Wv__AppConfig__Metadata__AppName"       : "WhitecardVision",
+        "Wv__AppConfig__Metadata__AppTagline"    : "Professional Image Editing Platform"
+    },
+
+    "Wv__AppConfig__Server": {
+        "Wv__AppConfig__Server__BaseUrl"                : "",
+        "Wv__AppConfig__Server__HealthEndpoint"         : "/api/system/health",
+        "Wv__AppConfig__Server__ProjectsEndpoint"       : "/api/projects",
+        "Wv__AppConfig__Server__TemplatesTreeEndpoint"  : "/api/templates/tree",
+        "Wv__AppConfig__Server__TemplatesReadEndpoint"  : "/api/templates/read",
+        "Wv__AppConfig__Server__GenerateRenderEndpoint" : "/api/generate/render",
+        "Wv__AppConfig__Server__GenerateEditEndpoint"   : "/api/generate/edit"
+    },
+
+    "Wv__AppConfig__Gemini": {
+        "Wv__AppConfig__Gemini__ModelId"                 : "gemini-3-pro-image-preview",
+        "Wv__AppConfig__Gemini__DefaultImageSize"        : "2K",
+        "Wv__AppConfig__Gemini__ValidImageSizes"         : ["512", "1K", "2K", "4K"],
+        "Wv__AppConfig__Gemini__ValidAspectRatios"       : [
+            "1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:3",
+            "4:5", "5:4", "4:1", "8:1", "9:16", "16:9", "21:9"
+        ],
+        "Wv__AppConfig__Gemini__ResponseModalities"      : ["TEXT", "IMAGE"],
+        "Wv__AppConfig__Gemini__BlockedModelSubstrings"  : ["flash-image"]
+    },
+
+    "Wv__AppConfig__PromptConstructor": {
+        "Wv__AppConfig__PromptConstructor__TokenImageNumber"       : "{{Wv__ImageNumber}}",
+        "Wv__AppConfig__PromptConstructor__TokenImageLabel"        : "{{Wv__ImageLabel}}",
+        "Wv__AppConfig__PromptConstructor__MaxReferenceImages"     : 10,
+        "Wv__AppConfig__PromptConstructor__TemplatesRootRelPath"   : "10__Local__PromptTemplates",
+
+        "Wv__AppConfig__PromptConstructor__FrontLoader__Whitecard" : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/01__FrontLoad__CoreStandard__Whitecard__StructuralControlPrompt__.md",
+        "Wv__AppConfig__PromptConstructor__FrontLoader__Material"  : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/02__FrontLoad__CoreStandard__MaterialReference__ReferenceControlPrompt__.md",
+        "Wv__AppConfig__PromptConstructor__FrontLoader__Style"     : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/03__FrontLoad__CoreStandard__StyleReference__ReferenceControlPrompt__.md",
+        "Wv__AppConfig__PromptConstructor__FrontLoader__Avoid"     : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/04__FrontLoad__CoreStandard__Whitecard__AvoidTheFollowing.md"
+    },
+
+    "Wv__AppConfig__Modes": {
+        "Wv__AppConfig__Modes__DefaultModeId"   : "Render",
+        "Wv__AppConfig__Modes__Registered"      : [
+            { "modeId": "Render",       "label": "Render Image",  "panelElementId": "Wv__App__ModeRender",       "configRelPath": "02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__Config__.json" },
+            { "modeId": "Editor",       "label": "Editor Mode",   "panelElementId": "Wv__App__ModeEditor",       "configRelPath": "02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__Config__.json" },
+            { "modeId": "FilterSuite",  "label": "Filter Suite",  "panelElementId": "Wv__App__ModeFilterSuite",  "configRelPath": "02__Src__AppModules/30__System__FilterSuite/WhitecardVision__FilterSuite__Config__.json" },
+            { "modeId": "FinalPreview", "label": "Final Preview", "panelElementId": "Wv__App__ModeFinalPreview", "configRelPath": "02__Src__AppModules/40__System__FinalPreview/WhitecardVision__FinalPreview__Config__.json" }
+        ]
+    }
+}

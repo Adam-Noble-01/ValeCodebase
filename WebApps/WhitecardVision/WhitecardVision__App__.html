@@ -1,0 +1,337 @@
+<!doctype html>
+<!--
+=============================================================================
+ WHITECARDVISION - ENTRY HTML
+=============================================================================
+ FILE       : WhitecardVision__App__.html
+ NAMESPACE  : Wv
+ MODULE     : Entry Shell
+ PURPOSE    : Hosts the four app modes (Render / Editor / Filter Suite /
+              Final Preview) behind a text-link nav bar, loads the CSS hub
+              and all IIFE modules in dependency order.
+=============================================================================
+-->
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WhitecardVision</title>
+    <meta name="description" content="Whitecard-driven image rendering and editing powered by Gemini 3 Pro." />
+
+    <link rel="icon" type="image/svg+xml" href="01__AppAssets/WhitecardVision__Icon__Favicon__.svg" />
+    <link rel="stylesheet" href="03__Style__AppStylesheets/WhitecardVision__CoreUi__Styles__Index__.css" />
+</head>
+
+<body class="Wv__App__Body">
+
+    <!-- ======================================================================
+         REGION | App Header
+         ================================================================== -->
+    <header class="Wv__App__Header" id="Wv__App__Header">
+        <div class="Wv__App__Header__Brand">
+            <span class="Wv__App__Header__Title">WhitecardVision</span>
+        </div>
+        <div class="Wv__App__Header__Status" id="Wv__App__Header__Status">
+            <span class="Wv__App__Header__ProjectBadge" id="Wv__App__Header__ProjectBadge">No project loaded</span>
+            <span class="Wv__App__Header__ServerBadge"  id="Wv__App__Header__ServerBadge">Server: ...</span>
+        </div>
+    </header>
+    <!-- endregion -->
+
+
+    <!-- ======================================================================
+         REGION | Navigation Bar (text links separated by " / ")
+         ================================================================== -->
+    <nav class="Wv__App__NavigationBar" id="Wv__App__NavigationBar" aria-label="Primary">
+        <a href="#" class="Wv__App__NavTab Wv__App__NavTab--Active" data-wv-mode="Render">Render Image</a>
+        <span class="Wv__App__NavSeparator">/</span>
+        <a href="#" class="Wv__App__NavTab" data-wv-mode="Editor">Editor Mode</a>
+        <span class="Wv__App__NavSeparator">/</span>
+        <a href="#" class="Wv__App__NavTab" data-wv-mode="FilterSuite">Filter Suite</a>
+        <span class="Wv__App__NavSeparator">/</span>
+        <a href="#" class="Wv__App__NavTab" data-wv-mode="FinalPreview">Final Preview</a>
+    </nav>
+    <!-- endregion -->
+
+
+    <!-- ======================================================================
+         REGION | Main Content - Mode Panels
+         ================================================================== -->
+    <main class="Wv__App__Main" id="Wv__App__Main">
+
+        <!-- RENDER MODE PANEL -->
+        <section id="Wv__App__ModeRender" class="Wv__App__ModePanel" data-wv-mode="Render">
+
+            <div class="Wv__Render__ProjectMeta" id="Wv__Render__ProjectMeta">
+                <div class="Wv__Render__ProjectMeta__Row">
+                    <label class="Wv__Ui__Label">Project Name
+                        <input type="text" id="Wv__Render__ProjectMeta__NameInput"
+                               class="Wv__Ui__Input" placeholder="ExampleProject-01" />
+                    </label>
+                    <label class="Wv__Ui__Label Wv__Ui__Label--Grow">Description
+                        <input type="text" id="Wv__Render__ProjectMeta__DescriptionInput"
+                               class="Wv__Ui__Input" placeholder="Short project description..." />
+                    </label>
+                    <div class="Wv__Render__ProjectMeta__Actions">
+                        <button type="button" class="Wv__Ui__Button" id="Wv__Render__ProjectMeta__NewBtn">New</button>
+                        <button type="button" class="Wv__Ui__Button" id="Wv__Render__ProjectMeta__LoadBtn">Load</button>
+                        <button type="button" class="Wv__Ui__Button" id="Wv__Render__ProjectMeta__SaveBtn">Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="Wv__Render__Workbench">
+
+                <div class="Wv__Render__Workbench__Main" id="Wv__Render__Workbench__Main">
+
+                    <section class="Wv__Render__Section" id="Wv__Render__Section__Whitecard">
+                        <h2 class="Wv__Ui__H2">Whitecard (Structural Reference)</h2>
+                        <div class="Wv__Render__WhitecardSlot" id="Wv__Render__WhitecardSlot">
+                            <div class="Wv__Render__WhitecardSlot__Thumb" id="Wv__Render__WhitecardSlot__Thumb">
+                                <span class="Wv__Render__WhitecardSlot__Placeholder">No Whitecard loaded</span>
+                            </div>
+                            <div class="Wv__Render__WhitecardSlot__Controls">
+                                <input type="file" id="Wv__Render__WhitecardSlot__FileInput" accept="image/png,image/jpeg" hidden />
+                                <button type="button" class="Wv__Ui__Button" id="Wv__Render__WhitecardSlot__UploadBtn">Upload Whitecard</button>
+                                <span class="Wv__Render__WhitecardSlot__Meta" id="Wv__Render__WhitecardSlot__Meta">Aspect: -</span>
+                            </div>
+                            <textarea id="Wv__Render__WhitecardSlot__PromptInput"
+                                      class="Wv__Ui__Textarea"
+                                      placeholder="Describe the desired scene, materials, lighting, mood..."></textarea>
+                        </div>
+                    </section>
+
+                    <section class="Wv__Render__Section" id="Wv__Render__Section__MaterialRefs">
+                        <h2 class="Wv__Ui__H2">Material References (textures, local colour)</h2>
+                        <div class="Wv__Render__RefList" id="Wv__Render__RefList__Material"
+                             data-wv-reftype="material"></div>
+                        <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Ghost"
+                                id="Wv__Render__RefList__Material__AddBtn">+ Add Material Reference</button>
+                    </section>
+
+                    <section class="Wv__Render__Section" id="Wv__Render__Section__StyleRefs">
+                        <h2 class="Wv__Ui__H2">Style References (aesthetic, lighting, mood)</h2>
+                        <div class="Wv__Render__RefList" id="Wv__Render__RefList__Style"
+                             data-wv-reftype="style"></div>
+                        <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Ghost"
+                                id="Wv__Render__RefList__Style__AddBtn">+ Add Style Reference</button>
+                        <p class="Wv__Ui__Hint" id="Wv__Render__RefList__Counter">0 of 10 reference slots used (Material + Style combined).</p>
+                    </section>
+
+                    <section class="Wv__Render__Section" id="Wv__Render__Section__Avoid">
+                        <h2 class="Wv__Ui__H2">Avoid The Following</h2>
+                        <textarea id="Wv__Render__Avoid__Input" class="Wv__Ui__Textarea"
+                                  placeholder="Comma-separated items to explicitly exclude from the output..."></textarea>
+                    </section>
+
+                    <section class="Wv__Render__Section" id="Wv__Render__Section__Output">
+                        <h2 class="Wv__Ui__H2">Output</h2>
+                        <div class="Wv__Render__Output">
+                            <div class="Wv__Render__Output__Canvas" id="Wv__Render__Output__Canvas">
+                                <span class="Wv__Render__Output__Placeholder">No output yet</span>
+                            </div>
+                            <div class="Wv__Render__Output__Controls">
+                                <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Primary"
+                                        id="Wv__Render__Output__GenerateBtn">Generate</button>
+                                <button type="button" class="Wv__Ui__Button"
+                                        id="Wv__Render__Output__RegenerateBtn" disabled>Regenerate</button>
+                                <button type="button" class="Wv__Ui__Button"
+                                        id="Wv__Render__Output__SendToEditorBtn" disabled>Send To Editor</button>
+                                <button type="button" class="Wv__Ui__Button"
+                                        id="Wv__Render__Output__DownloadBtn" disabled>Download PNG</button>
+                                <button type="button" class="Wv__Ui__Button"
+                                        id="Wv__Render__Output__DownloadPromptBtn">Download Compiled Prompt (.md)</button>
+                                <div id="Wv__Render__Output__ResolutionPicker"></div>
+                            </div>
+                            <p class="Wv__Ui__Hint" id="Wv__Render__Output__StatusLine">Idle.</p>
+                        </div>
+                    </section>
+
+                </div>
+
+                <aside class="Wv__Render__Workbench__Sidebar" id="Wv__Render__Workbench__Sidebar"></aside>
+
+            </div>
+
+        </section>
+
+
+        <!-- EDITOR MODE PANEL -->
+        <section id="Wv__App__ModeEditor" class="Wv__App__ModePanel" data-wv-mode="Editor" hidden>
+
+            <div class="Wv__Edit__IterationBar" id="Wv__Edit__IterationBar">
+                <div class="Wv__Edit__IterationBar__TitleBlock">
+                    <span class="Wv__Edit__IterationBar__Title">Edit Iterations</span>
+                </div>
+                <div class="Wv__Edit__IterationList__Items" id="Wv__Edit__IterationList__Items" role="listbox" aria-label="Edit iterations"></div>
+                <div class="Wv__Edit__IterationList__Controls">
+                    <button type="button" class="Wv__Ui__Button" id="Wv__Edit__IterationList__NewBtn">New</button>
+                    <button type="button" class="Wv__Ui__Button" id="Wv__Edit__IterationList__DuplicateBtn">Duplicate</button>
+                    <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Danger" id="Wv__Edit__IterationList__DeleteBtn">Delete</button>
+                </div>
+            </div>
+
+            <div class="Wv__Edit__Workbench">
+
+                <div class="Wv__Edit__Workbench__Main" id="Wv__Edit__Workbench__Main">
+
+                    <section class="Wv__Edit__Section" id="Wv__Edit__Section__Base">
+                        <h2 class="Wv__Ui__H2">Base Image</h2>
+                        <div class="Wv__Edit__BaseSlot" id="Wv__Edit__BaseSlot">
+                            <div class="Wv__Edit__BaseSlot__Thumb" id="Wv__Edit__BaseSlot__Thumb">
+                                <span class="Wv__Edit__BaseSlot__Placeholder">No base image</span>
+                            </div>
+                            <div class="Wv__Edit__BaseSlot__Controls">
+                                <input type="file" id="Wv__Edit__BaseSlot__FileInput" accept="image/png,image/jpeg" hidden />
+                                <button type="button" class="Wv__Ui__Button" id="Wv__Edit__BaseSlot__UploadBtn">Upload Base</button>
+                                <span class="Wv__Edit__BaseSlot__Meta" id="Wv__Edit__BaseSlot__Meta">Aspect: -</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="Wv__Edit__Section" id="Wv__Edit__Section__TargetElement">
+                        <h2 class="Wv__Ui__H2">Target Element (what to change)</h2>
+                        <textarea id="Wv__Edit__TargetElement__Input"
+                                  class="Wv__Ui__Textarea"
+                                  placeholder="Describe ONLY the element to change, e.g. 'Change the garage roller door to a double timber entry door with full-height glazing panels'."></textarea>
+                    </section>
+
+                    <section class="Wv__Edit__Section" id="Wv__Edit__Section__Preserve">
+                        <h2 class="Wv__Ui__H2">Preserve (protect the rest of the canvas)</h2>
+                        <textarea id="Wv__Edit__Preserve__Input"
+                                  class="Wv__Ui__Textarea"
+                                  placeholder="Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, aspect ratio..."></textarea>
+                    </section>
+
+                    <section class="Wv__Edit__Section" id="Wv__Edit__Section__Avoid">
+                        <h2 class="Wv__Ui__H2">Avoid</h2>
+                        <textarea id="Wv__Edit__Avoid__Input" class="Wv__Ui__Textarea"
+                                  placeholder="Things that must not appear..."></textarea>
+                    </section>
+
+                    <section class="Wv__Edit__Section" id="Wv__Edit__Section__Output">
+                        <h2 class="Wv__Ui__H2">Iteration Output</h2>
+                        <div class="Wv__Edit__Output">
+                            <div class="Wv__Edit__Output__Canvas" id="Wv__Edit__Output__Canvas">
+                                <span class="Wv__Edit__Output__Placeholder">No edit yet</span>
+                            </div>
+                            <div class="Wv__Edit__Output__Controls">
+                                <button type="button" class="Wv__Ui__Button Wv__Ui__Button--Primary"
+                                        id="Wv__Edit__Output__GenerateBtn">Generate Edit</button>
+                                <button type="button" class="Wv__Ui__Button" id="Wv__Edit__Output__DownloadBtn" disabled>Download PNG</button>
+                                <button type="button" class="Wv__Ui__Button"
+                                        id="Wv__Edit__Output__DownloadPromptBtn">Download Compiled Prompt (.md)</button>
+                                <div id="Wv__Edit__Output__ResolutionPicker"></div>
+                            </div>
+                            <p class="Wv__Ui__Hint" id="Wv__Edit__Output__StatusLine">Idle.</p>
+                        </div>
+                    </section>
+
+                </div>
+
+                <aside class="Wv__Edit__Workbench__Sidebar" id="Wv__Edit__Workbench__Sidebar"></aside>
+
+            </div>
+
+        </section>
+
+
+        <!-- FILTER SUITE MODE PANEL (placeholder) -->
+        <section id="Wv__App__ModeFilterSuite" class="Wv__App__ModePanel" data-wv-mode="FilterSuite" hidden>
+            <div class="Wv__FilterSuite__Placeholder">
+                <h2 class="Wv__Ui__H2">Filter Suite</h2>
+                <p>Post-processing toolkit coming in a later build. This tab is a placeholder so the navigation layout is final.</p>
+                <ul>
+                    <li>Preset photographic profiles</li>
+                    <li>Auto colour grading</li>
+                    <li>Mask-aware adjustments</li>
+                </ul>
+            </div>
+        </section>
+
+
+        <!-- FINAL PREVIEW MODE PANEL -->
+        <section id="Wv__App__ModeFinalPreview" class="Wv__App__ModePanel" data-wv-mode="FinalPreview" hidden>
+            <div class="Wv__FinalPreview__Wrapper">
+                <h2 class="Wv__Ui__H2">Final Preview</h2>
+                <div class="Wv__FinalPreview__Canvas" id="Wv__FinalPreview__Canvas">
+                    <span class="Wv__FinalPreview__Placeholder">Nothing to preview yet</span>
+                </div>
+                <div class="Wv__FinalPreview__Controls">
+                    <button type="button" class="Wv__Ui__Button" id="Wv__FinalPreview__PickRenderBtn">Show Latest Render</button>
+                    <button type="button" class="Wv__Ui__Button" id="Wv__FinalPreview__PickEditBtn">Show Active Edit</button>
+                    <button type="button" class="Wv__Ui__Button" id="Wv__FinalPreview__DownloadPromptBtn">Download Compiled Prompt (.md)</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <!-- endregion -->
+
+
+    <!-- ======================================================================
+         REGION | Toasts + Modals Hosts
+         ================================================================== -->
+    <div class="Wv__App__ToastHost" id="Wv__App__ToastHost" aria-live="polite"></div>
+    <div class="Wv__App__ModalHost" id="Wv__App__ModalHost" hidden></div>
+    <!-- endregion -->
+
+
+    <!-- ======================================================================
+         REGION | Scripts - loaded in strict dependency order
+         ================================================================== -->
+
+    <!-- 1. State, config, utils (core) -->
+    <script src="02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__StateManager__.js"></script>
+    <script src="02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__ConfigLoader__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__Toast__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__Clipboard__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__ImageUpload__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__DateFormat__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__Hotkeys__.js"></script>
+    <script src="02__Src__AppModules/04__MathUtils/WhitecardVision__MathUtils__AspectRatio__.js"></script>
+
+    <!-- 2. Data layer -->
+    <script src="02__Src__AppModules/02__AppData/WhitecardVision__AppData__ProjectSchemaValidator__.js"></script>
+    <script src="02__Src__AppModules/02__AppData/WhitecardVision__AppData__ProjectFileManager__.js"></script>
+
+    <!-- 3. Mode manager -->
+    <script src="02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__ModeManager__.js"></script>
+
+    <!-- 4. Prompt constructor stack (shared by Render + Edit) -->
+    <script src="07__PromptConstructor/PromptConstructor__LoadMarkdown__.js"></script>
+    <script src="07__PromptConstructor/PromptConstructor__BuildImageList__.js"></script>
+    <script src="07__PromptConstructor/PromptConstructor__BuildStructuredPrompt__.js"></script>
+    <script src="07__PromptConstructor/PromptConstructor__BuildFinalPayload__.js"></script>
+
+    <!-- 4b. Shared common elements (resolution picker / spinner / logger / templates panel / prompt exporter) -->
+    <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__ApiLogger__.js"></script>
+    <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__LoadingSpinner__.js"></script>
+    <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__ResolutionPicker__.js"></script>
+    <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__TemplatesPanel__.js"></script>
+    <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__CompiledPromptExporter__.js"></script>
+
+    <!-- 5. System - Render Mode -->
+    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__ProjectMetaPanel__.js"></script>
+    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__WhitecardSlot__.js"></script>
+    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__ReferenceImageList__.js"></script>
+    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__OutputPanel__.js"></script>
+    <script src="02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__Controller__.js"></script>
+
+    <!-- 6. System - Editor Mode -->
+    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__IterationList__.js"></script>
+    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__BaseSlot__.js"></script>
+    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__PromptPanel__.js"></script>
+    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__OutputPanel__.js"></script>
+    <script src="02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__Controller__.js"></script>
+
+    <!-- 7. System - Filter Suite + Final Preview -->
+    <script src="02__Src__AppModules/30__System__FilterSuite/WhitecardVision__FilterSuite__Controller__.js"></script>
+    <script src="02__Src__AppModules/40__System__FinalPreview/WhitecardVision__FinalPreview__Controller__.js"></script>
+
+    <!-- 8. App init (must be LAST) -->
+    <script src="02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__Init__.js"></script>
+    <!-- endregion -->
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+/*
+=============================================================================
+ WHITECARDVISION - CSS HUB (ENTRY)
+=============================================================================
+ FILE    : WhitecardVision__CoreUi__Styles__Index__.css
+ PURPOSE : Single stylesheet loaded by the entry HTML. All other sheets -
+           including per-System sheets - are imported from here so the
+           load order is explicit and deduplicated.
+=============================================================================
+*/
+
+/* --- 1. Core UI foundation -------------------------------------------- */
+@import url("./WhitecardVision__CoreUi__Styles__Variables__.css");
+@import url("./WhitecardVision__CoreUi__Styles__BaseLayout__.css");
+@import url("./WhitecardVision__CoreUi__Styles__AppHeader__.css");
+@import url("./WhitecardVision__CoreUi__Styles__NavigationBar__.css");
+@import url("./WhitecardVision__CoreUi__Styles__UiPrimitives__.css");
+@import url("./WhitecardVision__CoreUi__Styles__ModalsAndToasts__.css");
+
+/* --- 2. Shared common elements (picker / spinner / templates panel) --- */
+@import url("../02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__Styles__.css");
+
+/* --- 3. Per-System sheets (each System owns its own stylesheet) ------- */
+@import url("../02__Src__AppModules/10__System__RenderImageMode/WhitecardVision__RenderMode__Styles__.css");
+@import url("../02__Src__AppModules/20__System__EditImageMode/WhitecardVision__EditMode__Styles__.css");
+@import url("../02__Src__AppModules/30__System__FilterSuite/WhitecardVision__FilterSuite__Styles__.css");
+@import url("../02__Src__AppModules/40__System__FinalPreview/WhitecardVision__FinalPreview__Styles__.css");

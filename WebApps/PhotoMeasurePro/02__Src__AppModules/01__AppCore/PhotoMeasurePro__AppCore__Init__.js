@@ -49,8 +49,25 @@
         window.PhotoMeasurePro__AppCore__StateManager.PhotoMeasurePro__StateManager__GetState(),
         domRefs
     );
+
+    PhotoMeasurePro__AppCore__TryInitializeDeferredThreeViewport(domRefs, 0);
 })();
 // endregion ----------------------------------------------------
+
+function PhotoMeasurePro__AppCore__TryInitializeDeferredThreeViewport(domRefs, attemptCount) {
+    if (window.PhotoMeasurePro__System__ThreeViewport__Main) {
+        window.PhotoMeasurePro__System__ThreeViewport__Main.PhotoMeasurePro__ThreeViewport__Initialize(domRefs);
+        PhotoMeasurePro__AppCore__RenderAll(
+            window.PhotoMeasurePro__AppCore__StateManager.PhotoMeasurePro__StateManager__GetState(),
+            domRefs
+        );
+        return;
+    }
+    if (attemptCount >= 40) return;
+    window.setTimeout(function() {
+        PhotoMeasurePro__AppCore__TryInitializeDeferredThreeViewport(domRefs, attemptCount + 1);
+    }, 100);
+}
 
 // -----------------------------------------------------------------------------
 // REGION | AppCore Helpers
@@ -139,6 +156,9 @@ function PhotoMeasurePro__AppCore__ResolveDomReferences() {
 
         PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg: domById("PhotoMeasurePro__Scene3D__ButtonGenerateDepthSeg"),
         PhotoMeasurePro__Scene3D__ButtonBuildScene: domById("PhotoMeasurePro__Scene3D__ButtonBuildScene"),
+        PhotoMeasurePro__Scene3D__ButtonAlignToPhoto: domById("PhotoMeasurePro__Scene3D__ButtonAlignToPhoto"),
+        PhotoMeasurePro__Scene3D__ButtonDetectVolumes: domById("PhotoMeasurePro__Scene3D__ButtonDetectVolumes"),
+        PhotoMeasurePro__Scene3D__ButtonClearMeasurements: domById("PhotoMeasurePro__Scene3D__ButtonClearMeasurements"),
         PhotoMeasurePro__Scene3D__StatusText: domById("PhotoMeasurePro__Scene3D__StatusText"),
         PhotoMeasurePro__Scene3D__SelectSnapTarget: domById("PhotoMeasurePro__Scene3D__SelectSnapTarget"),
         PhotoMeasurePro__Scene3D__SelectViewMode: domById("PhotoMeasurePro__Scene3D__SelectViewMode"),
@@ -386,7 +406,9 @@ function PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs) {
                         scene3d: Object.assign({}, previousState.scene3d, {
                             status: "ready",
                             depthCacheUrl: depthResult.data && depthResult.data.cacheUrl || null,
-                            segmentationCacheUrl: segmentationResult.data && segmentationResult.data.cacheUrl || null
+                            segmentationCacheUrl: segmentationResult.data && segmentationResult.data.cacheUrl || null,
+                            depthScaling: null,
+                            depthMeshReady: true
                         })
                     };
                 });
@@ -411,10 +433,37 @@ function PhotoMeasurePro__AppCore__InitializeSidebarEvents(domRefs) {
                     scene3d: Object.assign({}, previousState.scene3d, {
                         worldOrigin: reconstructed.worldOrigin,
                         analyticalSceneReady: Boolean(reconstructed.ready),
-                        status: reconstructed.ready ? "ready" : "error"
+                        status: reconstructed.ready ? "ready" : "error",
+                        cameraState: null
                     })
                 };
             });
+            if (reconstructed.ready && window.PhotoMeasurePro__System__ThreeViewport__Main) {
+                window.PhotoMeasurePro__System__ThreeViewport__Main.PhotoMeasurePro__ThreeViewport__AlignToPhoto();
+            }
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__ButtonAlignToPhoto) {
+        domRefs.PhotoMeasurePro__Scene3D__ButtonAlignToPhoto.addEventListener("click", function() {
+            if (window.PhotoMeasurePro__System__ThreeViewport__Main) {
+                window.PhotoMeasurePro__System__ThreeViewport__Main.PhotoMeasurePro__ThreeViewport__AlignToPhoto();
+            }
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__ButtonDetectVolumes) {
+        domRefs.PhotoMeasurePro__Scene3D__ButtonDetectVolumes.addEventListener("click", function() {
+            PhotoMeasurePro__AppCore__RunVolumeDetection(domRefs);
+        });
+    }
+
+    if (domRefs.PhotoMeasurePro__Scene3D__ButtonClearMeasurements) {
+        domRefs.PhotoMeasurePro__Scene3D__ButtonClearMeasurements.addEventListener("click", function() {
+            const measurement3dEngine = window.PhotoMeasurePro__System__Measurement3D__Engine;
+            if (measurement3dEngine) {
+                measurement3dEngine.PhotoMeasurePro__Measurement3D__ClearAll();
+            }
         });
     }
 
@@ -535,6 +584,7 @@ function PhotoMeasurePro__AppCore__BuildProjectFromState(currentState) {
                 DepthScaling: currentState.scene3d.depthScaling,
                 WorldOrigin: currentState.scene3d.worldOrigin,
                 OffsetPlanes: currentState.scene3d.offsetPlanes || [],
+                PlaneLabelMap: currentState.scene3d.planeLabelMap || null,
                 SnapTarget: currentState.scene3d.snapTarget || "analytical",
                 ViewMode: currentState.scene3d.viewMode || "3dOnly",
                 CameraState: currentState.scene3d.cameraState || null
@@ -688,6 +738,7 @@ function PhotoMeasurePro__AppCore__HydrateStateFromProject(projectData, domRefs)
                 depthScaling: scene3d.DepthScaling || null,
                 worldOrigin: scene3d.WorldOrigin || null,
                 offsetPlanes: Array.isArray(scene3d.OffsetPlanes) ? scene3d.OffsetPlanes : [],
+                planeLabelMap: scene3d.PlaneLabelMap || null,
                 snapTarget: scene3d.SnapTarget || "analytical",
                 viewMode: scene3d.ViewMode || "3dOnly",
                 cameraState: scene3d.CameraState || null,
@@ -748,6 +799,115 @@ function PhotoMeasurePro__AppCore__BuildDirtySnapshot(currentState) {
         measurements3d: currentState.measurements3d
     });
 }
+// endregion ----------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Volume Detection (Depth-Anything V2 + Offset-Plane Clustering)
+// -----------------------------------------------------------------------------
+
+// FUNCTION | Build The Detection Payload From Current State
+// ------------------------------------------------------------
+// Server never re-derives perspective; it must receive the client-solved
+// values. Anchor falls back to the principal point so detection still runs
+// when the user hasn't explicitly placed an anchor.
+function PhotoMeasurePro__AppCore__BuildDetectionPayload(currentState) {
+    const perspectiveEngine = window.PhotoMeasurePro__System__PerspectiveSetup__Engine;
+    if (!perspectiveEngine) return null;
+    const perspectiveData = perspectiveEngine.PhotoMeasurePro__PerspectiveSetup__ComputePerspectiveData(currentState);
+    if (!perspectiveData || !perspectiveData.f || !perspectiveData.basis) return null;
+    const anchorPoint = currentState.anchorPoint && Number.isFinite(currentState.anchorPoint.x)
+        ? currentState.anchorPoint
+        : { x: perspectiveData.cx, y: perspectiveData.cy };
+    const constraintsByPlane = currentState.constraintsByPlane || {};
+    return {
+        perspective: {
+            f:         perspectiveData.f,
+            principal: { x: perspectiveData.cx, y: perspectiveData.cy },
+            basis:     {
+                Rx: perspectiveData.basis.Rx,
+                Ry: perspectiveData.basis.Ry,
+                Rz: perspectiveData.basis.Rz
+            },
+            anchor:    { x: anchorPoint.x, y: anchorPoint.y }
+        },
+        constraints: {
+            Facade: { lengthMm: (constraintsByPlane.Facade || {}).lengthMm || 0 },
+            Side:   { lengthMm: (constraintsByPlane.Side   || {}).lengthMm || 0 },
+            Ground: { lengthMm: (constraintsByPlane.Ground || {}).lengthMm || 0 }
+        }
+    };
+}
+// ------------------------------------------------------------
+
+// FUNCTION | Trigger Volume Detection And Apply Offset-Plane Suggestions
+// ------------------------------------------------------------
+// Routes: (1) gather perspective + constraints, (2) POST to detect-volumes,
+// (3) replace source="detected" offset planes in state, (4) rebuild the 3D
+// scene so the new auto planes become visible immediately.
+function PhotoMeasurePro__AppCore__RunVolumeDetection(domRefs) {
+    const stateManager = window.PhotoMeasurePro__AppCore__StateManager;
+    const currentState = stateManager.PhotoMeasurePro__StateManager__GetState();
+    const projectCode  = currentState.currentProjectCode;
+    if (!projectCode) {
+        window.alert("Save the project first so volume detection can key off its ProjectCode.");
+        return;
+    }
+    const detectionPayload = PhotoMeasurePro__AppCore__BuildDetectionPayload(currentState);
+    if (!detectionPayload) {
+        window.alert("Perspective is not solved yet. Set three vanishing points first, then retry.");
+        return;
+    }
+    const projectFileManager = window.PhotoMeasurePro__AppData__ProjectFileManager;
+    const offsetManager      = window.PhotoMeasurePro__System__SceneReconstruction3D__PlaneOffsetManager;
+    if (!projectFileManager || !offsetManager) return;
+
+    stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+        return { scene3d: Object.assign({}, previousState.scene3d, { status: "detecting" }) };
+    });
+
+    projectFileManager.PhotoMeasurePro__ProjectFileManager__DetectVolumesForProject(projectCode, detectionPayload)
+        .then(function(detectionResult) {
+            if (!detectionResult || !detectionResult.ok) {
+                throw new Error((detectionResult && detectionResult.error) || "Volume detection failed");
+            }
+            const resultData  = detectionResult.data || {};
+            const suggestions = Array.isArray(resultData.offsetPlanes) ? resultData.offsetPlanes : [];
+            offsetManager.PhotoMeasurePro__PlaneOffsetManager__ReplaceDetectedOffsetPlanes(suggestions);
+            const labelMapPayload = resultData.labelMap || null;
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return {
+                    scene3d: Object.assign({}, previousState.scene3d, {
+                        status:               "ready",
+                        depthCacheUrl:        resultData.depthCacheUrl || previousState.scene3d.depthCacheUrl || null,
+                        depthMeshReady:       true,
+                        planeLabelMap:        labelMapPayload && labelMapPayload.cacheUrl ? labelMapPayload : null,
+                        lastVolumeDetection:  {
+                            suggestionCount: suggestions.length,
+                            depthSource:     resultData.depthSource || null,
+                            calibration:     resultData.calibration || null
+                        }
+                    })
+                };
+            });
+            if (window.PhotoMeasurePro__System__ThreeViewport__Main) {
+                window.PhotoMeasurePro__System__ThreeViewport__Main.PhotoMeasurePro__ThreeViewport__AlignToPhoto();
+            }
+            const calibration = resultData.calibration || {};
+            const qualityLabel = (calibration.qualityR2 !== undefined && calibration.qualityR2 !== null)
+                ? (" (R^2=" + Number(calibration.qualityR2).toFixed(2) + ")")
+                : "";
+            console.log("[PhotoMeasurePro] Volume detection: "
+                + suggestions.length + " suggestion(s) from "
+                + (resultData.depthSource || "depth") + qualityLabel);
+        })
+        .catch(function(detectError) {
+            stateManager.PhotoMeasurePro__StateManager__PatchState(function(previousState) {
+                return { scene3d: Object.assign({}, previousState.scene3d, { status: "error" }) };
+            });
+            window.alert("Volume detection failed: " + (detectError.message || detectError));
+        });
+}
+// ------------------------------------------------------------
 // endregion ----------------------------------------------------
 
 // -----------------------------------------------------------------------------
@@ -1072,14 +1232,32 @@ function PhotoMeasurePro__AppCore__RenderScene3dPanel(domRefs, currentState) {
     const sceneStatus = scene3dState.status || "idle";
     const analyticalReady = scene3dState.analyticalSceneReady ? "yes" : "no";
     const depthReady = scene3dState.depthCacheUrl ? "yes" : "no";
+    const measurementCount = (currentState.measurements3d || []).length;
     domRefs.PhotoMeasurePro__Scene3D__StatusText.textContent =
-        "3D status: " + sceneStatus + " | analytical: " + analyticalReady + " | depth: " + depthReady;
+        "3D status: " + sceneStatus + " | analytical: " + analyticalReady + " | depth: " + depthReady + " | measures: " + measurementCount;
 
     if (domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget && document.activeElement !== domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget) {
         domRefs.PhotoMeasurePro__Scene3D__SelectSnapTarget.value = scene3dState.snapTarget || "analytical";
     }
     if (domRefs.PhotoMeasurePro__Scene3D__SelectViewMode && document.activeElement !== domRefs.PhotoMeasurePro__Scene3D__SelectViewMode) {
         domRefs.PhotoMeasurePro__Scene3D__SelectViewMode.value = scene3dState.viewMode || "3dOnly";
+    }
+
+    if (domRefs.PhotoMeasurePro__ThreeViewport__Root) {
+        const viewMode = scene3dState.viewMode || "3dOnly";
+        if (viewMode === "split") {
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.width = "50%";
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.left = "50%";
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.opacity = "1";
+        } else if (viewMode === "overlay") {
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.width = "100%";
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.left = "0";
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.opacity = "0.72";
+        } else {
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.width = "100%";
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.left = "0";
+            domRefs.PhotoMeasurePro__ThreeViewport__Root.style.opacity = "1";
+        }
     }
     if (!domRefs.PhotoMeasurePro__Scene3D__OffsetPlaneList) return;
     const offsetPlaneListElement = domRefs.PhotoMeasurePro__Scene3D__OffsetPlaneList;

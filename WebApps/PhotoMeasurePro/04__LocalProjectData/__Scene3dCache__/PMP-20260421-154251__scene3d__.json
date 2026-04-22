@@ -1,0 +1,25 @@
+{
+  "segmentation": {
+    "source": "fallback-heuristic-segmentation",
+    "classes": {
+      "0": "unknown",
+      "1": "facade",
+      "2": "side",
+      "3": "ground",
+      "4": "sky",
+      "5": "foliage",
+      "6": "opening"
+    },
+    "shape": [
+      3024,
+      4032
+    ]
+  },
+  "depth": {
+    "source": "onnxruntime-available-fallback-used",
+    "shape": [
+      3024,
+      4032
+    ]
+  }
+}

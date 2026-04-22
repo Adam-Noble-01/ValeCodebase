@@ -1,6 +1,82 @@
 # PhotoMeasurePro Development Log
 # =========================================================
 
+## PhotoMeasurePro v0.4.0 - 21-Apr-2026
+### Scene3D mode with analytical plane reconstruction + depth/seg cache pipeline
+
+Introduced a new 3D measurement workflow to break out of single-plane limits when measuring elements that project in front of or behind the facade.
+
+#### 3D mode and viewport
+- Added `5. 3D Measure` mode and sidebar controls in `PhotoMeasurePro__App__.html`.
+- Added Three.js viewport (`PhotoMeasurePro__ThreeViewport__Main__.js`) with orbit controls, analytical Facade/Side/Ground planes, offset planes, and 3D pick-to-measure interaction.
+- Added `PhotoMeasurePro__ThreeViewport__OverlayHud__.js` for live scene diagnostics (status, snap mode, pending point, measurement count).
+
+#### Scene reconstruction + 3D measurements
+- Added `PhotoMeasurePro__SceneReconstruction3D__WorldOriginSolver__.js` to derive an analytical scene bundle from existing perspective basis + constraints + anchor corner.
+- Added `PhotoMeasurePro__SceneReconstruction3D__PlaneOffsetManager__.js` for user-defined depth-offset planes (e.g. bay window projection planes).
+- Added `PhotoMeasurePro__Measurement3D__Engine__.js` to capture two world picks and store true 3D mm distances.
+
+#### Depth and segmentation server pipeline
+- Added Flask routes:
+  - `POST /api/scene3d/depth/<project_code>`
+  - `POST /api/scene3d/segmentation/<project_code>`
+  - `GET /api/scene3d/cache/<filename>`
+- Added `05__Server__DepthAndSegmentation/PhotoMeasurePro__Server__DepthAndSegmentation__Main__.py`:
+  - writes 16-bit depth PNG cache and class-id segmentation PNG cache.
+  - currently uses a robust fallback pipeline (luma-gradient depth + heuristic segmentation) with optional `onnxruntime` detection for future model binding.
+- Added `05__Server__DepthAndSegmentation/requirements.txt` for the scene3d pipeline dependencies.
+
+#### State + schema + project persistence
+- Extended app state with `scene3d` and `measurements3d` slices (`PhotoMeasurePro__AppCore__StateManager__.js`).
+- Extended project schema to v2 with:
+  - `PhotoMeasurePro__ProjectFile__Scene3D`
+  - `PhotoMeasurePro__ProjectFile__Measurements3D`
+- Updated init hydration/build bridge to persist and restore 3D settings, offset planes, and 3D measurements.
+- Added `ProjectFileManager` helpers to trigger depth/seg generation through the new Flask API.
+
+#### Notes
+- The current depth mesh rendering path is intentionally lightweight (wireframe placeholder driven by cache availability) to keep interaction responsive while ML calibration is iterated.
+- The architecture now supports upgrading the fallback depth/seg stage to full Depth-Anything + SAM ONNX inference without changing the app-side contract.
+
+# ---------------------------------------------------------
+
+## PhotoMeasurePro v0.4.1 - 21-Apr-2026
+### Photo-locked 3D rebuild + version-locked ONNX dependency layout
+
+Rebuilt the Scene3D analytical foundation so the default 3D view locks to the source photo calibration and anchor-space convention, while keeping depth/segmentation inference in fallback mode until real ONNX models are present.
+
+#### 3D analytical scene corrections
+- `PhotoMeasurePro__SceneReconstruction3D__WorldOriginSolver__.js` now returns a complete analytical bundle (`worldOrigin` with `R_wc` and `C`, plane world corners, per-plane image footprints).
+- Enforced world convention for anchor-space planes: Facade on `Y=0`, Side on `X=0`, Ground on `Z=0`, with anchor at `(0,0,0)`.
+- Height inference now uses projected vertical setup lines against the facade plane, with fallback only when needed.
+
+#### Three viewport photo-lock + picking fixes
+- `PhotoMeasurePro__ThreeViewport__Main__.js` camera setup now derives FOV from `f` and image height, places camera from solver pose, applies principal point via `setViewOffset`, and supports explicit `Align to Photo`.
+- Plane meshes now use solver-provided world corners (quad geometry) rather than hard-coded centred planes.
+- Per-plane orthorectified textures are generated from image footprints using homography inversion + bilinear sampling and attached as `CanvasTexture`.
+- Removed hard-coded tessellated placeholder depth mesh (`UpdateDepthMesh` is now a no-op until real depth mesh phase).
+- Raycast hit selection now prefers facade/side intersections ahead of ground-behind hits.
+- Offset planes inherit parent plane size and orientation, and offset along parent normal in mm.
+
+#### App wiring updates
+- Added `Align to Photo` control in `PhotoMeasurePro__App__.html` and wired in `PhotoMeasurePro__AppCore__Init__.js`.
+- Build Scene now auto-aligns to photo lock after successful analytical solve.
+- Removed fabricated depth scale fit samples; `depthScaling` remains `null` until real calibrated samples exist.
+
+#### New version-locked dependency folder
+- Added `00__ThirdParty__VersionLockedDependencies/` under PhotoMeasurePro root with:
+  - `00__DepthAnythingV2__Small__Onnx/README.md`
+  - `01__MobileSAM__Onnx/README.md`
+  - `02__OnnxRuntime__PythonWheels/README.md` (optional wheel cache)
+  - `download_models.py` (re-runnable downloader with optional SHA256 validation)
+- Added root `.gitignore` rules to exclude ONNX binaries from git tracking.
+
+#### Flask + server pipeline integration
+- `PhotoMeasurePro__FlaskServer__Localhost__.py` now resolves `VERSION_LOCKED_DEPS_PATH` and adds it to `sys.path`.
+- `PhotoMeasurePro__Server__DepthAndSegmentation__Main__.py` now resolves model paths from the new `00__` dependency folder and logs one warning when model files are missing, then continues heuristic fallback generation.
+
+# ---------------------------------------------------------
+
 ## PhotoMeasurePro v0.3.1 - 21-Apr-2026
 ### Export settings controls, visibility-filtered PNG output, and interaction guardrails polish
 

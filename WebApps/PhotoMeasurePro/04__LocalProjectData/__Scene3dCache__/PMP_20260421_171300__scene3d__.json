@@ -1,0 +1,28 @@
+{
+  "depth": {
+    "source": "depth-anything-v2-small-onnx",
+    "modelPath": "D:\\10_CoreLib__ValeCodebase\\WebApps\\PhotoMeasurePro\\00__ThirdParty__VersionLockedDependencies\\00__DepthAnythingV2__Small__Onnx\\depth_anything_v2_vits.onnx",
+    "modelPresent": true,
+    "shape": [
+      3024,
+      4032
+    ]
+  },
+  "volumeDetection": {
+    "downsampleStep": 10,
+    "calibrationAlpha": 0.6909633322202023,
+    "calibrationBeta": 7105.794787935251,
+    "calibrationQualityR2": 0.0002750656334702395,
+    "offsetPlaneCount": 3,
+    "labelMapFilename": "PMP_20260421_171300__planeLabels__.png",
+    "labelsByPlane": {
+      "background": 0,
+      "Facade": 1,
+      "Side": 2,
+      "Ground": 3,
+      "Offset_0": 4,
+      "Offset_1": 5,
+      "Offset_2": 6
+    }
+  }
+}

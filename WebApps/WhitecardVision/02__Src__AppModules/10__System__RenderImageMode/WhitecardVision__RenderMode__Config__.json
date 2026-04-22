@@ -1,0 +1,22 @@
+{
+    "Wv__RenderMode__Config__Metadata": {
+        "Wv__RenderMode__Config__Metadata__SystemId"    : "Render",
+        "Wv__RenderMode__Config__Metadata__SchemaVer"   : "0.1.0"
+    },
+
+    "Wv__RenderMode__Config__Limits": {
+        "Wv__RenderMode__Config__Limits__MaxReferenceImagesCombined" : 10,
+        "Wv__RenderMode__Config__Limits__MaxWhitecardSizeMb"         : 20,
+        "Wv__RenderMode__Config__Limits__MaxReferenceSizeMb"         : 10
+    },
+
+    "Wv__RenderMode__Config__Defaults": {
+        "Wv__RenderMode__Config__Defaults__ImageSize"   : "2K",
+        "Wv__RenderMode__Config__Defaults__AvoidSuffix" : ""
+    },
+
+    "Wv__RenderMode__Config__AspectRatio": {
+        "Wv__RenderMode__Config__AspectRatio__StrictMatch"         : true,
+        "Wv__RenderMode__Config__AspectRatio__SnappedDeltaWarnPct" : 2.0
+    }
+}

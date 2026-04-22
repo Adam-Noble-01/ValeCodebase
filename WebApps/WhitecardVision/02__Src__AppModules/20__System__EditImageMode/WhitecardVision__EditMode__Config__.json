@@ -1,0 +1,16 @@
+{
+    "Wv__EditMode__Config__Metadata": {
+        "Wv__EditMode__Config__Metadata__SystemId"    : "Editor",
+        "Wv__EditMode__Config__Metadata__SchemaVer"   : "0.1.0"
+    },
+
+    "Wv__EditMode__Config__Defaults": {
+        "Wv__EditMode__Config__Defaults__ImageSize"         : "2K",
+        "Wv__EditMode__Config__Defaults__PreserveDefault"   : "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
+        "Wv__EditMode__Config__Defaults__IterationNamePrefix" : "Iter"
+    },
+
+    "Wv__EditMode__Config__Limits": {
+        "Wv__EditMode__Config__Limits__MaxIterations"   : 50
+    }
+}

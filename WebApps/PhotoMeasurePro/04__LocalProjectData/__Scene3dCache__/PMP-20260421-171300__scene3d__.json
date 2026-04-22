@@ -1,0 +1,46 @@
+{
+  "segmentation": {
+    "source": "fallback-heuristic-segmentation",
+    "modelPath": "D:\\10_CoreLib__ValeCodebase\\WebApps\\PhotoMeasurePro\\00__ThirdParty__VersionLockedDependencies\\01__MobileSAM__Onnx\\mobile_sam.onnx",
+    "modelPresent": false,
+    "classes": {
+      "0": "unknown",
+      "1": "facade",
+      "2": "side",
+      "3": "ground",
+      "4": "sky",
+      "5": "foliage",
+      "6": "opening"
+    },
+    "shape": [
+      3024,
+      4032
+    ]
+  },
+  "depth": {
+    "source": "depth-anything-v2-small-onnx",
+    "modelPath": "D:\\10_CoreLib__ValeCodebase\\WebApps\\PhotoMeasurePro\\00__ThirdParty__VersionLockedDependencies\\00__DepthAnythingV2__Small__Onnx\\depth_anything_v2_vits.onnx",
+    "modelPresent": true,
+    "shape": [
+      3024,
+      4032
+    ]
+  },
+  "volumeDetection": {
+    "downsampleStep": 10,
+    "calibrationAlpha": 0.021720827085864272,
+    "calibrationBeta": 6395.29095485976,
+    "calibrationQualityR2": 1.9690003405514744e-08,
+    "offsetPlaneCount": 3,
+    "labelMapFilename": "PMP-20260421-171300__planeLabels__.png",
+    "labelsByPlane": {
+      "background": 0,
+      "Facade": 1,
+      "Side": 2,
+      "Ground": 3,
+      "Offset_0": 4,
+      "Offset_1": 5,
+      "Offset_2": 6
+    }
+  }
+}

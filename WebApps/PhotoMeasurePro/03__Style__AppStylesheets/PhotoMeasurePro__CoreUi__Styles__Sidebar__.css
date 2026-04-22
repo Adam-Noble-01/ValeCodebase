@@ -573,7 +573,12 @@
     margin           : 8px 0;
 }
 
-#PhotoMeasurePro__Scene3D__ActionRow button {
+#PhotoMeasurePro__Scene3D__ActionRowSecondary {
+    margin-bottom    : 8px;
+}
+
+#PhotoMeasurePro__Scene3D__ActionRow button,
+#PhotoMeasurePro__Scene3D__ActionRowSecondary button {
     border           : 1px solid var(--PhotoMeasurePro__ColorBorderMain);
     background       : var(--PhotoMeasurePro__ColorBackgroundPanelAlt);
     color            : var(--PhotoMeasurePro__ColorTextPrimary);
@@ -581,6 +586,7 @@
     padding          : 8px 4px;
     cursor           : pointer;
     font-size        : 11px;
+    width            : 100%;
 }
 
 #PhotoMeasurePro__Scene3D__StatusText {

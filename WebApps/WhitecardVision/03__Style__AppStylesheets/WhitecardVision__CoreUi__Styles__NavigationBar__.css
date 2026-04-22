@@ -1,0 +1,43 @@
+/*
+=============================================================================
+ WHITECARDVISION - NAVIGATION BAR (text links separated by " / ")
+=============================================================================
+*/
+.Wv__App__NavigationBar {
+    display           : flex;
+    align-items       : center;
+    justify-content   : center;
+    gap               : var(--Wv__Space__Md);
+    padding           : 0 var(--Wv__Space__Lg);
+    background        : var(--Wv__Color__BgPanel);
+    border-bottom     : 1px solid var(--Wv__Color__Border);
+    font-size         : 13px;
+    letter-spacing    : 0.02em;
+}
+
+.Wv__App__NavTab {
+    padding           : 6px 12px;
+    border-radius     : var(--Wv__Radius__Sm);
+    color             : var(--Wv__Color__TextSecondary);
+    transition        : color 120ms ease, background 120ms ease;
+    user-select       : none;
+    cursor            : pointer;
+}
+
+.Wv__App__NavTab:hover {
+    color             : var(--Wv__Color__TextPrimary);
+    background        : var(--Wv__Color__BgRaised);
+    text-decoration   : none;
+}
+
+.Wv__App__NavTab--Active {
+    color             : var(--Wv__Color__AccentHover);
+    background        : var(--Wv__Color__BgRaised);
+    text-decoration   : underline;
+    text-underline-offset : 4px;
+}
+
+.Wv__App__NavSeparator {
+    color             : var(--Wv__Color__TextMuted);
+    user-select       : none;
+}

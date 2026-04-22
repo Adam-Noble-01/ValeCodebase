@@ -32,14 +32,32 @@ BUNDLED_FLASK_DEPS_PATH      = os.path.join(
     "ThirdParty__VersionLockedDependencies",
     "SERVER__FlaskServerDepencies"
 )
+SCENE3D_PIPELINE_PATH        = os.path.join(
+    SCRIPT_DIR,
+    "05__Server__DepthAndSegmentation"
+)
+VERSION_LOCKED_DEPS_PATH     = os.path.join(
+    SCRIPT_DIR,
+    "00__ThirdParty__VersionLockedDependencies"
+)
 
 if os.path.exists(BUNDLED_FLASK_DEPS_PATH):
     sys.path.insert(0, BUNDLED_FLASK_DEPS_PATH)
+if os.path.exists(SCENE3D_PIPELINE_PATH):
+    sys.path.insert(0, SCENE3D_PIPELINE_PATH)
+if os.path.exists(VERSION_LOCKED_DEPS_PATH):
+    sys.path.insert(0, VERSION_LOCKED_DEPS_PATH)
 
 # endregion -------------------------------------------------------------------
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from PhotoMeasurePro__Server__DepthAndSegmentation__Main__ import (
+    PhotoMeasurePro__Scene3d__EnsureDirectories,
+    PhotoMeasurePro__Scene3d__RunDepth,
+    PhotoMeasurePro__Scene3d__RunSegmentation,
+    PhotoMeasurePro__Scene3d__RunDetectVolumes
+)
 
 # -----------------------------------------------------------------------------
 # REGION | Flask Application Configuration
@@ -50,6 +68,7 @@ SERVER_PORT                  = 8003
 APP_SHELL_FILENAME           = "PhotoMeasurePro__App__.html"
 PROJECT_DATA_DIR             = Path(SCRIPT_DIR) / "04__LocalProjectData"
 PROJECT_FILE_PREFIX          = "PhotoMeasurePro__ProjectFile__"
+SCENE3D_CACHE_DIR            = PROJECT_DATA_DIR / "__Scene3dCache__"
 
 app = Flask(__name__, static_folder=SCRIPT_DIR)
 CORS(app)
@@ -66,6 +85,7 @@ def PhotoMeasurePro__Server__SanitiseName(raw_name: str) -> str:
 
 def PhotoMeasurePro__Server__EnsureProjectDataDir() -> None:
     PROJECT_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    SCENE3D_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def PhotoMeasurePro__Server__ResolveProjectFile(project_code: str, project_name: str = "") -> Path:
@@ -93,6 +113,19 @@ def PhotoMeasurePro__Server__ReadManifestEntry(project_file: Path) -> dict | Non
         }
     except (OSError, json.JSONDecodeError):
         return None
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# REGION | Scene3D Helpers
+# -----------------------------------------------------------------------------
+
+def PhotoMeasurePro__Server__LoadProjectData(project_code: str) -> dict:
+    project_file = PhotoMeasurePro__Server__ResolveProjectFile(project_code)
+    if not project_file.exists():
+        raise FileNotFoundError(f"Project not found: {project_code}")
+    with project_file.open("r", encoding="utf-8") as file_handle:
+        return json.load(file_handle)
 
 # endregion -------------------------------------------------------------------
 
@@ -160,6 +193,86 @@ def PhotoMeasurePro__Server__DeleteProjectApi(project_code: str):
     except OSError as delete_error:
         return jsonify({"ok": False, "error": str(delete_error)}), 500
 
+
+@app.route("/api/scene3d/depth/<project_code>", methods=["POST"])
+def PhotoMeasurePro__Server__GenerateDepthApi(project_code: str):
+    try:
+        PhotoMeasurePro__Server__EnsureProjectDataDir()
+        project_data = PhotoMeasurePro__Server__LoadProjectData(project_code)
+        dirs = PhotoMeasurePro__Scene3d__EnsureDirectories(PROJECT_DATA_DIR)
+        depth_result = PhotoMeasurePro__Scene3d__RunDepth(
+            project_data,
+            project_code,
+            dirs["cache_dir"],
+            Path(VERSION_LOCKED_DEPS_PATH)
+        )
+        return jsonify({
+            "ok": True,
+            "data": {
+                "filename": depth_result["filename"],
+                "cacheUrl": "/api/scene3d/cache/" + depth_result["filename"]
+            }
+        })
+    except Exception as depth_error:
+        return jsonify({"ok": False, "error": str(depth_error)}), 500
+
+
+@app.route("/api/scene3d/segmentation/<project_code>", methods=["POST"])
+def PhotoMeasurePro__Server__GenerateSegmentationApi(project_code: str):
+    try:
+        PhotoMeasurePro__Server__EnsureProjectDataDir()
+        project_data = PhotoMeasurePro__Server__LoadProjectData(project_code)
+        dirs = PhotoMeasurePro__Scene3d__EnsureDirectories(PROJECT_DATA_DIR)
+        segmentation_result = PhotoMeasurePro__Scene3d__RunSegmentation(
+            project_data,
+            project_code,
+            dirs["cache_dir"],
+            Path(VERSION_LOCKED_DEPS_PATH)
+        )
+        return jsonify({
+            "ok": True,
+            "data": {
+                "filename": segmentation_result["filename"],
+                "cacheUrl": "/api/scene3d/cache/" + segmentation_result["filename"]
+            }
+        })
+    except Exception as segmentation_error:
+        return jsonify({"ok": False, "error": str(segmentation_error)}), 500
+
+
+@app.route("/api/scene3d/detect-volumes/<project_code>", methods=["POST"])
+def PhotoMeasurePro__Server__DetectVolumesApi(project_code: str):
+    try:
+        PhotoMeasurePro__Server__EnsureProjectDataDir()
+        client_payload = request.get_json(silent=True) or {}
+        project_data   = PhotoMeasurePro__Server__LoadProjectData(project_code)
+        dirs           = PhotoMeasurePro__Scene3d__EnsureDirectories(PROJECT_DATA_DIR)
+        detection      = PhotoMeasurePro__Scene3d__RunDetectVolumes(
+            project_data,
+            project_code,
+            dirs["cache_dir"],
+            Path(VERSION_LOCKED_DEPS_PATH),
+            client_payload
+        )
+        label_map_payload = detection.get("labelMap") or {}
+        return jsonify({
+            "ok": True,
+            "data": {
+                "offsetPlanes":   detection["offsetPlanes"],
+                "depthSource":    detection["depthSource"],
+                "depthCacheUrl":  "/api/scene3d/cache/" + detection["depthFilename"],
+                "calibration":    detection["calibration"],
+                "labelMap": {
+                    "cacheUrl":       "/api/scene3d/cache/" + label_map_payload["filename"] if label_map_payload.get("filename") else None,
+                    "widthPixels":    label_map_payload.get("widthPixels"),
+                    "heightPixels":   label_map_payload.get("heightPixels"),
+                    "labelsByPlane":  label_map_payload.get("labelsByPlane"),
+                },
+            }
+        })
+    except Exception as detect_error:
+        return jsonify({"ok": False, "error": str(detect_error)}), 500
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -174,6 +287,13 @@ def PhotoMeasurePro__FlaskServer__ServeRoot():
 @app.route(f"/{APP_SHELL_FILENAME}", methods=["GET"])
 def PhotoMeasurePro__FlaskServer__ServeShell():
     return send_from_directory(SCRIPT_DIR, APP_SHELL_FILENAME)
+
+
+@app.route("/api/scene3d/cache/<path:filename>", methods=["GET"])
+def PhotoMeasurePro__FlaskServer__ServeScene3dCache(filename: str):
+    PhotoMeasurePro__Server__EnsureProjectDataDir()
+    safe_name = os.path.basename(filename)
+    return send_from_directory(SCENE3D_CACHE_DIR, safe_name)
 
 
 @app.route("/<path:path>", methods=["GET"])

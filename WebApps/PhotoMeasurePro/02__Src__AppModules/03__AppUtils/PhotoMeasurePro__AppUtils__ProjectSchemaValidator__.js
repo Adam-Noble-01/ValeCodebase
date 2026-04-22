@@ -8,7 +8,7 @@
 // -----------------------------------------------------------------------------
 const PhotoMeasurePro__AppUtils__ProjectSchemaValidator = (function() {
 
-    const PhotoMeasurePro__SchemaValidator__CurrentSchemaVersion = 1;
+    const PhotoMeasurePro__SchemaValidator__CurrentSchemaVersion = 2;
 
     // HELPER FUNCTION | Ensure A Top-Level Section Exists With Default Contents
     // ------------------------------------------------------------
@@ -97,6 +97,30 @@ const PhotoMeasurePro__AppUtils__ProjectSchemaValidator = (function() {
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | Build Default Scene3D Section
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__SchemaValidator__BuildDefaultScene3d() {
+        return {
+            DepthCacheUrl: null,
+            SegmentationCacheUrl: null,
+            DepthScaling: null,
+            WorldOrigin: null,
+            OffsetPlanes: [],
+            PlaneLabelMap: null,
+            SnapTarget: "analytical",
+            ViewMode: "3dOnly",
+            CameraState: null
+        };
+    }
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | Build Default Measurements3D Section
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__SchemaValidator__BuildDefaultMeasurements3d() {
+        return { Lines: [] };
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Validate And Normalise A Project Payload
     // ------------------------------------------------------------
     function PhotoMeasurePro__SchemaValidator__ValidateAndNormaliseProject(projectData, sourceLabel) {
@@ -110,8 +134,18 @@ const PhotoMeasurePro__AppUtils__ProjectSchemaValidator = (function() {
         if (PhotoMeasurePro__SchemaValidator__EnsureSection(normalised, "PhotoMeasurePro__ProjectFile__Measurements", PhotoMeasurePro__SchemaValidator__BuildDefaultMeasurements)) didMutate = true;
         if (PhotoMeasurePro__SchemaValidator__EnsureSection(normalised, "PhotoMeasurePro__ProjectFile__VisualSettings", PhotoMeasurePro__SchemaValidator__BuildDefaultVisualSettings)) didMutate = true;
         if (PhotoMeasurePro__SchemaValidator__EnsureSection(normalised, "PhotoMeasurePro__ProjectFile__OrthoView", PhotoMeasurePro__SchemaValidator__BuildDefaultOrthoView)) didMutate = true;
+        if (PhotoMeasurePro__SchemaValidator__EnsureSection(normalised, "PhotoMeasurePro__ProjectFile__Scene3D", PhotoMeasurePro__SchemaValidator__BuildDefaultScene3d)) didMutate = true;
+        if (PhotoMeasurePro__SchemaValidator__EnsureSection(normalised, "PhotoMeasurePro__ProjectFile__Measurements3D", PhotoMeasurePro__SchemaValidator__BuildDefaultMeasurements3d)) didMutate = true;
 
         const metadata = normalised.PhotoMeasurePro__ProjectFile__Metadata;
+        const perspective = normalised.PhotoMeasurePro__ProjectFile__Perspective;
+        const measurements = normalised.PhotoMeasurePro__ProjectFile__Measurements;
+        const measurements3d = normalised.PhotoMeasurePro__ProjectFile__Measurements3D;
+        const scene3d = normalised.PhotoMeasurePro__ProjectFile__Scene3D;
+        if (!Array.isArray(perspective.Lines)) { perspective.Lines = []; didMutate = true; }
+        if (!Array.isArray(measurements.Lines)) { measurements.Lines = []; didMutate = true; }
+        if (!Array.isArray(measurements3d.Lines)) { measurements3d.Lines = []; didMutate = true; }
+        if (!Array.isArray(scene3d.OffsetPlanes)) { scene3d.OffsetPlanes = []; didMutate = true; }
         if (metadata.SchemaVersion !== PhotoMeasurePro__SchemaValidator__CurrentSchemaVersion) {
             metadata.SchemaVersion = PhotoMeasurePro__SchemaValidator__CurrentSchemaVersion;
             didMutate = true;

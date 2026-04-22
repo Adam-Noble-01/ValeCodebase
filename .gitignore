@@ -121,3 +121,7 @@ WebApps/Prototypes__ToolTesting__EarlyStage/Prototype__WindowConfigurator__Maker
 #    tooling that should never appear on the public web.
 #  - Encrypted counterparts (without --HIDDEN) are safe to commit.
 *.--HIDDEN
+
+# PhotoMeasurePro version-locked ONNX model binaries
+WebApps/PhotoMeasurePro/00__ThirdParty__VersionLockedDependencies/00__DepthAnythingV2__Small__Onnx/*.onnx
+WebApps/PhotoMeasurePro/00__ThirdParty__VersionLockedDependencies/01__MobileSAM__Onnx/*.onnx

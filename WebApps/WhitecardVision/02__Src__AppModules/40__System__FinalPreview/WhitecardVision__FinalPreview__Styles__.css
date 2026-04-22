@@ -1,0 +1,29 @@
+/*
+=============================================================================
+ WHITECARDVISION - FINAL PREVIEW (SYSTEM-OWNED STYLESHEET)
+=============================================================================
+*/
+.Wv__FinalPreview__Wrapper {
+    max-width         : 1200px;
+    margin            : 0 auto;
+    display           : flex;
+    flex-direction    : column;
+    gap               : var(--Wv__Space__Lg);
+}
+.Wv__FinalPreview__Canvas {
+    min-height        : 520px;
+    background        : var(--Wv__Color__BgPanel);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Md);
+    display           : flex;
+    align-items       : center;
+    justify-content   : center;
+    overflow          : hidden;
+    color             : var(--Wv__Color__TextMuted);
+}
+.Wv__FinalPreview__Canvas img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+.Wv__FinalPreview__Controls {
+    display           : flex;
+    gap               : var(--Wv__Space__Sm);
+    justify-content   : center;
+}

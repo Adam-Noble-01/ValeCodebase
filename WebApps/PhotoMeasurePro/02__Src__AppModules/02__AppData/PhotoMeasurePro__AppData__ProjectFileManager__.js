@@ -10,6 +10,7 @@ const PhotoMeasurePro__AppData__ProjectFileManager = (function() {
 
     const PhotoMeasurePro__ProjectFileManager__ManifestKey = "PhotoMeasurePro__ProjectManifest";
     const PhotoMeasurePro__ProjectFileManager__ApiBase = "/api/projects";
+    const PhotoMeasurePro__ProjectFileManager__Scene3dApiBase = "/api/scene3d";
 
     // HELPER FUNCTION | Read Manifest From localStorage
     // ------------------------------------------------------------
@@ -101,6 +102,27 @@ const PhotoMeasurePro__AppData__ProjectFileManager = (function() {
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Call Scene3D API Endpoint
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__ProjectFileManager__Scene3dPost(apiRoute, projectCode, bodyData) {
+        const endpointUrl = PhotoMeasurePro__ProjectFileManager__Scene3dApiBase + "/" + apiRoute + "/" + encodeURIComponent(projectCode);
+        return fetch(endpointUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bodyData || {})
+        }).then(function(response) {
+            return response.json().then(function(jsonResult) {
+                if (!response.ok || !jsonResult || !jsonResult.ok) {
+                    return { ok: false, error: (jsonResult && jsonResult.error) || ("HTTP " + response.status) };
+                }
+                return { ok: true, data: jsonResult.data || {} };
+            });
+        }).catch(function(errorValue) {
+            return { ok: false, error: errorValue.message || "Scene3D endpoint unreachable" };
+        });
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Build A Fresh Project Code
     // ------------------------------------------------------------
     function PhotoMeasurePro__ProjectFileManager__GenerateProjectCode() {
@@ -122,7 +144,8 @@ const PhotoMeasurePro__AppData__ProjectFileManager = (function() {
                 Author: "",
                 DateCreated: isoDate,
                 DateModified: isoDate,
-                SchemaVersion: 1
+                SchemaVersion: (window.PhotoMeasurePro__AppUtils__ProjectSchemaValidator
+                    && window.PhotoMeasurePro__AppUtils__ProjectSchemaValidator.PhotoMeasurePro__SchemaValidator__CurrentSchemaVersion) || 2
             }
         };
         const normalised = PhotoMeasurePro__ProjectFileManager__NormaliseProject(projectSkeleton, "createEmptyProject");
@@ -244,6 +267,31 @@ const PhotoMeasurePro__AppData__ProjectFileManager = (function() {
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Generate Depth Cache For Project
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__ProjectFileManager__GenerateDepthForProject(projectCode) {
+        return PhotoMeasurePro__ProjectFileManager__Scene3dPost("depth", projectCode, {});
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Generate Segmentation Cache For Project
+    // ------------------------------------------------------------
+    function PhotoMeasurePro__ProjectFileManager__GenerateSegmentationForProject(projectCode) {
+        return PhotoMeasurePro__ProjectFileManager__Scene3dPost("segmentation", projectCode, {});
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Request Volume Detection (Depth + Offset-Plane Clustering)
+    // ------------------------------------------------------------
+    // Posts the client-solved perspective (f, basis, principal, anchor) and
+    // current constraint lengths to the server so it can lift the ONNX depth
+    // map into metric world coordinates and cluster wall pixels into offset
+    // plane suggestions. The server never re-derives perspective itself.
+    function PhotoMeasurePro__ProjectFileManager__DetectVolumesForProject(projectCode, detectionPayload) {
+        return PhotoMeasurePro__ProjectFileManager__Scene3dPost("detect-volumes", projectCode, detectionPayload || {});
+    }
+    // ------------------------------------------------------------
+
     return {
         PhotoMeasurePro__ProjectFileManager__GenerateProjectCode: PhotoMeasurePro__ProjectFileManager__GenerateProjectCode,
         PhotoMeasurePro__ProjectFileManager__CreateEmptyProject: PhotoMeasurePro__ProjectFileManager__CreateEmptyProject,
@@ -253,7 +301,10 @@ const PhotoMeasurePro__AppData__ProjectFileManager = (function() {
         PhotoMeasurePro__ProjectFileManager__DeleteProject: PhotoMeasurePro__ProjectFileManager__DeleteProject,
         PhotoMeasurePro__ProjectFileManager__SyncFromServer: PhotoMeasurePro__ProjectFileManager__SyncFromServer,
         PhotoMeasurePro__ProjectFileManager__ExportProjectAsJson: PhotoMeasurePro__ProjectFileManager__ExportProjectAsJson,
-        PhotoMeasurePro__ProjectFileManager__ImportProjectFromJsonFile: PhotoMeasurePro__ProjectFileManager__ImportProjectFromJsonFile
+        PhotoMeasurePro__ProjectFileManager__ImportProjectFromJsonFile: PhotoMeasurePro__ProjectFileManager__ImportProjectFromJsonFile,
+        PhotoMeasurePro__ProjectFileManager__GenerateDepthForProject: PhotoMeasurePro__ProjectFileManager__GenerateDepthForProject,
+        PhotoMeasurePro__ProjectFileManager__GenerateSegmentationForProject: PhotoMeasurePro__ProjectFileManager__GenerateSegmentationForProject,
+        PhotoMeasurePro__ProjectFileManager__DetectVolumesForProject: PhotoMeasurePro__ProjectFileManager__DetectVolumesForProject
     };
 })();
 

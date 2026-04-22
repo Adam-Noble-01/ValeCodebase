@@ -1,0 +1,154 @@
+/*
+=============================================================================
+ WHITECARDVISION - RENDER MODE (SYSTEM-OWNED STYLESHEET)
+=============================================================================
+*/
+.Wv__Render__ProjectMeta {
+    padding           : var(--Wv__Space__Md) var(--Wv__Space__Lg);
+    background        : var(--Wv__Color__BgPanel);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Md);
+    margin-bottom     : var(--Wv__Space__Lg);
+}
+.Wv__Render__ProjectMeta__Row {
+    display           : flex;
+    align-items       : flex-end;
+    gap               : var(--Wv__Space__Md);
+    flex-wrap         : wrap;
+}
+.Wv__Render__ProjectMeta__Actions {
+    display           : flex;
+    gap               : var(--Wv__Space__Sm);
+}
+
+.Wv__Render__Workbench {
+    display           : grid;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+    gap               : var(--Wv__Space__Lg);
+    align-items       : start;
+    transition        : grid-template-columns 0.2s ease;
+}
+
+/* Fold-right: when the templates panel is collapsed, shrink the column to a thin rail */
+.Wv__Render__Workbench:has(.Wv__TemplatesPanel--Collapsed) {
+    grid-template-columns: minmax(0, 1fr) 44px;
+}
+
+.Wv__Render__Workbench__Main   { display: flex; flex-direction: column; gap: var(--Wv__Space__Lg); min-width: 0; }
+.Wv__Render__Workbench__Sidebar {
+    position          : sticky;
+    top               : var(--Wv__Space__Lg);
+    max-height        : calc(100vh - var(--Wv__Layout__HeaderHeight) - var(--Wv__Layout__NavHeight) - var(--Wv__Space__Xl));
+    display           : flex;
+    min-height        : 320px;
+}
+.Wv__Render__Workbench__Sidebar > .Wv__TemplatesPanel { flex: 1 1 auto; }
+
+.Wv__Render__Section {
+    background        : var(--Wv__Color__BgPanel);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Md);
+    padding           : var(--Wv__Space__Lg);
+}
+
+.Wv__Render__WhitecardSlot {
+    display           : grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto 1fr;
+    gap               : var(--Wv__Space__Md);
+}
+.Wv__Render__WhitecardSlot__Thumb {
+    grid-row          : 1 / span 2;
+    aspect-ratio      : 1 / 1;
+    background        : var(--Wv__Color__BgElevated);
+    border            : 1px dashed var(--Wv__Color__BorderStrong);
+    border-radius     : var(--Wv__Radius__Sm);
+    display           : flex;
+    align-items       : center;
+    justify-content   : center;
+    color             : var(--Wv__Color__TextMuted);
+    font-size         : 11px;
+    overflow          : hidden;
+}
+.Wv__Render__WhitecardSlot__Thumb img { width: 100%; height: 100%; object-fit: contain; }
+.Wv__Render__WhitecardSlot__Controls {
+    display           : flex;
+    align-items       : center;
+    gap               : var(--Wv__Space__Md);
+    flex-wrap         : wrap;
+}
+.Wv__Render__WhitecardSlot__Meta {
+    font-family       : var(--Wv__Font__Mono);
+    font-size         : 11px;
+    color             : var(--Wv__Color__TextSecondary);
+}
+.Wv__Render__WhitecardSlot__Meta--Mismatch { color: var(--Wv__Color__Warning); }
+
+.Wv__Render__RefList {
+    display           : grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap               : var(--Wv__Space__Md);
+    margin-bottom     : var(--Wv__Space__Md);
+}
+.Wv__Render__RefTile {
+    background        : var(--Wv__Color__BgElevated);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Sm);
+    padding           : var(--Wv__Space__Sm);
+    display           : flex;
+    flex-direction    : column;
+    gap               : var(--Wv__Space__Sm);
+}
+.Wv__Render__RefTile__Header {
+    display           : flex;
+    align-items       : center;
+    justify-content   : space-between;
+    font-size         : 11px;
+    color             : var(--Wv__Color__TextSecondary);
+    text-transform    : uppercase;
+    letter-spacing    : 0.08em;
+}
+.Wv__Render__RefTile__Thumb {
+    aspect-ratio      : 4 / 3;
+    background        : var(--Wv__Color__Bg);
+    border-radius     : 3px;
+    display           : flex;
+    align-items       : center;
+    justify-content   : center;
+    overflow          : hidden;
+    color             : var(--Wv__Color__TextMuted);
+    font-size         : 11px;
+    cursor            : pointer;
+}
+.Wv__Render__RefTile__Thumb img { width: 100%; height: 100%; object-fit: cover; }
+.Wv__Render__RefTile__PromptInput { min-height: 70px; }
+.Wv__Render__RefTile__LabelInput  { font-size: 12px; padding: 4px 6px; }
+.Wv__Render__RefTile__RemoveBtn {
+    background: transparent; border: none; color: var(--Wv__Color__Danger);
+    cursor: pointer; font-size: 16px; padding: 0 4px;
+}
+
+.Wv__Render__Output {
+    display           : flex;
+    flex-direction    : column;
+    gap               : var(--Wv__Space__Md);
+}
+.Wv__Render__Output__Canvas {
+    min-height        : 280px;
+    background        : var(--Wv__Color__BgElevated);
+    border            : 1px solid var(--Wv__Color__Border);
+    border-radius     : var(--Wv__Radius__Sm);
+    display           : flex;
+    align-items       : center;
+    justify-content   : center;
+    color             : var(--Wv__Color__TextMuted);
+    overflow          : hidden;
+    position          : relative;
+}
+.Wv__Render__Output__Canvas img { max-width: 100%; max-height: 640px; object-fit: contain; }
+.Wv__Render__Output__Controls {
+    display           : flex;
+    gap               : var(--Wv__Space__Sm);
+    flex-wrap         : wrap;
+    align-items       : center;
+}

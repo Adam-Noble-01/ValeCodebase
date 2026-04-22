@@ -6,6 +6,8 @@
  MODULE     : AppCore - ModeManager
  PURPOSE    : Nav-tab highlight + panel show/hide for Render / Editor /
               FilterSuite / FinalPreview.
+              Enforces project-load requirement: all tabs except Projects
+              are disabled until a project is loaded.
 ============================================================================= */
 
 // =============================================================================
@@ -26,10 +28,42 @@
         tabElements.forEach((tabElement) => {
             tabElement.addEventListener('click', (clickEvent) => {
                 clickEvent.preventDefault();
+                if (tabElement.classList.contains('Wv__App__NavTab--Disabled')) return;         //<-- JS guard: belt-and-braces alongside CSS pointer-events.
                 const targetModeId = tabElement.getAttribute('data-wv-mode');
                 if (targetModeId) Wv__ModeManager__SwitchToMode(targetModeId);
             });
         });
+
+        window.Wv__AppCore__StateManager.Wv__StateManager__On(
+            'activeProjectChanged',
+            Wv__ModeManager__UpdateNavState
+        );
+
+        Wv__ModeManager__UpdateNavState(null);                                                   //<-- Set initial disabled state before any project is loaded.
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Enable/disable tabs based on whether a project is active
+    // ------------------------------------------------------------
+    function Wv__ModeManager__UpdateNavState(projectTree) {
+        const navigationBarElement = document.getElementById('Wv__App__NavigationBar');
+        if (!navigationBarElement) return;
+
+        const hasProject = !!projectTree;
+
+        navigationBarElement.querySelectorAll('.Wv__App__NavTab').forEach((tabElement) => {
+            const tabModeId = tabElement.getAttribute('data-wv-mode');
+            if (tabModeId === 'ProjectManager') return;                                          //<-- Projects tab is always enabled.
+            if (tabModeId === 'FinalPreview')   return;                                          //<-- FinalPreview manages its own state via FinalPreview__Controller.
+
+            tabElement.classList.toggle('Wv__App__NavTab--Disabled', !hasProject);
+        });
+
+        if (!hasProject) {
+            const finalPreviewTab = navigationBarElement.querySelector('[data-wv-mode="FinalPreview"]');
+            if (finalPreviewTab) finalPreviewTab.classList.add('Wv__App__NavTab--Disabled');     //<-- Also disable FinalPreview when no project is loaded.
+        }
     }
     // ------------------------------------------------------------
 

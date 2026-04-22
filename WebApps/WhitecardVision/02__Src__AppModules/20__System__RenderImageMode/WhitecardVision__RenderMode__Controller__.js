@@ -73,7 +73,7 @@
             const geminiRequestShell     = await window.Wv__PromptConstructor__BuildFinalPayload.Wv__PromptConstructor__BuildFinalPayload__Render(projectTree);
             statusLineElement.textContent = 'Sending to Gemini (this can take up to ~60s)...';
 
-            window.Wv__SharedElements__LoadingSpinner.Wv__SharedElements__LoadingSpinner__ShowOver(canvasElement, 'Generating (Gemini 3 Pro)...');
+            window.Wv__SharedElements__LoadingSpinner.Wv__SharedElements__LoadingSpinner__ShowOver(canvasElement, 'ValeAI Is Rendering...');
 
             const generationResult       = await window.Wv__AppData__ProjectFileManager.Wv__ProjectFileManager__Generate(false, geminiRequestShell, '');
             projectTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__LastOutputPath = generationResult.imagePathRel;

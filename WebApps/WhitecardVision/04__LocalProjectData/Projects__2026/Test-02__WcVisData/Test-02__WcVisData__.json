@@ -6,7 +6,7 @@
         "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
         "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
         "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T13:46:30.427267+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-22T13:54:48.008899+00:00"
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-22T14:33:11.796768+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {
@@ -31,6 +31,18 @@
         "Wv__Project__RenderGroup__ImageSize": "4K",
         "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png"
     },
-    "Wv__Project__EditIterations": [],
-    "Wv__Project__ActiveEditIterationId": ""
+    "Wv__Project__EditIterations": [
+        {
+            "Wv__EditIteration__Id": "202604221428221Z",
+            "Wv__EditIteration__Label": "Iter 1",
+            "Wv__EditIteration__BaseImagePath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/20__FinalExport__RenderMode/20260422T135303Z__render__.png",
+            "Wv__EditIteration__TargetPrompt": "Add a depressed middle age clown guy to looking out of the left window pensively holding onto a deflated balloon. He should be facing looking out towards the garden lamenting on how difficult his life as been since losing his job at the circus. He it looking out into the distance.",
+            "Wv__EditIteration__PreservePrompt": "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
+            "Wv__EditIteration__AvoidNotes": "",
+            "Wv__EditIteration__ImageSize": "4K",
+            "Wv__EditIteration__LastOutputPath": "04__LocalProjectData/Projects__2026/Test-02__WcVisData/30__FinalExport__EditMode/202604221428221Z/20260422T143311Z__edit__.png",
+            "Wv__EditIteration__DateCreatedUtc": "2026-04-22T14:28:22.146Z"
+        }
+    ],
+    "Wv__Project__ActiveEditIterationId": "202604221428221Z"
 }

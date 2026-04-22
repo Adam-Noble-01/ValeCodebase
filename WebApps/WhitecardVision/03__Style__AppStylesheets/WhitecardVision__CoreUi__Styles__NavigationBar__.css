@@ -45,6 +45,12 @@
         text-underline-offset            : 4px;
     }
 
+    .Wv__App__NavTab--Disabled {
+        opacity                          : 0.35;
+        pointer-events                   : none;
+        cursor                           : not-allowed;
+    }
+
     .Wv__App__NavSeparator {
         color                            : var(--Wv__Color__TextMuted);
         user-select                      : none;

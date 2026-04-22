@@ -60,14 +60,15 @@
 
     // FUNCTION | Create a new project folder + seed JSON
     // ------------------------------------------------------------
-    async function Wv__ProjectFileManager__CreateProject(projectName, description, yearFolder) {
+    async function Wv__ProjectFileManager__CreateProject(projectName, description, yearFolder, displayName) {
         const seededData = await Wv__ProjectFileManager__FetchJson('/api/projects', {
             method  : 'POST',
             headers : { 'Content-Type': 'application/json' },
             body    : JSON.stringify({
                 projectName : projectName,
-                description : description || '',
-                yearFolder  : yearFolder  || ''
+                description : description  || '',
+                yearFolder  : yearFolder   || '',
+                displayName : displayName  || ''
             })
         });
         await Wv__ProjectFileManager__LoadProject(seededData.yearFolder, seededData.projectName);

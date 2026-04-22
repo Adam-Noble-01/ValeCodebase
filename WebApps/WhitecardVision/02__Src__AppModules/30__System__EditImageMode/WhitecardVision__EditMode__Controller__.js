@@ -63,7 +63,7 @@
         try {
             const geminiRequestShell    = await window.Wv__PromptConstructor__BuildFinalPayload.Wv__PromptConstructor__BuildFinalPayload__Edit(activeIteration);
             statusLineElement.textContent = 'Sending to Gemini...';
-            window.Wv__SharedElements__LoadingSpinner.Wv__SharedElements__LoadingSpinner__ShowOver(canvasElement, 'Generating Edit (Gemini 3 Pro)...');
+            window.Wv__SharedElements__LoadingSpinner.Wv__SharedElements__LoadingSpinner__ShowOver(canvasElement, 'Generating Edit ...');
 
             const generationResult      = await window.Wv__AppData__ProjectFileManager.Wv__ProjectFileManager__Generate(true, geminiRequestShell, activeIteration.Wv__EditIteration__Id);
 

@@ -4,6 +4,109 @@
 - Add latest changes to the top of the file.
 - Older changes descend in chronological order.
 
+
+# -----------------------------------------------------------------------------
+## WhitecardVision - v0.3.2 - 22-Apr-2026 - Nav gating + Final Preview auto-init
+
+### Summary
+Two connected improvements to navigation state and the Final Preview mode.
+First, all tabs except "Projects" are now disabled on app load and only light up
+once a project is opened. Second, Final Preview now auto-initialises with the
+newest available image the moment the tab is opened, so the preview card is
+never blank when output already exists. The "Final Preview" nav tab additionally
+stays dark until at least one image file is recorded in the project (render,
+edit iteration output, or whitecard).
+
+### Navigation gating (`ModeManager`)
+- `Wv__ModeManager__UpdateNavState(projectTree)` added.
+  - `ProjectManager` tab: always enabled.
+  - `Render`, `Editor`, `FilterSuite`: disabled until `projectTree` is truthy.
+  - `FinalPreview`: force-disabled when no project is loaded; state handed off
+    to `FinalPreview__Controller` once a project is active (image-existence
+    rule applies from that point).
+- `Wv__ModeManager__InstallNavigationBar()` updated:
+  - Subscribes to `activeProjectChanged` to keep nav live.
+  - Calls `UpdateNavState(null)` on install to establish the initial locked
+    state before any project is selected.
+  - Click guard added: disabled tabs bail out in JS even if CSS
+    `pointer-events` is somehow bypassed.
+
+### Final Preview auto-init + nav state (`FinalPreview__Controller`)
+- `Wv__FinalPreview__Controller__ExtractTimeToken(path)` - extracts the
+  `YYYYMMDDTHHMMSSZ` timestamp embedded in every generated output filename.
+- `Wv__FinalPreview__Controller__GetNewestImagePath(projectTree)` - scans
+  `RenderGroup__LastOutputPath` and every `EditIteration__LastOutputPath`,
+  sorts descending by timestamp, and returns the winner. Falls back to
+  `Wv__Whitecard__ImagePath` if no generated outputs exist yet.
+- `Wv__FinalPreview__Controller__UpdateNavState(projectTree)` - queries
+  `GetNewestImagePath` and toggles `Wv__App__NavTab--Disabled` on the
+  Final Preview tab. Wired to both `activeProjectChanged` and
+  `activeProjectMutated` so it stays live as generations complete.
+- `Wv__FinalPreview__Controller__OnActivated()` - ModeManager hook. Finds
+  the newest image path, resolves which source type it belongs to
+  (`Render` / `Edit` / `Whitecard`), and calls `DisplayImage` so the canvas
+  is always pre-populated on entry.
+- "Show Whitecard" button wired and `HandleDownloadWhitecard` implemented.
+- `ResetFromState` now also resets `DownloadWhitecardBtn` disabled state.
+- Public API updated to export `OnActivated` alongside `Init`.
+
+### CSS
+- `.Wv__App__NavTab--Disabled` added to `WhitecardVision__CoreUi__Styles__NavigationBar__.css`:
+  `opacity: 0.35`, `pointer-events: none`, `cursor: not-allowed`.
+
+### Files modified
+- `02__Src__AppModules/01__AppCore/WhitecardVision__AppCore__ModeManager__.js`
+- `02__Src__AppModules/50__System__FinalPreview/WhitecardVision__FinalPreview__Controller__.js`
+- `03__Style__AppStylesheets/WhitecardVision__CoreUi__Styles__NavigationBar__.css`
+
+# -----------------------------------------------------------------------------
+## WhitecardVision - v0.3.1 - 22-Apr-2026 - New project prompt + clean slug
+
+### Summary
+Replaced the auto-created "Untitled + timestamp" project flow with a
+`window.prompt` upfront dialog, clean slug generation, and immediate JSON
+seeding so the project file is correctly named from the moment it is written.
+
+### New project flow (`+ New Project`)
+- Clicking `+ New Project` (or the Render mode "New" button) now opens a
+  browser prompt pre-filled with the default display name from config.
+- Cancelling the prompt or submitting an empty string aborts without creating
+  anything; an empty-string attempt shows a warning toast.
+- The entered name is sanitised into a clean filesystem slug by the new
+  `BuildCleanSlug` helper: spaces and disallowed chars collapse to a single
+  hyphen, leading/trailing separators are stripped, max 64 chars. Examples:
+  `"Appleton"` → `Appleton`, `"My House 01"` → `My-House-01`.
+- The folder and JSON file use only this clean slug — no timestamp suffix.
+  `Appleton__WcVisData/` and `Appleton__WcVisData__.json`.
+
+### JSON seeded with display name at creation
+- `ProjectFileManager.CreateProject` now accepts an optional `displayName`
+  argument and forwards it in the POST body.
+- Flask `HandleProjectCreate` reads `displayName` from the body (falls back
+  to the slug if absent) and passes it to `BuildDefaultProjectJson`.
+- `BuildDefaultProjectJson` now seeds `Wv__ProjectFile__Metadata__ProjectName`
+  with `display_name` rather than the raw slug, so the file is correct from
+  the first write — no post-creation rename call needed.
+- The `RenameActiveProject` call that previously patched the name after
+  creation has been removed from the create flow.
+
+### Naming / refactors
+- `BuildTimestampSlug` replaced by `BuildCleanSlug` in `ProjectActions`.
+- `CreateUntitledProject` renamed to `CreateProjectWithPrompt`; public API
+  and all call sites updated (Controller, RenderMode ProjectMetaPanel).
+- `TriggerInlineNewProject` renamed to `TriggerNewProject`; `QueueRenameFocus`
+  call removed since no inline rename step is required.
+- Module-level comment in `ProjectActions` updated to reflect that a single
+  `window.prompt` is now used for the create action.
+
+### Files changed
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectActions__.js`
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__Controller__.js`
+- `02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__ProjectMetaPanel__.js`
+- `02__Src__AppModules/02__AppData/WhitecardVision__AppData__ProjectFileManager__.js`
+- `05__FlaskServerScripts/WhitecardVision__FlaskServer__Main__.py`
+
+
 # -----------------------------------------------------------------------------
 ## WhitecardVision - v0.3.0 - 22-Apr-2026 - UX overhaul + Project Manager
 

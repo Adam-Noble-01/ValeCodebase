@@ -168,11 +168,11 @@ def Wv__Server__PeekTemplateFrontMatter(markdown_path: Path) -> dict[str, str]: 
 
 # FUNCTION | Build default project JSON seed
 # ------------------------------------------------------------
-def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str, description: str) -> dict[str, Any]:
+def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str, description: str, display_name: str = "") -> dict[str, Any]:
     now_iso = datetime.now(timezone.utc).isoformat()
     return {
         "Wv__ProjectFile__Metadata": {
-            "Wv__ProjectFile__Metadata__ProjectName"        : project_name,
+            "Wv__ProjectFile__Metadata__ProjectName"        : display_name or project_name,
             "Wv__ProjectFile__Metadata__ProjectCode"        : project_name,
             "Wv__ProjectFile__Metadata__Description"        : description or "",
             "Wv__ProjectFile__Metadata__YearFolder"         : year_folder_name,
@@ -467,8 +467,9 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
         if request_body is None:
             return
 
-        project_name = str(request_body.get("projectName", "")).strip()
-        description  = str(request_body.get("description", "")).strip()
+        project_name    = str(request_body.get("projectName", "")).strip()
+        description     = str(request_body.get("description", "")).strip()
+        display_name    = str(request_body.get("displayName", "")).strip() or project_name
         year_folder_raw = str(request_body.get("yearFolder", "")).strip()
 
         if not WV__SERVER__PROJECT_NAME_PATTERN.match(project_name):
@@ -496,7 +497,7 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             (project_dir / subfolder_name).mkdir(exist_ok=True)
 
         project_json_path = project_dir / f"{project_name}__WcVisData__.json"
-        project_json_data = Wv__Server__BuildDefaultProjectJson(project_name, year_folder_name, description)
+        project_json_data = Wv__Server__BuildDefaultProjectJson(project_name, year_folder_name, description, display_name)
         project_json_path.write_text(
             json.dumps(project_json_data, indent=4, ensure_ascii=False),
             encoding="utf-8",

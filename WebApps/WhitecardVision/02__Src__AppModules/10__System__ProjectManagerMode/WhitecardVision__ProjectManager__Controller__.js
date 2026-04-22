@@ -47,13 +47,13 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Public entry point - called by Render "New" to branch here
+    // FUNCTION | Public entry point - prompt for a name, create the project, refresh the list
     // ------------------------------------------------------------
     //  1. Switch UI to ProjectManager tab.
-    //  2. Kick off CreateUntitledProject and queue inline-rename focus.
-    //  3. Refresh the list so the newly-created row appears and is focused.
+    //  2. Prompt the user for a project name via ProjectActions.
+    //  3. Refresh the list so the newly-created row appears.
     // ------------------------------------------------------------
-    async function Wv__ProjectManager__Controller__TriggerInlineNewProject() {
+    async function Wv__ProjectManager__Controller__TriggerNewProject() {
         const modeManager    = window.Wv__AppCore__ModeManager;
         const projectActions = window.Wv__ProjectManager__ProjectActions;
         const projectList    = window.Wv__ProjectManager__ProjectList;
@@ -61,11 +61,11 @@
 
         if (!projectActions || !projectList) return;
         try {
-            const createdDescriptor = await projectActions.Wv__ProjectManager__ProjectActions__CreateUntitledProject();
-            projectList.Wv__ProjectManager__ProjectList__QueueRenameFocus(createdDescriptor.projectSlug);
+            const createdDescriptor = await projectActions.Wv__ProjectManager__ProjectActions__CreateProjectWithPrompt();
+            if (!createdDescriptor) return;
             await projectList.Wv__ProjectManager__ProjectList__Refresh();
         } catch (createError) {
-            console.warn('[ProjectManager] TriggerInlineNewProject failed:', createError);
+            console.warn('[ProjectManager] TriggerNewProject failed:', createError);
         }
     }
     // ------------------------------------------------------------
@@ -80,7 +80,7 @@
         const refreshButtonEl = document.getElementById('Wv__ProjectManager__Toolbar__RefreshBtn');
 
         if (newButtonEl) {
-            newButtonEl.addEventListener('click', Wv__ProjectManager__Controller__TriggerInlineNewProject);
+            newButtonEl.addEventListener('click', Wv__ProjectManager__Controller__TriggerNewProject);
         }
         if (refreshButtonEl) {
             refreshButtonEl.addEventListener('click', Wv__ProjectManager__Controller__OnActivated);
@@ -103,7 +103,7 @@
     window.Wv__ProjectManager__Controller = {
         Wv__ProjectManager__Controller__Init,
         Wv__ProjectManager__Controller__OnActivated,
-        Wv__ProjectManager__Controller__TriggerInlineNewProject
+        Wv__ProjectManager__Controller__TriggerNewProject
     };
     // ------------------------------------------------------------
 

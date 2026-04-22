@@ -70,16 +70,12 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | "New" now delegates to the Project Manager inline-new flow
-    // ------------------------------------------------------------
-    //  This routes the user to the Projects tab, creates a default project on
-    //  the server, and opens an inline rename input so they can name it without
-    //  a blocking browser dialog.
+    // HELPER FUNCTION | "New" delegates to the Project Manager prompted-new flow
     // ------------------------------------------------------------
     async function Wv__RenderMode__ProjectMetaPanel__HandleNewClicked() {
         const projectManagerController = window.Wv__ProjectManager__Controller;
-        if (projectManagerController && projectManagerController.Wv__ProjectManager__Controller__TriggerInlineNewProject) {
-            await projectManagerController.Wv__ProjectManager__Controller__TriggerInlineNewProject();
+        if (projectManagerController && projectManagerController.Wv__ProjectManager__Controller__TriggerNewProject) {
+            await projectManagerController.Wv__ProjectManager__Controller__TriggerNewProject();
             return;
         }
         const modeManager = window.Wv__AppCore__ModeManager;

@@ -5,9 +5,8 @@
  NAMESPACE  : Wv
  MODULE     : System - ProjectManagerMode - ProjectActions
  PURPOSE    : High-level project lifecycle operations invoked from the
-              Project Manager UI (create, open, delete, rename). All browser
-              prompt dialogs are deliberately avoided; feedback flows through
-              toast notifications and inline table edits.
+              Project Manager UI (create, open, delete, rename). Feedback
+              flows through toast notifications; destructive ops use confirm.
 ============================================================================= */
 
 // =============================================================================
@@ -19,22 +18,25 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Helpers - Slug + date formatting
+// REGION | Helpers - Slug generation
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build a unique slug "Untitled-20260422-143207"
+    // HELPER FUNCTION | Sanitise a user display name into a filesystem-safe slug
     // ------------------------------------------------------------
-    function Wv__ProjectManager__ProjectActions__BuildTimestampSlug(prefixToken) {
-        const nowDate         = new Date();
-        const pad2            = (n) => String(n).padStart(2, '0');
-        const yearToken       = nowDate.getFullYear();
-        const monthToken      = pad2(nowDate.getMonth() + 1);
-        const dayToken        = pad2(nowDate.getDate());
-        const hourToken       = pad2(nowDate.getHours());
-        const minuteToken     = pad2(nowDate.getMinutes());
-        const secondToken     = pad2(nowDate.getSeconds());
-        const cleanPrefix     = String(prefixToken || 'Untitled').replace(/[^A-Za-z0-9]/g, '') || 'Untitled';
-        return cleanPrefix + '-' + yearToken + monthToken + dayToken + '-' + hourToken + minuteToken + secondToken;
+    //  Rules mirror the server allowlist: [A-Za-z0-9_-], first char alphanumeric,
+    //  max 64 chars. Spaces and other separators collapse to a single hyphen.
+    // ------------------------------------------------------------
+    function Wv__ProjectManager__ProjectActions__BuildCleanSlug(userInput) {
+        let slug = String(userInput || 'Untitled')
+            .trim()
+            .replace(/[^A-Za-z0-9_\-]+/g, '-')
+            .replace(/-{2,}/g, '-')
+            .replace(/^[-_]+|[-_]+$/g, '')
+            .substring(0, 64);
+        if (!slug || !/^[A-Za-z0-9]/.test(slug)) {
+            slug = ('Project-' + slug.replace(/^[^A-Za-z0-9]+/, '')).substring(0, 64);
+        }
+        return slug || 'Untitled';
     }
     // ------------------------------------------------------------
 
@@ -59,31 +61,38 @@
 // REGION | Public actions - Create / Open / Delete / Rename
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Create a new Untitled project and flag it for inline rename
+    // FUNCTION | Prompt the user for a project name, create the project, and notify via toast
     // ------------------------------------------------------------
-    //  1. Generate a unique timestamped slug.
-    //  2. Post to the server to create the folder + seed JSON.
-    //  3. Set metadata.ProjectName to the default display string and save.
-    //  4. Return `{ yearFolder, projectSlug, projectName }` so the table
-    //     can spawn an inline rename input on the newly-created row.
+    //  1. Show window.prompt to capture the desired display name.
+    //  2. Derive a clean filesystem slug from the user's input.
+    //  3. Post to the server; the display name is seeded into the JSON directly.
+    //  4. Return `{ yearFolder, projectSlug, projectName }`.
     // ------------------------------------------------------------
-    async function Wv__ProjectManager__ProjectActions__CreateUntitledProject() {
+    async function Wv__ProjectManager__ProjectActions__CreateProjectWithPrompt() {
         const projectFileManager = window.Wv__AppData__ProjectFileManager;
         const toast              = window.Wv__AppUtils__Toast;
         const defaults           = Wv__ProjectManager__ProjectActions__ReadDefaults();
-        const yearFolderToken    = projectFileManager.Wv__ProjectFileManager__CurrentYearFolder();
-        const newSlugToken       = Wv__ProjectManager__ProjectActions__BuildTimestampSlug(defaults.slugPrefix);
+
+        const userInputRaw  = window.prompt('Enter new project name:', defaults.displayName);
+        if (userInputRaw === null) return null;
+        const trimmedName   = userInputRaw.trim();
+        if (!trimmedName) {
+            if (toast) toast.Wv__Toast__Show('Project name cannot be empty.', 'warning');
+            return null;
+        }
+
+        const yearFolderToken = projectFileManager.Wv__ProjectFileManager__CurrentYearFolder();
+        const newSlugToken    = Wv__ProjectManager__ProjectActions__BuildCleanSlug(trimmedName);
 
         try {
             const createdDescriptor = await projectFileManager.Wv__ProjectFileManager__CreateProject(
-                newSlugToken, '', yearFolderToken
+                newSlugToken, '', yearFolderToken, trimmedName
             );
-            await projectFileManager.Wv__ProjectFileManager__RenameActiveProject(defaults.displayName);
-            if (toast) toast.Wv__Toast__Show('New project created.', 'success');
+            if (toast) toast.Wv__Toast__Show('Created project "' + trimmedName + '".', 'success');
             return {
                 yearFolder  : createdDescriptor.yearFolder,
                 projectSlug : createdDescriptor.projectName,
-                projectName : defaults.displayName
+                projectName : trimmedName
             };
         } catch (createError) {
             if (toast) toast.Wv__Toast__Show('Create failed: ' + createError.message, 'error');
@@ -174,7 +183,7 @@
     // PUBLIC API
     // ------------------------------------------------------------
     window.Wv__ProjectManager__ProjectActions = {
-        Wv__ProjectManager__ProjectActions__CreateUntitledProject,
+        Wv__ProjectManager__ProjectActions__CreateProjectWithPrompt,
         Wv__ProjectManager__ProjectActions__OpenProject,
         Wv__ProjectManager__ProjectActions__DeleteProject,
         Wv__ProjectManager__ProjectActions__CommitRename

@@ -5,7 +5,8 @@
    FILE       : WhitecardVision__FinalPreview__Styles__.css
    NAMESPACE  : Wv
    MODULE     : System - FinalPreview
-   PURPOSE    : Read-only full-size preview, right sidebar actions, max VH image
+   PURPOSE    : Read-only full-size preview, menu card column beside canvas,
+                max VH image
 
    ============================================================================= */
 
@@ -17,22 +18,23 @@
         --Wv__FinalPreview__SidebarWidth  : 220px;
     }
 
-    /* Full-width canvas; sidebar is absolutely positioned so the image
-       flex-centres on the full content width (true page centre, not
-       the leftover column next to a flex sidebar). */
+    /* Row: canvas + gap + menu. No forced row height — card hugs image + padding. */
     .Wv__FinalPreview__Wrapper {
-        position                         : relative;
+        display                          : flex;
+        flex-direction                   : row;
+        align-items                      : flex-start;
+        gap                              : var(--Wv__Space__Lg);
         width                            : 100%;
         max-width                        : none;
         padding                          : var(--Wv__Space__Md) 0;
-        min-height                       : calc(85dvh - var(--Wv__Layout__HeaderHeight) - 2 * var(--Wv__Space__Lg));
-        max-height                       : calc(95dvh - var(--Wv__Layout__HeaderHeight) - 2 * var(--Wv__Space__Lg));
     }
 
     .Wv__FinalPreview__Canvas {
-        width                            : 100%;
-        min-height                       : calc(80dvh - var(--Wv__Layout__HeaderHeight) - 2 * var(--Wv__Space__Lg));
-        max-height                       : calc(90dvh - var(--Wv__Layout__HeaderHeight) - 2 * var(--Wv__Space__Lg));
+        flex                             : 1 1 auto;
+        min-width                        : 0;
+        box-sizing                       : border-box;
+        /* Even inset on all sides of the image */
+        padding                          : var(--Wv__Space__Lg);
         background                       : var(--Wv__Color__BgPanel);
         border                           : 1px solid var(--Wv__Color__Border);
         border-radius                    : var(--Wv__Radius__Md);
@@ -41,28 +43,67 @@
         justify-content                  : center;
         overflow                         : hidden;
         color                            : var(--Wv__Color__TextMuted);
+        /* Height follows content; cap scroll when image is very tall */
+        max-height                       : calc(100dvh - var(--Wv__Layout__HeaderHeight) - 2 * var(--Wv__Space__Lg) - 2 * var(--Wv__Space__Md));
+        overflow-y                       : auto;
+    }
+    .Wv__FinalPreview__Canvas:has(.Wv__FinalPreview__Placeholder) {
+        min-height                       : 220px;
     }
     .Wv__FinalPreview__Canvas img {
-        /* Keep image from sitting under the overlay sidebar; still centred in full canvas width */
-        max-width                        : calc(100% - var(--Wv__FinalPreview__SidebarWidth) - var(--Wv__Space__Lg));
-        max-height                       : 100%;
+        display                          : block;
+        max-width                        : 100%;
+        /* Cap image height; canvas grows only as tall as image + padding (no vh min trap) */
+        max-height                       : calc(100dvh - var(--Wv__Layout__HeaderHeight) - 2 * var(--Wv__Space__Lg) - 2 * var(--Wv__Space__Md) - 2 * var(--Wv__Space__Lg));
         width                            : auto;
         height                           : auto;
         object-fit                       : contain;
     }
 
+    /* Card menu: fixed column to the right of the canvas (gutter) */
     .Wv__FinalPreview__Sidebar {
-        position                         : absolute;
-        right                            : 0;
-        top                              : 50%;
-        transform                        : translateY(-50%);
-        z-index                          : 2;
+        flex                             : 0 0 var(--Wv__FinalPreview__SidebarWidth);
+        position                         : static;
         display                          : flex;
         flex-direction                   : column;
         align-items                      : stretch;
         width                            : var(--Wv__FinalPreview__SidebarWidth);
-        gap                              : var(--Wv__Space__Sm);
+        max-width                        : 100%;
+        background                       : var(--Wv__Color__BgPanel);
+        border                           : 1px solid var(--Wv__Color__Border);
+        border-radius                    : var(--Wv__Radius__Md);
+        box-shadow                       : var(--Wv__Shadow__Panel);
+        overflow                         : hidden;
     }
+
+    .Wv__FinalPreview__SidebarHeader {
+        display                          : flex;
+        align-items                      : center;
+        padding                          : 10px 12px;
+        border-bottom                    : 1px solid var(--Wv__Color__Border);
+        color                            : var(--Wv__Color__Accent);
+        font-size                        : 12px;
+        font-weight                      : 600;
+        letter-spacing                   : 0.04em;
+        text-transform                   : uppercase;
+    }
+
+    .Wv__FinalPreview__SidebarTitle {
+        flex                             : 1;
+    }
+
+    .Wv__FinalPreview__SidebarContent {
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : var(--Wv__Space__Sm);
+        padding                          : 12px;
+    }
+
+    .Wv__FinalPreview__SidebarContent .Wv__Ui__Button {
+        width                            : 100%;
+        justify-content                  : center;
+    }
+
     .Wv__FinalPreview__Sidebar .Wv__Ui__Button--Primary {
         box-shadow                       : 0 0 0 1px rgba(79, 140, 255, 0.45), 0 4px 20px rgba(79, 140, 255, 0.22);
     }

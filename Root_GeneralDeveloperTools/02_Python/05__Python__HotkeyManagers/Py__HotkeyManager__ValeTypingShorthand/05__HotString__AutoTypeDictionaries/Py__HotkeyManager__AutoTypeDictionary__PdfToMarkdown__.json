@@ -1,0 +1,42 @@
+[
+    {
+        "Hotstring"  : ";pdf2md",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";pdf2markdown",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";pdftomarkdown",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";pdftomarkown",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";extractpdf",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";pdfextract",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";pdftotext",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    },
+    {
+        "Hotstring"  : ";pdf2text",
+        "Action"     : "TypeOutText",
+        "Text"       : "python \"D:\\10_CoreLib__ValeCodebase\\Root_GeneralDeveloperTools\\02_Python\\20__Python__PDFTools\\Py_PdfUtils__PdfToTextExtractor\\Py_PdfUtils__PdfToTextExtractor__Main__.py\""
+    }
+]

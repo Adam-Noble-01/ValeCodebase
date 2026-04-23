@@ -1,0 +1,6 @@
+All exterior Python packages used by this tool must live in this folder.
+Each package is installed into its own subfolder named NN__<PackageName>__PythonPackage__
+so that dependencies remain isolated, portable, and version-locked.
+
+Populated automatically by running INSTALL_DEPENDENCIES.bat (Windows) or
+INSTALL_DEPENDENCIES.sh (Unix) from the project root.

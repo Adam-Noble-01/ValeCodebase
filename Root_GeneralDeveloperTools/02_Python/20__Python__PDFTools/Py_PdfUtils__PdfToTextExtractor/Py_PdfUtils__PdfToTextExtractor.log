@@ -1,0 +1,21 @@
+2026-04-23 10:45:26,860 | WARNING | OcrTextExtractor | missing binaries: ['ghostscript']
+2026-04-23 10:45:26,860 | WARNING | OCR could not complete: OCR cannot run - the following native binaries are missing:
+  - Ghostscript (AGPL Release)
+      Windows installer: https://ghostscript.com/releases/gsdnld.html
+
+The app automatically detects installs in all standard locations
+(Program Files, Program Files (x86), and %LOCALAPPDATA%\Programs)
+so a restart is NOT required after installing. Just close this dialog,
+install the missing binary, then click 'Extract to Markdown' again.
+
+Text-native PDFs continue to extract without either of these.
+2026-04-23 10:45:26,864 | INFO | MarkdownWriter | wrote C:\Users\adamw\Downloads\AudioSPACE--Manifest-1.0.0.__TextExtracted__23-Apr-2026__.md (0 blocks)
+2026-04-23 10:45:55,548 | INFO | PdfTypeDetector | page=1/1 chars=0 words=0 -> ocr
+2026-04-23 10:45:55,804 | INFO | PdfTypeDetector | page=1/1 chars=0 words=0 -> ocr
+2026-04-23 10:45:57,770 | INFO | OcrTextExtractor | prepended to PATH: C:\Users\adamw\AppData\Local\Programs\Tesseract-OCR
+2026-04-23 10:46:08,447 | INFO | OcrTextExtractor | OCR'd 1 page(s), 228 line(s) total
+2026-04-23 10:46:08,448 | INFO | MarkdownWriter | wrote C:\Users\adamw\Downloads\AudioSPACE--Manifest-1.0.0.__TextExtracted__23-Apr-2026__.md (228 blocks)
+2026-04-23 10:51:03,752 | INFO | PdfTypeDetector | page=1/1 chars=0 words=0 -> ocr
+2026-04-23 10:51:07,854 | INFO | OcrTextExtractor | prepended to PATH: C:\Users\adamw\AppData\Local\Programs\Tesseract-OCR
+2026-04-23 10:51:17,746 | INFO | OcrTextExtractor | OCR'd 1 page(s), 228 line(s) total
+2026-04-23 10:51:17,747 | INFO | MarkdownWriter | wrote C:\Users\adamw\Downloads\AudioSPACE--Manifest-1.0.0.__TextExtracted__23-Apr-2026__.md (228 blocks)

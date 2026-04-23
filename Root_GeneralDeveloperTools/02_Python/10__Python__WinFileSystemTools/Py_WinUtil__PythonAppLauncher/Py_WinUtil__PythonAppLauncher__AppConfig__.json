@@ -1,0 +1,114 @@
+{
+  "schema_version": 2,
+  "apps": {
+    "05__Python__HotkeyManagers/Py__HotkeyManager__AutoEmail__ValeTemplates/Py__HotkeyManager__AutoEmail__ValeTemplates__Main__.py": {
+      "enabled": true,
+      "order": 10,
+      "name": "Auto Email (Vale Templates)",
+      "description": "AutoHotkey-style triggers that paste pre-built Vale delivery and project-sharing emails."
+    },
+    "05__Python__HotkeyManagers/Py__HotkeyManager__ValeTypingShorthand/Py__HotkeyManager__ValeTypingShorthand__Main__.py": {
+      "enabled": true,
+      "order": 20,
+      "name": "Vale Typing Shorthand",
+      "description": "System-tray hotstring engine that expands typed shortcuts into Markdown-backed snippets."
+    },
+    "10__Python__WinFileSystemTools/Py_FileUtils__FileCompression__StandardArchivalScript/Py_FileUtils__FileCompression__StandardArchivalScript__Main__.py": {
+      "enabled": true,
+      "order": 20,
+      "name": "Standard Archival Compressor",
+      "description": "One-click archiver - zips a chosen folder using the standard Vale archival profile for long-term storage."
+    },
+    "10__Python__WinFileSystemTools/Py_FileUtils__SimpleFileLogger__ListItems__InCurrentFolder/Py_FileUtils__SimpleFileLogger__ListFilesInCurrentFolder__DumpTxt__Main__.py": {
+      "enabled": true,
+      "order": 40,
+      "name": "List Files in Folder",
+      "description": "Dumps every file (with size) from a chosen folder into a timestamped .txt report."
+    },
+    "10__Python__WinFileSystemTools/Py_FileUtils__SimpleFileLogger__ListItems__InCurrentFolder/Py_FileUtils__SimpleFileLogger__ListFoldersAtCurrentDirLevel__DumpTxt__Main__.py": {
+      "enabled": true,
+      "order": 50,
+      "name": "List Subfolders",
+      "description": "Dumps every direct subfolder name at the chosen directory level into a .txt report."
+    },
+    "10__Python__WinFileSystemTools/Py_WinUtil__BuildValeProjectStructure/Py_WinUtil__BuildValeProjectStructure__Main__.py": {
+      "enabled": true,
+      "order": 10,
+      "name": "Build Vale Project Structure",
+      "description": "Scaffolds the canonical Vale project folder tree for a new job at the chosen location."
+    },
+    "10__Python__WinFileSystemTools/Py_WinUtil__ProjectFileTreeViewer/Py_WinUtil__ProjectFileTreeViewer__Main__.py": {
+      "enabled": true,
+      "order": 30,
+      "name": "Project File Tree Viewer",
+      "description": "Interactive tree browser with high-quality image export of a project's directory structure."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__A3PdfDocCompiler/Py_PdfUtils__PdfDocCompiler__Main__.py": {
+      "enabled": true,
+      "order": 30,
+      "name": "PDF Doc Compiler (A3)",
+      "description": "Merges multiple PDFs into a single A3 document with consistent page sizing and ordering."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__CompressPdfFile/Py_PdfUtils__CompressPdfFile__Main__.py": {
+      "enabled": true,
+      "order": 10,
+      "name": "Compress PDF",
+      "description": "Shrinks a PDF's file size by re-encoding embedded images while keeping text crisp."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__HtmlToPagelessPdfConverter/Py_PdfUtils__HtmlToPagelessPdfConverter__Main__.py": {
+      "enabled": true,
+      "order": 20,
+      "name": "HTML to Pageless PDF",
+      "description": "Renders an HTML file or URL into a single long pageless PDF - ideal for web captures."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__PdfToDxfConverter/Py_PdfUtils__PdfToDxfConverter__Main__.py": {
+      "enabled": true,
+      "order": 40,
+      "name": "PDF to DXF",
+      "description": "Converts vector PDF drawings into DXF files ready for CAD consumption."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__PdfToPngConverter/Py_PdfUtils__PdfToPngConverter__Main__.py": {
+      "enabled": true,
+      "order": 50,
+      "name": "PDF to PNG",
+      "description": "Rasterises every page of a PDF into individual PNG images at a chosen DPI."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__PdfToTextExtractor/Py_PdfUtils__PdfToTextExtractor__Main__.py": {
+      "enabled": true,
+      "order": 60,
+      "name": "PDF to Text Extractor",
+      "description": "Extracts embedded text or OCRs scanned PDFs and saves a structured Markdown file."
+    },
+    "20__Python__PDFTools/Py_PdfUtils__PngToPdfConverter/Py_PdfUtils__PngToPdfConverter__Main__.py": {
+      "enabled": true,
+      "order": 70,
+      "name": "PNG to PDF",
+      "description": "Compiles a batch of PNG images into a single ordered PDF document."
+    },
+    "30__Python__ImageTools/Py_ImgUtils__HeicToPngConverter/Py_ImgUtils__HeicToPngConverter__Main__.py": {
+      "enabled": true,
+      "order": 10,
+      "name": "HEIC to PNG",
+      "description": "Batch-converts Apple HEIC photos into PNG files, preserving image quality."
+    },
+    "30__Python__ImageTools/Py_ImgUtils__PhotoMetadataPurger/Py_ImgUtils__PhotoMetadataPurger__Main__.py": {
+      "enabled": true,
+      "order": 20,
+      "name": "Photo Metadata Purger",
+      "description": "Strips EXIF and other metadata from a batch of photos for safe public sharing."
+    },
+    "50__Python__VideoTools/Py_VideoUtils__CombineVideosInChronologicalOrder/SyPy_VideoUtils__CombineVideosInChronologicalOrder__Main__.py": {
+      "enabled": true,
+      "order": 10,
+      "name": "Combine Videos (Chronological)",
+      "description": "Stitches multiple video files into one output, ordered by original capture date."
+    },
+    "50__Python__VideoTools/Py_VideoUtils__PngFilesToTimelapseVideo/Py_VideoUtils__PngFilesToTimelapseVideo__Main__.py": {
+      "enabled": true,
+      "order": 20,
+      "name": "PNG Frames to Timelapse",
+      "description": "Turns a folder of numbered PNG stills into a smooth MP4 timelapse video."
+    }
+  },
+  "last_modified": "23-Apr-2026 11:28:52"
+}

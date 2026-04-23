@@ -18,6 +18,11 @@ from datetime import datetime, timezone
 from typing import Any
 
 
+# -----------------------------------------------------------------------------
+# REGION | Project Schema Helpers
+# -----------------------------------------------------------------------------
+
+
 # FUNCTION | Build default project JSON seed
 # ------------------------------------------------------------
 def Wv__Server__BuildDefaultProjectJson(
@@ -67,25 +72,31 @@ def Wv__Server__BuildDefaultProjectJson(
 def Wv__Server__ReplaceProjectFolderSegmentInJson(value: Any, old_segment: str, new_segment: str) -> Any:
     if isinstance(value, dict):
         return {
-            key_text: Wv__Server__ReplaceProjectFolderSegmentInJson(value_item, old_segment, new_segment)
-            for key_text, value_item in value.items()
+            k: Wv__Server__ReplaceProjectFolderSegmentInJson(v, old_segment, new_segment) for k, v in value.items()
         }
     if isinstance(value, list):
-        return [Wv__Server__ReplaceProjectFolderSegmentInJson(value_item, old_segment, new_segment) for value_item in value]
+        return [Wv__Server__ReplaceProjectFolderSegmentInJson(v, old_segment, new_segment) for v in value]
     if isinstance(value, str) and old_segment in value:
         return value.replace(old_segment, new_segment)
     return value
 # ------------------------------------------------------------
 
 
-# FUNCTION | Generate a stable slug from display name (allowlist + fallback)
+# FUNCTION | Sanitise a display name into a filesystem-safe project slug
+# ------------------------------------------------------------
+#  Rules mirror the client's BuildCleanSlug:
+#  - Strip non-alphanumeric/underscore/hyphen → hyphen.
+#  - Collapse repeated hyphens; strip leading/trailing hyphens and underscores.
+#  - Truncate to 64 chars; first char must be alphanumeric.
 # ------------------------------------------------------------
 def Wv__Server__BuildCleanProjectSlug(display_name: str) -> str:
-    slug_text = re.sub(r"[^A-Za-z0-9_\-]+", "_", str(display_name or "").strip())
-    slug_text = re.sub(r"_+", "_", slug_text).strip("_- ")
-    if not slug_text:
-        slug_text = "Project"
-    if not re.match(r"^[A-Za-z0-9]", slug_text):
-        slug_text = f"P_{slug_text}"
-    return slug_text[:64]
+    slug = re.sub(r'[^A-Za-z0-9_\-]+', '-', str(display_name or '').strip())
+    slug = re.sub(r'-{2,}', '-', slug)
+    slug = slug.strip('-_')[:64]
+    if not slug or not re.match(r'^[A-Za-z0-9]', slug):
+        slug = ('Project-' + re.sub(r'^[^A-Za-z0-9]+', '', slug))[:64]
+    return slug or 'Untitled'
 # ------------------------------------------------------------
+
+
+# endregion ----------------------------------------------------

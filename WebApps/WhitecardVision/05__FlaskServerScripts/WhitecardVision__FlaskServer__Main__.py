@@ -26,9 +26,13 @@
 
 from __future__ import annotations
 
+
+# -----------------------------------------------------------------------------
+# REGION | Standard Library Imports
+# -----------------------------------------------------------------------------
+
 import argparse
 import base64
-import io
 import json
 import os
 import re
@@ -44,23 +48,63 @@ from queue import Empty, SimpleQueue
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Path Bootstrap - App Root & Vendored Dependencies
+# -----------------------------------------------------------------------------
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 APP_ROOT   = SCRIPT_DIR.parent
 if str(APP_ROOT) not in sys.path:
     sys.path.insert(0, str(APP_ROOT))
 sys.path.insert(0, str(APP_ROOT / "00__ThirdParty__VersionLockedDependencies" / "02__Python__ImageUtils__Dependecies"))
 
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Flask Server Module Imports
+# -----------------------------------------------------------------------------
+
 from WhitecardVision__FlaskServer__EnvLoader__ import Wv__EnvLoader__ReadEnvFile
 from WhitecardVision__FlaskServer__AspectRatio__ import (
     Wv__AspectRatio__ResolveForFile,
-    Wv__AspectRatio__SnapToSupported,
     WV__ASPECT_RATIO__SUPPORTED_ENUM,
 )
 from WhitecardVision__FlaskServer__Thumbnails__ import (
-    Wv__Thumbnails__DeriveThumbPath,
     Wv__Thumbnails__GenerateForFile,
     Wv__Thumbnails__IsAvailable,
 )
+from WhitecardVision__FlaskServer__ProjectSchema__ import (
+    Wv__Server__BuildDefaultProjectJson,
+    Wv__Server__ReplaceProjectFolderSegmentInJson,
+    Wv__Server__BuildCleanProjectSlug,
+)
+from WhitecardVision__FlaskServer__TemplateIndex__ import (
+    Wv__Server__ReadHiddenTemplatePathsFromAppConfig,
+    Wv__Server__BuildTemplateTreeNode,
+)
+from WhitecardVision__FlaskServer__ProjectPaths__ import (
+    Wv__Server__AssertSafeRelativePath,
+    Wv__Server__ResolveProjectDir,
+    Wv__Server__CurrentYearFolderName,
+)
+from WhitecardVision__FlaskServer__ThumbnailBackfill__ import (
+    Wv__Server__GenerateMissingProjectThumbFiles,
+    Wv__Server__BackfillProjectJsonThumbPaths,
+)
+from WhitecardVision__FlaskServer__GenerationValidation__ import (
+    Wv__Server__ValidateFirstImageAspectRatio,
+)
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Google APIs Path & Gemini Client Imports
+# -----------------------------------------------------------------------------
 
 sys.path.insert(0, str(APP_ROOT / "06__ExernalApiAndWorkers" / "02__GoogleApis"))
 from WhitecardVision__Google__GeminiClient__ import (
@@ -71,6 +115,8 @@ from WhitecardVision__Google__GeminiClient__ import (
     Wv__Gemini__TransportError,
     Wv__Gemini__ResponseShapeError,
 )
+
+# endregion ----------------------------------------------------
 
 
 # -----------------------------------------------------------------------------
@@ -105,178 +151,8 @@ WV__SERVER__SCHEMA_VERSION       = "0.1.0"
 
 
 # -----------------------------------------------------------------------------
-# REGION | Safe Path Helpers
-# -----------------------------------------------------------------------------
-
-
-# HELPER FUNCTION | Reject path traversal attempts
-# ------------------------------------------------------------
-def Wv__Server__AssertSafeRelativePath(relative_path_text: str) -> None:
-    if not relative_path_text:
-        raise ValueError("Relative path is empty.")
-    if ".." in relative_path_text.split("/") or ".." in relative_path_text.split("\\"):
-        raise ValueError("Relative path contains traversal tokens.")
-    if relative_path_text.startswith("/") or re.match(r'^[A-Za-z]:', relative_path_text):
-        raise ValueError("Absolute paths are not allowed here.")
-# ------------------------------------------------------------
-
-
-# HELPER FUNCTION | Resolve project folder by projectName inside a year folder
-# ------------------------------------------------------------
-def Wv__Server__ResolveProjectDir(year_folder_name: str, project_name: str) -> Path:
-    if not WV__SERVER__YEAR_FOLDER_PATTERN.match(year_folder_name):
-        raise ValueError(f"Invalid year folder: {year_folder_name}")
-    if not WV__SERVER__PROJECT_NAME_PATTERN.match(project_name):
-        raise ValueError(f"Invalid project name: {project_name}")
-    return (WV__SERVER__PROJECT_DATA_PATH / year_folder_name / f"{project_name}__WcVisData").resolve()
-# ------------------------------------------------------------
-
-
-# HELPER FUNCTION | Current local year as Projects__YYYY token
-# ------------------------------------------------------------
-def Wv__Server__CurrentYearFolderName() -> str:
-    return f"Projects__{datetime.now().year}"
-# ------------------------------------------------------------
-
-
-# HELPER FUNCTION | Peek the first 2KB of a template and parse front-matter
-# ------------------------------------------------------------
-def Wv__Server__PeekTemplateFrontMatter(markdown_path: Path) -> dict[str, str]:                                                 #<-- '--- key = value ---' block.
-    try:
-        with markdown_path.open("rb") as source_handle:
-            head_bytes = source_handle.read(2048)
-        head_text   = head_bytes.decode("utf-8", errors="replace").lstrip("\ufeff").replace("\r\n", "\n")
-    except Exception:
-        return {}
-
-    pattern_match = re.match(r'^---\s*\n([\s\S]*?)\n---\s*\n?', head_text)
-    if not pattern_match:
-        return {}
-
-    front_matter_dict: dict[str, str] = {}
-    for raw_line in pattern_match.group(1).split("\n"):
-        trimmed_line = raw_line.strip()
-        if not trimmed_line or trimmed_line.startswith("#"):
-            continue
-        delimiter_index = trimmed_line.find("=")
-        if delimiter_index < 0:
-            continue
-        key_text   = trimmed_line[:delimiter_index].strip()
-        value_text = trimmed_line[delimiter_index + 1:].strip()
-        if key_text:
-            front_matter_dict[key_text] = value_text
-    return front_matter_dict
-# ------------------------------------------------------------
-
-
-def Wv__Server__NormaliseTemplateRelativePath(path_text: str) -> str:
-    return str(path_text or "").replace("\\", "/").strip().strip("/")
-
-
-def Wv__Server__ReadHiddenTemplatePathsFromAppConfig() -> set[str]:
-    if not WV__SERVER__APP_CONFIG_PATH.is_file():
-        return set()
-    try:
-        app_config_json = json.loads(WV__SERVER__APP_CONFIG_PATH.read_text(encoding="utf-8") or "{}")
-    except Exception:
-        return set()
-
-    prompt_constructor_block = app_config_json.get("Wv__AppConfig__PromptConstructor", {}) or {}
-    hidden_path_list_raw = prompt_constructor_block.get("Wv__AppConfig__PromptConstructor__HiddenTemplatePaths", []) or []
-    hidden_path_set: set[str] = set()
-    for hidden_path_raw in hidden_path_list_raw:
-        hidden_path_normalised = Wv__Server__NormaliseTemplateRelativePath(str(hidden_path_raw)).lower()
-        if hidden_path_normalised:
-            hidden_path_set.add(hidden_path_normalised)
-    return hidden_path_set
-
-
-def Wv__Server__ShouldHideTemplatePath(entry_relative_path: str, hidden_path_set: set[str]) -> bool:
-    entry_relative_path_normalised = Wv__Server__NormaliseTemplateRelativePath(entry_relative_path).lower()
-    for hidden_path in hidden_path_set:
-        if entry_relative_path_normalised == hidden_path:
-            return True
-        if entry_relative_path_normalised.startswith(hidden_path + "/"):
-            return True
-    return False
-
-
-# endregion ----------------------------------------------------
-
-
-# -----------------------------------------------------------------------------
 # REGION | Project Schema Seeder
 # -----------------------------------------------------------------------------
-
-
-# FUNCTION | Build default project JSON seed
-# ------------------------------------------------------------
-def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str, description: str, display_name: str = "") -> dict[str, Any]:
-    now_iso = datetime.now(timezone.utc).isoformat()
-    return {
-        "Wv__ProjectFile__Metadata": {
-            "Wv__ProjectFile__Metadata__ProjectName"        : display_name or project_name,
-            "Wv__ProjectFile__Metadata__ProjectCode"        : project_name,
-            "Wv__ProjectFile__Metadata__PreviousNames"      : [],
-            "Wv__ProjectFile__Metadata__Description"        : description or "",
-            "Wv__ProjectFile__Metadata__YearFolder"         : year_folder_name,
-            "Wv__ProjectFile__Metadata__SchemaVersion"      : WV__SERVER__SCHEMA_VERSION,
-            "Wv__ProjectFile__Metadata__DateCreatedUtc"     : now_iso,
-            "Wv__ProjectFile__Metadata__DateModifiedUtc"    : now_iso,
-        },
-        "Wv__Project__RenderGroup": {
-            "Wv__Project__RenderGroup__Whitecard"           : {
-                "Wv__Whitecard__ImagePath"                  : "",
-                "Wv__Whitecard__ImageThumbPath"             : "",
-                "Wv__Whitecard__Prompt"                     : "",
-                "Wv__Whitecard__WidthPx"                    : 0,
-                "Wv__Whitecard__HeightPx"                   : 0,
-                "Wv__Whitecard__SnappedAspectRatio"         : "",
-                "Wv__Whitecard__SnappedDeltaPct"            : 0.0,
-            },
-            "Wv__Project__RenderGroup__MaterialReferences" : [],
-            "Wv__Project__RenderGroup__StyleReferences"    : [],
-            "Wv__Project__RenderGroup__AvoidNotes"         : "",
-            "Wv__Project__RenderGroup__ImageSize"          : "2K",
-            "Wv__Project__RenderGroup__LastOutputPath"     : "",
-            "Wv__Project__RenderGroup__LastOutputThumbPath": "",
-        },
-        "Wv__Project__EditIterations"                       : [],
-        "Wv__Project__ActiveEditIterationId"                : "",
-    }
-# ------------------------------------------------------------
-
-
-# FUNCTION | Recursively replace old folder id segment in every string value
-# ------------------------------------------------------------
-def Wv__Server__ReplaceProjectFolderSegmentInJson(value: Any, old_segment: str, new_segment: str) -> Any:
-    if isinstance(value, dict):
-        return {
-            k: Wv__Server__ReplaceProjectFolderSegmentInJson(v, old_segment, new_segment) for k, v in value.items()
-        }
-    if isinstance(value, list):
-        return [Wv__Server__ReplaceProjectFolderSegmentInJson(v, old_segment, new_segment) for v in value]
-    if isinstance(value, str) and old_segment in value:
-        return value.replace(old_segment, new_segment)
-    return value
-# ------------------------------------------------------------
-
-
-# FUNCTION | Sanitise a display name into a filesystem-safe project slug
-# ------------------------------------------------------------
-#  Rules mirror the client's BuildCleanSlug:
-#  - Strip non-alphanumeric/underscore/hyphen → hyphen.
-#  - Collapse repeated hyphens; strip leading/trailing hyphens and underscores.
-#  - Truncate to 64 chars; first char must be alphanumeric.
-# ------------------------------------------------------------
-def Wv__Server__BuildCleanProjectSlug(display_name: str) -> str:
-    slug = re.sub(r'[^A-Za-z0-9_\-]+', '-', str(display_name or '').strip())
-    slug = re.sub(r'-{2,}', '-', slug)
-    slug = slug.strip('-_')[:64]
-    if not slug or not re.match(r'^[A-Za-z0-9]', slug):
-        slug = ('Project-' + re.sub(r'^[^A-Za-z0-9]+', '', slug))[:64]
-    return slug or 'Untitled'
-# ------------------------------------------------------------
 
 
 # endregion ----------------------------------------------------
@@ -593,7 +469,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Wv__Server__WriteJsonResponse(400, {"ok": False, "error": f"Invalid yearFolder '{year_folder_name}'."})
             return
 
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         if project_dir.exists():
             self.Wv__Server__WriteJsonResponse(409, {
                 "ok": False,
@@ -606,7 +488,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             (project_dir / subfolder_name).mkdir(exist_ok=True)
 
         project_json_path = project_dir / f"{project_name}__WcVisData__.json"
-        project_json_data = Wv__Server__BuildDefaultProjectJson(project_name, year_folder_name, description, display_name)
+        project_json_data = Wv__Server__BuildDefaultProjectJson(
+            project_name=project_name,
+            year_folder_name=year_folder_name,
+            description=description,
+            schema_version=WV__SERVER__SCHEMA_VERSION,
+            display_name=display_name,
+        )
         project_json_path.write_text(
             json.dumps(project_json_data, indent=4, ensure_ascii=False),
             encoding="utf-8",
@@ -628,7 +516,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Load a single project JSON
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectLoad(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         json_path   = project_dir / f"{project_name}__WcVisData__.json"
         if not json_path.is_file():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
@@ -650,7 +544,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     #  client knows whether a reload is needed.
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectSave(self, year_folder_name: str, current_slug: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, current_slug)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            current_slug,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         if not project_dir.is_dir():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
@@ -754,7 +654,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Delete an entire project directory tree
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectDelete(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         if not project_dir.is_dir():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
@@ -778,13 +684,23 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Generate missing thumbs and update JSON thumb fields
     # ------------------------------------------------------------
     def Wv__Server__HandleThumbBackfill(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         if not project_dir.is_dir():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
 
-        generated_count = self.Wv__Server__GenerateMissingProjectThumbFiles(project_dir)
-        updated_fields_count = self.Wv__Server__BackfillProjectJsonThumbPaths(project_dir, project_name)
+        generated_count = Wv__Server__GenerateMissingProjectThumbFiles(project_dir)
+        updated_fields_count = Wv__Server__BackfillProjectJsonThumbPaths(
+            project_dir,
+            project_name,
+            WV__SERVER__APP_ROOT_PATH,
+        )
 
         self.Wv__Server__WriteJsonResponse(200, {
             "ok": True,
@@ -797,129 +713,6 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # ------------------------------------------------------------
 
 
-    # HELPER FUNCTION | Create thumb files for all project images if missing
-    # ------------------------------------------------------------
-    def Wv__Server__GenerateMissingProjectThumbFiles(self, project_dir: Path) -> int:
-        if not Wv__Thumbnails__IsAvailable():
-            return 0
-
-        image_roots = (
-            "01__ImageInput__WhitecardImage",
-            "02__ImageInput__MaterialsReference",
-            "03__ImageInput__StyleReference",
-            "10__ImageInput__EditModeImages",
-            "20__FinalExport__RenderMode",
-            "30__FinalExport__EditMode",
-        )
-        generated_count = 0
-        for root_name in image_roots:
-            root_path = project_dir / root_name
-            if not root_path.is_dir():
-                continue
-            for file_path in root_path.rglob("*"):
-                if not file_path.is_file():
-                    continue
-                if file_path.suffix.lower() not in (".png", ".jpg", ".jpeg"):
-                    continue
-                if file_path.name.endswith("__thumb240.jpg"):
-                    continue
-                thumb_path = Wv__Thumbnails__DeriveThumbPath(file_path)
-                if thumb_path.is_file():
-                    continue
-                if Wv__Thumbnails__GenerateForFile(file_path):
-                    generated_count += 1
-        return generated_count
-    # ------------------------------------------------------------
-
-
-    # HELPER FUNCTION | Ensure one relative image path has a valid thumb path
-    # ------------------------------------------------------------
-    def Wv__Server__EnsureThumbForRelativeImage(self, image_rel_path: str) -> str:
-        image_rel_path = str(image_rel_path or "").strip()
-        if not image_rel_path:
-            return ""
-        try:
-            Wv__Server__AssertSafeRelativePath(image_rel_path)
-        except ValueError:
-            return ""
-
-        source_file_path = (WV__SERVER__APP_ROOT_PATH / image_rel_path).resolve()
-        try:
-            source_file_path.relative_to(WV__SERVER__APP_ROOT_PATH)
-        except ValueError:
-            return ""
-        if not source_file_path.is_file():
-            return ""
-
-        thumb_path = Wv__Thumbnails__DeriveThumbPath(source_file_path)
-        if not thumb_path.is_file():
-            generated_thumb_path = Wv__Thumbnails__GenerateForFile(source_file_path)
-            if generated_thumb_path:
-                thumb_path = generated_thumb_path
-        if not thumb_path.is_file():
-            return ""
-        return thumb_path.relative_to(WV__SERVER__APP_ROOT_PATH).as_posix()
-    # ------------------------------------------------------------
-
-
-    # HELPER FUNCTION | Populate missing thumb fields in project JSON
-    # ------------------------------------------------------------
-    def Wv__Server__BackfillProjectJsonThumbPaths(self, project_dir: Path, project_name: str) -> int:
-        json_path = project_dir / f"{project_name}__WcVisData__.json"
-        if not json_path.is_file():
-            return 0
-
-        try:
-            project_json = json.loads(json_path.read_text(encoding="utf-8") or "{}")
-        except Exception:
-            return 0
-
-        updated_fields = 0
-        render_group = project_json.get("Wv__Project__RenderGroup", {}) or {}
-        whitecard_block = render_group.get("Wv__Project__RenderGroup__Whitecard", {}) or {}
-
-        whitecard_thumb = self.Wv__Server__EnsureThumbForRelativeImage(whitecard_block.get("Wv__Whitecard__ImagePath", ""))
-        if whitecard_thumb and not whitecard_block.get("Wv__Whitecard__ImageThumbPath"):
-            whitecard_block["Wv__Whitecard__ImageThumbPath"] = whitecard_thumb
-            updated_fields += 1
-
-        render_thumb = self.Wv__Server__EnsureThumbForRelativeImage(render_group.get("Wv__Project__RenderGroup__LastOutputPath", ""))
-        if render_thumb and not render_group.get("Wv__Project__RenderGroup__LastOutputThumbPath"):
-            render_group["Wv__Project__RenderGroup__LastOutputThumbPath"] = render_thumb
-            updated_fields += 1
-
-        for list_key in ("Wv__Project__RenderGroup__MaterialReferences", "Wv__Project__RenderGroup__StyleReferences"):
-            refs_array = render_group.get(list_key, []) or []
-            for ref_entry in refs_array:
-                ref_thumb = self.Wv__Server__EnsureThumbForRelativeImage(ref_entry.get("Wv__Reference__ImagePath", ""))
-                if ref_thumb and not ref_entry.get("Wv__Reference__ThumbPath"):
-                    ref_entry["Wv__Reference__ThumbPath"] = ref_thumb
-                    updated_fields += 1
-
-        project_json["Wv__Project__RenderGroup"] = render_group
-        render_group["Wv__Project__RenderGroup__Whitecard"] = whitecard_block
-
-        edit_iterations = project_json.get("Wv__Project__EditIterations", []) or []
-        for iteration_entry in edit_iterations:
-            base_thumb = self.Wv__Server__EnsureThumbForRelativeImage(iteration_entry.get("Wv__EditIteration__BaseImagePath", ""))
-            if base_thumb and not iteration_entry.get("Wv__EditIteration__BaseImageThumbPath"):
-                iteration_entry["Wv__EditIteration__BaseImageThumbPath"] = base_thumb
-                updated_fields += 1
-
-            output_thumb = self.Wv__Server__EnsureThumbForRelativeImage(iteration_entry.get("Wv__EditIteration__LastOutputPath", ""))
-            if output_thumb and not iteration_entry.get("Wv__EditIteration__LastOutputThumbPath"):
-                iteration_entry["Wv__EditIteration__LastOutputThumbPath"] = output_thumb
-                updated_fields += 1
-
-        if updated_fields > 0:
-            try:
-                json_path.write_text(json.dumps(project_json, indent=4, ensure_ascii=False), encoding="utf-8")
-            except Exception:
-                return 0
-
-        return updated_fields
-    # ------------------------------------------------------------
-
 # endregion ----------------------------------------------------
 
 
@@ -931,7 +724,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Upload an image for a given project role slot
     # ------------------------------------------------------------
     def Wv__Server__HandleImageUpload(self, year_folder_name: str, project_name: str, role_name: str, query_parameters: dict) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         if not project_dir.is_dir():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
@@ -1024,41 +823,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # ------------------------------------------------------------
     def Wv__Server__HandleTemplateTree(self) -> None:
         WV__SERVER__TEMPLATE_ROOT_PATH.mkdir(parents=True, exist_ok=True)
-        hidden_path_set = Wv__Server__ReadHiddenTemplatePathsFromAppConfig()
-        tree_root = self.Wv__Server__BuildTemplateTreeNode(
+        hidden_path_set = Wv__Server__ReadHiddenTemplatePathsFromAppConfig(WV__SERVER__APP_CONFIG_PATH)
+        tree_root = Wv__Server__BuildTemplateTreeNode(
             WV__SERVER__TEMPLATE_ROOT_PATH,
             rel_prefix="",
             hidden_path_set=hidden_path_set,
         )
         self.Wv__Server__WriteJsonResponse(200, {"ok": True, "data": tree_root})
-    # ------------------------------------------------------------
-
-
-    # HELPER FUNCTION | Recursive tree builder (also peeks front-matter per file)
-    # ------------------------------------------------------------
-    def Wv__Server__BuildTemplateTreeNode(self, folder_path: Path, rel_prefix: str, hidden_path_set: set[str]) -> dict[str, Any]:
-        children_entries: list[dict[str, Any]] = []
-        for entry_path in sorted(folder_path.iterdir(), key=lambda p: p.name.lower()):
-            if entry_path.name.startswith("."):
-                continue
-            entry_relative = f"{rel_prefix}/{entry_path.name}".lstrip("/")
-            if Wv__Server__ShouldHideTemplatePath(entry_relative, hidden_path_set):
-                continue
-            if entry_path.is_dir():
-                children_entries.append(self.Wv__Server__BuildTemplateTreeNode(entry_path, entry_relative, hidden_path_set))
-            elif entry_path.suffix.lower() == ".md":
-                children_entries.append({
-                    "type"        : "file",
-                    "name"        : entry_path.name,
-                    "relPath"     : entry_relative,
-                    "frontMatter" : Wv__Server__PeekTemplateFrontMatter(entry_path),
-                })
-        return {
-            "type"     : "folder",
-            "name"     : folder_path.name if rel_prefix else "",
-            "relPath"  : rel_prefix,
-            "children" : children_entries,
-        }
     # ------------------------------------------------------------
 
 
@@ -1127,7 +898,13 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
         if not WV__SERVER__PROJECT_NAME_PATTERN.match(project_name):
             self.Wv__Server__WriteJsonResponse(400, {"ok": False, "error": "projectName invalid or missing"})
             return
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+        project_dir = Wv__Server__ResolveProjectDir(
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+        )
         if not project_dir.is_dir():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project folder missing"})
             return
@@ -1141,7 +918,7 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Wv__Server__WriteJsonResponse(400, {"ok": False, "error": f"aspectRatio '{requested_aspect}' not supported"})
             return
 
-        validation_result = self.Wv__Server__ValidateFirstImageAspectRatio(request_shell, requested_aspect)
+        validation_result = Wv__Server__ValidateFirstImageAspectRatio(request_shell, requested_aspect)
         if validation_result is not None:
             status_code, error_message = validation_result
             self.Wv__Server__WriteJsonResponse(status_code, {"ok": False, "error": error_message})
@@ -1223,66 +1000,6 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
         })
     # ------------------------------------------------------------
 
-
-    # HELPER FUNCTION | Revalidate that parts[0] is a Whitecard whose aspect matches
-    # ------------------------------------------------------------
-    def Wv__Server__ValidateFirstImageAspectRatio(self, request_shell: dict, declared_aspect_ratio: str) -> tuple[int, str] | None:
-        if not declared_aspect_ratio:
-            return None
-
-        contents_list = request_shell.get("contents") or []
-        if not contents_list:
-            return (400, "contents[] missing")
-        parts_list = contents_list[0].get("parts") or []
-        if not parts_list:
-            return (400, "contents[0].parts[] missing")
-
-        first_part   = parts_list[0]
-        inline_block = first_part.get("inlineData") or first_part.get("inline_data") or {}
-        base64_data  = inline_block.get("data") or ""
-        if not base64_data:
-            return (400, "First part must be the Whitecard image as inlineData")
-
-        try:
-            decoded_bytes = base64.b64decode(base64_data)
-            import struct as _struct
-            if decoded_bytes[:8] == b"\x89PNG\r\n\x1a\n":
-                width_px, height_px = _struct.unpack(">II", decoded_bytes[16:24])
-            elif decoded_bytes[:2] == b"\xff\xd8":
-                temp_stream = io.BytesIO(decoded_bytes)
-                temp_stream.read(2)
-                width_px = height_px = 0
-                while True:
-                    marker_bytes = temp_stream.read(2)
-                    if len(marker_bytes) < 2: break
-                    if marker_bytes[0] != 0xFF: break
-                    marker_code = marker_bytes[1]
-                    if marker_code in (0xD8, 0xD9): break
-                    segment_len = _struct.unpack(">H", temp_stream.read(2))[0]
-                    if 0xC0 <= marker_code <= 0xCF and marker_code not in (0xC4, 0xC8, 0xCC):
-                        sof_payload = temp_stream.read(segment_len - 2)
-                        height_px = _struct.unpack(">H", sof_payload[1:3])[0]
-                        width_px  = _struct.unpack(">H", sof_payload[3:5])[0]
-                        break
-                    temp_stream.seek(segment_len - 2, 1)
-                if not width_px or not height_px:
-                    return None
-            else:
-                return None
-            ratio_info = Wv__AspectRatio__SnapToSupported(int(width_px), int(height_px))
-        except Exception as probe_error:
-            print(f"[WARN] Could not probe first image dims: {probe_error}")
-            return None
-
-        if ratio_info["snappedAspectRatio"] != declared_aspect_ratio:
-            return (
-                400,
-                f"aspectRatio mismatch: Whitecard snaps to {ratio_info['snappedAspectRatio']} "
-                f"(raw {ratio_info['rawRatio']}) but payload declared {declared_aspect_ratio}. "
-                f"Refusing to generate - outputs would not composite."
-            )
-        return None
-    # ------------------------------------------------------------
 
 # endregion ----------------------------------------------------
 

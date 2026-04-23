@@ -2,7 +2,7 @@
 PromptTitle   = Vale Orangery Standard - Main Brief - Exterior Shot
 PromptSummary = Main Vale Garden Houses orangery brief for Exterior Orangery Shots
 DateCreated   = 22-Apr-2026
-PromptFlags   = vale, orangery, exterior, realism, vgh, uk-country-home
+PromptFlags   = general,vale, orangery, exterior, realism, vgh,
 ---
 
 **OBJECTIVE** 

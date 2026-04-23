@@ -141,7 +141,7 @@
             const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
             const activeMeta = (activeTree && activeTree.Wv__ProjectFile__Metadata) || {};
             if (activeMeta.Wv__ProjectFile__Metadata__YearFolder === yearFolderToken &&
-                activeMeta.Wv__ProjectFile__Metadata__ProjectName === projectSlugToken) {
+                projectFileManager.Wv__ProjectFileManager__GetProjectSlugForApi(activeMeta) === projectSlugToken) {
                 window.Wv__AppCore__StateManager.Wv__StateManager__SetActiveProject(null);
             }
             if (toast) toast.Wv__Toast__Show('Project deleted.', 'success');
@@ -156,6 +156,10 @@
 
     // FUNCTION | Commit an inline-edited display name for a project
     // ------------------------------------------------------------
+    //  1. Load the project to make it active.
+    //  2. Update the display name in metadata and mark dirty.
+    //  3. SaveActiveProject — the server reconciles the folder slug automatically.
+    // ------------------------------------------------------------
     async function Wv__ProjectManager__ProjectActions__CommitRename(yearFolderToken, projectSlugToken, newDisplayName) {
         const projectFileManager = window.Wv__AppData__ProjectFileManager;
         const toast              = window.Wv__AppUtils__Toast;
@@ -166,8 +170,12 @@
         }
 
         try {
-            await projectFileManager.Wv__ProjectFileManager__LoadProject(yearFolderToken, projectSlugToken);                     //<-- Ensure the project is the active one so RenameActiveProject targets it.
-            await projectFileManager.Wv__ProjectFileManager__RenameActiveProject(trimmedName);
+            await projectFileManager.Wv__ProjectFileManager__LoadProject(yearFolderToken, projectSlugToken);
+            const activeTree    = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+            const metadataBlock = activeTree.Wv__ProjectFile__Metadata || (activeTree.Wv__ProjectFile__Metadata = {});
+            metadataBlock.Wv__ProjectFile__Metadata__ProjectName = trimmedName;
+            window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
+            await projectFileManager.Wv__ProjectFileManager__SaveActiveProject();
             if (toast) toast.Wv__Toast__Show('Renamed to "' + trimmedName + '".', 'success');
             return true;
         } catch (renameError) {
@@ -186,7 +194,8 @@
         Wv__ProjectManager__ProjectActions__CreateProjectWithPrompt,
         Wv__ProjectManager__ProjectActions__OpenProject,
         Wv__ProjectManager__ProjectActions__DeleteProject,
-        Wv__ProjectManager__ProjectActions__CommitRename
+        Wv__ProjectManager__ProjectActions__CommitRename,
+        Wv__ProjectManager__ProjectActions__BuildCleanSlug
     };
     // ------------------------------------------------------------
 

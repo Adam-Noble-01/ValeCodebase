@@ -6,6 +6,87 @@
 
 
 # -----------------------------------------------------------------------------
+## WhitecardVision - v0.3.4 - 23-Apr-2026 - Self-reconciling project save + rename history
+
+### Summary
+Collapsed the dual save/relocate paths into a single self-reconciling POST
+endpoint. The server now detects slug drift on every save, atomically renames
+the on-disk folder and JSON file, rewrites all internal path strings, and
+records the change in a new `PreviousNames` history field. Removed the
+separate `/relocate` route entirely. Client error surfacing improved so toast
+messages show the actual HTTP status and server body snippet rather than the
+opaque "Invalid JSON from server" fallback.
+
+### Server: self-reconciling `HandleProjectSave`
+- Added `Wv__Server__BuildCleanProjectSlug(display_name)` — single Python
+  source of slug rules, mirroring the client `BuildCleanSlug`:
+  non-alnum/non-underscore/non-hyphen chars collapse to `-`, runs de-duped,
+  leading/trailing `-_` stripped, max 64 chars, first char must be alnum.
+  Hyphens are explicitly preserved so double-barrelled client names like
+  `Lee-Smith` round-trip cleanly (`Lee-Smith` → `Lee-Smith`).
+- `HandleProjectSave` now computes `desired_slug` from `ProjectName` on every
+  save. When it differs from the URL slug it:
+  1. 409s if the new folder name already exists.
+  2. `shutil.move`s the project directory.
+  3. Renames `{old}__WcVisData__.json` → `{new}__WcVisData__.json`.
+  4. Recursively rewrites all `{old}__WcVisData` substrings in the JSON tree.
+  5. Appends a `PreviousNames` history entry with old/new code + name + timestamp.
+  6. Sets `ProjectCode = desired_slug`, updates `DateModifiedUtc`, writes JSON.
+  7. Returns `{ ok, data: { yearFolder, projectName, renamed: true } }`.
+  In-place saves return `renamed: false`; both paths return the same shape.
+- Added `Wv__ProjectFile__Metadata__PreviousNames: []` to the project seed
+  (`BuildDefaultProjectJson`).
+- `do_POST`, `do_GET`, `do_DELETE` all wrapped in `try/except` so any
+  uncaught exception returns a JSON `500` response rather than the Python
+  `BaseHTTPRequestHandler` HTML error page.
+- Tail `404` in `do_POST` and `do_DELETE` now also returns JSON instead of
+  calling `self.send_error()`.
+
+### Server: `/relocate` route removed
+- `Wv__Server__ParseProjectRelocatePath` and `Wv__Server__HandleProjectRelocate`
+  deleted; the save handler covers all rename scenarios. Stale Flask processes
+  can no longer produce HTML 404s for that URL.
+
+### Schema: `PreviousNames` field
+- `Wv__ProjectSchemaValidator__BuildDefault` seeds `PreviousNames: []` in the
+  default metadata block.
+- `Wv__ProjectSchemaValidator__Normalise` coerces missing or non-array
+  `PreviousNames` to `[]` on load (legacy projects upgraded silently).
+
+### Client: improved error surfacing (`FetchJson`)
+- On JSON parse failure `FetchJson` now reads `response.text()` and throws
+  `HTTP {status}: {first 200 chars}` so the toast always shows what the server
+  actually said, even if it was an HTML page.
+
+### Client: single save path
+- `SaveActiveProject` reads the server's `{ renamed, yearFolder, projectName }`
+  response and calls `LoadProject(yearFolder, projectName)` automatically when
+  `renamed === true`. Callers see a single round-trip regardless of whether a
+  folder rename occurred.
+- `RelocateProject` removed from `ProjectFileManager` and its public API.
+- `RenderMode__ProjectMetaPanel__HandleSaveClicked` simplified: sync name to
+  state → `SaveActiveProject()`. No slug-comparison branching.
+- `ProjectActions__CommitRename` simplified: `LoadProject` once → set display
+  name → `SaveActiveProject()`. No separate relocate code path.
+
+### Data migration (manual)
+- Existing test projects with drifted `ProjectCode` / folder names migrated
+  on disk via a one-off Python script:
+  - `Test-01__WcVisData` → `Appleton__Active__Shot-01__WcVisData`
+  - `Test-02__WcVisData` → `Appleton__Funhouse__WcVisData`
+  - `Test__WcVisData`   → `LeeSmith__WcVisData`
+  - `Appleton__Nick__WcVisData` — already aligned, no action.
+  All internal JSON paths, `ProjectCode`, and `PreviousNames` entries updated.
+
+### Files modified
+- `05__FlaskServerScripts/WhitecardVision__FlaskServer__Main__.py`
+- `02__Src__AppModules/02__AppData/WhitecardVision__AppData__ProjectFileManager__.js`
+- `02__Src__AppModules/02__AppData/WhitecardVision__AppData__ProjectSchemaValidator__.js`
+- `02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__ProjectMetaPanel__.js`
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectActions__.js`
+
+
+# -----------------------------------------------------------------------------
 ## WhitecardVision - v0.3.3 - 22-Apr-2026 - Templates menu blacklist + folder label formatting
 
 ### Summary

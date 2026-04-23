@@ -27,6 +27,7 @@
             Wv__ProjectFile__Metadata: {
                 Wv__ProjectFile__Metadata__ProjectName      : projectName  || '',
                 Wv__ProjectFile__Metadata__ProjectCode      : projectName  || '',
+                Wv__ProjectFile__Metadata__PreviousNames    : [],
                 Wv__ProjectFile__Metadata__Description      : description  || '',
                 Wv__ProjectFile__Metadata__YearFolder       : yearFolder   || '',
                 Wv__ProjectFile__Metadata__SchemaVersion    : WV__PROJECTSCHEMA__CURRENT_VERSION,
@@ -67,6 +68,14 @@
             defaultTree.Wv__ProjectFile__Metadata,
             safeSource.Wv__ProjectFile__Metadata || {}
         );
+
+        const metaMerged = defaultTree.Wv__ProjectFile__Metadata;
+        if (!String((metaMerged || {}).Wv__ProjectFile__Metadata__ProjectCode || '').trim()) {
+            metaMerged.Wv__ProjectFile__Metadata__ProjectCode = projectName  || '';
+        }
+        if (!Array.isArray(metaMerged.Wv__ProjectFile__Metadata__PreviousNames)) {
+            metaMerged.Wv__ProjectFile__Metadata__PreviousNames = [];
+        }
 
         const sourceRenderGroup        = safeSource.Wv__Project__RenderGroup || {};
         defaultTree.Wv__Project__RenderGroup.Wv__Project__RenderGroup__Whitecard = Object.assign(

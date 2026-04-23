@@ -20,13 +20,13 @@
       "description": "One-click archiver - zips a chosen folder using the standard Vale archival profile for long-term storage."
     },
     "10__Python__WinFileSystemTools/Py_FileUtils__SimpleFileLogger__ListItems__InCurrentFolder/Py_FileUtils__SimpleFileLogger__ListFilesInCurrentFolder__DumpTxt__Main__.py": {
-      "enabled": true,
+      "enabled": false,
       "order": 40,
       "name": "List Files in Folder",
       "description": "Dumps every file (with size) from a chosen folder into a timestamped .txt report."
     },
     "10__Python__WinFileSystemTools/Py_FileUtils__SimpleFileLogger__ListItems__InCurrentFolder/Py_FileUtils__SimpleFileLogger__ListFoldersAtCurrentDirLevel__DumpTxt__Main__.py": {
-      "enabled": true,
+      "enabled": false,
       "order": 50,
       "name": "List Subfolders",
       "description": "Dumps every direct subfolder name at the chosen directory level into a .txt report."
@@ -110,5 +110,5 @@
       "description": "Turns a folder of numbered PNG stills into a smooth MP4 timelapse video."
     }
   },
-  "last_modified": "23-Apr-2026 11:28:52"
+  "last_modified": "23-Apr-2026 11:52:30"
 }

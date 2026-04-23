@@ -190,9 +190,10 @@
             return;
         }
 
-        const activeTree      = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
-        const activeSlugToken = activeTree && activeTree.Wv__ProjectFile__Metadata
-            ? (activeTree.Wv__ProjectFile__Metadata.Wv__ProjectFile__Metadata__ProjectName || '')
+        const activeTree         = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+        const projectFileManager = window.Wv__AppData__ProjectFileManager;
+        const activeSlugToken    = (activeTree && activeTree.Wv__ProjectFile__Metadata && projectFileManager)
+            ? projectFileManager.Wv__ProjectFileManager__GetProjectSlugForApi(activeTree.Wv__ProjectFile__Metadata)
             : '';
 
         bodyEl.innerHTML = filteredProjects.map((projectItem) => {
@@ -231,14 +232,16 @@
         const escape           = Wv__ProjectManager__ProjectList__EscapeHtml;
 
         if (columnKey === 'projectName') {
-            const displayName = projectItem.projectName || projectSlugToken;
+            const displayName   = projectItem.projectName || projectSlugToken;
             const slugIsDifferent = projectSlugToken && projectSlugToken !== displayName;
+            const titleAttr     = slugIsDifferent
+                ? ' title="' + escape('Folder id: ' + projectSlugToken) + '"'
+                : '';
             return `<td>
                 <div class="Wv__ProjectManager__Cell__ProjectName"
                      data-wv-cell="projectName"
                      data-wv-year="${escape(projectItem.yearFolder)}"
-                     data-wv-slug="${escape(projectSlugToken)}">${escape(displayName)}</div>
-                ${slugIsDifferent ? `<div class="Wv__ProjectManager__Cell__Slug">${escape(projectSlugToken)}</div>` : ''}
+                     data-wv-slug="${escape(projectSlugToken)}"${titleAttr}>${escape(displayName)}</div>
             </td>`;
         }
         if (columnKey === 'description') {

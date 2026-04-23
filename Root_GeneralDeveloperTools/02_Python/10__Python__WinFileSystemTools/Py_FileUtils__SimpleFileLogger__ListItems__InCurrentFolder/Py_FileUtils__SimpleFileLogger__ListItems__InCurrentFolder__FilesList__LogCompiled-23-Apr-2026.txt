@@ -1,0 +1,19 @@
+
+==========================================================================================
+REPORT METADATA
+==========================================================================================
+Directory Path    :  D:\10_CoreLib__ValeCodebase\Root_GeneralDeveloperTools\02_Python\10__Python__WinFileSystemTools\Py_FileUtils__SimpleFileLogger__ListItems__InCurrentFolder
+Directory Name    :  \Py_FileUtils__SimpleFileLogger__ListItems__InCurrentFolder
+Date              :  23-Apr-2026
+Time              :  11:52
+File Count        :  1
+File Size Total   :  14kb
+
+==========================================================================================
+FILES LIST
+==========================================================================================
+
+FILE NAME                                                                        │     SIZE     │ FILE TYPE                
+──────────────────────────────────────────────────────────────────────────────── ┼ ──────────── ┼ ─────────────────────────
+Py_FileUtils__SimpleFileLogger__ListFoldersAtCurrentDirLevel__DumpTxt__Main__.py │     14kb     │ py - Python Script       
+

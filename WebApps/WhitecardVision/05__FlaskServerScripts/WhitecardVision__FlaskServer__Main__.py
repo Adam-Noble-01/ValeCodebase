@@ -11,6 +11,9 @@
  FEATURES:
  - Serves the SPA (WhitecardVision__App__.html) and all static assets.
  - Project CRUD with full folder tree creation on POST /api/projects.
+ - Self-reconciling project save: POST /api/projects/{year}/{slug} detects when the
+   display name implies a new slug, atomically renames the on-disk folder + JSON
+   file, rewrites all internal paths, and records the change in PreviousNames.
  - Template tree + read endpoints for the prompt constructor.
  - Role-scoped image upload endpoints (whitecard / material / style / edit).
  - Gemini generation proxy that reads the API key from .env and never leaks
@@ -29,6 +32,7 @@ import io
 import json
 import os
 import re
+import shutil
 import socket
 import sys
 import threading
@@ -213,6 +217,7 @@ def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str
         "Wv__ProjectFile__Metadata": {
             "Wv__ProjectFile__Metadata__ProjectName"        : display_name or project_name,
             "Wv__ProjectFile__Metadata__ProjectCode"        : project_name,
+            "Wv__ProjectFile__Metadata__PreviousNames"      : [],
             "Wv__ProjectFile__Metadata__Description"        : description or "",
             "Wv__ProjectFile__Metadata__YearFolder"         : year_folder_name,
             "Wv__ProjectFile__Metadata__SchemaVersion"      : WV__SERVER__SCHEMA_VERSION,
@@ -239,6 +244,38 @@ def Wv__Server__BuildDefaultProjectJson(project_name: str, year_folder_name: str
         "Wv__Project__EditIterations"                       : [],
         "Wv__Project__ActiveEditIterationId"                : "",
     }
+# ------------------------------------------------------------
+
+
+# FUNCTION | Recursively replace old folder id segment in every string value
+# ------------------------------------------------------------
+def Wv__Server__ReplaceProjectFolderSegmentInJson(value: Any, old_segment: str, new_segment: str) -> Any:
+    if isinstance(value, dict):
+        return {
+            k: Wv__Server__ReplaceProjectFolderSegmentInJson(v, old_segment, new_segment) for k, v in value.items()
+        }
+    if isinstance(value, list):
+        return [Wv__Server__ReplaceProjectFolderSegmentInJson(v, old_segment, new_segment) for v in value]
+    if isinstance(value, str) and old_segment in value:
+        return value.replace(old_segment, new_segment)
+    return value
+# ------------------------------------------------------------
+
+
+# FUNCTION | Sanitise a display name into a filesystem-safe project slug
+# ------------------------------------------------------------
+#  Rules mirror the client's BuildCleanSlug:
+#  - Strip non-alphanumeric/underscore/hyphen → hyphen.
+#  - Collapse repeated hyphens; strip leading/trailing hyphens and underscores.
+#  - Truncate to 64 chars; first char must be alphanumeric.
+# ------------------------------------------------------------
+def Wv__Server__BuildCleanProjectSlug(display_name: str) -> str:
+    slug = re.sub(r'[^A-Za-z0-9_\-]+', '-', str(display_name or '').strip())
+    slug = re.sub(r'-{2,}', '-', slug)
+    slug = slug.strip('-_')[:64]
+    if not slug or not re.match(r'^[A-Za-z0-9]', slug):
+        slug = ('Project-' + re.sub(r'^[^A-Za-z0-9]+', '', slug))[:64]
+    return slug or 'Untitled'
 # ------------------------------------------------------------
 
 
@@ -285,90 +322,108 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | GET dispatch
     # ------------------------------------------------------------
     def do_GET(self) -> None:
-        parsed_url        = urlparse(self.path)
-        url_path          = parsed_url.path.rstrip("/") or "/"
-        query_parameters  = parse_qs(parsed_url.query)
+        try:
+            parsed_url        = urlparse(self.path)
+            url_path          = parsed_url.path.rstrip("/") or "/"
+            query_parameters  = parse_qs(parsed_url.query)
 
-        if self.Wv__Server__TryHandleSharedAssetRead():
-            return
+            if self.Wv__Server__TryHandleSharedAssetRead():
+                return
 
-        if url_path == "/api/system/health":
-            self.Wv__Server__HandleHealthCheck()
-            return
+            if url_path == "/api/system/health":
+                self.Wv__Server__HandleHealthCheck()
+                return
 
-        if url_path == "/api/projects":
-            self.Wv__Server__HandleProjectList()
-            return
+            if url_path == "/api/projects":
+                self.Wv__Server__HandleProjectList()
+                return
 
-        project_tokens = self.Wv__Server__ParseProjectPath(url_path)
-        if project_tokens:
-            self.Wv__Server__HandleProjectLoad(*project_tokens)
-            return
+            project_tokens = self.Wv__Server__ParseProjectPath(url_path)
+            if project_tokens:
+                self.Wv__Server__HandleProjectLoad(*project_tokens)
+                return
 
-        if url_path == "/api/templates/tree":
-            self.Wv__Server__HandleTemplateTree()
-            return
+            if url_path == "/api/templates/tree":
+                self.Wv__Server__HandleTemplateTree()
+                return
 
-        if url_path == "/api/templates/read":
-            self.Wv__Server__HandleTemplateRead(query_parameters)
-            return
+            if url_path == "/api/templates/read":
+                self.Wv__Server__HandleTemplateRead(query_parameters)
+                return
 
-        super().do_GET()
+            super().do_GET()
+        except Exception as unhandled_error:
+            try:
+                self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": f"Unhandled server error: {unhandled_error}"})
+            except Exception:
+                pass
     # ------------------------------------------------------------
 
 
     # SUB FUNCTION | POST dispatch
     # ------------------------------------------------------------
     def do_POST(self) -> None:
-        parsed_url        = urlparse(self.path)
-        url_path          = parsed_url.path.rstrip("/") or "/"
-        query_parameters  = parse_qs(parsed_url.query)
+        try:
+            parsed_url        = urlparse(self.path)
+            url_path          = parsed_url.path.rstrip("/") or "/"
+            query_parameters  = parse_qs(parsed_url.query)
 
-        if url_path == "/api/projects":
-            self.Wv__Server__HandleProjectCreate()
-            return
+            if url_path == "/api/projects":
+                self.Wv__Server__HandleProjectCreate()
+                return
 
-        project_tokens = self.Wv__Server__ParseProjectPath(url_path)
-        if project_tokens:
-            year_folder, project_name = project_tokens
-            self.Wv__Server__HandleProjectSave(year_folder, project_name)
-            return
+            project_tokens = self.Wv__Server__ParseProjectPath(url_path)
+            if project_tokens:
+                year_folder, project_name = project_tokens
+                self.Wv__Server__HandleProjectSave(year_folder, project_name)
+                return
 
-        image_upload_tokens = self.Wv__Server__ParseProjectImageUploadPath(url_path)
-        if image_upload_tokens:
-            year_folder, project_name, role_name = image_upload_tokens
-            self.Wv__Server__HandleImageUpload(year_folder, project_name, role_name, query_parameters)
-            return
+            image_upload_tokens = self.Wv__Server__ParseProjectImageUploadPath(url_path)
+            if image_upload_tokens:
+                year_folder, project_name, role_name = image_upload_tokens
+                self.Wv__Server__HandleImageUpload(year_folder, project_name, role_name, query_parameters)
+                return
 
-        backfill_tokens = self.Wv__Server__ParseProjectThumbBackfillPath(url_path)
-        if backfill_tokens:
-            year_folder, project_name = backfill_tokens
-            self.Wv__Server__HandleThumbBackfill(year_folder, project_name)
-            return
+            backfill_tokens = self.Wv__Server__ParseProjectThumbBackfillPath(url_path)
+            if backfill_tokens:
+                year_folder, project_name = backfill_tokens
+                self.Wv__Server__HandleThumbBackfill(year_folder, project_name)
+                return
 
-        if url_path == "/api/generate/render":
-            self.Wv__Server__HandleGenerateRender()
-            return
+            if url_path == "/api/generate/render":
+                self.Wv__Server__HandleGenerateRender()
+                return
 
-        if url_path == "/api/generate/edit":
-            self.Wv__Server__HandleGenerateEdit()
-            return
+            if url_path == "/api/generate/edit":
+                self.Wv__Server__HandleGenerateEdit()
+                return
 
-        self.send_error(404, "Not Found")
+            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": f"No POST handler for {url_path}"})
+        except Exception as unhandled_error:
+            try:
+                self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": f"Unhandled server error: {unhandled_error}"})
+            except Exception:
+                pass
     # ------------------------------------------------------------
 
 
     # SUB FUNCTION | DELETE dispatch
     # ------------------------------------------------------------
     def do_DELETE(self) -> None:
-        parsed_url = urlparse(self.path)
-        url_path   = parsed_url.path.rstrip("/") or "/"
-        project_tokens = self.Wv__Server__ParseProjectPath(url_path)
-        if project_tokens:
-            year_folder, project_name = project_tokens
-            self.Wv__Server__HandleProjectDelete(year_folder, project_name)
-            return
-        self.send_error(404, "Not Found")
+        try:
+            parsed_url = urlparse(self.path)
+            url_path   = parsed_url.path.rstrip("/") or "/"
+            project_tokens = self.Wv__Server__ParseProjectPath(url_path)
+            if project_tokens:
+                year_folder, project_name = project_tokens
+                self.Wv__Server__HandleProjectDelete(year_folder, project_name)
+                return
+            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": f"No DELETE handler for {url_path}"})
+        except Exception as unhandled_error:
+            try:
+                self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": f"Unhandled server error: {unhandled_error}"})
+            except Exception:
+                pass
     # ------------------------------------------------------------
 
 
@@ -426,8 +481,6 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
         if not match_obj:
             return None
         return match_obj.group("year"), match_obj.group("name")
-    # ------------------------------------------------------------
-
 
     # SUB FUNCTION | Read JSON request body or respond 400
     # ------------------------------------------------------------
@@ -588,10 +641,16 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # ------------------------------------------------------------
 
 
-    # SUB FUNCTION | Save a project JSON
+    # SUB FUNCTION | Save a project JSON (self-reconciling: renames folder when slug drifts)
     # ------------------------------------------------------------
-    def Wv__Server__HandleProjectSave(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, project_name)
+    #  If the display name in the body implies a different slug to the current folder id,
+    #  this handler atomically: moves the folder, renames the JSON file, rewrites all
+    #  internal path strings, appends a PreviousNames history entry, and then writes the
+    #  updated JSON.  The response always includes the (possibly new) projectName so the
+    #  client knows whether a reload is needed.
+    # ------------------------------------------------------------
+    def Wv__Server__HandleProjectSave(self, year_folder_name: str, current_slug: str) -> None:
+        project_dir = Wv__Server__ResolveProjectDir(year_folder_name, current_slug)
         if not project_dir.is_dir():
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
@@ -600,18 +659,93 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
         if request_body is None:
             return
 
+        now_iso        = datetime.now(timezone.utc).isoformat()
         metadata_block = request_body.get("Wv__ProjectFile__Metadata", {}) or {}
-        metadata_block["Wv__ProjectFile__Metadata__DateModifiedUtc"] = datetime.now(timezone.utc).isoformat()
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__ProjectName", project_name)
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__YearFolder", year_folder_name)
+        metadata_block.setdefault("Wv__ProjectFile__Metadata__ProjectName",  current_slug)
+        metadata_block.setdefault("Wv__ProjectFile__Metadata__ProjectCode",  current_slug)
+        metadata_block.setdefault("Wv__ProjectFile__Metadata__PreviousNames", [])
+        metadata_block.setdefault("Wv__ProjectFile__Metadata__YearFolder",   year_folder_name)
         metadata_block.setdefault("Wv__ProjectFile__Metadata__SchemaVersion", WV__SERVER__SCHEMA_VERSION)
+        if not isinstance(metadata_block["Wv__ProjectFile__Metadata__PreviousNames"], list):
+            metadata_block["Wv__ProjectFile__Metadata__PreviousNames"] = []
+
+        display_name  = str(metadata_block.get("Wv__ProjectFile__Metadata__ProjectName") or current_slug).strip()
+        desired_slug  = Wv__Server__BuildCleanProjectSlug(display_name) or current_slug
+
+        if desired_slug != current_slug:
+            year_path = (WV__SERVER__PROJECT_DATA_PATH / year_folder_name).resolve()
+            new_dir   = (year_path / f"{desired_slug}__WcVisData").resolve()
+            if new_dir.exists():
+                self.Wv__Server__WriteJsonResponse(409, {
+                    "ok"    : False,
+                    "error" : f"A project with folder id '{desired_slug}' already exists in {year_folder_name}.",
+                })
+                return
+            try:
+                shutil.move(str(project_dir), str(new_dir))
+            except Exception as move_error:
+                self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": f"Folder move failed: {move_error}"})
+                return
+            old_json = new_dir / f"{current_slug}__WcVisData__.json"
+            new_json = new_dir / f"{desired_slug}__WcVisData__.json"
+            if old_json.is_file():
+                try:
+                    old_json.rename(new_json)
+                except Exception as rename_error:
+                    self.Wv__Server__WriteJsonResponse(500, {
+                        "ok"    : False,
+                        "error" : f"Folder moved to {new_dir.name} but JSON rename failed: {rename_error}",
+                    })
+                    return
+            if not new_json.is_file():
+                self.Wv__Server__WriteJsonResponse(500, {
+                    "ok"    : False,
+                    "error" : f"JSON file missing at {new_json.name} after move.",
+                })
+                return
+
+            old_seg = f"{current_slug}__WcVisData"
+            new_seg = f"{desired_slug}__WcVisData"
+            request_body = Wv__Server__ReplaceProjectFolderSegmentInJson(request_body, old_seg, new_seg)
+            metadata_block = request_body.get("Wv__ProjectFile__Metadata", {}) or {}
+
+            previous_entry = {
+                "previousProjectCode" : current_slug,
+                "previousProjectName" : str(metadata_block.get("Wv__ProjectFile__Metadata__ProjectName") or current_slug),
+                "renamedAtUtc"        : now_iso,
+                "newProjectCode"      : desired_slug,
+                "newProjectName"      : display_name,
+            }
+            if not isinstance(metadata_block.get("Wv__ProjectFile__Metadata__PreviousNames"), list):
+                metadata_block["Wv__ProjectFile__Metadata__PreviousNames"] = []
+            metadata_block["Wv__ProjectFile__Metadata__PreviousNames"].append(previous_entry)
+            metadata_block["Wv__ProjectFile__Metadata__ProjectCode"] = desired_slug
+            metadata_block["Wv__ProjectFile__Metadata__ProjectName"] = display_name
+            request_body["Wv__ProjectFile__Metadata"] = metadata_block
+
+            active_json_path = new_json
+            print(f"[PROJECT] Renamed: {year_folder_name}/{current_slug}__WcVisData -> {desired_slug}__WcVisData")
+            renamed = True
+        else:
+            active_json_path = project_dir / f"{current_slug}__WcVisData__.json"
+            renamed = False
+
+        metadata_block = request_body.get("Wv__ProjectFile__Metadata", {}) or {}
+        metadata_block["Wv__ProjectFile__Metadata__DateModifiedUtc"] = now_iso
         request_body["Wv__ProjectFile__Metadata"] = metadata_block
 
-        json_path = project_dir / f"{project_name}__WcVisData__.json"
         try:
-            json_path.write_text(json.dumps(request_body, indent=4, ensure_ascii=False), encoding="utf-8")
-            print(f"[PROJECT] Saved: {year_folder_name}/{project_name}__WcVisData/{project_name}__WcVisData__.json")
-            self.Wv__Server__WriteJsonResponse(200, {"ok": True})
+            active_json_path.write_text(json.dumps(request_body, indent=4, ensure_ascii=False), encoding="utf-8")
+            if not renamed:
+                print(f"[PROJECT] Saved: {year_folder_name}/{current_slug}__WcVisData/{current_slug}__WcVisData__.json")
+            self.Wv__Server__WriteJsonResponse(200, {
+                "ok"  : True,
+                "data": {
+                    "yearFolder"  : year_folder_name,
+                    "projectName" : desired_slug,
+                    "renamed"     : renamed,
+                },
+            })
         except Exception as write_error:
             self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": str(write_error)})
     # ------------------------------------------------------------
@@ -625,7 +759,6 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
             return
 
-        import shutil
         try:
             shutil.rmtree(project_dir)
             print(f"[PROJECT] Deleted: {year_folder_name}/{project_name}__WcVisData/")

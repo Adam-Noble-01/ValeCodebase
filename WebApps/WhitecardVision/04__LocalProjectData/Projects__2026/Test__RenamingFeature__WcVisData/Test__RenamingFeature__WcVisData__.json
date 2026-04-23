@@ -1,0 +1,67 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Test__RenamingFeature",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Test__RenamingFeature",
+        "Wv__ProjectFile__Metadata__PreviousNames": [
+            {
+                "previousProjectCode": "Test-Renaming-Projects",
+                "previousProjectName": "rename",
+                "renamedAtUtc": "2026-04-23T11:36:19.607790+00:00",
+                "newProjectCode": "rename",
+                "newProjectName": "rename"
+            },
+            {
+                "previousProjectCode": "rename",
+                "previousProjectName": "Test__RenameFeature",
+                "renamedAtUtc": "2026-04-23T11:36:47.066620+00:00",
+                "newProjectCode": "Test__RenameFeature",
+                "newProjectName": "Test__RenameFeature"
+            },
+            {
+                "previousProjectCode": "Test__RenameFeature",
+                "previousProjectName": "Test__Re",
+                "renamedAtUtc": "2026-04-23T11:36:53.509157+00:00",
+                "newProjectCode": "Test__Re",
+                "newProjectName": "Test__Re"
+            },
+            {
+                "previousProjectCode": "Test__Re",
+                "previousProjectName": "Test__Renaming",
+                "renamedAtUtc": "2026-04-23T11:37:07.954518+00:00",
+                "newProjectCode": "Test__Renaming",
+                "newProjectName": "Test__Renaming"
+            },
+            {
+                "previousProjectCode": "Test__Renaming",
+                "previousProjectName": "Test__RenamingFeature",
+                "renamedAtUtc": "2026-04-23T11:37:14.143611+00:00",
+                "newProjectCode": "Test__RenamingFeature",
+                "newProjectName": "Test__RenamingFeature"
+            }
+        ],
+        "Wv__ProjectFile__Metadata__Description": "This is to see if this feature works",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-23T11:35:50.297754+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-23T11:37:40.440285+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "",
+            "Wv__Whitecard__ImageThumbPath": "",
+            "Wv__Whitecard__Prompt": "",
+            "Wv__Whitecard__WidthPx": 0,
+            "Wv__Whitecard__HeightPx": 0,
+            "Wv__Whitecard__SnappedAspectRatio": "",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [],
+        "Wv__Project__RenderGroup__StyleReferences": [],
+        "Wv__Project__RenderGroup__AvoidNotes": "",
+        "Wv__Project__RenderGroup__ImageSize": "2K",
+        "Wv__Project__RenderGroup__LastOutputPath": "",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": ""
+    },
+    "Wv__Project__EditIterations": [],
+    "Wv__Project__ActiveEditIterationId": ""
+}

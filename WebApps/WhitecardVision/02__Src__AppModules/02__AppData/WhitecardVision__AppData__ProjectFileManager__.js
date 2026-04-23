@@ -34,12 +34,37 @@
     // FUNCTION | Wrap fetch with JSON parse + uniform error shape
     // ------------------------------------------------------------
     async function Wv__ProjectFileManager__FetchJson(relativeUrl, fetchOptions) {
-        const response = await fetch(Wv__ProjectFileManager__ServerBaseUrl() + relativeUrl, fetchOptions);
-        const payload  = await response.json().catch(() => ({ ok: false, error: 'Invalid JSON from server' }));
+        const response  = await fetch(Wv__ProjectFileManager__ServerBaseUrl() + relativeUrl, fetchOptions);
+        let   payload;
+        try {
+            payload = await response.json();
+        } catch (_parseError) {
+            const bodySnippet = await response.text().catch(() => '');
+            throw new Error('HTTP ' + response.status + ': ' + (bodySnippet.slice(0, 200) || 'non-JSON response from server'));
+        }
         if (!response.ok || !payload.ok) {
             throw new Error(payload.error || ('HTTP ' + response.status));
         }
         return payload.data;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Project identity (display vs API slug)
+// -----------------------------------------------------------------------------
+
+    //  Flask routes /api/projects/{Year}/{slug} and generate `projectName` use the
+    //  stable folder id (Wv__ProjectFile__Metadata__ProjectCode). Display label is
+    //  Wv__ProjectFile__Metadata__ProjectName. Legacy JSON may only have ProjectName.
+    // ------------------------------------------------------------
+    function Wv__ProjectFileManager__GetProjectSlugForApi(metadataBlock) {
+        const m = metadataBlock || {};
+        const fromCode = String(m.Wv__ProjectFile__Metadata__ProjectCode || '').trim();
+        if (fromCode) { return fromCode; }
+        return String(m.Wv__ProjectFile__Metadata__ProjectName || '').trim();
     }
     // ------------------------------------------------------------
 
@@ -117,24 +142,33 @@
 
     // FUNCTION | Persist the currently-active project tree back to disk
     // ------------------------------------------------------------
+    //  The server is self-reconciling: if the display name implies a new folder slug
+    //  it moves the folder and returns { renamed: true, projectName: newSlug }.
+    //  This function reloads the project automatically in that case so the
+    //  in-memory state and URL references are consistent with the new slug.
+    // ------------------------------------------------------------
     async function Wv__ProjectFileManager__SaveActiveProject() {
         const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
         if (!activeTree) { throw new Error('No active project to save.'); }
 
         const metadataBlock    = activeTree.Wv__ProjectFile__Metadata || {};
-        const projectNameToken = metadataBlock.Wv__ProjectFile__Metadata__ProjectName;
         const yearFolderToken  = metadataBlock.Wv__ProjectFile__Metadata__YearFolder;
-        if (!projectNameToken || !yearFolderToken) { throw new Error('Project metadata missing projectName/yearFolder.'); }
+        const projectSlugToken = Wv__ProjectFileManager__GetProjectSlugForApi(metadataBlock);
+        if (!yearFolderToken)  { throw new Error('Project metadata missing year folder.'); }
+        if (!projectSlugToken) { throw new Error('Project metadata missing project id (ProjectCode).'); }
 
-        await Wv__ProjectFileManager__FetchJson(
-            '/api/projects/' + encodeURIComponent(yearFolderToken) + '/' + encodeURIComponent(projectNameToken),
+        const result = await Wv__ProjectFileManager__FetchJson(
+            '/api/projects/' + encodeURIComponent(yearFolderToken) + '/' + encodeURIComponent(projectSlugToken),
             {
                 method  : 'POST',
                 headers : { 'Content-Type': 'application/json' },
                 body    : JSON.stringify(activeTree)
             }
         );
-        return true;
+        if (result && result.renamed) {
+            await Wv__ProjectFileManager__LoadProject(result.yearFolder, result.projectName);
+        }
+        return result || true;
     }
     // ------------------------------------------------------------
 
@@ -153,8 +187,8 @@
 
     // FUNCTION | Rename the currently-active project's DISPLAY name and persist
     // ------------------------------------------------------------
-    //  The folder slug (URL-safe filesystem id) stays fixed for the lifetime of
-    //  the project; only the human-readable Metadata.ProjectName is rewritten.
+    //  Use when the folder slug (ProjectCode) is unchanged. To rename the
+    //  on-disk folder, call Wv__ProjectFileManager__RelocateProject.
     // ------------------------------------------------------------
     async function Wv__ProjectFileManager__RenameActiveProject(newDisplayName) {
         const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
@@ -184,11 +218,11 @@
         const activeTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
         if (!activeTree) { throw new Error('Create or load a project before uploading images.'); }
         const metadataBlock    = activeTree.Wv__ProjectFile__Metadata || {};
-        const projectNameToken = metadataBlock.Wv__ProjectFile__Metadata__ProjectName;
         const yearFolderToken  = metadataBlock.Wv__ProjectFile__Metadata__YearFolder;
+        const projectSlugToken = Wv__ProjectFileManager__GetProjectSlugForApi(metadataBlock);
 
         return await Wv__ProjectFileManager__FetchJson(
-            '/api/projects/' + encodeURIComponent(yearFolderToken) + '/' + encodeURIComponent(projectNameToken) + '/images/' + roleToken,
+            '/api/projects/' + encodeURIComponent(yearFolderToken) + '/' + encodeURIComponent(projectSlugToken) + '/images/' + roleToken,
             {
                 method  : 'POST',
                 headers : { 'Content-Type': 'application/json' },
@@ -236,7 +270,7 @@
                 method  : 'POST',
                 headers : { 'Content-Type': 'application/json' },
                 body    : JSON.stringify({
-                    projectName    : metadataBlock.Wv__ProjectFile__Metadata__ProjectName,
+                    projectName    : Wv__ProjectFileManager__GetProjectSlugForApi(metadataBlock),
                     yearFolder     : metadataBlock.Wv__ProjectFile__Metadata__YearFolder,
                     iterationId    : iterationIdOrEmpty || '',
                     geminiRequest  : geminiRequestShell
@@ -329,7 +363,8 @@
         Wv__ProjectFileManager__UploadImage,
         Wv__ProjectFileManager__Generate,
         Wv__ProjectFileManager__CurrentYearFolder,
-        Wv__ProjectFileManager__BackfillProjectThumbnails
+        Wv__ProjectFileManager__BackfillProjectThumbnails,
+        Wv__ProjectFileManager__GetProjectSlugForApi
     };
     // ------------------------------------------------------------
 

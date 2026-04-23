@@ -7,48 +7,48 @@
 	  },
 	  {
 		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D",
-        "name"         : "ValeVision3D - Child Project Folder",
+        "name"         : "Project |  ValeVision3D",
         "description"  : "This is the main project for the ValeVision3D Web Application. ValeVision3D is a 3D viewer for its sister project, Whitecardopedia."
 	  },
 	  {
 		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/Whitecardopedia",
-        "name"         : "Whitecardopedia - Child Project Folder",
+        "name"         : "Project |  Whitecardopedia",
         "description"  : "This is the main project for the Whitecardopedia Web Application. Whitecardopedia is a gallery web app containing all of Vale projects whitecard images linking to the ValeVision3D viewer and providing a live web platform for staff to review and approve designs in a easy to use and navigate manner."
 	  },
 	  {
-		"path"         : "D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools",
-        "name"         : "Root_GeneralDeveloperTools - Sister Folder With Developer Tools",
-        "description"  : "This folder contains general developer tools that are used across the Vale project. These are miscellaneous utilities and tools that are not specific to any one project but are useful for the development process. The auto Vale Email generator tool can be found here and my Python version of AutoHotkey which is optimised for Vale Projects etc."
-	  },
-	  {
 		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValePlanner",
-        "name"         : "ValePlanner - Sister Project Folder",
+        "name"         : "Project |  ValePlanner",
         "description"  : "This is the main project for the ValePlanner Web Application. ValePlanner is a planning tool for Vale projects and time management. It allows users to plan and manage their projects in a easy to use and navigate manner."
 	  },
 	  {
 		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/ValeSpec",
-        "name"         : "ValeSpec - Sister Project Folder",
+        "name"         : "Project |  ValeSpec",
         "description"  : "This is the main project for the ValePlanner Web Application. ValePlanner is a configuration tool for VGH Doors, Bifold doors, windows, hardware etc and serves as a catalogue of products and their specifications build into a dynamic configuration tool and hosted as a intuitive and user friendly web application."
 	  },
 	  {
 		"path"         : "D:/10_CoreLib__ValeCodebase/WebApps/WhitecardVision",
-        "name"         : "WhitecardVision - Sister Project Folder",
+        "name"         : "Project |  WhitecardVision",
         "description"  : "This is the main project for the WhitecardVision Web Application. WhitecardVision is a web application that allows users to create & edit fully rendered realistic images using AI. The AI uses Whitecard Images as a wireframe and then renders them as photorealistic images."
 	  },
 	  {
 		"path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins",
-        "name"         : "SketchUp Plugins - Reference Project Folder",
+        "name"         : "SketchUp |  SketchUp Plugins",
         "description"  : "Some of the WebApps rely on exporters such as the SketchUp to GLB Exporter, some other helpful code is contained here such as SketchUp HTML Window UI code which is helpful for the ValeVision3D and other projects that utilise the HTML Window UI for the user interface, there is also a SVG Generator which in the SketchUp Window Configuration plugin and this can be studied and utilised for other projects."
 	  },
       {
-        "name": "REFERENCE ONLY!! : Cousin Project - Noble Architecture Apps",
-        "Description": "This is the cousin project to ValeVision3D. Noble Architecture TrueVision 3D is a similar App that branched off of ValeVision3D and is now a standalone project. its listed here for reference purposes only, DO NOT EDIT TRUEVISION 3D CODE HERE, IT IS A SEPARATE PROJECT.",
-        "path": "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
+		"path"         : "D:/10_CoreLib__ValeCodebase/Root_GeneralDeveloperTools",
+        "name"         : "DevTools |  General Developer Tools",
+        "description"  : "This folder contains general developer tools that are used across the Vale project. These are miscellaneous utilities and tools that are not specific to any one project but are useful for the development process. The auto Vale Email generator tool can be found here and my Python version of AutoHotkey which is optimised for Vale Projects etc."
 	  },
       {
-        "name": "Obsidian Notebook |  General Knowledge Base",
-        "Description": "This is a general knowledge base for the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project.",
-        "path": "C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Documents/Remote__KnowledgeBase__General"
+        "name"         : "REFERENCE ONLY!! | Cousin Project - Noble Architecture Apps",
+        "Description"  : "This is the cousin project to ValeVision3D. Noble Architecture TrueVision 3D is a similar App that branched off of ValeVision3D and is now a standalone project. its listed here for reference purposes only, DO NOT EDIT TRUEVISION 3D CODE HERE, IT IS A SEPARATE PROJECT.",
+        "path"         : "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
+	  },
+      {
+        "name"         : "Obsidian Notebook |  General Knowledge Base",
+        "Description"  : "This is a general knowledge base for the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project.",
+        "path"         : "C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Documents/Remote__KnowledgeBase__General"
 	  }
       
 	],

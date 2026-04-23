@@ -49,10 +49,18 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Keep the active project name in sync with the input
+    // HELPER FUNCTION | Keep the active project display name in sync with the input
+    // ------------------------------------------------------------
+    //  Display name. On Save, if the sanitised slug differs from ProjectCode, the
+    //  app calls relocate to rename the on-disk project folder to match.
     // ------------------------------------------------------------
     function Wv__RenderMode__ProjectMetaPanel__SyncProjectNameToState() {
-        // name-change requires a rename flow; input is informational until New
+        const projectTree = window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject();
+        if (!projectTree) return;
+        const metadataBlock = projectTree.Wv__ProjectFile__Metadata || (projectTree.Wv__ProjectFile__Metadata = {});
+        metadataBlock.Wv__ProjectFile__Metadata__ProjectName =
+            document.getElementById('Wv__Render__ProjectMeta__NameInput').value;
+        window.Wv__AppCore__StateManager.Wv__StateManager__MarkProjectDirty();
     }
     // ------------------------------------------------------------
 
@@ -93,14 +101,20 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Save active project
+    // HELPER FUNCTION | Save active project (server reconciles slug + folder rename)
     // ------------------------------------------------------------
     async function Wv__RenderMode__ProjectMetaPanel__HandleSaveClicked() {
+        Wv__RenderMode__ProjectMetaPanel__SyncProjectNameToState();
+        const pfm   = window.Wv__AppData__ProjectFileManager;
+        const toast = window.Wv__AppUtils__Toast;
         try {
-            await window.Wv__AppData__ProjectFileManager.Wv__ProjectFileManager__SaveActiveProject();
-            window.Wv__AppUtils__Toast.Wv__Toast__Show('Project saved.', 'success');
+            if (!window.Wv__AppCore__StateManager.Wv__StateManager__GetActiveProject()) {
+                throw new Error('No active project to save.');
+            }
+            await pfm.Wv__ProjectFileManager__SaveActiveProject();
+            if (toast) toast.Wv__Toast__Show('Project saved.', 'success');
         } catch (saveError) {
-            window.Wv__AppUtils__Toast.Wv__Toast__Show('Save failed: ' + saveError.message, 'error');
+            if (toast) toast.Wv__Toast__Show('Save failed: ' + saveError.message, 'error');
         }
     }
     // ------------------------------------------------------------

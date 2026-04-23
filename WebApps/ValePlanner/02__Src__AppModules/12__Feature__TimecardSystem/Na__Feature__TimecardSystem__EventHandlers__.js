@@ -185,7 +185,10 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
          const validityClassName = entryValue.Timecard__IsHashValid
              ? 'na-timecard-hash-status--ok'
              : 'na-timecard-hash-status--warn';
-         const validityLabel = entryValue.Timecard__IsHashValid ? 'Valid' : 'Mismatch';
+        const validityLabel = entryValue.Timecard__IsHashValid ? 'Valid' : 'Mismatch';
+        const statusTitleLabel = entryValue.Timecard__IsRetrospectiveOverride
+            ? 'Validated via retrospective admin override.'
+            : 'Validated by deterministic row hash.';
         const rowClassName = entryValue.Timecard__IsOpenShift ? 'na-timecard-table__row na-timecard-table__row--open' : 'na-timecard-table__row';
 
          return `
@@ -194,7 +197,7 @@ import { Na__Utils__FormatUkDateLong } from '../05__AppUtils/Na__Utils__Dates.js
                 <td>${entryValue['Timcard__Clock-In__']}</td>
                 <td>${entryValue['Timcard__Clock-Out__']}</td>
                 <td>${entryValue.Timecard__WorkedHoursLabel}</td>
-                <td><span class="na-timecard-hash-status ${validityClassName}">${validityLabel}</span></td>
+                <td><span class="na-timecard-hash-status ${validityClassName}" title="${statusTitleLabel}">${validityLabel}</span></td>
                 <td class="na-timecard-hash-cell" title="${entryValue.Timecard__AuthHash}">${entryValue.Timecard__AuthHash}</td>
             </tr>
          `;

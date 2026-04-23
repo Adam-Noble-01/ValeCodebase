@@ -90,8 +90,22 @@
     {
       "Timecard__Date": "2026-04-22",
       "Timcard__Clock-In__": "07:55",
+      "Timcard__Clock-Out__": "18:05",
+      "Timecard__AuthHash": "sha256__90e261e5f499f2190b30f1d4242899be0ef4d39d13e17b64d229e4beb231ab24",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-04-23T08:44:18.913694Z",
+        "Timecard__Reason": "Rushed to leave, didnt clock out, saw James so he can validate my finish time.",
+        "Timecard__EditedBy": "Adam Noble",
+        "Timecard__OriginalClockIn": "07:55",
+        "Timecard__OriginalClockOut": "07:55"
+      }
+    },
+    {
+      "Timecard__Date": "2026-04-23",
+      "Timcard__Clock-In__": "07:55",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__2d313d9758ae7787c039ad2b55448c3860c0423126ab0e31dcf351fba521c1e8"
+      "Timecard__AuthHash": "sha256__db1187736ca7bd7d23a7287308485fa579660455c85286ef420a52297ddd4820"
     }
   ]
 }

@@ -133,6 +133,57 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
 
 
 // -----------------------------------------------------------------------------
+// REGION | Admin Override Parsing - Retrospective Edit Metadata
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Normalize Optional Admin Override Block
+    // ------------------------------------------------------------
+    function Na__Timecard__NormalizeAdminOverrideBlock(overrideValue) {
+        if (!overrideValue || typeof overrideValue !== 'object' || Array.isArray(overrideValue)) {
+            return null;
+        }
+
+        const isRetrospectiveEdit = Boolean(
+            overrideValue.Timecard__IsRetrospectiveEdit
+            ?? overrideValue.IsRetrospectiveEdit
+        );
+        if (!isRetrospectiveEdit) {
+            return null;
+        }
+
+        return {
+            Timecard__IsRetrospectiveEdit: true,
+            Timecard__EditedAtUtcIso: String(
+                overrideValue.Timecard__EditedAtUtcIso
+                ?? overrideValue.Timestamp
+                ?? ''
+            ).trim(),
+            Timecard__Reason: String(
+                overrideValue.Timecard__Reason
+                ?? overrideValue.Reason
+                ?? ''
+            ).trim(),
+            Timecard__EditedBy: String(
+                overrideValue.Timecard__EditedBy
+                ?? overrideValue.EditedBy
+                ?? ''
+            ).trim(),
+            Timecard__OriginalClockIn: String(
+                overrideValue.Timecard__OriginalClockIn
+                ?? ''
+            ).trim(),
+            Timecard__OriginalClockOut: String(
+                overrideValue.Timecard__OriginalClockOut
+                ?? ''
+            ).trim()
+        };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Clock-In Rounding - Floor to Previous 5 Minutes
 // -----------------------------------------------------------------------------
 
@@ -424,6 +475,7 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                 const dateValue     = String(rawEntry?.Timecard__Date || '').trim();
                 const clockInValue  = String(rawEntry?.['Timcard__Clock-In__'] || '').trim();
                 const clockOutValue = String(rawEntry?.['Timcard__Clock-Out__'] || '').trim();
+                const adminOverrideData = Na__Timecard__NormalizeAdminOverrideBlock(rawEntry?.Timecard__AdminOverride__);
                 const normalizedClockInValue  = Na__Timecard__NormalizeClockInTextWithFiveMinFloor(clockInValue);
                 const normalizedClockOutValue = Na__Timecard__NormalizeClockOutTextWithFiveMinFloor(clockOutValue);
 
@@ -437,7 +489,10 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
 
                 const expectedHash    = await Na__Timecard__CreateAuthHashAsync(hashPayload);
                 const storedHashValue = String(rawEntry?.Timecard__AuthHash || '').trim() || expectedHash;
-                const isHashValid     = await Na__Timecard__ValidateAuthHashAsync(hashPayload, storedHashValue);
+                const isHashValidFromHash = await Na__Timecard__ValidateAuthHashAsync(hashPayload, storedHashValue);
+                // Future admin dashboard versions can use this flag for dedicated colour/state rendering.
+                const isRetrospectiveOverride = Boolean(adminOverrideData?.Timecard__IsRetrospectiveEdit);
+                const isHashValid = isRetrospectiveOverride ? true : isHashValidFromHash;
                 const workedMinutesValue = Na__Timecard__CalculateWorkedMinutes(normalizedClockInValue, normalizedClockOutValue);
                 const isOpenShift     = Boolean(clockInValue) && !clockOutValue;
 
@@ -459,7 +514,9 @@ import { Na__Utils__FormatLocalDateAsYyyyMmDd } from '../05__AppUtils/Na__Utils_
                     Timecard__WorkedMinutes:     workedMinutesValue,
                     Timecard__WorkedHoursLabel:  workedMinutesValue > 0 ? Na__Timecard__FormatMinutesLabel(workedMinutesValue) : '--',
                     Timecard__IsHashValid:       isHashValid,
-                    Timecard__IsOpenShift:       isOpenShift
+                    Timecard__IsOpenShift:       isOpenShift,
+                    Timecard__IsRetrospectiveOverride: isRetrospectiveOverride,
+                    Timecard__AdminOverride__:   adminOverrideData
                 };
 
                 normalizedEntries.push(normalizedEntry);

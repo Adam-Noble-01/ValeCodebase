@@ -942,6 +942,126 @@
           "endTime": "14:15",
           "title": "Tea",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776933966934",
+          "date": "2026-04-21",
+          "startTime": "16:00",
+          "endTime": "18:00",
+          "title": "Research |  Vale Data Structures",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776933991772",
+          "date": "2026-04-22",
+          "startTime": "08:00",
+          "endTime": "12:00",
+          "title": "Research |  Nano API",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776934016231",
+          "date": "2026-04-22",
+          "startTime": "12:00",
+          "endTime": "12:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776934041539",
+          "date": "2026-04-22",
+          "startTime": "16:00",
+          "endTime": "16:30",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1776934077456",
+          "date": "2026-04-22",
+          "startTime": "16:30",
+          "endTime": "18:00",
+          "title": "Dev |  WhitecardVision",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776934062717",
+          "date": "2026-04-22",
+          "startTime": "12:15",
+          "endTime": "15:00",
+          "title": "Dev |  WhitecardVision",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776934099260",
+          "date": "2026-04-22",
+          "startTime": "15:00",
+          "endTime": "16:00",
+          "title": "CGI |  Appleton",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1776934137411",
+          "date": "2026-04-23",
+          "startTime": "15:00",
+          "endTime": "16:00",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1776934120378",
+          "date": "2026-04-23",
+          "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1776934166587",
+          "date": "2026-04-23",
+          "startTime": "08:30",
+          "endTime": "11:00",
+          "title": "Dev |  WhitecardVision",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1776934201763",
+          "date": "2026-04-17",
+          "startTime": "12:00",
+          "endTime": "12:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776934213590",
+          "date": "2026-04-17",
+          "startTime": "15:00",
+          "endTime": "15:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776934234546",
+          "date": "2026-04-17",
+          "startTime": "14:00",
+          "endTime": "15:00",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1776934254490",
+          "date": "2026-04-17",
+          "startTime": "12:15",
+          "endTime": "14:00",
+          "title": "Research |  API Digital Ocean",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1776934272092",
+          "date": "2026-04-17",
+          "startTime": "15:15",
+          "endTime": "17:30",
+          "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-slate"
         }
       ]
     }

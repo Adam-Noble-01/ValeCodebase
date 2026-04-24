@@ -1078,6 +1078,30 @@
           "endTime": "15:00",
           "title": "Dev |  WhitecardVision",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1777019628912",
+          "date": "2026-04-24",
+          "startTime": "08:00",
+          "endTime": "08:15",
+          "title": "Admin |  Emails",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1777019650281",
+          "date": "2026-04-24",
+          "startTime": "08:15",
+          "endTime": "08:45",
+          "title": "Meeting |  Technical",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1777019673974",
+          "date": "2026-04-24",
+          "startTime": "08:45",
+          "endTime": "10:00",
+          "title": "Dev |  Add Duplicate Project To WcV",
+          "color": "na-shift-color-lime"
         }
       ]
     }

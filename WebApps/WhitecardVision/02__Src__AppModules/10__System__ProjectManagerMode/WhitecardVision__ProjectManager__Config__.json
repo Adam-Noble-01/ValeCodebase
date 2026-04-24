@@ -23,6 +23,6 @@
 
     "Wv__ProjectManager__Config__Confirmations": {
         "Wv__ProjectManager__Config__Confirmations__DuplicateRequiresConfirm" : true,
-        "Wv__ProjectManager__Config__Confirmations__DeleteRequiresConfirm" : true
+        "Wv__ProjectManager__Config__Confirmations__DeleteRequiresConfirm"    : true
     }
 }

@@ -113,9 +113,22 @@
 
     .Wv__Render__WhitecardSlot {
         display                          : grid;
-        grid-template-columns            : 240px 1fr;
+        grid-template-columns            : 340px 1fr;
         grid-template-rows               : auto 1fr;
         gap                              : var(--Wv__Space__Md);
+    }
+    .Wv__Render__WhitecardSlot .Wv__NotebookOverlay__TextareaWrap {
+        align-self                       : stretch;
+        display                          : flex;
+        flex-direction                   : column;
+        min-height                       : 0;
+    }
+    #Wv__Render__WhitecardSlot__PromptInput {
+        flex                             : 1 1 auto !important;
+        height                           : auto !important;
+        max-height                       : none !important;
+        min-height                       : 80px;
+        align-self                       : stretch;
     }
     .Wv__Render__WhitecardSlot__Thumb {
         grid-row                         : 1 / span 2;

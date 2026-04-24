@@ -28,6 +28,8 @@
         if (!textareaElement || textareaElement.tagName !== 'TEXTAREA') return;
         if (!textareaElement.classList.contains('Wv__Ui__Textarea'))    return;
 
+        if (textareaElement.hasAttribute('data-wv-notebook-ref')) return;   //<-- notebook textareas have a fixed inline size set by NotebookOverlay__Install()
+
         textareaElement.style.overflowY = 'hidden';
         textareaElement.style.resize    = 'none';
 

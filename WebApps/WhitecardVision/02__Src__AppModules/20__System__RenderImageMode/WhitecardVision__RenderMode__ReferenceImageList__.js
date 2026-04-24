@@ -184,6 +184,7 @@
 
         const promptTextareaEl   = document.createElement('textarea');
         promptTextareaEl.className   = 'Wv__Ui__Textarea Wv__Render__RefTile__PromptInput';
+        promptTextareaEl.setAttribute('data-wv-notebook-ref', 'ref-tile');                  //<-- registers textarea with NotebookOverlay
         promptTextareaEl.placeholder = referenceTypeToken === 'material'
             ? 'Describe the material: textures, finish, local colour...'
             : 'Describe the style: lighting, colour grade, mood, lens...';

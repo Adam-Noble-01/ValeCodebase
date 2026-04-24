@@ -34,6 +34,7 @@
         window.Wv__AppUtils__Hotkeys.Wv__Hotkeys__Install();
         window.Wv__AppUtils__AutoResize.Wv__AutoResize__Install();
         window.Wv__AppUtils__UiHelpers.Wv__UiHelpers__Install();
+        window.Wv__SharedElements__NotebookOverlay.Wv__NotebookOverlay__Install();
 
         window.Wv__AppCore__ModeManager.Wv__ModeManager__InstallNavigationBar();
 

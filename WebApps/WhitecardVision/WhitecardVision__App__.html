@@ -142,6 +142,7 @@
                             </div>
                             <textarea id="Wv__Render__WhitecardSlot__PromptInput"
                                       class="Wv__Ui__Textarea"
+                                      data-wv-notebook-ref="whitecard"
                                       placeholder="Describe the desired scene, materials, lighting, mood..."></textarea>
                         </div>
                     </section>
@@ -166,6 +167,7 @@
                     <section class="Wv__Render__Section" id="Wv__Render__Section__Avoid">
                         <h2 class="Wv__Ui__H2">Avoid The Following</h2>
                         <textarea id="Wv__Render__Avoid__Input" class="Wv__Ui__Textarea"
+                                  data-wv-notebook-ref="whitecard"
                                   placeholder="Comma-separated items to explicitly exclude from the output..."></textarea>
                     </section>
 
@@ -244,6 +246,7 @@
                         <h2 class="Wv__Ui__H2">Target Element (what to change)</h2>
                         <textarea id="Wv__Edit__TargetElement__Input"
                                   class="Wv__Ui__Textarea"
+                                  data-wv-notebook-ref="edit-base"
                                   placeholder="Describe ONLY the element to change, e.g. 'Change the garage roller door to a double timber entry door with full-height glazing panels'."></textarea>
                     </section>
 
@@ -251,12 +254,14 @@
                         <h2 class="Wv__Ui__H2">Preserve (protect the rest of the canvas)</h2>
                         <textarea id="Wv__Edit__Preserve__Input"
                                   class="Wv__Ui__Textarea"
+                                  data-wv-notebook-ref="edit-base"
                                   placeholder="Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, aspect ratio..."></textarea>
                     </section>
 
                     <section class="Wv__Edit__Section" id="Wv__Edit__Section__Avoid">
                         <h2 class="Wv__Ui__H2">Avoid</h2>
                         <textarea id="Wv__Edit__Avoid__Input" class="Wv__Ui__Textarea"
+                                  data-wv-notebook-ref="edit-base"
                                   placeholder="Things that must not appear..."></textarea>
                     </section>
 
@@ -370,7 +375,7 @@
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__ImageUpload__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__DateFormat__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__Hotkeys__.js"></script>
-    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__AutoResize__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__AutoResize__.js?v=4"></script>
     <script src="02__Src__AppModules/03__AppUtils/WhitecardVision__AppUtils__UiHelpers__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils/WhitecardVision__MathUtils__AspectRatio__.js"></script>
 
@@ -393,6 +398,7 @@
     <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__ResolutionPicker__.js"></script>
     <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__TemplatesPanel__.js"></script>
     <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__CompiledPromptExporter__.js"></script>
+    <script src="02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__NotebookOverlay__.js?v=4"></script>
 
     <!-- 5. System - Project Manager Mode (default landing tab) -->
     <script src="02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectList__.js"></script>

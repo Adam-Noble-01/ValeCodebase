@@ -28,7 +28,7 @@
 /* REGION | Layer 2 - Shared Common Elements                        */
 /* ----------------------------------------------------------------- */
 
-    @import url("../02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__Styles__.css");
+    @import url("../02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__Styles__.css?v=4");
 
 /* endregion ----------------------------------------------------------------- */
 
@@ -38,7 +38,7 @@
 /* ----------------------------------------------------------------- */
 
     @import url("../02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__Styles__.css");
-    @import url("../02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__Styles__.css");
+    @import url("../02__Src__AppModules/20__System__RenderImageMode/WhitecardVision__RenderMode__Styles__.css?v=4");
     @import url("../02__Src__AppModules/30__System__EditImageMode/WhitecardVision__EditMode__Styles__.css");
     @import url("../02__Src__AppModules/40__System__FilterSuite/WhitecardVision__FilterSuite__Styles__.css");
     @import url("../02__Src__AppModules/50__System__FinalPreview/WhitecardVision__FinalPreview__Styles__.css");

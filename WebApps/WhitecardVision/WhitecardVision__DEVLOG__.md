@@ -6,6 +6,54 @@
 
 
 # -----------------------------------------------------------------------------
+## WhitecardVision - v0.3.6 - 24-Apr-2026 - Notebook overlay: wider template panel + all dividers resizable
+
+### Summary
+Two UX improvements to the full-screen Notebook overlay. The Prompt Templates
+panel is now twice as wide (520 px default) with the freed space coming from
+the reference image pane. Both dividers in the three-pane layout are now
+drag-resizable — the second divider previously had an immovable `--Static`
+modifier; it is now wired to the same drag system as the first.
+
+### Notebook overlay layout changes (CSS)
+- `.Wv__NotebookOverlay__TemplatesPane` default width doubled:
+  `flex: 0 0 260px` → `flex: 0 0 520px`; `max-width` raised from `360px` to
+  `720px`; `min-width` kept at `200px` for narrow viewports.
+- `.Wv__NotebookOverlay__ImagePane` reduced from `flex: 0 0 34%` to
+  `flex: 0 0 20%` — donating the recovered horizontal space to the templates
+  panel while keeping the editor pane at its natural flex-fill width.
+- Removed the `.Wv__NotebookOverlay__Divider--Static` CSS block (the
+  `cursor: default` and suppressed `:hover` rules). The right-hand divider
+  now inherits the standard `col-resize` cursor and blue hover highlight from
+  `.Wv__NotebookOverlay__Divider` automatically.
+
+### Notebook overlay drag-resize wiring (JS)
+- Added constant `Wv__NotebookOverlay__TemplatesPaneMinPx = 200` — the floor
+  for templates-pane drag, matching the CSS `min-width`.
+- Added module state variable `Wv__NotebookOverlay__TemplatesPaneEl` — captured
+  in `BuildHostDom` alongside the existing `ImagePaneEl`.
+- `BuildHostDom` now selects both dividers with `querySelectorAll` and passes
+  each to its own installer. The second divider no longer carries the
+  `Wv__NotebookOverlay__Divider--Static` class.
+- Added `Wv__NotebookOverlay__InstallTemplatesDividerDrag(dividerEl, templatesPaneEl, cardEl)`.
+  The templates pane sits to the right of its divider, so the delta is
+  inverted (`rawWidth = paneStartW - delta`): dragging left expands the
+  templates pane, dragging right shrinks it. The clamp floor is
+  `TemplatesPaneMinPx`; the ceiling is computed live from the current card
+  width minus the image pane's actual rendered width minus the editor pane
+  minimum.
+- Updated the first divider's clamp ceiling: the hardcoded `320` reserved
+  for the templates pane is replaced with a live
+  `templatesPaneEl.getBoundingClientRect().width` lookup so that if the user
+  has already dragged the right divider, the left divider's range stays
+  accurate.
+
+### Files modified
+- `02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__Styles__.css`
+- `02__Src__AppModules/09__SharedSystems__CommonElements/WhitecardVision__SharedElements__NotebookOverlay__.js`
+
+
+# -----------------------------------------------------------------------------
 ## WhitecardVision - v0.3.5 - 24-Apr-2026 - Project duplication + modular project actions
 
 ### Summary

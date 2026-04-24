@@ -12,6 +12,7 @@
               5. Per-Style    frontloader + user prompt (for each style ref)
               6. AVOID suffix (standard markdown)
               7. Special avoid notes (user-supplied free text)
+              8. Camera angle end reaffirmation (always last)
 ============================================================================= */
 
 // =============================================================================
@@ -74,6 +75,9 @@
             sections.push('--- SPECIAL AVOID NOTES ---\n' + avoidNotes.trim());
         }
 
+        const cameraReaffirmationText = await loader.Wv__PromptConstructor__LoadMarkdown__ByConfigKey('Wv__AppConfig__PromptConstructor__EndLoader__CameraReaffirmation');
+        sections.push(cameraReaffirmationText);
+
         return sections.join('\n\n');
     }
     // ------------------------------------------------------------
@@ -106,6 +110,10 @@
         if (iterationAvoidNotes) {
             sections.push('--- SPECIAL AVOID NOTES ---\n' + iterationAvoidNotes);
         }
+
+        const cameraReaffirmationText = await loader.Wv__PromptConstructor__LoadMarkdown__ByConfigKey('Wv__AppConfig__PromptConstructor__EndLoader__CameraReaffirmation');
+        sections.push(cameraReaffirmationText);
+
         return sections.join('\n\n');
     }
     // ------------------------------------------------------------

@@ -104,8 +104,22 @@
     {
       "Timecard__Date": "2026-04-23",
       "Timcard__Clock-In__": "07:55",
+      "Timcard__Clock-Out__": "18:05",
+      "Timecard__AuthHash": "sha256__6941219350d33eed89d4eb4bba843ef84479d470cc7d34bff003f5a5c2bf513a",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-04-24T07:01:36.040573Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "07:55",
+        "Timecard__OriginalClockOut": "08:00"
+      }
+    },
+    {
+      "Timecard__Date": "2026-04-24",
+      "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__db1187736ca7bd7d23a7287308485fa579660455c85286ef420a52297ddd4820"
+      "Timecard__AuthHash": "sha256__7ff1c4483723eee55e434c3700fabe0c79ad225c49077109219a05bdc4b7984f"
     }
   ]
 }

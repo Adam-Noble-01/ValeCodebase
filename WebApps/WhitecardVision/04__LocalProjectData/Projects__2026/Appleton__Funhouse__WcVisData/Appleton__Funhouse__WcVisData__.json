@@ -2,11 +2,6 @@
     "Wv__ProjectFile__Metadata": {
         "Wv__ProjectFile__Metadata__ProjectName": "Appleton__Funhouse",
         "Wv__ProjectFile__Metadata__ProjectCode": "Appleton__Funhouse",
-        "Wv__ProjectFile__Metadata__Description": "A Test Of the clown House Project",
-        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
-        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
-        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T13:46:30.427267+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-23T11:33:07.391390+00:00",
         "Wv__ProjectFile__Metadata__PreviousNames": [
             {
                 "previousProjectCode": "Test-02",
@@ -15,7 +10,12 @@
                 "newProjectCode": "Appleton__Funhouse",
                 "newProjectName": "Appleton__Funhouse"
             }
-        ]
+        ],
+        "Wv__ProjectFile__Metadata__Description": "A Test Of the clown House Project",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T13:46:30.427267+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-24T07:16:22.477128+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {

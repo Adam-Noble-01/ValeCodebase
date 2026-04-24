@@ -39,7 +39,8 @@
         "Wv__AppConfig__PromptConstructor__FrontLoader__Whitecard" : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/01__FrontLoad__CoreStandard__Whitecard__StructuralControlPrompt__.md",
         "Wv__AppConfig__PromptConstructor__FrontLoader__Material"  : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/02__FrontLoad__CoreStandard__MaterialReference__ReferenceControlPrompt__.md",
         "Wv__AppConfig__PromptConstructor__FrontLoader__Style"     : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/03__FrontLoad__CoreStandard__StyleReference__ReferenceControlPrompt__.md",
-        "Wv__AppConfig__PromptConstructor__FrontLoader__Avoid"     : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/04__FrontLoad__CoreStandard__Whitecard__AvoidTheFollowing.md"
+        "Wv__AppConfig__PromptConstructor__FrontLoader__Avoid"     : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/04__FrontLoad__CoreStandard__Whitecard__AvoidTheFollowing.md",
+        "Wv__AppConfig__PromptConstructor__EndLoader__CameraReaffirmation" : "10__Local__PromptTemplates/01__FrontLoadedPrompts__CoreStandards/05__EndLoad__CoreStandard__Whitecard__CameraAngleReaffirmation__.md"
     },
 
     "Wv__AppConfig__Modes": {

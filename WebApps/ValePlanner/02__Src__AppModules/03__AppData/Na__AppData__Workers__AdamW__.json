@@ -1016,14 +1016,6 @@
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1776934166587",
-          "date": "2026-04-23",
-          "startTime": "08:30",
-          "endTime": "11:00",
-          "title": "Dev |  WhitecardVision",
-          "color": "na-shift-color-slate"
-        },
-        {
           "id": "new-1776934201763",
           "date": "2026-04-17",
           "startTime": "12:00",
@@ -1061,6 +1053,30 @@
           "startTime": "15:15",
           "endTime": "17:30",
           "title": "Dev |  ValeSpec",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1777014161872",
+          "date": "2026-04-23",
+          "startTime": "16:30",
+          "endTime": "18:00",
+          "title": "CGI |  Appleton Amends",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1777014180834",
+          "date": "2026-04-23",
+          "startTime": "16:00",
+          "endTime": "16:30",
+          "title": "Admin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1776934166587",
+          "date": "2026-04-23",
+          "startTime": "08:30",
+          "endTime": "15:00",
+          "title": "Dev |  WhitecardVision",
           "color": "na-shift-color-slate"
         }
       ]

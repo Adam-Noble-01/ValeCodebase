@@ -22,24 +22,24 @@
         "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
         "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
         "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-22T15:35:44.845623+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-23T11:40:22.104642+00:00"
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-23T13:28:03.195936+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {
-            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__ValeVision3D__5461x4096.png",
-            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__ValeVision3D__5461x4096__thumb240.jpg",
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__02-Apr-2026__thumb240.jpg",
             "Wv__Whitecard__Prompt": "**OBJECTIVE** \n- Render the provided Whitecard Image as a highly realistic photograph.\n- Your photograph should be indistinguishable from a High Resolution Photograph.\n- You are producing A Photograph for Vale Garden Houses.\n- Vale Garden Houses are the UK's premium UK Manufacturer of Conservatories and Orangeries in the UK and they are a established Luxury high end brand.\n- The Photograph is a Professional Exterior Photograph showing a Newly Constructed Orangery.\n- The aim of the image is to show a client how the Orangery will look against their Existing Home.\n\n**THE VIBE**\n- Realistic.\n- UK Country Home.\n- Create a Rustic, Refined & Sophisticated Aesthetic.\n- Luxury.\n- Classic.\n- Timeless Orangery Design.\n- Classical Garden Room Exterior.\n\n\n**THE GARDEN & SURROUNDING LANDSCAPE**\n\n**Foreground Garden**\n- Patio Area around orangery & house \n- A Manicured Lawn\n- Small shrubs.\n- Potted Plants on Patio Area\n\n**Patio Area & Outdoor Furniture**\n- A slabbed Patio Area around the Orangery & Main House paved in York Stone Slabs.\n- Outdoor dining set dressed with classical outdoor high-end British food and wine etc and luxury lifestyle props.\n- Outdoor lounging area.\n\n**Background Landscape**\n- Trees and British Countryside, should not be the focus of the shot, the main focus should be showing off the Orangery.\n",
-            "Wv__Whitecard__WidthPx": 5461,
-            "Wv__Whitecard__HeightPx": 4096,
-            "Wv__Whitecard__SnappedAspectRatio": "4:3",
-            "Wv__Whitecard__SnappedDeltaPct": 0.006
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
         },
         "Wv__Project__RenderGroup__MaterialReferences": [
             {
                 "Wv__Reference__Id": "ref_moa9rf8p_5x462",
                 "Wv__Reference__Type": "material",
                 "Wv__Reference__Label": "Existing Building",
-                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/02__ImageInput__MaterialsReference/01__Material__Existing_Building.jpg",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/02__ImageInput__MaterialsReference/01__Material__Existing_Building.png",
                 "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Lee-Smith__WcVisData/02__ImageInput__MaterialsReference/01__Material__Existing_Building__thumb240.jpg",
                 "Wv__Reference__Prompt": "Style of the existing house & Materials Pallette, Buff Brickwork, White Masonry Painted Rusticated Corner Qoins, Masonry painted window surrounds."
             }

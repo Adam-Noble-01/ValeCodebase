@@ -6,7 +6,7 @@
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery Project",
         "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Pending Approval",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-15",
-        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-17",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-24",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
         "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble",
         "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-17"
@@ -14,7 +14,7 @@
     "ValeSpec__ProjectFile__GlobalSettings": {
         "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
         "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "Unlacquered Brass",
-        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Scroll Lever Handle",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "Newton Lever Handle",
         "ValeSpec__ProjectFile__GlobalSettings__JobNotes": "Client owns an evil dog, it will bark at you, it will bite you. But worse of all, it will judge you! "
     },
     "ValeSpec__ProjectFile__Assemblies": [
@@ -29,11 +29,11 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 1848,
-                "Assembly__Dimensions__Config__HeightMm": 3000
+                "Assembly__Dimensions__Config__WidthMm": 1608,
+                "Assembly__Dimensions__Config__HeightMm": 2303
             },
             "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Scroll Lever Handle",
+                "Assembly__Lever__Config__Type": "Plain Lever Handle",
                 "Assembly__Lever__Config__HeightMm": 1000
             },
             "Assembly__Miscellaneous__Config": {
@@ -69,30 +69,7 @@
                 "Assembly__Opening__Config__FixedPanel": "none"
             },
             "Assembly__Warnings__Config": {
-                "Assembly__Warnings__Config__ActiveWarnings": [
-                    {
-                        "RuleId": "WARN_DOOR_HEIGHT_OVER_2400",
-                        "Severity": "Warning",
-                        "WarningMessage": "Doors above 2400 mm height require non-standard hinge specification.",
-                        "DocumentWarning": {
-                            "Title": "Door Height Warning",
-                            "Message": "Doors above 2400 mm height require non-standard hinge specification."
-                        },
-                        "TriggeredAtValue": 3000,
-                        "Acknowledged": false
-                    },
-                    {
-                        "RuleId": "WARN_DOOR_HEIGHT_OVER_2650",
-                        "Severity": "Critical",
-                        "WarningMessage": "Extreme door height — doors above 2650 mm are a special case and require written approval from a Senior Architect before specification. Do not proceed without confirmation.",
-                        "DocumentWarning": {
-                            "Title": "Extreme Door Height — Special Approval Required",
-                            "Message": "Door height exceeds 2650 mm. This is an extreme specification and requires written approval from a Senior Architect prior to order. Ensure approval is documented before finalising."
-                        },
-                        "TriggeredAtValue": 3000,
-                        "Acknowledged": false
-                    }
-                ]
+                "Assembly__Warnings__Config__ActiveWarnings": []
             },
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
@@ -104,7 +81,7 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "handles"
+                "Assembly__ProgressState__Config__ActiveStepId": "finish"
             }
         },
         {
@@ -334,6 +311,73 @@
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
                 "Assembly__ProgressState__Config__ActiveStepId": "dimensions"
+            }
+        },
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_448055",
+                "Assembly__Identity__Config__Title": "Front Doors",
+                "Assembly__Identity__Config__SortOrder": 4
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "Double Doors",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward"
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1800,
+                "Assembly__Dimensions__Config__HeightMm": 2300
+            },
+            "Handing": "Left",
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "misc"
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__Hanging": "Standard",
+                "Assembly__Hinge__Config__Projection": 4,
+                "Assembly__Hinge__Config__Style": "Decorative"
+            },
+            "Assembly__DoorCondition__Config": {
+                "Assembly__DoorCondition__Config__ConditionCode": "STANDARD_3_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors less than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 3 hinges per leaf.",
+                "Assembly__DoorCondition__Config__AppliesWarning": false
+            },
+            "Assembly__Warnings__Config": {
+                "Assembly__Warnings__Config__ActiveWarnings": []
+            },
+            "Assembly__Locking__Config": {
+                "Assembly__Locking__Config__Points": 5,
+                "Assembly__Locking__Config__Type": "Multi-Point"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__CabinHooks__Config": {
+                "Assembly__CabinHooks__Config__Size": "6\"",
+                "Assembly__CabinHooks__Config__HookCount": 2,
+                "Assembly__CabinHooks__Config__EyeCount": 2
+            },
+            "Assembly__Miscellaneous__Config": {
+                "Assembly__Miscellaneous__Config__Items": [
+                    "Misc_OverheadRestrictors",
+                    "Misc_LetterPlate",
+                    "Misc_CatFlap",
+                    "Misc_Other"
+                ],
+                "Assembly__Miscellaneous__Config__OtherText": ""
             }
         }
     ]

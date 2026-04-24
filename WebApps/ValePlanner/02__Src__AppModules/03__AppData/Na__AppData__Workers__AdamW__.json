@@ -1102,6 +1102,22 @@
           "endTime": "10:00",
           "title": "Dev |  Add Duplicate Project To WcV",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1777034446824",
+          "date": "2026-04-24",
+          "startTime": "18:15",
+          "endTime": "18:30",
+          "title": "New Shift",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1777034448007",
+          "date": "2026-04-24",
+          "startTime": "13:45",
+          "endTime": "17:00",
+          "title": "Whitecard |  Hendy",
+          "color": "na-shift-color-amber"
         }
       ]
     }

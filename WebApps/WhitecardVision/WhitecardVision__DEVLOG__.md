@@ -6,6 +6,78 @@
 
 
 # -----------------------------------------------------------------------------
+## WhitecardVision - v0.3.5 - 24-Apr-2026 - Project duplication + modular project actions
+
+### Summary
+Added a full project-duplication workflow to the Project Manager so an existing
+project can be cloned into a brand-new folder-backed copy, including its JSON,
+uploaded references, render outputs, edit outputs, and thumbnails. The backend
+project lifecycle logic was also split into a dedicated helper module so the
+main server file stays focused on route dispatch instead of growing into one
+large monolith.
+
+### Server: modular project action handlers
+- Added `05__FlaskServerScripts/WhitecardVision__FlaskServer__ProjectActions__.py`
+  and moved project list/create/load/save/delete/backfill logic into clearly
+  separated regioned handler blocks.
+- `WhitecardVision__FlaskServer__Main__.py` now delegates project lifecycle
+  work into the new helper module while keeping route parsing in one place.
+- Added `POST /api/projects/{Projects__YYYY}/{slug}/duplicate`.
+
+### Server: project duplication flow
+- Duplicate handler resolves the source project safely, validates the new slug,
+  copies the full `__WcVisData` directory tree, renames the copied JSON file,
+  rewrites embedded project-folder path strings, refreshes metadata timestamps,
+  and returns the cloned project descriptor.
+- Clone metadata now sets the new `ProjectCode`, preserves the chosen display
+  name, keeps the same year bucket, and resets the copy's `PreviousNames` list.
+- Post-copy thumbnail backfill is re-run against the duplicate so any missing
+  thumb fields/files are healed without changing the source project.
+
+### Client: Project Manager duplicate action
+- Added a duplicate endpoint template to app config:
+  `Wv__AppConfig__Server__ProjectDuplicateEndpointTemplate`.
+- `ProjectFileManager` now exposes `Wv__ProjectFileManager__DuplicateProject(...)`
+  so the browser can call the new server clone route through the existing
+  config-driven data layer.
+- `ProjectActions` now has separate regioned blocks for New / Duplicate / Open /
+  Delete / Rename so the action file follows the established WhitecardVision
+  layout more closely.
+- Duplicate prompt defaults to the existing project name plus `__COPY__`, then
+  runs a confirm step before the server call.
+
+### UI: Projects table actions
+- Project rows now show `Open | Duplicate | Delete`.
+- Moved the Actions header width/alignment styling out of inline HTML in
+  `ProjectList__.js` and into `ProjectManager__Styles__.css`.
+- Added a dedicated hover colour for `Open` (green), kept `Duplicate` on the
+  default accent blue, and kept `Delete` red.
+- Actions header and row buttons were verified to render on one horizontal line.
+
+### Runtime verification note
+- Confirmed the duplicate route worked on a temporary validation server first,
+  including copied JSON path rewrites and copied image/output files.
+- A later UI failure on `8004` was traced to a stale pre-change Flask-style
+  server process; after restart, the live duplicate endpoint responded
+  correctly.
+- Browser verification confirmed:
+  - duplicate row action visible in the Projects table
+  - Actions column layout stable
+  - duplicate confirm dialog appears and can be cancelled safely
+  - Open hover state is green
+
+### Files modified
+- `05__FlaskServerScripts/WhitecardVision__FlaskServer__Main__.py`
+- `05__FlaskServerScripts/WhitecardVision__FlaskServer__ProjectActions__.py`
+- `02__Src__AppModules/02__AppData/WhitecardVision__AppData__Config__Main__.json`
+- `02__Src__AppModules/02__AppData/WhitecardVision__AppData__ProjectFileManager__.js`
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__Config__.json`
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectActions__.js`
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__ProjectList__.js`
+- `02__Src__AppModules/10__System__ProjectManagerMode/WhitecardVision__ProjectManager__Styles__.css`
+
+
+# -----------------------------------------------------------------------------
 ## WhitecardVision - v0.3.4 - 23-Apr-2026 - Self-reconciling project save + rename history
 
 ### Summary

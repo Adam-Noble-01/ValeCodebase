@@ -5,7 +5,7 @@
  NAMESPACE  : Wv
  MODULE     : System - ProjectManagerMode - ProjectActions
  PURPOSE    : High-level project lifecycle operations invoked from the
-              Project Manager UI (create, open, delete, rename). Feedback
+              Project Manager UI (create, duplicate, open, delete, rename). Feedback
               flows through toast notifications; destructive ops use confirm.
 ============================================================================= */
 
@@ -46,10 +46,13 @@
     function Wv__ProjectManager__ProjectActions__ReadDefaults() {
         const systemConfig = window.Wv__AppCore__StateManager.Wv__StateManager__GetSystemConfig('ProjectManager');
         const defaults     = (systemConfig || {}).Wv__ProjectManager__Config__Defaults || {};
+        const confirmations = (systemConfig || {}).Wv__ProjectManager__Config__Confirmations || {};
         return {
             slugPrefix       : defaults.Wv__ProjectManager__Config__Defaults__NewProjectSlugPrefix  || 'Untitled',
             displayName      : defaults.Wv__ProjectManager__Config__Defaults__NewProjectDisplayName || 'Untitled Project',
-            deleteConfirm    : !!((((systemConfig || {}).Wv__ProjectManager__Config__Confirmations) || {}).Wv__ProjectManager__Config__Confirmations__DeleteRequiresConfirm)
+            duplicateSuffix  : defaults.Wv__ProjectManager__Config__Defaults__DuplicateSuffix       || '__COPY__',
+            duplicateConfirm : !!confirmations.Wv__ProjectManager__Config__Confirmations__DuplicateRequiresConfirm,
+            deleteConfirm    : !!confirmations.Wv__ProjectManager__Config__Confirmations__DeleteRequiresConfirm
         };
     }
     // ------------------------------------------------------------
@@ -58,7 +61,7 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Public actions - Create / Open / Delete / Rename
+// REGION | Public action - New Project
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Prompt the user for a project name, create the project, and notify via toast
@@ -101,6 +104,69 @@
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public action - Duplicate Project
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Duplicate an existing project into a new folder-backed clone
+    // ------------------------------------------------------------
+    //  1. Prompt with the existing project display name plus configured copy suffix.
+    //  2. Build the destination slug using the same allowlist as create/rename.
+    //  3. Ask the server to clone the full project tree without changing the active project.
+    // ------------------------------------------------------------
+    async function Wv__ProjectManager__ProjectActions__DuplicateProject(yearFolderToken, projectSlugToken, projectDisplayName) {
+        const projectFileManager = window.Wv__AppData__ProjectFileManager;
+        const toast              = window.Wv__AppUtils__Toast;
+        const defaults           = Wv__ProjectManager__ProjectActions__ReadDefaults();
+
+        const sourceDisplayName = String(projectDisplayName || projectSlugToken || defaults.displayName).trim();
+        const duplicateSeedName = sourceDisplayName + defaults.duplicateSuffix;
+        const userInputRaw      = window.prompt('Duplicate project as:', duplicateSeedName);
+        if (userInputRaw === null) return null;
+
+        const trimmedName = userInputRaw.trim();
+        if (!trimmedName) {
+            if (toast) toast.Wv__Toast__Show('Project name cannot be empty.', 'warning');
+            return null;
+        }
+        if (defaults.duplicateConfirm) {
+            const okToDuplicate = window.confirm(
+                'Duplicate project "' + sourceDisplayName + '" as "' + trimmedName + '"?\n\nThis will clone the full project folder, images, outputs, and JSON data.'
+            );
+            if (!okToDuplicate) return null;
+        }
+
+        const duplicateSlugToken = Wv__ProjectManager__ProjectActions__BuildCleanSlug(trimmedName);
+        try {
+            const duplicateDescriptor = await projectFileManager.Wv__ProjectFileManager__DuplicateProject(
+                yearFolderToken,
+                projectSlugToken,
+                duplicateSlugToken,
+                trimmedName
+            );
+            if (toast) toast.Wv__Toast__Show('Duplicated project "' + trimmedName + '".', 'success');
+            return {
+                yearFolder  : duplicateDescriptor.yearFolder,
+                projectSlug : duplicateDescriptor.projectSlug || duplicateDescriptor.projectName,
+                projectName : duplicateDescriptor.projectDisplayName || trimmedName
+            };
+        } catch (duplicateError) {
+            if (toast) toast.Wv__Toast__Show('Duplicate failed: ' + duplicateError.message, 'error');
+            return null;
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public action - Open Project
+// -----------------------------------------------------------------------------
+
 
     // FUNCTION | Open an existing project and switch to Render mode
     // ------------------------------------------------------------
@@ -119,6 +185,13 @@
         }
     }
     // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public action - Delete Project
+// -----------------------------------------------------------------------------
 
 
     // FUNCTION | Delete a project after (optional) confirmation
@@ -152,6 +225,13 @@
         }
     }
     // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public action - Rename Project
+// -----------------------------------------------------------------------------
 
 
     // FUNCTION | Commit an inline-edited display name for a project
@@ -192,6 +272,7 @@
     // ------------------------------------------------------------
     window.Wv__ProjectManager__ProjectActions = {
         Wv__ProjectManager__ProjectActions__CreateProjectWithPrompt,
+        Wv__ProjectManager__ProjectActions__DuplicateProject,
         Wv__ProjectManager__ProjectActions__OpenProject,
         Wv__ProjectManager__ProjectActions__DeleteProject,
         Wv__ProjectManager__ProjectActions__CommitRename,

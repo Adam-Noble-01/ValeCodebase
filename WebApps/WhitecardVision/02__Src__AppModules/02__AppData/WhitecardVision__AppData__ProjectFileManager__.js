@@ -31,6 +31,30 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Read one server config value with a fallback
+    // ------------------------------------------------------------
+    function Wv__ProjectFileManager__ReadServerConfigValue(configKey, fallbackValue) {
+        const appConfig = window.Wv__AppCore__StateManager.Wv__StateManager__GetAppConfig() || {};
+        const serverConfig = appConfig.Wv__AppConfig__Server || {};
+        return serverConfig[configKey] || fallbackValue;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the duplicate-project endpoint from AppConfig
+    // ------------------------------------------------------------
+    function Wv__ProjectFileManager__BuildProjectDuplicateEndpoint(yearFolder, projectName) {
+        const endpointTemplate = Wv__ProjectFileManager__ReadServerConfigValue(
+            'Wv__AppConfig__Server__ProjectDuplicateEndpointTemplate',
+            '/api/projects/{yearFolder}/{projectName}/duplicate'
+        );
+        return endpointTemplate
+            .replace('{yearFolder}', encodeURIComponent(yearFolder))
+            .replace('{projectName}', encodeURIComponent(projectName));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Wrap fetch with JSON parse + uniform error shape
     // ------------------------------------------------------------
     async function Wv__ProjectFileManager__FetchJson(relativeUrl, fetchOptions) {
@@ -181,6 +205,24 @@
             { method: 'DELETE' }
         );
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Duplicate a project folder tree without loading the clone
+    // ------------------------------------------------------------
+    async function Wv__ProjectFileManager__DuplicateProject(yearFolder, sourceProjectName, duplicateProjectName, duplicateDisplayName) {
+        return await Wv__ProjectFileManager__FetchJson(
+            Wv__ProjectFileManager__BuildProjectDuplicateEndpoint(yearFolder, sourceProjectName),
+            {
+                method  : 'POST',
+                headers : { 'Content-Type': 'application/json' },
+                body    : JSON.stringify({
+                    projectName : duplicateProjectName,
+                    displayName : duplicateDisplayName || duplicateProjectName
+                })
+            }
+        );
     }
     // ------------------------------------------------------------
 
@@ -359,6 +401,7 @@
         Wv__ProjectFileManager__LoadProject,
         Wv__ProjectFileManager__SaveActiveProject,
         Wv__ProjectFileManager__DeleteProject,
+        Wv__ProjectFileManager__DuplicateProject,
         Wv__ProjectFileManager__RenameActiveProject,
         Wv__ProjectFileManager__UploadImage,
         Wv__ProjectFileManager__Generate,

@@ -1,0 +1,76 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Appleton__Shot-02__1.0.0",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Appleton__Shot-02__1-0-0",
+        "Wv__ProjectFile__Metadata__PreviousNames": [
+            {
+                "previousProjectCode": "Appleton__Active__Shot-02",
+                "previousProjectName": "Appleton__Shot-02__1.0.0",
+                "renamedAtUtc": "2026-04-24T08:26:05.872509+00:00",
+                "newProjectCode": "Appleton__Shot-02__1-0-0",
+                "newProjectName": "Appleton__Shot-02__1.0.0"
+            }
+        ],
+        "Wv__ProjectFile__Metadata__Description": "Interior shot of the stone wall side of the conservatory.",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-23T16:10:55.349019+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-24T08:26:05.872509+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__Appleton__InteriorWhitecard__View-02__StoneWall__2_0_0.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__Appleton__InteriorWhitecard__View-02__StoneWall__2_0_0__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "**OBJECTIVE** \n- Render the provided Whitecard Image as a highly realistic photograph.\n- Your photograph should be indistinguishable from a High Resolution Photograph.\n- You are producing A Photograph for Vale Garden Houses.\n- The Photograph is a Professional Interior shot showing a Newly Constructed Conservatory.\n- The aim of the image is to show a client how the Conservatory Interior space will look and feel once constructed.\n- Vale Garden Houses are the UK's premium UK Manufacturer of Conservatories and Orangeries in the UK and they are a established Luxury high end brand.\n- Focus on the interior space and heavily blur the garden outside the conservatory.\n\n**THE VIBE**\n- Realistic.\n- UK Country Home.\n- Focus on the interior space not the outside.\n- Clear Communication of interior space within Conservatory.\n- Create a Rustic, Refined & Sophisticated Aesthetic.\n\n**FINISHES WITHIN THE SPACE**\n\n**Tiled Floor**\n- The floor is tiled, the floor tiles are large format natural stone pavers characterised by a honed finish in a neutral limestone palette. The layout follows a traditional flagstone pattern with staggered grout lines typical of period properties. Minor surface variations should exist for realism.\n\n**Interior Walls Left & Low Walls**\n\n- The wall on the right side is plastered and painted Farrow & Ball Colour \"Ammonite\". \n- The Low walls beneath the conservatory window cills are plastered and painted Farrow & Ball Colour \"Ammonite\".\n\n**Interior End Stone Wall**\n\n- The Wall on the far end is a Feature Natural Stonework Interior Wall.\n\n**Classic Joinery**\n\n- Tall 175mm skirting boards with a moulded top edge are painted to match the white paint of the orangery.\n- Window boards with a moulded top edge are painted to match the white paint of the orangery.\n- The opening through to the next room on the right side wall is lined with panelling withing the opening reveal and has a classic architrave around the sides and top of the opening.\n\n**VALE GARDEN HOUSES CONSERVATORY ELEMENTS**\n\n**Elements Typical On The Conservatory Framework**\n- Sliding Sash Windows\n- All framework is hardwood and PAINTED Off White, the white should NOT BE Car crash white, instead a soft white easy on the eyes conveying timeless white conservatory paint.\n- Inset Panelled vertical sections between window and door spans, these vertical panel sections have a inset panel with a classic moulding framing the perimeter of the inset panels.\n\n**Right Side Conservatory Framework**\n\n- Two Sets of double doors with lower section fielded panels with inset panel with classic conservatory moulding framing the perimeter of the the fielded panel.\n- The double door handles are a traditional brass finish.\n- The door level handles are a Scroll Lever Type handle.\n- Sliding Sash windows with inset panel sections between sat atop a dwarf wall.\n\n **CONSERVATORY ROOF**\n- The Roof is a Monopitched Roof & Spans from the right to the left, the conservatory roof is doubled glazed panels set between the structural roof timbers.\n- The Roof timbers have a classic moulding to their underside edges.\n- On the left side of the roof at the apex where it meets the wall there are Roof Vents, The roof vents are opening based casements that open to ventilate the apex of the roof. These vents are in their closed positions.\n- Along the Apex there is a timber wall plate with a moulded bottom edge that the roof timbers are seated against.\n- Around the Eaves above the window and door panels there is a decorative traditional crown moulding profile featuring a sequence of stepped curves and square fillets and staff bead.\n- The conservatory Roof Features two lighting hooks on a lighting blocks positioned roughly at the mid span of one of the structural roof timbers.\n- Note: there are two different kinds of roof timber, shallower in depth are the glaze bars and thicker in depth are the Structural Roof Supports such as the on the lighting block is affixed to.\n\n**GARDEN OUTSIDE OF WINDOWS**\n\n- Show a country cottage garden backdrop with a open lawn on the left side in front of a small paved access path. \n- Heavily blur the garden outside the conservatory.\n- Focus more on the interior rather than the garden.\n- The backdrop environment is to created a sense of depth without being distracting.",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 3994,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0.15
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [
+            {
+                "Wv__Reference__Id": "ref_mobp7xwq_flp9i",
+                "Wv__Reference__Type": "material",
+                "Wv__Reference__Label": "StoneEndWall",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/02__ImageInput__MaterialsReference/01__Material__AppletonStoneRef.png",
+                "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/02__ImageInput__MaterialsReference/01__Material__AppletonStoneRef__thumb240.jpg",
+                "Wv__Reference__Prompt": "The Feature Stonework Interior wall at the end of the conservatory should match this reference."
+            }
+        ],
+        "Wv__Project__RenderGroup__StyleReferences": [
+            {
+                "Wv__Reference__Id": "ref_mobp7ocj_rr0of",
+                "Wv__Reference__Type": "style",
+                "Wv__Reference__Label": "Shot-01",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/03__ImageInput__StyleReference/01__Style__20260423T160926Z__edit.png",
+                "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/03__ImageInput__StyleReference/01__Style__20260423T160926Z__edit__thumb240.jpg",
+                "Wv__Reference__Prompt": "DO NOT USE THIS SHOT, ALWAYS USE IMAGE 01 (This is a view from the opposite end of the conservatory, ensure lighting and color grading are aligned with this shot.)"
+            }
+        ],
+        "Wv__Project__RenderGroup__AvoidNotes": "Avoid plants near the windows instead ensure all foliage is distant and blurred as to focus exclusively on the interior and not the outside garden. ,\nAvoid showing keys in the doors. ",
+        "Wv__Project__RenderGroup__ImageSize": "4K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/20__FinalExport__RenderMode/20260423T163556Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/20__FinalExport__RenderMode/20260423T163556Z__render____thumb240.jpg"
+    },
+    "Wv__Project__EditIterations": [
+        {
+            "Wv__EditIteration__Id": "202604231637081Z",
+            "Wv__EditIteration__Label": "Iter 1",
+            "Wv__EditIteration__Version": "Version-01",
+            "Wv__EditIteration__BaseImagePath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/20__FinalExport__RenderMode/20260423T163556Z__render__.png",
+            "Wv__EditIteration__BaseImageThumbPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/20__FinalExport__RenderMode/20260423T163556Z__render____thumb240.jpg",
+            "Wv__EditIteration__BaseWidthPx": 6000,
+            "Wv__EditIteration__BaseHeightPx": 3994,
+            "Wv__EditIteration__SnappedAspectRatio": "3:2",
+            "Wv__EditIteration__SnappedDeltaPct": 0.15,
+            "Wv__EditIteration__TargetPrompt": "Remove all garden context and show a plain white environment outside.",
+            "Wv__EditIteration__PreservePrompt": "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
+            "Wv__EditIteration__AvoidNotes": "Avoid the garden being visible. , \nAvoid all distractions outside of the conservatory interior.",
+            "Wv__EditIteration__ImageSize": "4K",
+            "Wv__EditIteration__LastOutputPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/30__FinalExport__EditMode/202604231637081Z/20260423T163813Z__edit__.png",
+            "Wv__EditIteration__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Appleton__Shot-02__1-0-0__WcVisData/30__FinalExport__EditMode/202604231637081Z/20260423T163813Z__edit____thumb240.jpg",
+            "Wv__EditIteration__DateCreatedUtc": "2026-04-23T16:37:08.154Z"
+        }
+    ],
+    "Wv__Project__ActiveEditIterationId": "202604231637081Z"
+}

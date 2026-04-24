@@ -5,8 +5,8 @@
  NAMESPACE  : Wv
  MODULE     : System - ProjectManagerMode - ProjectList
  PURPOSE    : Render a sortable/searchable table of every project on disk,
-              provide inline-rename focus hooks, and wire Open/Delete row
-              actions to Wv__ProjectManager__ProjectActions.
+              provide inline-rename focus hooks, and wire Open/Duplicate/Delete
+              row actions to Wv__ProjectManager__ProjectActions.
 ============================================================================= */
 
 // =============================================================================
@@ -148,7 +148,7 @@
                 ${Wv__ProjectManager__ProjectList__EscapeHtml(columnDescriptor.label)}
                 <span class="Wv__ProjectManager__Table__SortArrow">${arrowGlyph}</span>
             </th>`;
-        }).join('') + '<th style="width:1%;text-align:right;">Actions</th>';
+        }).join('') + '<th class="Wv__ProjectManager__Table__ActionsHead">Actions</th>';
 
         headRowEl.querySelectorAll('th[data-wv-sortable="1"]').forEach((headCellEl) => {
             headCellEl.addEventListener('click', () => {
@@ -204,10 +204,15 @@
                 return Wv__ProjectManager__ProjectList__RenderCell(projectItem, columnDescriptor);
             }).join('');
             const actionsHtml = `<td class="Wv__ProjectManager__Cell__Actions">
-                <button class="Wv__ProjectManager__RowAction"
+                <button class="Wv__ProjectManager__RowAction Wv__ProjectManager__RowAction--Open"
                         data-wv-action="open"
                         data-wv-year="${Wv__ProjectManager__ProjectList__EscapeHtml(projectItem.yearFolder)}"
                         data-wv-slug="${Wv__ProjectManager__ProjectList__EscapeHtml(projectSlugToken)}">Open</button>
+                <button class="Wv__ProjectManager__RowAction"
+                        data-wv-action="duplicate"
+                        data-wv-year="${Wv__ProjectManager__ProjectList__EscapeHtml(projectItem.yearFolder)}"
+                        data-wv-slug="${Wv__ProjectManager__ProjectList__EscapeHtml(projectSlugToken)}"
+                        data-wv-name="${Wv__ProjectManager__ProjectList__EscapeHtml(projectItem.projectName || projectSlugToken)}">Duplicate</button>
                 <button class="Wv__ProjectManager__RowAction Wv__ProjectManager__RowAction--Danger"
                         data-wv-action="delete"
                         data-wv-year="${Wv__ProjectManager__ProjectList__EscapeHtml(projectItem.yearFolder)}"
@@ -302,6 +307,19 @@
                 await projectActions.Wv__ProjectManager__ProjectActions__OpenProject(
                     btn.getAttribute('data-wv-year'), btn.getAttribute('data-wv-slug')
                 );
+            });
+        });
+        document.querySelectorAll('#Wv__ProjectManager__Table__Body [data-wv-action="duplicate"]').forEach((btn) => {
+            btn.addEventListener('click', async (evt) => {
+                evt.stopPropagation();
+                const duplicateDescriptor = await projectActions.Wv__ProjectManager__ProjectActions__DuplicateProject(
+                    btn.getAttribute('data-wv-year'),
+                    btn.getAttribute('data-wv-slug'),
+                    btn.getAttribute('data-wv-name')
+                );
+                if (!duplicateDescriptor) return;
+                Wv__ProjectManager__ProjectList__QueueRenameFocus(duplicateDescriptor.projectSlug);
+                await Wv__ProjectManager__ProjectList__Refresh();
             });
         });
         document.querySelectorAll('#Wv__ProjectManager__Table__Body [data-wv-action="delete"]').forEach((btn) => {

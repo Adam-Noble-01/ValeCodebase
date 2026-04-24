@@ -77,11 +77,6 @@ from WhitecardVision__FlaskServer__Thumbnails__ import (
     Wv__Thumbnails__GenerateForFile,
     Wv__Thumbnails__IsAvailable,
 )
-from WhitecardVision__FlaskServer__ProjectSchema__ import (
-    Wv__Server__BuildDefaultProjectJson,
-    Wv__Server__ReplaceProjectFolderSegmentInJson,
-    Wv__Server__BuildCleanProjectSlug,
-)
 from WhitecardVision__FlaskServer__TemplateIndex__ import (
     Wv__Server__ReadHiddenTemplatePathsFromAppConfig,
     Wv__Server__BuildTemplateTreeNode,
@@ -91,12 +86,17 @@ from WhitecardVision__FlaskServer__ProjectPaths__ import (
     Wv__Server__ResolveProjectDir,
     Wv__Server__CurrentYearFolderName,
 )
-from WhitecardVision__FlaskServer__ThumbnailBackfill__ import (
-    Wv__Server__GenerateMissingProjectThumbFiles,
-    Wv__Server__BackfillProjectJsonThumbPaths,
-)
 from WhitecardVision__FlaskServer__GenerationValidation__ import (
     Wv__Server__ValidateFirstImageAspectRatio,
+)
+from WhitecardVision__FlaskServer__ProjectActions__ import (
+    Wv__Server__ProjectActions__HandleProjectCreate,
+    Wv__Server__ProjectActions__HandleProjectDelete,
+    Wv__Server__ProjectActions__HandleProjectDuplicate,
+    Wv__Server__ProjectActions__HandleProjectList,
+    Wv__Server__ProjectActions__HandleProjectLoad,
+    Wv__Server__ProjectActions__HandleProjectSave,
+    Wv__Server__ProjectActions__HandleThumbBackfill,
 )
 
 # endregion ----------------------------------------------------
@@ -248,6 +248,12 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
                 self.Wv__Server__HandleProjectCreate()
                 return
 
+            duplicate_tokens = self.Wv__Server__ParseProjectDuplicatePath(url_path)
+            if duplicate_tokens:
+                year_folder, project_name = duplicate_tokens
+                self.Wv__Server__HandleProjectDuplicate(year_folder, project_name)
+                return
+
             project_tokens = self.Wv__Server__ParseProjectPath(url_path)
             if project_tokens:
                 year_folder, project_name = project_tokens
@@ -358,6 +364,15 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
             return None
         return match_obj.group("year"), match_obj.group("name")
 
+    def Wv__Server__ParseProjectDuplicatePath(self, url_path: str) -> tuple[str, str] | None:
+        match_obj = re.match(
+            r'^/api/projects/(?P<year>Projects__\d{4})/(?P<name>[A-Za-z0-9][A-Za-z0-9_\-]{0,63})/duplicate$',
+            url_path,
+        )
+        if not match_obj:
+            return None
+        return match_obj.group("year"), match_obj.group("name")
+
     # SUB FUNCTION | Read JSON request body or respond 400
     # ------------------------------------------------------------
     def Wv__Server__ReadJsonBody(self) -> dict[str, Any] | None:
@@ -405,133 +420,39 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | List every project across every year folder
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectList(self) -> None:
-        WV__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
-
-        collected_projects: list[dict[str, Any]] = []
-        for year_path in sorted(WV__SERVER__PROJECT_DATA_PATH.iterdir()):
-            if not year_path.is_dir():
-                continue
-            if not WV__SERVER__YEAR_FOLDER_PATTERN.match(year_path.name):
-                continue
-
-            for project_dir in sorted(year_path.iterdir()):
-                if not project_dir.is_dir():
-                    continue
-                if not project_dir.name.endswith("__WcVisData"):
-                    continue
-                project_name = project_dir.name[:-len("__WcVisData")]
-                json_path    = project_dir / f"{project_name}__WcVisData__.json"
-                metadata_block: dict[str, Any] = {}
-                if json_path.is_file():
-                    try:
-                        loaded_json   = json.loads(json_path.read_text(encoding="utf-8") or "{}")
-                        metadata_block = loaded_json.get("Wv__ProjectFile__Metadata", {}) or {}
-                    except Exception as read_error:
-                        print(f"[WARN] Could not parse {json_path.name}: {read_error}")
-
-                display_name_raw = str(metadata_block.get("Wv__ProjectFile__Metadata__ProjectName", "") or "").strip()
-                collected_projects.append({
-                    "projectName"     : display_name_raw or project_name,                                                        #<-- Prefer metadata display name; falls back to folder-derived slug.
-                    "projectSlug"     : project_name,                                                                            #<-- Stable folder-derived id used for URL paths.
-                    "yearFolder"      : year_path.name,
-                    "description"     : metadata_block.get("Wv__ProjectFile__Metadata__Description", ""),
-                    "dateCreatedUtc"  : metadata_block.get("Wv__ProjectFile__Metadata__DateCreatedUtc", ""),
-                    "dateModifiedUtc" : metadata_block.get("Wv__ProjectFile__Metadata__DateModifiedUtc", ""),
-                    "projectDirRel"   : f"04__LocalProjectData/{year_path.name}/{project_dir.name}",
-                })
-
-        collected_projects.sort(key=lambda item: item.get("dateModifiedUtc", ""), reverse=True)
-        self.Wv__Server__WriteJsonResponse(200, {"ok": True, "data": collected_projects})
+        Wv__Server__ProjectActions__HandleProjectList(
+            self,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+        )
     # ------------------------------------------------------------
 
 
     # SUB FUNCTION | Create a project + full folder tree
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectCreate(self) -> None:
-        request_body = self.Wv__Server__ReadJsonBody()
-        if request_body is None:
-            return
-
-        project_name    = str(request_body.get("projectName", "")).strip()
-        description     = str(request_body.get("description", "")).strip()
-        display_name    = str(request_body.get("displayName", "")).strip() or project_name
-        year_folder_raw = str(request_body.get("yearFolder", "")).strip()
-
-        if not WV__SERVER__PROJECT_NAME_PATTERN.match(project_name):
-            self.Wv__Server__WriteJsonResponse(400, {
-                "ok": False,
-                "error": "projectName must be 1-64 chars of [A-Za-z0-9_-] starting with alphanumeric."
-            })
-            return
-
-        year_folder_name = year_folder_raw or Wv__Server__CurrentYearFolderName()
-        if not WV__SERVER__YEAR_FOLDER_PATTERN.match(year_folder_name):
-            self.Wv__Server__WriteJsonResponse(400, {"ok": False, "error": f"Invalid yearFolder '{year_folder_name}'."})
-            return
-
-        project_dir = Wv__Server__ResolveProjectDir(
-            year_folder_name,
-            project_name,
+        Wv__Server__ProjectActions__HandleProjectCreate(
+            self,
             WV__SERVER__PROJECT_DATA_PATH,
             WV__SERVER__YEAR_FOLDER_PATTERN,
             WV__SERVER__PROJECT_NAME_PATTERN,
+            WV__SERVER__PROJECT_SUBFOLDERS,
+            WV__SERVER__SCHEMA_VERSION,
         )
-        if project_dir.exists():
-            self.Wv__Server__WriteJsonResponse(409, {
-                "ok": False,
-                "error": f"Project '{project_name}' already exists in {year_folder_name}."
-            })
-            return
-
-        project_dir.mkdir(parents=True, exist_ok=False)
-        for subfolder_name in WV__SERVER__PROJECT_SUBFOLDERS:
-            (project_dir / subfolder_name).mkdir(exist_ok=True)
-
-        project_json_path = project_dir / f"{project_name}__WcVisData__.json"
-        project_json_data = Wv__Server__BuildDefaultProjectJson(
-            project_name=project_name,
-            year_folder_name=year_folder_name,
-            description=description,
-            schema_version=WV__SERVER__SCHEMA_VERSION,
-            display_name=display_name,
-        )
-        project_json_path.write_text(
-            json.dumps(project_json_data, indent=4, ensure_ascii=False),
-            encoding="utf-8",
-        )
-
-        print(f"[PROJECT] Created: {year_folder_name}/{project_name}__WcVisData/")
-        self.Wv__Server__WriteJsonResponse(200, {
-            "ok": True,
-            "data": {
-                "projectName"    : project_name,
-                "yearFolder"     : year_folder_name,
-                "projectDirRel"  : f"04__LocalProjectData/{year_folder_name}/{project_name}__WcVisData",
-                "projectJsonRel" : f"04__LocalProjectData/{year_folder_name}/{project_name}__WcVisData/{project_name}__WcVisData__.json",
-            }
-        })
     # ------------------------------------------------------------
 
 
     # SUB FUNCTION | Load a single project JSON
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectLoad(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(
+        Wv__Server__ProjectActions__HandleProjectLoad(
+            self,
             year_folder_name,
             project_name,
             WV__SERVER__PROJECT_DATA_PATH,
             WV__SERVER__YEAR_FOLDER_PATTERN,
             WV__SERVER__PROJECT_NAME_PATTERN,
         )
-        json_path   = project_dir / f"{project_name}__WcVisData__.json"
-        if not json_path.is_file():
-            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
-            return
-        try:
-            project_json_data = json.loads(json_path.read_text(encoding="utf-8"))
-            self.Wv__Server__WriteJsonResponse(200, {"ok": True, "data": project_json_data})
-        except Exception as load_error:
-            self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": str(load_error)})
     # ------------------------------------------------------------
 
 
@@ -544,133 +465,45 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     #  client knows whether a reload is needed.
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectSave(self, year_folder_name: str, current_slug: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(
+        Wv__Server__ProjectActions__HandleProjectSave(
+            self,
             year_folder_name,
             current_slug,
             WV__SERVER__PROJECT_DATA_PATH,
             WV__SERVER__YEAR_FOLDER_PATTERN,
             WV__SERVER__PROJECT_NAME_PATTERN,
+            WV__SERVER__SCHEMA_VERSION,
         )
-        if not project_dir.is_dir():
-            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
-            return
+    # ------------------------------------------------------------
 
-        request_body = self.Wv__Server__ReadJsonBody()
-        if request_body is None:
-            return
 
-        now_iso        = datetime.now(timezone.utc).isoformat()
-        metadata_block = request_body.get("Wv__ProjectFile__Metadata", {}) or {}
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__ProjectName",  current_slug)
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__ProjectCode",  current_slug)
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__PreviousNames", [])
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__YearFolder",   year_folder_name)
-        metadata_block.setdefault("Wv__ProjectFile__Metadata__SchemaVersion", WV__SERVER__SCHEMA_VERSION)
-        if not isinstance(metadata_block["Wv__ProjectFile__Metadata__PreviousNames"], list):
-            metadata_block["Wv__ProjectFile__Metadata__PreviousNames"] = []
-
-        display_name  = str(metadata_block.get("Wv__ProjectFile__Metadata__ProjectName") or current_slug).strip()
-        desired_slug  = Wv__Server__BuildCleanProjectSlug(display_name) or current_slug
-
-        if desired_slug != current_slug:
-            year_path = (WV__SERVER__PROJECT_DATA_PATH / year_folder_name).resolve()
-            new_dir   = (year_path / f"{desired_slug}__WcVisData").resolve()
-            if new_dir.exists():
-                self.Wv__Server__WriteJsonResponse(409, {
-                    "ok"    : False,
-                    "error" : f"A project with folder id '{desired_slug}' already exists in {year_folder_name}.",
-                })
-                return
-            try:
-                shutil.move(str(project_dir), str(new_dir))
-            except Exception as move_error:
-                self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": f"Folder move failed: {move_error}"})
-                return
-            old_json = new_dir / f"{current_slug}__WcVisData__.json"
-            new_json = new_dir / f"{desired_slug}__WcVisData__.json"
-            if old_json.is_file():
-                try:
-                    old_json.rename(new_json)
-                except Exception as rename_error:
-                    self.Wv__Server__WriteJsonResponse(500, {
-                        "ok"    : False,
-                        "error" : f"Folder moved to {new_dir.name} but JSON rename failed: {rename_error}",
-                    })
-                    return
-            if not new_json.is_file():
-                self.Wv__Server__WriteJsonResponse(500, {
-                    "ok"    : False,
-                    "error" : f"JSON file missing at {new_json.name} after move.",
-                })
-                return
-
-            old_seg = f"{current_slug}__WcVisData"
-            new_seg = f"{desired_slug}__WcVisData"
-            request_body = Wv__Server__ReplaceProjectFolderSegmentInJson(request_body, old_seg, new_seg)
-            metadata_block = request_body.get("Wv__ProjectFile__Metadata", {}) or {}
-
-            previous_entry = {
-                "previousProjectCode" : current_slug,
-                "previousProjectName" : str(metadata_block.get("Wv__ProjectFile__Metadata__ProjectName") or current_slug),
-                "renamedAtUtc"        : now_iso,
-                "newProjectCode"      : desired_slug,
-                "newProjectName"      : display_name,
-            }
-            if not isinstance(metadata_block.get("Wv__ProjectFile__Metadata__PreviousNames"), list):
-                metadata_block["Wv__ProjectFile__Metadata__PreviousNames"] = []
-            metadata_block["Wv__ProjectFile__Metadata__PreviousNames"].append(previous_entry)
-            metadata_block["Wv__ProjectFile__Metadata__ProjectCode"] = desired_slug
-            metadata_block["Wv__ProjectFile__Metadata__ProjectName"] = display_name
-            request_body["Wv__ProjectFile__Metadata"] = metadata_block
-
-            active_json_path = new_json
-            print(f"[PROJECT] Renamed: {year_folder_name}/{current_slug}__WcVisData -> {desired_slug}__WcVisData")
-            renamed = True
-        else:
-            active_json_path = project_dir / f"{current_slug}__WcVisData__.json"
-            renamed = False
-
-        metadata_block = request_body.get("Wv__ProjectFile__Metadata", {}) or {}
-        metadata_block["Wv__ProjectFile__Metadata__DateModifiedUtc"] = now_iso
-        request_body["Wv__ProjectFile__Metadata"] = metadata_block
-
-        try:
-            active_json_path.write_text(json.dumps(request_body, indent=4, ensure_ascii=False), encoding="utf-8")
-            if not renamed:
-                print(f"[PROJECT] Saved: {year_folder_name}/{current_slug}__WcVisData/{current_slug}__WcVisData__.json")
-            self.Wv__Server__WriteJsonResponse(200, {
-                "ok"  : True,
-                "data": {
-                    "yearFolder"  : year_folder_name,
-                    "projectName" : desired_slug,
-                    "renamed"     : renamed,
-                },
-            })
-        except Exception as write_error:
-            self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": str(write_error)})
+    # SUB FUNCTION | Duplicate a project into a new folder-backed clone
+    # ------------------------------------------------------------
+    def Wv__Server__HandleProjectDuplicate(self, year_folder_name: str, project_name: str) -> None:
+        Wv__Server__ProjectActions__HandleProjectDuplicate(
+            self,
+            year_folder_name,
+            project_name,
+            WV__SERVER__PROJECT_DATA_PATH,
+            WV__SERVER__YEAR_FOLDER_PATTERN,
+            WV__SERVER__PROJECT_NAME_PATTERN,
+            WV__SERVER__SCHEMA_VERSION,
+            WV__SERVER__APP_ROOT_PATH,
+        )
     # ------------------------------------------------------------
 
 
     # SUB FUNCTION | Delete an entire project directory tree
     # ------------------------------------------------------------
     def Wv__Server__HandleProjectDelete(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(
+        Wv__Server__ProjectActions__HandleProjectDelete(
+            self,
             year_folder_name,
             project_name,
             WV__SERVER__PROJECT_DATA_PATH,
             WV__SERVER__YEAR_FOLDER_PATTERN,
             WV__SERVER__PROJECT_NAME_PATTERN,
         )
-        if not project_dir.is_dir():
-            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
-            return
-
-        try:
-            shutil.rmtree(project_dir)
-            print(f"[PROJECT] Deleted: {year_folder_name}/{project_name}__WcVisData/")
-            self.Wv__Server__WriteJsonResponse(200, {"ok": True})
-        except Exception as delete_error:
-            self.Wv__Server__WriteJsonResponse(500, {"ok": False, "error": str(delete_error)})
     # ------------------------------------------------------------
 
 # endregion ----------------------------------------------------
@@ -684,32 +517,15 @@ class Wv__Server__RequestHandler(SimpleHTTPRequestHandler):
     # SUB FUNCTION | Generate missing thumbs and update JSON thumb fields
     # ------------------------------------------------------------
     def Wv__Server__HandleThumbBackfill(self, year_folder_name: str, project_name: str) -> None:
-        project_dir = Wv__Server__ResolveProjectDir(
+        Wv__Server__ProjectActions__HandleThumbBackfill(
+            self,
             year_folder_name,
             project_name,
             WV__SERVER__PROJECT_DATA_PATH,
             WV__SERVER__YEAR_FOLDER_PATTERN,
             WV__SERVER__PROJECT_NAME_PATTERN,
-        )
-        if not project_dir.is_dir():
-            self.Wv__Server__WriteJsonResponse(404, {"ok": False, "error": "Project not found"})
-            return
-
-        generated_count = Wv__Server__GenerateMissingProjectThumbFiles(project_dir)
-        updated_fields_count = Wv__Server__BackfillProjectJsonThumbPaths(
-            project_dir,
-            project_name,
             WV__SERVER__APP_ROOT_PATH,
         )
-
-        self.Wv__Server__WriteJsonResponse(200, {
-            "ok": True,
-            "data": {
-                "thumbsGenerated": generated_count,
-                "jsonFieldsUpdated": updated_fields_count,
-                "pilAvailable": Wv__Thumbnails__IsAvailable(),
-            }
-        })
     # ------------------------------------------------------------
 
 

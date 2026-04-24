@@ -126,6 +126,12 @@
         color                            : var(--Wv__Color__Accent);
     }
 
+    .Wv__ProjectManager__Table__ActionsHead {
+        width                            : 240px;
+        text-align                       : right !important;
+        white-space                      : nowrap;
+    }
+
     .Wv__ProjectManager__Table__SortArrow {
         display                          : inline-block;
         margin-left                      : 6px;
@@ -186,7 +192,9 @@
     .Wv__ProjectManager__Cell__Actions {
         display                          : flex;
         gap                              : 6px;
+        flex-wrap                        : nowrap;
         justify-content                  : flex-end;
+        white-space                      : nowrap;
     }
 
     .Wv__ProjectManager__RowAction {
@@ -201,6 +209,10 @@
     .Wv__ProjectManager__RowAction:hover {
         border-color                     : var(--Wv__Color__Accent);
         color                            : var(--Wv__Color__Accent);
+    }
+    .Wv__ProjectManager__RowAction--Open:hover {
+        border-color                     : var(--Wv__Color__Success, #16a34a);
+        color                            : var(--Wv__Color__Success, #16a34a);
     }
     .Wv__ProjectManager__RowAction--Danger:hover {
         border-color                     : var(--Wv__Color__Danger, #dc2626);

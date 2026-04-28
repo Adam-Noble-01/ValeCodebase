@@ -18,6 +18,60 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.3 - 28-Apr-2026 - Cross-Platform PWA Install + Shared Service Worker + Gallery Thumbnails
+### Features Added
+- **Cross-Platform PWA Installability**: First-time visitors are now greeted with a platform-aware install prompt rather than relying on the hidden browser address-bar icon. One small handler module per platform / browser combo so future OS updates only touch one file:
+  - **Chromium (Chrome / Edge / Opera / Samsung Internet on Windows, macOS, Linux, Android)**: captures `beforeinstallprompt`, defers the mini-infobar, and renders a Vale-branded compact install bar; a click triggers the native `prompt()` and `appinstalled` clears state
+  - **iPhone Safari (iOS 16.4+)**: centred instruction sheet with three steps (Share → Add to Home Screen → Add) and an animated arrow pointing **down** at the share icon
+  - **iPad / iPadOS Safari (iPadOS 26)**: same instruction sheet but the arrow points **up** at the top-bar share icon; iPad-as-Mac UA quirk handled via `navigator.maxTouchPoints` so iPadOS never gets misclassified as macOS
+  - **iOS Chrome / Edge / Firefox**: explains that only Safari can install web apps on iOS, plus a `Copy Link` button (modern Clipboard API with `execCommand` fallback)
+  - **macOS Safari 17+**: instruction sheet for File → Add to Dock
+  - **Already installed (any platform)**: controller never instantiates a handler, prompt never renders
+- **Single PWA Container Spanning Both Apps**: Whitecardopedia and ValeVision 3D are now installed together as a single PWA called "ValeVision 3D"; navigating from a project card into the 3D viewer stays inside the standalone window with no browser chrome
+- **Shared Service Worker With Smart Caching**: Reduces load times after first visit and survives short connection drops; cache strategy avoids stale full-resolution project images:
+  - App shell (HTML / CSS / JSX / JS / manifest / icons): `stale-while-revalidate`
+  - Gallery thumbnails (`*__Thumbnail__524p__.*`): `cache-first` with a 256-entry LRU cap
+  - `project.json`, `masterConfig.json`, designer / artist / hotkey lists: `network-first` with cached fallback when offline
+  - Full-resolution `IMG##__*` project images: pass-through (network only) so the project view always shows the latest delivered art
+  - Bumping a single VERSION token at the top of the SW logic file invalidates every owned cache via the `activate` cleanup step
+- **Gallery Thumbnails (524p)**: New build step generates a 524p long-edge WebP plus JPG fallback for the first IMG01 image of every project and patches `project.json` with a `thumbnailImage` field, drastically shrinking the gallery payload (no more full 4K images for thumbnails); the main project viewer continues to load full-resolution images as before
+- **PWA Snooze Ladder**: Dismissing the install prompt schedules an exponential backoff (1 min → 1 hr → 1 day → 1 week → 1 month) tracked in localStorage so users are never nagged
+- **Diagnostic API**: `window.Whitecardopedia__Pwa__InstallController.requestShow()` re-triggers the install flow on demand (useful for an "Install app" link in a future About menu); legacy `Na__AppInstallability__BrowserDelegate` global remains as a slim shim so any existing callers keep working
+
+### Build Tooling Updates
+- **Gallery Thumbnail Generator**: New `AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py` walks every enabled project, finds the first IMG01 source, produces 524p WebP + JPG named `*__Thumbnail__524p__.{webp,jpg}` next to the original, and patches `project.json` with `"thumbnailImage": "<filename>"`; idempotent (only regenerates when source is newer), supports `--dry-run`, `--force`, and `--project <folderId>`; uses Pillow only
+- **Build Pipeline Hook**: `AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py` now calls the thumbnail generator as a non-blocking post-step, so a freshly imported project gets its gallery thumbnail automatically
+- **Convenience Launcher**: `AutomationUtil__GenerateGalleryThumbnails__524p__.bat` matches the existing `.bat` launcher pattern
+
+### Technical Implementation
+- Created `WebApps/Na__Pwa__ServiceWorker__.js` — thin loader stub at the WebApps root (only file outside Whitecardopedia, required because GitHub Pages cannot send `Service-Worker-Allowed` headers; keeping the stub at WebApps level guarantees the SW scope covers both apps); pulls real logic via `importScripts()`
+- Created modular install stack inside `02__Src__AppModules/62__Feature__AppInstallability/`:
+  - `Whitecardopedia__Pwa__Url__Constructor__.js` — environment-aware URL helper resolving WebApps / Whitecardopedia / ValeVision3D / manifest / SW / start URLs for localhost ports 8000 + 5500, GitHub Pages `/ValeCodebase/WebApps/`, and any future custom domain (with optional `<meta name="vale-pwa-base">` override); auto-injects manifest and apple-touch-icon link tags so static HTML doesn't need to know dev vs prod paths
+  - `Whitecardopedia__Pwa__PlatformDetector__.js` — OS + browser + display-mode classification with iPad-as-Mac UA quirk handling and live `(display-mode: standalone)` subscription
+  - `Whitecardopedia__Pwa__SessionState__.js` — localStorage dismissal/snooze tracker with in-memory fallback for private mode
+  - `Whitecardopedia__Pwa__PromptUi__.js` — vanilla DOM banner / instruction sheet (mounts before React boots; no React dependency)
+  - `Whitecardopedia__Pwa__Handler__Chromium__.js`, `_IosSafari__.js`, `_IosNonSafari__.js`, `_MacSafari__.js`, `_InstalledStandalone__.js` — five platform handlers, each owning a single rendering strategy
+  - `Whitecardopedia__Pwa__InstallController__.js` — orchestrator that picks the handler from the platform descriptor, schedules first show after a 4.5 s engagement delay, retries while Chromium warms up, and queries `getInstalledRelatedApps()` to suppress prompts when an installed PWA already exists
+  - `Whitecardopedia__Pwa__ServiceWorker__Logic__.js` — actual SW caching brain (loaded via `importScripts` from the WebApps stub)
+  - `Whitecardopedia__Pwa__ServiceWorker__Registrar__.js` — registers the SW from the URL helper, gated to HTTPS or localhost so file:// never tries to register
+- Created `Whitecardopedia__Pwa__Manifest__.webmanifest` replacing the old manifest with `categories`, `description`, `shortcuts` (gallery + 3D viewer), `display_override: ["standalone","minimal-ui","browser"]`, `launch_handler.client_mode: "navigate-existing"`, and dual `purpose: any` + `purpose: maskable` icons; `start_url` and `scope` paths chosen so they resolve correctly on both the localhost dev server (Whitecardopedia served as origin root) and production GitHub Pages
+- Refactored existing `Na__UiFeature__AppInstallability__BrowserDelegate.js` into a slim shim that delegates to the new modules so any current callers continue to work
+- Created `03__Style__AppStylesheets/Na__UiFeature__Styles__PwaInstallability__.css` — banner + sheet styles, animated arrow keyframes, dark/light-friendly tokens, automatically hides itself when the page is running in `display-mode: standalone | minimal-ui | fullscreen | window-controls-overlay`
+- Created `Tools__DevUtils/AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py` and `.bat` launcher; wired into `AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py` as a non-blocking post-step
+- Updated `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js` — `getThumbnailImage()` now prefers `project.thumbnailImage` and falls back to `images[0]` when absent so existing data stays unbroken
+- Updated `app.html` — replaced the single delegate `<script>` with the full ordered handler stack, swapped to the new manifest, and added `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `apple-mobile-web-app-title`, `mobile-web-app-capable`, and `application-name` meta tags
+- Updated `ValeVision3D/index.html` — same install handler stack referenced via `../Whitecardopedia/...` so the install flow works no matter which app the user lands on first
+- Updated `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css` to import the new install stylesheet
+- Updated `server.py` — serves `Na__Pwa__ServiceWorker__.js` at origin root with `Service-Worker-Allowed: /` and `Cache-Control: no-cache`, mirrors `/Whitecardopedia/...` paths so production URL shapes resolve identically in dev, sets `application/manifest+json` MIME for `.webmanifest` files, and applies `no-cache` headers to HTML
+
+### Validation
+- All 14 PWA module files pass `node --check`; thumbnail generator + build script + server pass `py_compile`; manifest is valid JSON
+- All key endpoints respond `200 OK` with correct MIME types and headers (manifest = `application/manifest+json`; SW = `text/javascript` with `Service-Worker-Allowed: /`; HTML = `no-cache`)
+- DevTools Application panel confirms: every PWA global mounts on both `app.html` and `ValeVision3D/index.html`, the service worker activates with scope `http://127.0.0.1:8000/` covering both apps, and the URL helper resolves all paths correctly; `getActiveDescriptor()` returns `chromium-desktop-windows` so the Chromium handler is selected
+- Real-device install verification (Chrome on Windows, Edge on Android, Safari on iPhone / iPad, Safari on macOS) is the next manual follow-up since browser automation embedded in Cursor's Electron shell suppresses `beforeinstallprompt`; `window.Whitecardopedia__Pwa__InstallController.requestShow()` from the console is the easiest way to force-test the prompt UI on any device
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.3.2 - 07-Apr-2026 - Keyboard Navigation Hotkeys
 ### Features Added
 - **Global Hotkey System**: App-wide keyboard shortcut handler with bindings loaded from a JSON data file
@@ -178,5 +232,5 @@
 
 # -----------------------------------------------------------------------------
 
-**Last Updated**: 07-Apr-2026
+**Last Updated**: 28-Apr-2026
 

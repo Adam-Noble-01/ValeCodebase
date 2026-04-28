@@ -158,11 +158,15 @@
     // FUNCTION | Get Thumbnail Image for Project
     // ------------------------------------------------------------
     function getThumbnailImage(projectData) {
+        if (projectData && projectData.thumbnailImage) {
+            return getImageUrl(projectData, projectData.thumbnailImage); // <-- Prefer the 524p thumbnail when available
+        }
+
         if (!projectData.images || projectData.images.length === 0) {
             return null;                                                 // <-- Return null if no images
         }
-        
-        return getImageUrl(projectData, projectData.images[0]);          // <-- Return first image as thumbnail
+
+        return getImageUrl(projectData, projectData.images[0]);          // <-- Fallback to first full-resolution image
     }
     // ---------------------------------------------------------------
 

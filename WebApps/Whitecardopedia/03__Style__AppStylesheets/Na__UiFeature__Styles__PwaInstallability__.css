@@ -1,0 +1,347 @@
+/* ================================================================= */
+/* REGION  |  PWA Installability Prompt - Banner & Sheet Styles      */
+/* ================================================================= */
+
+    /* ----------------------------------------------------------------- */
+    /* SUB REGION  |  Tokens & Animations                                */
+    /* ----------------------------------------------------------------- */
+
+    :root {
+        --wpwa-color-bg                  : #ffffff;                                                              /* <-- Surface background */
+        --wpwa-color-fg                  : #172b3a;                                                              /* <-- Vale primary text colour */
+        --wpwa-color-fg-muted            : #4a6076;                                                              /* <-- Secondary text colour */
+        --wpwa-color-accent              : #172b3a;                                                              /* <-- Primary action background */
+        --wpwa-color-accent-fg           : #ffffff;                                                              /* <-- Primary action text */
+        --wpwa-color-accent-hover        : #243d50;                                                              /* <-- Primary action hover */
+        --wpwa-color-secondary-bg        : transparent;                                                          /* <-- Secondary action background */
+        --wpwa-color-secondary-fg        : #4a6076;                                                              /* <-- Secondary action text */
+        --wpwa-color-border              : rgba(23, 43, 58, 0.12);                                               /* <-- Subtle border colour */
+        --wpwa-color-shadow              : 0 14px 32px rgba(23, 43, 58, 0.20);                                   /* <-- Floating panel shadow */
+        --wpwa-color-backdrop            : rgba(23, 43, 58, 0.45);                                               /* <-- Modal backdrop tint */
+        --wpwa-radius                    : 14px;                                                                 /* <-- Corner radius */
+        --wpwa-radius-sm                 : 8px;                                                                  /* <-- Smaller radius for buttons */
+        --wpwa-spacing                   : 16px;                                                                 /* <-- Default spacing */
+        --wpwa-font-stack                : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; /* <-- Font stack */
+        --wpwa-zindex                    : 2147483000;                                                           /* <-- Sit above app chrome */
+    }
+
+    @keyframes wpwaFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes wpwaSlideUp {
+        from { transform: translate(-50%, 16px); opacity: 0; }
+        to   { transform: translate(-50%, 0);    opacity: 1; }
+    }
+
+    @keyframes wpwaSheetIn {
+        from { transform: translate(-50%, -50%) scale(0.96); opacity: 0; }
+        to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+    }
+
+    @keyframes wpwaArrowBounceDown {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(8px); }
+    }
+
+    @keyframes wpwaArrowBounceUp {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+
+    /* endregion -------------------------------------------------------- */
+
+
+    /* ----------------------------------------------------------------- */
+    /* SUB REGION  |  Root Container                                     */
+    /* ----------------------------------------------------------------- */
+
+    .wpwa-prompt {
+        position                         : fixed;
+        inset                            : 0;
+        pointer-events                   : none;
+        z-index                          : var(--wpwa-zindex);
+        font-family                      : var(--wpwa-font-stack);
+        color                            : var(--wpwa-color-fg);
+        opacity                          : 0;
+        transition                       : opacity 200ms ease-out;
+    }
+
+    .wpwa-prompt--visible {
+        opacity                          : 1;
+    }
+
+    /* endregion -------------------------------------------------------- */
+
+
+    /* ----------------------------------------------------------------- */
+    /* SUB REGION  |  Compact Bar Variant                                */
+    /* ----------------------------------------------------------------- */
+
+    .wpwa-prompt__bar {
+        position                         : fixed;
+        bottom                           : 24px;
+        left                             : 50%;
+        transform                        : translate(-50%, 0);
+        max-width                        : 560px;
+        width                            : calc(100% - 32px);
+        background                       : var(--wpwa-color-bg);
+        color                            : var(--wpwa-color-fg);
+        border                           : 1px solid var(--wpwa-color-border);
+        border-radius                    : var(--wpwa-radius);
+        box-shadow                       : var(--wpwa-color-shadow);
+        padding                          : 14px 16px;
+        display                          : flex;
+        align-items                      : center;
+        gap                              : 14px;
+        pointer-events                   : auto;
+        animation                        : wpwaSlideUp 240ms ease-out;
+    }
+
+    /* endregion -------------------------------------------------------- */
+
+
+    /* ----------------------------------------------------------------- */
+    /* SUB REGION  |  Sheet Variant                                      */
+    /* ----------------------------------------------------------------- */
+
+    .wpwa-prompt__backdrop {
+        position                         : fixed;
+        inset                            : 0;
+        background                       : var(--wpwa-color-backdrop);
+        animation                        : wpwaFadeIn 180ms ease-out;
+        pointer-events                   : auto;
+    }
+
+    .wpwa-prompt__sheet {
+        position                         : fixed;
+        top                              : 50%;
+        left                             : 50%;
+        transform                        : translate(-50%, -50%);
+        width                            : min(420px, calc(100% - 32px));
+        background                       : var(--wpwa-color-bg);
+        color                            : var(--wpwa-color-fg);
+        border-radius                    : var(--wpwa-radius);
+        box-shadow                       : var(--wpwa-color-shadow);
+        padding                          : 24px 22px 20px;
+        display                          : flex;
+        flex-direction                   : column;
+        align-items                      : center;
+        text-align                       : center;
+        gap                              : 12px;
+        pointer-events                   : auto;
+        animation                        : wpwaSheetIn 220ms ease-out;
+        max-height                       : calc(100vh - 32px);
+        overflow-y                       : auto;
+    }
+
+    .wpwa-prompt__sheet .wpwa-prompt__icon {
+        width                            : 64px;
+        height                           : 64px;
+    }
+
+    /* endregion -------------------------------------------------------- */
+
+
+    /* ----------------------------------------------------------------- */
+    /* SUB REGION  |  Shared Inner Elements                              */
+    /* ----------------------------------------------------------------- */
+
+    .wpwa-prompt__icon {
+        width                            : 40px;
+        height                           : 40px;
+        flex                             : 0 0 auto;
+        border-radius                    : 8px;
+        object-fit                       : contain;
+        background                       : transparent;
+    }
+
+    .wpwa-prompt__text {
+        flex                             : 1 1 auto;
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 4px;
+        min-width                        : 0;
+    }
+
+    .wpwa-prompt__title {
+        font-size                        : 15px;
+        font-weight                      : 600;
+        color                            : var(--wpwa-color-fg);
+        line-height                      : 1.3;
+    }
+
+    .wpwa-prompt__sheet .wpwa-prompt__title {
+        font-size                        : 18px;
+    }
+
+    .wpwa-prompt__body {
+        font-size                        : 13.5px;
+        font-weight                      : 400;
+        color                            : var(--wpwa-color-fg-muted);
+        line-height                      : 1.45;
+    }
+
+    .wpwa-prompt__sheet .wpwa-prompt__body {
+        font-size                        : 14.5px;
+    }
+
+    .wpwa-prompt__steps {
+        list-style                       : none;
+        margin                           : 4px 0 8px;
+        padding                          : 0;
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 8px;
+        align-self                       : stretch;
+        text-align                       : left;
+    }
+
+    .wpwa-prompt__step {
+        display                          : flex;
+        align-items                      : flex-start;
+        gap                              : 10px;
+        background                       : rgba(23, 43, 58, 0.04);
+        border-radius                    : var(--wpwa-radius-sm);
+        padding                          : 10px 12px;
+    }
+
+    .wpwa-prompt__step-number {
+        flex                             : 0 0 22px;
+        width                            : 22px;
+        height                           : 22px;
+        border-radius                    : 50%;
+        background                       : var(--wpwa-color-accent);
+        color                            : var(--wpwa-color-accent-fg);
+        font-size                        : 12px;
+        font-weight                      : 600;
+        display                          : inline-flex;
+        align-items                      : center;
+        justify-content                  : center;
+    }
+
+    .wpwa-prompt__step-text {
+        font-size                        : 13.5px;
+        line-height                      : 1.4;
+        color                            : var(--wpwa-color-fg);
+    }
+
+    .wpwa-prompt__actions {
+        display                          : flex;
+        gap                              : 8px;
+        align-items                      : center;
+        justify-content                  : flex-end;
+        flex                             : 0 0 auto;
+    }
+
+    .wpwa-prompt__sheet .wpwa-prompt__actions {
+        align-self                       : stretch;
+        justify-content                  : center;
+        margin-top                       : 4px;
+    }
+
+    .wpwa-prompt__button {
+        font-family                      : inherit;
+        font-size                        : 13.5px;
+        font-weight                      : 600;
+        padding                          : 9px 14px;
+        border-radius                    : var(--wpwa-radius-sm);
+        border                           : 1px solid transparent;
+        cursor                           : pointer;
+        transition                       : background 140ms ease-out, color 140ms ease-out, border-color 140ms ease-out;
+    }
+
+    .wpwa-prompt__button--primary {
+        background                       : var(--wpwa-color-accent);
+        color                            : var(--wpwa-color-accent-fg);
+    }
+
+    .wpwa-prompt__button--primary:hover {
+        background                       : var(--wpwa-color-accent-hover);
+    }
+
+    .wpwa-prompt__button--secondary {
+        background                       : var(--wpwa-color-secondary-bg);
+        color                            : var(--wpwa-color-secondary-fg);
+        border-color                     : var(--wpwa-color-border);
+    }
+
+    .wpwa-prompt__button--secondary:hover {
+        border-color                     : var(--wpwa-color-fg-muted);
+        color                            : var(--wpwa-color-fg);
+    }
+
+    .wpwa-prompt__close {
+        position                         : absolute;
+        top                              : 8px;
+        right                            : 10px;
+        width                            : 28px;
+        height                           : 28px;
+        border                           : none;
+        background                       : transparent;
+        color                            : var(--wpwa-color-fg-muted);
+        font-size                        : 16px;
+        font-weight                      : 600;
+        cursor                           : pointer;
+        border-radius                    : 50%;
+    }
+
+    .wpwa-prompt__close:hover {
+        background                       : rgba(23, 43, 58, 0.08);
+        color                            : var(--wpwa-color-fg);
+    }
+
+    .wpwa-prompt__arrow {
+        width                            : 24px;
+        height                           : 24px;
+        border-style                     : solid;
+        border-color                     : var(--wpwa-color-accent);
+        border-width                     : 0;
+    }
+
+    .wpwa-prompt__arrow--bottom {
+        border-bottom-width              : 4px;
+        border-right-width               : 4px;
+        transform                        : rotate(45deg);
+        margin-top                       : 4px;
+        animation                        : wpwaArrowBounceDown 1.6s ease-in-out infinite;
+    }
+
+    .wpwa-prompt__arrow--top {
+        border-top-width                 : 4px;
+        border-left-width                : 4px;
+        transform                        : rotate(45deg);
+        margin-bottom                    : 4px;
+        animation                        : wpwaArrowBounceUp 1.6s ease-in-out infinite;
+    }
+
+    /* endregion -------------------------------------------------------- */
+
+
+    /* ----------------------------------------------------------------- */
+    /* SUB REGION  |  Responsive Tweaks                                  */
+    /* ----------------------------------------------------------------- */
+
+    @media (max-width: 480px) {
+        .wpwa-prompt__bar {
+            flex-wrap                    : wrap;
+            padding                      : 12px;
+            gap                          : 10px;
+        }
+
+        .wpwa-prompt__bar .wpwa-prompt__actions {
+            width                        : 100%;
+            justify-content              : space-between;
+        }
+    }
+
+    @media (display-mode: standalone), (display-mode: minimal-ui), (display-mode: fullscreen), (display-mode: window-controls-overlay) {
+        .wpwa-prompt {
+            display                      : none;                                                                  /* <-- Never show install prompt inside a launched PWA */
+        }
+    }
+
+    /* endregion -------------------------------------------------------- */
+
+/* endregion -------------------------------------------------------- */

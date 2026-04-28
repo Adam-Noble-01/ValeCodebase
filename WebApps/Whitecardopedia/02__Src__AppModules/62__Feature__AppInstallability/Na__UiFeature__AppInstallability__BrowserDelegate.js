@@ -1,41 +1,43 @@
 // =============================================================================
-// WHITECARDOPEDIA - BROWSER APP INSTALLABILITY DELEGATE
+// WHITECARDOPEDIA - LEGACY APP INSTALLABILITY BROWSER DELEGATE (SHIM)
 // =============================================================================
 //
 // FILE       : Na__UiFeature__AppInstallability__BrowserDelegate.js
 // NAMESPACE  : Whitecardopedia
-// MODULE     : AppInstallabilityBrowserDelegate
+// MODULE     : AppInstallabilityBrowserDelegate (Legacy Shim)
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Bridge browser install events for Edge and Chrome app install UX
-// CREATED    : 2026
+// PURPOSE    : Maintain backwards-compatible global API for existing callers
+// CREATED    : 2026 (refactored from prior implementation)
 //
 // DESCRIPTION:
-// - Captures browser install prompt event (`beforeinstallprompt`)
-// - Exposes global helper functions for install availability and prompt trigger
-// - Detects installed/standalone mode for UI state handling
-// - Keeps implementation lightweight with zero dependency on React component tree
+// - The previous implementation has been replaced by the modular Pwa module
+//   stack (Whitecardopedia__Pwa__*). This shim keeps the historical global
+//   `Na__AppInstallability__BrowserDelegate` API alive so any existing UI
+//   integrations continue to work.
+// - All real logic now lives in:
+//     * Whitecardopedia__Pwa__InstallController__.js
+//     * Whitecardopedia__Pwa__Handler__Chromium__.js
+//     * Whitecardopedia__Pwa__PlatformDetector__.js
 //
 // =============================================================================
 
-// -----------------------------------------------------------------------------
-// REGION | App Installability Browser Delegate
-// -----------------------------------------------------------------------------
+(function () {
 
-    // MODULE VARIABLES | Deferred Prompt and Install State
-    // ------------------------------------------------------------
-    let Na__AppInstallability__DeferredPromptEvent = null;                      // <-- Cached browser prompt event
-    let Na__AppInstallability__InstalledFromPrompt = false;                     // <-- Tracks if install flow succeeded
-    // ------------------------------------------------------------
-
+// -----------------------------------------------------------------------------
+// REGION | Legacy API Surface
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Detect Standalone Installed Mode
     // ---------------------------------------------------------------
     function Na__AppInstallability__IsStandaloneMode() {
-        const isIosStandaloneMode = window.navigator.standalone === true;       // <-- iOS standalone signal
-        const isDisplayModeStandalone = window.matchMedia('(display-mode: standalone)').matches; // <-- Chromium standalone signal
-        const isDisplayModeMinimalUi = window.matchMedia('(display-mode: minimal-ui)').matches;   // <-- Alternate standalone-like mode
+        const platformDetector  = window.Whitecardopedia__Pwa__PlatformDetector;                                                    // <-- Resolve detector
+        if (platformDetector && typeof platformDetector.isStandaloneDisplay === 'function') {
+            return platformDetector.isStandaloneDisplay();                                                                          // <-- Delegate to detector
+        }
 
-        return isIosStandaloneMode || isDisplayModeStandalone || isDisplayModeMinimalUi; // <-- True when app is installed/running app-like
+        const isIosStandaloneMode      = window.navigator && window.navigator.standalone === true;                                  // <-- Legacy iOS signal
+        const isDisplayModeStandalone  = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;              // <-- Modern signal
+        return Boolean(isIosStandaloneMode || isDisplayModeStandalone);                                                             // <-- Inclusive standalone detection
     }
     // ---------------------------------------------------------------
 
@@ -43,7 +45,16 @@
     // HELPER FUNCTION | Check Install Prompt Availability
     // ---------------------------------------------------------------
     function Na__AppInstallability__IsPromptAvailable() {
-        return !!Na__AppInstallability__DeferredPromptEvent;                     // <-- Prompt becomes available after browser heuristics pass
+        const controller        = window.Whitecardopedia__Pwa__InstallController;                                                   // <-- Resolve controller
+        if (!controller || typeof controller.getActiveDescriptor !== 'function') return false;                                      // <-- Controller not ready
+
+        const descriptor        = controller.getActiveDescriptor();                                                                 // <-- Active descriptor
+        if (!descriptor) return false;                                                                                              // <-- Not initialised yet
+
+        const PlatformIds       = (window.Whitecardopedia__Pwa__PlatformDetector || {}).PlatformIds || {};                          // <-- Token map
+        if (descriptor.platformId === PlatformIds.InstalledStandalone) return false;                                                // <-- Already installed
+
+        return true;                                                                                                                // <-- A handler exists for this platform
     }
     // ---------------------------------------------------------------
 
@@ -51,46 +62,23 @@
     // FUNCTION | Trigger Browser Install Prompt
     // ------------------------------------------------------------
     async function Na__AppInstallability__TriggerInstallPrompt() {
-        if (!Na__AppInstallability__DeferredPromptEvent) {
-            return { success: false, reason: 'prompt-not-available' };           // <-- No prompt available yet
+        const controller        = window.Whitecardopedia__Pwa__InstallController;                                                   // <-- Resolve controller
+        if (!controller || typeof controller.requestShow !== 'function') {
+            return { success: false, reason: 'controller-not-available' };                                                          // <-- Bail when controller missing
         }
 
-        Na__AppInstallability__DeferredPromptEvent.prompt();                     // <-- Ask browser to show native install prompt
-        const choiceResult = await Na__AppInstallability__DeferredPromptEvent.userChoice; // <-- Wait for user action
-
-        Na__AppInstallability__InstalledFromPrompt = choiceResult.outcome === 'accepted'; // <-- Track accepted state
-        Na__AppInstallability__DeferredPromptEvent = null;                       // <-- Prompt event can only be used once
-
-        return {
-            success : Na__AppInstallability__InstalledFromPrompt,                // <-- True if user accepted
-            outcome : choiceResult.outcome || 'dismissed'                        // <-- Browser outcome payload
-        };
+        controller.requestShow();                                                                                                   // <-- Forward to active handler
+        return { success: true, outcome: 'forwarded' };                                                                              // <-- Indicate dispatch only
     }
     // ---------------------------------------------------------------
 
 
-    // SUB FUNCTION | Bind Browser Install Events
-    // ---------------------------------------------------------------
-    function Na__AppInstallability__BindInstallEvents() {
-        window.addEventListener('beforeinstallprompt', (event) => {
-            event.preventDefault();                                               // <-- Use delegated custom trigger flow
-            Na__AppInstallability__DeferredPromptEvent = event;                  // <-- Cache prompt for later call
-        });
-
-        window.addEventListener('appinstalled', () => {
-            Na__AppInstallability__InstalledFromPrompt = true;                   // <-- Browser confirms installation
-            Na__AppInstallability__DeferredPromptEvent = null;                   // <-- Prompt no longer needed
-        });
-    }
-    // ---------------------------------------------------------------
-
-
-    // FUNCTION | Initialize Global Browser Delegate API
+    // FUNCTION | Initialize Global Browser Delegate API (Legacy)
     // ------------------------------------------------------------
     function Na__AppInstallability__InitializeBrowserDelegate() {
-        Na__AppInstallability__BindInstallEvents();                              // <-- Activate browser event listeners
+        if (typeof window === 'undefined') return;                                                                                  // <-- Guard non-window contexts
 
-        window.Na__AppInstallability__BrowserDelegate = {                        // <-- Expose API for future UI integration
+        window.Na__AppInstallability__BrowserDelegate = {                                                                           // <-- Legacy API surface
             isStandaloneMode      : Na__AppInstallability__IsStandaloneMode,
             isPromptAvailable     : Na__AppInstallability__IsPromptAvailable,
             triggerInstallPrompt  : Na__AppInstallability__TriggerInstallPrompt
@@ -99,19 +87,8 @@
     // ---------------------------------------------------------------
 
 
-    // SUB FUNCTION | Bootstrap Delegate Initialization
-    // ---------------------------------------------------------------
-    function Na__AppInstallability__BootstrapInitialization() {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', Na__AppInstallability__InitializeBrowserDelegate); // <-- Delay until DOM is ready
-            return;
-        }
-
-        Na__AppInstallability__InitializeBrowserDelegate();                      // <-- Immediate init when DOM already loaded
-    }
-    // ---------------------------------------------------------------
-
-
-    Na__AppInstallability__BootstrapInitialization();                            // <-- Start delegate as soon as script loads
+    Na__AppInstallability__InitializeBrowserDelegate();                                                                             // <-- Mount shim immediately
 
 // endregion -------------------------------------------------------------------
+
+})();

@@ -27,6 +27,7 @@
 # =============================================================================
 
 import os
+import sys
 import json
 import re
 import shutil
@@ -1134,6 +1135,20 @@ def main():
     successful_count = sum(1 for r in all_final_results if r['success'] and not r['skipped'])  # <-- Count successful
     refreshed_count = sum(1 for r in all_final_results if r.get('model_urls_updated'))  # <-- Count URL refreshes
     print(f"{COLOR_GREEN}Complete! {successful_count} project(s) cloned, {refreshed_count} project(s) model URLs refreshed.{COLOR_RESET}\n")  # <-- Print completion
+
+    # POST-STEP | Generate gallery thumbnails for any newly cloned projects
+    # ---------------------------------------------------------------
+    try:
+        import subprocess                                                  # <-- Local import to avoid impacting top-of-file ordering
+        thumbnail_script = Path(__file__).resolve().parent / "AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py"  # <-- Sibling script path
+        if thumbnail_script.exists():
+            print(f"{COLOR_CYAN}[POST-STEP] Generating gallery thumbnails (524p)...{COLOR_RESET}\n")  # <-- Announce post-step
+            subprocess.run([sys.executable, str(thumbnail_script)], check=False)                     # <-- Best-effort invocation
+        else:
+            print(f"{COLOR_YELLOW}[POST-STEP] Thumbnail generator not found, skipping thumbnail build.{COLOR_RESET}\n")  # <-- Soft warning
+    except Exception as thumbnail_step_error:
+        print(f"{COLOR_YELLOW}[POST-STEP] Thumbnail generation failed (non-fatal): {thumbnail_step_error}{COLOR_RESET}\n")  # <-- Surface non-blocking error
+    # ---------------------------------------------------------------
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

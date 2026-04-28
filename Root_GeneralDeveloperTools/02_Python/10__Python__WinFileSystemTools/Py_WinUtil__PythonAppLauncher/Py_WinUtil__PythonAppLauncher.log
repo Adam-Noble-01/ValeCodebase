@@ -195,3 +195,6 @@
 2026-04-23 13:37:07,756 | INFO    | Hiding window to tray
 2026-04-23 16:00:15,056 | INFO    | Launching app: 10__Python__WinFileSystemTools/Py_WinUtil__BuildValeProjectStructure/Py_WinUtil__BuildValeProjectStructure__Main__.py
 2026-04-23 16:03:05,724 | INFO    | Hiding window to tray
+2026-04-28 08:03:35,505 | INFO    | === Python App Launcher starting ===
+2026-04-28 08:03:35,522 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
+2026-04-28 08:03:36,157 | INFO    | Discovery: found 18 launchable apps across 5 categories

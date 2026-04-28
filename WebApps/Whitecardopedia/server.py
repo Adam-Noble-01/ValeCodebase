@@ -25,6 +25,8 @@
 # - GET  /api/projects/<folder>   : Get specific project.json data
 # - POST /api/projects/<folder>   : Save updated project.json data
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
+# - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
+# - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
 # - GET  /assets__CommonApplicationAssets/<path> : Serve shared assets
 #
 # CONSOLE COMMANDS:
@@ -48,7 +50,7 @@ BUNDLED_DEPS_PATH = os.path.join(
 if os.path.exists(BUNDLED_DEPS_PATH):
     sys.path.insert(0, BUNDLED_DEPS_PATH)
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, make_response
 from flask_cors import CORS
 
 # -----------------------------------------------------------------------------
@@ -474,6 +476,63 @@ def serve_valevision(filename):
 # ------------------------------------------------------------
 
 
+# API ENDPOINT | Serve Whitecardopedia Files (Production Path Parity)
+# ------------------------------------------------------------
+@app.route('/Whitecardopedia/<path:filename>', methods=['GET'])
+def serve_whitecardopedia_proxy(filename):
+    """Mirror production path '/Whitecardopedia/<path>' so manifest URLs and PWA
+    module paths resolve identically on localhost dev and GitHub Pages."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Whitecardopedia root
+        if not os.path.exists(os.path.join(base_dir, filename)):         # <-- Verify file exists
+            return jsonify({'error': f'Whitecardopedia file not found: {filename}'}), 404
+        return send_from_directory(base_dir, filename)                   # <-- Serve from app root
+    except Exception as e:
+        return jsonify({'error': f'Error serving Whitecardopedia file: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve Shared Service Worker (Required at Origin Root)
+# ------------------------------------------------------------
+@app.route('/Na__Pwa__ServiceWorker__.js', methods=['GET'])
+def serve_pwa_service_worker():
+    """Serve the WebApps-level service worker stub from origin root.
+    On localhost dev the service worker MUST be reachable at the origin root so
+    its scope can cover both Whitecardopedia (root) and /ValeVision3D/."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Whitecardopedia root
+        parent_dir = os.path.dirname(base_dir)                            # <-- WebApps parent directory
+        sw_path = os.path.join(parent_dir, 'Na__Pwa__ServiceWorker__.js') # <-- SW absolute path
+
+        if not os.path.exists(sw_path):                                  # <-- Verify SW file exists
+            return jsonify({'error': 'Service worker file not found'}), 404
+
+        response = send_from_directory(parent_dir, 'Na__Pwa__ServiceWorker__.js')   # <-- Serve from parent
+        response.headers['Service-Worker-Allowed'] = '/'                              # <-- Permit broad scope on localhost
+        response.headers['Cache-Control']          = 'no-cache, no-store, must-revalidate'  # <-- Always fresh during dev
+        return response                                                  # <-- Return prepared response
+    except Exception as e:
+        return jsonify({'error': f'Error serving service worker: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve Sibling SW Logic File (Localhost Dev Parity)
+# ------------------------------------------------------------
+@app.route('/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/<path:filename>', methods=['GET'])
+def serve_pwa_module_proxy(filename):
+    """Mirror the production module path so that importScripts() inside the
+    service worker resolves identically on localhost dev and production."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))            # <-- Whitecardopedia root
+        module_dir = os.path.join(base_dir, '02__Src__AppModules', '62__Feature__AppInstallability')   # <-- Local module folder
+        if not os.path.exists(os.path.join(module_dir, filename)):       # <-- Verify file exists
+            return jsonify({'error': f'PWA module not found: {filename}'}), 404
+        return send_from_directory(module_dir, filename)                 # <-- Serve module file
+    except Exception as e:
+        return jsonify({'error': f'Error serving PWA module: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
 # ROUTE HANDLER | Serve Static Files
 # ------------------------------------------------------------
 @app.route('/', defaults={'path': ''})
@@ -482,12 +541,20 @@ def serve_static(path):
     """Serve static files from application directory"""
     if path == '' or path == '/':
         path = 'index.html'                                              # <-- Default to index.html
-    
+
     base_dir = os.path.dirname(os.path.abspath(__file__))                # <-- Get server directory
     file_path = os.path.join(base_dir, path)                             # <-- Build file path
-    
+
     if os.path.isfile(file_path):
-        return send_from_directory(base_dir, path)                       # <-- Serve file
+        response = send_from_directory(base_dir, path)                   # <-- Serve file
+
+        lowercase_path = path.lower()                                    # <-- Used for extension checks
+        if lowercase_path.endswith('.webmanifest'):
+            response.headers['Content-Type'] = 'application/manifest+json'   # <-- Required MIME for PWA manifest
+        if lowercase_path.endswith(('.html', '.htm')):
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'   # <-- Avoid stale dev HTML
+
+        return response                                                  # <-- Return prepared response
     else:
         return send_from_directory(base_dir, 'index.html')               # <-- Fallback to index
 # ------------------------------------------------------------

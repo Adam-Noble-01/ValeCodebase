@@ -609,6 +609,114 @@ def process_all_projects(s3_client: boto3.client, bucket_name: str, projects: Li
     return results                                                    # <-- Return all results
 # ---------------------------------------------------------------
 
+
+# HELPER FUNCTION | Upload a Single File Using a Pre-Determined Action
+# ---------------------------------------------------------------
+def upload_planned_file(s3_client: boto3.client, bucket_name: str, project_info: Dict, dry_file: Dict, year: str) -> Dict:
+    """Upload one file whose action was already classified during dry-run.
+    
+    Reuses the cached action and dest filename from the dry-run pass, so no
+    second R2 HEAD request is issued before the PUT.
+    """
+    filename      = dry_file['filename']                               # <-- Source filename on disk
+    dest_filename = dry_file['dest_filename']                          # <-- Rebranded destination filename
+    
+    file_result = {
+        'filename'      : filename,
+        'dest_filename' : dest_filename,
+        'success'       : False,
+        'action'        : dry_file['action'],
+        'action_detail' : dry_file['action_detail'],
+        'size'          : dry_file['size'],
+        'error'         : None
+    }
+    
+    local_path = project_info['glb_sync_path'] / filename              # <-- Resolve local file path
+    r2_key     = f"{R2_BASE_PREFIX}/{year}/{project_info['dest_folder_name']}/{dest_filename}"  # <-- R2 destination key
+    
+    print(f"      {COLOR_YELLOW}[>>] Uploading{COLOR_RESET} {dest_filename} ({format_file_size(file_result['size'])})...", end='', flush=True)  # <-- Log upload start
+    upload_success      = upload_file_to_r2(s3_client, bucket_name, local_path, r2_key)  # <-- Perform PUT
+    file_result['success'] = upload_success                            # <-- Record outcome
+    
+    if upload_success:
+        print(f" {COLOR_GREEN}OK{COLOR_RESET}")                       # <-- Success indicator
+    else:
+        print(f" {COLOR_RED}FAILED{COLOR_RESET}")                     # <-- Failure indicator
+        file_result['error'] = "Upload failed"                         # <-- Record error
+    
+    return file_result                                                 # <-- Return file outcome
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Execute Upload Plan Built from Dry-Run Results
+# ------------------------------------------------------------
+def execute_upload_plan(s3_client: boto3.client, bucket_name: str, plan: List[Dict]) -> List[Dict]:
+    """Upload only the files marked NEW or UPDATE during the dry-run pass.
+    
+    Skips projects (and entire years) that have no pending work, so the
+    console no longer prints `[PROJECT]` banners for fully-synced projects
+    and no further R2 HEAD requests are issued for already-skipped files.
+    Each plan entry is a dict with keys: year, project_info, dry_run_result.
+    """
+    final_results = []                                                 # <-- Aggregated upload outcomes
+    current_year  = None                                               # <-- Tracks year header printing
+    
+    for plan_entry in plan:
+        year           = plan_entry['year']                            # <-- Plan entry year
+        project_info   = plan_entry['project_info']                    # <-- Resolved project metadata
+        dry_run_result = plan_entry['dry_run_result']                  # <-- Cached per-file actions
+        
+        # PRINT YEAR HEADER ONCE PER YEAR (only for years with pending work)
+        if year != current_year:
+            print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+            print(f"{COLOR_CYAN}Uploading GLB Files for Year: {year}{COLOR_RESET}")
+            print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+            current_year = year                                        # <-- Remember last printed year
+        
+        # FILTER FILES TO ONLY THOSE NEEDING UPLOAD
+        files_to_upload = [
+            f for f in dry_run_result['file_results']
+            if f['action'] in ('new', 'update')
+        ]
+        
+        file_count = len(files_to_upload)                              # <-- Pending file count for this project
+        plural     = 's' if file_count != 1 else ''                    # <-- Pluralise label
+        print(f"    {COLOR_CYAN}[PROJECT]{COLOR_RESET} {project_info['dest_folder_name']} ({file_count} file{plural} pending)")  # <-- Truthful project header
+        
+        # BUILD PROJECT RESULT FOR FINAL REPORTING
+        project_result = {
+            'project_name'  : project_info['source_folder_name'],
+            'dest_name'     : project_info['dest_folder_name'],
+            'success'       : True,
+            'files_found'   : dry_run_result['files_found'],
+            'files_new'     : 0,
+            'files_updated' : 0,
+            'files_skipped' : dry_run_result['files_skipped'],
+            'files_errors'  : 0,
+            'total_size'    : 0,
+            'file_results'  : [],
+            'error'         : None
+        }
+        
+        # UPLOAD EACH PENDING FILE
+        for dry_file in files_to_upload:
+            file_result = upload_planned_file(s3_client, bucket_name, project_info, dry_file, year)  # <-- Upload single file
+            project_result['file_results'].append(file_result)         # <-- Record file outcome
+            project_result['total_size'] += file_result['size']        # <-- Accumulate size
+            
+            if file_result['success']:
+                if dry_file['action'] == 'new':
+                    project_result['files_new'] += 1                   # <-- Increment new count
+                else:
+                    project_result['files_updated'] += 1               # <-- Increment update count
+            else:
+                project_result['files_errors'] += 1                    # <-- Increment error count
+        
+        final_results.append(project_result)                           # <-- Append project result
+    
+    return final_results                                               # <-- Return all upload outcomes
+# ---------------------------------------------------------------
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -789,9 +897,9 @@ def main():
     
     print(f"{COLOR_BLUE}Scanning {len(year_folders)} year folder(s): {', '.join([y[0] for y in year_folders])}{COLOR_RESET}\n")
     
-    all_results = []                                                  # <-- Collect results from all years
+    all_dry_run_records = []                                          # <-- Per-project records: year, project_info, result
     
-    # STEP 4: Process each year folder
+    # STEP 4: Dry-run all year folders, capturing per-project plan data
     for year, source_base in year_folders:
         print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
         print(f"{COLOR_CYAN}Processing Year: {year}{COLOR_RESET}")
@@ -806,22 +914,39 @@ def main():
         
         print(f"{COLOR_BLUE}[DISCOVERY] Found {len(projects)} project(s) with GLB sync folders in {year} (sorted oldest to newest){COLOR_RESET}\n")
         
-        # STEP 5: Run dry-run for this year
+        # RUN DRY-RUN FOR THIS YEAR
         print(f"{COLOR_YELLOW}Mode: DRY RUN (preview mode){COLOR_RESET}\n")
         
         results = process_all_projects(s3_client, bucket_name, projects, args.project, dry_run=True, year=year)
-        all_results.extend(results)                                   # <-- Add to all results
+        
+        # MAP RESULTS BACK TO PROJECT METADATA FOR THE UPLOAD PLAN
+        project_lookup = {p['source_folder_name']: p for p in projects}  # <-- Lookup by source folder name
+        for result in results:
+            all_dry_run_records.append({
+                'year'         : year,
+                'project_info' : project_lookup[result['project_name']],
+                'result'       : result
+            })
+        
         print_results(results, dry_run=True)                          # <-- Print preview results for this year
     
-    # Check if any files need uploading across all years
-    needs_upload = any(r['files_new'] > 0 or r['files_updated'] > 0 for r in all_results)  # <-- Check if upload needed
+    # STEP 5: Build upload plan (only projects with new/update files)
+    upload_plan = [
+        {
+            'year'           : record['year'],
+            'project_info'   : record['project_info'],
+            'dry_run_result' : record['result']
+        }
+        for record in all_dry_run_records
+        if record['result']['files_new'] > 0 or record['result']['files_updated'] > 0
+    ]
     
     # If dry-run-only flag is set, exit after preview
     if args.dry_run_only:
         return                                                        # <-- Exit after dry-run
     
     # If no files need uploading, exit
-    if not needs_upload:
+    if not upload_plan:
         print(f"{COLOR_GREEN}All files are up to date. No uploads needed.{COLOR_RESET}\n")  # <-- No changes message
         return                                                        # <-- Exit if nothing to upload
     
@@ -829,26 +954,13 @@ def main():
     if not prompt_for_confirmation():
         return                                                        # <-- Exit if user cancels
     
-    # STEP 7: Run actual upload for all years
+    # STEP 7: Execute upload plan (skips fully-synced projects and years)
     print(f"{COLOR_GREEN}Mode: UPLOADING FILES TO R2{COLOR_RESET}\n")  # <-- Print upload mode
     
-    all_final_results = []                                            # <-- Collect final results
+    final_results = execute_upload_plan(s3_client, bucket_name, upload_plan)  # <-- Run uploads from plan
+    print_results(final_results, dry_run=False)                       # <-- Print final results
     
-    for year, source_base in year_folders:
-        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}")
-        print(f"{COLOR_CYAN}Uploading GLB Files for Year: {year}{COLOR_RESET}")
-        print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
-        
-        projects = discover_whitecard_projects(source_base)           # <-- Discover projects for this year
-        
-        if not projects:
-            continue                                                  # <-- Skip if no projects
-        
-        results = process_all_projects(s3_client, bucket_name, projects, args.project, dry_run=False, year=year)
-        all_final_results.extend(results)                             # <-- Add to all results
-        print_results(results, dry_run=False)                         # <-- Print final results for this year
-    
-    successful_count = sum(r['files_new'] + r['files_updated'] for r in all_final_results)  # <-- Count successful
+    successful_count = sum(r['files_new'] + r['files_updated'] for r in final_results)  # <-- Count successful
     print(f"{COLOR_GREEN}Upload complete! {successful_count} file(s) uploaded to Cloudflare R2 across all years.{COLOR_RESET}\n")  # <-- Print completion
 # ---------------------------------------------------------------
 

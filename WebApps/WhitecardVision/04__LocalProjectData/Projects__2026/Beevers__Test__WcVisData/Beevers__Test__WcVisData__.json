@@ -7,17 +7,17 @@
         "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
         "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
         "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-28T15:41:01.823890+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-29T06:57:03.031226+00:00"
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-29T09:46:35.752359+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {
-            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__PowerToys_Paste_20260428164115.png",
-            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__PowerToys_Paste_20260428164115__thumb240.jpg",
-            "Wv__Whitecard__Prompt": "**OBJECTIVE** \n- Render the provided Whitecard Image as a charming Water Colour Painting .\n- Your Watercolour Concept Design Artwork should be indistinguishable from a Professional Client-Facing Design Concept Deliverable.\n- You are producing A Watercolour Painting for Vale Garden Houses.\n- Vale Garden Houses are the UK's premium UK Manufacturer of Conservatories and Orangeries in the UK and they are a established Luxury high end brand.\n- The Artwork is illustrating to the client a Orangery Design Proposal.\n- The aim of the image is to show a client how the Orangery will look against their Existing Home and to sell the Scheme.\n- The image is a high fidelity scan of a physical painting.\n\n**THE VIBE**\n- Charming watercolour painting.\n- Expertly painted.\n- UK Country Home.\n- Create a Rustic, Refined & Sophisticated Aesthetic.\n- Luxury.\n- Classic.\n- Timeless Orangery Design.\n- Classical Garden Room Exterior.\n\n**ART STYLE**\n- Loose.\n- Expressive.\n- Pen lines drawn over watercolour.\n- \"Pen & Wash\" Style.\n- Faded out onto the page.\n- Imperfect.\n- Loose.\n- Sketchy.\n- Early Stage Concept Design Painting.\n- Expert Concept proposal painting.\n\n**DETAILS**\n- Ensure all glazing is filled solid do not feather the pained edge within windows all glazing should be block filled with watercolor.\n- Use a very loose expressive style for organic elements & vegetation.\n- Use a higher level of detail around the orangery,\n\n\n",
-            "Wv__Whitecard__WidthPx": 2445,
-            "Wv__Whitecard__HeightPx": 1528,
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "**OBJECTIVE** \n- Render the provided Whitecard Image as a charming Water Colour Painting .\n- Your Watercolour Concept Design Artwork should be indistinguishable from a Professional Client-Facing Design Concept Deliverable.\n- You are producing A Watercolour Painting for Vale Garden Houses.\n- Vale Garden Houses are the UK's premium UK Manufacturer of Conservatories and Orangeries in the UK and they are a established Luxury high end brand.\n- The Artwork is illustrating to the client a Orangery Design Proposal.\n- The aim of the image is to show a client how the Orangery will look against their Existing Home and to sell the Scheme.\n- The image is a high fidelity scan of a physical painting.\n\n**THE VIBE**\n- Charming watercolour painting.\n- Expertly painted.\n- UK Country Home.\n- Create a Rustic, Refined & Sophisticated Aesthetic.\n- Luxury.\n- Classic.\n- Timeless Orangery Design.\n- Classical Garden Room Exterior.\n\n**ART STYLE**\n- Loose.\n- Expressive.\n- Pen lines drawn over watercolour.\n- \"Pen & Wash\" Style.\n- Faded out onto the page.\n- Imperfect.\n- Loose.\n- Sketchy.\n- Early Stage Concept Design Painting.\n- Expert Concept proposal painting.\nTraditional architectural watercolour.\n- Traditional Ink and wash.\n- Cold-pressed paper texture.\n- Loose hand-drawn linework.\n- Transparent watercolour washes.\n- Muted heritage colour palette.\n- Soft bleeding pigment edges.\n- Delicate glazing shadows.\n- White paper negative space.\n- Architectural presentation sketch.\n- Rich Colour as though its been enhanced in post production to give more vibrance to the paint.\n- Sketchy pen lines sparingly indicate the material finishes applied to each part of the building but avoid overdoing it.\n\n**DETAILS**\n- Ensure all glazing is filled solid do not feather the pained edge within windows all glazing should be block filled with watercolor.\n- Use a very loose expressive style for organic elements & vegetation.\n- Use a higher level of detail around the orangery,\n- Background environment should be very loose and loosely indicate greenery and sky etc but avoid it distracting from the architecture. \n\n**THE CONTEXT**\n- A Building featuring two distinct Orangeries, on the left side is a brick built orangery with a front bay window and a tiled roof and a decorative cupola, On the Right side is a Vale Garden Houses Classical Orangery structure with a large glazed roof lantern.\n- The Vale Garden Houses structure has framework seated on a brick low wall with 3 folding doors on a bay front, above the doors and windows is a clerestory and above that decorative glazed bars.\n- The existing house is brick built at the ground floor level with hanging tiles to the the first floor and gable ends.\n- The Orangeries joinery paintwork matches the existing house.\n\n\n\n\n",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
             "Wv__Whitecard__SnappedAspectRatio": "3:2",
-            "Wv__Whitecard__SnappedDeltaPct": 6.675
+            "Wv__Whitecard__SnappedDeltaPct": 0
         },
         "Wv__Project__RenderGroup__MaterialReferences": [
             {
@@ -39,10 +39,10 @@
                 "Wv__Reference__Prompt": ""
             }
         ],
-        "Wv__Project__RenderGroup__AvoidNotes": "Avoid total perfection and instead aim for a loose realistic conceptual level artwork. , \nAvoid Deep Rich colours instead use more pastel tones. ,\nAvoid Dull paint.",
+        "Wv__Project__RenderGroup__AvoidNotes": "Avoid total perfection and instead aim for a loose realistic conceptual level artwork. , \nAvoid the linework for material embellishments being too thick, instead use lighter linework for embellishments., \nAvoid whitespace within window panels instead all windowpanes must be filled solid with pigment with no bleeding edges.\n",
         "Wv__Project__RenderGroup__ImageSize": "4K",
-        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260428T170107Z__render__.png",
-        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260428T170107Z__render____thumb240.jpg"
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260429T094635Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260429T094635Z__render____thumb240.jpg"
     },
     "Wv__Project__EditIterations": [],
     "Wv__Project__ActiveEditIterationId": ""

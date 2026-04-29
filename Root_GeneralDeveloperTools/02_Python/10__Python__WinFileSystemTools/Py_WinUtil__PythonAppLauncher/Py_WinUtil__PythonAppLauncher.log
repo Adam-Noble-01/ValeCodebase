@@ -198,3 +198,14 @@
 2026-04-28 08:03:35,505 | INFO    | === Python App Launcher starting ===
 2026-04-28 08:03:35,522 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
 2026-04-28 08:03:36,157 | INFO    | Discovery: found 18 launchable apps across 5 categories
+2026-04-28 10:07:29,968 | INFO    | Hiding window to tray
+2026-04-28 10:07:34,992 | INFO    | Discovery: found 18 launchable apps across 5 categories
+2026-04-28 10:07:35,919 | INFO    | Hiding window to tray
+2026-04-28 10:21:58,891 | INFO    | Launching app: 20__Python__PDFTools/Py_PdfUtils__PdfToPngConverter/Py_PdfUtils__PdfToPngConverter__Main__.py
+2026-04-28 10:22:01,680 | INFO    | Launching app: 20__Python__PDFTools/Py_PdfUtils__PdfToPngConverter/Py_PdfUtils__PdfToPngConverter__Main__.py
+2026-04-28 10:22:19,742 | INFO    | Launching app: 20__Python__PDFTools/Py_PdfUtils__PdfToPngConverter/Py_PdfUtils__PdfToPngConverter__Main__.py
+2026-04-28 10:41:34,193 | INFO    | Hiding window to tray
+2026-04-29 08:02:42,833 | INFO    | === Python App Launcher starting ===
+2026-04-29 08:02:42,841 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
+2026-04-29 08:02:43,751 | INFO    | Discovery: found 18 launchable apps across 5 categories
+2026-04-29 08:03:33,851 | INFO    | Hiding window to tray

@@ -1118,6 +1118,46 @@
           "endTime": "17:00",
           "title": "Whitecard |  Hendy",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1777367140564",
+          "date": "2026-04-28",
+          "startTime": "08:00",
+          "endTime": "08:45",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1777367187970",
+          "date": "2026-04-28",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1777367152494",
+          "date": "2026-04-28",
+          "startTime": "09:45",
+          "endTime": "10:00",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1777367172618",
+          "date": "2026-04-28",
+          "startTime": "08:45",
+          "endTime": "09:45",
+          "title": "Dev |  PWA Update",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1777367201269",
+          "date": "2026-04-28",
+          "startTime": "10:15",
+          "endTime": "14:00",
+          "title": "Concept3D |  Beevers",
+          "color": "na-shift-color-rose"
         }
       ]
     }

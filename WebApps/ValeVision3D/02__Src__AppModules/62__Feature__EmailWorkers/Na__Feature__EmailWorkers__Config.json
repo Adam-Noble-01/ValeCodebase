@@ -7,6 +7,6 @@
         "EmailWorkers__Config__VerifyAuthEndpoint"       : "/verify-auth",
         "EmailWorkers__Config__RequestTimeoutMs"         : 15000,
         "EmailWorkers__Config__ContactsCdnUrl"           : "https://cdn.noble-architecture.com/VaApps/ValeVision3D/data/Na__Email__AddressBook__Encrypted__.json",
-        "EmailWorkers__Config__ContactsDecryptKeyB64"    : "Pu9c0bBtczSxChhwfp5jIQ1t7+hA/U07Tq+mOI9esss="
+        "EmailWorkers__Config__ContactsDecryptKeyB64"    : "hlSzBZB4y0yP1KcgJ+w2qHcLpzFB5XQm3BBxBTIM8e0="
     }
 }

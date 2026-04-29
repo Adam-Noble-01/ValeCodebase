@@ -42,6 +42,11 @@
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Confirm Dialog (gates destructive write)
+    // ------------------------------------------------------------
+    import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -193,7 +198,16 @@
         }
 
         if (Na__FogUi__SaveBtn) {
-            Na__FogUi__SaveBtn.addEventListener('click', Na__FogPlaneSystem__SaveSettings);
+            Na__FogUi__SaveBtn.addEventListener('click', async () => {
+                const confirmed = await Na__AppUtils__ConfirmDialog__Show({
+                    title        : 'Overwrite Saved Fog Settings?',
+                    message      : 'This will overwrite the fog plane positions and falloff stored in this project.',
+                    confirmLabel : 'Overwrite',
+                    isDestructive: true
+                });
+                if (!confirmed) return;
+                Na__FogPlaneSystem__SaveSettings();
+            });
         }
 
         window.addEventListener('na-fogplane-state-changed', (event) => {

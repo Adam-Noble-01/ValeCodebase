@@ -478,10 +478,33 @@
                 <span class="na-dropdown-menu__arrow">▾</span>
             </summary>
             <ul class="na-dropdown-menu__list">
-                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naSaveCameraSettingsItem" style="display:none;">
-                    <button class="na-dropdown-menu__button" id="naSaveCameraSettingsButton">
-                        Save Camera Settings
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naCameraConfigItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCameraConfigToggle" aria-expanded="false">
+                        Camera Configurations
+                        <span class="na-dropdown-menu__subarrow">▾</span>
                     </button>
+                    <div class="na-dropdown-menu__panel" id="naCameraConfigPanel">
+
+                        <!-- SAVE CAMERA SETTINGS (camera position + orbit target) -->
+                        <div class="na-dropdown-menu__panel-title">Saved Camera + Orbit Target</div>
+                        <button class="na-dropdown-menu__action" id="naSaveCameraSettingsButton">Save Camera Settings</button>
+
+                        <hr class="na-dropdown-menu__panel-divider" />
+
+                        <!-- PROJECT MAX ZOOM RADIUS (flattened inline) -->
+                        <div class="na-dropdown-menu__panel-title">Project Max Zoom Radius</div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <span class="na-dropdown-menu__panel-title" style="font-weight:400;flex:1;">Effective:</span>
+                            <span class="na-dropdown-menu__value" id="naOrbitMaxDistanceCurrent">—</span>
+                        </div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <input type="number" id="naOrbitMaxDistanceInput" class="na-dropdown-menu__value-input" min="1000" step="500" placeholder="80000" />
+                            <span class="na-dropdown-menu__value-unit">mm</span>
+                        </div>
+                        <button class="na-dropdown-menu__action" id="naOrbitMaxDistanceApply">Apply Live</button>
+                        <button class="na-dropdown-menu__action" id="naOrbitMaxDistanceSave">Save to Project</button>
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naOrbitMaxDistanceClear">Clear from Project</button>
+                    </div>
                 </li>
                 <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item">
@@ -556,6 +579,19 @@
     
     <!-- Toast Notification (success / error feedback) -->
     <div class="na-toast" id="naToastNotification"></div>
+
+    <!-- Shared Confirm Dialog (gates destructive / persistent dev actions) -->
+    <div class="na-confirm-dialog" id="naConfirmDialog" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="na-confirm-dialog__backdrop" id="naConfirmDialogBackdrop"></div>
+        <div class="na-confirm-dialog__panel" role="document">
+            <div class="na-confirm-dialog__title" id="naConfirmDialogTitle">Confirm</div>
+            <div class="na-confirm-dialog__message" id="naConfirmDialogMessage"></div>
+            <div class="na-confirm-dialog__actions">
+                <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naConfirmDialogCancel" type="button">Cancel</button>
+                <button class="na-dropdown-menu__action na-confirm-dialog__confirm" id="naConfirmDialogConfirm" type="button">Confirm</button>
+            </div>
+        </div>
+    </div>
     
     <!-- endregion -------------------------------------------------------- -->
     
@@ -579,6 +615,7 @@
     import { Na__UiFeature__InitializeVerticalCorrectionControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__Camera__VerticalCorrection__Controls.js';
     import { Na__UiFeature__InitializeImageExportControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js';
     import { Na__UiFeature__InitializeSaveCameraButton } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js';
+    import { Na__UiFeature__InitializeOrbitMaxDistanceDevControls } from './02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js';
     import { Na__UiFeature__InitializeLocalhostDevMenu } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__DevMenu__LocalhostOnly.js';
     import { Na__UiFeature__InitializeProfileLinesControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js';
     import { Na__UiFeature__InitializeSceneInspector } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js';
@@ -781,6 +818,7 @@
             elevationSpeedMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__ElevationSpeedMm,  // <-- Vertical navigation speed (mm)
             minDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMinDistanceMm,   // <-- Orbit zoom in (mm)
             maxDistanceMm: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMaxDistanceMm,  // <-- Orbit zoom out (mm)
+            maxDistanceMultiplier: Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMaxDistanceMultiplier, // <-- Tablet bonus multiplier (1.5 = +50%)
             minCameraYMm:  Na__Navmode__ActiveConfig.Navmode__IpadControls__OrbitMinCameraYMm    // <-- Camera floor guard (mm)
         }
         : {
@@ -1003,6 +1041,15 @@
     Na__UiFeature__PromptToolsMenu();
     Na__UiFeature__InitializeLocalhostDevMenu();
     Na__UiFeature__InitializeSaveCameraButton(Na__Camera__Main, Na__Controls__Orbit, Na__UiFeature__ShowToast);
+    Na__UiFeature__InitializeOrbitMaxDistanceDevControls({
+        controls         : Na__Controls__Orbit,                                 // <-- Active OrbitControls instance
+        setMaxDistanceMm : Na__NavBundle__Main.setMaxDistanceMm,                // <-- Nav bundle runtime setter
+        showToast        : Na__UiFeature__ShowToast,                            // <-- Toast feedback callback
+        deviceConfig     : {
+            activeConfig : Na__Navmode__ActiveConfig,                           // <-- Per-device default config block
+            isTouch      : Na__Device__UseTouchControls                         // <-- True for iPad / touch devices
+        }
+    });
     Na__UiFeature__InitializeProfileLinesControls(Na__AppFlow__PipelineRef, Na__Config__ProfileLines);
     Na__UiFeature__InitializeFogPlaneControls(null);
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);

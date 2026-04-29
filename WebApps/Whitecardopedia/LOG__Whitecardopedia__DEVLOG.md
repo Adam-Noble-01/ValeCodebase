@@ -18,6 +18,35 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.4 - 29-Apr-2026 - Progressive Gallery Loading + Newest-First Order + Lazy Thumbnails
+### Features Added
+- **Progressive Batched Loading**: Gallery no longer blocks on `Promise.all` for all 100 enabled `project.json` files before rendering. Projects now stream in batches of 10 — the grid becomes interactive after the first batch lands (~10 cards) and the remaining 90 continue loading in the background. Resolves the long blank-screen wait on localhost where Flask + HTTP/1.1 was serialising the 200+ requests through the browser's ~6-connection cap
+- **Newest-First Load Order**: The batched loader now sorts the enabled project list by year DESC then by appended-position DESC before slicing into batches. Because the auto-cloner script appends new projects to the end of `masterConfig.json`, this surfaces the most recently delivered work first — the visible viewport on first paint matches the gallery's default `date-newest` sort, so users see the cards they care about as soon as they appear instead of waiting for older 2025 entries to finish loading first
+- **Native Lazy Thumbnails**: Added `loading="lazy"` + `decoding="async"` to every gallery card thumbnail and to the two `ContentIndicatorIcons` (watercolor / 3D-model badges); the browser now defers image decode until each card is near the viewport's prefetch margin (verified: only ~60 of 100 thumbnails fetched on first paint, with the rest fetched on scroll). Same attributes applied to the `ImageCarousel` thumbnail strip for projects with many images, so opening a project no longer eagerly fetches every full-resolution image
+- **Streaming Progress Indicator**: Below the grid, a small `Loading more projects... X / Y` line appears while batches are still arriving and auto-hides once `loaded === total`. Search / sort / mode-toggle keep working as projects stream in — the visible count and filtered results update live, matching the "continue loading" UX the user expected
+
+### Technical Implementation
+- Updated `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js`:
+  - Added `loadProjectsInBatches(initialBatchSize, subsequentBatchSize, onBatchLoaded)` that fetches enabled projects in chunks via `Promise.all` per batch and invokes `onBatchLoaded(batch, loadedCount, totalEnabled)` after each chunk resolves
+  - Added two helpers: `extractFolderIdYear(folderId)` reads the leading 4-digit year prefix, and `sortProjectEntriesNewestFirst(entries)` performs an indexed stable sort by year DESC then by `originalIndex` DESC inside each year
+  - Added `GALLERY_INITIAL_BATCH_SIZE` and `GALLERY_SUBSEQUENT_BATCH_SIZE` module constants (both `10`) for clarity, even though current call site passes literals
+  - `loadAllProjects()` left unchanged — still used by `Na__AppCore__WhitecardopediaApp.jsx` for URL deep-link routing (`?id=...`)
+- Updated `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx`:
+  - Replaced the single `useEffect` `Promise.all` with a streaming-append effect calling `loadProjectsInBatches(10, 10, ...)`. The grid reveals as soon as the first batch lands; subsequent batches are appended via `setProjects(prev => [...prev, ...batch])`
+  - Added `loadProgress` state and an inline indicator rendered after the grid (auto-hides when complete)
+  - Added a `cancelled` flag returned from the effect cleanup to avoid `setState` after unmount when the user navigates away mid-load
+  - Added `loading="lazy"` + `decoding="async"` to the project card thumbnail `<img>` and to both `ContentIndicatorIcons` images
+- Updated `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__ImageCarousel.jsx` — `loading="lazy"` + `decoding="async"` on the bottom thumbnail strip; the main carousel image stays eager (correct UX — it's the focus)
+
+### Validation
+- Network panel on cold load shows exactly 10 sequential batches of 10 `project.json` requests, with batch 1 entirely 2026 projects (Beevers, Hendy, James, Thompson, Marsh, Berry, McLoughlin, Matharu, Thorpe, Lee-Smith) and 2025 projects only appearing from batch 5 onwards — confirms newest-first order is correct
+- First image requests on first paint are also all 2026 thumbnails (Beevers, Matharu, McLoughlin, Lee-Smith, Hampson, King, Lorriman, Smee, Lister, Lamming) — load order, render order, and visible viewport now match the date-newest sort
+- Lazy loading verified: 60 of 100 thumbnail requests on first paint, remainder triggered as the user scrolls
+- Search / sort / mode-toggle continue working while batches stream in; no console errors introduced (only pre-existing Babel-standalone and React-devtools dev warnings)
+- `loadAllProjects()` URL deep-link path (`?id=<projectCode>`) still functions because it was deliberately left untouched
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.3.3 - 28-Apr-2026 - Cross-Platform PWA Install + Shared Service Worker + Gallery Thumbnails
 ### Features Added
 - **Cross-Platform PWA Installability**: First-time visitors are now greeted with a platform-aware install prompt rather than relying on the hidden browser address-bar icon. One small handler module per platform / browser combo so future OS updates only touch one file:

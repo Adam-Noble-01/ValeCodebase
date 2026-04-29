@@ -42,6 +42,11 @@
     import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Confirm Dialog (gates destructive write)
+    // ------------------------------------------------------------
+    import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -57,6 +62,15 @@
             showToast('No project loaded — cannot save camera settings.', true);
             return;
         }
+
+        // CONFIRM | Block accidental overwrites of saved camera state
+        const confirmed = await Na__AppUtils__ConfirmDialog__Show({
+            title        : 'Overwrite Saved Camera?',
+            message      : `This will overwrite the camera position and orbit target saved in ${projectCode}.`,
+            confirmLabel : 'Overwrite',
+            isDestructive: true
+        });
+        if (!confirmed) return;
 
         try {
             const cameraJsonString = Na__UiFeature__BuildCameraJson(
@@ -106,16 +120,27 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Initialize Localhost-Only Save Button
+    // FUNCTION | Initialize Localhost-Only Camera Configurations Submenu
     // ------------------------------------------------------------
     function Na__UiFeature__InitializeSaveCameraButton(camera, controls, showToast) {
         if (!Na__AppUtils__IsRunningOnLocalhost()) return;                   // <-- Only on localhost
 
-        const menuItem = document.getElementById('naSaveCameraSettingsItem');
-        const button   = document.getElementById('naSaveCameraSettingsButton');
+        const menuItem  = document.getElementById('naCameraConfigItem');     // <-- Wrapper for whole Camera Configurations submenu
+        const toggleBtn = document.getElementById('naCameraConfigToggle');   // <-- Submenu open/close button
+        const panel     = document.getElementById('naCameraConfigPanel');    // <-- Submenu panel container
+        const button    = document.getElementById('naSaveCameraSettingsButton');
         if (!menuItem || !button) return;
 
         menuItem.style.display = '';                                         // <-- Reveal the Dev Tools menu item
+
+        if (toggleBtn && panel) {
+            toggleBtn.addEventListener('click', () => {
+                const isOpen = panel.classList.contains('is-open');
+                panel.classList.toggle('is-open', !isOpen);                  // <-- Toggle submenu open state
+                toggleBtn.setAttribute('aria-expanded', String(!isOpen));    // <-- Sync accessibility state
+            });
+        }
+
         button.addEventListener('click', () => Na__UiFeature__SaveCameraSettings(camera, controls, showToast)); // <-- Wire up save handler
     }
     // ------------------------------------------------------------

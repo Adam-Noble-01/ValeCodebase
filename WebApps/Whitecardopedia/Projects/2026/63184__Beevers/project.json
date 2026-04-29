@@ -1,18 +1,35 @@
 {
     "Camera__DefaultPosition": {
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
-        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
             "Camera__DefaultPos__PosX": 15162,
             "Camera__DefaultPos__PosY": 1370,
             "Camera__DefaultPos__PosZ": 29658
         },
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultRotation": {
             "Camera__DefaultRotation__RotX": -0.0095,
             "Camera__DefaultRotation__RotY": -0.2596,
             "Camera__DefaultRotation__RotZ": -0.0024
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 10000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -27150
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": false,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 66573
         }
     },
     "OrbitHelperCube__Position": {
@@ -51,22 +68,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers/Beevers__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers/Beevers__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers/Beevers__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "FogPlane__Config": {
-        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
-        "FogPlane__Config__Enabled": true,
-        "FogPlane__Config__FalloffDistanceMm": 10000,
-        "FogPlane__Config__PlaneA": {
-            "FogPlane__Config__PlaneA__Active": true,
-            "FogPlane__Config__PlaneA__PositionMm": -27150,
-            "FogPlane__Config__PlaneA__NormalX": 0,
-            "FogPlane__Config__PlaneA__NormalZ": 1
-        },
-        "FogPlane__Config__PlaneB": {
-            "FogPlane__Config__PlaneB__Active": false,
-            "FogPlane__Config__PlaneB__PositionMm": 66573,
-            "FogPlane__Config__PlaneB__NormalX": -1,
-            "FogPlane__Config__PlaneB__NormalZ": 0
-        }
-    }
+    ]
 }

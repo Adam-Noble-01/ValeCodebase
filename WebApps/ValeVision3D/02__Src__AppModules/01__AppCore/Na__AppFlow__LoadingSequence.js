@@ -266,6 +266,14 @@
                     || null;
                 Na__Saved__ProjectOrbitTarget  = projectData.OrbitHelperCube__Position || null;
 
+                // APPLY PER-PROJECT ORBIT MAX DISTANCE OVERRIDE
+                // Single value overrides BOTH PC and iPad equally; iPad bonus does NOT stack on top.
+                const Na__Saved__ProjectOrbitMaxDistanceMm = projectData.Navmode__OrbitMaxDistanceMm;
+                if (Number.isFinite(Na__Saved__ProjectOrbitMaxDistanceMm) && Na__Saved__ProjectOrbitMaxDistanceMm > 0) {
+                    Na__Controls__Orbit.maxDistance = Na__Math__ConvertMmToUnits(Na__Saved__ProjectOrbitMaxDistanceMm);
+                    console.log(`[ValeVision3D] Project orbit max distance override applied: ${Na__Saved__ProjectOrbitMaxDistanceMm} mm`);
+                }
+
                 // EXTRACT MODEL URLS FROM PROJECT DATA
                 const projectUrls = Na__AppUtils__ExtractModelUrls(projectData);
                 if (projectUrls.length > 0) {

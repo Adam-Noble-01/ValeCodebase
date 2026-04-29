@@ -39,21 +39,29 @@
     // ------------------------------------------------------------
     function ProjectGallery({ onSelectProject, onOpenProjectEditor, onOpenTimeAnalysis }) {
         const [projects, setProjects] = React.useState([]);              // <-- Projects array state
-        const [loading, setLoading] = React.useState(true);              // <-- Loading state
+        const [loading, setLoading] = React.useState(true);              // <-- Loading state (true until first batch arrives)
+        const [loadProgress, setLoadProgress] = React.useState({ loaded: 0, total: 0 });  // <-- Progressive load progress
         const [sortBy, setSortBy] = React.useState('date-newest');       // <-- Sort option state
         const [searchTerm, setSearchTerm] = React.useState('');          // <-- Search term state
         const [galleryMode, setGalleryMode] = React.useState('whitecard');  // <-- Gallery mode state (whitecard or blockout)
         
-        // EFFECT | Load Projects on Mount
+        // EFFECT | Load Projects Progressively in Batches
         // ---------------------------------------------------------------
         React.useEffect(() => {
-            async function fetchProjects() {
-                const loadedProjects = await loadAllProjects();          // <-- Load all projects
-                setProjects(loadedProjects);                             // <-- Update projects state
-                setLoading(false);                                       // <-- Set loading to false
-            }
+            let cancelled = false;                                       // <-- Guard against setState after unmount
             
-            fetchProjects();                                             // <-- Execute fetch function
+            setProjects([]);                                             // <-- Reset list on (re)mount
+            setLoading(true);                                            // <-- Show loading spinner until first batch
+            setLoadProgress({ loaded: 0, total: 0 });                    // <-- Reset progress counter
+            
+            loadProjectsInBatches(10, 10, (batch, loaded, total) => {
+                if (cancelled) return;                                   // <-- Skip if component already unmounted
+                setProjects(prev => [...prev, ...batch]);                // <-- Append newly loaded batch
+                setLoading(false);                                       // <-- Reveal grid as soon as first batch lands
+                setLoadProgress({ loaded, total });                      // <-- Update progress indicator
+            });
+            
+            return () => { cancelled = true; };                          // <-- Cleanup on unmount
         }, []);
         // ---------------------------------------------------------------
         
@@ -151,6 +159,8 @@
                                         src={getThumbnailImage(project)} 
                                         alt={project.projectName}
                                         className="project-card__image"
+                                        loading="lazy"
+                                        decoding="async"
                                         onContextMenu={(e) => e.preventDefault()}
                                         draggable="false"
                                     />
@@ -170,6 +180,20 @@
                         ))
                         )}
                     </div>
+
+                    {loadProgress.total > 0 && loadProgress.loaded < loadProgress.total && (
+                        <p
+                            className="project-gallery__load-progress"
+                            style={{
+                                textAlign: 'center',
+                                fontSize: '14px',
+                                color: 'var(--Vale_TextSecondary)',
+                                margin: 'var(--Vale_Spacing_Medium) 0 0 0'
+                            }}
+                        >
+                            Loading more projects... {loadProgress.loaded} / {loadProgress.total}
+                        </p>
+                    )}
                 </div>
             </>
         );
@@ -201,6 +225,8 @@
                         alt="Watercolor Artwork Available"
                         className="project-card__content-icon"
                         title="Watercolor Artwork Available"
+                        loading="lazy"
+                        decoding="async"
                     />
                 )}
                 {show3DModelIcon && (
@@ -209,6 +235,8 @@
                         alt="3D Model Available"
                         className="project-card__content-icon"
                         title="3D Model Available"
+                        loading="lazy"
+                        decoding="async"
                     />
                 )}
             </div>

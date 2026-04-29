@@ -147,6 +147,96 @@
     // ---------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Batch Loading Configuration
+    // ------------------------------------------------------------
+    const GALLERY_INITIAL_BATCH_SIZE     = 20;                           // <-- First batch revealed to user (fast first paint)
+    const GALLERY_SUBSEQUENT_BATCH_SIZE  = 20;                           // <-- Each follow-up batch streamed in background
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Extract Year Prefix From Folder Identifier
+    // ---------------------------------------------------------------
+    function extractFolderIdYear(folderId) {
+        const yearMatch = typeof folderId === 'string'
+            ? folderId.match(/^(\d{4})\//)                               // <-- Match 4-digit year prefix before slash
+            : null;
+        return yearMatch ? parseInt(yearMatch[1], 10) : 0;               // <-- Return 0 if folderId is malformed
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Order Projects Newest-First For Batched Loading
+    // ---------------------------------------------------------------
+    // The masterConfig keeps newly-added projects at the end of the
+    // list, so reverse-original-order within each year approximates
+    // "newest first" - which matches the gallery's default
+    // date-newest sort and gets the most-relevant cards on screen
+    // during the very first batch of fetches.
+    // ---------------------------------------------------------------
+    function sortProjectEntriesNewestFirst(projectEntries) {
+        const indexed = projectEntries.map((project, originalIndex) => ({
+            project,                                                     // <-- Preserve original entry
+            originalIndex                                                // <-- Preserve original position
+        }));
+
+        indexed.sort((a, b) => {
+            const yearA = extractFolderIdYear(a.project.folderId);       // <-- Year of project A
+            const yearB = extractFolderIdYear(b.project.folderId);       // <-- Year of project B
+            if (yearA !== yearB) return yearB - yearA;                   // <-- Newer year first
+            return b.originalIndex - a.originalIndex;                    // <-- Within same year: newest-appended first
+        });
+
+        return indexed.map(item => item.project);                        // <-- Return reordered entries
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Load Projects Progressively in Batches
+    // ------------------------------------------------------------
+    // Streams enabled projects to the caller in chunks via onBatchLoaded
+    // so the gallery can render the first batch immediately while
+    // subsequent batches continue loading in the background. Projects
+    // are ordered newest-first so the initial batch matches the
+    // gallery's default date-newest sort and the user sees the most
+    // relevant cards as soon as they appear.
+    // ---------------------------------------------------------------
+    async function loadProjectsInBatches(initialBatchSize, subsequentBatchSize, onBatchLoaded) {
+        const masterConfig = await loadMasterConfig();                   // <-- Load master configuration
+        
+        if (!masterConfig || !masterConfig.projects) {
+            return [];                                                   // <-- Return empty array on error
+        }
+        
+        const enabledProjects = sortProjectEntriesNewestFirst(
+            masterConfig.projects.filter(project => project.enabled)     // <-- Filter enabled projects only
+        );                                                               // <-- Reorder so newest entries load first
+        
+        const totalEnabled    = enabledProjects.length;                  // <-- Total projects to load
+        const allLoaded       = [];                                      // <-- Aggregate of every loaded project
+        let cursor            = 0;                                       // <-- Position in enabled list
+        
+        while (cursor < enabledProjects.length) {
+            const batchSize = cursor === 0 ? initialBatchSize : subsequentBatchSize;  // <-- First batch may differ from rest
+            const chunk     = enabledProjects.slice(cursor, cursor + batchSize);       // <-- Slice next chunk
+            
+            const chunkPromises = chunk.map(project => loadProjectData(project.folderId));  // <-- Fetch project.json per item
+            const chunkResults  = (await Promise.all(chunkPromises))
+                .filter(project => project !== null);                    // <-- Drop failed loads
+            
+            allLoaded.push(...chunkResults);                             // <-- Append to aggregate
+            
+            if (typeof onBatchLoaded === 'function') {
+                onBatchLoaded(chunkResults, allLoaded.length, totalEnabled);  // <-- Notify caller with progress
+            }
+            
+            cursor += batchSize;                                         // <-- Advance cursor
+        }
+        
+        return allLoaded;                                                // <-- Return full list when done
+    }
+    // ---------------------------------------------------------------
+
+
     // FUNCTION | Get Image URL for Project
     // ------------------------------------------------------------
     function getImageUrl(projectData, imageName) {

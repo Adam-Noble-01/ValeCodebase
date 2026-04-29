@@ -66,7 +66,13 @@
         const movementSpeedUnits = Na__Math__ConvertMmToUnits(config.movementSpeedMm);
         const elevationSpeedUnits = Na__Math__ConvertMmToUnits(config.elevationSpeedMm);
         const minDistanceUnits = Number.isFinite(config.minDistanceMm) ? Na__Math__ConvertMmToUnits(config.minDistanceMm) : null;
-        const maxDistanceUnits = Number.isFinite(config.maxDistanceMm) ? Na__Math__ConvertMmToUnits(config.maxDistanceMm) : null;
+        const maxDistanceMultiplier = Number.isFinite(config.maxDistanceMultiplier) && config.maxDistanceMultiplier > 0
+            ? config.maxDistanceMultiplier
+            : 1;                                                     // <-- Tablet bonus multiplier (default 1.0 = no bonus)
+        const effectiveMaxDistanceMm = Number.isFinite(config.maxDistanceMm)
+            ? config.maxDistanceMm * maxDistanceMultiplier
+            : null;                                                  // <-- Effective max with bonus applied
+        const maxDistanceUnits = Number.isFinite(effectiveMaxDistanceMm) ? Na__Math__ConvertMmToUnits(effectiveMaxDistanceMm) : null;
         const minCameraYUnits  = Number.isFinite(config.minCameraYMm)  ? Na__Math__ConvertMmToUnits(config.minCameraYMm)  : null; // <-- Camera floor guard (units)
         
         if (Number.isFinite(minDistanceUnits)) {
@@ -134,10 +140,17 @@
             controls.dispose();
         };
         
+        // SETTER | Mutate Orbit Max Distance at Runtime
+        const setMaxDistanceMm = (mm) => {
+            if (!Number.isFinite(mm) || mm <= 0) return;             // <-- Guard against invalid values
+            controls.maxDistance = Na__Math__ConvertMmToUnits(mm);   // <-- Single source of truth for max distance
+        };
+        
         return {
             controls,
             updateNavigation,
-            dispose
+            dispose,
+            setMaxDistanceMm
         };
     }
     // ------------------------------------------------------------

@@ -2,6 +2,87 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.3.4 - 29-Apr-2026
+### Dev Tools — Confirm Modals + Camera Configurations Grouping
+
+**Overview**
+- Added a shared in-app confirmation dialog that gates the four destructive Dev Tools writes to `project.json` so a stray click can no longer overwrite saved camera positions, fog settings, grid offsets, or orbit-max overrides.
+- Reorganised the Dev Tools dropdown so "Save Camera Settings" and "Project Max Zoom Radius" no longer float as bare items at the top — both now live inside a single "Camera Configurations" submenu with proper section titles.
+
+**Shared Confirm Dialog**
+- New module `02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js` exposing `Na__AppUtils__ConfirmDialog__Show({ title, message, confirmLabel, cancelLabel, isDestructive })` which returns a `Promise<boolean>`.
+- Cancel / backdrop click / Escape resolve `false`; Confirm / Enter resolve `true`. Auto-cancels any prior open dialog so re-entry cannot leak listeners or promises. Falls back to `window.confirm()` if the modal markup is missing.
+- Single `<div id="naConfirmDialog">` element added to `index.html` next to the toast notification, with backdrop, title, message, Cancel and Confirm buttons. Uses `aria-modal="true"` and `aria-hidden` toggling for accessibility.
+- New CSS region appended to `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` covering `.na-confirm-dialog`, `.na-confirm-dialog__backdrop`, `.na-confirm-dialog__panel`, `.na-confirm-dialog__title|message|actions`, plus a destructive warm-red accent (`#b3382c`) via `.na-confirm-dialog__confirm--destructive`. No new stylesheet file — buttons reuse existing `na-dropdown-menu__action*` classes for visual consistency.
+
+**Confirm-Gated Save Actions (project.json writes only)**
+- Save Camera Settings — title "Overwrite Saved Camera?", message includes the project code.
+- Save to Project (orbit max distance) — title "Save Orbit Max Override?", message includes the mm value and project code.
+- Save Fog Settings — title "Overwrite Saved Fog Settings?".
+- Save Grid Position — title "Overwrite Saved Grid Position?", message includes the project code.
+- Apply Live, Clear from Project, Remove Plane A/B, and Place Fog Plane A/B were intentionally NOT gated (non-persistent or trivially redoable).
+
+**Camera Configurations Submenu**
+- Replaced the two floating items `naSaveCameraSettingsItem` and `naOrbitMaxDistanceItem` with one new submenu `Camera Configurations` (`naCameraConfigItem` / `naCameraConfigToggle` / `naCameraConfigPanel`).
+- Inside the panel: a "Saved Camera + Orbit Target" heading with the Save Camera Settings action button, divider, then a "Project Max Zoom Radius" heading with the Effective display, Override input, and the Apply Live / Save to Project / Clear from Project buttons (flattened inline — no nested submenu).
+- All inner control IDs preserved (`naSaveCameraSettingsButton`, `naOrbitMaxDistanceCurrent`, `naOrbitMaxDistanceInput`, `naOrbitMaxDistanceApply`, `naOrbitMaxDistanceSave`, `naOrbitMaxDistanceClear`) so existing JS bindings continue to work.
+- `Na__UiFeature__SaveCameraSettings.js` now owns the wrapper visibility and the new submenu open/close toggle; lookup retargeted from `naSaveCameraSettingsItem` to `naCameraConfigItem`.
+- `Na__UiFeature__OrbitMaxDistance__DevControls.js` had its now-redundant wrapper-reveal and submenu-toggle wiring trimmed (the parent submenu owns those concerns); only the inline orbit-max controls remain.
+
+**Files Added**
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ConfirmDialog.js`
+
+**Files Changed**
+- `index.html` — added `#naConfirmDialog` markup; replaced floating Save Camera + Project Max Zoom Radius items with a single `Camera Configurations` submenu containing both
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — appended `Confirm Dialog (Shared Destructive-Action Modal)` region with backdrop, panel, typography, and destructive-button styles
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js` — confirm-gated save; retargeted wrapper id to `naCameraConfigItem`; wired submenu toggle
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js` — confirm-gated save; removed redundant wrapper/submenu-toggle wiring
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js` — confirm-gated `Save Fog Settings` click handler
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js` — confirm-gated `Save Position` write inside `Na__GridUi__SavePositionToProject`
+
+# ---------------------------------------------------------
+## ValeVision3D v2.3.3 - 29-Apr-2026
+### Orbit Max Zoom Distance — iPad +50% Bonus + Per-Project Override
+
+**Overview**
+- iPad / touch devices were noticeably more restricted than PC when zooming out from the helper cube. Added a config-driven multiplier so touch devices get +50% extra orbit-out distance by default while PC behaviour stays unchanged.
+- Added a per-project override (`Navmode__OrbitMaxDistanceMm` in `project.json`) that replaces the per-device default for both PC and iPad equally — useful on the ~10% of projects with unusually large or small site footprints. iPad bonus does NOT stack on top of the project override.
+- New "Project Max Zoom Radius" controls inside Dev Tools allow viewing the live effective cap, applying a value live for testing, saving it to `project.json` via the Flask API, or clearing it back to the per-device default.
+
+**Default Config**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — added `Navmode__IpadControls__OrbitMaxDistanceMultiplier: 1.5` inside the existing `Navmode__IpadControls` block. iPad effective max becomes `50 m * 1.5 = 75 m` out of the box; PC stays at 60 m.
+
+**Navigation Modules — Multiplier + Runtime-Mutable Cap**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js` — multiplies `config.maxDistanceMm` by `config.maxDistanceMultiplier` (defaults to 1.0 when missing, so existing callers like Whitecardopedia / TestEnv are unaffected). Bundle now exposes `setMaxDistanceMm(mm)` for runtime mutation.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js` — wheel-zoom clamp now reads `controls.maxDistance` live (instead of the closure-captured value) so post-init mutations affect both wheel and orbit equally. Same `setMaxDistanceMm(mm)` setter exposed.
+
+**Per-Project Override Read in App Flow**
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — alongside the existing `Camera__DefaultPosition` and `OrbitHelperCube__Position` reads, captures `projectData.Navmode__OrbitMaxDistanceMm` and applies it to `Na__Controls__Orbit.maxDistance` post-fetch and pre-render-loop. iPad multiplier is intentionally NOT re-applied on top.
+
+**index.html Wiring**
+- Added `maxDistanceMultiplier` to the iPad branch of `Na__Navmode__ConfigPayload` so the iPad nav module receives the bonus from JSON.
+- Initial Dev Tools dropdown markup added a top-level "Project Max Zoom Radius" submenu (subsequently flattened into the `Camera Configurations` submenu in v2.3.4).
+- New init call `Na__UiFeature__InitializeOrbitMaxDistanceDevControls(...)` registered alongside `Na__UiFeature__InitializeSaveCameraButton(...)`.
+
+**Dev Tools — New Module**
+- New module `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js`. Mirrors the `Na__UiFeature__SaveCameraSettings.js` Flask round-trip pattern.
+  - **Apply Live** — sets `controls.maxDistance` instantly via the nav-bundle setter, no persistence.
+  - **Save to Project** — writes `Navmode__OrbitMaxDistanceMm` into `project.json`.
+  - **Clear from Project** — deletes the key and restores the per-device default (PC: 60 m; iPad: 50 m × 1.5 = 75 m) by recomputing from the in-memory `Na__Navmode__ActiveConfig`.
+- Live "Effective Max" display refreshed on every `OrbitControls 'change'` event, so panning/zooming reflects the cap immediately.
+- All controls are localhost-gated via `Na__AppUtils__IsRunningOnLocalhost()` — production users never see them.
+
+**Files Added**
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js`
+
+**Files Changed**
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — added `Navmode__IpadControls__OrbitMaxDistanceMultiplier: 1.5`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js` — applied multiplier to effective max distance; exposed `setMaxDistanceMm`
+- `02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js` — wheel-zoom reads live `controls.maxDistance`; exposed `setMaxDistanceMm`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — applied `Navmode__OrbitMaxDistanceMm` from `project.json` post-fetch
+- `index.html` — wired `maxDistanceMultiplier` into iPad payload; added initial `Project Max Zoom Radius` Dev Tools markup; imported and called the new dev-controls initializer
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.3.2 - 09-Apr-2026
 ### Email Workers — R2 CDN Contacts, BCC Admin Copy, Deployment Tooling
 

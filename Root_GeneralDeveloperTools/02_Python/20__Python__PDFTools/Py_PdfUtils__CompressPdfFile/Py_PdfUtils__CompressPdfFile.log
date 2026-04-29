@@ -295,3 +295,11 @@
 2026-04-23 11:41:52,229 | INFO | PyMuPDF (fitz) library loaded successfully
 2026-04-23 11:41:52,259 | INFO | Successfully imported Noble Architecture icon loader
 2026-04-23 11:41:52,355 | INFO | PDF Compression App initialized
+2026-04-29 14:36:37,198 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-04-29 14:36:37,406 | INFO | Successfully imported Noble Architecture icon loader
+2026-04-29 14:36:37,759 | INFO | PDF Compression App initialized
+2026-04-29 14:36:45,085 | INFO | Starting batch compression for 1 file(s)
+2026-04-29 14:36:45,085 | INFO | Settings: DPI=300, JPEG=True, Quality=100
+2026-04-29 14:36:45,088 | INFO | Compressing file 1/1: C:/01__ValeProjects/ValeProjects__2026/63184__Beevers__Whitecard/WatercolourStyleTransfer__Reference-06__Iso-A4__RevA__1.0.0__.pdf
+2026-04-29 14:36:45,090 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/63184__Beevers__Whitecard/WatercolourStyleTransfer__Reference-06__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf
+2026-04-29 14:36:45,918 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/63184__Beevers__Whitecard/WatercolourStyleTransfer__Reference-06__Iso-A4__RevA__1.0.0____Compressed__DPI-300__JPEG-100.pdf

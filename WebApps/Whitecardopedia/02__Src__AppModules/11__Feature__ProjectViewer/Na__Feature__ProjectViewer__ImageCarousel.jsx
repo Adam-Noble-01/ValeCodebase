@@ -436,6 +436,8 @@
                                 src={getImageUrl(projectData, image)}
                                 alt={`Thumbnail ${index + 1}`}
                                 className={`image-carousel__thumbnail ${index === currentIndex ? 'image-carousel__thumbnail--active' : ''}`}
+                                loading="lazy"
+                                decoding="async"
                                 onClick={() => handleThumbnailClick(index, setCurrentIndex)}
                                 onContextMenu={(e) => e.preventDefault()}
                                 draggable="false"

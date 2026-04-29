@@ -164,7 +164,8 @@
             const accelerationFactor = extraTicks > 0 ? Math.pow(1.05, extraTicks) : 1;
             const acceleratedZoomStep = zoomStepUnits * accelerationFactor;
             
-            Na__DefaultNavmode__ApplyZoomStep(camera, controls, zoomDirection, acceleratedZoomStep, minDistanceUnits, maxDistanceUnits);
+            const liveMaxDistanceUnits = Number.isFinite(controls.maxDistance) ? controls.maxDistance : maxDistanceUnits; // <-- Read live so runtime overrides take effect
+            Na__DefaultNavmode__ApplyZoomStep(camera, controls, zoomDirection, acceleratedZoomStep, minDistanceUnits, liveMaxDistanceUnits);
         };
         // ------------------------------------------------------------
         
@@ -233,10 +234,17 @@
             controls.dispose();
         };
         
+        // SETTER | Mutate Orbit Max Distance at Runtime
+        const setMaxDistanceMm = (mm) => {
+            if (!Number.isFinite(mm) || mm <= 0) return;             // <-- Guard against invalid values
+            controls.maxDistance = Na__Math__ConvertMmToUnits(mm);   // <-- Single source of truth for max distance (wheel zoom reads live)
+        };
+        
         return {
             controls,
             updateNavigation,
-            dispose
+            dispose,
+            setMaxDistanceMm
         };
         // ------------------------------------------------------------
     }

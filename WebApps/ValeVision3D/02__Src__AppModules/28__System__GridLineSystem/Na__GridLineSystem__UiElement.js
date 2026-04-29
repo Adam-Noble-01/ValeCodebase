@@ -44,6 +44,11 @@
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Confirm Dialog (gates destructive write)
+    // ------------------------------------------------------------
+    import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Render Loop Invalidation
     // ------------------------------------------------------------
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
@@ -361,6 +366,15 @@
             toast('No project loaded — cannot save grid position.', true);
             return;
         }
+
+        // CONFIRM | Block accidental writes of the grid offset
+        const confirmed = await Na__AppUtils__ConfirmDialog__Show({
+            title        : 'Overwrite Saved Grid Position?',
+            message      : `Save grid position offset to ${projectCode}? This overwrites any existing grid position.`,
+            confirmLabel : 'Overwrite',
+            isDestructive: true
+        });
+        if (!confirmed) return;
 
         try {
             const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;

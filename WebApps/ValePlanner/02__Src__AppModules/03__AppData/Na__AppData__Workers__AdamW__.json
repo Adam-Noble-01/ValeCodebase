@@ -1158,6 +1158,54 @@
           "endTime": "14:00",
           "title": "Concept3D |  Beevers",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1777471062070",
+          "date": "2026-04-28",
+          "startTime": "14:00",
+          "endTime": "14:30",
+          "title": "Lunch",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1777471075465",
+          "date": "2026-04-28",
+          "startTime": "14:30",
+          "endTime": "18:00",
+          "title": "Concept3D |  Beevers",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1777471115377",
+          "date": "2026-04-29",
+          "startTime": "09:30",
+          "endTime": "10:00",
+          "title": "Meeting |  DF",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1777471140529",
+          "date": "2026-04-29",
+          "startTime": "10:00",
+          "endTime": "11:30",
+          "title": "Concept3D |  Beevers Amentments",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1777471168749",
+          "date": "2026-04-29",
+          "startTime": "11:30",
+          "endTime": "13:00",
+          "title": "Watercolour Experiments",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1777471189930",
+          "date": "2026-04-29",
+          "startTime": "08:00",
+          "endTime": "09:30",
+          "title": "Concept3D |  Beevers",
+          "color": "na-shift-color-rose"
         }
       ]
     }

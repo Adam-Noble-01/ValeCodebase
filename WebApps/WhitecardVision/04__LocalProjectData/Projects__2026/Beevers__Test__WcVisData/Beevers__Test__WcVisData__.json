@@ -7,7 +7,7 @@
         "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
         "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
         "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-28T15:41:01.823890+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-29T13:33:25.787015+00:00"
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-29T14:07:39.456684+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {
@@ -36,13 +36,13 @@
                 "Wv__Reference__Label": "Shot-01__RightSide__0.3.0__",
                 "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/03__ImageInput__StyleReference/01__Style__Shot-01__RightSide__0_3_0.png",
                 "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/03__ImageInput__StyleReference/01__Style__Shot-01__RightSide__0_3_0__thumb240.jpg",
-                "Wv__Reference__Prompt": "Match this style of painting."
+                "Wv__Reference__Prompt": "Match this style of painting, match the color, level of detail, color grading, (Image-03)"
             }
         ],
         "Wv__Project__RenderGroup__AvoidNotes": "Avoid total perfection and instead aim for a loose realistic conceptual level artwork. , \nAvoid the linework for material embellishments being too thick, instead use lighter linework for embellishments., \nAvoid whitespace within window panels instead all windowpanes must be filled solid with pigment with no bleeding edges. , \nAvoid showing blocky or 3D Model-esque patio furniture, instead use more expressive pen strokes and show only loose sketchy indications of the patio furniture.\nAvoid the feeling of a 3D Model or Rigid Technical drawing instead the artwork should feel loose, expressive and human.",
         "Wv__Project__RenderGroup__ImageSize": "4K",
-        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260429T133325Z__render__.png",
-        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260429T133325Z__render____thumb240.jpg"
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260429T140220Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Beevers__Test__WcVisData/20__FinalExport__RenderMode/20260429T140220Z__render____thumb240.jpg"
     },
     "Wv__Project__EditIterations": [
         {

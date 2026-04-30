@@ -161,6 +161,7 @@
                         </div>
                         
                         <div className="project-viewer__ratings-panel">
+                            <div className="project-viewer__panel-section project-viewer__panel-section--data">
                             <h2 className="project-viewer__data-title">Production Data</h2>
                             
                             {project.productionData && (
@@ -218,9 +219,10 @@
                                     })()}
                                 </>
                             )}
+                            </div>
                             
                             {!checkValeVisionModelUrl(project) && (
-                                <>
+                                <div className="project-viewer__panel-section project-viewer__panel-section--download">
                                     <h3 className="project-viewer__actions-title">Project Actions</h3>
                                     
                                     {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
@@ -264,9 +266,10 @@
                                             )}
                                         </button>
                                     </div>
-                                </>
+                                </div>
                             )}
 
+                            <div className="project-viewer__panel-section project-viewer__panel-section--viewer-actions">
                             <hr className="project-viewer__divider project-viewer__divider--viewer-actions" />
                             <h3 className="project-viewer__actions-title project-viewer__actions-title--viewer-actions">Project Actions</h3>
 
@@ -299,13 +302,14 @@
                                     )}
                                 </button>
                             </div>
+                            </div>
 
                             {project.scheduleData && (
-                                <>
+                                <div className="project-viewer__panel-section project-viewer__panel-section--efficiency">
                                     <hr className="project-viewer__divider" />
                                     <h3 className="project-viewer__production-title">Efficiency Scale</h3>
                                     <EfficiencyScale scheduleData={project.scheduleData} compact={false} />
-                                </>
+                                </div>
                             )}
                         </div>
                     </div>

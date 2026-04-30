@@ -18,6 +18,42 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.5 - 30-Apr-2026 - Portrait Mobile Layout Fix (Header + Project Viewer)
+### Features Added
+- **Decluttered Mobile Header**: On portrait phones (≤600px viewport) the Whitecardopedia / Blockoutopedia title logo is now hidden so the Vale Garden Houses logo, hamburger menu, gallery-mode toggle, and search box can all share the limited horizontal space without truncation. The title logo continues to render exactly as before on landscape phones, iPad portrait, and desktop — only narrow portrait viewports are affected. Resolves the issue visible on the user's phone screenshot where "Whitecardope..." was clipping the search input
+- **Stacked Project Viewer on Portrait Mobile**: The project detail page no longer hides the carousel thumbnail and ValeVision3D click-through behind the production-data column. On viewports ≤600px the page now flows naturally as **Image carousel → Actions → Stats**:
+  - Image carousel sits at the top with a guaranteed `aspect-ratio: 4 / 3` so the project image is always visible (capped at `max-height: 70vh` for tall phones); the existing ValeVision3D "Click here" overlay is now reachable as the primary tap target
+  - Project Actions immediately below the carousel — Back to Gallery, Copy Share Link, plus SketchUp model and Download Image Files when the project has no ValeVision3D model
+  - Production Data + Efficiency Scale follow as scrollable secondary content
+  - Resolves the issue where mobile users had no way to launch ValeVision 3D from a project card and could not see the project image on the detail page
+- **Natural-Flow Scrolling on Mobile**: Replaced the `height: calc(90vh - header)` lock on `.project-viewer` with `min-height` for portrait phones so the page scrolls organically through the new stack instead of clipping content behind the fixed-height container
+- **Compact ValeVision Click-Through Overlay**: Added a third responsive tier to the ValeVision3D overlay sizing (already 270 / 225 / 180px at desktop / 1024 / 768) — now `150px × Vale_UIScale` at ≤600px so the overlay sits comfortably over the smaller portrait carousel without feeling oversized
+
+### Technical Implementation
+- New `@media (max-width: 600px)` block appended to `03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css` (kept separate from the existing `768px` block so iPad portrait + landscape phones inherit the previous behaviour):
+  - Header: `.app-header__logo-container--right { display: none }` and a slight `.app-header__logo-left` height nudge for balance
+  - Project viewer container: switched from grid to `display: flex; flex-direction: column; gap` on `.project-viewer__content`; released `90vh` height lock via `height: auto; min-height: calc(100vh - var(--Vale_HeaderHeight))`
+  - Carousel: `aspect-ratio: 4 / 3`, `min-height: unset`, `max-height: 70vh` on `.project-viewer__carousel-container`; overrode the `768px` carousel `min-height: 400px / max-height: 800px` rule so the new aspect-ratio drives sizing
+  - Section ordering: `order: 1/2/3/4` applied to four new section wrappers so DOM order (data → download → viewer-actions → efficiency) is rendered as (viewer-actions → download → data → efficiency) on portrait mobile only
+  - Hid the now-redundant `.project-viewer__divider--viewer-actions` and the duplicate `.project-viewer__actions-title--viewer-actions` heading on mobile (sections self-separate via flex column spacing)
+- Updated `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx` — wrapped the four logical regions inside `.project-viewer__ratings-panel` in semantic group divs (purely additive, no JSX behaviour change for desktop):
+  - `project-viewer__panel-section project-viewer__panel-section--data` — Production Data title + production data fields
+  - `project-viewer__panel-section project-viewer__panel-section--download` — SketchUp + Download Image Files (rendered only when `!checkValeVisionModelUrl(project)`)
+  - `project-viewer__panel-section project-viewer__panel-section--viewer-actions` — Back to Gallery + Copy Share Link
+  - `project-viewer__panel-section project-viewer__panel-section--efficiency` — Efficiency Scale
+- Appended a new `@media (max-width: 600px)` rule to `03__Style__AppStylesheets/Na__UiFeature__Styles__ImageCarouselOverlay__.css` alongside the existing 1024 / 768 tiers, scaling `.image-carousel__valevision-overlay` to `calc(150px * var(--Vale_UIScale))`
+- No changes to `Na__AppCore__Header.jsx`, the gallery components, the carousel JS logic, the ValeVision3D click-through navigation handler (`handleValeVisionClick` in `Na__Feature__ProjectViewer__ImageCarousel.jsx`), or any service worker / project loader code
+
+### Validation
+- DevTools at 390 × 844 (iPhone 13/14/15 portrait): header shows VGH logo only; toolbar (hamburger / mode toggle / search) fits without overflow
+- Tap a project: image carousel renders at the top with the ValeVision3D "Click here" overlay reachable; Project Actions follow immediately below; Production Data + Efficiency Scale scroll into view as expected
+- Rotated to landscape on the same device: layout reverts cleanly to the existing desktop-style two-column grid + dual-logo header
+- DevTools at 768 × 1024 (iPad portrait) and 1280 × 800 (desktop): no visual difference vs prior behaviour confirmed
+- No console errors introduced; no linter warnings on edited CSS or JSX
+- ValeVision3D deep-link path from the carousel (`window.Na__Feature__PwaAppHelpers__ValeVisionLinkRouting.navigateToValeVisionProject(projectData)`) untouched and verified still operational
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.3.4 - 29-Apr-2026 - Progressive Gallery Loading + Newest-First Order + Lazy Thumbnails
 ### Features Added
 - **Progressive Batched Loading**: Gallery no longer blocks on `Promise.all` for all 100 enabled `project.json` files before rendering. Projects now stream in batches of 10 — the grid becomes interactive after the first batch lands (~10 cards) and the remaining 90 continue loading in the background. Resolves the long blank-screen wait on localhost where Flask + HTTP/1.1 was serialising the 200+ requests through the browser's ~6-connection cap

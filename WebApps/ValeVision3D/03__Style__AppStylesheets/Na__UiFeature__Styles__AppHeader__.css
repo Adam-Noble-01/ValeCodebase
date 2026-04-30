@@ -106,3 +106,39 @@
 
 /* endregion ------------------------------------------------------------------- */
 
+
+/* -----------------------------------------------------------------------------
+ * REGION | Responsive | Portrait Mobile (≤600px)
+ * -----------------------------------------------------------------------------
+ * Targets narrow viewports only (≤600px). iPad portrait, landscape phones,
+ * and desktop are unaffected. Scales the top bar + Vale logo down 20% and
+ * hides the "ValeVision 3D" title so the VGH logo stands alone.
+ * Redefining --Vale_HeaderHeight at :root cascades to the canvas, image
+ * export overlays, dropdowns, controls help panel, etc., so all header-
+ * relative offsets follow the smaller header automatically.
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 600px) {
+
+        /* HEADER | Scale Header Down 20% on Narrow Portrait Screens */
+        /* ------------------------------------------------------------ */
+        :root {
+            --Vale_HeaderHeight             : 48px;                         /* <-- 60px scaled to 80% (auto-cascades to canvas / overlays) */
+        }
+
+        .app-header {
+            padding                         : 0 12px;                       /* <-- Tighter horizontal padding on narrow screens */
+        }
+
+        .app-header__logo-left {
+            height                          : 33.6px;                       /* <-- 42px scaled to 80% */
+        }
+
+        .app-header__title {
+            display                         : none;                          /* <-- Hide "ValeVision 3D" text; VGH logo carries the brand */
+        }
+        /* ------------------------------------------------------------ */
+    }
+
+/* endregion ------------------------------------------------------------------- */
+

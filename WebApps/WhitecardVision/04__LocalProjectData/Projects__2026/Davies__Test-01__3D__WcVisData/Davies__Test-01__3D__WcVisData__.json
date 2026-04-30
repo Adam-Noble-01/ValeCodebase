@@ -1,0 +1,39 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Davies__Test-01__3D",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Davies__Test-01__3D",
+        "Wv__ProjectFile__Metadata__PreviousNames": [
+            {
+                "previousProjectCode": "Davies__Test-01__Elevations",
+                "previousProjectName": "Davies__Test-01__3D",
+                "renamedAtUtc": "2026-04-30T10:57:13.789456+00:00",
+                "newProjectCode": "Davies__Test-01__3D",
+                "newProjectName": "Davies__Test-01__3D"
+            }
+        ],
+        "Wv__ProjectFile__Metadata__Description": "",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-30T10:53:09.402833+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-30T10:57:13.789456+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [],
+        "Wv__Project__RenderGroup__StyleReferences": [],
+        "Wv__Project__RenderGroup__AvoidNotes": "",
+        "Wv__Project__RenderGroup__ImageSize": "2K",
+        "Wv__Project__RenderGroup__LastOutputPath": "",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": ""
+    },
+    "Wv__Project__EditIterations": [],
+    "Wv__Project__ActiveEditIterationId": ""
+}

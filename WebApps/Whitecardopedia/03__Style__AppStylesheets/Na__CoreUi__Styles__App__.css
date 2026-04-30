@@ -1536,5 +1536,65 @@
     }
     /* ------------------------------------------------------------ */
 
+
+    /* RESPONSIVE | Portrait Mobile Adjustments (≤600px) */
+    /* ------------------------------------------------------------ */
+    /* Targets narrow viewports only. iPad portrait, landscape phones, and desktop are unaffected. */
+    @media (max-width: 600px) {
+
+        /* HEADER | Hide title logo so VGH logo + toolbar have room */
+        .app-header__logo-container--right {
+            display                        : none;                          /* <-- Drop Whitecardopedia/Blockoutopedia logo on portrait phones */
+        }
+
+        .app-header__logo-left {
+            height                         : calc(38px * var(--Vale_UIScale));  /* <-- Slightly smaller VGH logo on portrait phones */
+        }
+
+
+        /* PROJECT VIEWER | Convert from height-locked grid to natural-flow stacked column */
+        .project-viewer {
+            height                         : auto;                          /* <-- Release 90vh height lock so page can scroll */
+            min-height                     : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Still fill viewport at minimum */
+            padding                        : var(--Vale_Spacing_Medium);    /* <-- Tighter padding on phones */
+        }
+
+        .project-viewer__content {
+            display                        : flex;                          /* <-- Override grid for simple stacking */
+            flex-direction                 : column;                        /* <-- Carousel above ratings panel */
+            gap                            : var(--Vale_Spacing_Medium);    /* <-- Match new compact spacing */
+        }
+
+        .project-viewer__carousel-container {
+            aspect-ratio                   : 4 / 3;                         /* <-- Guarantee visible image area */
+            min-height                     : unset;                         /* <-- Let aspect-ratio drive height */
+            max-height                     : 70vh;                          /* <-- Cap on tall phones */
+        }
+
+        .image-carousel {
+            min-height                     : unset;                         /* <-- Override 768px rule for portrait phones */
+            max-height                     : unset;                         /* <-- Override 768px rule for portrait phones */
+        }
+
+        .project-viewer__ratings-panel {
+            display                        : flex;                          /* <-- Enable section ordering */
+            flex-direction                 : column;                        /* <-- Stack sections */
+            padding                        : var(--Vale_Spacing_Medium);    /* <-- Tighter padding on phones */
+        }
+
+        /* SECTION ORDER | Mobile portrait: actions first, then stats */
+        .project-viewer__panel-section--viewer-actions { order: 1; }       /* <-- Back / Share */
+        .project-viewer__panel-section--download       { order: 2; }       /* <-- SketchUp / Download (when no VV3D) */
+        .project-viewer__panel-section--data           { order: 3; }       /* <-- Production Data */
+        .project-viewer__panel-section--efficiency     { order: 4; }       /* <-- Efficiency Scale */
+
+        /* Hide the now-redundant divider + duplicate "Project Actions" heading from the desktop layout */
+        .project-viewer__divider--viewer-actions,
+        .project-viewer__actions-title--viewer-actions {
+            display                        : none;                          /* <-- Sections now self-separate via order/spacing */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
 /* endregion ------------------------------------------------------------------- */
 

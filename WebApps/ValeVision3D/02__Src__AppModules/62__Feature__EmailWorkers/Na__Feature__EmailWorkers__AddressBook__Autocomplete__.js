@@ -87,6 +87,30 @@
         // ------------------------------------------------------------
 
 
+        // SUB FUNCTION | True If Contact Matches Autocomplete Query
+        // ------------------------------------------------------------
+        function contactMatchesQuery(contactItem, currentInput) {
+            const contactName  = String(contactItem?.name || '').toLowerCase();
+            const contactEmail = Na__Feature__EmailWorkers__NormalizeEmail(contactItem?.email);
+            if (!currentInput || !contactEmail) return false;
+
+            if (contactName.includes(currentInput)) return true;
+
+            const atIndex   = contactEmail.indexOf('@');
+            const localPart = atIndex >= 0 ? contactEmail.slice(0, atIndex) : contactEmail;
+            if (localPart.includes(currentInput)) return true;
+
+            // Full-address match only when user is clearly searching an address (avoids
+            // "val" matching every @valegardenhouses.com contact via the domain).
+            if (currentInput.includes('@')) {
+                return contactEmail.includes(currentInput);
+            }
+
+            return false;
+        }
+        // ------------------------------------------------------------
+
+
         // SUB FUNCTION | Filter Address Book Suggestions
         // ------------------------------------------------------------
         function getFilteredSuggestions() {
@@ -98,10 +122,7 @@
                 .filter((contactItem) => {
                     const emailNormalized = Na__Feature__EmailWorkers__NormalizeEmail(contactItem.email);
                     if (selectedSet.has(emailNormalized)) return false;
-
-                    const contactName = String(contactItem?.name || '').toLowerCase();
-                    const contactEmail = String(contactItem?.email || '').toLowerCase();
-                    return contactName.includes(currentInput) || contactEmail.includes(currentInput);
+                    return contactMatchesQuery(contactItem, currentInput);
                 })
                 .slice(0, 8);
         }

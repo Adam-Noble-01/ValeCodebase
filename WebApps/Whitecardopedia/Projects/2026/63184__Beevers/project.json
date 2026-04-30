@@ -44,17 +44,17 @@
         "IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Dan provided a Sketch Drawing which I converted to the model, a pretty complex building. A great design though, so kudos to Dan!",
+        "conceptArtist": "Dan",
+        "input": "Early Stage Sketch"
     },
     "projectCode": "63184",
     "projectName": "Beevers",
     "scheduleData": {
         "dateFulfilled": "29-Apr-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "29-Apr-2026",
+        "timeAllocated": 4.5,
+        "timeTaken": 5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -68,5 +68,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers/Beevers__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers/Beevers__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers/Beevers__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/63184__Beevers",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026.png"
     ]
 }

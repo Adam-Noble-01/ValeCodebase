@@ -1206,6 +1206,22 @@
           "endTime": "09:30",
           "title": "Concept3D |  Beevers",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1777475130525",
+          "date": "2026-04-29",
+          "startTime": "16:30",
+          "endTime": "18:00",
+          "title": "Blockout |  Davies",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1777532870877",
+          "date": "2026-04-30",
+          "startTime": "08:00",
+          "endTime": "08:45",
+          "title": "Blockout |  Davies",
+          "color": "na-shift-color-amber"
         }
       ]
     }

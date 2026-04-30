@@ -1,0 +1,79 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -63,
+            "Camera__DefaultPos__PosY": 2267,
+            "Camera__DefaultPos__PosZ": 8112
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0261,
+            "Camera__DefaultRotation__RotY": -0.7121,
+            "Camera__DefaultRotation__RotZ": -0.0171
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 1,
+            "FogPlane__Config__PlaneA__NormalZ": 0,
+            "FogPlane__Config__PlaneA__PositionMm": -9029
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 43442
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 30000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 15544,
+        "OrbitHelperCube__Position__PosY": 1795,
+        "OrbitHelperCube__Position__PosZ": -9963
+    },
+    "ProjectType": "Blockout",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/63232__Davies",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026.png"
+    ],
+    "folderId": "2026/63232__Davies",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Nothing to report, no issues.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File"
+    },
+    "projectCode": "63232",
+    "projectName": "Davies",
+    "scheduleData": {
+        "dateFulfilled": "30-Apr-2026",
+        "dateReceived": "29-Apr-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63232__Davies/Davies__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63232__Davies/Davies__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63232__Davies/Davies__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63232__Davies/Davies__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63232__Davies/Davies__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
+}

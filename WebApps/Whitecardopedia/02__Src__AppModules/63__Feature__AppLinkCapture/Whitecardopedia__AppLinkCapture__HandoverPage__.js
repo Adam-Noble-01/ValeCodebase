@@ -64,6 +64,8 @@
     const HANDOVER_PAGE_SAW_STANDALONE_KEY      = 'Whitecardopedia__AppLinkCapture__HandoverPage__SawStandaloneFlag__v1';           // <-- Persisted "saw standalone" flag
     const HANDOVER_PAGE_PROTOCOL_TIMEOUT_MS     = 1800;                                                                             // <-- Wait this long after protocol attempt
     const HANDOVER_PAGE_AUTOFORWARD_DELAY_MS    = 200;                                                                              // <-- Delay before standalone auto-forward
+    const HANDOVER_PAGE_INSTALL_PROBE_TIMEOUT_MS = 1500;                                                                            // <-- Wait this long for `beforeinstallprompt`
+    const HANDOVER_PAGE_INSTALL_PROBE_POLL_MS   = 60;                                                                               // <-- Poll cadence for the deferred-prompt cache
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -289,13 +291,22 @@
 
     // FUNCTION | Render Installed-In-Browser State (State B)
     // ------------------------------------------------------------
+    // - Drawn when ValeVision 3D appears to be installed already (definitive
+    //   probe, persisted standalone history, OR Chromium suppressed the
+    //   `beforeinstallprompt` event - all three are read by the resolver).
+    // - The primary "Open in ValeVision 3D" button fires the custom protocol
+    //   URL on click; we never auto-fire it on render so the page never feels
+    //   like it's hanging or doing something behind the user's back.
+    // - Always-visible hint mirrors the exact menu path Edge shows for an
+    //   installed PWA so users have a guaranteed manual fallback.
+    // ------------------------------------------------------------
     function Whitecardopedia__AppLinkCapture__HandoverPage__RenderInstalledState(projectCode) {
         const helpers           = Whitecardopedia__AppLinkCapture__HandoverPage__GetHelpers();                                      // <-- Resolve helpers
         const targets           = Whitecardopedia__AppLinkCapture__HandoverPage__GetDomTargets();                                   // <-- Resolve DOM nodes
         if (!targets.rootElement) return;                                                                                           // <-- Bail without root
 
         if (targets.titleElement)   targets.titleElement.textContent  = 'Open this in the ValeVision 3D app';                       // <-- Title
-        if (targets.bodyElement)    targets.bodyElement.textContent   = 'It looks like you already have the app installed. Tap the button below to launch it, or continue here in your browser.';   // <-- Body
+        if (targets.bodyElement)    targets.bodyElement.textContent   = 'You already have ValeVision 3D installed on this device. Click below to open this project in the app, or continue viewing here in your browser.';   // <-- Body
         if (targets.spinnerElement) targets.spinnerElement.classList.add(HANDOVER_PAGE_CLASS_HIDDEN);                                // <-- Hide spinner
 
         if (targets.actionsElement) {
@@ -303,7 +314,7 @@
             const openInAppButton   = Whitecardopedia__AppLinkCapture__HandoverPage__BuildActionButton(
                 'Open in ValeVision 3D',
                 HANDOVER_PAGE_CLASS_BUTTON_PRIMARY,
-                () => Whitecardopedia__AppLinkCapture__HandoverPage__AttemptProtocolLaunch(projectCode, false)
+                () => Whitecardopedia__AppLinkCapture__HandoverPage__AttemptProtocolLaunch(projectCode, true)
             );
             const continueButton    = Whitecardopedia__AppLinkCapture__HandoverPage__BuildActionButton(
                 'Continue in this browser',
@@ -313,9 +324,53 @@
             Whitecardopedia__AppLinkCapture__HandoverPage__ReplaceChildren(targets.actionsElement, [openInAppButton, continueButton]);   // <-- Mount buttons
         }
 
+        Whitecardopedia__AppLinkCapture__HandoverPage__RenderInstalledLaunchHint(false);                                            // <-- Always-visible Edge menu instructions
+
         if (helpers.optInTooltip && targets.tooltipSlot) {
-            helpers.optInTooltip.render(targets.tooltipSlot);                                                                       // <-- Render Chromium opt-in nudge
+            helpers.optInTooltip.render(targets.tooltipSlot);                                                                       // <-- Render Chromium opt-in nudge below the launch hint
         }
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Render Installed-Launch Manual Fallback Hint
+    // ---------------------------------------------------------------
+    // - Renders into the same slot as the install hint so the two never
+    //   collide. Provides the exact menu path the user can use immediately
+    //   if the protocol launch click does nothing (Edge's protocol-handler
+    //   first-use dialog can be suppressed by user choice or by group
+    //   policy on managed machines).
+    // ---------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__RenderInstalledLaunchHint(emphasised) {
+        const targets           = Whitecardopedia__AppLinkCapture__HandoverPage__GetDomTargets();                                   // <-- Resolve DOM nodes
+        if (!targets.hintSlot) return;                                                                                              // <-- No slot in DOM
+
+        targets.hintSlot.innerHTML = '';                                                                                            // <-- Wipe any existing hint
+
+        const hintContainer     = document.createElement('div');                                                                    // <-- Container element
+        hintContainer.className  = emphasised
+            ? `${HANDOVER_PAGE_CLASS_HINT} ${HANDOVER_PAGE_CLASS_HINT_EMPHASIS}`
+            : HANDOVER_PAGE_CLASS_HINT;
+
+        const hintTitle         = document.createElement('p');                                                                      // <-- Title
+        hintTitle.className     = HANDOVER_PAGE_CLASS_HINT_TITLE;
+        hintTitle.textContent   = emphasised
+            ? "Browser blocked the launch \u2014 open it manually instead:"
+            : "If the button does nothing, open the app manually:";
+
+        const hintText          = document.createElement('p');                                                                      // <-- Body
+        hintText.className      = HANDOVER_PAGE_CLASS_HINT_TEXT;
+
+        const isEdge            = Whitecardopedia__AppLinkCapture__HandoverPage__IsEdgeBrowser();                                   // <-- Edge-specific copy
+        if (isEdge) {
+            hintText.textContent = 'Click the \u2026 menu at the top right of Edge, choose "Apps", then click "Open in ValeVision 3D". The project will open in the standalone window.';
+        } else {
+            hintText.textContent = 'Open the browser menu, choose "Apps" (or similar), and click "ValeVision 3D" to launch the standalone window.';
+        }
+
+        hintContainer.appendChild(hintTitle);                                                                                       // <-- Mount title
+        hintContainer.appendChild(hintText);                                                                                        // <-- Mount body
+        targets.hintSlot.appendChild(hintContainer);                                                                                // <-- Mount in slot
     }
     // ---------------------------------------------------------------
 
@@ -458,7 +513,17 @@
 
     // FUNCTION | Attempt web+valevision Protocol Launch
     // ------------------------------------------------------------
-    function Whitecardopedia__AppLinkCapture__HandoverPage__AttemptProtocolLaunch(projectCode, autoFallback) {
+    // - Triggers the custom protocol URL. On a fresh Chromium install with
+    //   the PWA registered as a protocol_handlers entry, this will pop the
+    //   "Always open in ValeVision 3D?" dialog. If the user has already
+    //   accepted, the standalone PWA window opens immediately.
+    // - When `revealManualHintOnStall` is true (typical for the click handler)
+    //   we set a timer: if the page is still visible after the timeout, the
+    //   protocol launch must have failed silently (browser policy, group
+    //   policy, etc.) so we swap the manual-fallback hint to its emphasised
+    //   variant pointing the user at the Edge "Apps" menu path.
+    // ------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__AttemptProtocolLaunch(projectCode, revealManualHintOnStall) {
         const helpers           = Whitecardopedia__AppLinkCapture__HandoverPage__GetHelpers();                                      // <-- Resolve helpers
         if (!helpers.urlBuilder) return false;                                                                                      // <-- Bail without URL builder
 
@@ -471,10 +536,10 @@
             // Silent: not all browsers register the scheme; fall through to fallback
         }
 
-        if (autoFallback) {
+        if (revealManualHintOnStall) {
             window.setTimeout(() => {
                 if (!document.hidden) {
-                    Whitecardopedia__AppLinkCapture__HandoverPage__RenderInstalledState(projectCode);                               // <-- User stayed -> reveal actions
+                    Whitecardopedia__AppLinkCapture__HandoverPage__RenderInstalledLaunchHint(true);                                 // <-- Page still visible -> show emphatic manual instructions
                 }
             }, HANDOVER_PAGE_PROTOCOL_TIMEOUT_MS);
         }
@@ -492,6 +557,20 @@
 
     // FUNCTION | Resolve Display State From Probes
     // ------------------------------------------------------------
+    // - Combines four signals to decide which handover-page state to render:
+    //     1. `display-mode: standalone` -> State A (forward to project view)
+    //     2. `getInstalledRelatedApps()` returns a hit -> State B (already
+    //        installed - definitive)
+    //     3. We've previously seen the user in standalone mode -> State B
+    //        (best-effort; useful on Safari / Firefox where the API doesn't
+    //        exist)
+    //     4. `beforeinstallprompt` does not arrive within
+    //        HANDOVER_PAGE_INSTALL_PROBE_TIMEOUT_MS on Chromium -> State B
+    //        (very-strong signal; Chromium suppresses that event whenever the
+    //        PWA is already installed, so absence over time is itself proof)
+    // - Default is State C (not installed) only when the polling heuristic
+    //   confirms the deferred prompt is buffered.
+    // ------------------------------------------------------------
     async function Whitecardopedia__AppLinkCapture__HandoverPage__ResolveDisplayState() {
         const isStandaloneNow   = Whitecardopedia__AppLinkCapture__HandoverPage__IsStandaloneNow();                                 // <-- Standalone check
         if (isStandaloneNow) {
@@ -502,12 +581,56 @@
         const installedProbe    = await Whitecardopedia__AppLinkCapture__HandoverPage__ProbeInstalled();                            // <-- Hard probe
         if (installedProbe === true) return 'installed';                                                                            // <-- State B (definitive)
 
-        if (installedProbe === null) {
-            const sawStandalone = Whitecardopedia__AppLinkCapture__HandoverPage__HasSawStandalone();                                // <-- Soft probe
-            if (sawStandalone) return 'installed';                                                                                  // <-- State B (best-effort)
-        }
+        const sawStandalone     = Whitecardopedia__AppLinkCapture__HandoverPage__HasSawStandalone();                                // <-- Persisted standalone history
+        if (sawStandalone) return 'installed';                                                                                      // <-- State B (best-effort history)
 
-        return 'not-installed';                                                                                                     // <-- State C
+        const promptVerdict     = await Whitecardopedia__AppLinkCapture__HandoverPage__WaitForInstallPromptVerdict();               // <-- Poll for deferred prompt
+        if (promptVerdict === 'available') return 'not-installed';                                                                  // <-- Browser confirms the app is installable
+
+        if (promptVerdict === 'absent') return 'installed';                                                                         // <-- No deferred prompt + Chromium -> already installed
+
+        return 'not-installed';                                                                                                     // <-- Indeterminate fallback (non-Chromium, no signal)
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Poll Chromium Handler for Deferred Prompt Verdict
+    // ---------------------------------------------------------------
+    // - Returns one of three string verdicts after at most
+    //   HANDOVER_PAGE_INSTALL_PROBE_TIMEOUT_MS milliseconds:
+    //     - "available"  -> the deferred install event has been buffered
+    //                       (PWA is installable but not installed)
+    //     - "absent"     -> Chromium handler is loaded but no deferred prompt
+    //                       has appeared (PWA is already installed)
+    //     - "unknown"    -> Chromium handler not present (Safari, Firefox,
+    //                       etc.) so we cannot infer anything from the absence
+    // ---------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__WaitForInstallPromptVerdict() {
+        return new Promise((resolveVerdict) => {
+            const chromiumHandler   = (typeof window !== 'undefined') ? window.Whitecardopedia__Pwa__Handler__Chromium : null;      // <-- Resolve Chromium handler
+            if (!chromiumHandler || typeof chromiumHandler.isPromptAvailable !== 'function') {
+                resolveVerdict('unknown');                                                                                          // <-- No Chromium handler -> can't infer
+                return;
+            }
+
+            if (chromiumHandler.isPromptAvailable()) {
+                resolveVerdict('available');                                                                                        // <-- Already buffered before we polled
+                return;
+            }
+
+            const startedAtMs       = Date.now();                                                                                   // <-- Poll start timestamp
+            const intervalHandle    = window.setInterval(() => {
+                if (chromiumHandler.isPromptAvailable()) {
+                    window.clearInterval(intervalHandle);                                                                           // <-- Stop polling
+                    resolveVerdict('available');                                                                                    // <-- Prompt arrived during poll
+                    return;
+                }
+                if ((Date.now() - startedAtMs) >= HANDOVER_PAGE_INSTALL_PROBE_TIMEOUT_MS) {
+                    window.clearInterval(intervalHandle);                                                                           // <-- Stop polling
+                    resolveVerdict('absent');                                                                                       // <-- Timeout reached without the event firing
+                }
+            }, HANDOVER_PAGE_INSTALL_PROBE_POLL_MS);
+        });
     }
     // ---------------------------------------------------------------
 
@@ -545,7 +668,7 @@
         }
 
         if (displayState === 'installed') {
-            Whitecardopedia__AppLinkCapture__HandoverPage__AttemptProtocolLaunch(projectCode, true);                                // <-- Try protocol then reveal actions on stall
+            Whitecardopedia__AppLinkCapture__HandoverPage__RenderInstalledState(projectCode);                                       // <-- Render State B (Open in app + manual fallback)
             return;
         }
 

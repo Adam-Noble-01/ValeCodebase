@@ -42,6 +42,7 @@
     const HANDOVER_PAGE_PROJECT_ID              = 'WalcHandoverProjectCode';                                                        // <-- Project code chip element id
     const HANDOVER_PAGE_ACTIONS_ID              = 'WalcHandoverActions';                                                            // <-- Actions container id
     const HANDOVER_PAGE_TOOLTIP_SLOT_ID         = 'WalcHandoverTooltipSlot';                                                        // <-- Opt-in tooltip slot id
+    const HANDOVER_PAGE_HINT_SLOT_ID            = 'WalcHandoverHintSlot';                                                           // <-- Manual install hint slot id
     // ------------------------------------------------------------
 
 
@@ -51,6 +52,10 @@
     const HANDOVER_PAGE_CLASS_BUTTON_SECONDARY  = 'walc-handover__button walc-handover__button--secondary';                         // <-- Secondary action class
     const HANDOVER_PAGE_CLASS_PROJECT_CHIP      = 'walc-handover__chip';                                                            // <-- Project code chip class
     const HANDOVER_PAGE_CLASS_HIDDEN            = 'walc-handover--hidden';                                                          // <-- Hidden state modifier
+    const HANDOVER_PAGE_CLASS_HINT              = 'walc-handover__hint';                                                            // <-- Manual install hint container class
+    const HANDOVER_PAGE_CLASS_HINT_TITLE        = 'walc-handover__hint-title';                                                      // <-- Hint title class
+    const HANDOVER_PAGE_CLASS_HINT_TEXT         = 'walc-handover__hint-text';                                                       // <-- Hint body text class
+    const HANDOVER_PAGE_CLASS_HINT_EMPHASIS     = 'walc-handover__hint--emphasis';                                                  // <-- Emphasised hint variant
     // ------------------------------------------------------------
 
 
@@ -175,8 +180,63 @@
             bodyElement      : document.getElementById(HANDOVER_PAGE_BODY_ID),
             projectElement   : document.getElementById(HANDOVER_PAGE_PROJECT_ID),
             actionsElement   : document.getElementById(HANDOVER_PAGE_ACTIONS_ID),
-            tooltipSlot      : document.getElementById(HANDOVER_PAGE_TOOLTIP_SLOT_ID)
+            tooltipSlot      : document.getElementById(HANDOVER_PAGE_TOOLTIP_SLOT_ID),
+            hintSlot         : document.getElementById(HANDOVER_PAGE_HINT_SLOT_ID)
         };
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Detect Likely Edge Browser
+    // ---------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__IsEdgeBrowser() {
+        if (typeof navigator === 'undefined' || !navigator.userAgent) return false;                                                 // <-- Guard non-DOM contexts
+        return /Edg\//.test(navigator.userAgent);                                                                                   // <-- Match Edg/ token (Chromium Edge)
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Render Manual Install Hint into Hint Slot
+    // ---------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__RenderManualInstallHint(emphasised) {
+        const targets           = Whitecardopedia__AppLinkCapture__HandoverPage__GetDomTargets();                                   // <-- Resolve DOM nodes
+        if (!targets.hintSlot) return;                                                                                              // <-- No slot in DOM
+
+        targets.hintSlot.innerHTML = '';                                                                                            // <-- Wipe existing hint
+
+        const hintContainer     = document.createElement('div');                                                                    // <-- Container element
+        hintContainer.className  = emphasised
+            ? `${HANDOVER_PAGE_CLASS_HINT} ${HANDOVER_PAGE_CLASS_HINT_EMPHASIS}`
+            : HANDOVER_PAGE_CLASS_HINT;                                                                                             // <-- Apply emphasis when forced
+
+        const hintTitle         = document.createElement('p');                                                                      // <-- Title
+        hintTitle.className     = HANDOVER_PAGE_CLASS_HINT_TITLE;
+        hintTitle.textContent   = emphasised
+            ? "Edge didn't open the install dialog yet"
+            : "If nothing happens when you click Install:";
+
+        const hintText          = document.createElement('p');                                                                      // <-- Body text
+        hintText.className      = HANDOVER_PAGE_CLASS_HINT_TEXT;
+
+        const isEdge            = Whitecardopedia__AppLinkCapture__HandoverPage__IsEdgeBrowser();                                   // <-- Edge-specific copy
+        if (isEdge) {
+            hintText.textContent = 'Look for the small + (install) icon at the right of the address bar, or open the \u2026 menu in the top right and choose "Apps" then "Install ValeVision 3D".';
+        } else {
+            hintText.textContent = 'Look for the install icon at the right of the address bar, or open the browser menu and choose "Install ValeVision 3D" / "Install app".';
+        }
+
+        hintContainer.appendChild(hintTitle);                                                                                       // <-- Mount title
+        hintContainer.appendChild(hintText);                                                                                        // <-- Mount body
+        targets.hintSlot.appendChild(hintContainer);                                                                                // <-- Mount in slot
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Clear Manual Install Hint
+    // ---------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__ClearManualInstallHint() {
+        const targets           = Whitecardopedia__AppLinkCapture__HandoverPage__GetDomTargets();                                   // <-- Resolve DOM nodes
+        if (targets.hintSlot) targets.hintSlot.innerHTML = '';                                                                      // <-- Wipe slot
     }
     // ---------------------------------------------------------------
 
@@ -263,7 +323,6 @@
     // FUNCTION | Render Not-Installed State (State C)
     // ------------------------------------------------------------
     function Whitecardopedia__AppLinkCapture__HandoverPage__RenderNotInstalledState(projectCode) {
-        const helpers           = Whitecardopedia__AppLinkCapture__HandoverPage__GetHelpers();                                      // <-- Resolve helpers
         const targets           = Whitecardopedia__AppLinkCapture__HandoverPage__GetDomTargets();                                   // <-- Resolve DOM nodes
         if (!targets.rootElement) return;                                                                                           // <-- Bail without root
 
@@ -276,11 +335,7 @@
             const installButton     = Whitecardopedia__AppLinkCapture__HandoverPage__BuildActionButton(
                 'Install ValeVision 3D',
                 HANDOVER_PAGE_CLASS_BUTTON_PRIMARY,
-                () => {
-                    if (helpers.installController && typeof helpers.installController.requestShow === 'function') {
-                        helpers.installController.requestShow();                                                                    // <-- Trigger install prompt
-                    }
-                }
+                () => Whitecardopedia__AppLinkCapture__HandoverPage__AttemptNativeInstall()
             );
             const continueButton    = Whitecardopedia__AppLinkCapture__HandoverPage__BuildActionButton(
                 'Continue in this browser',
@@ -289,6 +344,57 @@
             );
             Whitecardopedia__AppLinkCapture__HandoverPage__ReplaceChildren(targets.actionsElement, [installButton, continueButton]);    // <-- Mount buttons
         }
+
+        Whitecardopedia__AppLinkCapture__HandoverPage__RenderManualInstallHint(false);                                              // <-- Always-visible non-emphatic hint
+        Whitecardopedia__AppLinkCapture__HandoverPage__SubscribeChromiumAvailability();                                             // <-- Keep button in sync as event arrives
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Attempt the Native Browser Install Prompt
+    // ------------------------------------------------------------
+    // - Calls the Chromium handler's `triggerNativePrompt()` directly (not
+    //   `requestShow()`) so we bypass the secondary banner UI; the handover
+    //   card itself acts as the install surface.
+    // - When no deferred prompt is buffered (Edge engagement heuristic, or
+    //   the page just loaded), swap the manual install hint to its
+    //   emphasised variant so the user knows what to do next.
+    // ------------------------------------------------------------
+    async function Whitecardopedia__AppLinkCapture__HandoverPage__AttemptNativeInstall() {
+        const chromiumHandler   = (typeof window !== 'undefined') ? window.Whitecardopedia__Pwa__Handler__Chromium : null;          // <-- Resolve Chromium handler
+
+        const promptAvailable   = chromiumHandler
+            && typeof chromiumHandler.isPromptAvailable === 'function'
+            && chromiumHandler.isPromptAvailable();                                                                                 // <-- Is the deferred prompt buffered?
+
+        if (promptAvailable && typeof chromiumHandler.triggerNativePrompt === 'function') {
+            try { await chromiumHandler.triggerNativePrompt(); }                                                                    // <-- Fire native install dialog
+            catch (error) { console.warn('Whitecardopedia handover native install attempt failed:', error); }                       // <-- Log non-blocking
+            return;
+        }
+
+        Whitecardopedia__AppLinkCapture__HandoverPage__RenderManualInstallHint(true);                                               // <-- Show emphatic manual instructions
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Subscribe to Chromium Prompt Availability
+    // ------------------------------------------------------------
+    // - Listens for the deferred install event arriving (or being consumed)
+    //   so we can clear the manual-install hint once the click will succeed.
+    //   Idempotent and harmless on non-Chromium browsers.
+    // ------------------------------------------------------------
+    function Whitecardopedia__AppLinkCapture__HandoverPage__SubscribeChromiumAvailability() {
+        const chromiumHandler   = (typeof window !== 'undefined') ? window.Whitecardopedia__Pwa__Handler__Chromium : null;          // <-- Resolve handler
+        if (!chromiumHandler || typeof chromiumHandler.subscribePromptAvailability !== 'function') return;                          // <-- Not available
+
+        chromiumHandler.subscribePromptAvailability((isAvailable) => {
+            if (isAvailable) {
+                Whitecardopedia__AppLinkCapture__HandoverPage__ClearManualInstallHint();                                            // <-- Hide hint when prompt buffered
+            } else {
+                Whitecardopedia__AppLinkCapture__HandoverPage__RenderManualInstallHint(false);                                      // <-- Restore non-emphatic hint
+            }
+        });
     }
     // ---------------------------------------------------------------
 

@@ -177,6 +177,45 @@
         justify-content                  : center;
     }
 
+    .walc-handover__hint-slot {
+        align-self                       : stretch;
+        display                          : flex;
+        justify-content                  : center;
+    }
+
+    .walc-handover__hint-slot:empty {
+        display                          : none;
+    }
+
+    .walc-handover__hint {
+        align-self                       : stretch;
+        background                       : var(--walc-color-tooltip-bg);
+        border                           : 1px solid var(--walc-color-border);
+        border-radius                    : var(--walc-radius-sm);
+        padding                          : 10px 12px;
+        text-align                       : left;
+        animation                        : walcCardIn 220ms ease-out;
+    }
+
+    .walc-handover__hint--emphasis {
+        border-color                     : var(--walc-color-accent);
+        background                       : #fff7ec;                                                                  /* <-- Soft amber to draw attention */
+    }
+
+    .walc-handover__hint-title {
+        margin                           : 0 0 4px 0;
+        font-size                        : 13px;
+        font-weight                      : 600;
+        color                            : var(--walc-color-fg);
+    }
+
+    .walc-handover__hint-text {
+        margin                           : 0;
+        font-size                        : 12.5px;
+        line-height                      : 1.45;
+        color                            : var(--walc-color-fg-muted);
+    }
+
     /* endregion -------------------------------------------------------- */
 
 

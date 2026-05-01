@@ -1149,21 +1149,6 @@ def main():
     except Exception as thumbnail_step_error:
         print(f"{COLOR_YELLOW}[POST-STEP] Thumbnail generation failed (non-fatal): {thumbnail_step_error}{COLOR_RESET}\n")  # <-- Surface non-blocking error
     # ---------------------------------------------------------------
-
-
-    # POST-STEP | Regenerate Android App Links / assetlinks.json artefact
-    # ---------------------------------------------------------------
-    try:
-        import subprocess                                                  # <-- Local import (already imported above; safe to repeat)
-        applinks_script = Path(__file__).resolve().parent / "AutomationUtil__GenerateAppLinks__AssetLinks__Main__.py"  # <-- Sibling script path
-        if applinks_script.exists():
-            print(f"{COLOR_CYAN}[POST-STEP] Regenerating Android App Links assetlinks.json...{COLOR_RESET}\n")  # <-- Announce post-step
-            subprocess.run([sys.executable, str(applinks_script)], check=False)                       # <-- Best-effort invocation
-        else:
-            print(f"{COLOR_YELLOW}[POST-STEP] AssetLinks generator not found, skipping assetlinks build.{COLOR_RESET}\n")  # <-- Soft warning
-    except Exception as applinks_step_error:
-        print(f"{COLOR_YELLOW}[POST-STEP] AssetLinks generation failed (non-fatal): {applinks_step_error}{COLOR_RESET}\n")  # <-- Surface non-blocking error
-    # ---------------------------------------------------------------
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

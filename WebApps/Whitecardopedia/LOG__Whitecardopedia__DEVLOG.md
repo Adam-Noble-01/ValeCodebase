@@ -18,48 +18,6 @@
 
 # -----------------------------------------------------------------------------
 
-## Whitecardopedia v0.3.6 - 01-May-2026 - PWA Email Link Capture (Open Share Links Inside the Installed App)
-### Features Added
-- **Email Share Links Open Directly in the Installed PWA**: Recipients of ValeVision 3D share-link emails now land inside the installed app instead of their browser, wherever the platform allows it. Single new feature module spans all surfaces:
-  - **Chrome / Edge desktop (Windows, macOS, Linux)**: manifest now declares `handle_links: "preferred"` and a custom `web+valevision` protocol handler. Once the user enables "Always open in app" in the address-bar toggle (one-time opt-in), all future emailed links route straight into the standalone PWA window via the existing `launch_handler.client_mode: "navigate-existing"` shipped in v0.3.3
-  - **Chrome on Android**: full Android App Links support via the new `Distro__AppLinks__AssetLinks__/` deployment artefact, so emailed links bypass the chooser and open directly in the installed WebAPK once the file is published at `https://adam-noble-01.github.io/.well-known/assetlinks.json`
-  - **iOS / iPadOS Safari + macOS Safari**: graceful handover page with "Open in ValeVision 3D" button (best-effort protocol launch) plus "Continue in browser" fallback, matching the platform reality that Apple does not expose programmatic link capture for PWAs
-  - **Already running standalone (any platform)**: handover page detects standalone mode immediately and instant-forwards to the matching ValeVision 3D project view, so the user never sees the handover card when they came in through the PWA
-- **Smart Three-State Handover Page**: New `Whitecardopedia/ShareLink__OpenInApp__.html` lives inside the PWA scope so the launch_handler can reuse the existing standalone window. State A auto-forwards when standalone, State B fires the protocol launch then reveals "Open in App" + "Continue in browser" + Chromium opt-in tooltip when the page stalls, State C shows the install invitation when the PWA is not yet installed
-- **One-Time Chromium-Desktop Opt-In Tooltip**: Renders only on Chrome / Edge desktop (where the address-bar "Open in app" toggle exists), only outside standalone mode, and only when `Whitecardopedia__Pwa__SessionState` says the user has not already snoozed it. Single dismiss advances the existing exponential snooze ladder
-- **Custom Protocol Scheme `web+valevision://project/<code>`**: Registered automatically via `navigator.registerProtocolHandler()` from both `app.html` and `ValeVision3D/index.html` on first visit; declared in the manifest's `protocol_handlers` so installed PWAs are offered as the system handler without user prompting on Chromium
-
-### Build Tooling Updates
-- **Android App Links Generator**: New `AutomationUtil__GenerateAppLinks__AssetLinks__Main__.py` reads a hand-maintained sources file at `Distro__AppLinks__AssetLinks__/Na__AppLinks__AssetLinks__Sources__.json` and emits the deployable `Na__AppLinks__AssetLinks__Generated__.json` artefact in the same folder. Idempotent. Skips Android entries with placeholder fingerprints so the deployed file never falsely claims ownership. Honours `--dry-run`
-- **Build Pipeline Hook**: `AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py` now runs the asset-links generator as a second non-blocking post-step (after the gallery thumbnail step shipped in v0.3.3) so a fresh project import always produces an up-to-date assetlinks artefact
-- **Convenience Launcher**: `AutomationUtil__GenerateAppLinks__AssetLinks__.bat` matches the existing `.bat` launcher pattern
-- **Deployment Documentation**: `Distro__AppLinks__AssetLinks__/Readme__AssetLinks__Deployment__.md` explains where the generated file must be deployed (user-pages repo `adam-noble-01.github.io/.well-known/assetlinks.json`), how to read the WebAPK package + cert SHA256 from `chrome://webapks` after the first Android install, and what to change for a future custom domain
-
-### Technical Implementation
-- Created new feature module `02__Src__AppModules/63__Feature__AppLinkCapture/` containing four cooperating scripts:
-  - `Whitecardopedia__AppLinkCapture__UrlBuilder__.js` - single source of truth for direct / handover / protocol URL shapes, pulls absolute URLs through `Whitecardopedia__Pwa__Url` so localhost / GitHub Pages / future custom domain all just work
-  - `Whitecardopedia__AppLinkCapture__ProtocolHandler__.js` - registers the `web+valevision` scheme via `navigator.registerProtocolHandler` (gated by a localStorage flag so we only ask the browser once) and consumes incoming protocol launches by parsing the `?protocol=` query value back into a project code
-  - `Whitecardopedia__AppLinkCapture__OptInTooltip__.js` - renders the Chromium-desktop "Always open in app" nudge as a self-contained DOM card; eligibility gated by platform descriptor; respects the snooze ladder
-  - `Whitecardopedia__AppLinkCapture__HandoverPage__.js` - orchestrates the three-state UX, reads the project query, runs platform / display-mode probes including the soft "saw standalone before" fallback for Safari and Firefox where `getInstalledRelatedApps()` is unavailable
-- Created `Whitecardopedia/ShareLink__OpenInApp__.html` inside the PWA scope; loads the same install module stack as `app.html` (so install prompts work from the handover page) plus the new App Link Capture stack, the in-app navigation helper, and the new stylesheet
-- Created `03__Style__AppStylesheets/Na__UiFeature__Styles__AppLinkCapture__.css`; centred Vale-branded handover card, animated spinner, primary / secondary buttons, opt-in tooltip; imported from `Na__CoreUi__Styles__Index__.css`
-- Updated `Whitecardopedia__Pwa__Manifest__.webmanifest` with `handle_links: "preferred"` and `protocol_handlers` declaring `web+valevision` -> `../../ShareLink__OpenInApp__.html?protocol=%s`. Path resolves correctly on both localhost (Whitecardopedia served as origin root) and production GitHub Pages
-- Refactored `Na__Feature__ShareProjectLink__UrlGeneratorLogic__.js` so `Na__Feature__ShareProjectLink__BuildProjectUrl()` produces a handover URL via the shared App Link Capture builder; legacy direct-URL path retained as a fallback so the share dialog still works in environments where the App Link Capture stack hasn't yet loaded
-- Refactored `Na__Feature__PwaAppHelpers__ValeVisionLinkRouting__Logic__.js` so the Whitecardopedia gallery -> ValeVision 3D in-app navigation now delegates to the shared builder's direct project URL (never the handover page), avoiding any handover bounce when users are already inside the standalone PWA
-- Updated `app.html` and `ValeVision3D/index.html` to load the new App Link Capture script stack and to call `navigator.registerProtocolHandler` once at window load
-- Updated `server.py` to expose `/.well-known/assetlinks.json` from the generated artefact at the canonical path with `Content-Type: application/json` for local end-to-end testing (Android verifier itself ignores localhost; this is for shape validation only)
-
-### Validation
-- All four new App Link Capture JavaScript modules pass `node --check`; refactored `ValeVisionLinkRouting` and `ShareProjectLink__UrlGeneratorLogic` siblings re-checked clean
-- Manifest still valid JSON, AssetLinks generator runs cleanly and produces a valid Digital Asset Links statement list (web origin claim emitted; Android entry deferred until WebAPK fingerprint is filled in to avoid false ownership claims)
-- All new endpoints respond `200 OK` with correct MIME types on the dev server: handover HTML, all four App Link Capture scripts, the new stylesheet, the manifest with the new fields, and `/.well-known/assetlinks.json`
-- Browser validation confirmed the handover page renders State C correctly (title "Open in the ValeVision 3D app", body, project chip "00__ExampleProject", "Install ValeVision 3D" + "Continue in this browser" buttons), and the missing-project error state renders correctly with the gallery fallback button
-
-### Manual follow-up needed
-- After the PWA is installed once on an Android device, copy `chrome://webapks` package name + SHA256 fingerprint into `Distro__AppLinks__AssetLinks__/Na__AppLinks__AssetLinks__Sources__.json`, re-run the assetlinks generator, and deploy the resulting JSON to the user-pages repo at `https://adam-noble-01.github.io/.well-known/assetlinks.json` to enable bypass-the-chooser link capture on Android (full instructions in `Distro__AppLinks__AssetLinks__/Readme__AssetLinks__Deployment__.md`)
-
-# -----------------------------------------------------------------------------
-
 ## Whitecardopedia v0.3.5 - 30-Apr-2026 - Portrait Mobile Layout Fix (Header + Project Viewer)
 ### Features Added
 - **Decluttered Mobile Header**: On portrait phones (≤600px viewport) the Whitecardopedia / Blockoutopedia title logo is now hidden so the Vale Garden Houses logo, hamburger menu, gallery-mode toggle, and search box can all share the limited horizontal space without truncation. The title logo continues to render exactly as before on landscape phones, iPad portrait, and desktop — only narrow portrait viewports are affected. Resolves the issue visible on the user's phone screenshot where "Whitecardope..." was clipping the search input
@@ -339,5 +297,5 @@
 
 # -----------------------------------------------------------------------------
 
-**Last Updated**: 01-May-2026
+**Last Updated**: 28-Apr-2026
 

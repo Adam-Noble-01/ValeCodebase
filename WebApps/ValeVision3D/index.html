@@ -41,28 +41,6 @@
     <link rel="stylesheet" href="../Whitecardopedia/03__Style__AppStylesheets/Na__UiFeature__Styles__PwaInstallability__.css">
     
     <!-- endregion -------------------------------------------------------- -->
-
-
-    <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  App Link Capture - Email Share-Link Routing            -->
-    <!-- ----------------------------------------------------------------- -->
-    
-    <script src="../Whitecardopedia/02__Src__AppModules/63__Feature__AppLinkCapture/Whitecardopedia__AppLinkCapture__UrlBuilder__.js"></script>
-    <script src="../Whitecardopedia/02__Src__AppModules/63__Feature__AppLinkCapture/Whitecardopedia__AppLinkCapture__ProtocolHandler__.js"></script>
-    <script src="../Whitecardopedia/02__Src__AppModules/63__Feature__AppLinkCapture/Whitecardopedia__AppLinkCapture__OptInTooltip__.js"></script>
-    <link rel="stylesheet" href="../Whitecardopedia/03__Style__AppStylesheets/Na__UiFeature__Styles__AppLinkCapture__.css">
-    <script>
-        // Best-effort registration of the web+valevision protocol handler so
-        // browsers without an installed WebAPK still get a chance to route
-        // protocol URLs back into the Whitecardopedia handover page.
-        window.addEventListener('load', function () {
-            if (window.Whitecardopedia__AppLinkCapture__ProtocolHandler && typeof window.Whitecardopedia__AppLinkCapture__ProtocolHandler.register === 'function') {
-                window.Whitecardopedia__AppLinkCapture__ProtocolHandler.register();
-            }
-        }, { once: true });
-    </script>
-    
-    <!-- endregion -------------------------------------------------------- -->
     
     
     <!-- ----------------------------------------------------------------- -->

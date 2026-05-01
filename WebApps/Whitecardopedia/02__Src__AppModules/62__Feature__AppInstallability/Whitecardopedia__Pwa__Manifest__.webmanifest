@@ -13,13 +13,6 @@
     "launch_handler": {
         "client_mode": "navigate-existing"
     },
-    "handle_links": "preferred",
-    "protocol_handlers": [
-        {
-            "protocol": "web+valevision",
-            "url": "../../ShareLink__OpenInApp__.html?protocol=%s"
-        }
-    ],
     "orientation": "any",
     "theme_color": "#172b3a",
     "background_color": "#172b3a",

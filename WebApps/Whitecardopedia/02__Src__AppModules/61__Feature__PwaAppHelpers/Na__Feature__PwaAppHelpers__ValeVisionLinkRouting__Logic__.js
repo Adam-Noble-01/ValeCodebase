@@ -33,32 +33,15 @@
 
     // HELPER FUNCTION | Build ValeVision Project URL
     // ---------------------------------------------------------------
-    // - Prefers the shared App Link Capture URL builder so in-app navigation
-    //   uses the same single source of truth that share-link emails rely on.
-    // - Always returns a DIRECT project URL here (never the handover page) so
-    //   gallery -> viewer navigation stays inside the same app shell.
-    // - Retains the legacy relative fallback so this helper still works when
-    //   the App Link Capture stack has not yet been loaded by the page.
-    // ---------------------------------------------------------------
     function Na__Feature__PwaAppHelpers__BuildValeVisionProjectUrl(projectCode) {
-        const trimmedProjectCode = String(projectCode || '').trim();             // <-- Sanitize input
-        if (!trimmedProjectCode) return null;                                    // <-- Need a project code
+        const safeProjectCode = encodeURIComponent(String(projectCode || '').trim()); // <-- URL-safe project code value
+        if (!safeProjectCode) return null;
 
-        const appLinkCaptureBuilder = (typeof window !== 'undefined')
-            ? window.Whitecardopedia__AppLinkCapture__UrlBuilder
-            : null;                                                              // <-- Resolve URL builder helper
-
-        if (appLinkCaptureBuilder && typeof appLinkCaptureBuilder.buildDirectProjectUrl === 'function') {
-            const directUrl = appLinkCaptureBuilder.buildDirectProjectUrl(trimmedProjectCode); // <-- Build direct project URL
-            if (directUrl) return directUrl;                                     // <-- Prefer shared builder when valid
-        }
-
-        const safeProjectCode = encodeURIComponent(trimmedProjectCode);          // <-- URL-safe fallback value
         if (Na__Feature__PwaAppHelpers__IsRunningOnLocalhost()) {
-            return `/ValeVision3D/index.html?project=${safeProjectCode}`;        // <-- Localhost route fallback
+            return `/ValeVision3D/index.html?project=${safeProjectCode}`;        // <-- Localhost route
         }
 
-        return `../ValeVision3D/index.html?project=${safeProjectCode}`;          // <-- Static relative route fallback
+        return `../ValeVision3D/index.html?project=${safeProjectCode}`;          // <-- Static relative route
     }
     // ---------------------------------------------------------------
 

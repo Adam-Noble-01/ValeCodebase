@@ -144,7 +144,7 @@
       "Timecard__Date": "2026-04-30",
       "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "18:05",
-      "Timecard__AuthHash": "",
+      "Timecard__AuthHash": "sha256__1ac824c10ac94e1128e4d138819a8575506dfb95f2f5b040f5832ff95b4261d3",
       "Timecard__AdminOverride__": {
         "Timecard__IsRetrospectiveEdit": true,
         "Timecard__EditedAtUtcIso": "2026-05-01T06:53:56.850338Z",

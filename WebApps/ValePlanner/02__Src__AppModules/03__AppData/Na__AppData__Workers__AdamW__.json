@@ -1246,6 +1246,38 @@
           "endTime": "18:00",
           "title": "Blockout |  Armstrong",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1777629554929",
+          "date": "2026-04-30",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "title": "New Shift",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1777629560543",
+          "date": "2026-05-01",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "New Shift",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1777629565545",
+          "date": "2026-05-01",
+          "startTime": "11:00",
+          "endTime": "14:00",
+          "title": "Blockout |  Majid",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1777654319098",
+          "date": "2026-05-01",
+          "startTime": "15:45",
+          "endTime": "18:00",
+          "title": "Standards |  Special Finials",
+          "color": "na-shift-color-lime"
         }
       ]
     }

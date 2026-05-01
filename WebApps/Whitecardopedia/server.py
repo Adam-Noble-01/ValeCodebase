@@ -27,6 +27,7 @@
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
 # - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
 # - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
+# - GET  /.well-known/assetlinks.json : Serve generated Android App Links artefact (dev only)
 # - GET  /assets__CommonApplicationAssets/<path> : Serve shared assets
 #
 # CONSOLE COMMANDS:
@@ -530,6 +531,34 @@ def serve_pwa_module_proxy(filename):
         return send_from_directory(module_dir, filename)                 # <-- Serve module file
     except Exception as e:
         return jsonify({'error': f'Error serving PWA module: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Serve Android App Links Asset Links File (Localhost Dev)
+# ------------------------------------------------------------
+@app.route('/.well-known/assetlinks.json', methods=['GET'])
+def serve_assetlinks_json():
+    """Serve the App Link Capture build artefact at the canonical
+    /.well-known/assetlinks.json path for local shape-validation only.
+    Android verifier itself does not check localhost; this route simply lets
+    a developer GET the file with the right MIME type during dev work."""
+    try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))                                    # <-- Whitecardopedia root
+        applinks_dir = os.path.join(base_dir, 'Distro__AppLinks__AssetLinks__')                  # <-- AssetLinks folder
+        applinks_file = 'Na__AppLinks__AssetLinks__Generated__.json'                             # <-- Output filename
+        applinks_path = os.path.join(applinks_dir, applinks_file)                                # <-- Absolute file path
+
+        if not os.path.exists(applinks_path):                                                    # <-- Verify build artefact exists
+            return jsonify({
+                'error': 'AssetLinks file not generated yet. Run AutomationUtil__GenerateAppLinks__AssetLinks__.bat first.'
+            }), 404
+
+        response = send_from_directory(applinks_dir, applinks_file)                              # <-- Serve from build folder
+        response.headers['Content-Type']  = 'application/json'                                   # <-- Required MIME for Digital Asset Links
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'                # <-- Always fresh during dev
+        return response                                                                          # <-- Return prepared response
+    except Exception as e:
+        return jsonify({'error': f'Error serving assetlinks.json: {str(e)}'}), 500
 # ------------------------------------------------------------
 
 

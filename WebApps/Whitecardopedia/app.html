@@ -130,6 +130,20 @@
     <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__InstallController__.js"></script>
     <script src="02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"></script>
     <script src="02__Src__AppModules/62__Feature__AppInstallability/Na__UiFeature__AppInstallability__BrowserDelegate.js"></script>
+    <!-- APP LINK CAPTURE | Email share-link routing into the installed PWA -->
+    <script src="02__Src__AppModules/63__Feature__AppLinkCapture/Whitecardopedia__AppLinkCapture__UrlBuilder__.js"></script>
+    <script src="02__Src__AppModules/63__Feature__AppLinkCapture/Whitecardopedia__AppLinkCapture__ProtocolHandler__.js"></script>
+    <script src="02__Src__AppModules/63__Feature__AppLinkCapture/Whitecardopedia__AppLinkCapture__OptInTooltip__.js"></script>
+    <script>
+        // Best-effort registration of the web+valevision protocol handler so
+        // browsers without an installed WebAPK still get a chance to route
+        // protocol URLs back into this app on first visit.
+        window.addEventListener('load', function () {
+            if (window.Whitecardopedia__AppLinkCapture__ProtocolHandler && typeof window.Whitecardopedia__AppLinkCapture__ProtocolHandler.register === 'function') {
+                window.Whitecardopedia__AppLinkCapture__ProtocolHandler.register();
+            }
+        }, { once: true });
+    </script>
     <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__StarRating.jsx"></script>
     <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__EfficiencyScale.jsx"></script>
     <script type="text/babel" src="02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__ImageCarousel.jsx"></script>

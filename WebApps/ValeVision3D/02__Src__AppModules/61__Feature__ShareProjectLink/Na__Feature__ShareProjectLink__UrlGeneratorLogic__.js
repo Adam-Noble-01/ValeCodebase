@@ -27,9 +27,13 @@
 // REGION | Share URL Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build Share URL for Current App Origin and Path
+    // HELPER FUNCTION | Build Direct Project URL (Legacy / Fallback)
     // ------------------------------------------------------------
-    function Na__Feature__ShareProjectLink__BuildProjectUrl(rawProjectCode) {
+    // - Used as a fallback when the App Link Capture URL builder is not
+    //   available on the page (e.g. very old emails / bookmarks that point
+    //   straight at this module's previous output shape).
+    // ------------------------------------------------------------
+    function Na__Feature__ShareProjectLink__BuildDirectProjectUrlFallback(rawProjectCode) {
         const base = new URL(window.location.href);
         base.search = '';
         base.hash = '';
@@ -37,6 +41,28 @@
         params.set('project', rawProjectCode);
         base.search = params.toString();
         return base.toString();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Share URL for Outgoing Email
+    // ------------------------------------------------------------
+    // - Prefers the Whitecardopedia App Link Capture handover URL so emailed
+    //   links can open inside the installed PWA wherever the platform allows.
+    // - Falls back to the legacy direct-project URL when the handover helper
+    //   is not loaded (e.g. running outside the wired-up app shell).
+    // ------------------------------------------------------------
+    function Na__Feature__ShareProjectLink__BuildProjectUrl(rawProjectCode) {
+        const appLinkCaptureBuilder = (typeof window !== 'undefined')
+            ? window.Whitecardopedia__AppLinkCapture__UrlBuilder
+            : null;                                                                                     // <-- Resolve URL builder helper
+
+        if (appLinkCaptureBuilder && typeof appLinkCaptureBuilder.buildHandoverUrl === 'function') {
+            const handoverUrl = appLinkCaptureBuilder.buildHandoverUrl(rawProjectCode);                  // <-- Build handover URL
+            if (handoverUrl) return handoverUrl;                                                         // <-- Prefer handover URL when valid
+        }
+
+        return Na__Feature__ShareProjectLink__BuildDirectProjectUrlFallback(rawProjectCode);             // <-- Legacy fallback path
     }
     // ------------------------------------------------------------
 

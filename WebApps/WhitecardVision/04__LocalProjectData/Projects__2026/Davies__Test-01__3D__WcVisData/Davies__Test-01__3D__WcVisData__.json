@@ -11,17 +11,17 @@
                 "newProjectName": "Davies__Test-01__3D"
             }
         ],
-        "Wv__ProjectFile__Metadata__Description": "",
+        "Wv__ProjectFile__Metadata__Description": "Creating a base 3D Image to next test creating Elevations",
         "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
         "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
         "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-30T10:53:09.402833+00:00",
-        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-30T10:57:13.789456+00:00"
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-30T11:20:03.781786+00:00"
     },
     "Wv__Project__RenderGroup": {
         "Wv__Project__RenderGroup__Whitecard": {
-            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026.png",
-            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01____WhitecardImage__30-Apr-2026__thumb240.jpg",
-            "Wv__Whitecard__Prompt": "",
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01__WithGarden____WhitecardImage__30-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG01__3dView__ViewOption-01__WithGarden____WhitecardImage__30-Apr-2026__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "Create a traditional British Architectural Watercolour illustration of a charming walled garden greenhouse in a soft hand-rendered sketchy early draft concept design presentation style.\n\nThe Image is a Client Facing Rendering for Vale Garden Houses who are the UK's Premium Traditional Orangery & Conservatory Manufacturer and this image serves to communicate the design to the client in their Traditional Watercolour Painting Style of deliverable.\n\n**GREENHOUSE DESIGN**\nThe Greenhouse has a slate roof, white framework, windows, front facing double doors, and stop chamfer columns. The framework is sat atop a brickwork dwarf wall with a breakfront gable section, All gables are glazed. The Greenhouse is situated up against an old walled garden tall brick wall.\n\n**WALLED GARDEN SURROUNDINGS** \nThere are planting beds raised slightly by a couple of inches and gravel pathways in-between, the beds should be planted with cottage garden plants and all plants should be shown extremely loosely and expressively as to not distract from the greenhouse proposal. The rear garden wall has pear cordons and other trained allotment garden plants growing up the wall. the planting should be charming and indicative of a working walled gardens. the centre section in front of the conservatory has a mowed lawn with the planting beds to the left and the right of the greenhouse building.\n\n**LINE ART STYLE**\nUse fine black ink architectural linework with delicate sketchy outlines, Ensure you use a imperfect hand-drawn pen marks, subtle hatching, accurate building geometry, crisp window divisions, and elegant but loose sketchy draughtsman-style detailing.\n\n**WATERCOLOUR STYLE**\nApply soft transparent watercolour washes over the ink. Use warm red brick tones, muted cream stonework, darker blue glazing, sage green trees and planting, a light blue washed sky, and a pale green lawn. The colours should be gentle, layered, and translucent, and the washes should blend out onto the page to create negative space at the margins. Make it look painted on textured cold-pressed watercolour paper with visible paper grain. Use loose irregular wash edges around the sky, lawn, and background trees, fading naturally into untouched white paper. it should look as though its a scan of a realistic watercolour painting and should be indistinguishable from the work of a skilled human artist.\n\n**BACKGROUND ELEMENTS**\nKeep the background minimal and softly suggestive with lose sketchy linework indicating trees vegetation and sky etc with washes to fill out the background space. \n\n**VIBE**\nThe image must exude a calm traditional quint essential English countryside atmosphere.\n\n**FILTER**\nApply a warm feeling slight sepia and slightly dream like filter avoiding acidy tones.\n\n**DETAILS**\nAvoid showing any interiors ensure glazing within windows are always filled with blue figment with the glazing panes within the linework completely filled with no whitespace.\n\n**DISAMBIGUATION** \nThe image should feel like a refined architectural presentation board hand draw concept sketchy illustration and not a CGI render, not a photorealistic image, not a vector drawing, and not a flat digital cartoon. Avoid harsh shadows, saturated colours, glossy rendering, perfect computer-straight lines, and heavy comic-style outlines.",
             "Wv__Whitecard__WidthPx": 6000,
             "Wv__Whitecard__HeightPx": 4000,
             "Wv__Whitecard__SnappedAspectRatio": "3:2",
@@ -30,9 +30,9 @@
         "Wv__Project__RenderGroup__MaterialReferences": [],
         "Wv__Project__RenderGroup__StyleReferences": [],
         "Wv__Project__RenderGroup__AvoidNotes": "",
-        "Wv__Project__RenderGroup__ImageSize": "2K",
-        "Wv__Project__RenderGroup__LastOutputPath": "",
-        "Wv__Project__RenderGroup__LastOutputThumbPath": ""
+        "Wv__Project__RenderGroup__ImageSize": "4K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/20__FinalExport__RenderMode/20260430T111916Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__WcVisData/20__FinalExport__RenderMode/20260430T111916Z__render____thumb240.jpg"
     },
     "Wv__Project__EditIterations": [],
     "Wv__Project__ActiveEditIterationId": ""

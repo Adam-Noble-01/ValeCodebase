@@ -1,0 +1,67 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Untitled Project",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Untitled-Project",
+        "Wv__ProjectFile__Metadata__PreviousNames": [],
+        "Wv__ProjectFile__Metadata__Description": "",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-30T13:42:38.924030+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-30T13:51:38.226657+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG06__3dView__ViewOption-01__WithGarden____WhitecardImage__30-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG06__3dView__ViewOption-01__WithGarden____WhitecardImage__30-Apr-2026__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "**RENDER IMAGE-01**\nCreate a traditional British Architectural Watercolour illustration of a charming walled garden greenhouse in a soft hand-rendered sketchy early draft concept design presentation style. ENSURE YOU KEEP THE LEVEL OF DETAIL LOW AND STUDY THE PROVIDED STYLE IMAGES AND MATCH THE ART STYLE IDENTICALLY. STUDY THE STYLE BEFORE GENERATING THE NEW IMAGE.\n\nThe Image is a Client Facing Rendering for Vale Garden Houses who are the UK's Premium Traditional Orangery & Conservatory Manufacturer and this image serves to communicate the design to the client in their Traditional Watercolour Painting Style of deliverable. \n\n**GREENHOUSE DESIGN**\nThe Greenhouse has a slate roof, white framework, windows, front facing double doors, and stop chamfer columns. The framework is sat atop a brickwork dwarf wall with a breakfront gable section, All gables are glazed. The Greenhouse is situated up against an old walled garden tall brick wall.\n\n**WALLED GARDEN SURROUNDINGS** \nThere are planting beds raised slightly by a couple of inches and gravel pathways in-between, the beds should be planted with cottage garden plants and all plants should be shown extremely loosely and expressively as to not distract from the greenhouse proposal. The rear garden wall has pear cordons and other trained allotment garden plants growing up the wall. the planting should be charming and indicative of a working walled gardens. the centre section in front of the conservatory has a mowed lawn with the planting beds to the right of the greenhouse building.\n\n**LINE ART STYLE**\nUse fine black ink architectural linework with delicate sketchy outlines, Ensure you use a imperfect hand-drawn pen marks, subtle hatching, accurate building geometry, crisp window divisions, and elegant but loose sketchy draughtsman-style detailing.\n\n**WATERCOLOUR STYLE**\nApply soft transparent watercolour washes over the ink. Use warm red brick tones, muted cream stonework, darker blue glazing, sage green trees and planting, a light blue washed sky, and a pale green lawn. The colours should be gentle, layered, and translucent, and the washes should blend out onto the page to create negative space at the margins. Make it look painted on textured cold-pressed watercolour paper with visible paper grain. Use loose irregular wash edges around the sky, lawn, and background trees, fading naturally into untouched white paper. it should look as though its a scan of a realistic watercolour painting and should be indistinguishable from the work of a skilled human artist.\n\n**BACKGROUND ELEMENTS**\nKeep the background minimal and softly suggestive with lose sketchy linework indicating trees vegetation and sky etc with washes to fill out the background space. \n\n**VIBE**\nThe image must exude a calm traditional quint essential English countryside atmosphere.\n\n**FILTER**\nApply a warm feeling slight sepia and slightly dream like filter avoiding acidy tones.\n\n**DETAILS**\nAvoid showing any interiors ensure glazing within windows are always filled with blue figment with the glazing panes within the linework completely filled with no whitespace. Ensure you match the exact perspective of image-01 (Looking at the front right corner.\n\n",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [],
+        "Wv__Project__RenderGroup__StyleReferences": [
+            {
+                "Wv__Reference__Id": "ref_moljadpj_907v1",
+                "Wv__Reference__Type": "style",
+                "Wv__Reference__Label": "StyleReference-01",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/03__ImageInput__StyleReference/01__Style__Perspective__View-01__1_0_0.png",
+                "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/03__ImageInput__StyleReference/01__Style__Perspective__View-01__1_0_0__thumb240.jpg",
+                "Wv__Reference__Prompt": "Use the same artworkstyle applied to the provided whitecard. YOU MUST NOT USE IMAGE 02 AS THE BASE WHITECARD YOU MUST ONLY USE IMAGE-01"
+            },
+            {
+                "Wv__Reference__Id": "ref_moljalwd_nhljl",
+                "Wv__Reference__Type": "style",
+                "Wv__Reference__Label": "StyleReference-02",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/03__ImageInput__StyleReference/02__Style__Elevation__FrontElevation__1_0_0.png",
+                "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/03__ImageInput__StyleReference/02__Style__Elevation__FrontElevation__1_0_0__thumb240.jpg",
+                "Wv__Reference__Prompt": "Use the same artworkstyle applied to the provided whitecard. YOU MUST NOT USE IMAGE 02 AS THE BASE WHITECARD YOU MUST ONLY USE IMAGE-01"
+            }
+        ],
+        "Wv__Project__RenderGroup__AvoidNotes": "",
+        "Wv__Project__RenderGroup__ImageSize": "4K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/20__FinalExport__RenderMode/20260430T135138Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/20__FinalExport__RenderMode/20260430T135138Z__render____thumb240.jpg"
+    },
+    "Wv__Project__EditIterations": [
+        {
+            "Wv__EditIteration__Id": "202604301347091Z",
+            "Wv__EditIteration__Label": "Iter 1",
+            "Wv__EditIteration__Version": "Version-01",
+            "Wv__EditIteration__BaseImagePath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/20__FinalExport__RenderMode/20260430T134653Z__render__.png",
+            "Wv__EditIteration__BaseImageThumbPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/20__FinalExport__RenderMode/20260430T134653Z__render____thumb240.jpg",
+            "Wv__EditIteration__BaseWidthPx": 6000,
+            "Wv__EditIteration__BaseHeightPx": 4000,
+            "Wv__EditIteration__SnappedAspectRatio": "3:2",
+            "Wv__EditIteration__SnappedDeltaPct": 0,
+            "Wv__EditIteration__TargetPrompt": "Use a lower level of detail, remove the level of detail from the brickwork and make the shot feel looser and more expressive. show glazing in the front gable above the doors instead of solid panels",
+            "Wv__EditIteration__PreservePrompt": "Keep everything else exactly the same. Preserve original style, lighting, composition, camera angle, perspective, and aspect ratio without any alteration to untouched areas of the image.",
+            "Wv__EditIteration__AvoidNotes": "",
+            "Wv__EditIteration__ImageSize": "4K",
+            "Wv__EditIteration__LastOutputPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/30__FinalExport__EditMode/202604301347091Z/20260430T134920Z__edit__.png",
+            "Wv__EditIteration__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Untitled-Project__WcVisData/30__FinalExport__EditMode/202604301347091Z/20260430T134920Z__edit____thumb240.jpg",
+            "Wv__EditIteration__DateCreatedUtc": "2026-04-30T13:47:09.114Z"
+        }
+    ],
+    "Wv__Project__ActiveEditIterationId": "202604301347091Z"
+}

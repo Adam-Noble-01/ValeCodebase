@@ -435,6 +435,10 @@
         {
             "folderId": "2026/63232__Davies",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63072__Armstrong",
+            "enabled": true
         }
     ]
 }

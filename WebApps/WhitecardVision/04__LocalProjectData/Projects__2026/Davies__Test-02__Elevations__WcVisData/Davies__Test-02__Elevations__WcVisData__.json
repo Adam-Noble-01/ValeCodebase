@@ -1,0 +1,40 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Davies__Test-02__Elevations",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Davies__Test-02__Elevations",
+        "Wv__ProjectFile__Metadata__PreviousNames": [],
+        "Wv__ProjectFile__Metadata__Description": "The front Elevation View",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-30T11:20:14.288298+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-30T12:25:12.697769+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-02__Elevations__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMD02__Elevation__FrontElevation____WhitecardImage__30-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-02__Elevations__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMD02__Elevation__FrontElevation____WhitecardImage__30-Apr-2026__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "Create a traditional British Architectural Watercolour 2D Elevation Drawing of a charming walled garden greenhouse in a soft hand-rendered sketchy early draft concept design presentation style.\n\n**IMPORTANT**\nThe image MUST be a 2D Front Elevation of the structure and must strictly be a 2D Orthographic drawing of the front on view and must not show any perspective what so ever, the view must be entirely flat and 2D. You must render the proved Whitecard image (Image-01) and its exact proportions as it will be a **SCALE DRAWING** So its critical you do not alter the scale, aspect, proportions etc of the provided 2D Whitecard Image as its intended for usage on a Scaled Plan Document. \n\nThe Image is a Client Facing Design Drawing for Vale Garden Houses who are the UK's Premium Traditional Orangery & Conservatory Manufacturer and this image serves to communicate the design to the client in their Traditional Watercolour Painting Style of deliverable.\n\nThe document is a 2D Elevation Drawing with zero perspective or depth.\n\n**GREENHOUSE DESIGN**\nThe Greenhouse has a slate roof, white framework, windows, front facing double doors, and stop chamfer columns. The framework is sat atop a brickwork dwarf wall with a breakfront gable section, All gables are glazed. The Greenhouse is situated up against an old walled garden tall brick wall.\n\n**WALLED GARDEN SURROUNDINGS** \nBeds should be planted with cottage garden plants and all plants should be shown extremely loosely and expressively as to not distract from the greenhouse proposal. The rear garden wall has pear cordons and other trained allotment garden plants growing up the wall. the planting should be charming and indicative of a working walled gardens.\n\n**LINE ART STYLE**\nUse fine black ink architectural linework with delicate sketchy outlines, Ensure you use a imperfect hand-drawn pen marks, subtle hatching, accurate building geometry, crisp window divisions, and elegant but loose sketchy draughtsman-style detailing. Show a slightly thicker ground line and do not draw any other linework or elements below this ground line, this ground line should indicate the cut through the sites topography visually in the style typical of 2D Building Elevations Drawings.\n\n**WATERCOLOUR STYLE**\nApply soft transparent watercolour washes over the ink. Use warm red brick tones, muted cream stonework, darker blue glazing, sage green trees and planting, a light blue washed sky, and a pale green lawn. The colours should be gentle, layered, and translucent, and the washes should blend out onto the page to create negative space at the margins. Make it look painted on textured cold-pressed watercolour paper with visible paper grain. Use loose irregular wash edges around the sky, lawn, and background trees, fading naturally into untouched white paper. it should look as though its a scan of a realistic watercolour painting and should be indistinguishable from the work of a skilled human artist.\n\n**BACKGROUND ELEMENTS**\nKeep the background minimal and softly suggestive with lose sketchy linework indicating trees vegetation and sky etc with washes to fill out the background space.  Below the ground line show only an expressive green watercolour wash and no other elements the aim is provide a visual indication of below ground.\n\n**VIBE**\nThe image must exude a calm traditional quint essential English countryside atmosphere.\n\n**FILTER**\nApply a warm feeling slight sepia and slightly dream like filter avoiding acidy tones.\n\n**DETAILS**\nAvoid showing any interiors ensure glazing within windows are always filled with blue figment with the glazing panes within the linework completely filled with no whitespace.\n\n**DISAMBIGUATION** \nThe image should feel like a refined 2D hand draw concept sketchy front elevation drawing and not a CGI render, not a photorealistic image, not a vector drawing, and not a flat digital cartoon. Avoid harsh shadows, saturated colours, glossy rendering, perfect computer-straight lines, and heavy comic-style outlines. Do not draw any foreground elements as this needs to be 2D front view shot with no perspective drawn.",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [],
+        "Wv__Project__RenderGroup__StyleReferences": [
+            {
+                "Wv__Reference__Id": "ref_mole79vy_ksx87",
+                "Wv__Reference__Type": "style",
+                "Wv__Reference__Label": "ReferenceImage",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-02__Elevations__WcVisData/03__ImageInput__StyleReference/01__Style__20260430T111916Z__render.png",
+                "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-02__Elevations__WcVisData/03__ImageInput__StyleReference/01__Style__20260430T111916Z__render__thumb240.jpg",
+                "Wv__Reference__Prompt": "THIS IS A REFERENCE FOR THE PAINT SO DO NOT USE IMAGE-02. You must copy the Art Style of Image-02 to Image-01 (The Whitecard Provided) **EXACTLY** Applying THIS style to the required 2D Elevation. You must under no circumstances create a 3D Perspective."
+            }
+        ],
+        "Wv__Project__RenderGroup__AvoidNotes": "",
+        "Wv__Project__RenderGroup__ImageSize": "4K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Davies__Test-02__Elevations__WcVisData/20__FinalExport__RenderMode/20260430T120526Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-02__Elevations__WcVisData/20__FinalExport__RenderMode/20260430T120526Z__render____thumb240.jpg"
+    },
+    "Wv__Project__EditIterations": [],
+    "Wv__Project__ActiveEditIterationId": ""
+}

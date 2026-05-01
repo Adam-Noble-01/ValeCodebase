@@ -1,0 +1,48 @@
+{
+    "Wv__ProjectFile__Metadata": {
+        "Wv__ProjectFile__Metadata__ProjectName": "Davies__Test-01__3D__View-02__",
+        "Wv__ProjectFile__Metadata__ProjectCode": "Davies__Test-01__3D__View-02",
+        "Wv__ProjectFile__Metadata__PreviousNames": [
+            {
+                "previousProjectCode": "Davies__Test-01__3D__View02",
+                "previousProjectName": "Davies__Test-01__3D__View-02__",
+                "renamedAtUtc": "2026-04-30T12:24:54.151310+00:00",
+                "newProjectCode": "Davies__Test-01__3D__View-02",
+                "newProjectName": "Davies__Test-01__3D__View-02__"
+            }
+        ],
+        "Wv__ProjectFile__Metadata__Description": "Creating a base 3D Image to next test creating Elevations",
+        "Wv__ProjectFile__Metadata__YearFolder": "Projects__2026",
+        "Wv__ProjectFile__Metadata__SchemaVersion": "0.1.0",
+        "Wv__ProjectFile__Metadata__DateCreatedUtc": "2026-04-30T12:24:02.194231+00:00",
+        "Wv__ProjectFile__Metadata__DateModifiedUtc": "2026-04-30T13:42:36.060070+00:00"
+    },
+    "Wv__Project__RenderGroup": {
+        "Wv__Project__RenderGroup__Whitecard": {
+            "Wv__Whitecard__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__View-02__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG06__3dView__ViewOption-01__WithGarden____WhitecardImage__30-Apr-2026.png",
+            "Wv__Whitecard__ImageThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__View-02__WcVisData/01__ImageInput__WhitecardImage/01__Whitecard__IMG06__3dView__ViewOption-01__WithGarden____WhitecardImage__30-Apr-2026__thumb240.jpg",
+            "Wv__Whitecard__Prompt": "",
+            "Wv__Whitecard__WidthPx": 6000,
+            "Wv__Whitecard__HeightPx": 4000,
+            "Wv__Whitecard__SnappedAspectRatio": "3:2",
+            "Wv__Whitecard__SnappedDeltaPct": 0
+        },
+        "Wv__Project__RenderGroup__MaterialReferences": [],
+        "Wv__Project__RenderGroup__StyleReferences": [
+            {
+                "Wv__Reference__Id": "ref_molj42bk_cnel6",
+                "Wv__Reference__Type": "style",
+                "Wv__Reference__Label": "STYLE-REFERENCE-IMAGE",
+                "Wv__Reference__ImagePath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__View-02__WcVisData/03__ImageInput__StyleReference/01__Style__Perspective__View-01__1_0_0.png",
+                "Wv__Reference__ThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__View-02__WcVisData/03__ImageInput__StyleReference/01__Style__Perspective__View-01__1_0_0__thumb240.jpg",
+                "Wv__Reference__Prompt": "Use this art style but apply to the provided whitecard image."
+            }
+        ],
+        "Wv__Project__RenderGroup__AvoidNotes": "",
+        "Wv__Project__RenderGroup__ImageSize": "4K",
+        "Wv__Project__RenderGroup__LastOutputPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__View-02__WcVisData/20__FinalExport__RenderMode/20260430T134227Z__render__.png",
+        "Wv__Project__RenderGroup__LastOutputThumbPath": "04__LocalProjectData/Projects__2026/Davies__Test-01__3D__View-02__WcVisData/20__FinalExport__RenderMode/20260430T134227Z__render____thumb240.jpg"
+    },
+    "Wv__Project__EditIterations": [],
+    "Wv__Project__ActiveEditIterationId": ""
+}

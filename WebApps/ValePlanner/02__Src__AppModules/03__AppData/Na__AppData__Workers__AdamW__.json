@@ -1192,14 +1192,6 @@
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "new-1777471168749",
-          "date": "2026-04-29",
-          "startTime": "11:30",
-          "endTime": "13:00",
-          "title": "Watercolour Experiments",
-          "color": "na-shift-color-cyan"
-        },
-        {
           "id": "new-1777471189930",
           "date": "2026-04-29",
           "startTime": "08:00",
@@ -1222,6 +1214,38 @@
           "endTime": "08:45",
           "title": "Blockout |  Davies",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1777557803713",
+          "date": "2026-04-30",
+          "startTime": "14:30",
+          "endTime": "15:00",
+          "title": "Size Estimate",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1777471168749",
+          "date": "2026-04-29",
+          "startTime": "11:30",
+          "endTime": "16:15",
+          "title": "Watercolour Experiments",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1777557836549",
+          "date": "2026-04-29",
+          "startTime": "16:15",
+          "endTime": "16:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1777558393489",
+          "date": "2026-04-30",
+          "startTime": "15:00",
+          "endTime": "18:00",
+          "title": "Blockout |  Armstrong",
+          "color": "na-shift-color-orange"
         }
       ]
     }

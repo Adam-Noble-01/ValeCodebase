@@ -15,6 +15,23 @@
             "Camera__DefaultRotation__RotZ": 0.0031
         }
     },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": 9581,
+            "FogPlane__Config__PlaneA__NormalX": 1,
+            "FogPlane__Config__PlaneA__NormalZ": 0
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -31890,
+            "FogPlane__Config__PlaneB__NormalX": 0,
+            "FogPlane__Config__PlaneB__NormalZ": 1
+        }
+    },
     "Navmode__OrbitMaxDistanceMm": 50000,
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
@@ -23,7 +40,15 @@
         "OrbitHelperCube__Position__PosZ": -17497
     },
     "ProjectType": "Whitecard",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/63295__Majid",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
+    ],
+    "folderId": "2026/63295__Majid",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
     ],
@@ -52,30 +77,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "FogPlane__Config": {
-        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
-        "FogPlane__Config__Enabled": false,
-        "FogPlane__Config__FalloffDistanceMm": 1000,
-        "FogPlane__Config__PlaneA": {
-            "FogPlane__Config__PlaneA__Active": true,
-            "FogPlane__Config__PlaneA__PositionMm": 9581,
-            "FogPlane__Config__PlaneA__NormalX": 1,
-            "FogPlane__Config__PlaneA__NormalZ": 0
-        },
-        "FogPlane__Config__PlaneB": {
-            "FogPlane__Config__PlaneB__Active": true,
-            "FogPlane__Config__PlaneB__PositionMm": -31890,
-            "FogPlane__Config__PlaneB__NormalX": 0,
-            "FogPlane__Config__PlaneB__NormalZ": 1
-        }
-    },
-    "folderId": "2026/63295__Majid",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
     ]
 }

@@ -232,3 +232,13 @@
 2026-04-30 09:48:13,130 | INFO    | Hiding window to tray
 2026-04-30 15:08:01,113 | INFO    | Launching app: 30__Python__ImageTools/Py_ImgUtils__HeicToPngConverter/Py_ImgUtils__HeicToPngConverter__Main__.py
 2026-04-30 15:08:58,383 | INFO    | Hiding window to tray
+2026-05-05 07:55:51,318 | INFO    | === Python App Launcher starting ===
+2026-05-05 07:55:51,321 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
+2026-05-05 07:55:51,956 | INFO    | Discovery: found 18 launchable apps across 5 categories
+2026-05-05 07:55:54,315 | INFO    | Hiding window to tray
+2026-05-05 12:14:32,938 | INFO    | === Python App Launcher starting ===
+2026-05-05 12:14:32,940 | INFO    | Lock already held - this is a secondary launch
+2026-05-05 12:14:32,941 | INFO    | Signalled primary instance via C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\show.flag
+2026-05-05 12:14:32,941 | INFO    | Secondary instance exiting cleanly
+2026-05-05 12:14:32,996 | INFO    | show.flag signal received - raising window
+2026-05-05 12:14:35,112 | INFO    | Hiding window to tray

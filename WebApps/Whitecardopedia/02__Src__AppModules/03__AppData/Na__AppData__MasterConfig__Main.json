@@ -439,6 +439,10 @@
         {
             "folderId": "2026/63072__Armstrong",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63295__Majid",
+            "enabled": true
         }
     ]
 }

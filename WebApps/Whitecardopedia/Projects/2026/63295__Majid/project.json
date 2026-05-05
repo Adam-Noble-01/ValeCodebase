@@ -1,0 +1,81 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 39694,
+            "Camera__DefaultPos__PosY": 2261,
+            "Camera__DefaultPos__PosZ": 12212
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0057,
+            "Camera__DefaultRotation__RotY": 0.5708,
+            "Camera__DefaultRotation__RotZ": 0.0031
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 50000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 20618,
+        "OrbitHelperCube__Position__PosY": 2091,
+        "OrbitHelperCube__Position__PosZ": -17497
+    },
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63295__Majid",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "A tricky Job but a beautiful scheme! I had to model out the cresting and finial which took some extra time but I have now saved them in my standards, the house itself was relatively easy, dentils achieved quickly using new array plugin, so was well worth the time making it.",
+        "conceptArtist": "Amy",
+        "input": "CAD File"
+    },
+    "projectCode": "63295",
+    "projectName": "Majid",
+    "scheduleData": {
+        "dateFulfilled": "05-May-2026",
+        "dateReceived": "01-May-2026",
+        "timeAllocated": 6,
+        "timeTaken": 5.5
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": false,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": 9581,
+            "FogPlane__Config__PlaneA__NormalX": 1,
+            "FogPlane__Config__PlaneA__NormalZ": 0
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -31890,
+            "FogPlane__Config__PlaneB__NormalX": 0,
+            "FogPlane__Config__PlaneB__NormalZ": 1
+        }
+    },
+    "folderId": "2026/63295__Majid",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026.png"
+    ]
+}

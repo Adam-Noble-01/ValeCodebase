@@ -23,17 +23,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__06-May-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Took much longer than expected as I had to fill out lots of context not included in the CAD.",
+        "conceptArtist": "Steph",
+        "input": "CAD File"
     },
     "projectCode": "63231",
     "projectName": "Sellon",
     "scheduleData": {
         "dateFulfilled": "06-May-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "04-May-2026",
+        "timeAllocated": 3,
+        "timeTaken": 4
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -69,5 +69,13 @@
         "OrbitHelperCube__Position__PosX": 12133,
         "OrbitHelperCube__Position__PosY": 2629,
         "OrbitHelperCube__Position__PosZ": -6665
-    }
+    },
+    "folderId": "2026/63231__Sellon",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__06-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__06-May-2026.png"
+    ]
 }

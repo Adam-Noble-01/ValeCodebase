@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "appName": "Na__DepthMapPhotoMeasure",
+  "appDescription": "Browser-based metric depth estimation prototype for architectural surveying. Runs Apple Depth Pro and Depth Anything V2 Metric Outdoor in-browser via onnxruntime-web and lets the user click points for true real-world distances.",
+
+  "externalLibraries": {
+    "onnxRuntimeWeb": {
+      "scriptUrl":      "01__ExternalDependencies__VersionLocked/02__OnnxRuntime__Web/ort.min.js",
+      "wasmPathPrefix": "01__ExternalDependencies__VersionLocked/02__OnnxRuntime__Web/"
+    },
+    "exifr": {
+      "scriptUrl": "01__ExternalDependencies__VersionLocked/03__Exifr__Library/full.umd.js"
+    }
+  },
+
+  "models": {
+    "DepthPro": {
+      "displayName": "Apple Depth Pro (Q4)",
+      "modelPath": "01__ExternalDependencies__VersionLocked/01__DepthAnything__ModelFiles/DepthPro__Onnx/model_q4.onnx",
+      "_alternativeModelPaths": {
+        "wasmFp32_recommended": "01__ExternalDependencies__VersionLocked/01__DepthAnything__ModelFiles/DepthPro__Onnx/model_q4.onnx",
+        "webgpuFp16":           "01__ExternalDependencies__VersionLocked/01__DepthAnything__ModelFiles/DepthPro__Onnx/model_q4f16.onnx"
+      },
+      "outputsFocalLength": true,
+      "outputDepthUnit": "meters",
+      "inputName": "pixel_values",
+      "outputs": {
+        "depth": "predicted_depth",
+        "focalLength": "focallength_px"
+      },
+      "inputSize": { "height": 1536, "width": 1536 },
+      "inputLayout": "NCHW",
+      "preprocessing": {
+        "rescaleFactor": 0.00392156862745098,
+        "imageMean": [0.5, 0.5, 0.5],
+        "imageStd": [0.5, 0.5, 0.5],
+        "padToSquare": true,
+        "padFillRgb": [0.5, 0.5, 0.5]
+      }
+    },
+    "DepthAnythingV2MetricOutdoor": {
+      "displayName": "Depth Anything V2 Metric Outdoor (vKITTI, ViT-L)",
+      "modelPath": "01__ExternalDependencies__VersionLocked/01__DepthAnything__ModelFiles/DepthAnythingV2Metric__OutdoorLarge/depth_anything_v2_metric_vkitti_vitl.onnx",
+      "outputsFocalLength": false,
+      "outputDepthUnit": "meters",
+      "inputName": "input",
+      "outputs": {
+        "depth": "output"
+      },
+      "inputSize": { "height": 518, "width": 518 },
+      "inputLayout": "NCHW",
+      "preprocessing": {
+        "rescaleFactor": 0.00392156862745098,
+        "imageMean": [0.485, 0.456, 0.406],
+        "imageStd": [0.229, 0.224, 0.225],
+        "padToSquare": false,
+        "padFillRgb": [0.0, 0.0, 0.0]
+      }
+    }
+  },
+
+  "modelDefault": "DepthPro",
+
+  "inference": {
+    "preferredExecutionProvider": "wasm",
+    "fallbackExecutionProvider": "wasm",
+    "graphOptimizationLevel": "all",
+    "wasmNumThreads": 1,
+    "comment": "WebGPU is not used by default because Apple Depth Pro requires 36 storage buffers per compute stage, exceeding the default WebGPU device limit (8). Switch to 'webgpu' if you have an Apple Silicon Mac or NVIDIA workstation GPU with high storageBuffersPerShaderStage limit; the runtime will still fall back to wasm if WebGPU session creation fails."
+  },
+
+  "intrinsics": {
+    "defaultFovDegrees": 60,
+    "fovSliderRangeDegrees": [10, 170],
+    "knownSensorPresetsMm": {
+      "iPhone15ProMain": { "sensorWidth": 9.6, "sensorHeight": 7.2 },
+      "iPhone15ProUltraWide": { "sensorWidth": 6.4, "sensorHeight": 4.8 },
+      "FullFrame_36x24": { "sensorWidth": 36.0, "sensorHeight": 24.0 },
+      "APSC_Canon": { "sensorWidth": 22.3, "sensorHeight": 14.9 },
+      "APSC_Sony": { "sensorWidth": 23.5, "sensorHeight": 15.6 },
+      "MicroFourThirds": { "sensorWidth": 17.3, "sensorHeight": 13.0 },
+      "OnePlus_Generic_Phone": { "sensorWidth": 7.2, "sensorHeight": 5.4 }
+    }
+  },
+
+  "ui": {
+    "depthOverlayDefaultOpacity": 0.55,
+    "colormap": "turbo",
+    "measurementColors": {
+      "MODEL": "#22d3ee",
+      "EXIF": "#34d399",
+      "MANUAL": "#fbbf24",
+      "CALIBRATION": "#f472b6",
+      "DEFAULT": "#f87171"
+    },
+    "pointMarkerRadiusPx": 6,
+    "magnifierEnabled": true,
+    "magnifierSizePx": 140,
+    "magnifierZoom": 4
+  },
+
+  "calibration": {
+    "depthSampleKernelRadius": 2,
+    "depthDivergence": {
+      "warnRatio": 1.15,
+      "badRatio": 1.5,
+      "warnRelativeDelta": 0.15
+    },
+    "depthHud": {
+      "enabled": true,
+      "kernelRadius": 2,
+      "gradientWarnRelative": 0.15,
+      "offsetPx": { "x": 14, "y": 14 }
+    }
+  },
+
+  "measurementHybrid": {
+    "enableWallPlaneClamp": true,
+    "wallParallelAngleDeg": 12,
+    "minRefSeparationPx": 50,
+    "enableDepthAnchoredVertical": true,
+    "verticalWallAngleDeg": 12,
+    "verticalDepthMaxRelativeShift": 0.35
+  },
+
+  "viewport": {
+    "minZoom":         0.05,
+    "maxZoom":         16,
+    "wheelZoomFactor": 1.15,
+    "fitPaddingPx":    16,
+    "panMouseButton":  1
+  },
+
+  "export": {
+    "defaultFilenamePrefix": "DepthMapPhoto__Annotated__",
+    "defaultLayers": {
+      "base":         true,
+      "depth":        false,
+      "measurements": true
+    }
+  },
+
+  "samplePhoto": "PM01__FrontRight__.JPG",
+
+  "limits": {
+    "maxImageEdgePx": 4096,
+    "maxConcurrentInferences": 1
+  }
+}

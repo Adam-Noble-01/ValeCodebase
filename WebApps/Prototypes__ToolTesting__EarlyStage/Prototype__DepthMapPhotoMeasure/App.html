@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Na | Depth Map Photo Measure</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='42' font-family='Segoe UI,system-ui,sans-serif' font-size='28' font-weight='800' fill='%230b0f14' text-anchor='middle'%3EDM%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="03__AppStyles/Na__Stylesheet__Main.css" />
+</head>
+<body>
+    <header id="Na__Header__Bar">
+        <div class="Na__Header__Title">
+            <span class="Na__Header__Mark">DM</span>
+            <h1>Depth Map Photo Measure</h1>
+            <span class="Na__Header__Subtitle">Metric monocular depth surveying prototype</span>
+        </div>
+        <div class="Na__Header__Tools">
+            <label class="Na__Header__FileLabel" for="Na__ImageInput__File">
+                <input type="file" id="Na__ImageInput__File" accept="image/*" hidden />
+                <span>Open photo</span>
+            </label>
+            <button type="button" id="Na__SamplePhoto__Button">Use sample (PM01)</button>
+            <button type="button" id="Na__ExportPng__OpenButton" disabled>Download PNG</button>
+            <div id="Na__ModelToggle__Group" role="tablist" aria-label="Active depth model"></div>
+        </div>
+    </header>
+
+    <main id="Na__App__Layout">
+        <section id="Na__Stage__Region" tabindex="0">
+            <div id="Na__Stage__CanvasWrap">
+                <div id="Na__Stage__ViewportFrame">
+                    <canvas id="Na__BaseImage__Canvas"></canvas>
+                    <canvas id="Na__DepthOverlay__Canvas"></canvas>
+                    <canvas id="Na__Measurement__Canvas"></canvas>
+                </div>
+                <div id="Na__Magnifier__Bubble" hidden></div>
+                <div id="Na__DepthHud__Chip" hidden>--</div>
+                <div id="Na__Stage__EmptyState">
+                    <p>Drop an image here, open a photo, or use the sample.</p>
+                </div>
+                <div id="Na__Viewport__Hud" hidden>
+                    <span id="Na__Viewport__ZoomReadout">100%</span>
+                    <button type="button" id="Na__Viewport__FitButton" title="Fit to view (F)">Fit</button>
+                </div>
+            </div>
+        </section>
+
+        <aside id="Na__Sidebar__Panel">
+            <section class="Na__Sidebar__Block" id="Na__FocalControls__Block">
+                <h2>Camera focal length</h2>
+                <div class="Na__FocalControls__Source">
+                    Source: <span id="Na__FocalControls__SourceTag" class="Na__SourceTag">DEFAULT</span>
+                </div>
+                <label>
+                    Horizontal FOV
+                    <input type="range" id="Na__FocalControls__FovSlider" min="10" max="170" step="0.5" value="60" />
+                    <span id="Na__FocalControls__FovValue">60.0&deg;</span>
+                </label>
+                <label>
+                    Focal length (px)
+                    <input type="number" id="Na__FocalControls__FocalPxInput" min="100" step="1" />
+                </label>
+                <p class="Na__FocalControls__Hint" id="Na__FocalControls__Hint">No image loaded.</p>
+            </section>
+
+            <section class="Na__Sidebar__Block" id="Na__OverlayControls__Block">
+                <h2>Depth overlay</h2>
+                <label>
+                    Opacity
+                    <input type="range" id="Na__DepthOverlay__OpacitySlider" min="0" max="1" step="0.01" value="0.55" />
+                </label>
+                <label class="Na__OverlayControls__Toggle">
+                    <input type="checkbox" id="Na__DepthOverlay__VisibleCheckbox" checked />
+                    Show depth heatmap
+                </label>
+            </section>
+
+            <section class="Na__Sidebar__Block" id="Na__Calibration__Block">
+                <h2>Reference calibration</h2>
+                <p class="Na__Calibration__Hint">
+                    Click two points on something of known length, then enter the value. Add a second known wall dimension at a different x-position to stabilise wall-parallel measurements.
+                </p>
+                <button type="button" id="Na__Calibration__StartButton">Start reference calibration</button>
+                <button type="button" id="Na__Calibration__StartSecondaryButton" hidden>Add second wall reference</button>
+                <div id="Na__Calibration__InlineForm" hidden>
+                    <p id="Na__Calibration__CaptureModeLabel" class="Na__Calibration__CaptureModeLabel">Primary reference</p>
+                    <p id="Na__Calibration__DivergenceBanner" class="Na__Calibration__Banner" hidden></p>
+                    <label>
+                        Known length (mm)
+                        <input type="number" id="Na__Calibration__LengthMm" min="1" step="1" />
+                    </label>
+                    <div class="Na__Calibration__ButtonRow">
+                        <button type="button" id="Na__Calibration__ApplyButton">Apply</button>
+                        <button type="button" id="Na__Calibration__CancelButton">Cancel</button>
+                    </div>
+                </div>
+                <p id="Na__Calibration__SummaryReadout" class="Na__Calibration__SummaryReadout" hidden></p>
+            </section>
+
+            <section class="Na__Sidebar__Block" id="Na__MeasurementList__Block">
+                <h2>Measurements</h2>
+                <ul id="Na__MeasurementList__List"></ul>
+                <button type="button" id="Na__MeasurementList__ClearButton" disabled>Clear all</button>
+            </section>
+
+            <section class="Na__Sidebar__Block" id="Na__Diagnostics__Block">
+                <h2>Diagnostics</h2>
+                <pre id="Na__Diagnostics__Output">Ready.</pre>
+            </section>
+        </aside>
+    </main>
+
+    <footer id="Na__StatusBar__Bar">
+        <div class="Na__StatusBar__Slot" id="Na__StatusBar__Model">Model: --</div>
+        <div class="Na__StatusBar__Slot" id="Na__StatusBar__Image">Image: --</div>
+        <div class="Na__StatusBar__Slot" id="Na__StatusBar__Focal">Focal: --</div>
+        <div class="Na__StatusBar__Slot Na__StatusBar__Right" id="Na__StatusBar__Progress">Idle</div>
+    </footer>
+
+    <div id="Na__ExportPng__ModalBackdrop" hidden>
+        <div id="Na__ExportPng__ModalCard" role="dialog" aria-labelledby="Na__ExportPng__ModalTitle" aria-modal="true">
+            <h2 id="Na__ExportPng__ModalTitle">Download annotated PNG</h2>
+            <p class="Na__ExportPng__Hint">Pick which layers to bake into the file. Output is at source-image resolution.</p>
+            <fieldset class="Na__ExportPng__Layers">
+                <legend>Layers</legend>
+                <label><input type="checkbox" id="Na__ExportPng__Layer__Base" checked /> Base photo</label>
+                <label><input type="checkbox" id="Na__ExportPng__Layer__Depth" /> Depth overlay (current opacity)</label>
+                <label><input type="checkbox" id="Na__ExportPng__Layer__Measurements" checked /> Measurements &amp; dimension labels</label>
+            </fieldset>
+            <label class="Na__ExportPng__FilenameField">
+                File name
+                <input type="text" id="Na__ExportPng__FilenameInput" autocomplete="off" spellcheck="false" />
+            </label>
+            <p id="Na__ExportPng__Status" class="Na__ExportPng__Status" hidden></p>
+            <div class="Na__ExportPng__ButtonRow">
+                <button type="button" id="Na__ExportPng__CancelButton">Cancel</button>
+                <button type="button" id="Na__ExportPng__DownloadButton">Download</button>
+            </div>
+        </div>
+    </div>
+    <a id="Na__ExportPng__DownloadAnchor" hidden></a>
+
+    <!-- Cache-bust query string is rewritten by the dev server-aware bootstrap so
+         every dependent module loads fresh on each reload. -->
+    <script>
+        (function Na__App__InjectBootstrap() {
+            const bust = Date.now();
+            const tag  = document.createElement('script');
+            tag.type   = 'module';
+            tag.src    = `02__AppSource/01__Bootstrap__/Na__Bootstrap__Main.js?v=${bust}`;
+            document.body.appendChild(tag);
+        })();
+    </script>
+</body>
+</html>

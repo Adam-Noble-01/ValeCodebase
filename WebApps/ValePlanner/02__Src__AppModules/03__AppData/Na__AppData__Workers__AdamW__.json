@@ -1280,14 +1280,6 @@
           "color": "na-shift-color-cyan"
         },
         {
-          "id": "new-1777971531437",
-          "date": "2026-05-05",
-          "startTime": "09:30",
-          "endTime": "11:15",
-          "title": "Standards |  Hardwick Finial",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1777629565545",
           "date": "2026-05-01",
           "startTime": "11:00",
@@ -1296,36 +1288,52 @@
           "color": "na-shift-color-orange"
         },
         {
+          "id": "new-1777971531437",
+          "date": "2026-05-05",
+          "startTime": "09:30",
+          "endTime": "11:00",
+          "title": "Standards |  Hardwick Finial",
+          "color": "na-shift-color-purple"
+        },
+        {
           "id": "new-1777975874888",
           "date": "2026-05-05",
-          "startTime": "11:15",
-          "endTime": "11:30",
+          "startTime": "11:00",
+          "endTime": "11:15",
           "title": "Tea",
           "color": "na-shift-color-blue"
         },
         {
           "id": "new-1777975869240",
           "date": "2026-05-05",
-          "startTime": "11:30",
-          "endTime": "12:30",
+          "startTime": "11:15",
+          "endTime": "12:15",
           "title": "Whitecard |  Majid",
           "color": "na-shift-color-orange"
         },
         {
-          "id": "new-1777971557268",
-          "date": "2026-05-05",
-          "startTime": "13:00",
-          "endTime": "17:45",
-          "title": "TEMP - STEPH",
-          "color": "na-shift-color-emerald"
-        },
-        {
           "id": "new-1777975893533",
           "date": "2026-05-05",
-          "startTime": "12:30",
-          "endTime": "13:00",
+          "startTime": "12:15",
+          "endTime": "12:45",
           "title": "Lunch",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1777983269577",
+          "date": "2026-05-05",
+          "startTime": "12:45",
+          "endTime": "13:15",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1777971557268",
+          "date": "2026-05-06",
+          "startTime": "08:00",
+          "endTime": "10:00",
+          "title": "Blockout |  Sellon",
+          "color": "na-shift-color-amber"
         }
       ]
     }

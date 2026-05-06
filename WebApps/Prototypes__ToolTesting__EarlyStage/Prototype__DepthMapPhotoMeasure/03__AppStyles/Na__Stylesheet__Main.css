@@ -1,0 +1,674 @@
+/* Na__Stylesheet__Main
+   Single source of styles for the Depth Map Photo Measure prototype.
+   Layout: header / main(stage + sidebar) / footer status bar.
+*/
+
+:root {
+    --Na__Color__BgBase: #0b0f14;
+    --Na__Color__BgPanel: #121821;
+    --Na__Color__BgPanelAlt: #182230;
+    --Na__Color__BgInput: #0f1722;
+    --Na__Color__Border: #243042;
+    --Na__Color__Text: #e6edf3;
+    --Na__Color__TextDim: #9aa7b6;
+    --Na__Color__Accent: #22d3ee;
+    --Na__Color__AccentSoft: rgba(34, 211, 238, 0.14);
+    --Na__Color__Warn: #fbbf24;
+    --Na__Color__Danger: #f87171;
+    --Na__Radius__Md: 8px;
+    --Na__Radius__Lg: 12px;
+    --Na__Shadow__Panel: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --Na__Spacing__Xs: 4px;
+    --Na__Spacing__Sm: 8px;
+    --Na__Spacing__Md: 14px;
+    --Na__Spacing__Lg: 22px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--Na__Color__BgBase);
+    color: var(--Na__Color__Text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.45;
+    overflow: hidden;
+}
+
+body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+}
+
+/* ======================================== HEADER ======================================== */
+#Na__Header__Bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--Na__Spacing__Md) var(--Na__Spacing__Lg);
+    background: var(--Na__Color__BgPanel);
+    border-bottom: 1px solid var(--Na__Color__Border);
+}
+
+.Na__Header__Title {
+    display: flex;
+    align-items: center;
+    gap: var(--Na__Spacing__Md);
+}
+.Na__Header__Mark {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--Na__Radius__Md);
+    background: linear-gradient(135deg, #22d3ee, #6366f1);
+    font-weight: 800;
+    color: #0b0f14;
+    font-size: 14px;
+}
+.Na__Header__Title h1 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+.Na__Header__Subtitle {
+    font-size: 12px;
+    color: var(--Na__Color__TextDim);
+}
+
+.Na__Header__Tools {
+    display: flex;
+    align-items: center;
+    gap: var(--Na__Spacing__Sm);
+}
+
+.Na__Header__FileLabel {
+    cursor: pointer;
+    background: var(--Na__Color__Accent);
+    color: #0b0f14;
+    padding: 7px 14px;
+    border-radius: var(--Na__Radius__Md);
+    font-weight: 600;
+}
+.Na__Header__FileLabel:hover { filter: brightness(1.1); }
+
+button, .Na__Header__FileLabel {
+    font-family: inherit;
+    font-size: 12.5px;
+}
+
+button {
+    background: var(--Na__Color__BgPanelAlt);
+    color: var(--Na__Color__Text);
+    border: 1px solid var(--Na__Color__Border);
+    padding: 7px 13px;
+    border-radius: var(--Na__Radius__Md);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+button:hover { background: var(--Na__Color__BgInput); border-color: var(--Na__Color__Accent); }
+button[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+#Na__ModelToggle__Group {
+    display: inline-flex;
+    background: var(--Na__Color__BgInput);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: var(--Na__Radius__Md);
+    padding: 3px;
+    gap: 3px;
+}
+.Na__ModelToggle__Btn {
+    background: transparent;
+    border: none;
+    color: var(--Na__Color__TextDim);
+    padding: 5px 11px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.Na__ModelToggle__Btn[aria-pressed="true"] {
+    background: var(--Na__Color__Accent);
+    color: #0b0f14;
+    font-weight: 600;
+}
+
+/* ======================================== LAYOUT ======================================== */
+#Na__App__Layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    overflow: hidden;
+}
+
+#Na__Stage__Region {
+    position: relative;
+    background:
+        radial-gradient(circle at 30% 30%, #16202c 0%, #0b0f14 60%);
+    overflow: hidden;
+}
+
+#Na__Stage__CanvasWrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+#Na__Stage__ViewportFrame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+}
+
+#Na__Stage__ViewportFrame canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    image-rendering: pixelated;
+}
+
+#Na__DepthOverlay__Canvas {
+    pointer-events: none;
+    mix-blend-mode: normal;
+    opacity: 0.55;
+}
+
+#Na__Measurement__Canvas {
+    cursor: crosshair;
+}
+
+#Na__Stage__Region.Na__Stage__Panning,
+#Na__Stage__Region.Na__Stage__Panning #Na__Measurement__Canvas {
+    cursor: grabbing;
+}
+
+#Na__Viewport__Hud[hidden] { display: none; }
+
+#Na__Viewport__Hud {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px 6px 12px;
+    background: rgba(11, 15, 20, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: var(--Na__Color__TextDim);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: opacity 120ms ease;
+    opacity: 0.55;
+    pointer-events: auto;
+}
+
+#Na__Viewport__Hud:hover {
+    opacity: 1;
+}
+
+#Na__Viewport__ZoomReadout {
+    color: #e6edf3;
+    font-weight: 600;
+    min-width: 44px;
+    text-align: right;
+}
+
+#Na__Viewport__FitButton {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: #e6edf3;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+}
+
+#Na__Viewport__FitButton:hover {
+    background: rgba(34, 211, 238, 0.12);
+    border-color: var(--Na__Color__Accent);
+}
+
+#Na__Stage__EmptyState {
+    position: relative;
+    z-index: 5;
+    color: var(--Na__Color__TextDim);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+#Na__Magnifier__Bubble {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 2px solid var(--Na__Color__Accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    pointer-events: none;
+    background-repeat: no-repeat;
+    z-index: 20;
+}
+
+#Na__DepthHud__Chip {
+    position: absolute;
+    z-index: 25;
+    pointer-events: none;
+    background: rgba(11, 15, 20, 0.86);
+    color: var(--Na__Color__Text);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.3;
+    white-space: nowrap;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+#Na__DepthHud__Chip[hidden] { display: none; }
+
+#Na__DepthHud__Chip.Na__DepthHud__Noisy {
+    border-color: var(--Na__Color__Warn);
+    color: var(--Na__Color__Warn);
+}
+
+/* ======================================== SIDEBAR ======================================== */
+#Na__Sidebar__Panel {
+    background: var(--Na__Color__BgPanel);
+    border-left: 1px solid var(--Na__Color__Border);
+    overflow-y: auto;
+    padding: var(--Na__Spacing__Md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--Na__Spacing__Md);
+}
+
+.Na__Sidebar__Block {
+    background: var(--Na__Color__BgPanelAlt);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: var(--Na__Radius__Lg);
+    padding: var(--Na__Spacing__Md);
+}
+
+.Na__Sidebar__Block h2 {
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--Na__Color__TextDim);
+    margin: 0 0 var(--Na__Spacing__Sm) 0;
+}
+
+.Na__Sidebar__Block label {
+    display: block;
+    margin-bottom: var(--Na__Spacing__Sm);
+    font-size: 12.5px;
+    color: var(--Na__Color__TextDim);
+}
+
+.Na__Sidebar__Block input[type="number"],
+.Na__Sidebar__Block input[type="text"] {
+    width: 100%;
+    background: var(--Na__Color__BgInput);
+    color: var(--Na__Color__Text);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: var(--Na__Radius__Md);
+    padding: 6px 9px;
+    font-family: inherit;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.Na__Sidebar__Block input[type="range"] {
+    width: 100%;
+    accent-color: var(--Na__Color__Accent);
+    margin-top: 4px;
+}
+
+.Na__SourceTag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: var(--Na__Color__AccentSoft);
+    color: var(--Na__Color__Accent);
+}
+.Na__SourceTag.Na__SourceTag__MODEL       { color: #22d3ee; background: rgba(34,211,238,0.16); }
+.Na__SourceTag.Na__SourceTag__EXIF        { color: #34d399; background: rgba(52,211,153,0.16); }
+.Na__SourceTag.Na__SourceTag__MANUAL      { color: #fbbf24; background: rgba(251,191,36,0.16); }
+.Na__SourceTag.Na__SourceTag__CALIBRATION { color: #f472b6; background: rgba(244,114,182,0.16); }
+.Na__SourceTag.Na__SourceTag__DEFAULT     { color: #f87171; background: rgba(248,113,113,0.16); }
+
+.Na__FocalControls__Source {
+    margin-bottom: var(--Na__Spacing__Sm);
+    font-size: 12px;
+    color: var(--Na__Color__TextDim);
+}
+.Na__FocalControls__Hint {
+    margin: var(--Na__Spacing__Sm) 0 0 0;
+    font-size: 11.5px;
+    color: var(--Na__Color__TextDim);
+    line-height: 1.4;
+}
+
+.Na__OverlayControls__Toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    margin-top: var(--Na__Spacing__Sm);
+}
+.Na__OverlayControls__Toggle input[type="checkbox"] {
+    accent-color: var(--Na__Color__Accent);
+}
+
+.Na__Calibration__Hint {
+    margin-top: 0;
+    font-size: 12px;
+    color: var(--Na__Color__TextDim);
+}
+.Na__Calibration__ButtonRow {
+    display: flex;
+    gap: var(--Na__Spacing__Sm);
+    margin-top: var(--Na__Spacing__Sm);
+}
+#Na__Calibration__StartButton.Na__Calibration__Active {
+    background: var(--Na__Color__Warn);
+    color: #0b0f14;
+}
+
+.Na__Calibration__Banner {
+    margin: 0 0 var(--Na__Spacing__Sm) 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    color: var(--Na__Color__Warn);
+}
+.Na__Calibration__Banner.Na__Calibration__Banner__Bad {
+    background: rgba(248, 113, 113, 0.08);
+    border-color: rgba(248, 113, 113, 0.4);
+    color: var(--Na__Color__Danger);
+}
+.Na__Calibration__Banner[hidden] { display: none; }
+
+.Na__Calibration__CaptureModeLabel {
+    margin: 0 0 var(--Na__Spacing__Sm) 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--Na__Color__BgInput);
+    border: 1px solid var(--Na__Color__Border);
+    color: var(--Na__Color__Accent);
+    display: inline-block;
+}
+.Na__Calibration__CaptureModeLabel.Na__Calibration__CaptureModeLabel__Secondary {
+    color: #f472b6;
+    border-color: rgba(244, 114, 182, 0.4);
+}
+
+#Na__Calibration__StartSecondaryButton {
+    margin-top: var(--Na__Spacing__Sm);
+    width: 100%;
+}
+#Na__Calibration__StartSecondaryButton.Na__Calibration__Active {
+    background: var(--Na__Color__Warn);
+    color: #0b0f14;
+}
+#Na__Calibration__StartSecondaryButton[hidden] { display: none; }
+
+.Na__Calibration__SummaryReadout {
+    margin: var(--Na__Spacing__Sm) 0 0 0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    background: var(--Na__Color__BgInput);
+    border: 1px solid var(--Na__Color__Border);
+    color: var(--Na__Color__TextDim);
+    white-space: pre-line;
+}
+.Na__Calibration__SummaryReadout[hidden] { display: none; }
+
+#Na__MeasurementList__List {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: var(--Na__Radius__Md);
+}
+#Na__MeasurementList__List li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--Na__Color__Border);
+    font-size: 12.5px;
+}
+#Na__MeasurementList__List li:last-child { border-bottom: none; }
+.Na__Measurement__Swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+.Na__Measurement__Value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.Na__Measurement__DeleteBtn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--Na__Color__TextDim);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.Na__Measurement__DeleteBtn:hover { border-color: var(--Na__Color__Danger); color: var(--Na__Color__Danger); background: transparent; }
+
+#Na__MeasurementList__ClearButton {
+    margin-top: var(--Na__Spacing__Sm);
+    width: 100%;
+}
+
+#Na__Diagnostics__Output {
+    margin: 0;
+    padding: var(--Na__Spacing__Sm);
+    background: var(--Na__Color__BgInput);
+    border-radius: var(--Na__Radius__Md);
+    font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 11.5px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ======================================== STATUS BAR ======================================== */
+#Na__StatusBar__Bar {
+    display: flex;
+    align-items: center;
+    gap: var(--Na__Spacing__Lg);
+    padding: 6px var(--Na__Spacing__Lg);
+    background: var(--Na__Color__BgPanel);
+    border-top: 1px solid var(--Na__Color__Border);
+    font-size: 11.5px;
+    color: var(--Na__Color__TextDim);
+}
+.Na__StatusBar__Slot { white-space: nowrap; }
+.Na__StatusBar__Right { margin-left: auto; }
+#Na__StatusBar__Progress.Na__StatusBar__Busy {
+    color: var(--Na__Color__Accent);
+}
+
+/* ======================================== DRAG-OVER STATE ======================================== */
+.Na__Stage__DragOver {
+    outline: 2px dashed var(--Na__Color__Accent);
+    outline-offset: -8px;
+}
+
+/* ======================================== EXPORT PNG MODAL ======================================== */
+#Na__ExportPng__ModalBackdrop[hidden] { display: none; }
+
+#Na__ExportPng__ModalBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+#Na__ExportPng__Status[hidden] { display: none; }
+
+#Na__ExportPng__ModalCard {
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    background: var(--Na__Color__BgPanel);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: var(--Na__Radius__Md);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+    padding: 18px 20px 16px;
+    color: var(--Na__Color__Text);
+    font-size: 13px;
+}
+
+#Na__ExportPng__ModalCard h2 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e6edf3;
+}
+
+.Na__ExportPng__Hint {
+    margin: 0 0 14px;
+    color: var(--Na__Color__TextDim);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.Na__ExportPng__Layers {
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: 6px;
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.Na__ExportPng__Layers legend {
+    padding: 0 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--Na__Color__TextDim);
+}
+
+.Na__ExportPng__Layers label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.Na__ExportPng__FilenameField {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--Na__Color__TextDim);
+}
+
+.Na__ExportPng__FilenameField input {
+    background: var(--Na__Color__BgInput);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: #e6edf3;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.Na__ExportPng__FilenameField input:focus {
+    outline: none;
+    border-color: var(--Na__Color__Accent);
+}
+
+.Na__ExportPng__Status {
+    margin: 0 0 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    color: var(--Na__Color__Accent);
+    font-size: 12px;
+}
+
+.Na__ExportPng__Status.Na__ExportPng__StatusError {
+    background: rgba(248, 113, 113, 0.08);
+    border-color: rgba(248, 113, 113, 0.35);
+    color: #f87171;
+}
+
+.Na__ExportPng__ButtonRow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.Na__ExportPng__ButtonRow button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--Na__Color__Border);
+    border-radius: 6px;
+    color: #e6edf3;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+}
+
+.Na__ExportPng__ButtonRow button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--Na__Color__Accent);
+}
+
+#Na__ExportPng__DownloadButton {
+    background: linear-gradient(135deg, #22d3ee, #6366f1);
+    color: #0b0f14;
+    border-color: transparent;
+}
+
+#Na__ExportPng__DownloadButton:hover {
+    filter: brightness(1.1);
+    border-color: transparent;
+}
+
+#Na__ExportPng__OpenButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

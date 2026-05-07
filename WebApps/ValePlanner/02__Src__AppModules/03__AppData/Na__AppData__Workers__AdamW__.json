@@ -1334,6 +1334,70 @@
           "endTime": "10:00",
           "title": "Blockout |  Sellon",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1778065075420",
+          "date": "2026-05-06",
+          "startTime": "11:15",
+          "endTime": "11:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1778065047075",
+          "date": "2026-05-06",
+          "startTime": "10:30",
+          "endTime": "11:15",
+          "title": "Meeting |  AE",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1778065090316",
+          "date": "2026-05-06",
+          "startTime": "10:00",
+          "endTime": "10:30",
+          "title": "WCP |  Hotfix",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1778065067140",
+          "date": "2026-05-06",
+          "startTime": "11:30",
+          "endTime": "12:00",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778080241808",
+          "date": "2026-05-07",
+          "startTime": "12:30",
+          "endTime": "17:00",
+          "title": "Steve Interior Thing",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1778142170232",
+          "date": "2026-05-07",
+          "startTime": "10:00",
+          "endTime": "12:00",
+          "title": "Whitecard |  Robson",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1778151599098",
+          "date": "2026-05-07",
+          "startTime": "08:00",
+          "endTime": "10:00",
+          "title": "Vale |  Camera Plan",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1778065108143",
+          "date": "2026-05-06",
+          "startTime": "12:00",
+          "endTime": "17:00",
+          "title": "Vale |  Camera Plan",
+          "color": "na-shift-color-purple"
         }
       ]
     }

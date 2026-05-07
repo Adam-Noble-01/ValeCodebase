@@ -1,0 +1,81 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 29168,
+            "Camera__DefaultPos__PosY": 2344,
+            "Camera__DefaultPos__PosZ": 9841
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0009,
+            "Camera__DefaultRotation__RotY": 0.6051,
+            "Camera__DefaultRotation__RotZ": 0.0005
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -21685
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 4435
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 28000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 14581,
+        "OrbitHelperCube__Position__PosY": 2326,
+        "OrbitHelperCube__Position__PosZ": -11250
+    },
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63271__Robson",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__07-May-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "A nice & easy one, Amy's CAD File was perfectly prepared and standards purged etc. there was scope to add furniture and a patio but these didn't take long, I used a reference Image of the clients furniture and it took me 1 hour to model those additions, but I've banked them in our assets library so they can be infinitely used from here out.",
+        "conceptArtist": "Amy",
+        "input": "CAD File"
+    },
+    "projectCode": "63271",
+    "projectName": "Robson",
+    "scheduleData": {
+        "dateFulfilled": "07-May-2026",
+        "dateReceived": "06-May-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__07-May-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63271__Robson/Robson__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/63271__Robson",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__07-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__07-May-2026.png"
+    ]
+}

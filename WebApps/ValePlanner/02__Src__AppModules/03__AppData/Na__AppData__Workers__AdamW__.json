@@ -1368,14 +1368,6 @@
           "color": "na-shift-color-orange"
         },
         {
-          "id": "new-1778080241808",
-          "date": "2026-05-07",
-          "startTime": "12:30",
-          "endTime": "17:00",
-          "title": "Steve Interior Thing",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1778142170232",
           "date": "2026-05-07",
           "startTime": "10:00",
@@ -1398,6 +1390,102 @@
           "endTime": "17:00",
           "title": "Vale |  Camera Plan",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1778157309519",
+          "date": "2026-05-07",
+          "startTime": "12:00",
+          "endTime": "12:15",
+          "title": "Meeting |  AE",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778157273337",
+          "date": "2026-05-07",
+          "startTime": "12:15",
+          "endTime": "12:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1778157287213",
+          "date": "2026-05-07",
+          "startTime": "12:30",
+          "endTime": "13:45",
+          "title": "Assets |  Table & Chairs",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1778157356155",
+          "date": "2026-05-07",
+          "startTime": "13:45",
+          "endTime": "14:00",
+          "title": "Meeting |  AE",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778080241808",
+          "date": "2026-05-07",
+          "startTime": "14:00",
+          "endTime": "18:00",
+          "title": "Steve Interior Thing",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1778239159483",
+          "date": "2026-05-08",
+          "startTime": "08:30",
+          "endTime": "10:30",
+          "title": "Vale HQ2 |  Drawings",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778239182554",
+          "date": "2026-05-08",
+          "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Meeting |  LM",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1778239199962",
+          "date": "2026-05-08",
+          "startTime": "11:30",
+          "endTime": "12:15",
+          "title": "Email |  SB",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1778239214483",
+          "date": "2026-05-08",
+          "startTime": "10:30",
+          "endTime": "11:30",
+          "title": "Vale HQ2 |  Visit Site",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778239250950",
+          "date": "2026-05-08",
+          "startTime": "12:15",
+          "endTime": "13:00",
+          "title": "Vale HQ2 |  Package For SE",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778242780692",
+          "date": "2026-05-08",
+          "startTime": "13:00",
+          "endTime": "13:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1778242794420",
+          "date": "2026-05-08",
+          "startTime": "15:15",
+          "endTime": "17:15",
+          "title": "Blockout |  Martin",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

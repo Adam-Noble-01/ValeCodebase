@@ -113,6 +113,17 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build Plain-Text Subject for Outbound Share Emails
+    // ------------------------------------------------------------
+    // Example display id "2026/55164__Quinn" → "ValeVision3D | Quinn - 55164"
+    // ------------------------------------------------------------
+    function Na__Feature__ShareProjectLink__BuildShareEmailSubject(displayProjectId) {
+        const { projectCode, projectName } = Na__Feature__ShareProjectLink__ParseProjectFolderDisplay(displayProjectId);
+        return `ValeVision3D | ${projectName} - ${projectCode}`;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Project Code / Name Block HTML
     // ------------------------------------------------------------
     function Na__Feature__ShareProjectLink__BuildProjectMetaHtml(displayProjectId) {
@@ -197,6 +208,9 @@
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
-    export { Na__Feature__ShareProjectLink__BuildEmailHtml };
+    export {
+        Na__Feature__ShareProjectLink__BuildEmailHtml,
+        Na__Feature__ShareProjectLink__BuildShareEmailSubject
+    };
 
 // endregion -------------------------------------------------------------------

@@ -16,23 +16,17 @@
 // -----------------------------------------------------------------------------
 
     import { Na__Feature__ShareProjectLink__GetShareContext } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__UrlGeneratorLogic__.js';
-    import { Na__Feature__ShareProjectLink__BuildEmailHtml } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__GenerateEmail__Logic__.js';
+    import {
+        Na__Feature__ShareProjectLink__BuildEmailHtml,
+        Na__Feature__ShareProjectLink__BuildShareEmailSubject
+    } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__GenerateEmail__Logic__.js';
 
 // endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
-// REGION | Subject Builder
+// REGION | Filename Helpers
 // -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Build Default Email Subject for Project
-    // ------------------------------------------------------------
-    function Na__Feature__EmailWorkers__BuildEmailSubject(displayProjectId) {
-        const safeProjectId = String(displayProjectId || 'Project').trim();
-        return `ValeVision3D Share - ${safeProjectId}`;
-    }
-    // ------------------------------------------------------------
-
 
     // HELPER FUNCTION | Sanitize Project Id Segment for Filename
     // ------------------------------------------------------------
@@ -82,7 +76,7 @@
 
         return {
             to              : selectedRecipients.map((item) => String(item?.email || '').trim()).filter(Boolean),
-            subject         : Na__Feature__EmailWorkers__BuildEmailSubject(share.displayProjectId),
+            subject         : Na__Feature__ShareProjectLink__BuildShareEmailSubject(share.displayProjectId),
             htmlBody,
             downloadFilename,
             projectUrl      : share.projectUrl,

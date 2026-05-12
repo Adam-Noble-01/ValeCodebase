@@ -1486,6 +1486,22 @@
           "endTime": "17:15",
           "title": "Blockout |  Martin",
           "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1778591455858",
+          "date": "2026-05-12",
+          "startTime": "14:00",
+          "endTime": "17:00",
+          "title": "Quinn",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1778591472718",
+          "date": "2026-05-12",
+          "startTime": "08:00",
+          "endTime": "14:00",
+          "title": "TEMP__ProfileTool",
+          "color": "na-shift-color-orange"
         }
       ]
     }

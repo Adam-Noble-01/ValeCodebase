@@ -46,6 +46,11 @@
         "path"         : "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
 	  },
       {
+        "name"         : "CORE LIBRARY | SketchUp Plugin Core Data Library",
+        "Description"  : "This is the core data library for the SketchUp plugins. It is a collection of data that is used by the SketchUp plugins. It houses the standard Data json files defining Noble Architecture Materials, Edge Colours, Tags, Object Naming, Links, etc.",
+        "path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__DataLib__CoreSuEntityStandards"
+	  },
+      {
         "name"         : "Obsidian Notebook |  General Knowledge Base",
         "Description"  : "This is a general knowledge base for the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project.",
         "path"         : "C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Documents/Remote__KnowledgeBase__General"

@@ -32,7 +32,7 @@
             "FogPlane__Config__PlaneB__NormalZ": 1
         }
     },
-    "Navmode__OrbitMaxDistanceMm": 25000,
+    "Navmode__OrbitMaxDistanceMm": 30000,
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
         "OrbitHelperCube__Position__PosX": 13913,
@@ -40,7 +40,15 @@
         "OrbitHelperCube__Position__PosZ": -9340
     },
     "ProjectType": "Whitecard",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__12-May-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/55164__Quinn",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__12-May-2026.png"
+    ],
+    "folderId": "2026/55164__Quinn",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__12-May-2026.png"
     ],
@@ -69,13 +77,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/55164__Quinn/Quinn__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/55164__Quinn/Quinn__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/55164__Quinn/Quinn__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "folderId": "2026/55164__Quinn",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__12-May-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__12-May-2026.png"
     ]
 }

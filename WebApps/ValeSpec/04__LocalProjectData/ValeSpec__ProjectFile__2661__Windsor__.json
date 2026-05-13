@@ -6,7 +6,7 @@
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery",
         "ValeSpec__ProjectFile__Metadata__DocumentStatus": "In Progress",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-17",
-        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-04-23",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-05-13",
         "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-04-23",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
         "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
@@ -26,13 +26,13 @@
             },
             "Assembly__DoorType__Config": {
                 "Assembly__DoorType__Config__Type": "Double Doors",
-                "Assembly__DoorType__Config__OpeningDirection": "Outward"
+                "Assembly__DoorType__Config__OpeningDirection": "Inward"
             },
             "Assembly__Dimensions__Config": {
                 "Assembly__Dimensions__Config__WidthMm": 1600,
                 "Assembly__Dimensions__Config__HeightMm": 2000
             },
-            "Handing": "Left",
+            "Handing": "Right",
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
                     "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
@@ -68,7 +68,7 @@
             },
             "Assembly__Lever__Config": {
                 "Assembly__Lever__Config__Type": "Scroll Lever Handle",
-                "Assembly__Lever__Config__HeightMm": 1000
+                "Assembly__Lever__Config__HeightMm": 900
             },
             "Assembly__CabinHooks__Config": {
                 "Assembly__CabinHooks__Config__Size": "10\"",

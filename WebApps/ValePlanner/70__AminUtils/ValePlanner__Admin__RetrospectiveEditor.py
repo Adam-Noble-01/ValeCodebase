@@ -8,11 +8,14 @@ Purpose:
 - Allow retrospective edit of clock-in/clock-out values for an existing day row.
 - Inject a nested admin override block on the edited row.
 - Reset Timecard__AuthHash so the web app can re-backfill a current hash.
+- Allow safe deletion of accidental rows with backup and hash repair.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -139,6 +142,50 @@ def Na__Retro__BuildListHeaderText() -> str:
 
 
 # -----------------------------------------------------------------------------
+# REGION | Hash Integrity Helpers
+# -----------------------------------------------------------------------------
+
+def Na__Retro__BuildCanonicalHashInput(month_key: str, row_index: int, row_payload: dict) -> str:
+    month_key_value = str(month_key or "").strip()
+    row_index_value = str(row_index).strip()
+    date_value = str(row_payload.get("Timecard__Date", "")).strip()
+    clock_in_value = str(row_payload.get("Timcard__Clock-In__", "")).strip()
+    clock_out_value = str(row_payload.get("Timcard__Clock-Out__", "")).strip()
+    return f"{month_key_value}|{row_index_value}|{date_value}|{clock_in_value}|{clock_out_value}"
+
+
+def Na__Retro__CreateAuthHash(month_key: str, row_index: int, row_payload: dict) -> str:
+    canonical_input = Na__Retro__BuildCanonicalHashInput(month_key, row_index, row_payload)
+    digest_hex = hashlib.sha256(canonical_input.encode("utf-8")).hexdigest()
+    return f"sha256__{digest_hex}"
+
+
+def Na__Retro__RepairAllAuthHashes(timecard_data: dict) -> int:
+    repaired_count = 0
+    for month_key, month_rows in timecard_data.items():
+        if not isinstance(month_rows, list):
+            continue
+        for row_index, row_payload in enumerate(month_rows):
+            if not isinstance(row_payload, dict):
+                continue
+            repaired_hash = Na__Retro__CreateAuthHash(month_key, row_index, row_payload)
+            if row_payload.get("Timecard__AuthHash") != repaired_hash:
+                row_payload["Timecard__AuthHash"] = repaired_hash
+                repaired_count += 1
+    return repaired_count
+
+
+def Na__Retro__CreateTimestampedBackupFile(source_path: Path) -> Path:
+    timestamp_label = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup_path = source_path.with_name(f"{source_path.stem}__Backup__{timestamp_label}.bak.json")
+    shutil.copy2(source_path, backup_path)
+    return backup_path
+
+
+# endregion ----------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
 # REGION | Main Tkinter App
 # -----------------------------------------------------------------------------
 
@@ -211,7 +258,13 @@ class Na__RetrospectiveEditor__App:
             editor_frame,
             text="Save Retrospective Edit",
             command=self.Na__Retro__SaveSelectedEntry
-        ).grid(row=4, column=0, columnspan=4, sticky="ew", padx=8, pady=(0, 8))
+        ).grid(row=4, column=0, columnspan=2, sticky="ew", padx=8, pady=(0, 8))
+
+        ttk.Button(
+            editor_frame,
+            text="Delete Selected Row",
+            command=self.Na__Retro__DeleteSelectedEntry
+        ).grid(row=4, column=2, columnspan=2, sticky="ew", padx=8, pady=(0, 8))
 
         list_frame = ttk.LabelFrame(self.root, text="Available Day Rows")
         list_frame.grid(row=2, column=0, sticky="nsew", padx=12, pady=(0, 8))
@@ -448,6 +501,80 @@ class Na__RetrospectiveEditor__App:
             "- Times were updated.\n"
             "- Timecard__AdminOverride__ was injected.\n"
             "- Timecard__AuthHash was reset for app-side revalidation."
+        )
+    # ------------------------------------------------------------
+
+    # SUB FUNCTION | Delete Selected Entry From JSON
+    # ------------------------------------------------------------
+    def Na__Retro__DeleteSelectedEntry(self) -> None:
+        entry_ref = self.Na__Retro__GetSelectedEntryRef()
+        if entry_ref is None:
+            messagebox.showwarning("No Selection", "Select a day row before deleting.")
+            return
+
+        month_rows = self.timecard_data.get(entry_ref.month_key)
+        if not isinstance(month_rows, list) or entry_ref.row_index >= len(month_rows):
+            messagebox.showerror("Data Error", "Selected row no longer exists in loaded data.")
+            return
+
+        row_payload = month_rows[entry_ref.row_index]
+        if not isinstance(row_payload, dict):
+            messagebox.showerror("Data Error", "Selected row has invalid JSON structure.")
+            return
+
+        date_display = Na__Retro__FormatDateForDisplay(entry_ref.date_value)
+        clock_in_display = Na__Retro__FormatClockForDisplay(entry_ref.clock_in_value)
+        clock_out_display = Na__Retro__FormatClockForDisplay(entry_ref.clock_out_value)
+        confirm_message = (
+            "Delete this timecard row?\n\n"
+            f"Date: {date_display}\n"
+            f"Clock In: {clock_in_display}\n"
+            f"Clock Out: {clock_out_display}\n"
+            f"Month Key: {entry_ref.month_key}\n"
+            f"Row Index: {entry_ref.row_index}\n\n"
+            "A backup JSON file will be created before the row is removed."
+        )
+        if not messagebox.askyesno("Confirm Safe Delete", confirm_message, icon="warning"):
+            return
+
+        try:
+            backup_path = Na__Retro__CreateTimestampedBackupFile(self.timecard_file_path)
+        except OSError as io_error:
+            messagebox.showerror("Backup Error", f"Failed to create backup file:\n{io_error}")
+            self.status_var.set("Delete failed: backup could not be created")
+            return
+
+        deleted_row = month_rows.pop(entry_ref.row_index)
+        repaired_count = Na__Retro__RepairAllAuthHashes(self.timecard_data)
+
+        try:
+            with self.timecard_file_path.open("w", encoding="utf-8", newline="\n") as json_file:
+                json.dump(self.timecard_data, json_file, indent=2, ensure_ascii=False)
+                json_file.write("\n")
+        except OSError as io_error:
+            month_rows.insert(entry_ref.row_index, deleted_row)
+            Na__Retro__RepairAllAuthHashes(self.timecard_data)
+            messagebox.showerror(
+                "Write Error",
+                "Failed to write updated file.\n\n"
+                f"The original file was backed up here:\n{backup_path}\n\n"
+                f"Error:\n{io_error}"
+            )
+            self.status_var.set("Delete failed: file write error")
+            return
+
+        self.Na__Retro__RebuildEntryRefs()
+        self.Na__Retro__RefreshListbox()
+        self.status_var.set(
+            f"Deleted {entry_ref.date_value} ({entry_ref.month_key}, row {entry_ref.row_index}). "
+            f"Repaired {repaired_count} hash value(s). Backup: {backup_path.name}"
+        )
+        messagebox.showinfo(
+            "Deleted",
+            "Selected timecard row deleted safely.\n\n"
+            f"- Backup created: {backup_path.name}\n"
+            f"- Repaired hashes: {repaired_count}\n"
+            "- Remaining rows now match their current row indices."
         )
     # ------------------------------------------------------------
 

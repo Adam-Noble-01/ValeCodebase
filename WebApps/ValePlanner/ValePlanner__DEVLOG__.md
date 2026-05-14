@@ -3,6 +3,22 @@
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
+## ValePlanner v0.5.4 - 14-May-2026
+### Timecard Admin — Safe Row Delete + Deterministic Hash Repair
+
+**Overview**
+- Extended the retrospective timecard Python editor (`70__AminUtils`) so accidental duplicate or wrong rows can be removed without leaving **invalid `Timecard__AuthHash` values**.
+- Row hashes bind `monthKey` and **array row index**, so deleting a row shifts indices; after removal the tool recomputes **SHA-256** hashes for **all** remaining row objects using the same canonical string rules as `Na__Feature__TimecardSystem__UniqueHashGenerator__.js`.
+- Before any write, the tool saves a **timestamped backup** of the JSON next to `Na__Feature__Data__TimecardData__.json` (`*.bak.json`).
+
+**Admin Tool**
+- Added **Delete Selected Row** next to retrospective save; confirmation dialog lists date, clocks, month bucket, and row index.
+- On failed save after deletion, in-memory rollback restores the popped row and repairs hashes again.
+
+**Files Changed**
+- `70__AminUtils/ValePlanner__Admin__RetrospectiveEditor.py`
+
+# ---------------------------------------------------------
 ## ValePlanner v0.5.3 - 15-Apr-2026
 ### Schedule — Timeline Auto-Extend + Drag Render Performance
 

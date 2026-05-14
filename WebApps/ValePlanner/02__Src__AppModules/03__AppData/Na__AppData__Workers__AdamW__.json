@@ -1502,6 +1502,54 @@
           "endTime": "14:00",
           "title": "TEMP__ProfileTool",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1778669878725",
+          "date": "2026-05-13",
+          "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Meeting |  JT",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1778669871324",
+          "date": "2026-05-13",
+          "startTime": "08:30",
+          "endTime": "10:00",
+          "title": "Quadrick",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1778669898062",
+          "date": "2026-05-13",
+          "startTime": "10:00",
+          "endTime": "12:15",
+          "title": "Meeting |  GH",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1778669934671",
+          "date": "2026-05-13",
+          "startTime": "16:30",
+          "endTime": "18:30",
+          "title": "TEMP__JAMES",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1778669916918",
+          "date": "2026-05-13",
+          "startTime": "13:00",
+          "endTime": "16:00",
+          "title": "TEMP__ANNA",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1778686135533",
+          "date": "2026-05-13",
+          "startTime": "16:00",
+          "endTime": "16:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
         }
       ]
     }

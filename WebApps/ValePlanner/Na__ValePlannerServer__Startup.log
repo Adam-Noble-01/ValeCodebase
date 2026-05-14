@@ -7416,3 +7416,9 @@ ConnectionAbortedError: [WinError 10053] An established connection was aborted b
 [REQUEST] 14-May-2026 - 07:44 | 127.0.0.1 | "GET /api/data/workers HTTP/1.1" 200 -
 [REQUEST] 14-May-2026 - 07:44 | 127.0.0.1 | "GET /01__AppAssets__ValePlanner/Na__ValePlannerApp__Icon__192x192.png HTTP/1.1" 200 -
 [REQUEST] 14-May-2026 - 07:44 | 127.0.0.1 | "GET /api/data/timecard HTTP/1.1" 200 -
+[REQUEST] 14-May-2026 - 09:05 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 14-May-2026 - 09:05 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 14-May-2026 - 09:05 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 14-May-2026 - 09:05 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 14-May-2026 - 10:01 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 14-May-2026 - 10:01 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -

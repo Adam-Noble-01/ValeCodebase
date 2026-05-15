@@ -1,0 +1,77 @@
+---
+description: "SketchUp Plugins root (Noble Architecture): SSOT for Na__Common__DataLib__CoreSuEntityStandards, shared assets in Na__Common__PluginDependencies, path resolution relative to Plugins/. Apply when editing Ruby/JSON under those folders or Na__*__Modules__ plugin trees."
+globs:
+  - "**/Na__Common__DataLib__CoreSuEntityStandards/**"
+  - "**/Na__Common__PluginDependencies/**"
+  - "**/Na__Noble3dModellingTools__Modules__/**"
+  - "**/Na__ArchTools__ElementAssemblyStudioPro__Modules__/**"
+  - "**/Na__ProfileTools__ProfilePathTracer__Modules__/**"
+  - "**/Na__TrueVision__GlbBuilderUtility__Modules__/**"
+  - "**/Na__EdgeUtil__PaintDeepNestedEdges__Modules__/**"
+  - "**/Na__*__Modules__/**"
+alwaysApply: false
+---
+
+# SketchUp Plugins root | SSOT and portable paths
+
+## Agent instructions (Cursor / Claude)
+
+When **globs** match the current file, treat this rule as binding:
+
+1. **Paths** — Express every canonical location **relative to the SketchUp `Plugins` directory** (see table below). Build absolute paths only at runtime from the resolved plugin or `Plugins` root.
+2. **Data** — Treat `Na__Common__DataLib__CoreSuEntityStandards/` as the only authoritative source for the listed indices and generators. **Do not** duplicate or fork those JSON/Ruby files inside a feature plugin; add loaders or `require` against SSOT instead.
+3. **Assets** — Icons, logos, and shared graphics live under `Na__Common__PluginDependencies/`. Do not copy shared assets into per-plugin folders; reference the shared path (see `12-PluginDependencies__CommonAssetsIntegration__.mdc` under the Plugins `.cursor/rules` tree).
+4. **Workspace vs code** — The multi-root `.code-workspace` file may use **machine-specific absolute** paths; **source code, comments, and docs** must not encode `C:\...` or `/Users/...` for Noble shared data.
+
+## Plugins-relative quick reference
+
+| Role | Relative path (from `Plugins/`) |
+|------|--------------------------------|
+| SSOT data + indices | `Na__Common__DataLib__CoreSuEntityStandards/` |
+| Shared logos / icons / graphics | `Na__Common__PluginDependencies/` |
+| Shared modelling utilities | `Na__Noble3dModellingTools__Modules__/` |
+
+**Resolve `Plugins/` as:** …/SketchUp *version*/SketchUp/Plugins/ (OS-specific parent; Windows commonly under `%AppData%\Roaming\SketchUp\…`).
+
+---
+
+## Portability
+
+- **Workspace JSON**: absolute paths per PC — expected.
+- **Canonical references** in Ruby, JSON, AI replies: **relative-from-Plugins** only, joined in code to the real root.
+
+## SSOT — core data library
+
+**Folder:** `Na__Common__DataLib__CoreSuEntityStandards/`
+
+Authoritative Noble Architecture SketchUp **data**: materials, edge materials, tags, components indices, cache behaviour, URL generation, entity standards. **Consume** via loaders; **do not** duplicate sources in feature plugins.
+
+**Anchor files:**
+
+- `Na__Common__DataLib__CoreSuEntityStandards/Na__DataLib__CacheData__.rb`
+- `Na__Common__DataLib__CoreSuEntityStandards/Na__DataLib__CoreIndex__Components__.json`
+- `Na__Common__DataLib__CoreSuEntityStandards/Na__DataLib__CoreIndex__EdgeMaterials__.json`
+- `Na__Common__DataLib__CoreSuEntityStandards/Na__DataLib__CoreIndex__Materials__.json`
+- `Na__Common__DataLib__CoreSuEntityStandards/Na__DataLib__CoreIndex__Tags__.json`
+- `Na__Common__DataLib__CoreSuEntityStandards/Na__DataLib__UrlGenerator__.rb`
+
+## Shared logos and graphics
+
+**Folder:** `Na__Common__PluginDependencies/`
+
+**Related rule:** `.cursor/rules/12-PluginDependencies__CommonAssetsIntegration__.mdc` (sibling to `Plugins`, under the SketchUp Plugins workspace root).
+
+## Representative plugin module roots
+
+Documentation anchors under `Plugins/` (not copies of SSOT data):
+
+- `Na__ArchTools__ElementAssemblyStudioPro__Modules__/`
+- `Na__ProfileTools__ProfilePathTracer__Modules__/`
+- `Na__TrueVision__GlbBuilderUtility__Modules__/`
+- `Na__EdgeUtil__PaintDeepNestedEdges__Modules__/`
+
+The glob `**/Na__*__Modules__/**` covers these and other Noble Architecture module packages for the same rules.
+
+## Utilities bundle
+
+**Folder:** `Na__Noble3dModellingTools__Modules__/` — small shared utilities (e.g. path resolution, toolbar helpers).

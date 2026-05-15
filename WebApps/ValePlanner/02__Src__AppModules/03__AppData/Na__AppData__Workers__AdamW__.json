@@ -1574,6 +1574,14 @@
           "endTime": "17:00",
           "title": "QUIN MODEL 02",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1778777591627",
+          "date": "2026-05-14",
+          "startTime": "17:00",
+          "endTime": "18:00",
+          "title": "QUIN DRAWING",
+          "color": "na-shift-color-purple"
         }
       ]
     }

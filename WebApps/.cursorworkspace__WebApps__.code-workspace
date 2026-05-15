@@ -46,9 +46,19 @@
         "path"         : "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
 	  },
       {
-        "name"         : "CORE LIBRARY | SketchUp Plugin Core Data Library",
-        "Description"  : "This is the core data library for the SketchUp plugins. It is a collection of data that is used by the SketchUp plugins. It houses the standard Data json files defining Noble Architecture Materials, Edge Colours, Tags, Object Naming, Links, etc.",
-        "path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__DataLib__CoreSuEntityStandards"
+        "path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__DataLib__CoreSuEntityStandards",
+        "name"         : "SSOT | SketchUp Plugin Core Data Library (Na__Common__DataLib__CoreSuEntityStandards)",
+        "description"  : "Single source of truth for Noble Architecture SketchUp plugin data: canonical JSON indices (materials, edge materials, tags, components), cache loader Ruby, URL generator, and related standards. Do not duplicate these sources inside feature plugins; load and consume from this folder only."
+	  },
+      {
+        "path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__PluginDependencies",
+        "name"         : "Shared assets | Na__Common__PluginDependencies",
+        "description"  : "Logos, icons, and graphics shared across Noble Architecture SketchUp plugins. Centralize shared visuals here; avoid copying assets into individual feature plugins (see Plugins/.cursor/rules for common-assets guidance)."
+	  },
+      {
+        "path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Noble3dModellingTools__Modules__",
+        "name"         : "SketchUp utilities | Na__Noble3dModellingTools__Modules__",
+        "description"  : "A collection of useful small utilities and modules for SketchUp Noble Architecture tooling (shared path resolution, toolbar assets, and related helpers)."
 	  },
       {
         "name"         : "Obsidian Notebook |  General Knowledge Base",

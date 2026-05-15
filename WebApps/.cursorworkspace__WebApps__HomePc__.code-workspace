@@ -24,6 +24,26 @@
 		"path"         : "D:/80__External__LiveRepos/ValeCodebase/WebApps/ValeVision3D/ValePlanner",
         "name"         : "ValePlanner - Sister Project Folder",
         "description"  : "This is the main project for the ValePlanner Web Application. ValePlanner is a planning tool for Vale projects and time management. It allows users to plan and manage their projects in a easy to use and navigate manner."
+	  },
+	  {
+		"path"         : "D:/Users/Administrator/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins",
+        "name"         : "SketchUp |  SketchUp Plugins",
+        "description"  : "Some of the WebApps rely on exporters such as the SketchUp to GLB Exporter, some other helpful code is contained here such as SketchUp HTML Window UI code which is helpful for the ValeVision3D and other projects that utilise the HTML Window UI for the user interface, there is also a SVG Generator which in the SketchUp Window Configuration plugin and this can be studied and utilised for other projects."
+	  },
+      {
+        "path"         : "D:/Users/Administrator/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__DataLib__CoreSuEntityStandards",
+        "name"         : "SSOT | SketchUp Plugin Core Data Library (Na__Common__DataLib__CoreSuEntityStandards)",
+        "description"  : "Single source of truth for Noble Architecture SketchUp plugin data: canonical JSON indices (materials, edge materials, tags, components), cache loader Ruby, URL generator, and related standards. Do not duplicate these sources inside feature plugins; load and consume from this folder only."
+	  },
+      {
+        "path"         : "D:/Users/Administrator/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__PluginDependencies",
+        "name"         : "Shared assets | Na__Common__PluginDependencies",
+        "description"  : "Logos, icons, and graphics shared across Noble Architecture SketchUp plugins. Centralize shared visuals here; avoid copying assets into individual feature plugins (see Plugins/.cursor/rules for common-assets guidance)."
+	  },
+      {
+        "path"         : "D:/Users/Administrator/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Noble3dModellingTools__Modules__",
+        "name"         : "SketchUp utilities | Na__Noble3dModellingTools__Modules__",
+        "description"  : "A collection of useful small utilities and modules for SketchUp Noble Architecture tooling (shared path resolution, toolbar assets, and related helpers)."
 	  }
 	],
 	"settings": {

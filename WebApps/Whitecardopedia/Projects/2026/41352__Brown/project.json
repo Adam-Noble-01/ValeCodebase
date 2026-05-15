@@ -45,17 +45,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__15-May-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "An easy orangery but a pretty complex house, I had only a hand drawn PDF to work with too so took longer than a regular Whitecard job.",
+        "conceptArtist": "James",
+        "input": "CAD File"
     },
     "projectCode": "41352",
     "projectName": "Brown",
     "scheduleData": {
         "dateFulfilled": "15-May-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "15-May-2026",
+        "timeAllocated": 4,
+        "timeTaken": 4
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -68,5 +68,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/41352__Brown/Brown__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/41352__Brown/Brown__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/41352__Brown/Brown__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/41352__Brown",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__15-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__15-May-2026.png"
     ]
 }

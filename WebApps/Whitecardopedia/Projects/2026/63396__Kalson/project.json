@@ -1,0 +1,81 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 8405,
+            "Camera__DefaultPos__PosY": 2965,
+            "Camera__DefaultPos__PosZ": 12944
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": 0.0038,
+            "Camera__DefaultRotation__RotY": -0.2588,
+            "Camera__DefaultRotation__RotZ": 0.001
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 25000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 14004,
+        "OrbitHelperCube__Position__PosY": 3046,
+        "OrbitHelperCube__Position__PosZ": -8207
+    },
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63396__Kalson",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__20-May-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Nothing To Report. Nice easy one, Good CAD File",
+        "conceptArtist": "Anna",
+        "input": "CAD File"
+    },
+    "projectCode": "63396",
+    "projectName": "Kalson",
+    "scheduleData": {
+        "dateFulfilled": "20-May-2026",
+        "dateReceived": "19-May-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__20-May-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -23965,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": 33190,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
+        }
+    },
+    "folderId": "2026/63396__Kalson",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__20-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__20-May-2026.png"
+    ]
+}

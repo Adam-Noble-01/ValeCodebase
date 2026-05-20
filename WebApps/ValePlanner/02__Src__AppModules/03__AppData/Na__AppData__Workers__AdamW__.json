@@ -1488,22 +1488,6 @@
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "new-1778591455858",
-          "date": "2026-05-12",
-          "startTime": "14:00",
-          "endTime": "17:00",
-          "title": "Quinn",
-          "color": "na-shift-color-rose"
-        },
-        {
-          "id": "new-1778591472718",
-          "date": "2026-05-12",
-          "startTime": "08:00",
-          "endTime": "14:00",
-          "title": "TEMP__ProfileTool",
-          "color": "na-shift-color-orange"
-        },
-        {
           "id": "new-1778669878725",
           "date": "2026-05-13",
           "startTime": "08:00",
@@ -1528,51 +1512,11 @@
           "color": "na-shift-color-lime"
         },
         {
-          "id": "new-1778669934671",
-          "date": "2026-05-13",
-          "startTime": "16:30",
-          "endTime": "18:30",
-          "title": "TEMP__JAMES",
-          "color": "na-shift-color-lime"
-        },
-        {
-          "id": "new-1778669916918",
-          "date": "2026-05-13",
-          "startTime": "13:00",
-          "endTime": "16:00",
-          "title": "TEMP__ANNA",
-          "color": "na-shift-color-indigo"
-        },
-        {
-          "id": "new-1778686135533",
-          "date": "2026-05-13",
-          "startTime": "16:00",
-          "endTime": "16:15",
-          "title": "Tea",
-          "color": "na-shift-color-blue"
-        },
-        {
-          "id": "new-1778745917506",
-          "date": "2026-05-14",
-          "startTime": "09:15",
-          "endTime": "10:45",
-          "title": "TEMP__ANNA",
-          "color": "na-shift-color-lime"
-        },
-        {
-          "id": "new-1778766953025",
-          "date": "2026-05-14",
-          "startTime": "11:00",
-          "endTime": "14:00",
-          "title": "Assets",
-          "color": "na-shift-color-indigo"
-        },
-        {
           "id": "new-1778766963869",
           "date": "2026-05-14",
           "startTime": "15:00",
           "endTime": "17:00",
-          "title": "QUIN MODEL 02",
+          "title": "Whitecard |  Quinn - Model 02",
           "color": "na-shift-color-rose"
         },
         {
@@ -1584,11 +1528,187 @@
           "color": "na-shift-color-purple"
         },
         {
+          "id": "new-1778745917506",
+          "date": "2026-05-14",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "Whitecard |  Kedia",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1778669916918",
+          "date": "2026-05-13",
+          "startTime": "12:30",
+          "endTime": "16:15",
+          "title": "Whitecard |  Quinn - Model 01",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1779261500350",
+          "date": "2026-05-13",
+          "startTime": "12:15",
+          "endTime": "12:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779261493472",
+          "date": "2026-05-13",
+          "startTime": "16:15",
+          "endTime": "16:30",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779261516252",
+          "date": "2026-05-14",
+          "startTime": "14:00",
+          "endTime": "14:45",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1778686135533",
+          "date": "2026-05-14",
+          "startTime": "14:45",
+          "endTime": "15:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779261378023",
+          "date": "2026-05-15",
+          "startTime": "08:00",
+          "endTime": "10:45",
+          "title": "Research |  ValeSpec Product Data",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1779261531656",
+          "date": "2026-05-15",
+          "startTime": "10:45",
+          "endTime": "11:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1778766953025",
+          "date": "2026-05-14",
+          "startTime": "12:30",
+          "endTime": "14:00",
+          "title": "Standards |  Assets - Sun Lounger",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1779261574911",
+          "date": "2026-05-14",
+          "startTime": "11:00",
+          "endTime": "12:00",
+          "title": "Standards |  Set Up Template For Assets",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1779261593085",
+          "date": "2026-05-14",
+          "startTime": "12:00",
+          "endTime": "12:30",
+          "title": "Lunch",
+          "color": "na-shift-color-orange"
+        },
+        {
           "id": "new-1778848666620",
           "date": "2026-05-15",
-          "startTime": "14:00",
-          "endTime": "18:30",
-          "title": "TEMP__BROWN",
+          "startTime": "13:30",
+          "endTime": "18:00",
+          "title": "Whitecard |  Brown",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1778591472718",
+          "date": "2026-05-12",
+          "startTime": "08:00",
+          "endTime": "12:00",
+          "title": "Dev |  Profile Tool",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1779261646571",
+          "date": "2026-05-12",
+          "startTime": "12:00",
+          "endTime": "12:30",
+          "title": "Lunch",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1778591455858",
+          "date": "2026-05-12",
+          "startTime": "12:30",
+          "endTime": "15:30",
+          "title": "Quinn",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1779261670734",
+          "date": "2026-05-12",
+          "startTime": "15:30",
+          "endTime": "18:00",
+          "title": "Quinn |  Updates For Gary",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1778669934671",
+          "date": "2026-05-13",
+          "startTime": "16:30",
+          "endTime": "18:00",
+          "title": "TEMP__JAMES",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1779261696767",
+          "date": "2026-05-15",
+          "startTime": "11:00",
+          "endTime": "13:45",
+          "title": "Research |  Quadrick",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1779261713883",
+          "date": "2026-05-20",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1779269128919",
+          "date": "2026-05-20",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "title": "Amend |  Brown",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1779269153167",
+          "date": "2026-05-20",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779269163938",
+          "date": "2026-05-20",
+          "startTime": "10:15",
+          "endTime": "10:30",
+          "title": "Meeting |  RB",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1779269187721",
+          "date": "2026-05-20",
+          "startTime": "10:30",
+          "endTime": "13:00",
+          "title": "Whitecard | Kalston",
           "color": "na-shift-color-rose"
         }
       ]

@@ -44,17 +44,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__21-May-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Audit required, I had to fill out tons of context so time budget went way over what it should have been. had to use photo-match alignment & Texture projection to add façade context etc. found a few discrepancies whilst modelling out the roof and slope etc so I carefully traced through the survey info etc and corrected some errors highlighted by the photo-match alignment process.",
+        "conceptArtist": "Amy",
+        "input": "CAD File"
     },
     "projectCode": "60906",
     "projectName": "Dawson-Smith",
     "scheduleData": {
         "dateFulfilled": "21-May-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "20-May-2026",
+        "timeAllocated": 3,
+        "timeTaken": 6
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -70,5 +70,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/60906__Dawson-Smith/Dawson-Smith__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/60906__Dawson-Smith/Dawson-Smith__TrueVision__SiteBoundaries__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/60906__Dawson-Smith/Dawson-Smith__TrueVision__SiteBoundaries__MeshModel__.glb"
+    ],
+    "folderId": "2026/60906__Dawson-Smith",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__21-May-2026.png"
     ]
 }

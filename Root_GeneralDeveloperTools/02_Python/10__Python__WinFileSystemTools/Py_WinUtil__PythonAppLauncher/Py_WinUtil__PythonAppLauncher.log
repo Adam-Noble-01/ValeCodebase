@@ -274,3 +274,4 @@
 2026-05-21 08:10:07,002 | INFO    | === Python App Launcher starting ===
 2026-05-21 08:10:07,015 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
 2026-05-21 08:10:08,080 | INFO    | Discovery: found 18 launchable apps across 5 categories
+2026-05-21 09:30:30,992 | INFO    | Hiding window to tray

@@ -28,6 +28,7 @@
 import os
 import sys
 import re
+import json
 import argparse
 import boto3
 from pathlib import Path
@@ -46,6 +47,14 @@ CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"              
 GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"                   # <-- GLB files subfolder name
 R2_BASE_PREFIX                     = "VaApps/Projects"                           # <-- Base prefix in R2 bucket (year added dynamically)
 ENV_FILE_PATH                      = "API__Cloudflare/Token__CloudflareAPI.env"  # <-- Environment file path (relative)
+# ------------------------------------------------------------
+
+
+# MODULE CONSTANTS | Project JSON Sync
+# ------------------------------------------------------------
+WHITECARDOPEDIA_PROJECTS_BASE      = "../Projects"                                         # <-- Whitecardopedia projects folder (relative to script)
+CDN_BASE_URL                       = "https://cdn.noble-architecture.com/VaApps/Projects"  # <-- CDN base URL for ValeVision models
+PROJECT_JSON_FILENAME              = "project.json"                                        # <-- Project metadata filename
 # ------------------------------------------------------------
 
 
@@ -837,6 +846,129 @@ def prompt_for_confirmation() -> bool:
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | Project JSON Sync Functions
+# -----------------------------------------------------------------------------
+
+# FUNCTION | Find Whitecardopedia project.json for a Project
+# ------------------------------------------------------------
+def find_whitecardopedia_project_json(year: str, dest_folder_name: str) -> Optional[Path]:
+    """Return Path to project.json if it exists, None if project not yet cloned"""
+    script_dir   = Path(__file__).parent                                    # <-- Get script directory
+    projects_dir = script_dir / WHITECARDOPEDIA_PROJECTS_BASE               # <-- Resolve projects base path
+    project_json = projects_dir / year / dest_folder_name / PROJECT_JSON_FILENAME  # <-- Build full path
+
+    return project_json if project_json.exists() else None                  # <-- Return path or None
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Build All CDN URLs for a Project from GLB Filename List
+# ------------------------------------------------------------
+def build_all_cdn_urls_for_project(year: str, dest_folder_name: str, glb_filenames: List[str]) -> List[str]:
+    """Build sorted CDN URL list for every GLB filename, applying NaModel rebrand"""
+    urls = []                                                               # <-- Initialise URL list
+
+    for filename in glb_filenames:
+        dest_filename = generate_destination_filename(filename)             # <-- Apply NaModel -> ValeVision rebrand
+        url = f"{CDN_BASE_URL}/{year}/{dest_folder_name}/{dest_filename}"   # <-- Construct CDN URL
+        urls.append(url)                                                    # <-- Add to list
+
+    urls.sort()                                                             # <-- Sort alphabetically (matches discovery order)
+    return urls                                                             # <-- Return sorted URL list
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Write Refreshed Model URLs Into Existing project.json
+# ------------------------------------------------------------
+def refresh_project_json_model_urls(project_json_path: Path, cdn_urls: List[str]) -> bool:
+    """Read existing project.json, replace valeVision_ModelUrls, write back"""
+    try:
+        with open(project_json_path, 'r', encoding='utf-8') as file:       # <-- Open for reading
+            project_data = json.load(file)                                  # <-- Parse existing JSON
+    except Exception as error:
+        print(f"{COLOR_RED}Error reading {project_json_path}: {error}{COLOR_RESET}")  # <-- Log read error
+        return False                                                        # <-- Return failure
+
+    # CLEAN LEGACY MODEL URL FIELDS (remove old v3 format keys if present)
+    project_data.pop('valeVision_ModelUrl_BaseMesh', None)                  # <-- Remove legacy base mesh key
+    project_data.pop('valeVision_ModelUrl_Linework', None)                  # <-- Remove legacy linework key
+    project_data.pop('valeVision_ModelUrl', None)                           # <-- Remove legacy single/array key
+
+    project_data['valeVision_ModelUrls'] = cdn_urls                         # <-- Set refreshed URL array
+
+    try:
+        with open(project_json_path, 'w', encoding='utf-8') as file:       # <-- Open for writing
+            json.dump(project_data, file, indent=4, ensure_ascii=False)     # <-- Write formatted JSON
+            file.write('\n')                                                # <-- Add trailing newline
+    except Exception as error:
+        print(f"{COLOR_RED}Error writing {project_json_path}: {error}{COLOR_RESET}")  # <-- Log write error
+        return False                                                        # <-- Return failure
+
+    return True                                                             # <-- Return success
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Refresh project.json URLs for All Scanned Projects
+# ------------------------------------------------------------
+def refresh_all_project_json_urls(dry_run_records: List[Dict]) -> tuple:
+    """Refresh valeVision_ModelUrls in every Whitecardopedia project.json found.
+
+    Covers all projects discovered during the scan regardless of whether files
+    were uploaded or skipped, so the URL index is always complete.
+    Returns (refreshed_count, skipped_count).
+    """
+    refreshed_count = 0                                                     # <-- Count of refreshed project.json files
+    skipped_count   = 0                                                     # <-- Count of skipped (not yet cloned)
+
+    print(f"\n{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+    print(f"{COLOR_CYAN}POST-STEP | Refreshing project.json valeVision_ModelUrls{COLOR_RESET}")
+    print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+
+    for record in dry_run_records:
+        year         = record['year']                                       # <-- Year for this project
+        project_info = record['project_info']                               # <-- Project metadata
+        result       = record['result']                                     # <-- Dry-run file results
+
+        dest_folder_name = project_info['dest_folder_name']                 # <-- R2 / Whitecardopedia folder name
+
+        # BUILD GLB FILENAME LIST FROM DRY-RUN FILE RESULTS (all files, not just uploaded)
+        glb_filenames = [
+            fr['filename']
+            for fr in result.get('file_results', [])
+            if fr.get('filename')
+        ]
+
+        if not glb_filenames:
+            continue                                                        # <-- Skip projects with no GLB files
+
+        # FIND project.json IN WHITECARDOPEDIA
+        project_json_path = find_whitecardopedia_project_json(year, dest_folder_name)
+
+        if project_json_path is None:
+            print(f"  {COLOR_YELLOW}[SKIP]{COLOR_RESET} {dest_folder_name} - project.json not found (project not yet cloned)")
+            skipped_count += 1                                              # <-- Increment skipped count
+            continue                                                        # <-- Skip uncloned projects
+
+        # BUILD CDN URLS AND REFRESH
+        cdn_urls = build_all_cdn_urls_for_project(year, dest_folder_name, glb_filenames)
+        success  = refresh_project_json_model_urls(project_json_path, cdn_urls)
+
+        if success:
+            print(f"  {COLOR_GREEN}[OK]{COLOR_RESET}   {dest_folder_name} - {len(cdn_urls)} URL(s) written")
+            refreshed_count += 1                                            # <-- Increment refreshed count
+        else:
+            print(f"  {COLOR_RED}[ERROR]{COLOR_RESET} {dest_folder_name} - failed to write project.json")
+
+    print(f"\n{COLOR_CYAN}{'='*80}{COLOR_RESET}")
+    print(f"project.json refreshed : {refreshed_count}")
+    print(f"Skipped (not cloned)   : {skipped_count}")
+    print(f"{COLOR_CYAN}{'='*80}{COLOR_RESET}\n")
+
+    return refreshed_count, skipped_count                                   # <-- Return counts
+# ---------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | Main Entry Point
 # -----------------------------------------------------------------------------
 
@@ -941,27 +1073,32 @@ def main():
         if record['result']['files_new'] > 0 or record['result']['files_updated'] > 0
     ]
     
-    # If dry-run-only flag is set, exit after preview
+    # If dry-run-only flag is set, exit after preview (no writes of any kind)
     if args.dry_run_only:
         return                                                        # <-- Exit after dry-run
-    
-    # If no files need uploading, exit
-    if not upload_plan:
-        print(f"{COLOR_GREEN}All files are up to date. No uploads needed.{COLOR_RESET}\n")  # <-- No changes message
-        return                                                        # <-- Exit if nothing to upload
-    
+
     # STEP 6: Ask for confirmation before proceeding
-    if not prompt_for_confirmation():
-        return                                                        # <-- Exit if user cancels
-    
-    # STEP 7: Execute upload plan (skips fully-synced projects and years)
-    print(f"{COLOR_GREEN}Mode: UPLOADING FILES TO R2{COLOR_RESET}\n")  # <-- Print upload mode
-    
-    final_results = execute_upload_plan(s3_client, bucket_name, upload_plan)  # <-- Run uploads from plan
-    print_results(final_results, dry_run=False)                       # <-- Print final results
-    
-    successful_count = sum(r['files_new'] + r['files_updated'] for r in final_results)  # <-- Count successful
-    print(f"{COLOR_GREEN}Upload complete! {successful_count} file(s) uploaded to Cloudflare R2 across all years.{COLOR_RESET}\n")  # <-- Print completion
+    # NOTE: Confirmation covers both R2 uploads AND project.json refresh.
+    # If no files need uploading, skip straight to STEP 8 (JSON refresh still runs).
+    if upload_plan:
+        if not prompt_for_confirmation():
+            return                                                    # <-- Exit if user cancels
+
+        # STEP 7: Execute upload plan (skips fully-synced projects and years)
+        print(f"{COLOR_GREEN}Mode: UPLOADING FILES TO R2{COLOR_RESET}\n")  # <-- Print upload mode
+
+        final_results = execute_upload_plan(s3_client, bucket_name, upload_plan)  # <-- Run uploads from plan
+        print_results(final_results, dry_run=False)                   # <-- Print final results
+
+        successful_count = sum(r['files_new'] + r['files_updated'] for r in final_results)  # <-- Count successful
+        print(f"{COLOR_GREEN}Upload complete! {successful_count} file(s) uploaded to Cloudflare R2 across all years.{COLOR_RESET}\n")  # <-- Print completion
+    else:
+        print(f"{COLOR_GREEN}All R2 files are up to date. No uploads needed.{COLOR_RESET}\n")  # <-- No R2 changes
+
+    # STEP 8: Refresh project.json valeVision_ModelUrls for all scanned projects
+    # Runs regardless of whether R2 uploads occurred, so the URL index is always
+    # kept in sync with whatever GLBs are in the local sync folder / R2 bucket.
+    refresh_all_project_json_urls(all_dry_run_records)
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

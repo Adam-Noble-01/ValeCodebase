@@ -1754,10 +1754,26 @@
         {
           "id": "new-1779347174714",
           "date": "2026-05-21",
-          "startTime": "08:15",
-          "endTime": "10:00",
+          "startTime": "09:15",
+          "endTime": "11:00",
           "title": "Whitecard |  Dawson-Smith",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1779351774521",
+          "date": "2026-05-21",
+          "startTime": "08:00",
+          "endTime": "08:45",
+          "title": "New Shift",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779351783654",
+          "date": "2026-05-21",
+          "startTime": "08:45",
+          "endTime": "09:15",
+          "title": "Email |  VV Update",
+          "color": "na-shift-color-lime"
         }
       ]
     }

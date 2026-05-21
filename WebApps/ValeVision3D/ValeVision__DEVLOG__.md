@@ -2,6 +2,32 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.3.5 - 21-May-2026
+### Site Boundaries Toggle — Conditional Layer Support
+
+**Overview**
+- Added `Site Boundaries` as a first-class toggleable model layer, driven by the new `08__Site__Boundaries` SketchUp tag. When a project has boundary GLBs uploaded, a "Site Boundaries" toggle button appears automatically in the Model Parts List panel between "Doors" and "Landscape". Projects without boundary geometry are unaffected.
+
+**Model Loader — Load Order**
+- `"ValeVision__SiteBoundaries"` inserted into `Na__ModelCategories__LoadOrder` in `Na__ModelLoader__MultiModel.js` between `ProposedDoors` (tag 25) and `LandscapeEnvironment` (tags 07, 09), matching the tag-08 numeric position in the SSOT.
+- The loader's URL parse regex already accepted `ValeVision__SiteBoundaries` filenames; no regex changes required.
+
+**Toggle UI — Display Name**
+- `"ValeVision__SiteBoundaries": "Site Boundaries"` added to `Na__ModelToggle__DisplayNames` in `Na__UiFeature__ModelToggle__Controls.js` at the correct position between ProposedDoors and Landscape.
+- Button only appears when `TrueVision__SiteBoundaries__*` GLBs are present in the project's `valeVision_ModelUrls` array.
+
+**Cloudflare Bucket Builder — Automatic project.json Sync**
+- `AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py` extended with a new `REGION | Project JSON Sync` containing four functions: `find_whitecardopedia_project_json`, `build_all_cdn_urls_for_project`, `refresh_project_json_model_urls`, `refresh_all_project_json_urls`.
+- New **STEP 8** added to `main()` — runs after every execution (including when all R2 files are already up to date) to refresh `valeVision_ModelUrls` in every Whitecardopedia `project.json` from the current local GLB sync folder. Eliminates the previous requirement to manually run `AutomationUtil__FetchLocalProjects` after each new GLB export.
+- `--dry-run-only` flag still suppresses all writes including STEP 8.
+- Added `import json` to the script's imports.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — added `ValeVision__SiteBoundaries` to load order
+- `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js` — added display name
+- `Whitecardopedia/Tools__DevUtils/AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py` — STEP 8 JSON sync
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.3.4 - 29-Apr-2026
 ### Dev Tools — Confirm Modals + Camera Configurations Grouping
 

@@ -46,7 +46,8 @@
         "ValeVision__MainBuildingModel__Existing"      : "Existing Building",      // <-- Tag 10-19
         "ValeVision__MainBuildingModel__Proposed"      : "Design Proposal",        // <-- Tag 20-24
         "ValeVision__MainBuildingModel__ProposedDoors" : "Doors",                  // <-- Tag 25 (interactive ADR assemblies)
-        "ValeVision__LandscapeEnvironment"             : "Landscape",              // <-- Tag 07-09
+        "ValeVision__SiteBoundaries"                   : "Site Boundaries",        // <-- Tag 08 (conditional: shown only when boundary GLBs exist)
+        "ValeVision__LandscapeEnvironment"             : "Landscape",              // <-- Tag 07, 09
         "ValeVision__GroundFloorFurniture"             : "Ground Floor Furniture", // <-- Tag 30-38
         "ValeVision__GroundFloorDecor"                 : "Ground Floor Decor",     // <-- Tag 39
         "ValeVision__FirstFloorFurniture"              : "First Floor Furniture",  // <-- Tag 40-48

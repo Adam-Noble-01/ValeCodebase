@@ -1707,8 +1707,56 @@
           "id": "new-1779269187721",
           "date": "2026-05-20",
           "startTime": "10:30",
-          "endTime": "13:00",
+          "endTime": "13:15",
           "title": "Whitecard | Kalston",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1779285360737",
+          "date": "2026-05-20",
+          "startTime": "13:15",
+          "endTime": "13:45",
+          "title": "Meeting |  MS",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779285335438",
+          "date": "2026-05-20",
+          "startTime": "13:45",
+          "endTime": "14:45",
+          "title": "Fix |  SketchUp Glitch, Purge Config etc",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1779285405267",
+          "date": "2026-05-20",
+          "startTime": "14:45",
+          "endTime": "15:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779285439501",
+          "date": "2026-05-21",
+          "startTime": "12:00",
+          "endTime": "15:00",
+          "title": "CGI |  TEMP - HALL",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1779347145327",
+          "date": "2026-05-20",
+          "startTime": "15:00",
+          "endTime": "17:15",
+          "title": "Whitecard |  Dawson-Smith",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1779347174714",
+          "date": "2026-05-21",
+          "startTime": "08:15",
+          "endTime": "10:00",
+          "title": "Whitecard |  Dawson-Smith",
           "color": "na-shift-color-rose"
         }
       ]

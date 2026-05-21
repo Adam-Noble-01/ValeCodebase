@@ -51,7 +51,9 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63396__Kalson/Kalson__TrueVision__SiteBoundaries__MeshModel__.glb"
     ],
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",

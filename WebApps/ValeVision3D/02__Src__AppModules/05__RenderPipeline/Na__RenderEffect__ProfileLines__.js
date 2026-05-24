@@ -67,6 +67,27 @@
     // ---------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Walk Parent Chain to Detect Linework GLB Root
+    // ---------------------------------------------------------------
+    // The model loader tags each linework GLB root with
+    //   userData.Na__ModelType = 'linework'
+    // This helper walks an object's ancestor chain testing for that tag so
+    // that any node nested anywhere inside a linework GLB tree can be cleanly
+    // identified and skipped by passes that should only operate on meshes.
+    // ---------------------------------------------------------------
+    function Na__IsInsideLineworkGroup(object) {
+        let current = object;                                                 // <-- Start at the object itself
+        while (current) {
+            if (current.userData && current.userData.Na__ModelType === 'linework') {
+                return true;                                                  // <-- Found linework root in ancestor chain
+            }
+            current = current.parent;                                         // <-- Walk up scene graph
+        }
+        return false;                                                         // <-- No linework ancestor found
+    }
+    // ---------------------------------------------------------------
+
+
     // HELPER FUNCTION | Collect Line Objects for Normal-Pass Visibility Toggle
     // ---------------------------------------------------------------
     function collectLineObjects(scene) {
@@ -81,10 +102,18 @@
 
     // HELPER FUNCTION | Collect Visible Mesh Objects
     // ---------------------------------------------------------------
+    // Filters in three stages, each a defensive backstop for the next:
+    //   1. obj.isMesh must be true ........................... only real meshes considered
+    //   2. obj.isLine2 / obj.isLineSegments2 must be false ... fat-line shells set isMesh=true internally and must NEVER have their LineMaterial swapped
+    //   3. ancestor chain must not be a linework GLB root .... defensive: ignore any stray Mesh nodes nested inside a linework GLB tree
+    // ---------------------------------------------------------------
     function collectMeshObjects(scene) {
         const meshObjects = [];
         scene.traverse((obj) => {
-            if (obj.isMesh && !obj.isLine2 && !obj.isLineSegments2) meshObjects.push(obj); // <-- Exclude fat-line meshes; their template quad corrupts the normal buffer
+            if (!obj.isMesh)                        return;                  // <-- Only real meshes are considered
+            if (obj.isLine2 || obj.isLineSegments2) return;                  // <-- LineSegments2 sets isMesh=true internally; their LineMaterial must NEVER be swapped
+            if (Na__IsInsideLineworkGroup(obj))     return;                  // <-- Defensive: ignore stray Mesh nodes nested inside a linework GLB root
+            meshObjects.push(obj);                                            // <-- Real surface mesh; eligible for the profile-colour swap
         });
         return meshObjects;
     }
@@ -269,6 +298,12 @@
             cachedMeshObjects = collectMeshObjects(scene);
             cachedOriginalMaterials = new Array(cachedMeshObjects.length);    // <-- Pre-allocate to mesh count; slots reused every frame
             sceneCacheDirty = false;
+
+            console.log(                                                      // <-- One-shot diagnostic; verifies mesh/linework split is clean
+                `[ProfileLines] Scene cache rebuilt: `
+                + `${cachedMeshObjects.length} meshes (swap), `
+                + `${cachedLineObjects.length} lines (hide)`
+            );
         }
         // ---------------------------------------------------------------
 

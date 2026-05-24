@@ -2,6 +2,7 @@
 # =========================================================
 
 # ---------------------------------------------------------
+<<<<<<< Updated upstream
 ## ValeVision3D v2.3.5 - 21-May-2026
 ### Site Boundaries Toggle — Conditional Layer Support
 
@@ -26,6 +27,47 @@
 - `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — added `ValeVision__SiteBoundaries` to load order
 - `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js` — added display name
 - `Whitecardopedia/Tools__DevUtils/AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py` — STEP 8 JSON sync
+=======
+## ValeVision3D v2.3.5 - 24-May-2026
+### Profile Lines — Architectural Alignment with TrueVision (Mesh/Linework Discrimination Tags)
+
+**Overview**
+- Forward-looking, low-risk architectural port from TrueVision. ValeVision was already running fast and already had the basic `LineSegments2` filter in `collectMeshObjects`, but it was missing the explicit `userData.Na__ModelType` discrimination tags that TrueVision now uses. This port adds those tags + a defensive parent-chain guard so any future render effect (or collision/raycast/picking system) can cleanly filter "operate only on mesh roots" or "operate only on linework roots" without relying on `obj.isMesh` heuristics — which is unsafe because `LineSegments2` sets `isMesh = true` internally.
+- No behaviour change in the current effect output. This is purely an architectural alignment so the two cousin codebases share the same discrimination contract.
+
+**Why This Was Worth Doing Even Though ValeVision Is Already Fast**
+- ValeVision currently uses `obj.isMesh && !obj.isLine2 && !obj.isLineSegments2` as the only filter in `collectMeshObjects`. That works for the current `LineSegments2` shape, but the moment any future loader produces a `Mesh` node nested inside a linework GLB tree (e.g. a hidden bounding mesh for frustum culling, or a debug placeholder), it would silently slip into the profile-colour material-swap pass and corrupt the linework's `LineMaterial`. The new third-line `Na__IsInsideLineworkGroup` guard prevents that class of bug from ever appearing.
+- TrueVision now uses the same three-stage filter. Aligning ValeVision now means any future visual effect ported between the two apps will Just Work.
+
+**Model Loader — Tagged Mesh and Linework Roots**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — both the priority-order loop AND the unordered-fallback loop now set:
+    - `meshRoot.userData.Na__ModelType = 'mesh';` immediately after `Na__ModelLoader__LoadSingleMesh(...)` returns.
+    - `lineworkRoot.userData.Na__ModelType = 'linework';` immediately after `Na__ModelLoader__LoadSingleLinework(...)` returns.
+- These tags propagate to every descendant via the parent chain — they are read by walking `current.parent` upwards, so individual mesh nodes do NOT need to be tagged individually. One tag per GLB root is enough.
+- Existing `Na__ProfileLineColorDominant` / `Na__ProfileLineColorByName` / `Na__ProfileLineColor` userData was left untouched — those are separate concerns (per-mesh dominant colour for the profile prepass) and continue to work as before.
+
+**Profile Lines — Defensive Parent-Chain Guard**
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js` — added new helper `Na__IsInsideLineworkGroup(object)` that walks the ancestor chain testing for `userData.Na__ModelType === 'linework'`.
+- `collectMeshObjects` now filters in three stages, each a defensive backstop for the next:
+    1. `obj.isMesh` must be true (only real meshes considered).
+    2. `obj.isLine2 / obj.isLineSegments2` must be false (fat-line shells set `isMesh = true` internally and must NEVER have their `LineMaterial` swapped).
+    3. Ancestor chain must not be a linework GLB root (defensive: ignores any stray Mesh nodes nested inside a linework tree).
+- The behaviour for the current scene graph is identical to before (the existing fat-line filter already caught everything that mattered). The architectural value is in stage 3 being there as a safety net for future scene graphs.
+
+**Diagnostic Console Log (One-Shot Per Cache Rebuild)**
+- `rebuildSceneCache` now logs `[ProfileLines] Scene cache rebuilt: N meshes (swap), M lines (hide)` after each rebuild. Fires once per scene-dirty event (typically once at startup, again on a model reload). Makes it trivial to confirm the mesh-vs-linework split is clean if you ever suspect something is being processed twice. Matches the same diagnostic added to TrueVision in its v2.2.5 port.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — added 4 `userData.Na__ModelType` tag assignments (2 in priority-order loop, 2 in unordered-fallback loop).
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js` — added `Na__IsInsideLineworkGroup` helper; expanded `collectMeshObjects` from a one-line `if` into a three-stage filter using the new helper; added one-shot diagnostic console log to `rebuildSceneCache`.
+
+**Verification**
+- No linter errors in either file.
+- No behaviour change expected for current scenes; the existing `LineSegments2` filter already handled the only real-world case. New guard is a safety net.
+
+**Known Future Opportunity (Not Done In This Pass)**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` `Na__WalkMode__SetCollisionMeshes` uses the same bare `if (!child.isMesh) return;` pattern (line ~280) and currently pushes every `LineSegments2` fat-line shell into the collision raycast set. ValeVision's collision counts are smaller than TrueVision's so this hasn't manifested as a felt slowdown, but it is the same architectural issue. Could be cleaned up in a future pass using the now-available `userData.Na__ModelType === 'linework'` tag.
+>>>>>>> Stashed changes
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.3.4 - 29-Apr-2026

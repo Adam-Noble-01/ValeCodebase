@@ -70,7 +70,7 @@
     let Na__WalkMode__Config__GravityMmPerSecSq            = 9810;       // <-- Gravity acceleration (mm/s^2)
     let Na__WalkMode__Config__MaxStepHeightMm              = 350;        // <-- Max climbable step height (mm)
     let Na__WalkMode__Config__MouseSensitivity             = 0.002;      // <-- Mouse look sensitivity
-    let Na__WalkMode__Config__DoorProximityThresholdMm     = 2000;       // <-- Door proximity trigger distance (mm)
+    let Na__WalkMode__Config__DoorProximityThresholdMm     = 3000;       // <-- Door proximity trigger distance (mm)
     // ------------------------------------------------------------
 
 

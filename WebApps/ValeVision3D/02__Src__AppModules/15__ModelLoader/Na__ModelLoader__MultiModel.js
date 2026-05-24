@@ -610,6 +610,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                         config.baseMesh,                                 // <-- Base mesh material config
                         loader
                     );
+                    meshRoot.userData.Na__ModelType = 'mesh';            // <-- Tag for downstream render passes & collision filters
                     categoryGroup.add(meshRoot);                         // <-- Add mesh to category group
                     console.log(`[ValeVision3D] Loaded Mesh: ${shortName}`);
                 } catch (error) {
@@ -627,6 +628,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                         loader,
                         lineResolution
                     );
+                    lineworkRoot.userData.Na__ModelType = 'linework';    // <-- Tag for downstream render passes & collision filters
                     categoryGroup.add(lineworkRoot);                     // <-- Add linework to category group
                     Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
                     console.log(`[ValeVision3D] Loaded Linework: ${shortName}`);
@@ -651,6 +653,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 if (statusCallback) statusCallback(`Loading ${shortName} Mesh...`);
                 try {
                     const meshRoot = await Na__ModelLoader__LoadSingleMesh(entry.meshUrl, config.baseMesh, loader);
+                    meshRoot.userData.Na__ModelType = 'mesh';            // <-- Tag for downstream render passes & collision filters
                     categoryGroup.add(meshRoot);
                     console.log(`[ValeVision3D] Loaded Mesh (unordered): ${shortName}`);
                 } catch (error) {
@@ -662,6 +665,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 if (statusCallback) statusCallback(`Loading ${shortName} Linework...`);
                 try {
                     const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(entry.lineworkUrl, config.RenderConfig__Linework, loader, lineResolution);
+                    lineworkRoot.userData.Na__ModelType = 'linework';    // <-- Tag for downstream render passes & collision filters
                     categoryGroup.add(lineworkRoot);
                     Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
                     console.log(`[ValeVision3D] Loaded Linework (unordered): ${shortName}`);

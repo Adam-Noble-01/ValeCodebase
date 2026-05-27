@@ -1,0 +1,80 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 9874,
+            "Camera__DefaultPos__PosY": 3188,
+            "Camera__DefaultPos__PosZ": 19734
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0252,
+            "Camera__DefaultRotation__RotY": -0.345,
+            "Camera__DefaultRotation__RotZ": -0.0085
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -16118
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 35048
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 28000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 18957,
+        "OrbitHelperCube__Position__PosY": 2552,
+        "OrbitHelperCube__Position__PosZ": -5536
+    },
+    "ProjectType": "Whitecard",
+    "allImages": [
+        "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/63578__Yates__Porch",
+    "displayImages": [
+        "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
+    ],
+    "folderId": "2026/63578__Yates__Porch",
+    "images": [
+        "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "63578",
+    "projectName": "Yates |  Front Porch",
+    "scheduleData": {
+        "dateFulfilled": "26-May-2026",
+        "dateReceived": "26-May-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
+}

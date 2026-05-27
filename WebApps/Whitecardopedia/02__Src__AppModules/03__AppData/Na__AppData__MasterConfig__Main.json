@@ -479,6 +479,14 @@
         {
             "folderId": "2026/60906__Dawson-Smith",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63578__Yates__Orangery",
+            "enabled": true
+        },
+        {
+            "folderId": "2026/63578__Yates__Porch",
+            "enabled": true
         }
     ]
 }

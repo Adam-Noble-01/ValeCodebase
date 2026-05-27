@@ -1,0 +1,94 @@
+===============================================================================
+## Image Style / Art Style
+-Loose architectural interior concept sketch.
+-Hand-drawn designer presentation drawing.
+-Fine black ink linework over soft watercolour washes.
+-Sketchy, expressive, imperfect pen lines.
+-Multiple overlapping construction lines around edges and perspective points.
+-Thin, scratchy line weight with occasional darker emphasis lines.
+-Rapid freehand drafting style, like an architect’s concept sketch.
+-Light watercolour paper texture visible across the whole image.
+-Soft translucent washes rather than solid colour fills.
+-Pale warm neutral palette: ivory, beige, cream, stone, taupe, pale grey.
+-Cool blue-green watercolour washes used on the glass roof.
+-Subtle lilac and pale blue shadow washes in the background.
+-Warm yellow ochre accents for light and cabinetry shadows.
+-Small orange and red accents in flowers and wall art.
+-Loose watercolour bleed at the edges of objects.
+-White paper left visible as the main background.
+-Unfinished vignette edges, with the drawing fading into blank paper.
+-Soft shadow pooling under furniture and floor tiles.
+-Slightly exaggerated perspective for dramatic interior depth.
+-Freehand perspective lines remain visible.
+-Objects drawn with confident but imperfect geometry.
+-Cabinets, roof bars and floor tiles are suggested through line rhythm rather than precise hard drafting.
+-Pen marks overlap and double back, creating a lively exploratory sketch feel.
+-The image feels like a high-end experienced professional interior designer’s early presentation sketch.
+-Balanced between technical architectural drawing and expressive watercolour illustration.
+-Elegant, loose, refined, not cartoonish.
+-High-detail architectural linework, but soft and relaxed colouring.
+-Atmospheric daylight feeling.
+-Very light tonal contrast overall, with dark ink giving structure.
+-The drawing looks scanned from a physical sketchbook or presentation board.
+
+
+===============================================================================
+## Context / Scene Content
+-Luxury kitchen inside a glazed orangery or conservatory extension.
+-Interior view looking lengthways through the kitchen.
+-Wide landscape composition.
+-One-point / two-point architectural perspective from eye height.
+-Viewer positioned near the front-left side of the kitchen.
+-Long kitchen counter running along the left wall.
+-Cream painted shaker-style kitchen cabinetry.
+-Tall wall cabinets with framed panel doors.
+-Base cabinets with drawers and framed doors.
+-Curved end cabinet at the near-left end of the kitchen run.
+-Pale stone or marble worktops.
+-Light marble or stone splashback behind the counter.
+-Built-in hob and range area along the back counter.
+-Large curved traditional extractor hood above the hob.
+-Central island running into the depth of the room.
+-Island has a pale stone countertop and cream shaker base units.
+-Rounded or softened island corner facing the viewer.
+-Sink and tap shown on the island.
+-Bar stools placed around the island.
+-Fine sketchy chair legs and loose stool outlines.
+-Large glazed roof above the kitchen.
+-Roof formed as a pitched glass lantern / orangery roof.
+-Strong visible roof rafters and glazing bars.
+-Blue-green glass reflections in the roof panes.
+-Gabled glazed end visible toward the far-right roof area.
+-Roof structure drawn with many angular converging lines.
+-Stone or limestone large-format floor tiles.
+-Floor tile joints drawn in perspective.
+-Opening or doorway into another room at the far end.
+-Framed wall art on the left wall and right background wall.
+-Potted indoor trees or topiary plants at both sides of the space.
+-Terracotta plant pots.
+-Small flowers or decorative arrangement on the island.
+-Pendant light hanging above the island.
+-Soft daylight entering from the glazed roof.
+-Warm interior lighting suggested under or around the island.
+-Elegant high-end British orangery kitchen atmosphere.
+-Classic-contemporary design: traditional cabinetry with a bright glazed extension.
+-Calm, aspirational, residential interior design presentation mood.
+
+
+
+===============================================================================
+## Ultimate Optimised Prompt
+-A loose hand-drawn architectural interior concept sketch of a luxury British orangery kitchen, shown in a wide landscape format, viewed from eye height in dramatic perspective looking down the length of the room.
+-The space contains a long run of cream shaker-style kitchen cabinets along the left wall, with tall wall cupboards, framed cabinet doors, base drawers, curved end units, pale stone worktops, a light marble splashback, and a traditional curved extractor hood above the hob.
+-A large central kitchen island sits in the foreground and leads into the depth of the room, with cream shaker base cabinets, a pale stone countertop, a sink and tap, softly rounded corners, loose bar stools around it, and a small flower arrangement on top.
+-Above the kitchen is a large pitched glazed orangery roof with many visible rafters, glazing bars, gabled glass sections, blue-green translucent glass reflections, and strong architectural perspective lines converging toward the back of the room.
+-The floor is made from large-format limestone or stone tiles, drawn with loose perspective grid lines and soft warm shadows between the tile joints.
+-The background includes an opening into another room, pale walls, framed botanical artwork, potted indoor trees in terracotta pots, and a hanging pendant light over the island.
+-The drawing style is an expressive architect’s presentation sketch, made with fine black ink linework and soft transparent watercolour washes on textured white paper.
+-Use scratchy freehand pen lines, overlapping construction lines, double outlines, lively imperfect geometry, visible perspective marks, and loose gestural detailing.
+-Colour with pale cream, ivory, beige, taupe, stone grey, soft yellow ochre, faint lilac shadows, pale blue-green glass washes, small orange-red flower accents, and warm light pooling around the island.
+-Keep the paper background bright and visible, with unfinished sketch edges fading into white space, translucent watercolour bleed, subtle paper grain, and a refined high-end interior design presentation atmosphere.
+
+
+
+===============================================================================

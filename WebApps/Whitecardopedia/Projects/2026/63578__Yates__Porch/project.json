@@ -53,17 +53,17 @@
         "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Nothing to report, had to model from a hand drawing which takes longer than the CAD pipeline, but no issues.",
+        "conceptArtist": "Dan",
+        "input": "Early Stage Sketch"
     },
     "projectCode": "63578",
     "projectName": "Yates |  Front Porch",
     "scheduleData": {
         "dateFulfilled": "26-May-2026",
-        "dateReceived": "26-May-2026",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "25-May-2026",
+        "timeAllocated": 3,
+        "timeTaken": 3
     },
     "sketchUpModel": {
         "url": "Nil"

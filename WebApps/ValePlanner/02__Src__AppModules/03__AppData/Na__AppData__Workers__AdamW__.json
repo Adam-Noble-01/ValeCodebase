@@ -1856,28 +1856,12 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1779793932576",
-          "date": "2026-05-29",
-          "startTime": "08:15",
-          "endTime": "16:30",
-          "title": "REMINDER |  Polish CGI",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1779799764053",
           "date": "2026-05-26",
           "startTime": "12:15",
           "endTime": "13:00",
           "title": "Meeting |  SM & NF",
           "color": "na-shift-color-orange"
-        },
-        {
-          "id": "new-1779795760021",
-          "date": "2026-05-26",
-          "startTime": "13:00",
-          "endTime": "18:00",
-          "title": "Yates",
-          "color": "na-shift-color-indigo"
         },
         {
           "id": "new-1779865612084",
@@ -1896,20 +1880,76 @@
           "color": "na-shift-color-slate"
         },
         {
-          "id": "new-1779876407830",
-          "date": "2026-05-27",
-          "startTime": "11:45",
-          "endTime": "13:45",
-          "title": "Yates",
-          "color": "na-shift-color-indigo"
-        },
-        {
           "id": "new-1779879284556",
           "date": "2026-05-27",
           "startTime": "11:00",
           "endTime": "11:30",
           "title": "Meeting |  Martin",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779795760021",
+          "date": "2026-05-26",
+          "startTime": "13:00",
+          "endTime": "17:00",
+          "title": "Yates |  Orangery",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1779876407830",
+          "date": "2026-05-27",
+          "startTime": "12:00",
+          "endTime": "15:00",
+          "title": "Yates |  Porch",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1779898501234",
+          "date": "2026-05-27",
+          "startTime": "15:00",
+          "endTime": "15:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779898491223",
+          "date": "2026-05-27",
+          "startTime": "15:15",
+          "endTime": "16:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1780039060132",
+          "date": "2026-05-29",
+          "startTime": "08:00",
+          "endTime": "13:00",
+          "title": "Hall |  Video",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1779793932576",
+          "date": "2026-05-28",
+          "startTime": "08:00",
+          "endTime": "18:00",
+          "title": "Hall |  Redo CGI's",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1780056347240",
+          "date": "2026-05-29",
+          "startTime": "13:00",
+          "endTime": "13:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1779898547692",
+          "date": "2026-05-29",
+          "startTime": "13:15",
+          "endTime": "18:00",
+          "title": "Whitecard |  Jones",
+          "color": "na-shift-color-lime"
         }
       ]
     }

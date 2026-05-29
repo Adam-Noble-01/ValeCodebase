@@ -1,0 +1,228 @@
+/* =============================================================================
+   NOBLEIMAGETOOLS - CORE UI - CANVAS AREA
+   =============================================================================
+
+   FILE       : NobleImageTools__CoreUi__Styles__Canvas__.css
+   NAMESPACE  : Nit
+   MODULE     : Core UI - Canvas Area
+   PURPOSE    : Styles for the central canvas viewport, the floating toolbar,
+                prompt point markers, and the bottom status bar.
+
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Canvas Viewport Container                                */
+/* ----------------------------------------------------------------- */
+
+    .Nit__CanvasArea {
+        position                         : relative;
+        flex                             : 1;
+        display                          : flex;
+        flex-direction                   : column;
+        overflow                         : hidden;
+        background                       : var(--Nit__Color__Bg);
+        min-width                        : 0;
+    }
+
+    .Nit__CanvasArea--DragOver {
+        outline                          : 3px dashed var(--Nit__Color__Accent);
+        outline-offset                   : -6px;
+        background                       : var(--Nit__Color__AccentSubtle);
+    }
+
+    .Nit__CanvasArea--DragOver .Nit__CanvasArea__Empty {
+        color                            : var(--Nit__Color__Accent);
+    }
+
+    .Nit__CanvasArea__Empty {
+        position                         : absolute;
+        inset                            : 0;
+        display                          : flex;
+        flex-direction                   : column;
+        align-items                      : center;
+        justify-content                  : center;
+        gap                              : var(--Nit__Space__Lg);
+        color                            : var(--Nit__Color__TextMuted);
+        font-size                        : var(--Nit__Font__SizeSm);
+        pointer-events                   : none;
+        z-index                          : 2;
+        user-select                      : none;
+    }
+
+    .Nit__CanvasArea__Empty__Icon {
+        font-size                        : 48px;
+        opacity                          : 0.3;
+        line-height                      : 1;
+    }
+
+    .Nit__CanvasArea__Empty--hidden {
+        display                          : none;
+    }
+
+    #Nit__Canvas__Main {
+        position                         : absolute;
+        inset                            : 0;
+        display                          : block;
+        width                            : 100%;
+        height                           : 100%;
+        cursor                           : crosshair;
+        user-select                      : none;
+        -webkit-user-select              : none;
+        -webkit-user-drag                : none;
+        touch-action                     : none;
+    }
+
+    #Nit__Canvas__Main.Nit__Canvas--Pan {
+        cursor                           : grab;
+    }
+
+    #Nit__Canvas__Main.Nit__Canvas--Panning {
+        cursor                           : grabbing;
+    }
+
+    #Nit__Canvas__Main.Nit__Canvas--Box {
+        cursor                           : crosshair;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Floating Mode Toolbar                                    */
+/* ----------------------------------------------------------------- */
+
+    .Nit__ModeToolbar {
+        position                         : absolute;
+        top                              : var(--Nit__Space__Lg);
+        left                             : 50%;
+        transform                        : translateX(-50%);
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Xs);
+        background                       : var(--Nit__Color__BgPanel);
+        border                           : 1px solid var(--Nit__Color__Border);
+        border-radius                    : var(--Nit__Radius__Lg);
+        padding                          : var(--Nit__Space__Xs) var(--Nit__Space__Sm);
+        box-shadow                       : var(--Nit__Shadow__Panel);
+        z-index                          : 50;
+        user-select                      : none;
+        white-space                      : nowrap;
+        flex-wrap                        : nowrap;
+    }
+
+    .Nit__ModeToolbar__Group {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Xs);
+    }
+
+    .Nit__ModeToolbar__Divider {
+        width                            : 1px;
+        height                           : 18px;
+        background                       : var(--Nit__Color__Border);
+        margin                           : 0 var(--Nit__Space__Xs);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__ModeBtn {
+        display                          : inline-flex;
+        align-items                      : center;
+        gap                              : 5px;
+        padding                          : 5px 10px;
+        border-radius                    : var(--Nit__Radius__Sm);
+        border                           : 1px solid transparent;
+        background                       : transparent;
+        color                            : var(--Nit__Color__TextSecondary);
+        font-size                        : var(--Nit__Font__SizeSm);
+        font-weight                      : 500;
+        cursor                           : pointer;
+        transition                       : background var(--Nit__Transition__Fast),
+                                           color var(--Nit__Transition__Fast),
+                                           border-color var(--Nit__Transition__Fast);
+        white-space                      : nowrap;
+    }
+
+    .Nit__ModeBtn:hover {
+        background                       : var(--Nit__Color__BgRaised);
+        color                            : var(--Nit__Color__TextPrimary);
+    }
+
+    .Nit__ModeBtn--active {
+        background                       : var(--Nit__Color__AccentSubtle);
+        border-color                     : var(--Nit__Color__Accent);
+        color                            : var(--Nit__Color__Accent);
+    }
+
+    .Nit__ModeBtn__Icon {
+        font-style                       : normal;
+        font-size                        : 14px;
+        line-height                      : 1;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Canvas Bottom Status Bar                                 */
+/* ----------------------------------------------------------------- */
+
+    .Nit__CanvasStatusBar {
+        position                         : absolute;
+        bottom                           : 0;
+        left                             : 0;
+        right                            : 0;
+        height                           : 26px;
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Md);
+        padding                          : 0 var(--Nit__Space__Md);
+        background                       : rgba(13, 15, 18, 0.85);
+        border-top                       : 1px solid var(--Nit__Color__Border);
+        font-size                        : var(--Nit__Font__SizeXs);
+        color                            : var(--Nit__Color__TextMuted);
+        font-family                      : var(--Nit__Font__Mono);
+        pointer-events                   : none;
+        z-index                          : 30;
+    }
+
+    .Nit__CanvasStatusBar__Item {
+        white-space                      : nowrap;
+    }
+
+    .Nit__CanvasStatusBar__Sep {
+        color                            : var(--Nit__Color__Border);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Zoom Controls                                            */
+/* ----------------------------------------------------------------- */
+
+    .Nit__ZoomControls {
+        position                         : absolute;
+        bottom                           : 38px;
+        right                            : var(--Nit__Space__Lg);
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : var(--Nit__Space__Xs);
+        z-index                          : 30;
+    }
+
+    .Nit__ZoomControls .Nit__Btn--icon {
+        background                       : var(--Nit__Color__BgPanel);
+        border-color                     : var(--Nit__Color__Border);
+        color                            : var(--Nit__Color__TextSecondary);
+        width                            : 30px;
+        height                           : 30px;
+        padding                          : 0;
+        font-size                        : 16px;
+        line-height                      : 1;
+    }
+
+    .Nit__ZoomControls .Nit__Btn--icon:hover {
+        color                            : var(--Nit__Color__TextPrimary);
+    }
+
+/* endregion ----------------------------------------------------------------- */

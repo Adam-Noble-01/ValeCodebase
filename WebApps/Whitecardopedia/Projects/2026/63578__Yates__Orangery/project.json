@@ -39,17 +39,17 @@
         "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Quite a tricky one, none-standard orangery, had to Photomatch to get the side of the elevation existing conditions so this added time, I also had to model from a hand drawing which takes longer than the CAD pipeline, but no issues.",
+        "conceptArtist": "Dan",
+        "input": "Early Stage Sketch"
     },
     "projectCode": "63578",
     "projectName": "Yates |  Orangery",
     "scheduleData": {
         "dateFulfilled": "27-May-2026",
         "dateReceived": "26-May-2026",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "timeAllocated": 3,
+        "timeTaken": 4
     },
     "sketchUpModel": {
         "url": "Nil"

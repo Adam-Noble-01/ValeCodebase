@@ -1,0 +1,4 @@
+# Ignore large model checkpoint files - download with download_models.py
+Sam2__Checkpoints/*.pt
+Sam2__Checkpoints/*.pth
+Sam2__Checkpoints/*.onnx

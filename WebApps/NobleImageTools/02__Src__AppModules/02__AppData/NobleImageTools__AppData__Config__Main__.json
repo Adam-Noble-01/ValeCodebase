@@ -1,0 +1,28 @@
+{
+    "NobleImageTools__App__Title"             : "NobleImageTools",
+    "NobleImageTools__App__Version"           : "1.0.0",
+    "NobleImageTools__App__CreatedDate"       : "28-May-2026",
+
+    "NobleImageTools__Server__Host"           : "127.0.0.1",
+    "NobleImageTools__Server__Port"           : 8005,
+    "NobleImageTools__Server__BaseUrl"        : "http://127.0.0.1:8005",
+
+    "NobleImageTools__Sam2__DefaultModel"     : "sam2.1_hiera_large",
+    "NobleImageTools__Sam2__FallbackModel"    : "sam2.1_hiera_base_plus",
+
+    "NobleImageTools__Canvas__DefaultZoom"    : 1.0,
+    "NobleImageTools__Canvas__MinZoom"        : 0.05,
+    "NobleImageTools__Canvas__MaxZoom"        : 20.0,
+    "NobleImageTools__Canvas__ZoomStep"       : 0.12,
+
+    "NobleImageTools__Modes__Default"         : "click",
+
+    "NobleImageTools__Layers__MaxLayers"      : 64,
+    "NobleImageTools__Layers__DefaultColors"  : [
+        "#ff4d4d", "#ff9800", "#ffeb3b", "#4caf50", "#2196f3",
+        "#9c27b0", "#e91e63", "#00bcd4", "#8bc34a", "#ff5722",
+        "#f48fb1", "#80cbc4", "#ffe082", "#b39ddb", "#ef9a9a"
+    ],
+
+    "NobleImageTools__Export__DefaultDir"     : ""
+}

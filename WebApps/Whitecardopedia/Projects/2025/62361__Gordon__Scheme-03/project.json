@@ -3,15 +3,15 @@
     "ProjectType": "Whitecard",
     "projectCode": "62361",
     "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "input": "CAD File",
+        "conceptArtist": "Anna",
+        "additionalNotes": "An easy set of amendments, got them done ahead of time."
     },
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "08-Jan-2026",
         "dateFulfilled": "09-Jan-2026",
         "timeAllocated": 2,
-        "timeTaken": 2
+        "timeTaken": 1.5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -33,5 +33,40 @@
         "IMG21__Elevation__FrontElevation__WhitecardImage__09-Jan-2026.png",
         "IMG22__Elevation__RightSideElevation__WhitecardImage__09-Jan-2026.png"
     ],
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__09-Jan-2026__Thumbnail__524p__.webp"
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__09-Jan-2026__Thumbnail__524p__.webp",
+    "folderId": "2025/62361__Gordon__Scheme-03",
+    "basePath": "Projects/2025/62361__Gordon__Scheme-03",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__09-Jan-2026.png",
+        "IMG02__3dView__CloserView-01____WhitecardImage__09-Jan-2026.png",
+        "IMG03__3dView__ViewOption-02__Further__WhitecardImage__09-Jan-2026.png",
+        "IMG04__3dView__FirePit__WhitecardImage__09-Jan-2026.png",
+        "IMG05__3dView__ViewOption-03__WhitecardImage__09-Jan-2026.png",
+        "IMG06__3dView__ViewOption-04__WhitecardImage__09-Jan-2026.png",
+        "IMG07__3dView__ViewOption-5__WhitecardImage__09-Jan-2026.png",
+        "IMG08__3dView__Front__ViewingDoors__WhitecardImage__09-Jan-2026.png",
+        "IMG09__3dView__ViewOverPool__WhitecardImage__09-Jan-2026.png",
+        "IMG10__3dView__LowDown__WhitecardImage__09-Jan-2026.png",
+        "IMG10__3dView__SideView-01__WhitecardImage__09-Jan-2026.png",
+        "IMG10__3dView__SideView-02__WhitecardImage__09-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__09-Jan-2026.png",
+        "IMG22__Elevation__RightSideElevation__WhitecardImage__09-Jan-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__09-Jan-2026.png",
+        "IMG02__3dView__CloserView-01____WhitecardImage__09-Jan-2026.png",
+        "IMG03__3dView__ViewOption-02__Further__WhitecardImage__09-Jan-2026.png",
+        "IMG04__3dView__FirePit__WhitecardImage__09-Jan-2026.png",
+        "IMG05__3dView__ViewOption-03__WhitecardImage__09-Jan-2026.png",
+        "IMG06__3dView__ViewOption-04__WhitecardImage__09-Jan-2026.png",
+        "IMG07__3dView__ViewOption-5__WhitecardImage__09-Jan-2026.png",
+        "IMG08__3dView__Front__ViewingDoors__WhitecardImage__09-Jan-2026.png",
+        "IMG09__3dView__ViewOverPool__WhitecardImage__09-Jan-2026.png",
+        "IMG10__3dView__LowDown__WhitecardImage__09-Jan-2026.png",
+        "IMG10__3dView__SideView-01__WhitecardImage__09-Jan-2026.png",
+        "IMG10__3dView__SideView-02__WhitecardImage__09-Jan-2026.png",
+        "IMG21__Elevation__FrontElevation__WhitecardImage__09-Jan-2026.png",
+        "IMG22__Elevation__RightSideElevation__WhitecardImage__09-Jan-2026.png"
+    ]
 }

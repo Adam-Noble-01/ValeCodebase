@@ -1,0 +1,410 @@
+/* =============================================================================
+   NOBLEIMAGETOOLS - CORE UI - SIDEBAR (LAYERS + EXPORT)
+   =============================================================================
+
+   FILE       : NobleImageTools__CoreUi__Styles__Sidebar__.css
+   NAMESPACE  : Nit
+   MODULE     : Core UI - Sidebar
+   PURPOSE    : Left sidebar: file loading section, layer stack, and
+                export controls at the bottom.
+
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Sidebar Shell                                            */
+/* ----------------------------------------------------------------- */
+
+    .Nit__Sidebar {
+        width                            : var(--Nit__Layout__SidebarWidth);
+        min-width                        : var(--Nit__Layout__SidebarWidth);
+        max-width                        : var(--Nit__Layout__SidebarWidth);
+        display                          : flex;
+        flex-direction                   : column;
+        background                       : var(--Nit__Color__BgPanel);
+        border-right                     : 1px solid var(--Nit__Color__Border);
+        overflow                         : hidden;
+        flex-shrink                      : 0;
+        user-select                      : none;
+    }
+
+    .Nit__Sidebar__Section {
+        padding                          : var(--Nit__Space__Md) var(--Nit__Space__Md) var(--Nit__Space__Sm);
+        border-bottom                    : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__Sidebar__SectionTitle {
+        font-size                        : var(--Nit__Font__SizeXs);
+        font-weight                      : 600;
+        color                            : var(--Nit__Color__TextMuted);
+        text-transform                   : uppercase;
+        letter-spacing                   : 0.08em;
+        margin-bottom                    : var(--Nit__Space__Sm);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | File Load Section                                        */
+/* ----------------------------------------------------------------- */
+
+    .Nit__FileSection {
+        padding                          : var(--Nit__Space__Md);
+        border-bottom                    : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__FileSection__LoadBtn {
+        width                            : 100%;
+        padding                          : 8px;
+        justify-content                  : center;
+        font-size                        : var(--Nit__Font__SizeSm);
+    }
+
+    .Nit__FileSection__ImageInfo {
+        margin-top                       : var(--Nit__Space__Sm);
+        padding                          : var(--Nit__Space__Sm);
+        background                       : var(--Nit__Color__BgRaised);
+        border-radius                    : var(--Nit__Radius__Sm);
+        border                           : 1px solid var(--Nit__Color__Border);
+    }
+
+    .Nit__FileSection__ImageInfo__Name {
+        font-size                        : var(--Nit__Font__SizeSm);
+        color                            : var(--Nit__Color__TextPrimary);
+        font-weight                      : 500;
+        overflow                         : hidden;
+        text-overflow                    : ellipsis;
+        white-space                      : nowrap;
+        max-width                        : 100%;
+    }
+
+    .Nit__FileSection__ImageInfo__Dims {
+        font-size                        : var(--Nit__Font__SizeXs);
+        color                            : var(--Nit__Color__TextMuted);
+        font-family                      : var(--Nit__Font__Mono);
+        margin-top                       : 2px;
+    }
+
+    .Nit__FileSection__ImageInfo--hidden {
+        display                          : none;
+    }
+
+    .Nit__FileBrowser {
+        position                         : fixed;
+        inset                            : 0;
+        z-index                          : 5000;
+        display                          : flex;
+        align-items                      : center;
+        justify-content                  : center;
+        background                       : var(--Nit__Color__OverlayBg);
+    }
+
+    .Nit__FileBrowser--hidden {
+        display                          : none;
+    }
+
+    .Nit__FileBrowser__Dialog {
+        background                       : var(--Nit__Color__BgElevated);
+        border                           : 1px solid var(--Nit__Color__Border);
+        border-radius                    : var(--Nit__Radius__Lg);
+        box-shadow                       : var(--Nit__Shadow__Panel);
+        width                            : min(560px, 92vw);
+        max-height                       : 75vh;
+        display                          : flex;
+        flex-direction                   : column;
+        overflow                         : hidden;
+    }
+
+    .Nit__FileBrowser__Header {
+        display                          : flex;
+        align-items                      : center;
+        justify-content                  : space-between;
+        padding                          : var(--Nit__Space__Md) var(--Nit__Space__Lg);
+        border-bottom                    : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__FileBrowser__Title {
+        font-weight                      : 600;
+        font-size                        : var(--Nit__Font__SizeSm);
+    }
+
+    .Nit__FileBrowser__PathBar {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        padding                          : var(--Nit__Space__Sm) var(--Nit__Space__Lg);
+        border-bottom                    : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__FileBrowser__PathInput {
+        flex                             : 1;
+        background                       : var(--Nit__Color__BgInput);
+        border                           : 1px solid var(--Nit__Color__Border);
+        border-radius                    : var(--Nit__Radius__Sm);
+        color                            : var(--Nit__Color__TextPrimary);
+        padding                          : 5px 8px;
+        font-family                      : var(--Nit__Font__Mono);
+        font-size                        : var(--Nit__Font__SizeXs);
+        outline                          : none;
+    }
+
+    .Nit__FileBrowser__PathInput:focus {
+        border-color                     : var(--Nit__Color__Accent);
+    }
+
+    .Nit__FileBrowser__FileList {
+        flex                             : 1;
+        overflow-y                       : auto;
+        padding                          : var(--Nit__Space__Sm);
+    }
+
+    .Nit__FileBrowser__FileItem {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        padding                          : 6px var(--Nit__Space__Sm);
+        border-radius                    : var(--Nit__Radius__Sm);
+        cursor                           : pointer;
+        font-size                        : var(--Nit__Font__SizeSm);
+        color                            : var(--Nit__Color__TextPrimary);
+        transition                       : background var(--Nit__Transition__Fast);
+    }
+
+    .Nit__FileBrowser__FileItem:hover {
+        background                       : var(--Nit__Color__BgRaised);
+    }
+
+    .Nit__FileBrowser__FileItem--dir {
+        color                            : var(--Nit__Color__Accent);
+    }
+
+    .Nit__FileBrowser__FileItem--selected {
+        background                       : var(--Nit__Color__AccentSubtle);
+        border                           : 1px solid var(--Nit__Color__BorderAccent);
+    }
+
+    .Nit__FileBrowser__FileItem__Icon {
+        font-style                       : normal;
+        font-size                        : 14px;
+        flex-shrink                      : 0;
+    }
+
+    .Nit__FileBrowser__Footer {
+        display                          : flex;
+        justify-content                  : flex-end;
+        gap                              : var(--Nit__Space__Sm);
+        padding                          : var(--Nit__Space__Md) var(--Nit__Space__Lg);
+        border-top                       : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Layer Stack                                              */
+/* ----------------------------------------------------------------- */
+
+    .Nit__LayersPanel {
+        flex                             : 1;
+        display                          : flex;
+        flex-direction                   : column;
+        overflow                         : hidden;
+        min-height                       : 0;
+    }
+
+    .Nit__LayersPanel__Header {
+        display                          : flex;
+        align-items                      : center;
+        justify-content                  : space-between;
+        padding                          : var(--Nit__Space__Sm) var(--Nit__Space__Md);
+        border-bottom                    : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__LayersPanel__Title {
+        font-size                        : var(--Nit__Font__SizeXs);
+        font-weight                      : 600;
+        color                            : var(--Nit__Color__TextMuted);
+        text-transform                   : uppercase;
+        letter-spacing                   : 0.08em;
+    }
+
+    .Nit__LayersPanel__Actions {
+        display                          : flex;
+        gap                              : var(--Nit__Space__Xs);
+    }
+
+    .Nit__LayersList {
+        flex                             : 1;
+        overflow-y                       : auto;
+        padding                          : var(--Nit__Space__Xs);
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : 2px;
+    }
+
+    .Nit__LayersList__Empty {
+        padding                          : var(--Nit__Space__Xl) var(--Nit__Space__Md);
+        text-align                       : center;
+        color                            : var(--Nit__Color__TextMuted);
+        font-size                        : var(--Nit__Font__SizeSm);
+    }
+
+    .Nit__LayerItem {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        padding                          : 6px var(--Nit__Space__Sm);
+        border-radius                    : var(--Nit__Radius__Sm);
+        border                           : 1px solid transparent;
+        cursor                           : pointer;
+        transition                       : background var(--Nit__Transition__Fast),
+                                           border-color var(--Nit__Transition__Fast);
+    }
+
+    .Nit__LayerItem:hover {
+        background                       : var(--Nit__Color__BgRaised);
+    }
+
+    .Nit__LayerItem--selected {
+        background                       : var(--Nit__Color__AccentSubtle);
+        border-color                     : var(--Nit__Color__BorderAccent);
+    }
+
+    .Nit__LayerItem--multi {
+        background                       : rgba(79, 140, 255, 0.08);
+        border-color                     : rgba(79, 140, 255, 0.3);
+    }
+
+    .Nit__LayerItem__VisibilityBtn {
+        background                       : none;
+        border                           : none;
+        cursor                           : pointer;
+        color                            : var(--Nit__Color__TextMuted);
+        font-size                        : 13px;
+        line-height                      : 1;
+        padding                          : 2px;
+        border-radius                    : var(--Nit__Radius__Sm);
+        flex-shrink                      : 0;
+        transition                       : color var(--Nit__Transition__Fast);
+    }
+
+    .Nit__LayerItem__VisibilityBtn:hover {
+        color                            : var(--Nit__Color__TextPrimary);
+    }
+
+    .Nit__LayerItem__VisibilityBtn--hidden {
+        opacity                          : 0.35;
+    }
+
+    .Nit__LayerItem__ColorSwatch {
+        width                            : 12px;
+        height                           : 12px;
+        border-radius                    : var(--Nit__Radius__Sm);
+        flex-shrink                      : 0;
+        border                           : 1px solid rgba(255,255,255,0.15);
+    }
+
+    .Nit__LayerItem__Name {
+        flex                             : 1;
+        font-size                        : var(--Nit__Font__SizeSm);
+        color                            : var(--Nit__Color__TextPrimary);
+        overflow                         : hidden;
+        text-overflow                    : ellipsis;
+        white-space                      : nowrap;
+        min-width                        : 0;
+    }
+
+    .Nit__LayerItem__Name--editing {
+        background                       : var(--Nit__Color__BgInput);
+        border                           : 1px solid var(--Nit__Color__Accent);
+        border-radius                    : var(--Nit__Radius__Sm);
+        padding                          : 1px 5px;
+        outline                          : none;
+        color                            : var(--Nit__Color__TextPrimary);
+        font-size                        : var(--Nit__Font__SizeSm);
+        font-family                      : inherit;
+        width                            : 100%;
+    }
+
+    .Nit__LayerItem__DeleteBtn {
+        background                       : none;
+        border                           : none;
+        cursor                           : pointer;
+        color                            : var(--Nit__Color__TextMuted);
+        font-size                        : 13px;
+        line-height                      : 1;
+        padding                          : 2px 4px;
+        border-radius                    : var(--Nit__Radius__Sm);
+        flex-shrink                      : 0;
+        opacity                          : 0;
+        transition                       : opacity var(--Nit__Transition__Fast), color var(--Nit__Transition__Fast);
+    }
+
+    .Nit__LayerItem:hover .Nit__LayerItem__DeleteBtn {
+        opacity                          : 1;
+    }
+
+    .Nit__LayerItem__DeleteBtn:hover {
+        color                            : var(--Nit__Color__Danger);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Export Panel (bottom of sidebar)                         */
+/* ----------------------------------------------------------------- */
+
+    .Nit__ExportPanel {
+        padding                          : var(--Nit__Space__Md);
+        border-top                       : 1px solid var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+        display                          : flex;
+        flex-direction                   : column;
+        gap                              : var(--Nit__Space__Sm);
+    }
+
+    .Nit__ExportPanel__Title {
+        font-size                        : var(--Nit__Font__SizeXs);
+        font-weight                      : 600;
+        color                            : var(--Nit__Color__TextMuted);
+        text-transform                   : uppercase;
+        letter-spacing                   : 0.08em;
+        margin-bottom                    : var(--Nit__Space__Xs);
+    }
+
+    .Nit__ExportPanel__Row {
+        display                          : flex;
+        gap                              : var(--Nit__Space__Xs);
+    }
+
+    .Nit__ExportPanel__Row .Nit__Btn {
+        flex                             : 1;
+        justify-content                  : center;
+        font-size                        : var(--Nit__Font__SizeXs);
+        padding                          : 5px 6px;
+    }
+
+    .Nit__ExportPanel__DirRow {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Xs);
+    }
+
+    .Nit__ExportPanel__DirLabel {
+        font-size                        : var(--Nit__Font__SizeXs);
+        color                            : var(--Nit__Color__TextMuted);
+        overflow                         : hidden;
+        text-overflow                    : ellipsis;
+        white-space                      : nowrap;
+        flex                             : 1;
+        font-family                      : var(--Nit__Font__Mono);
+    }
+
+/* endregion ----------------------------------------------------------------- */

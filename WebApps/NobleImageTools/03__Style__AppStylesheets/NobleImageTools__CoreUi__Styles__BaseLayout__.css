@@ -1,0 +1,370 @@
+/* =============================================================================
+   NOBLEIMAGETOOLS - CORE UI - BASE LAYOUT
+   =============================================================================
+
+   FILE       : NobleImageTools__CoreUi__Styles__BaseLayout__.css
+   NAMESPACE  : Nit
+   MODULE     : Core UI - Base Layout
+   PURPOSE    : Resets, root HTML/body sizing, primary grid shell, and the
+                top app header bar.
+
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Reset & Base HTML                                        */
+/* ----------------------------------------------------------------- */
+
+    *, *::before, *::after {
+        box-sizing                       : border-box;
+        margin                           : 0;
+        padding                          : 0;
+    }
+
+    html, body {
+        height                           : 100%;
+        width                            : 100%;
+        overflow                         : hidden;
+        font-family                      : var(--Nit__Font__Sans);
+        font-size                        : var(--Nit__Font__SizeBase);
+        color                            : var(--Nit__Color__TextPrimary);
+        background-color                 : var(--Nit__Color__Bg);
+        line-height                      : 1.5;
+        -webkit-font-smoothing           : antialiased;
+    }
+
+    button, input, select, textarea {
+        font-family                      : inherit;
+        font-size                        : inherit;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | App Shell Grid                                           */
+/* ----------------------------------------------------------------- */
+
+    .Nit__App__Body {
+        display                          : flex;
+        flex-direction                   : column;
+        height                           : 100vh;
+        width                            : 100vw;
+        overflow                         : hidden;
+    }
+
+    .Nit__App__Main {
+        display                          : flex;
+        flex-direction                   : row;
+        flex                             : 1;
+        overflow                         : hidden;
+        min-height                       : 0;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | App Header                                               */
+/* ----------------------------------------------------------------- */
+
+    .Nit__App__Header {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Md);
+        height                           : var(--Nit__Layout__HeaderHeight);
+        min-height                       : var(--Nit__Layout__HeaderHeight);
+        padding                          : 0 var(--Nit__Space__Lg);
+        background                       : var(--Nit__Color__BgElevated);
+        border-bottom                    : 1px solid var(--Nit__Color__Border);
+        box-shadow                       : 0 1px 0 rgba(0,0,0,0.4);
+        user-select                      : none;
+        flex-shrink                      : 0;
+        z-index                          : 100;
+    }
+
+    .Nit__App__Header__Brand {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__App__Header__Title {
+        font-size                        : var(--Nit__Font__SizeLg);
+        font-weight                      : 700;
+        color                            : var(--Nit__Color__TextPrimary);
+        letter-spacing                   : -0.02em;
+        white-space                      : nowrap;
+    }
+
+    .Nit__App__Header__Divider {
+        width                            : 1px;
+        height                           : 22px;
+        background                       : var(--Nit__Color__Border);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__App__Header__Status {
+        margin-left                      : auto;
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__App__Header__StatusBadge {
+        font-size                        : var(--Nit__Font__SizeXs);
+        color                            : var(--Nit__Color__TextMuted);
+        background                       : var(--Nit__Color__BgPanel);
+        border                           : 1px solid var(--Nit__Color__Border);
+        border-radius                    : var(--Nit__Radius__Full);
+        padding                          : 2px 10px;
+        white-space                      : nowrap;
+        transition                       : color var(--Nit__Transition__Std), border-color var(--Nit__Transition__Std);
+    }
+
+    .Nit__App__Header__StatusBadge--ok {
+        color                            : var(--Nit__Color__Success);
+        border-color                     : var(--Nit__Color__Success);
+    }
+
+    .Nit__App__Header__StatusBadge--error {
+        color                            : var(--Nit__Color__Danger);
+        border-color                     : var(--Nit__Color__Danger);
+    }
+
+    .Nit__App__Header__StatusBadge--loading {
+        color                            : var(--Nit__Color__Warning);
+        border-color                     : var(--Nit__Color__Warning);
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Shared UI Primitives - Buttons, Inputs, Scrollbars      */
+/* ----------------------------------------------------------------- */
+
+    .Nit__Btn {
+        display                          : inline-flex;
+        align-items                      : center;
+        justify-content                  : center;
+        gap                              : var(--Nit__Space__Xs);
+        padding                          : 5px 13px;
+        border-radius                    : var(--Nit__Radius__Md);
+        border                           : 1px solid var(--Nit__Color__Border);
+        background                       : var(--Nit__Color__BgRaised);
+        color                            : var(--Nit__Color__TextPrimary);
+        font-size                        : var(--Nit__Font__SizeSm);
+        font-weight                      : 500;
+        cursor                           : pointer;
+        white-space                      : nowrap;
+        transition                       : background var(--Nit__Transition__Fast),
+                                           border-color var(--Nit__Transition__Fast),
+                                           color var(--Nit__Transition__Fast);
+        flex-shrink                      : 0;
+        line-height                      : 1.4;
+    }
+
+    .Nit__Btn:hover {
+        background                       : var(--Nit__Color__BorderStrong);
+        border-color                     : var(--Nit__Color__BorderStrong);
+    }
+
+    .Nit__Btn:active {
+        background                       : var(--Nit__Color__Accent);
+        border-color                     : var(--Nit__Color__Accent);
+        color                            : #fff;
+    }
+
+    .Nit__Btn--primary {
+        background                       : var(--Nit__Color__Accent);
+        border-color                     : var(--Nit__Color__Accent);
+        color                            : #fff;
+    }
+
+    .Nit__Btn--primary:hover {
+        background                       : var(--Nit__Color__AccentHover);
+        border-color                     : var(--Nit__Color__AccentHover);
+    }
+
+    .Nit__Btn--danger {
+        background                       : var(--Nit__Color__DangerSubtle);
+        border-color                     : var(--Nit__Color__Danger);
+        color                            : var(--Nit__Color__Danger);
+    }
+
+    .Nit__Btn--danger:hover {
+        background                       : var(--Nit__Color__Danger);
+        color                            : #fff;
+    }
+
+    .Nit__Btn--success {
+        background                       : var(--Nit__Color__SuccessSubtle);
+        border-color                     : var(--Nit__Color__Success);
+        color                            : var(--Nit__Color__Success);
+    }
+
+    .Nit__Btn--success:hover {
+        background                       : var(--Nit__Color__Success);
+        color                            : var(--Nit__Color__TextInverse);
+    }
+
+    .Nit__Btn--icon {
+        padding                          : 5px 8px;
+        font-size                        : 14px;
+        min-width                        : 30px;
+    }
+
+    .Nit__Btn[disabled], .Nit__Btn--disabled {
+        opacity                          : 0.4;
+        pointer-events                   : none;
+    }
+
+    .Nit__Btn--active {
+        background                       : var(--Nit__Color__AccentSubtle);
+        border-color                     : var(--Nit__Color__Accent);
+        color                            : var(--Nit__Color__Accent);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar                  { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track            { background: transparent; }
+    ::-webkit-scrollbar-thumb            { background: var(--Nit__Color__Border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover      { background: var(--Nit__Color__BorderStrong); }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Text Prompt Input (Header)                               */
+/* ----------------------------------------------------------------- */
+
+    .Nit__TextPrompt__Group {
+        display                          : flex;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        flex-shrink                      : 0;
+    }
+
+    .Nit__TextPrompt__Label {
+        font-size                        : var(--Nit__Font__SizeSm);
+        color                            : var(--Nit__Color__TextMuted);
+        white-space                      : nowrap;
+        flex-shrink                      : 0;
+    }
+
+    .Nit__TextPrompt__Input {
+        width                            : 200px;
+        padding                          : 5px 10px;
+        background                       : var(--Nit__Color__BgInput);
+        border                           : 1px solid var(--Nit__Color__Border);
+        border-radius                    : var(--Nit__Radius__Md);
+        color                            : var(--Nit__Color__TextPrimary);
+        font-size                        : var(--Nit__Font__SizeSm);
+        font-family                      : inherit;
+        outline                          : none;
+        transition                       : border-color var(--Nit__Transition__Fast),
+                                           box-shadow var(--Nit__Transition__Fast);
+    }
+
+    .Nit__TextPrompt__Input:focus {
+        border-color                     : var(--Nit__Color__Accent);
+        box-shadow                       : 0 0 0 2px var(--Nit__Color__AccentSubtle);
+    }
+
+    .Nit__TextPrompt__Input::placeholder {
+        color                            : var(--Nit__Color__TextMuted);
+        opacity                          : 0.6;
+    }
+
+    .Nit__TextPrompt__Input:disabled {
+        opacity                          : 0.5;
+        cursor                           : not-allowed;
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Toast Notifications                                      */
+/* ----------------------------------------------------------------- */
+
+    #Nit__Toast__Container {
+        position                         : fixed;
+        bottom                           : var(--Nit__Space__Xl);
+        left                             : 50%;
+        transform                        : translateX(-50%);
+        display                          : flex;
+        flex-direction                   : column;
+        align-items                      : center;
+        gap                              : var(--Nit__Space__Sm);
+        pointer-events                   : none;
+        z-index                          : 9000;
+    }
+
+    .Nit__Toast {
+        padding                          : 9px 18px;
+        border-radius                    : var(--Nit__Radius__Md);
+        background                       : var(--Nit__Color__BgRaised);
+        border                           : 1px solid var(--Nit__Color__Border);
+        color                            : var(--Nit__Color__TextPrimary);
+        font-size                        : var(--Nit__Font__SizeSm);
+        box-shadow                       : var(--Nit__Shadow__Toast);
+        opacity                          : 0;
+        animation                        : Nit__Toast__FadeIn 200ms ease forwards;
+        pointer-events                   : none;
+        white-space                      : nowrap;
+    }
+
+    .Nit__Toast--success  { border-color: var(--Nit__Color__Success);  color: var(--Nit__Color__Success); }
+    .Nit__Toast--error    { border-color: var(--Nit__Color__Danger);   color: var(--Nit__Color__Danger);  }
+    .Nit__Toast--warning  { border-color: var(--Nit__Color__Warning);  color: var(--Nit__Color__Warning); }
+    .Nit__Toast--info     { border-color: var(--Nit__Color__Accent);   color: var(--Nit__Color__Accent);  }
+
+    @keyframes Nit__Toast__FadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0);   }
+    }
+
+/* endregion ----------------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION | Spinner / Loading                                        */
+/* ----------------------------------------------------------------- */
+
+    .Nit__Spinner {
+        display                          : inline-block;
+        width                            : 16px;
+        height                           : 16px;
+        border                           : 2px solid var(--Nit__Color__Border);
+        border-top-color                 : var(--Nit__Color__Accent);
+        border-radius                    : 50%;
+        animation                        : Nit__Spin 700ms linear infinite;
+        flex-shrink                      : 0;
+    }
+
+    @keyframes Nit__Spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .Nit__FullscreenOverlay {
+        position                         : fixed;
+        inset                            : 0;
+        background                       : var(--Nit__Color__OverlayBg);
+        display                          : flex;
+        flex-direction                   : column;
+        align-items                      : center;
+        justify-content                  : center;
+        gap                              : var(--Nit__Space__Md);
+        z-index                          : 8000;
+        font-size                        : var(--Nit__Font__SizeSm);
+        color                            : var(--Nit__Color__TextSecondary);
+    }
+
+    .Nit__FullscreenOverlay--hidden {
+        display                          : none;
+    }
+
+/* endregion ----------------------------------------------------------------- */

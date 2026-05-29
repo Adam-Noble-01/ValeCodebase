@@ -1,0 +1,334 @@
+<!doctype html>
+<!--
+=============================================================================
+ NOBLEIMAGETOOLS - ENTRY HTML
+=============================================================================
+ FILE       : NobleImageTools__App__.html
+ NAMESPACE  : Nit
+ MODULE     : Entry Shell
+ PURPOSE    : App shell with header toolbar, left sidebar (file load, layers,
+              export) and central canvas area. Loads CSS index and all IIFE
+              modules in dependency order.
+=============================================================================
+-->
+<html lang="en-GB">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles                     -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NobleImageTools</title>
+    <meta name="description" content="Local AI-powered image masking tool using Meta SAM 2.1." />
+
+    <link rel="stylesheet" href="03__Style__AppStylesheets/NobleImageTools__CoreUi__Styles__Index__.css" />
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Body - Application Shell                        -->
+<!-- ----------------------------------------------------------------- -->
+<body class="Nit__App__Body">
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Application Header                                      -->
+    <!-- ----------------------------------------------------------------- -->
+    <header class="Nit__App__Header" id="Nit__App__Header">
+
+        <div class="Nit__App__Header__Brand">
+            <span class="Nit__App__Header__Title">NobleImageTools</span>
+        </div>
+
+        <div class="Nit__App__Header__Divider"></div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI TOOLBAR | Mode Buttons                                         -->
+        <!-- ----------------------------------------------------------------- -->
+        <div style="display:flex;align-items:center;gap:4px;">
+
+            <button class="Nit__ModeBtn Nit__ModeBtn--active" data-nit-mode="click" title="Click mode — left-click adds positive point, right-click adds negative point">
+                <i class="Nit__ModeBtn__Icon">✦</i> Click
+            </button>
+
+            <button class="Nit__ModeBtn" data-nit-mode="box" title="Box mode — drag to draw a bounding box prompt">
+                <i class="Nit__ModeBtn__Icon">⬜</i> Box
+            </button>
+
+            <button class="Nit__ModeBtn" data-nit-mode="pan" title="Pan mode — drag to pan the canvas (also: middle-mouse or Space+drag)">
+                <i class="Nit__ModeBtn__Icon">✋</i> Pan
+            </button>
+
+            <div class="Nit__ModeToolbar__Divider"></div>
+
+            <button class="Nit__ModeBtn" data-nit-mode="paint-add" title="Paint brush — add to selected mask layer (keys: [ ] size, Shift+[ ] hardness)">
+                <i class="Nit__ModeBtn__Icon">🖌</i> Paint+
+            </button>
+
+            <button class="Nit__ModeBtn" data-nit-mode="paint-sub" title="Erase brush — subtract from selected mask layer">
+                <i class="Nit__ModeBtn__Icon">🧹</i> Erase
+            </button>
+
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI PANEL | Brush Controls (visible only in paint modes)          -->
+        <!-- ----------------------------------------------------------------- -->
+        <div id="Nit__Brush__Panel" style="display:none;align-items:center;gap:10px;flex-shrink:0;">
+
+            <div style="display:flex;align-items:center;gap:6px;">
+                <label for="Nit__Brush__SizeSlider" style="font-size:11px;color:var(--Nit__Color__TextMuted);white-space:nowrap;">Size</label>
+                <input  type="range" id="Nit__Brush__SizeSlider"
+                        min="1" max="500" value="40" step="1"
+                        style="width:90px;accent-color:var(--Nit__Color__Accent);" />
+                <span id="Nit__Brush__SizeLabel" style="font-size:11px;color:var(--Nit__Color__TextSecondary);min-width:36px;font-family:var(--Nit__Font__Mono);">40px</span>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:6px;">
+                <label for="Nit__Brush__HardSlider" style="font-size:11px;color:var(--Nit__Color__TextMuted);white-space:nowrap;">Hardness</label>
+                <input  type="range" id="Nit__Brush__HardSlider"
+                        min="0" max="100" value="85" step="1"
+                        style="width:80px;accent-color:var(--Nit__Color__Accent);" />
+                <span id="Nit__Brush__HardLabel" style="font-size:11px;color:var(--Nit__Color__TextSecondary);min-width:32px;font-family:var(--Nit__Font__Mono);">85%</span>
+            </div>
+
+        </div>
+
+        <div class="Nit__App__Header__Divider"></div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI TOOLBAR | Text Prompt (Florence-2 + SAM2)                     -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="Nit__TextPrompt__Group" title="Type an object name and press Enter — Florence-2 finds it, SAM2 masks it">
+            <span class="Nit__TextPrompt__Label">Find:</span>
+            <input  class="Nit__TextPrompt__Input"
+                    id="Nit__TextPrompt__Input"
+                    type="text"
+                    placeholder="window, orangery, door…"
+                    autocomplete="off"
+                    spellcheck="false"
+                    maxlength="120"
+                    title="Type object names separated by commas. Press Enter." />
+            <span class="Nit__Spinner" id="Nit__TextPrompt__Spinner" style="display:none;"></span>
+            <button class="Nit__Btn Nit__Btn--primary" id="Nit__TextPrompt__Btn" title="Find and mask objects matching the text">
+                Find &amp; Mask
+            </button>
+        </div>
+
+        <div class="Nit__App__Header__Divider"></div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI TOOLBAR | Mask Actions                                         -->
+        <!-- ----------------------------------------------------------------- -->
+        <div style="display:flex;align-items:center;gap:4px;">
+
+            <button class="Nit__Btn Nit__Btn--success" id="Nit__Toolbar__AcceptMask" title="Accept the preview mask and add it to the layer stack" data-nit-infer-disable>
+                ✓ Accept Mask
+            </button>
+
+            <button class="Nit__Btn" id="Nit__Toolbar__ClearPrompt" title="Clear current click points and box prompt">
+                ✕ Clear Prompt
+            </button>
+
+            <button class="Nit__Btn" id="Nit__Toolbar__AutoSegment" title="Auto-segment: SAM2 detects all objects automatically" data-nit-infer-disable>
+                ⚡ Auto-Segment
+            </button>
+
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- UI TOOLBAR | SAM2 Inference Status                               -->
+        <!-- ----------------------------------------------------------------- -->
+        <span id="Nit__Header__InferStatus" style="display:none;font-size:11.5px;color:var(--Nit__Color__Warning);align-items:center;gap:6px;">
+            <span class="Nit__Spinner"></span>&nbsp;Running SAM2...
+        </span>
+
+        <div class="Nit__App__Header__Status">
+            <span class="Nit__App__Header__StatusBadge Nit__App__Header__StatusBadge--loading" id="Nit__Header__ServerBadge">
+                Connecting...
+            </span>
+        </div>
+
+    </header>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Main Content Area                                        -->
+    <!-- ----------------------------------------------------------------- -->
+    <main class="Nit__App__Main" id="Nit__App__Main">
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- REGION | Left Sidebar - File, Layers, Export                     -->
+        <!-- ----------------------------------------------------------------- -->
+        <aside class="Nit__Sidebar" id="Nit__Sidebar">
+
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI SECTION | File Load                                           -->
+            <!-- ----------------------------------------------------------------- -->
+            <div class="Nit__FileSection">
+                <button class="Nit__Btn Nit__Btn--primary Nit__FileSection__LoadBtn" id="Nit__FileSection__LoadBtn">
+                    📂 Load Image
+                </button>
+                <div class="Nit__FileSection__ImageInfo Nit__FileSection__ImageInfo--hidden" id="Nit__FileSection__ImageInfo">
+                    <div class="Nit__FileSection__ImageInfo__Name" id="Nit__FileSection__ImageName">—</div>
+                    <div class="Nit__FileSection__ImageInfo__Dims" id="Nit__FileSection__ImageDims">—</div>
+                </div>
+            </div>
+
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI SECTION | Layers Stack                                        -->
+            <!-- ----------------------------------------------------------------- -->
+            <div class="Nit__LayersPanel" id="Nit__LayersPanel">
+
+                <div class="Nit__LayersPanel__Header">
+                    <span class="Nit__LayersPanel__Title">Mask Layers</span>
+                    <span id="Nit__Layers__SelectCount" style="font-size:10px;color:var(--Nit__Color__Accent);margin-right:auto;margin-left:4px;"></span>
+                    <div class="Nit__LayersPanel__Actions">
+                        <button class="Nit__Btn Nit__Btn--icon" id="Nit__Layers__MergeSelected"
+                                title="Merge selected layers into one (Ctrl+click to select multiple)"
+                                style="display:none;font-size:11px;padding:3px 7px;"
+                                onclick="window.NobleImageTools__MaskingTools__LayerManager.NobleImageTools__LayerManager__MergeMultiSelected()">
+                            ⊕ Merge
+                        </button>
+                        <button class="Nit__Btn Nit__Btn--icon Nit__Btn--danger" id="Nit__Layers__DeleteSelected"
+                                title="Delete all selected layers"
+                                style="display:none;font-size:11px;padding:3px 7px;"
+                                onclick="window.NobleImageTools__MaskingTools__LayerManager.NobleImageTools__LayerManager__DeleteMultiSelected()">
+                            🗑 Del
+                        </button>
+                        <button class="Nit__Btn Nit__Btn--icon Nit__Btn--danger" id="Nit__Layers__ClearAll" title="Delete all layers"
+                                onclick="if(window.NobleImageTools__MaskingTools__LayerManager){window.NobleImageTools__MaskingTools__LayerManager.NobleImageTools__LayerManager__ClearAll();}">
+                            🗑
+                        </button>
+                    </div>
+                </div>
+
+                <div class="Nit__LayersList" id="Nit__LayersList">
+                    <div class="Nit__LayersList__Empty">No masks yet.<br/>Use Click or Box mode to create masks.</div>
+                </div>
+
+            </div>
+
+            <!-- ----------------------------------------------------------------- -->
+            <!-- UI SECTION | Export Panel                                        -->
+            <!-- ----------------------------------------------------------------- -->
+            <div class="Nit__ExportPanel" id="Nit__ExportPanel">
+
+                <div class="Nit__ExportPanel__Title">Export</div>
+
+                <div class="Nit__ExportPanel__DirRow">
+                    <span class="Nit__ExportPanel__DirLabel" id="Nit__ExportPanel__DirLabel">(same as image)</span>
+                    <button class="Nit__Btn Nit__Btn--icon" title="Change output folder" onclick="window.NobleImageTools__MaskExport__ColorId.NobleImageTools__ColorId__PickExportDir()">✏️</button>
+                    <button class="Nit__Btn Nit__Btn--icon" id="Nit__Export__OpenFolder" title="Open output folder in Explorer" onclick="window.NobleImageTools__MaskExport__BW.NobleImageTools__ExportBW__OpenExportFolder()">📂</button>
+                </div>
+
+                <div class="Nit__ExportPanel__Row">
+                    <button class="Nit__Btn" id="Nit__Export__BW" title="Export selected layer as B&W PNG (white=mask, black=bg)">B&W</button>
+                    <button class="Nit__Btn" id="Nit__Export__RGBA" title="Export selected layer as RGBA cutout (transparent background)">RGBA</button>
+                </div>
+
+                <div class="Nit__ExportPanel__Row">
+                    <button class="Nit__Btn" id="Nit__Export__ColorId" title="Export all layers as a Color ID map">Color ID</button>
+                    <button class="Nit__Btn Nit__Btn--primary" id="Nit__Export__All" title="Export all layers as B&W PNGs in a ZIP">Export All</button>
+                </div>
+
+            </div>
+
+        </aside>
+        <!-- endregion ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- REGION | Canvas Area                                              -->
+        <!-- ----------------------------------------------------------------- -->
+        <section class="Nit__CanvasArea" id="Nit__CanvasArea">
+
+            <!-- Empty state / drop zone (shown before an image is loaded) -->
+            <div class="Nit__CanvasArea__Empty" id="Nit__CanvasArea__Empty">
+                <div class="Nit__CanvasArea__Empty__Icon">🖼️</div>
+                <div>Drop an image here, or click <strong>Load Image</strong></div>
+                <div style="font-size:11px;opacity:0.5;">PNG, JPG, WebP, BMP, TIFF — drag from Windows Explorer</div>
+            </div>
+
+            <!-- Main rendering canvas -->
+            <canvas id="Nit__Canvas__Main" draggable="false" ondragstart="return false"></canvas>
+
+            <!-- Floating mode toolbar (centred at top of canvas) -->
+            <div class="Nit__ModeToolbar" id="Nit__ModeToolbar" style="display:none;">
+                <span style="font-size:11px;color:var(--Nit__Color__TextMuted);padding:0 4px;">
+                    Left-click = add point &nbsp;|&nbsp; Right-click = exclude &nbsp;|&nbsp; Scroll = zoom &nbsp;|&nbsp; Middle-drag = pan
+                </span>
+            </div>
+
+            <!-- Zoom controls (bottom-right) -->
+            <div class="Nit__ZoomControls">
+                <button class="Nit__Btn Nit__Btn--icon" id="Nit__Zoom__Fit"   title="Fit image to canvas">⊡</button>
+                <button class="Nit__Btn Nit__Btn--icon" id="Nit__Zoom__Reset" title="Reset to 100%">1:1</button>
+            </div>
+
+            <!-- Status bar (bottom) -->
+            <div class="Nit__CanvasStatusBar">
+                <span class="Nit__CanvasStatusBar__Item" id="Nit__StatusBar__Zoom">Zoom: 100%</span>
+                <span class="Nit__CanvasStatusBar__Sep">|</span>
+                <span class="Nit__CanvasStatusBar__Item" id="Nit__StatusBar__Cursor">x: 0  y: 0</span>
+                <span class="Nit__CanvasStatusBar__Sep">|</span>
+                <span class="Nit__CanvasStatusBar__Item" id="Nit__StatusBar__Layers">0 layers</span>
+                <span class="Nit__CanvasStatusBar__Sep">|</span>
+                <span class="Nit__CanvasStatusBar__Item" id="Nit__StatusBar__Hints" style="font-size:10.5px;opacity:0.6;">
+                    Click = positive prompt  ·  Right-click = negative prompt  ·  Scroll = zoom  ·  Middle-drag / Space+drag = pan
+                </span>
+            </div>
+
+        </section>
+        <!-- endregion ----------------------------------------------------------------- -->
+
+    </main>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- File browser modal removed — using OS native file picker + drag-and-drop -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Toast Container                                          -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="Nit__Toast__Container" aria-live="polite"></div>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | JavaScript Modules - Dependency Order                   -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <!-- Layer 1: Canvas systems (no deps on each other except PanZoom -> Renderer) -->
+    <script src="02__Src__AppModules/10__System__ImageCanvas/NobleImageTools__Canvas__PanZoom__.js"></script>
+    <script src="02__Src__AppModules/10__System__ImageCanvas/NobleImageTools__Canvas__Renderer__.js"></script>
+
+    <!-- Layer 2: Masking tools (depend on Renderer + State) -->
+    <script src="02__Src__AppModules/30__System__MaskingTools/NobleImageTools__MaskingTools__LayerManager__.js"></script>
+    <script src="02__Src__AppModules/30__System__MaskingTools/NobleImageTools__MaskingTools__PromptController__.js"></script>
+
+    <!-- Layer 3: Canvas interaction (depends on PanZoom + PromptController) -->
+    <script src="02__Src__AppModules/10__System__ImageCanvas/NobleImageTools__Canvas__InteractionHandler__.js"></script>
+
+    <!-- Layer 4: File manager + Text prompt + Brush editor -->
+    <script src="02__Src__AppModules/20__System__FileManager/NobleImageTools__FileManager__Loader__.js"></script>
+    <script src="02__Src__AppModules/30__System__MaskingTools/NobleImageTools__MaskingTools__TextPrompt__.js"></script>
+    <script src="02__Src__AppModules/30__System__MaskingTools/NobleImageTools__MaskingTools__BrushEditor__.js"></script>
+
+    <!-- Layer 5: Export modules (depend on State + API) -->
+    <script src="02__Src__AppModules/40__System__MaskExport/NobleImageTools__MaskExport__BW__.js"></script>
+    <script src="02__Src__AppModules/40__System__MaskExport/NobleImageTools__MaskExport__ColorId__.js"></script>
+
+    <!-- Layer 6: App core init - LAST (depends on everything above) -->
+    <script src="02__Src__AppModules/01__AppCore/NobleImageTools__AppCore__Init__.js"></script>
+
+    <!-- endregion ----------------------------------------------------------------- -->
+
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+
+</html>

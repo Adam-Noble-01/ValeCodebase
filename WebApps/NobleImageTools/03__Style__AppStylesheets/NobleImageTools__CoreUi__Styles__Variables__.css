@@ -1,0 +1,94 @@
+/* =============================================================================
+   NOBLEIMAGETOOLS - CORE UI - CSS VARIABLES
+   =============================================================================
+
+   FILE       : NobleImageTools__CoreUi__Styles__Variables__.css
+   NAMESPACE  : Nit
+   MODULE     : Core UI - Design Tokens
+   PURPOSE    : Global CSS custom properties — colour, spacing, type, layout.
+                Import first in the stylesheet index; no other rules here.
+
+   ============================================================================= */
+
+/* ----------------------------------------------------------------- */
+/* REGION | Root Design Tokens - Colours, Space, Type, Layout        */
+/* ----------------------------------------------------------------- */
+
+    :root {
+
+        /* --- Colour palette --- */
+        --Nit__Color__Bg                 : #0d0f12;
+        --Nit__Color__BgElevated         : #141720;
+        --Nit__Color__BgPanel            : #1a1e2a;
+        --Nit__Color__BgRaised           : #232838;
+        --Nit__Color__BgInput            : #1d2230;
+
+        --Nit__Color__Border             : #2d3347;
+        --Nit__Color__BorderStrong       : #3e4764;
+        --Nit__Color__BorderAccent       : #4f8cff55;
+
+        --Nit__Color__TextPrimary        : #e4e8f2;
+        --Nit__Color__TextSecondary      : #9ba5be;
+        --Nit__Color__TextMuted          : #5c6680;
+        --Nit__Color__TextInverse        : #0d0f12;
+
+        --Nit__Color__Accent             : #4f8cff;
+        --Nit__Color__AccentHover        : #6aa3ff;
+        --Nit__Color__AccentActive       : #3570e0;
+        --Nit__Color__AccentSubtle       : #4f8cff1a;
+
+        --Nit__Color__Success            : #2db87a;
+        --Nit__Color__SuccessSubtle      : #2db87a1a;
+        --Nit__Color__Warning            : #e2a23b;
+        --Nit__Color__WarningSubtle      : #e2a23b1a;
+        --Nit__Color__Danger             : #e05555;
+        --Nit__Color__DangerSubtle       : #e055551a;
+        --Nit__Color__DangerHover        : #f06060;
+
+        --Nit__Color__OverlayBg          : rgba(13, 15, 18, 0.82);
+
+        /* --- Canvas tool colours --- */
+        --Nit__Color__PointPos           : #3af55a;
+        --Nit__Color__PointNeg           : #ff4444;
+        --Nit__Color__BoxStroke          : #ffcc00;
+        --Nit__Color__MaskPreview        : rgba(79, 140, 255, 0.38);
+
+        /* --- Spacing scale --- */
+        --Nit__Space__2xs                : 2px;
+        --Nit__Space__Xs                 : 4px;
+        --Nit__Space__Sm                 : 8px;
+        --Nit__Space__Md                 : 12px;
+        --Nit__Space__Lg                 : 18px;
+        --Nit__Space__Xl                 : 28px;
+        --Nit__Space__2xl                : 44px;
+
+        /* --- Border radius --- */
+        --Nit__Radius__Sm                : 4px;
+        --Nit__Radius__Md                : 7px;
+        --Nit__Radius__Lg               : 12px;
+        --Nit__Radius__Full              : 9999px;
+
+        /* --- Typography --- */
+        --Nit__Font__Sans                : -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        --Nit__Font__Mono                : ui-monospace, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+        --Nit__Font__SizeBase            : 13px;
+        --Nit__Font__SizeSm              : 11.5px;
+        --Nit__Font__SizeXs              : 10.5px;
+        --Nit__Font__SizeLg              : 15px;
+
+        /* --- Elevation / shadows --- */
+        --Nit__Shadow__Panel             : 0 1px 4px rgba(0,0,0,0.5), 0 6px 20px rgba(0,0,0,0.3);
+        --Nit__Shadow__Raised            : 0 2px 8px rgba(0,0,0,0.6);
+        --Nit__Shadow__Toast             : 0 6px 20px rgba(0,0,0,0.6);
+
+        /* --- Layout --- */
+        --Nit__Layout__HeaderHeight      : 52px;
+        --Nit__Layout__SidebarWidth      : 260px;
+        --Nit__Layout__ExportPanelWidth  : 0px;
+
+        /* --- Transitions --- */
+        --Nit__Transition__Fast          : 100ms ease;
+        --Nit__Transition__Std           : 200ms ease;
+    }
+
+/* endregion ----------------------------------------------------------------- */

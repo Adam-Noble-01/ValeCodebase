@@ -1,0 +1,22 @@
+# =============================================================================
+# NOBLEIMAGETOOLS - PYTHON DEPENDENCIES
+# =============================================================================
+#
+# Install with:
+#   pip install -r requirements.txt
+#
+# For GPU acceleration (NVIDIA), install the CUDA-enabled PyTorch first:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# Then install the rest:
+#   pip install -r requirements.txt --no-deps sam2 flask flask-cors Pillow numpy
+#
+# Python requirement: >= 3.10
+# =============================================================================
+
+flask>=3.0.0
+flask-cors>=4.0.0
+Pillow>=10.0.0
+numpy>=1.24.0
+torch>=2.5.1
+torchvision>=0.20.1
+sam2>=1.0.0

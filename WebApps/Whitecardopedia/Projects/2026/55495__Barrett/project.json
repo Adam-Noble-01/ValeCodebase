@@ -1,0 +1,75 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 19778,
+            "Camera__DefaultPos__PosY": 2107,
+            "Camera__DefaultPos__PosZ": 6888
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0182,
+            "Camera__DefaultRotation__RotY": 0.0542,
+            "Camera__DefaultRotation__RotZ": 0.001
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 1,
+            "FogPlane__Config__PlaneA__NormalZ": 0,
+            "FogPlane__Config__PlaneA__PositionMm": 8155
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 0,
+            "FogPlane__Config__PlaneB__NormalZ": 1,
+            "FogPlane__Config__PlaneB__PositionMm": -30122
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 18700,
+        "OrbitHelperCube__Position__PosY": 1746,
+        "OrbitHelperCube__Position__PosZ": -12974
+    },
+    "ProjectType": "Blockout",
+    "basePath": "Projects/2026/55495__Barrett",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "55495",
+    "projectName": "Barrett",
+    "scheduleData": {
+        "dateFulfilled": "02-Jun-2026",
+        "dateReceived": "10-Oct-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__SiteBoundaries__MeshModel__.glb"
+    ],
+    "Navmode__OrbitMaxDistanceMm": 30000
+}

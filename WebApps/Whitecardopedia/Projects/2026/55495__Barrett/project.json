@@ -44,17 +44,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "A quick and easy job, no issues. Completed ahead of schedule.",
+        "conceptArtist": "James",
+        "input": "Early Stage Sketch"
     },
     "projectCode": "55495",
     "projectName": "Barrett",
     "scheduleData": {
         "dateFulfilled": "02-Jun-2026",
-        "dateReceived": "10-Oct-2025",
+        "dateReceived": "02-Jun-2026",
         "timeAllocated": 2,
-        "timeTaken": 2
+        "timeTaken": 1.75
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -71,5 +71,13 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__SiteBoundaries__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/55495__Barrett/Barrett__TrueVision__SiteBoundaries__MeshModel__.glb"
     ],
-    "Navmode__OrbitMaxDistanceMm": 30000
+    "Navmode__OrbitMaxDistanceMm": 30000,
+    "folderId": "2026/55495__Barrett",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
+    ]
 }

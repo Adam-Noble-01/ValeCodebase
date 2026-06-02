@@ -1960,20 +1960,60 @@
           "color": "na-shift-color-blue"
         },
         {
+          "id": "new-1780404022683",
+          "date": "2026-06-02",
+          "startTime": "13:30",
+          "endTime": "15:30",
+          "title": "Blockout |  Barrett",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1780415846426",
+          "date": "2026-06-02",
+          "startTime": "15:30",
+          "endTime": "15:45",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1780415860083",
+          "date": "2026-06-02",
+          "startTime": "15:45",
+          "endTime": "17:00",
+          "title": "Amend |  Barrett",
+          "color": "na-shift-color-purple"
+        },
+        {
           "id": "new-1780386971768",
           "date": "2026-06-02",
-          "startTime": "09:00",
-          "endTime": "10:30",
+          "startTime": "09:15",
+          "endTime": "11:45",
           "title": "Jones |  Additional Detail",
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1780404022683",
+          "id": "new-1780415886471",
           "date": "2026-06-02",
-          "startTime": "13:30",
-          "endTime": "16:00",
-          "title": "Blockout |  Barrett",
-          "color": "na-shift-color-purple"
+          "startTime": "09:00",
+          "endTime": "09:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1780415894654",
+          "date": "2026-06-02",
+          "startTime": "11:45",
+          "endTime": "12:30",
+          "title": "Dev |  WCP Hotfix",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1780417050981",
+          "date": "2026-06-05",
+          "startTime": "11:00",
+          "endTime": "12:00",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-rose"
         }
       ]
     }

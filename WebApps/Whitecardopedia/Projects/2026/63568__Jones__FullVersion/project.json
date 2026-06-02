@@ -21,15 +21,15 @@
         "FogPlane__Config__FalloffDistanceMm": 1000,
         "FogPlane__Config__PlaneA": {
             "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -33563,
             "FogPlane__Config__PlaneA__NormalX": 0,
-            "FogPlane__Config__PlaneA__NormalZ": 1,
-            "FogPlane__Config__PlaneA__PositionMm": -33563
+            "FogPlane__Config__PlaneA__NormalZ": 1
         },
         "FogPlane__Config__PlaneB": {
             "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -19270,
             "FogPlane__Config__PlaneB__NormalX": 1,
-            "FogPlane__Config__PlaneB__NormalZ": 0,
-            "FogPlane__Config__PlaneB__PositionMm": 9797
+            "FogPlane__Config__PlaneB__NormalZ": 0
         }
     },
     "Navmode__OrbitMaxDistanceMm": 35000,

@@ -1950,6 +1950,22 @@
           "endTime": "18:00",
           "title": "Whitecard |  Jones",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1780386964304",
+          "date": "2026-06-02",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Admin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1780386971768",
+          "date": "2026-06-02",
+          "startTime": "09:00",
+          "endTime": "10:30",
+          "title": "Jones |  Additional Detail",
+          "color": "na-shift-color-amber"
         }
       ]
     }

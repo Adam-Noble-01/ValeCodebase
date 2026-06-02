@@ -1,0 +1,82 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 43704,
+            "Camera__DefaultPos__PosY": 3582,
+            "Camera__DefaultPos__PosZ": -3818
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0433,
+            "Camera__DefaultRotation__RotY": 1.0174,
+            "Camera__DefaultRotation__RotZ": 0.0369
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 1000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -33563
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 9797
+        }
+    },
+    "Navmode__OrbitMaxDistanceMm": 35000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 20249,
+        "OrbitHelperCube__Position__PosY": 2954,
+        "OrbitHelperCube__Position__PosZ": -18296
+    },
+    "ProjectType": "Whitecard",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "basePath": "Projects/2026/63568__Jones__FullVersion",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
+    ],
+    "folderId": "2026/63568__Jones__FullVersion",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Additional detail required, added the frontage context. Moved garden wall onto boundary layer.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File"
+    },
+    "projectCode": "63568",
+    "projectName": "Jones",
+    "scheduleData": {
+        "dateFulfilled": "02-Jun-2026",
+        "dateReceived": "01-Jun-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__02-Jun-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63568__Jones__FullVersion/Jones__TrueVision__SiteBoundaries__MeshModel__.glb"
+    ]
+}

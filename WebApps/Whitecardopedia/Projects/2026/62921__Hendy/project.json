@@ -21,11 +21,7 @@
         "OrbitHelperCube__Position__PosY": 2971,
         "OrbitHelperCube__Position__PosZ": -12082
     },
-    "ProjectType": "Blockout",
     "basePath": "Projects/2026/62921__Hendy",
-    "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Apr-2026.png"
-    ],
     "productionData": {
         "additionalNotes": "A tricky Job, went slightly over due to not having full CAD Input, had to draw the house based on scanned plans.",
         "conceptArtist": "Rachael",
@@ -42,15 +38,6 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "valeVision_ModelUrls": [
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__01__OrbitHelperCube__MeshModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__LandscapeEnvironment__MeshModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -76,5 +63,34 @@
     "allImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__24-Apr-2026.png"
     ],
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__24-Apr-2026__Thumbnail__524p__.webp"
+    "variantData": {
+        "Whitecard": {
+            "images": [
+                "IMG01__3dView__ViewOption-01____WhitecardImage__24-Apr-2026.png"
+            ],
+            "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__24-Apr-2026.png",
+            "valeVision_ModelUrls": [
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__01__OrbitHelperCube__MeshModel__.glb",
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+                "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Whitecard/Hendy__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+            ]
+        }
+    },
+    "variants": [
+        "Whitecard"
+    ],
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__24-Apr-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
 }

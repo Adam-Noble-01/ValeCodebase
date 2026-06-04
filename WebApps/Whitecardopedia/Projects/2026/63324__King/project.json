@@ -28,7 +28,7 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__04-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "Extremely complicated existing house. After a quick meeting with Rachael prior to delivery we decided the best view required the side elevation to be modelled additional, this meant a photo alignment was necessary and the side modelled to ensure we could capture the best view. It was the right thing to do but took me extra time. the original model was completed within the expected window but the additional side elevation pushed me a little over my time allowance, but for such a job my opinion is thinks it was worth it, @James is to confirm I made the right decision.",
         "conceptArtist": "Rachael",
         "input": "CAD File"
     },
@@ -36,9 +36,9 @@
     "projectName": "King",
     "scheduleData": {
         "dateFulfilled": "04-Jun-2026",
-        "dateReceived": "04-Jun-2026",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "02-Jun-2026",
+        "timeAllocated": 5,
+        "timeTaken": 6.5
     },
     "sketchUpModel": {
         "url": "Nil"

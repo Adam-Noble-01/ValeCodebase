@@ -324,3 +324,6 @@
 2026-05-08 12:07:35,844 | INFO | Compressing file 1/1: C:/01__ValeProjects/ValeProjects__2026/63228__Sebire__InteriorWhitecard/10__ContentDelivered__Local/01__FirstDraft__Foa-SB__08-May-2026/05__FinalImages/SecxtrionsImagesMerged__A4-Landscape__08-May-2026.pdf
 2026-05-08 12:07:35,845 | INFO | Output path: C:/01__ValeProjects/ValeProjects__2026/63228__Sebire__InteriorWhitecard/10__ContentDelivered__Local/01__FirstDraft__Foa-SB__08-May-2026/05__FinalImages/SecxtrionsImagesMerged__A4-Landscape__08-May-2026__Compressed__DPI-300__JPEG-100.pdf
 2026-05-08 12:07:36,941 | INFO | Compression successful: C:/01__ValeProjects/ValeProjects__2026/63228__Sebire__InteriorWhitecard/10__ContentDelivered__Local/01__FirstDraft__Foa-SB__08-May-2026/05__FinalImages/SecxtrionsImagesMerged__A4-Landscape__08-May-2026__Compressed__DPI-300__JPEG-100.pdf
+2026-06-03 11:37:18,453 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-06-03 11:37:18,496 | INFO | Successfully imported Noble Architecture icon loader
+2026-06-03 11:37:18,550 | INFO | PDF Compression App initialized

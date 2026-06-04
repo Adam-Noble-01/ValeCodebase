@@ -2014,6 +2014,78 @@
           "endTime": "12:00",
           "title": "REM |  Chse HEW",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1780472477637",
+          "date": "2026-06-03",
+          "startTime": "08:45",
+          "endTime": "11:00",
+          "title": "Whitecard | King",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1780484875967",
+          "date": "2026-06-03",
+          "startTime": "11:00",
+          "endTime": "12:15",
+          "title": "TEMP__PDF THING",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1780496672271",
+          "date": "2026-06-03",
+          "startTime": "15:45",
+          "endTime": "17:45",
+          "title": "Barrett Pre App Drawing",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1780484888206",
+          "date": "2026-06-03",
+          "startTime": "13:00",
+          "endTime": "15:45",
+          "title": "Whitecard | King",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1780497769428",
+          "date": "2026-06-03",
+          "startTime": "12:15",
+          "endTime": "12:45",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1780558728131",
+          "date": "2026-06-04",
+          "startTime": "08:00",
+          "endTime": "08:45",
+          "title": "Barrett |  Boundary Line Research",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1780558750459",
+          "date": "2026-06-04",
+          "startTime": "08:45",
+          "endTime": "09:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1780558761388",
+          "date": "2026-06-04",
+          "startTime": "09:00",
+          "endTime": "10:00",
+          "title": "Whitecard |  King",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1780564726896",
+          "date": "2026-06-04",
+          "startTime": "10:15",
+          "endTime": "11:15",
+          "title": "Extras |  King",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

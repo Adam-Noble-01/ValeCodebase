@@ -1,51 +1,70 @@
 {
-    "projectName": "Allen",
-    "projectCode": "63459",
-    "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -10657,
+            "Camera__DefaultPos__PosY": 3230,
+            "Camera__DefaultPos__PosZ": 12128
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": 0.0124,
+            "Camera__DefaultRotation__RotY": -0.5802,
+            "Camera__DefaultRotation__RotZ": 0.0068
+        }
     },
+    "Navmode__OrbitMaxDistanceMm": 35000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 5475,
+        "OrbitHelperCube__Position__PosY": 3536,
+        "OrbitHelperCube__Position__PosZ": -12484
+    },
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63459__Allen",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "63459",
+    "projectName": "Allen",
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
         "dateFulfilled": "05-Jun-2026",
+        "dateReceived": "10-Oct-2025",
         "timeAllocated": 2,
         "timeTaken": 2
     },
     "sketchUpModel": {
         "url": "Nil"
     },
-    "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
-    ],
-    "ProjectType": "Whitecard",
-    "basePath": "Projects/2026/63459__Allen",
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__LandscapeEnvironment__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "valeVision_Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
-        "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -5000,
-            "Camera__DefaultPos__PosY": 2800,
-            "Camera__DefaultPos__PosZ": 3250
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -38067,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1
         },
-        "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX": -1250,
-            "Camera__DefaultTarget__TargetY": 2570,
-            "Camera__DefaultTarget__TargetZ": -350
-        },
-        "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.073,
-            "Camera__DefaultRotation__RotY": -0.8346,
-            "Camera__DefaultRotation__RotZ": -0.0541
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": 20480,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
         }
-    },
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026__Thumbnail__524p__.webp"
+    }
 }

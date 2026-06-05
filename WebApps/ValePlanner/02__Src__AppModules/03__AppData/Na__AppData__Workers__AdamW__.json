@@ -2008,14 +2008,6 @@
           "color": "na-shift-color-slate"
         },
         {
-          "id": "new-1780417050981",
-          "date": "2026-06-05",
-          "startTime": "11:00",
-          "endTime": "12:00",
-          "title": "REM |  Chse HEW",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1780472477637",
           "date": "2026-06-03",
           "startTime": "08:45",
@@ -2086,6 +2078,46 @@
           "endTime": "11:15",
           "title": "Extras |  King",
           "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1780578461049",
+          "date": "2026-06-04",
+          "startTime": "14:00",
+          "endTime": "17:45",
+          "title": "Whitecard |  Allen",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1780644856266",
+          "date": "2026-06-05",
+          "startTime": "08:15",
+          "endTime": "08:45",
+          "title": "Meeting |  SB",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1780643599704",
+          "date": "2026-06-05",
+          "startTime": "08:45",
+          "endTime": "13:00",
+          "title": "Whitecard |  Allen",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1780666702890",
+          "date": "2026-06-05",
+          "startTime": "14:30",
+          "endTime": "16:15",
+          "title": "Whitecard |  Allen",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1780417050981",
+          "date": "2026-06-05",
+          "startTime": "17:00",
+          "endTime": "18:00",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-rose"
         }
       ]
     }

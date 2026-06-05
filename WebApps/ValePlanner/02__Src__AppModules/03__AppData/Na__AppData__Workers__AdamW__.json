@@ -2072,14 +2072,6 @@
           "color": "na-shift-color-indigo"
         },
         {
-          "id": "new-1780564726896",
-          "date": "2026-06-04",
-          "startTime": "10:15",
-          "endTime": "11:15",
-          "title": "Extras |  King",
-          "color": "na-shift-color-emerald"
-        },
-        {
           "id": "new-1780578461049",
           "date": "2026-06-04",
           "startTime": "14:00",
@@ -2096,28 +2088,52 @@
           "color": "na-shift-color-amber"
         },
         {
+          "id": "new-1780676317445",
+          "date": "2026-06-09",
+          "startTime": "11:15",
+          "endTime": "12:45",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1780564726896",
+          "date": "2026-06-04",
+          "startTime": "10:00",
+          "endTime": "12:00",
+          "title": "Extras |  King",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1780676338874",
+          "date": "2026-06-04",
+          "startTime": "12:00",
+          "endTime": "14:00",
+          "title": "Dev |  Fixes To N3d",
+          "color": "na-shift-color-slate"
+        },
+        {
           "id": "new-1780643599704",
           "date": "2026-06-05",
           "startTime": "08:45",
-          "endTime": "13:00",
+          "endTime": "14:00",
           "title": "Whitecard |  Allen",
           "color": "na-shift-color-cyan"
         },
         {
-          "id": "new-1780666702890",
+          "id": "new-1780676430752",
           "date": "2026-06-05",
-          "startTime": "14:30",
+          "startTime": "14:00",
+          "endTime": "14:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1780676403556",
+          "date": "2026-06-05",
+          "startTime": "14:15",
           "endTime": "16:15",
-          "title": "Whitecard |  Allen",
-          "color": "na-shift-color-cyan"
-        },
-        {
-          "id": "new-1780417050981",
-          "date": "2026-06-05",
-          "startTime": "17:00",
-          "endTime": "18:00",
-          "title": "REM |  Chse HEW",
-          "color": "na-shift-color-rose"
+          "title": "Dev |  Fixes To N3d",
+          "color": "na-shift-color-slate"
         }
       ]
     }

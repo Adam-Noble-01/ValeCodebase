@@ -28,17 +28,17 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "additionalNotes": "Took longer than typical as I agreed to draw up some extra elements such as the front elevation, this added a couple of hours extra. I got a little caught out with the roof as I did not have any standards so had to do a little research and trial and error which wasted a little time, we should in the future look at ways to trace profiles around the hips and ridge automatically",
+        "conceptArtist": "Amy",
+        "input": "CAD File"
     },
     "projectCode": "63459",
     "projectName": "Allen",
     "scheduleData": {
         "dateFulfilled": "05-Jun-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "04-Jun-2026",
+        "timeAllocated": 3,
+        "timeTaken": 4
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -68,5 +68,13 @@
             "FogPlane__Config__PlaneB__NormalX": -1,
             "FogPlane__Config__PlaneB__NormalZ": 0
         }
-    }
+    },
+    "folderId": "2026/63459__Allen",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
+    ]
 }

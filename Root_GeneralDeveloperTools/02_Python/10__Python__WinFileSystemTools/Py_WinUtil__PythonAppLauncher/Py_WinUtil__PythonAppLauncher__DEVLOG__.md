@@ -6,6 +6,17 @@
 
 
 # -----------------------------------------------------------------------------
+## PythonAppLauncher - v1.2.1 - 09-Jun-2026 - New app: CAD Background Remover
+
+### Summary
+Added CAD Background Remover to the 30__Python__ImageTools category. Registered
+polished display name and description in `CURATED_APP_METADATA`.
+
+### Changes
+1. **New app registered** - `30__Python__ImageTools/Py_ImgUtils__CadBackgroundRemover` added to `CURATED_APP_METADATA` with display name "CAD Background Remover" and description "Batch-strips white and light-grey backgrounds from CAD linework images, saving clean transparent PNGs beside the originals."
+2. **Version bump** - `APP_VERSION = "1.2.1"`.
+
+# -----------------------------------------------------------------------------
 ## PythonAppLauncher - v1.2.0 - 23-Apr-2026 - Branded header banner + rounded cards + per-app order index
 
 ### Summary

@@ -85,6 +85,12 @@
       "name": "PNG to PDF",
       "description": "Compiles a batch of PNG images into a single ordered PDF document."
     },
+    "30__Python__ImageTools/Py_ImgUtils__CadBackgroundRemover/Py_ImgUtils__CadBackgroundRemover__Main__.py": {
+      "enabled": true,
+      "order": 30,
+      "name": "Cad Background Remover",
+      "description": "Launches Py_ImgUtils__CadBackgroundRemover__Main__.py from Image Tools."
+    },
     "30__Python__ImageTools/Py_ImgUtils__HeicToPngConverter/Py_ImgUtils__HeicToPngConverter__Main__.py": {
       "enabled": true,
       "order": 10,
@@ -110,5 +116,5 @@
       "description": "Turns a folder of numbered PNG stills into a smooth MP4 timelapse video."
     }
   },
-  "last_modified": "23-Apr-2026 11:52:30"
+  "last_modified": "09-Jun-2026 10:18:19"
 }

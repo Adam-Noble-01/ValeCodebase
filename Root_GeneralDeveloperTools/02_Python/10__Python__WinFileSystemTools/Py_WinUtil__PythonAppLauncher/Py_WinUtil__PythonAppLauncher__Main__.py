@@ -137,7 +137,7 @@ if not TRAY_LIBS_AVAILABLE:
 # REGION | CONSTANTS
 # =============================================================================
 APP_TITLE                    = "Python App Launcher"
-APP_VERSION                  = "1.2.0"
+APP_VERSION                  = "1.2.1"
 CONFIG_FILE_NAME             = "Py_WinUtil__PythonAppLauncher__AppConfig__.json"
 CONFIG_SCHEMA_VERSION        = 2
 
@@ -269,6 +269,10 @@ CURATED_APP_METADATA: dict[str, tuple[str, str]] = {
     "30__Python__ImageTools/Py_ImgUtils__PhotoMetadataPurger/Py_ImgUtils__PhotoMetadataPurger__Main__.py": (
         "Photo Metadata Purger",
         "Strips EXIF and other metadata from a batch of photos for safe public sharing.",
+    ),
+    "30__Python__ImageTools/Py_ImgUtils__CadBackgroundRemover/Py_ImgUtils__CadBackgroundRemover__Main__.py": (
+        "CAD Background Remover",
+        "Batch-strips white and light-grey backgrounds from CAD linework images, saving clean transparent PNGs beside the originals.",
     ),
     # 50__Python__VideoTools --------------------------------------------------
     "50__Python__VideoTools/Py_VideoUtils__CombineVideosInChronologicalOrder/SyPy_VideoUtils__CombineVideosInChronologicalOrder__Main__.py": (

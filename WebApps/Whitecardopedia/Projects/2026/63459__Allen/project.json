@@ -37,8 +37,8 @@
     "scheduleData": {
         "dateFulfilled": "05-Jun-2026",
         "dateReceived": "04-Jun-2026",
-        "timeAllocated": 3,
-        "timeTaken": 4
+        "timeAllocated": 5,
+        "timeTaken": 5.5
     },
     "sketchUpModel": {
         "url": "Nil"

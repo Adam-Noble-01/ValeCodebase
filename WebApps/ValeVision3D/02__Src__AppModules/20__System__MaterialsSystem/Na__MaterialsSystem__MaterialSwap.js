@@ -446,6 +446,64 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Apply Whitecard to All Indexed Materials (PureEngine Look)
+    // ------------------------------------------------------------
+    // PureEngine must render the classic whitecard appearance with NO face
+    // colours or opacity. Since the model loader now preserves indexed
+    // MAT###__ materials (required for the MaxEngine swap), this pass
+    // replaces them with the shared whitecard material whenever PureEngine
+    // is active. Originals are captured first so a later switch to
+    // MaxEngine can restore the indexed names before its DataLib swap.
+    //
+    // Parameters:
+    //   modelGroup             - THREE.Group containing loaded model meshes
+    //   baseMeshMaterialConfig - models.baseMesh.material block from AppConfig
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials(modelGroup, baseMeshMaterialConfig) {
+        if (!modelGroup) return;
+
+        const cfg = baseMeshMaterialConfig || {};
+        const Na__Material__WhiteMat = new THREE.MeshStandardMaterial({
+            color               : (cfg.whiteColor !== undefined) ? cfg.whiteColor : 0xffffff,
+            roughness           : (typeof cfg.roughness === 'number') ? cfg.roughness : 1.0,
+            metalness           : (typeof cfg.metalness === 'number') ? cfg.metalness : 0.0,
+            side                : THREE.DoubleSide,
+            polygonOffset       : true,
+            polygonOffsetFactor : (typeof cfg.polygonOffsetFactor === 'number') ? cfg.polygonOffsetFactor : 2,
+            polygonOffsetUnits  : (typeof cfg.polygonOffsetUnits === 'number') ? cfg.polygonOffsetUnits : 2
+        });
+
+        let replacedCount = 0;
+
+        const resolveMaterial = (material) => {
+            if (material && Na__MaterialsSystem__IsIndexedName(material.name)) {
+                replacedCount++;
+                return Na__Material__WhiteMat;                                // <-- Indexed material -> whitecard under PureEngine
+            }
+            return material;                                                  // <-- Non-indexed materials untouched
+        };
+
+        modelGroup.traverse((node) => {
+            if (!node.isMesh) return;                                         // <-- Skip non-mesh nodes
+
+            if (node.userData.na_originalMaterial === undefined) {
+                node.userData.na_originalMaterial = node.material;            // <-- Capture for MaxEngine restore
+            }
+
+            if (Array.isArray(node.material)) {
+                node.material = node.material.map(resolveMaterial);
+            } else {
+                node.material = resolveMaterial(node.material);
+            }
+        });
+
+        if (replacedCount > 0) {
+            console.log(`[MaterialsSystem] PureEngine whitecard enforced on ${replacedCount} indexed material slot(s)`);
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Restore Original (Pre-Swap) Materials on a Model Group
     // ------------------------------------------------------------
     // Used when the render engine switches back to PureEngine at runtime.
@@ -604,6 +662,7 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
     // ------------------------------------------------------------
     export {
         Na__MaterialsSystem__ApplyMaterials,
+        Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials,
         Na__MaterialsSystem__RestoreOriginalMaterials,
         Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides,
         Na__MaterialsSystem__ApplyGlassEnvironmentOverrides

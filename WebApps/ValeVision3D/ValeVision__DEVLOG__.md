@@ -2,6 +2,62 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.5.0 - 10-Jun-2026
+### Floating Navigation Toolbar + Project-JSON Reset View + Navigation Help Panel
+
+**Overview**
+Navigation is the primary way users interact with the model, so the user-facing navigation controls have moved out of the right-hand Tools & Settings menu (where "Navigation Mode" was buried in a submenu) into a new always-visible floating pill toolbar fixed to the bottom centre of the viewer: Orbit | Walk | Fly | Reset View | Help. The Tools menu stays focused on technical/configuration tools (camera, export, grid, layers, elevation, render engine, sharing, fullscreen).
+
+**New — Floating Navigation Toolbar (`Na__UiFeature__NavigationToolbar__Controls.js`)**
+- White rounded pill with subtle shadow, bottom-centre, using the prepared `UiIcons__MenuIcons__NavigationMenu` PNG icons with text labels (icons-only below 560px width).
+- Active mode highlighted with a soft pale blue background. `Na__NavToolbar__SetActiveMode` is the single UI entry point for mode highlighting — toolbar buttons, Alt+Shift+W/F hotkeys, and the walk/fly toggle wrappers all route through it, so the highlight stays correct no matter where the mode change originates. Dispatches `na-navigation-mode-changed` for future consumers.
+- Same gating as before: Orbit always visible; Walk/Fly buttons revealed by `na-navigation-modes-loaded` (project.json `Navmode__EnabledModes`) and by the Dev menu save callback. Mutual exclusivity preserved via the existing 'silent-off' / 'return-to-orbit' toggle hints.
+- The old Tools-menu "Navigation Mode" section and its module (`Na__UiFeature__NavigationModes__Controls.js`) are RETIRED — markup removed from index.html, module deleted. Underlying navigation mode logic (SystemLogic, ModeTransition, hotkeys, state) is untouched.
+
+**New — Reset View from Project JSON (`Na__Camera__ProjectStartState.js`)**
+- The loading sequence now captures the canonical start state immediately after applying the project.json camera config + resolved orbit target: raw `Camera__DefaultPosition` block (authoritative) plus an applied snapshot of position/rotation/FOV/orbit target (fallback when no project.json — e.g. app-config boot camera).
+- Reset View exits Walk/Fly first (return-to-orbit), restores the snapshot, re-applies the raw project config via `Na__UiFeature__ApplyCameraConfig` (legacy `Camera__DefaultTarget` stripped — orbit target is owned by `OrbitHelperCube__Position`), then `controls.update()` + render invalidation. No hard-coded reset location anywhere.
+
+**New — Navigation Help Panel (`Na__UiFeature__NavigationHelpPanel__Controls.js`)**
+- Modal help card triggered by the toolbar Help button: Orbit (rotate/pan/zoom), Walk (WASD, mouse look, sprint, Esc), Fly (WASD + Q/E, boost, Esc), Reset View, fullscreen pointer, Escape behaviour.
+- Walk/Fly instruction sections show only when those modes are enabled for the current model.
+- Closes via the X button, clicking the backdrop, or pressing Escape.
+
+**Files Changed**
+- NEW `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js`
+- NEW `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js`
+- NEW `02__Src__AppModules/10__NavigationAndCameras/Na__Camera__ProjectStartState.js`
+- NEW `03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css` (+ registered in `Na__CoreUi__Styles__Index__.css`)
+- `index.html` — toolbar + help panel markup, old Navigation Mode menu removed, hotkey/toggle wrappers rewired to `Na__NavToolbar__SetActiveMode`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — canonical start state capture after saved camera re-apply
+- DELETED `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationModes__Controls.js` (superseded by the toolbar)
+
+# ---------------------------------------------------------
+## ValeVision3D v2.4.3 - 10-Jun-2026
+### Negative Door Swing Angles + PureEngine Whitecard Enforcement
+
+**Overview**
+Two follow-up fixes from Bagot MaxModel testing: doors named with negative degrees opened the wrong way, and PureEngine was showing glass opacity/face colours (a regression introduced by the v2.4.1 indexed-material preservation).
+
+**Fix 1 — Negative Door Rotation Degrees (`3dObjectIInteraction__Animation__ClickToOpenDoors__.js`)**
+- The MOD name degree parser did NOT support negative values (neither does TrueVision's original — this was a faithful port of the same gap). Worse, for `MOD001__ROT__-110-Deg__DoorPanel` the regex `/(\d+)-Deg/i` silently matched `110` (skipping the minus), so the door opened +110° — the wrong direction — with no warning.
+- FIX: regex now `/(-?\d+)-Deg/i` and the validity guard accepts any non-zero signed integer. The pivot rotation already applies the angle directly via `setFromAxisAngle`, so a negative value naturally reverses the swing. Duration scaling already used `Math.abs` and needed no change. Walk/fly proximity opening inherits the fix (shared registry + ToggleDoor).
+- Convention: `110-Deg` = standard swing, `-110-Deg` = reversed swing. Header docs updated.
+- NOTE: TrueVision has the same bug — flag for a future TrueVision patch.
+
+**Fix 2 — PureEngine Showing Opacity / Face Colours (regression from v2.4.1)**
+- v2.4.1 made the loader preserve indexed MAT###__ materials (required for MaxEngine's swap). Side effect: under PureEngine the preserved glass material (exporter-enriched, transparent) rendered with opacity, and the legacy local-library swap — previously a silent no-op because load destroyed the names — suddenly started matching MAT101 and applying PBR glass.
+- FIX: New `Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials(group, baseMeshMaterialConfig)` — replaces every indexed-named material with the shared whitecard material (same params the loader uses), capturing originals first. The engine materials flow is now strictly:
+  - PureEngine : restore loaded originals → whitecard ALL indexed materials (classic appearance, zero face colours/opacity)
+  - MaxEngine  : restore loaded originals (indexed names back after any Pure whitecarding) → DataLib SSOT swap → glass/mirror env overrides
+- The dead PureEngine local-library swap path was removed from the loading sequence (`Na__PureEngine__ApplyLocalLibraryMaterials` + the `Na__MaterialsSystem__LoadLibrary` import) — it had never matched anything before v2.4.1 because load-time whitecarding destroyed the names, so removal restores exact pre-v2.4.1 PureEngine visuals. Engine switching cycles Pure→Max→Pure verified consistent via the capture/restore contract.
+
+**Files Changed**
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` — signed degree regex + guard + docs
+- `02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js` — new `ApplyWhitecardToIndexedMaterials` export
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — engine materials flow rework (restore-first in Max branch, whitecard pass in Pure branch, legacy local-library path removed)
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.4.2 - 10-Jun-2026
 ### Glass Realism Upgrade + Red Failure Toast Diagnostics
 

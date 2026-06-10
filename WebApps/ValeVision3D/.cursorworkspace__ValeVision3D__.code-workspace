@@ -1,28 +1,29 @@
 {
 	"folders": [
-	  {
-        "name": "ValeVision3D - This Project",
-        "Description": "This is the main project for ValeVision3D. It is a 3D viewer for its sister project, Whitecardopedia.",
-        "path": "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D"
-	  },
-	  {
-        "name": "SketchUp Plugin - GLB Builder Utility",
-        "Description": "This is the SketchUp plugin for the GLB Builder Utility. It is a tool that allows you to build GLB files from SketchUp models for use in ValeVision3D.",
-        "path": "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__TrueVision__WhitecardModel__GlbBuilderUtility__Modules__",
-        "path": "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__TrueVision__GlbBuilderUtility__Modules__"
-	  },
-	  {
-        "name": "Whitecardopedia - Sister Project",
-        "Description": "This is the sister project to ValeVision3D. Whitecardopedia is a intuitive gallery web app containing all of the projects whitecard images linking to the ValeVision3D viewer.",
-        "path": "D:/10_CoreLib__ValeCodebase/WebApps/Whitecardopedia"
-	  },
-	  {
-        "name": "REFERENCE ONLY!! : Cousin Project - Noble Architecture Apps",
-        "Description": "This is the cousin project to ValeVision3D. Noble Architecture TrueVision 3D is a similar App that branched off of ValeVision3D and is now a standalone project. its listed here for reference purposes only, DO NOT EDIT TRUEVISION 3D CODE HERE, IT IS A SEPARATE PROJECT.",
-        "path": "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
-	  }
-      
-	],
+        {
+            "name": "ValeVision3D - This Project",
+            "Description": "This is the main project for ValeVision3D. It is a 3D viewer for its sister project, Whitecardopedia.",
+            "path": "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D"
+        },
+        {
+            "name": "SketchUp Plugin - GLB Builder Utility",
+            "Description": "This is the SketchUp plugin for the GLB Builder Utility. It is a tool that allows you to build GLB files from SketchUp models for use in ValeVision3D.",
+            "path": "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__TrueVision__GlbBuilderUtility__Modules__"
+        },
+        {
+            "name": "Whitecardopedia - Sister Project",
+            "Description": "This is the sister project to ValeVision3D. Whitecardopedia is a intuitive gallery web app containing all of the projects whitecard images linking to the ValeVision3D viewer.",
+            "path": "D:/10_CoreLib__ValeCodebase/WebApps/Whitecardopedia"
+        },
+        {
+            "name": "REFERENCE ONLY!! : Cousin Project - Noble Architecture Apps",
+            "Description": "This is the cousin project to ValeVision3D. Noble Architecture TrueVision 3D is a similar App that branched off of ValeVision3D and is now a standalone project. its listed here for reference purposes only, DO NOT EDIT TRUEVISION 3D CODE HERE, IT IS A SEPARATE PROJECT.",
+            "path": "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb"
+        },
+        {
+            "path": "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__DataLib__CoreSuEntityStandards"
+        }
+    ],
 	"settings": {
 	  "editor.tabSize": 4,
 	  "editor.insertSpaces": true,

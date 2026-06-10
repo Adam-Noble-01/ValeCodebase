@@ -163,7 +163,7 @@
             "Navmode__WalkMode__GravityMmPerSecSq"                 : 9810,
             "Navmode__WalkMode__MaxStepHeightMm"                   : 350,
             "Navmode__WalkMode__MouseSensitivity"                  : 0.002,
-            "Navmode__WalkMode__DoorProximityThresholdMm"          : 3000
+            "Navmode__WalkMode__DoorProximityThresholdMm"          : 6500
         },
         "Navmode__FlyMode": {
             "Navmode__FlyMode__Description"                        : "Free-fly camera mode settings. All distance values are integer millimeters; convert to 3D units in code.",
@@ -176,7 +176,7 @@
             "Navmode__FlyMode__KeyboardRotateRadPerSec"            : 1.4,
             "Navmode__FlyMode__MovementDampingFactor"              : 12.0,
             "Navmode__FlyMode__DoorProximityEnabled"               : true,
-            "Navmode__FlyMode__DoorProximityThresholdMm"           : 3000
+            "Navmode__FlyMode__DoorProximityThresholdMm"           : 6500
         }
     },
     "Navmode__Damping": {

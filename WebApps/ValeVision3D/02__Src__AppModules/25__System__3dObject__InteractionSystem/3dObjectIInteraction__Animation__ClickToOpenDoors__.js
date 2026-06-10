@@ -21,6 +21,8 @@
 // NAMING CONVENTION (Scene Graph):
 // - ADR = Door Assembly (e.g. ADR002__InternalDoor__GroundFloor__PorchToLounge)
 // - MOD = Modifier with __ROT__ tag (e.g. MOD001__ROT__90-Deg__DoorPanel)
+//   Degrees may be NEGATIVE to reverse the swing direction
+//   (e.g. MOD001__ROT__-110-Deg__DoorPanel opens the opposite way to 110-Deg)
 // - ROT = Rotation/Hinge Point (e.g. ROT001__RotationPoint__DoorHingeCentre)
 //
 // INTEGRATION:
@@ -60,7 +62,7 @@
     const Na__DoorAnim__PREFIX_MOD             = 'MOD';                          // <-- Modifier object prefix
     const Na__DoorAnim__PREFIX_ROT             = 'ROT';                          // <-- Rotation point prefix
     const Na__DoorAnim__MOD_ROT_TAG            = '__ROT__';                      // <-- Rotation modifier tag in MOD name
-    const Na__DoorAnim__DEG_REGEX              = /(\d+)-Deg/i;                   // <-- Regex to extract degrees from MOD name
+    const Na__DoorAnim__DEG_REGEX              = /(-?\d+)-Deg/i;                 // <-- Regex to extract degrees from MOD name (negative = opens opposite way)
     const Na__DoorAnim__Y_AXIS                 = new THREE.Vector3(0, 1, 0);     // <-- Vertical rotation axis (Y-up from GLB Builder export)
     // ------------------------------------------------------------
 
@@ -123,13 +125,18 @@
 
     // HELPER FUNCTION | Parse Rotation Degrees from MOD Object Name
     // ------------------------------------------------------------
+    // Supports signed values: 'MOD001__ROT__110-Deg__DoorPanel' opens +110deg,
+    // 'MOD001__ROT__-110-Deg__DoorPanel' opens -110deg (the opposite way).
+    // The pivot rotation applies the angle directly via setFromAxisAngle, so a
+    // negative value naturally reverses the swing direction.
+    // ------------------------------------------------------------
     function Na__DoorAnim__ParseDegreesFromName(modName) {
-        const match = Na__DoorAnim__DEG_REGEX.exec(modName);                     // <-- Match XX-Deg pattern
+        const match = Na__DoorAnim__DEG_REGEX.exec(modName);                     // <-- Match signed XX-Deg pattern
 
         if (match && match[1]) {
-            const degrees = parseInt(match[1], 10);                              // <-- Parse integer degrees
-            if (Number.isFinite(degrees) && degrees > 0) {
-                return degrees;                                                  // <-- Return parsed value
+            const degrees = parseInt(match[1], 10);                              // <-- Parse signed integer degrees
+            if (Number.isFinite(degrees) && degrees !== 0) {
+                return degrees;                                                  // <-- Return parsed value (negative = reversed swing)
             }
         }
 

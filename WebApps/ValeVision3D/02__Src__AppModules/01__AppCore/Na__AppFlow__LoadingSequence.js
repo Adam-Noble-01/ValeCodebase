@@ -140,9 +140,10 @@
 
     // MODULE IMPORTS | Materials System
     // ------------------------------------------------------------
-    import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from '../20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
+    import { Na__MaterialsSystem__BuildLookup } from '../20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
     import {
         Na__MaterialsSystem__ApplyMaterials,
+        Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials,
         Na__MaterialsSystem__RestoreOriginalMaterials,
         Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides,
         Na__MaterialsSystem__ApplyGlassEnvironmentOverrides
@@ -190,6 +191,11 @@
     // MODULE IMPORTS | Navigation Modes State
     // ------------------------------------------------------------
     import { Na__NavigationModes__SetEnabledModes } from '../10__NavigationAndCameras/Na__NavigationModes__State.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Camera Project Start State (Reset View canonical state)
+    // ------------------------------------------------------------
+    import { Na__CameraStartState__CaptureStartState } from '../10__NavigationAndCameras/Na__Camera__ProjectStartState.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Vertical Perspective Correction
@@ -453,36 +459,24 @@
         }
         // ---------------------------------------------------------------
 
-        // SUB FUNCTION | Apply PureEngine Local-Library Materials (Legacy Path — Unchanged Behaviour)
-        // ---------------------------------------------------------------
-        async function Na__PureEngine__ApplyLocalLibraryMaterials() {
-            if (!Na__Config__MaterialsSystem.MaterialsSystem__Config__Enabled || !Na__LoadedModelGroups) return;
-
-            const Na__MaterialsLibraryUrl  = Na__Config__MaterialsSystem.MaterialsSystem__Config__LibraryUrl;
-            const Na__MaterialsLibraryData = await Na__MaterialsSystem__LoadLibrary(Na__MaterialsLibraryUrl);
-            if (!Na__MaterialsLibraryData) return;
-
-            const Na__MaterialsLookupMap = Na__MaterialsSystem__BuildLookup(Na__MaterialsLibraryData, true);  // <-- Force rebuild: cache may hold the DataLib map
-            if (Na__MaterialsLookupMap.size === 0) return;
-
-            for (const [, group] of Na__LoadedModelGroups) {
-                await Na__MaterialsSystem__ApplyMaterials(group, Na__MaterialsLookupMap, Na__Config__MaterialsSystem);
-            }
-        }
-        // ---------------------------------------------------------------
-
         // SUB FUNCTION | Apply Engine-Appropriate Materials to Loaded Model Groups
         // ---------------------------------------------------------------
-        // MaxEngine : DataLib SSOT (GitHub) PBR swap + AO exclusions + glass /
-        //             mirror environment overrides. Falls back to PureEngine
-        //             materials if the DataLib fetch fails.
-        // PureEngine: restores pre-swap originals (on engine switch-back) then
-        //             re-runs the unchanged local-library swap.
+        // MaxEngine : restore loaded originals (indexed names back), then
+        //             DataLib SSOT (GitHub) PBR swap + AO exclusions + glass /
+        //             mirror environment overrides. Falls back gracefully if
+        //             the DataLib fetch fails.
+        // PureEngine: restores loaded originals then whitecards ALL indexed
+        //             MAT###__ materials — PureEngine must show NO face
+        //             colours or opacity (classic whitecard appearance).
         // Door animations are unaffected in both directions: the door registry
         // holds Object3D references and transforms, never material references.
         // ---------------------------------------------------------------
         async function Na__RenderEngine__ApplyEngineMaterials(engineName) {
             if (!Na__LoadedModelGroups) return;
+
+            const Na__BaseMeshMaterialConfig = (Na__Config__Models && Na__Config__Models.baseMesh)
+                ? Na__Config__Models.baseMesh.material
+                : null;                                                      // <-- Whitecard params shared with the model loader
 
             if (engineName === Na__RenderEngine__MAX) {
                 try {
@@ -504,6 +498,7 @@
                 const Na__EnvTexture = await Na__MaxEngine__EnsureEnvironmentTexture();   // <-- Null when env disabled (glass stays transparent, no reflections)
 
                 for (const [, group] of Na__LoadedModelGroups) {
+                    Na__MaterialsSystem__RestoreOriginalMaterials(group);    // <-- Indexed names back (PureEngine may have whitecarded them)
                     await Na__MaterialsSystem__ApplyMaterials(group, Na__MaterialsLookupMap, Na__Config__MaterialsSystem);
 
                     if (Na__EnvTexture && Na__Config__SceneEnvironment) {
@@ -532,9 +527,9 @@
                 Na__DistanceCulling__RegisterModelGroups(Na__LoadedModelGroups);
             } else {
                 for (const [, group] of Na__LoadedModelGroups) {
-                    Na__MaterialsSystem__RestoreOriginalMaterials(group);    // <-- Back to pre-swap originals (also clears AO layer-1 tags)
+                    Na__MaterialsSystem__RestoreOriginalMaterials(group);    // <-- Back to loaded originals (also clears AO layer-1 tags)
+                    Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials(group, Na__BaseMeshMaterialConfig);  // <-- PureEngine: no face colours / opacity
                 }
-                await Na__PureEngine__ApplyLocalLibraryMaterials();          // <-- Recreate today's unchanged PureEngine appearance
 
                 Na__DistanceCulling__SetEnabled(false);                      // <-- MaxEngine-only feature; restores any culled items
             }
@@ -607,6 +602,14 @@
         if (Na__FinalOrbitTargetApplied || Na__Saved__ProjectCameraConfig) {
             Na__Controls__Orbit.update();                                    // <-- Finalize controls with restored state
         }
+
+        // CAPTURE CANONICAL RESET STATE (camera + orbit target exactly as loaded from project.json)
+        // @delegate: ../10__NavigationAndCameras/Na__Camera__ProjectStartState.js
+        Na__CameraStartState__CaptureStartState(
+            Na__Camera__Main,                                                // <-- Camera in its project start state
+            Na__Controls__Orbit,                                             // <-- Controls with resolved orbit target
+            Na__Saved__ProjectCameraConfig                                   // <-- Raw project.json camera block (null when absent)
+        );
 
         // LOAD ALL MODELS VIA MULTI-MODEL LOADER
         try {

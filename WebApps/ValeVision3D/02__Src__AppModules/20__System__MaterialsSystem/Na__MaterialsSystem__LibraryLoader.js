@@ -77,6 +77,9 @@
 
             if (!response.ok) {
                 console.error(`[MaterialsSystem] Library fetch failed: ${response.status} ${response.statusText}`);
+                window.dispatchEvent(new CustomEvent('na-show-toast', {
+                    detail: { message: `Materials library failed to load (HTTP ${response.status}) — PBR materials unavailable.`, isError: true }
+                }));
                 return null;
             }
 
@@ -88,6 +91,9 @@
 
         } catch (error) {
             console.error('[MaterialsSystem] Failed to load materials library:', error);
+            window.dispatchEvent(new CustomEvent('na-show-toast', {
+                detail: { message: `Materials library failed to load (${error.message}) — PBR materials unavailable.`, isError: true }
+            }));
             return null;
         }
     }

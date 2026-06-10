@@ -2,6 +2,34 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.4.2 - 10-Jun-2026
+### Glass Realism Upgrade + Red Failure Toast Diagnostics
+
+**Overview**
+Two MaxEngine refinements following the first successful Bagot MaxModel render. The glass looked pale and cartoonish compared to TrueVision's dark reflective glass — root cause was config values, not the materials pipeline. Separately, data-file load failures (DataLib, HDR, materials library, GLBs, project.json) were only logged to console; they now surface as red toast notifications for instant diagnosis.
+
+**Glass Realism — Root Cause Was Config Drift, Not Materials Code**
+Both apps use the SAME DataLib glass entry (`MAT101__Glass__ClearDefault`: pale blue rgb(230,240,255), Opacity 0.2). TrueVision's darker, more realistic look comes from its `Scene__Environment` config:
+- `GlassBrightnessMultiplier: 0.25` — darkens the glass colour to 25% at override time (the "more black" look)
+- `GlassEnvMapIntensity: 1.0` — full HDR reflection strength
+ValeVision's config (written during the v2.4.0 port) had `1.0` brightness (no darkening) and `0.8` intensity — hence the washed-out cartoon glass.
+
+**Changes**
+- `Na__AppConfig__Main.json` — `Scene__Environment` updated to TrueVision parity: `GlassBrightnessMultiplier: 0.25`, `GlassEnvMapIntensity: 1.0`, `MirrorEnvMapIntensity: 1.0`, `MirrorBrightnessBoost: 1.0`, plus `MirrorRoughnessOverride: 0.14` (TrueVision value, previously missing). NEW realism knobs beyond TrueVision: `GlassRoughnessOverride: 0.03` (sharper reflections than the DataLib 0.05) and `GlassOpacityOverride: null` (set a number to raise glass presence; null = DataLib value).
+- `Na__MaterialsSystem__MaterialSwap.js` — `ApplyGlassEnvironmentOverrides` extended with `roughnessOverride` + `opacityOverride` options; console log now reports all applied values. Safe across engine switches: each MaxEngine activation builds fresh materials from the DataLib config, so the darkening multiplier never compounds.
+- `Na__AppFlow__LoadingSequence.js` — passes the new glass/mirror override options from config.
+
+**Red Failure Toasts — The Missing Event Bridge**
+Sub-systems were already dispatching `na-show-toast` CustomEvents (DataLib loader, AO performance monitor) but NOTHING in ValeVision listened — failures were silently dropped. TrueVision has this bridge in its Index.html; ValeVision never received it during earlier ports.
+- `index.html` — added the `na-show-toast` window listener bridging events to `Na__UiFeature__ShowToast` (red styling via existing `na-toast--error` class).
+- NEW red-toast dispatch points:
+  - `Na__Scene__DefaultSceneLighting.js` — HDR env URL missing or HDR load failure ("glass/mirror reflections disabled")
+  - `Na__MaterialsSystem__LibraryLoader.js` — local materials library HTTP failure or fetch exception
+  - `Na__AppFlow__LoadingSequence.js` — empty DataLib materials index (MaxEngine), project.json load failure, top-level model load error
+  - `Na__ModelLoader__MultiModel.js` — per-GLB mesh/linework load failures (all four catch paths, named per category)
+  - DataLib JSON fetch failures (already dispatched by `AppCore__DataLib__Loader.js`) now actually display via the new bridge
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.4.1 - 10-Jun-2026
 ### MaxModel Loading Fixes — Storey GLB Parsing, Indexed Material Preservation, Token-Based Door Collection
 

@@ -539,10 +539,12 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Apply Subtle Glass Environment Overrides
+    // FUNCTION | Apply Glass Environment and Realism Overrides
     // ------------------------------------------------------------
-    // Applies a low-intensity environment reflection to window glass
-    // so it reflects slightly without affecting the full scene tone.
+    // Applies environment reflections plus optional realism overrides to
+    // window glass. brightnessMultiplier darkens the DataLib base colour
+    // (low values = dark reflective architectural glass); roughnessOverride
+    // sharpens reflections; opacityOverride raises glass presence when set.
     // ------------------------------------------------------------
     function Na__MaterialsSystem__ApplyGlassEnvironmentOverrides(modelGroup, envMapTexture, options = {}) {
         if (!modelGroup || !envMapTexture) return;
@@ -553,6 +555,8 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
 
         const envIntensity         = Number.isFinite(options.envMapIntensity) ? options.envMapIntensity : 0.3;
         const brightnessMultiplier = Number.isFinite(options.brightnessMultiplier) ? options.brightnessMultiplier : 1.0;
+        const roughnessOverride    = Number.isFinite(options.roughnessOverride) ? options.roughnessOverride : null;
+        const opacityOverride      = Number.isFinite(options.opacityOverride) ? options.opacityOverride : null;
         let   glassMatchedCount    = 0;
 
         const applyToMaterial = (material) => {
@@ -561,7 +565,13 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
             material.envMap = envMapTexture;
             material.envMapIntensity = envIntensity;
             if (material.color && typeof material.color.multiplyScalar === 'function') {
-                material.color.multiplyScalar(brightnessMultiplier);
+                material.color.multiplyScalar(brightnessMultiplier);          // <-- Darken toward realistic dark glass
+            }
+            if (roughnessOverride !== null && 'roughness' in material) {
+                material.roughness = roughnessOverride;                       // <-- Sharper reflections than DataLib default
+            }
+            if (opacityOverride !== null && 'opacity' in material) {
+                material.opacity = opacityOverride;                           // <-- Optional stronger glass presence
             }
             material.needsUpdate = true;
             glassMatchedCount++;
@@ -578,7 +588,7 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
         });
 
         console.log(
-            `[MaterialsSystem] Glass overrides applied: target=${targetMaterialName}, matched=${glassMatchedCount}, envIntensity=${envIntensity}`
+            `[MaterialsSystem] Glass overrides applied: target=${targetMaterialName}, matched=${glassMatchedCount}, envIntensity=${envIntensity}, brightness=${brightnessMultiplier}, roughness=${roughnessOverride}, opacity=${opacityOverride}`
         );
     }
     // ------------------------------------------------------------

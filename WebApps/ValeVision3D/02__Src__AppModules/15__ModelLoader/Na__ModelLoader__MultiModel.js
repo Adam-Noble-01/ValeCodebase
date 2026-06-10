@@ -650,6 +650,16 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 // REGION | Multi-Model Orchestration
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Dispatch Red Error Toast for a Failed GLB Load
+    // ------------------------------------------------------------
+    function Na__ModelLoader__DispatchLoadErrorToast(assetLabel) {
+        window.dispatchEvent(new CustomEvent('na-show-toast', {
+            detail: { message: `Model file failed to load: ${assetLabel}. Check console for details.`, isError: true }
+        }));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Load All Models in Priority Order
     // ------------------------------------------------------------
     // Main entry point. Accepts an array of CDN URLs, classifies them by
@@ -693,6 +703,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                     console.log(`[ValeVision3D] Loaded Mesh: ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Mesh for ${shortName}:`, error);
+                    Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Mesh)`);
                 }
             }
 
@@ -712,6 +723,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                     console.log(`[ValeVision3D] Loaded Linework: ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Linework for ${shortName}:`, error);
+                    Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Linework)`);
                 }
             }
 
@@ -736,6 +748,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                     console.log(`[ValeVision3D] Loaded Mesh (unordered): ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Mesh for ${shortName}:`, error);
+                    Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Mesh)`);
                 }
             }
 
@@ -749,6 +762,7 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                     console.log(`[ValeVision3D] Loaded Linework (unordered): ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Linework for ${shortName}:`, error);
+                    Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Linework)`);
                 }
             }
 

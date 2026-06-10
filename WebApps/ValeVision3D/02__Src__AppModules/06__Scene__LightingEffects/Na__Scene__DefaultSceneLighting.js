@@ -68,6 +68,9 @@
         const hdriUrl = environmentConfig.Scene__Environment__HdriUrl;
         if (!hdriUrl || typeof hdriUrl !== 'string') {
             console.warn('[ValeVision3D] Scene environment enabled but Scene__Environment__HdriUrl is missing.');
+            window.dispatchEvent(new CustomEvent('na-show-toast', {
+                detail: { message: 'HDR environment URL missing from config — glass/mirror reflections disabled.', isError: true }
+            }));
             return null;
         }
 
@@ -100,6 +103,9 @@
             return envTexture;
         } catch (error) {
             console.warn('[ValeVision3D] Failed to load scene HDR environment:', error);
+            window.dispatchEvent(new CustomEvent('na-show-toast', {
+                detail: { message: `HDR environment failed to load (${hdriUrl.split('/').pop()}) — glass/mirror reflections disabled.`, isError: true }
+            }));
             return null;
         }
     }

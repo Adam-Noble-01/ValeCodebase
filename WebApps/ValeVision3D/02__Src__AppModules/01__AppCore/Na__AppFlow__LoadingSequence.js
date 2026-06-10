@@ -423,6 +423,9 @@
                 }
             } catch (error) {
                 console.warn('[ValeVision3D] Project data load failed, using defaults', error);
+                window.dispatchEvent(new CustomEvent('na-show-toast', {
+                    detail: { message: `Project data (project.json) failed to load — using defaults. (${error.message})`, isError: true }
+                }));
             }
         }
 
@@ -491,7 +494,12 @@
 
                 const Na__DataLibMaterialsData = Na__DataLib__GetMaterials();
                 const Na__MaterialsLookupMap   = Na__MaterialsSystem__BuildLookup(Na__DataLibMaterialsData, true);  // <-- Force rebuild from SSOT source
-                if (Na__MaterialsLookupMap.size === 0) return;
+                if (Na__MaterialsLookupMap.size === 0) {
+                    window.dispatchEvent(new CustomEvent('na-show-toast', {
+                        detail: { message: 'DataLib materials index is empty — MaxEngine PBR materials unavailable.', isError: true }
+                    }));
+                    return;
+                }
 
                 const Na__EnvTexture = await Na__MaxEngine__EnsureEnvironmentTexture();   // <-- Null when env disabled (glass stays transparent, no reflections)
 
@@ -503,14 +511,17 @@
                             Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides(group, Na__EnvTexture, {
                                 targetMaterialName : Na__Config__SceneEnvironment.Scene__Environment__MirrorMaterialName,
                                 envMapIntensity    : Na__Config__SceneEnvironment.Scene__Environment__MirrorEnvMapIntensity,
-                                brightnessBoost    : Na__Config__SceneEnvironment.Scene__Environment__MirrorBrightnessBoost
+                                brightnessBoost    : Na__Config__SceneEnvironment.Scene__Environment__MirrorBrightnessBoost,
+                                roughnessOverride  : Na__Config__SceneEnvironment.Scene__Environment__MirrorRoughnessOverride
                             });
                         }
                         if (Na__Config__SceneEnvironment.Scene__Environment__GlassEnabled === true) {
                             Na__MaterialsSystem__ApplyGlassEnvironmentOverrides(group, Na__EnvTexture, {
                                 targetMaterialName  : Na__Config__SceneEnvironment.Scene__Environment__GlassMaterialName,
                                 envMapIntensity     : Na__Config__SceneEnvironment.Scene__Environment__GlassEnvMapIntensity,
-                                brightnessMultiplier: Na__Config__SceneEnvironment.Scene__Environment__GlassBrightnessMultiplier
+                                brightnessMultiplier: Na__Config__SceneEnvironment.Scene__Environment__GlassBrightnessMultiplier,
+                                roughnessOverride   : Na__Config__SceneEnvironment.Scene__Environment__GlassRoughnessOverride,
+                                opacityOverride     : Na__Config__SceneEnvironment.Scene__Environment__GlassOpacityOverride
                             });
                         }
                     }
@@ -692,6 +703,9 @@
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);
             Na__UiFeature__UpdateStatus('Model load error - check console', true);
+            window.dispatchEvent(new CustomEvent('na-show-toast', {
+                detail: { message: `Model load error — ${error.message}. Check console for details.`, isError: true }
+            }));
         }
 
         // INVALIDATE PROFILE LINES CACHE (scene objects changed after model load)

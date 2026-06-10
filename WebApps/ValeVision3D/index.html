@@ -1167,6 +1167,19 @@
     // ------------------------------------------------------------
 
 
+    // MODULE INITIALIZATION | Toast Event Bridge (na-show-toast)
+    // ------------------------------------------------------------
+    // Sub-systems (DataLib loader, materials system, model loader, env map,
+    // AO performance monitor) dispatch 'na-show-toast' CustomEvents rather
+    // than importing the toast UI directly. This bridge routes them to the
+    // toast element so data-file load failures surface in red immediately.
+    window.addEventListener('na-show-toast', (event) => {
+        const detail = event.detail || {};
+        Na__UiFeature__ShowToast(detail.message || 'Unknown notification', detail.isError === true);
+    });
+    // ------------------------------------------------------------
+
+
     // @delegate: ./02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js
 
 // endregion -------------------------------------------------------------------

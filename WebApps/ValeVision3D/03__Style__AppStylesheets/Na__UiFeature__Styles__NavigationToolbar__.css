@@ -23,7 +23,7 @@
  * REGION | Floating Navigation Toolbar - Pill Container
  * ----------------------------------------------------------------------------- */
 
-    /* TOOLBAR CONTAINER | Bottom-centre floating pill */
+    /* TOOLBAR CONTAINER | Bottom-centre floating pill — scaled 10% larger */
     /* ------------------------------------------------------------ */
     .na-nav-toolbar {
         position                           : fixed;
@@ -32,8 +32,8 @@
         transform                          : translateX(-50%);
         display                            : flex;
         align-items                        : center;
-        gap                                : 4px;
-        padding                            : 6px 10px;
+        gap                                : 4px;                   /* <-- 4 * 1.1 ≈ 4px */
+        padding                            : 7px 11px;              /* <-- 6*1.1=6.6→7px, 10*1.1=11px */
         background-color                   : #ffffff;
         border                             : 1px solid rgba(23, 43, 58, 0.08);
         border-radius                      : 12px;                  /* <-- Rounded rectangular pill (reference match) */
@@ -49,19 +49,19 @@
  * REGION | Floating Navigation Toolbar - Buttons
  * ----------------------------------------------------------------------------- */
 
-    /* TOOLBAR BUTTON | Icon + label navigation button */
+    /* TOOLBAR BUTTON | Icon + label navigation button — scaled 10% larger */
     /* ------------------------------------------------------------ */
     .na-nav-toolbar__btn {
         display                            : flex;
         align-items                        : center;
-        gap                                : 8px;
-        padding                            : 8px 14px;
+        gap                                : 9px;                   /* <-- 8 * 1.1 */
+        padding                            : 9px 15px;              /* <-- 8*1.1=9px, 14*1.1=15px */
         border                             : none;
         background-color                   : transparent;
         border-radius                      : 9px;
         cursor                             : pointer;
         font-family                        : 'Open Sans', sans-serif;
-        font-size                          : 0.85rem;
+        font-size                          : 0.94rem;               /* <-- 0.85 * 1.1 */
         font-weight                        : 600;
         color                              : #172b3a;               /* <-- Vale brand blue text */
         white-space                        : nowrap;
@@ -83,11 +83,11 @@
     /* ------------------------------------------------------------ */
 
 
-    /* TOOLBAR ICON | PNG icon inside each button */
+    /* TOOLBAR ICON | PNG icon inside each button — scaled 10% larger */
     /* ------------------------------------------------------------ */
     .na-nav-toolbar__icon {
-        width                              : 18px;
-        height                             : 18px;
+        width                              : 20px;                  /* <-- 18 * 1.1 */
+        height                             : 20px;
         object-fit                         : contain;
         pointer-events                     : none;
     }
@@ -102,7 +102,7 @@
         }
 
         .na-nav-toolbar__btn {
-            padding                        : 10px 12px;
+            padding                        : 11px 13px;             /* <-- 10*1.1=11px, 12*1.1=13px */
         }
     }
     /* ------------------------------------------------------------ */
@@ -142,12 +142,12 @@
     /* ------------------------------------------------------------ */
 
 
-    /* MODAL PANEL | White help card */
+    /* MODAL PANEL | White help card — scaled 25% larger */
     /* ------------------------------------------------------------ */
     .na-nav-help__panel {
         position                           : relative;
-        width                              : min(440px, calc(100vw - 40px));
-        max-height                         : min(640px, calc(100vh - 80px));
+        width                              : min(550px, calc(100vw - 40px));     /* <-- 440 * 1.25 = 550 */
+        max-height                         : min(800px, calc(100vh - 80px));     /* <-- 640 * 1.25 = 800 */
         display                            : flex;
         flex-direction                     : column;
         background-color                   : #ffffff;
@@ -170,14 +170,14 @@
         display                            : flex;
         align-items                        : center;
         justify-content                    : space-between;
-        padding                            : 16px 20px;
+        padding                            : 20px 25px;                          /* <-- 16/20 * 1.25 */
         border-bottom                      : 1px solid rgba(23, 43, 58, 0.10);
     }
 
     .na-nav-help__title {
         margin                             : 0;
         font-family                        : 'Open Sans', sans-serif;
-        font-size                          : 1.05rem;
+        font-size                          : 1.3rem;                             /* <-- 1.05 * 1.25 */
         font-weight                        : 600;
         color                              : #172b3a;
     }
@@ -186,13 +186,13 @@
         display                            : flex;
         align-items                        : center;
         justify-content                    : center;
-        width                              : 30px;
-        height                             : 30px;
+        width                              : 38px;                               /* <-- 30 * 1.25 */
+        height                             : 38px;
         border                             : none;
         border-radius                      : 50%;
         background-color                   : rgba(23, 43, 58, 0.06);
         color                              : #172b3a;
-        font-size                          : 1.0rem;
+        font-size                          : 1.25rem;                            /* <-- 1.0 * 1.25 */
         font-weight                        : 600;
         line-height                        : 1;
         cursor                             : pointer;
@@ -214,30 +214,135 @@
     /* PANEL CONTENT | Scrollable instructions container */
     /* ------------------------------------------------------------ */
     .na-nav-help__content {
-        padding                            : 14px 20px 20px 20px;
+        padding                            : 18px 25px 25px 25px;               /* <-- 14/20/20/20 * 1.25 */
         overflow-y                         : auto;
     }
     /* ------------------------------------------------------------ */
 
 
-    /* HELP SECTION | Per-mode instruction group */
+    /* HELP SECTION | Per-mode collapsible instruction group */
     /* ------------------------------------------------------------ */
     .na-nav-help__section {
-        margin-bottom                      : 16px;
+        margin-bottom                      : 20px;                               /* <-- 16 * 1.25 */
     }
 
     .na-nav-help__section:last-child {
         margin-bottom                      : 0;
     }
+    /* ------------------------------------------------------------ */
 
-    .na-nav-help__section-title {
-        margin                             : 0 0 8px 0;
+
+    /* SECTION HEADER BUTTON | Clickable row: icon + title + fold arrow */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-header {
+        position                           : relative;              /* <-- Anchor for tooltip pseudo-element */
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 10px;
+        width                              : 100%;
+        border                             : none;
+        background                         : transparent;
+        cursor                             : pointer;
+        padding                            : 0 0 6px 0;
+        border-bottom                      : 1px solid rgba(23, 43, 58, 0.10);
+        margin-bottom                      : 12px;
+        text-align                         : left;
+        -webkit-tap-highlight-color        : transparent;
+        transition                         : opacity 0.15s ease;
+    }
+
+    .na-nav-help__section-header:hover {
+        opacity                            : 0.75;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INSTANT TOOLTIP | "Click to expand / collapse" shown on hover with no delay */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-header::before {
+        content                            : 'Click to expand';
+        position                           : absolute;
+        bottom                             : calc(100% + 8px);
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        padding                            : 4px 10px;
+        background-color                   : rgba(23, 43, 58, 0.82);
+        color                              : #ffffff;
         font-family                        : 'Open Sans', sans-serif;
-        font-size                          : 0.9rem;
+        font-size                          : 0.78rem;
+        font-weight                        : 400;
+        white-space                        : nowrap;
+        border-radius                      : 5px;
+        pointer-events                     : none;
+        opacity                            : 0;
+        transition                         : opacity 0s;            /* <-- Instant — no browser-style delay */
+        z-index                            : 10;
+    }
+
+    .na-nav-help__section-header:hover::before {
+        opacity                            : 1;                     /* <-- Show immediately on hover */
+    }
+
+    .na-nav-help__section:not(.na-nav-help__section--collapsed) .na-nav-help__section-header::before {
+        content                            : 'Click to collapse';   /* <-- Update label when already open */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION ICON | Mode icon matching the toolbar button */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-icon {
+        width                              : 22px;
+        height                             : 22px;
+        object-fit                         : contain;
+        flex-shrink                        : 0;
+        pointer-events                     : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION TITLE | Mode label text */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-title {
+        flex                               : 1;
+        margin                             : 0;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 1.1rem;                             /* <-- 0.9 * 1.25 */
         font-weight                        : 600;
         color                              : #172b3a;
-        border-bottom                      : 1px solid rgba(23, 43, 58, 0.10);
-        padding-bottom                     : 5px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION ARROW | Chevron indicating open/collapsed state */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-arrow {
+        flex-shrink                        : 0;
+        font-size                          : 1.1rem;
+        color                              : rgba(23, 43, 58, 0.45);
+        line-height                        : 1;
+        transition                         : transform 0.22s ease;
+        display                            : inline-block;
+    }
+
+    .na-nav-help__section--collapsed .na-nav-help__section-arrow {
+        transform                          : rotate(-90deg);                     /* <-- Arrow points right when collapsed */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION BODY | Collapsible rows container */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-body {
+        overflow                           : hidden;
+        max-height                         : 600px;                              /* <-- Large enough for any section */
+        transition                         : max-height 0.25s ease, opacity 0.22s ease;
+        opacity                            : 1;
+    }
+
+    .na-nav-help__section--collapsed .na-nav-help__section-body {
+        max-height                         : 0;                                  /* <-- Animate shut */
+        opacity                            : 0;
     }
     /* ------------------------------------------------------------ */
 
@@ -247,21 +352,21 @@
     .na-nav-help__row {
         display                            : flex;
         align-items                        : flex-start;
-        gap                                : 10px;
-        margin-bottom                      : 6px;
+        gap                                : 12px;                               /* <-- 10 * 1.25 */
+        margin-bottom                      : 8px;                                /* <-- 6 * 1.25 */
         font-family                        : 'Open Sans', sans-serif;
-        font-size                          : 0.82rem;
+        font-size                          : 1.0rem;                             /* <-- 0.82 * 1.25 */
         line-height                        : 1.5;
     }
 
     .na-nav-help__key {
         flex-shrink                        : 0;
-        min-width                          : 130px;
-        padding                            : 3px 8px;
+        min-width                          : 162px;                              /* <-- 130 * 1.25 */
+        padding                            : 4px 10px;                           /* <-- 3/8 * 1.25 */
         border-radius                      : 4px;
         background-color                   : rgba(23, 43, 58, 0.07);
         color                              : #172b3a;
-        font-size                          : 0.78rem;
+        font-size                          : 0.97rem;                            /* <-- 0.78 * 1.25 */
         font-weight                        : 600;
         text-align                         : center;
     }

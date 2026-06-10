@@ -703,38 +703,62 @@
             <div class="na-nav-help__content">
 
                 <!-- UI SECTION | Orbit Mode Instructions -->
-                <div class="na-nav-help__section" id="naNavHelpOrbitSection">
-                    <h3 class="na-nav-help__section-title">Orbit Mode (Default)</h3>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Left Drag / 1 Finger</span><span class="na-nav-help__desc">Rotate around the model</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Right Drag / 2 Fingers</span><span class="na-nav-help__desc">Pan the view sideways and up/down</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Scroll / Pinch</span><span class="na-nav-help__desc">Zoom in and out</span></div>
+                <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpOrbitSection">
+                    <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__OrbitMode__.png" alt="">
+                        <span class="na-nav-help__section-title">Orbit Mode (Default)</span>
+                        <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="na-nav-help__section-body">
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Left Drag / 1 Finger</span><span class="na-nav-help__desc">Rotate around the model</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Right Drag / 2 Fingers</span><span class="na-nav-help__desc">Pan the view sideways and up/down</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Scroll / Pinch</span><span class="na-nav-help__desc">Zoom in and out</span></div>
+                    </div>
                 </div>
 
                 <!-- UI SECTION | Walk Mode Instructions (shown only when enabled) -->
-                <div class="na-nav-help__section" id="naNavHelpWalkSection" style="display:none;">
-                    <h3 class="na-nav-help__section-title">Walk Mode</h3>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">W A S D / Arrows</span><span class="na-nav-help__desc">Walk forwards, backwards, and sideways</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Mouse</span><span class="na-nav-help__desc">Look around (click the view to capture the mouse)</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Shift</span><span class="na-nav-help__desc">Hold to walk faster</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Esc</span><span class="na-nav-help__desc">Release the mouse; press Orbit to exit walk mode</span></div>
+                <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpWalkSection" style="display:none;">
+                    <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__WalkMode__.png" alt="">
+                        <span class="na-nav-help__section-title">Walk Mode</span>
+                        <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="na-nav-help__section-body">
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">W A S D / Arrows</span><span class="na-nav-help__desc">Walk forwards, backwards, and sideways</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Mouse</span><span class="na-nav-help__desc">Look around (click the view to capture the mouse)</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Shift</span><span class="na-nav-help__desc">Hold to walk faster</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Esc</span><span class="na-nav-help__desc">Release the mouse; press Orbit to exit walk mode</span></div>
+                    </div>
                 </div>
 
                 <!-- UI SECTION | Fly Mode Instructions (shown only when enabled) -->
-                <div class="na-nav-help__section" id="naNavHelpFlySection" style="display:none;">
-                    <h3 class="na-nav-help__section-title">Fly Mode</h3>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">W A S D</span><span class="na-nav-help__desc">Fly forwards, backwards, and sideways</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Q / E</span><span class="na-nav-help__desc">Move straight down / up</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Mouse</span><span class="na-nav-help__desc">Look around (click the view to capture the mouse)</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Shift</span><span class="na-nav-help__desc">Hold to fly faster</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Esc</span><span class="na-nav-help__desc">Release the mouse; press Orbit to exit fly mode</span></div>
+                <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpFlySection" style="display:none;">
+                    <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__FlyMode__.png" alt="">
+                        <span class="na-nav-help__section-title">Fly Mode</span>
+                        <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="na-nav-help__section-body">
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">W A S D</span><span class="na-nav-help__desc">Fly forwards, backwards, and sideways</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Q / E</span><span class="na-nav-help__desc">Move straight down / up</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Mouse</span><span class="na-nav-help__desc">Look around (click the view to capture the mouse)</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Shift</span><span class="na-nav-help__desc">Hold to fly faster</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Esc</span><span class="na-nav-help__desc">Release the mouse; press Orbit to exit fly mode</span></div>
+                    </div>
                 </div>
 
                 <!-- UI SECTION | General Controls -->
-                <div class="na-nav-help__section" id="naNavHelpGeneralSection">
-                    <h3 class="na-nav-help__section-title">General</h3>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Reset View</span><span class="na-nav-help__desc">Return to the project's original starting view</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Full Screen</span><span class="na-nav-help__desc">Available in the Tools &amp; Settings menu (top right)</span></div>
-                    <div class="na-nav-help__row"><span class="na-nav-help__key">Esc</span><span class="na-nav-help__desc">Closes this panel and exits full screen</span></div>
+                <div class="na-nav-help__section na-nav-help__section--collapsed" id="naNavHelpGeneralSection">
+                    <button class="na-nav-help__section-header" type="button" aria-expanded="false" data-nav-help-section>
+                        <img class="na-nav-help__section-icon" src="./01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.png" alt="">
+                        <span class="na-nav-help__section-title">General</span>
+                        <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="na-nav-help__section-body">
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Reset View</span><span class="na-nav-help__desc">Return to the project's original starting view</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Full Screen</span><span class="na-nav-help__desc">Available in the Tools &amp; Settings menu (top right)</span></div>
+                        <div class="na-nav-help__row"><span class="na-nav-help__key">Esc</span><span class="na-nav-help__desc">Closes this panel and exits full screen</span></div>
+                    </div>
                 </div>
 
             </div>

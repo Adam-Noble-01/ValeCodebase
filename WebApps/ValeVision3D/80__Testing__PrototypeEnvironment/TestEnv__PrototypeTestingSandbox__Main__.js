@@ -35,7 +35,7 @@
     // ------------------------------------------------------------
     import { Na__DefaultNavmode__InitializeMouseControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js';
     import { Na__DefaultNavmode__InitializeIpadControls } from './02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js';
-    import { Na__RenderPipeline__SetupComposer } from './02__Src__AppModules/05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
+    import { Na__RenderPipeline__PureEngine__SetupComposer } from './02__Src__AppModules/05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js';
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     import {
         Na__ModelLoader__UpgradeLineworkRoot,
@@ -1565,7 +1565,7 @@
         TestEnv__SetupLighting();                                            // <-- Setup lights and ground
 
         // SETUP POST-PROCESSING PIPELINE
-        TestEnv__RenderPipelineState = Na__RenderPipeline__SetupComposer(
+        TestEnv__RenderPipelineState = Na__RenderPipeline__PureEngine__SetupComposer(
             TestEnv__Renderer,
             TestEnv__Scene,
             TestEnv__Camera,

@@ -10,11 +10,24 @@
 // CREATED    : 23-Feb-2026
 //
 // DESCRIPTION:
-// - Fetches Na__AppConfig__MaterialsLibrary.json from a configurable URL.
+// - Fetches Na__AppConfig__MaterialsLibrary.json from a configurable URL
+//   (PureEngine local library path — unchanged legacy behaviour).
 // - Caches the raw library data in module scope (single fetch per session).
 // - Flattens the nested series structure into a Map keyed by SketchUpName
 //   for O(1) material lookups during the render pipeline.
+// - BuildLookup supports BOTH library root keys so the same indexing logic
+//   serves both render engines:
+//     Na__AppConfig__MaterialsLibrary      (local file — PureEngine)
+//     Na__DataLib__CoreIndex__Materials    (GitHub SSOT — MaxEngine)
 // - Provides a regex-based check for indexed material name detection.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 10-Jun-2026 - Version 1.1.0
+// - BuildLookup now resolves either root key (local library or DataLib SSOT)
+//   and accepts a forceRebuild parameter so the cached map can be rebuilt
+//   when the active render engine switches material sources.
 //
 // =============================================================================
 
@@ -92,27 +105,37 @@
     // Flattens the nested series structure into a single Map keyed
     // by SketchUpName for O(1) lookups. Each value is the full
     // material config object. Skips the default material entry.
+    // Accepts EITHER library root key:
+    //   Na__AppConfig__MaterialsLibrary   (local file — PureEngine)
+    //   Na__DataLib__CoreIndex__Materials (GitHub SSOT — MaxEngine)
+    // Pass forceRebuild=true when the material source has changed
+    // (e.g. on a render engine switch) to bypass the session cache.
     // ------------------------------------------------------------
-    function Na__MaterialsSystem__BuildLookup(libraryData) {
-        if (Na__MaterialsSystem__CachedLookupMap) {
+    function Na__MaterialsSystem__BuildLookup(libraryData, forceRebuild = false) {
+        if (Na__MaterialsSystem__CachedLookupMap && !forceRebuild) {
             return Na__MaterialsSystem__CachedLookupMap;                      // <-- Return cached map
         }
 
         const lookupMap = new Map();                                          // <-- SketchUpName -> MaterialConfig
 
-        if (!libraryData || !libraryData.Na__AppConfig__MaterialsLibrary) {
+        const library = libraryData
+            ? (libraryData.Na__DataLib__CoreIndex__Materials || libraryData.Na__AppConfig__MaterialsLibrary)
+            : null;                                                           // <-- Resolve whichever root key is present
+
+        if (!library) {
             console.warn('[MaterialsSystem] No library data to index');
             return lookupMap;
         }
 
-        const library = libraryData.Na__AppConfig__MaterialsLibrary;         // <-- Root library object
-
         for (const seriesKey of Object.keys(library)) {
             const series = library[seriesKey];                                // <-- e.g. MAT100__BasicSeries__
+
+            if (typeof series !== 'object' || series === null) continue;     // <-- Skip non-object metadata entries
 
             for (const materialKey of Object.keys(series)) {
                 const config = series[materialKey];                           // <-- Individual material config
 
+                if (!config || typeof config !== 'object') continue;         // <-- Guard against malformed entries
                 if (config.IsDefault) continue;                               // <-- Skip default fallback entry
 
                 const sketchUpName = config.SketchUpName;                     // <-- Lookup key

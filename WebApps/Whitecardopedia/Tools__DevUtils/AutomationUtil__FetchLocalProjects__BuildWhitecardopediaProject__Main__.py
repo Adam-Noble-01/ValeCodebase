@@ -11,13 +11,14 @@
 # CREATED    : 2025
 #
 # DESCRIPTION:
-# - Scans local disc for projects with __Whitecard or __Blockout suffix
+# - Scans local disc for projects with __Whitecard, __Blockout, or __MaxModel suffix
 # - Discovers latest content delivery folders with date stamps
 # - Copies IMG## prefixed images to Whitecardopedia project structure
 # - Generates project.json files from template with extracted metadata
 # - Automatically extracts date fulfilled from content folder name (e.g., __17-Oct-2025)
 # - Prevents manual duplication by automating project folder creation
 # - Skips existing projects to avoid overwriting manual changes
+# - MaxModel projects additionally write RenderEngine__Config: MaxEngine so ValeVision3D boots into MaxEngine automatically
 #
 # USAGE:
 # - python AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py                    # Clone all Whitecard projects
@@ -90,6 +91,8 @@ WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'  # <-- New pattern: 12345__Example__Whitecard
 BLOCKOUT_FOLDER_PATTERN_OLD        = r'^([A-Z]{2}-\d+)__(.+?)__Blockout$'   # <-- Legacy pattern: EX-12345__Example__Blockout
 BLOCKOUT_FOLDER_PATTERN_NEW        = r'^(\d+)__(.+?)__Blockout$'   # <-- New pattern: 12345__Example__Blockout
+MAXMODEL_FOLDER_PATTERN_OLD        = r'^([A-Z]{2}-\d+)__(.+?)__MaxModel$'   # <-- Legacy pattern: EX-12345__Example__MaxModel
+MAXMODEL_FOLDER_PATTERN_NEW        = r'^(\d+)__(.+?)__MaxModel$'   # <-- New pattern: 12345__Example__MaxModel
 IMAGE_PREFIX_PATTERN               = r'^IMG(\d{2})(?:_ART(\d{2}))?__.*\.(png|jpg|jpeg|svg|gif|webp)$'  # <-- Image filename pattern
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 GLB_ARCHIVE_SUBFOLDER              = "01__Archive"                           # <-- Archive subfolder to skip
@@ -287,6 +290,8 @@ def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[
         (WHITECARD_FOLDER_PATTERN_NEW, "Whitecard"),                 # <-- New Whitecard: 12345__Example__Whitecard
         (BLOCKOUT_FOLDER_PATTERN_OLD,  "Blockout"),                  # <-- Legacy Blockout: EX-12345__Example__Blockout
         (BLOCKOUT_FOLDER_PATTERN_NEW,  "Blockout"),                  # <-- New Blockout: 12345__Example__Blockout
+        (MAXMODEL_FOLDER_PATTERN_OLD,  "MaxModel"),                  # <-- Legacy MaxModel: EX-12345__Example__MaxModel
+        (MAXMODEL_FOLDER_PATTERN_NEW,  "MaxModel"),                  # <-- New MaxModel: 12345__Example__MaxModel
     ]
 
     for pattern, project_type in patterns_with_types:
@@ -312,12 +317,14 @@ def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[
 # FUNCTION | Generate Destination Folder Name
 # ------------------------------------------------------------
 def generate_destination_folder_name(folder_name: str) -> Optional[str]:
-    # TRY ALL PATTERNS (Whitecard and Blockout, legacy and new)
+    # TRY ALL PATTERNS (Whitecard, Blockout, and MaxModel — legacy and new)
     all_patterns = [
         WHITECARD_FOLDER_PATTERN_OLD,                                # <-- Legacy Whitecard
         WHITECARD_FOLDER_PATTERN_NEW,                                # <-- New Whitecard
         BLOCKOUT_FOLDER_PATTERN_OLD,                                 # <-- Legacy Blockout
         BLOCKOUT_FOLDER_PATTERN_NEW,                                 # <-- New Blockout
+        MAXMODEL_FOLDER_PATTERN_OLD,                                 # <-- Legacy MaxModel
+        MAXMODEL_FOLDER_PATTERN_NEW,                                 # <-- New MaxModel
     ]
 
     for pattern in all_patterns:
@@ -692,9 +699,17 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     
     project_data = template.copy()                                    # <-- Copy template data
     project_data['projectName'] = project_name                        # <-- Set project name
-    project_data['ProjectType'] = project_type                        # <-- Set project type (Whitecard or Blockout)
+    project_data['ProjectType'] = project_type                        # <-- Set project type (Whitecard, Blockout, or MaxModel)
     project_data['projectCode'] = project_code                        # <-- Set project code
     project_data['images'] = images                                   # <-- Set images array
+
+    # MAXMODEL | Write RenderEngine__Config so ValeVision3D boots into MaxEngine automatically
+    if project_type == "MaxModel":
+        project_data['RenderEngine__Config'] = {
+            "RenderEngine__Active": "MaxEngine"                       # <-- Auto-activates MaxEngine in ValeVision3D
+        }
+    else:
+        project_data.pop('RenderEngine__Config', None)               # <-- Remove key if present in template (safe cleanup)
     
     # SET YEAR-AWARE BASE PATH
     project_data['basePath'] = f"Projects/{year}/{dest_folder_name}" # <-- Set basePath with year included
@@ -970,7 +985,12 @@ def print_results(results: List[Dict], dry_run: bool):
             print(f"    Latest Folder: {result['latest_folder']}\n")  # <-- Print folder name
             continue
         
+        project_type_label = result.get('project_type', 'Whitecard')  # <-- Get project type for display
+        type_color = COLOR_CYAN if project_type_label == "MaxModel" else COLOR_RESET  # <-- Highlight MaxModel in cyan
         print(f"{COLOR_GREEN}[+] {dest_name}{COLOR_RESET}")          # <-- Print success indicator
+        print(f"    Type: {type_color}{project_type_label}{COLOR_RESET}")  # <-- Print project type (MaxModel highlighted)
+        if project_type_label == "MaxModel":
+            print(f"    {COLOR_CYAN}RenderEngine__Config: MaxEngine will be written to project.json{COLOR_RESET}")  # <-- MaxModel tag note
         print(f"    Images: {result['images_found']} found")          # <-- Print images found
         if not dry_run:
             print(f"    Copied: {result['images_copied']} files")     # <-- Print copied count

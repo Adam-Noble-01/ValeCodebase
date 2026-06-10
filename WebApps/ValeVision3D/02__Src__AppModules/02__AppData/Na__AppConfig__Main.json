@@ -60,6 +60,46 @@
         "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
         "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0
     },
+    "RenderEngine__Config": {
+        "RenderEngine__Config__Description"                : "Dual render engine system. PureEngine = original lightweight whitecard pipeline (ALWAYS the default). MaxEngine = full PBR + SSAO pipeline ported from TrueVision (per-model opt-in). Per-model overrides live in project.json under the same key; this global default applies when project.json has no RenderEngine__Config.",
+        "RenderEngine__Active"                             : "PureEngine"
+    },
+    "RenderEffect__AmbientOcclusion": {
+        "RenderEffect__AmbientOcclusion__Description"      : "Screen-space ambient occlusion. MAXENGINE ONLY — never constructed under PureEngine. All distance values are integer millimeters; convert to 3D units in code. DebugMode: 0=off, 1=raw depth, 2=linear Z, 3=normals, 4=raw AO.",
+        "RenderEffect__AmbientOcclusion__Enabled"          : true,
+        "RenderEffect__AmbientOcclusion__RadiusMm"         : 50,
+        "RenderEffect__AmbientOcclusion__Intensity"        : 1.2,
+        "RenderEffect__AmbientOcclusion__Bias"             : 0.005,
+        "RenderEffect__AmbientOcclusion__Samples"          : 8,
+        "RenderEffect__AmbientOcclusion__CullDistanceMm"   : 8000,
+        "RenderEffect__AmbientOcclusion__BlurRadius"       : 1.0,
+        "RenderEffect__AmbientOcclusion__FpsThreshold"     : 24,
+        "RenderEffect__AmbientOcclusion__FpsSampleFrames"  : 120,
+        "RenderEffect__AmbientOcclusion__PerformanceMonitorStartupDelayMs" : 3000,
+        "RenderEffect__AmbientOcclusion__DebugMode"        : 0
+    },
+    "Scene__Environment": {
+        "Scene__Environment__Description"                  : "HDR environment map for MaxEngine PBR reflections (glass/mirrors). MAXENGINE ONLY. Same HDRI asset as TrueVision (byte-identical local copy). Loaded lazily — only fetched when MaxEngine activates.",
+        "Scene__Environment__Enabled"                      : true,
+        "Scene__Environment__HdriUrl"                      : "./01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr",
+        "Scene__Environment__Intensity"                    : 1.0,
+        "Scene__Environment__ApplyToScene"                 : false,
+        "Scene__Environment__UseAsBackground"              : false,
+        "Scene__Environment__MirrorOnly"                   : true,
+        "Scene__Environment__MirrorMaterialName"           : "MAT140__Mirror__ClearDefault",
+        "Scene__Environment__MirrorEnvMapIntensity"        : 1.6,
+        "Scene__Environment__MirrorBrightnessBoost"        : 1.15,
+        "Scene__Environment__GlassEnabled"                 : true,
+        "Scene__Environment__GlassMaterialName"            : "MAT101__Glass__ClearDefault",
+        "Scene__Environment__GlassEnvMapIntensity"         : 0.8,
+        "Scene__Environment__GlassBrightnessMultiplier"    : 1.0
+    },
+    "RenderEffect__DistanceCulling": {
+        "RenderEffect__DistanceCulling__Description"       : "Per-item distance culling for furniture/decor categories. MAXENGINE ONLY, optional, off by default. All distance values are integer millimeters; convert to 3D units in code.",
+        "RenderEffect__DistanceCulling__Enabled"           : false,
+        "RenderEffect__DistanceCulling__CullDistanceMm"    : 25000,
+        "RenderEffect__DistanceCulling__CategoryNameTokens": ["Furniture", "InteriorDecor", "Decor"]
+    },
     "cameraLens": {
         "minFocalLengthMM": 24,
         "maxFocalLengthMM": 75,
@@ -217,11 +257,15 @@
     },
     "3dObject__InteractionsSystem": {
         "3dObject__Interaction__DoorAnimation": {
-            "3dObject__Interaction__DoorAnimation__Description"         : "Interactive door animation settings for click-to-open doors. Doors must be exported from SketchUp with ADR/MOD/ROT naming convention via GLB Builder v1.5.0+",
+            "3dObject__Interaction__DoorAnimation__Description"         : "Interactive door animation settings for click-to-open doors. Doors must be exported from SketchUp with ADR/MOD/ROT naming convention via GLB Builder v1.5.0+. CategoryNameTokens match loaded model category keys (flat AND storey-based) to locate door groups.",
             "3dObject__Interaction__DoorAnimation__Enabled"             : true,
             "3dObject__Interaction__DoorAnimation__AnimationDurationMs" : 600,
             "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"  : 90,
-            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4,
+            "3dObject__Interaction__DoorAnimation__CategoryNameTokens"  : [
+                "ProposedDoors",
+                "ExistingDoors"
+            ]
         }
     }
 }

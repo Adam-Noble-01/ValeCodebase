@@ -1,17 +1,18 @@
 /* =============================================================================
- * WHITECARDOPEDIA - BLOCKOUTOPEDIA FEATURE STYLES
+ * WHITECARDOPEDIA - BLOCKOUTOPEDIA + MAX MODELS FEATURE STYLES
  * =============================================================================
  *
  * FILE       : Na__UiFeature__Styles__Blockoutopedia__.css
  * NAMESPACE  : Whitecardopedia
- * MODULE     : Blockoutopedia Feature Styles
+ * MODULE     : Blockoutopedia + Max Models Feature Styles
  * AUTHOR     : Adam Noble - Noble Architecture
- * PURPOSE    : Styles for Blockoutopedia gallery mode toggle and warning banner
+ * PURPOSE    : Styles for gallery mode toggle, Blockout warning banner, and Max Model info banner
  * CREATED    : 07-Apr-2026
  *
  * DESCRIPTION:
- * - Gallery mode toggle button styles (active/inactive states)
+ * - Gallery mode toggle button styles (active/inactive states — three tabs)
  * - Blockout warning banner with confidentiality notices
+ * - Max Model info banner
  * - Request button placeholder styling
  * - Responsive adjustments for smaller viewports
  *
@@ -49,6 +50,11 @@
     .gallery-mode-toggle__button:first-child {
         border-radius                      : var(--Vale_BorderRadius) 0 0 var(--Vale_BorderRadius); /* <-- Rounded left corners */
         border-right                       : none;                          /* <-- Remove inner border */
+    }
+
+    .gallery-mode-toggle__button:not(:first-child):not(:last-child) {
+        border-radius                      : 0;                             /* <-- No radius on middle button(s) */
+        border-right                       : none;                          /* <-- Remove right border on middle button(s) */
     }
 
     .gallery-mode-toggle__button:last-child {
@@ -213,7 +219,7 @@
         /* GALLERY MODE TOGGLE | Mobile Adjustments */
         /* ------------------------------------------------------------ */
         .gallery-mode-toggle__button {
-            padding                        : 6px 12px;                      /* <-- Smaller padding on mobile */
+            padding                        : 6px 10px;                      /* <-- Smaller padding on mobile */
             font-size                      : 11px;                          /* <-- Smaller font on mobile */
         }
         /* ------------------------------------------------------------ */
@@ -229,6 +235,85 @@
             gap                            : 2px;                           /* <-- Minimal gap */
         }
         /* ------------------------------------------------------------ */
+
+        /* MAX MODEL BANNER | Mobile Adjustments */
+        /* ------------------------------------------------------------ */
+        .max-model-info-banner {
+            padding                        : var(--Vale_Spacing_Medium);    /* <-- Reduced padding on mobile */
+        }
+
+        .max-model-info-banner__title-group {
+            flex-direction                 : column;                        /* <-- Stack title and subtitle */
+            gap                            : 2px;                           /* <-- Minimal gap */
+        }
+        /* ------------------------------------------------------------ */
     }
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Max Model Info Banner Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* MAX MODEL BANNER | Container */
+    /* ------------------------------------------------------------ */
+    .max-model-info-banner {
+        background                         : #f0f9ff;                       /* <-- Light sky-blue background */
+        border                             : 1px solid #bae6fd;             /* <-- Sky-blue border */
+        border-left                        : 4px solid #0284c7;             /* <-- Deep blue left accent */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Standard border radius */
+        padding                            : var(--Vale_Spacing_Large);     /* <-- Large padding */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below banner */
+    }
+
+    /* MAX MODEL BANNER | Header Row */
+    /* ------------------------------------------------------------ */
+    .max-model-info-banner__header {
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Gap between icon and titles */
+        margin-bottom                      : var(--Vale_Spacing_Medium);    /* <-- Space below header */
+    }
+
+    /* MAX MODEL BANNER | Icon */
+    /* ------------------------------------------------------------ */
+    .max-model-info-banner__icon {
+        font-size                          : 28px;                          /* <-- Large icon */
+        line-height                        : 1;                             /* <-- Tight line height */
+        flex-shrink                        : 0;                             /* <-- Prevent shrinking */
+        color                              : #0284c7;                       /* <-- Deep blue icon */
+    }
+
+    /* MAX MODEL BANNER | Title Group */
+    /* ------------------------------------------------------------ */
+    .max-model-info-banner__title-group {
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : baseline;                      /* <-- Baseline alignment */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Gap between title and subtitle */
+    }
+
+    .max-model-info-banner__title {
+        margin                             : 0;                             /* <-- Remove default margin */
+        font-size                          : var(--Vale_FontSize_SubHeading); /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold); /* <-- Semi-bold weight */
+        color                              : #0c4a6e;                       /* <-- Dark blue title */
+    }
+
+    .max-model-info-banner__subtitle {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small size */
+        color                              : #0369a1;                       /* <-- Medium blue subtitle */
+        font-weight                        : var(--Vale_FontWeight_Regular); /* <-- Regular weight */
+    }
+
+    /* MAX MODEL BANNER | Body Text */
+    /* ------------------------------------------------------------ */
+    .max-model-info-banner__text {
+        margin                             : 0;                             /* <-- Remove default margin */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text */
+        line-height                        : 1.6;                           /* <-- Comfortable line height */
+        color                              : #075985;                       /* <-- Deep blue body text */
+    }
+    /* ------------------------------------------------------------ */
 
 /* endregion ------------------------------------------------------------------- */

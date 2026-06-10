@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+**Render Engine Architecture | Two-Engine Separation (Critical)**
+
+ValeVision3D has TWO render engines. This separation is a critical design feature — do not merge, cross-import, or "simplify" it.
+
+- **PureEngine** — `02__Src__AppModules/05__RenderPipeline/01__Engine__PureEngine/`
+  - The ORIGINAL super-simplified whitecard pipeline: RenderPass → ProfileLines → Fog → FXAA.
+  - ALWAYS the default for every model. Models without a `RenderEngine__Config` key in `project.json` use PureEngine.
+  - Materials: the local library swap (`MaterialsSystem__Config__LibraryUrl` → `Na__AppConfig__MaterialsLibrary.json`). Never the DataLib.
+  - MUST NEVER import: SSAO/AmbientOcclusion modules, `AppCore__DataLib__Loader.js`, depth pre-pass logic, or anything from `02__Engine__MaxEngine/`.
+
+- **MaxEngine** — `02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/`
+  - Full PBR pipeline ported from TrueVision3D: RenderPass → ProfileLines → Fog → SSAO → AO Blur → FXAA, plus depth pre-pass and AO layer-1 exclusion.
+  - Per-model opt-in only, via `project.json` → `RenderEngine__Config.RenderEngine__Active: "MaxEngine"` (saved from the Dev menu).
+  - Materials: the DataLib SSOT fetched from GitHub raw URLs (`AppCore__DataLib__Loader.js`). NEVER create a local copy of any DataLib JSON — the GitHub files in `Na__Common__DataLib__CoreSuEntityStandards` are the single source of truth shared with TrueVision and the SketchUp plugins.
+  - MaxEngine-only modules: `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__*.js`, `02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js`, `Na__Scene__ApplyEnvironmentMap`.
+  - MUST NEVER import from `01__Engine__PureEngine/`.
+
+- **Shared infrastructure** (parent `05__RenderPipeline/` folder, imported by both engines):
+  - `Na__RenderEffect__ProfileLines__.js`, `Na__RenderLoop__Invalidation.js`, `Na__RenderEngine__State.js`, `Na__UiFeature__RenderEngine__Controls.js`.
+
+- **Pipeline state contract**: both engines' `SetupComposer` functions MUST return the same base surface (`composer, renderProfileNormals, setProfileLinesSize, invalidateProfileLinesCache, setFxaaSize, toggleProfileLines, insertFogPass, depthTexture, profileNormalTarget, profileColorTarget, profileLinesPassRef`). MaxEngine adds extras (`renderDepthPrePass, setDepthPrePassSize, updateAoUniforms, setAoSize, monitorAoFrame, toggleAo`) which consumers call optionally (`if (state.fn)`). Breaking this contract breaks ImageExport, ElevationView, GridLines, and the 2D profile lines.
+
+- **Engine switching**: only `Na__AppFlow__LoadingSequence.js` rebuilds the pipeline (listens for `na-render-engine-switch`). UI modules dispatch events; they never construct composers. Materials switch with the engine: MaxEngine applies the DataLib swap (originals captured in `userData.na_originalMaterial`); switching back to PureEngine restores originals and re-runs the local-library swap.
+
+- **Do not** activate MaxEngine systems from PureEngine paths, change PureEngine behaviour when working on MaxEngine, or default any model to MaxEngine.

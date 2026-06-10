@@ -5,6 +5,7 @@
     // MODULE IMPORTS | Three.js
     // ------------------------------------------------------------
     import * as THREE from 'three';
+    import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
     // ------------------------------------------------------------
 
 
@@ -51,10 +52,65 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Apply HDRI Environment for Reflective PBR Materials (MaxEngine)
+    // ------------------------------------------------------------
+    // Loads an HDR environment map, prefilters it with PMREM, and returns the
+    // resulting texture so callers can apply it globally or per-material
+    // (mirror/glass overrides). Returns null when disabled or on load failure
+    // — glass still renders transparent without it, just without reflections.
+    // Ported from TrueVision3D.
+    // ------------------------------------------------------------
+    async function Na__Scene__ApplyEnvironmentMap(scene, renderer, environmentConfig) {
+        if (!scene || !renderer || !environmentConfig || environmentConfig.Scene__Environment__Enabled !== true) {
+            return null;
+        }
+
+        const hdriUrl = environmentConfig.Scene__Environment__HdriUrl;
+        if (!hdriUrl || typeof hdriUrl !== 'string') {
+            console.warn('[ValeVision3D] Scene environment enabled but Scene__Environment__HdriUrl is missing.');
+            return null;
+        }
+
+        const envMapIntensity = Number.isFinite(environmentConfig.Scene__Environment__Intensity)
+            ? environmentConfig.Scene__Environment__Intensity
+            : 1.0;
+
+        try {
+            const hdrTexture = await new RGBELoader().loadAsync(hdriUrl);
+            hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+            const pmremGenerator  = new THREE.PMREMGenerator(renderer);
+            const envRenderTarget = pmremGenerator.fromEquirectangular(hdrTexture);
+
+            const envTexture   = envRenderTarget.texture;
+            const applyToScene = environmentConfig.Scene__Environment__ApplyToScene === true;
+            if (applyToScene) {
+                scene.environment = envTexture;
+                scene.environmentIntensity = envMapIntensity;
+
+                if (environmentConfig.Scene__Environment__UseAsBackground === true) {
+                    scene.background = envTexture;
+                }
+            }
+
+            hdrTexture.dispose();
+            pmremGenerator.dispose();
+
+            console.log(`[ValeVision3D] Scene HDR environment loaded: ${hdriUrl} (applyToScene=${applyToScene})`);
+            return envTexture;
+        } catch (error) {
+            console.warn('[ValeVision3D] Failed to load scene HDR environment:', error);
+            return null;
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // MODULE EXPORTS | Scene Lighting Effects API
     // ------------------------------------------------------------
     export {
-        Na__Scene__SetupDefaultSceneLighting
+        Na__Scene__SetupDefaultSceneLighting,
+        Na__Scene__ApplyEnvironmentMap
     };
     // ------------------------------------------------------------
 

@@ -27,6 +27,9 @@
     // HELPER FUNCTION | Filter Projects by Gallery Mode
     // ------------------------------------------------------------
     function filterProjectsByGalleryMode(projects, galleryMode) {
+        if (galleryMode === 'maxmodel') {
+            return projects.filter(p => p.ProjectType === 'MaxModel');        // <-- Show only MaxModel projects
+        }
         if (galleryMode === 'blockout') {
             return projects.filter(p => p.ProjectType === 'Blockout');        // <-- Show only Blockout projects
         }
@@ -139,11 +142,17 @@
                     {galleryMode === 'blockout' && (
                         <BlockoutWarningBanner />
                     )}
+
+                    {galleryMode === 'maxmodel' && (
+                        <MaxModelInfoBanner />
+                    )}
                     
                     <div className="project-gallery__grid">
                         {filteredProjects.length === 0 ? (
                             <p style={{ gridColumn: '1 / -1', textAlign: 'center', fontSize: '18px', color: 'var(--Vale_TextSecondary)' }}>
-                                {galleryMode === 'blockout'
+                                {galleryMode === 'maxmodel'
+                                    ? 'No Max Models available — tag a project with __MaxModel suffix in the WCP builder'
+                                    : galleryMode === 'blockout'
                                     ? 'No blockout models available'
                                     : 'No projects match your search'}
                             </p>

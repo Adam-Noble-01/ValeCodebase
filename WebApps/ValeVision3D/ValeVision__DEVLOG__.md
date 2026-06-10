@@ -2,6 +2,96 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.4.1 - 10-Jun-2026
+### MaxModel Loading Fixes — Storey GLB Parsing, Indexed Material Preservation, Token-Based Door Collection
+
+**Overview**
+First MaxModel project (62609__Bagot) exposed three loading-path bugs that broke storey-based GLB sets exported by the TrueVision GLB Builder. Confirmed via DevTools network capture (only 5 of 13 GLBs requested), runtime scene report (storey files collapsed into `ValeVision__LegacyModel`), and the GLB export log (which proved `MAT101__Glass__ClearDefault` was correctly exported but never rendered). All three fixes are TrueVision-parity ports and are fully backwards compatible — existing whitecard/blockout projects behave identically.
+
+**Bug 1 — Storey GLBs collapsed into one legacy bucket (5 of 13 files loaded)**
+- `Na__ModelLoader__ParseModelUrl` had no storey branch. Filenames like `Bagot__Storey__GroundFloor__ProposedDoors__MeshModel__.glb` failed the primary `(ValeVision|NaModel|TrueVision)__` regex and fell into the legacy fallback, which assigns ALL matches to the single key `ValeVision__LegacyModel`. Each storey file overwrote the previous — only the last mesh+linework pair (ProposedWindows) survived classification.
+- FIX: Added `Na__ModelUrl__StoreyParseRegex` (`/(?:.*?__)?Storey__([A-Za-z]+)__([A-Za-z]+)__(MeshModel|LineworkModel)__\.glb/i`) and a storey branch in `ParseModelUrl` — checked AFTER the primary regex, BEFORE the legacy fallback — producing distinct keys like `Storey__GroundFloor__ProposedWindows`. Storey categories load via the existing unordered second pass (same as TrueVision). The legacy fallback remains for genuinely old projects.
+
+**Bug 2 — Glass never transparent (indexed materials whitecard-replaced at load)**
+- `Na__ModelLoader__LoadSingleMesh` unconditionally replaced every untextured material with the shared whitecard material — destroying the `MAT101__Glass__ClearDefault` name before the MaxEngine DataLib swap could ever match it. The glass mesh was in the scene but rendered as opaque whitecard.
+- FIX: New `Na__ModelLoader__PrepareMeshMaterial` resolver — materials matching `/^MAT\d{3}__/` are PRESERVED (cloned + DoubleSide + polygon offset only), exactly mirroring TrueVision's `CloneAndPrepareMaterial`. Non-indexed materials keep the exact previous treatment (textured → emissive prep, untextured → whitecard). Multi-material arrays now handled. Old whitecard GLBs contain zero indexed materials (export logs show "0 materials exported"), so PureEngine projects are unaffected.
+- Diagnostic: logs `preserved N indexed material(s) for swap pass` per GLB when indexed materials are found.
+
+**Bug 3 — Door animations dead (category key matching could never succeed)**
+- LoadingSequence door init checked `categoryKey.includes('ProposedDoors') && categoryKey.includes('MeshModel')` — but Map category keys NEVER contain `MeshModel`/`LineworkModel` (those live on child root names via `userData.Na__ModelType`). This was silently broken for v4 flat projects too, not just storey sets.
+- FIX: Ported TrueVision's token-based pattern: `Na__ResolveDoorCategoryNameTokens` (config-driven, defaults `['ProposedDoors', 'ExistingDoors']`) + `Na__CollectDoorModelGroups` which matches tokens against category keys (`Storey__GroundFloor__ProposedDoors` ✓) and pulls mesh/linework roots from group children via `userData.Na__ModelType`. Collected ARRAYS are passed to `Na__DoorAnimation__Initialize` (already array-capable since its original port) so multiple door categories — e.g. one per storey — all register.
+
+**Files Changed**
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — storey regex + parse branch; `Na__ModelLoader__PrepareMeshMaterial` with indexed preservation + array handling; header devlog
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — token-based door collection (v1.2.1)
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — added `3dObject__Interaction__DoorAnimation__CategoryNameTokens: ["ProposedDoors", "ExistingDoors"]`
+
+**Expected Results (Bagot MaxModel)**
+- All 13 GLBs request and render: walls, roofs, doors, existing walls, windows, landscape
+- MaxEngine glass: `MAT101__Glass__ClearDefault` survives load → DataLib swap applies Opacity 0.2 / Transparent / DoubleSide / HDR env reflections
+- Door click + walk/fly proximity animations work (ADR/MOD hierarchy preserved by exporter's DoorHandler)
+- Model toggle menu lists each storey element category automatically
+
+**Deliberately Out of Scope**
+- TrueVision's Storey View / Storey Isolate UI controls (per-floor visibility UX — optional follow-up)
+- `Na__ModelLoader__ConsolidateInstances` performance port
+
+# ---------------------------------------------------------
+## ValeVision3D v2.4.0 - 10-Jun-2026
+### Dual Render Engine — PureEngine (Default) + MaxEngine (TrueVision PBR/SSAO Port)
+
+**Overview**
+ValeVision now has two render engines, selectable per model. **PureEngine** is the original super-simplified whitecard pipeline — unchanged, always the default; every existing project behaves identically. **MaxEngine** is the full TrueVision-equivalent pipeline (SSAO + AO blur, DataLib-driven PBR materials hot-swap, glass/mirror env overrides) for the rare projects that want full PBR. A new Dev-menu "Render Engine" section selects + saves the engine to `project.json` (standard GET-merge-POST). When MaxEngine is saved for a model, a "Render Engine" section appears in the user-facing Tools & Settings menu allowing live switching between both engines; PureEngine-only models show no trace of the feature. Door click + proximity animations work identically under both engines.
+
+**Engine Architecture (Critical — see new .cursor rule)**
+- `05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js` — the original `Na__RenderPipeline__PostProcessing__Setup.js` relocated verbatim (function renamed `Na__RenderPipeline__PureEngine__SetupComposer`). Zero behavioural change.
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js` — ported from TrueVision: RenderPass → ProfileLines → Fog → SSAO → AO Blur → FXAA, separate depth pre-pass RT (no composer-RT DepthTexture = no WebGL feedback loop), AO layer-1 exclusion, `camera.layers.enable(1)`. Exposes ValeVision's full pipeline-state contract (insertFogPass, depthTexture, profileNormal/ColorTarget, profileLinesPassRef) PLUS Max extras (renderDepthPrePass, setDepthPrePassSize, updateAoUniforms, setAoSize, monitorAoFrame, toggleAo) — so ImageExport / ElevationView / GridLines / 2D profile lines keep working under both engines.
+- No cross-imports between engine folders. Shared infra (ProfileLines, RenderLoop Invalidation, RenderEngine state, user controls) lives in the parent `05__RenderPipeline/` folder.
+- New rule file `.cursor/rules/07-RenderEngine-Architecture-.mdc` (alwaysApply) documents the separation so future agents cannot couple the engines.
+
+**SSOT Materials — No Duplicate Data Files**
+- New `01__AppCore/AppCore__DataLib__Loader.js` (ported from TrueVision) fetches the four `Na__DataLib__CoreIndex__*.json` files from the SAME GitHub raw URLs TrueVision uses (`Adam-Noble-01/Plugins/.../Na__Common__DataLib__CoreSuEntityStandards/`). MaxEngine material properties therefore come from the single source of truth — no locally-maintained copy was created.
+- `Na__MaterialsSystem__LibraryLoader.js` — `BuildLookup` now resolves either root key (`Na__AppConfig__MaterialsLibrary` local / `Na__DataLib__CoreIndex__Materials` SSOT) + `forceRebuild` param for engine switches. PureEngine continues to use the unchanged local library path.
+- `Na__MaterialsSystem__MaterialSwap.js` — upgraded to TrueVision parity: multi-material array handling, AoExclude layer-1 assignment (material flag + DataLib name tokens), mirror/glass environment override functions. NEW: original materials captured in `userData.na_originalMaterial` on first swap + `Na__MaterialsSystem__RestoreOriginalMaterials()` so switching back to PureEngine restores the exact pre-swap appearance (and clears AO layer tags). TrueVision's hardcoded MAT140 mirror debug counters were deliberately not ported.
+
+**Loading Sequence (`Na__AppFlow__LoadingSequence.js` v1.2.0)**
+- Engine-aware composer builder `Na__RenderEngine__BuildPipeline()`: PureEngine built at startup (always); rebuilt as MaxEngine after `project.json` read when configured; live runtime switching via `na-render-engine-switch` event (re-entrancy guarded, old composer/RTs disposed best-effort, fog pass re-inserted + tDepth rebound).
+- Engine-aware materials: MaxEngine → `Na__DataLib__LoadAll()` → DataLib lookup → swap + glass/mirror env overrides + distance culling registration. PureEngine → restore originals → re-run unchanged local-library swap. DataLib fetch failure falls back gracefully (keeps current materials, toast shown).
+- RenderFrame additions (no-ops under PureEngine): `updateAoUniforms`, `monitorAoFrame` (3 s startup-delay gated), `renderDepthPrePass`, `Na__DistanceCulling__Update`.
+- Resize additions: `setDepthPrePassSize` / `setAoSize` (optional calls).
+- **Door animations verified under MaxEngine**: startup order unchanged (materials swap → door registry scan), and the door system holds Object3D refs + transforms — never material refs — so swap/restore in either direction cannot break click-to-open or walk/fly proximity opening.
+
+**New Files**
+- `05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js` (relocated original; old file deleted)
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js`
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js` (config-gated, off by default)
+- `05__RenderPipeline/Na__RenderEngine__State.js` — configured vs active engine accessors
+- `05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js` — user-facing Tools section (dynamic visibility)
+- `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js` + `__Shader.js` — custom log-depth SSAO (Three's SSAOPass cannot work with logarithmicDepthBuffer)
+- `01__AppCore/AppCore__DataLib__Loader.js` — SSOT DataLib fetch
+- `70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js` — dev radios + Save (live preview on radio change)
+- `.cursor/rules/07-RenderEngine-Architecture-.mdc`
+
+**Files Modified**
+- `Na__AppFlow__LoadingSequence.js` — engine wiring (see above)
+- `Na__MaterialsSystem__MaterialSwap.js` / `Na__MaterialsSystem__LibraryLoader.js` — TrueVision parity + restore support
+- `Na__Scene__DefaultSceneLighting.js` — added `Na__Scene__ApplyEnvironmentMap` (HDR + PMREM, MaxEngine only)
+- `Na__AppConfig__Main.json` — `RenderEngine__Config` default, `RenderEffect__AmbientOcclusion`, `Scene__Environment` (disabled until an HDR asset is added), `RenderEffect__DistanceCulling` (disabled)
+- `index.html` — Tools + Dev menu HTML sections, config extraction, init calls, event listeners
+- `TestEnv__PrototypeTestingSandbox__Main__.js` — import path updated to PureEngine setup
+
+**project.json Schema Addition (per model, optional)**
+```json
+"RenderEngine__Config": { "RenderEngine__Active": "MaxEngine" }
+```
+Key absent or `"PureEngine"` → default behaviour, no visible change.
+
+**Known Limits / Honest Notes**
+- `Scene__Environment` is enabled and points at `./01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr` — a byte-identical copy of TrueVision's HDRI (MD5 verified), relocated into the proper app-assets tree mirroring TrueVision's `05__AppAssets__SkyDomes` convention. It is loaded lazily, only when MaxEngine activates, so PureEngine sessions never fetch the 4k HDR.
+- AO `setSize` receives CSS pixels while the depth pre-pass RT is pixel-ratio scaled — ported as-is from TrueVision for visual parity (subtle SSAO sampling offset at DPR > 1).
+- SSAO kernel is unseeded `Math.random()` (per TrueVision) — AO noise pattern varies per page load.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.3.7 - 09-Jun-2026
 ### Navigation Modes — Walk and Fly Mode Port from TrueVision3D
 

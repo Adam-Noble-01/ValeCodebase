@@ -32,6 +32,10 @@
             "FogPlane__Config__PlaneB__PositionMm": 20480
         }
     },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
     "Navmode__OrbitMaxDistanceMm": 35000,
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
@@ -77,8 +81,7 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "Navmode__EnabledModes": {
-        "Navmode__EnabledModes__Walk": true,
-        "Navmode__EnabledModes__Fly": true
+    "RenderEngine__Config": {
+        "RenderEngine__Active": "MaxEngine"
     }
 }

@@ -17,11 +17,32 @@
 // - If no match is found, the existing material (whitecard) is preserved.
 // - Supports optional texture URL hot-swapping from TextureMaps config.
 // - Handles IsDoubleSided, Transparent, DepthWrite, and EnvMapIntensity.
+// - Handles multi-material meshes (node.material arrays).
+// - AoExclude: true in the library config (or a name-token match against the
+//   DataLib pipeline exclusions) assigns a mesh to THREE.js layer 1 and tags
+//   node.userData.na_aoExclude = true. The MaxEngine render pipeline disables
+//   layer 1 on the camera during depth pre-passes so the SSAO shader never
+//   receives depth data for these meshes (foliage, plants, etc.).
+// - Captures each node's original material on first swap so the engine
+//   switcher can restore the whitecard appearance when returning to PureEngine.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 10-Jun-2026 - Version 1.1.0
+// - Upgraded to TrueVision3D parity: multi-material arrays, AO layer
+//   exclusion (material AoExclude flag + DataLib name tokens), and the
+//   mirror/glass environment override functions.
+// - Added original-material capture + Na__MaterialsSystem__RestoreOriginalMaterials
+//   so the render engine can switch back to PureEngine at runtime.
+// - TrueVision's hardcoded MAT140 mirror debug counters deliberately NOT
+//   ported (production debug cruft).
 //
 // =============================================================================
 
 import * as THREE from 'three';
 import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__LibraryLoader.js';
+import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__DataLib__Loader.js';
 
 
 // -----------------------------------------------------------------------------
@@ -251,6 +272,63 @@ import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__Libra
 
 
 // -----------------------------------------------------------------------------
+// REGION | Pipeline Exclusion Helpers
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Read Ambient-Occlusion Exclusion Tokens from DataLib
+    // ------------------------------------------------------------
+    // Returns { tokens: [...], matchMode: 'contains'|'prefix' } sourced from
+    // the Components DataLib Na__DataLib__PipelineExclusions section, or an
+    // empty token list when unavailable (PureEngine never loads the DataLib).
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__GetAoExclusionTokens() {
+        const exclusions = Na__DataLib__GetPipelineExclusions();
+        if (!exclusions) return { tokens: [], matchMode: 'contains' };
+
+        const aoSection = exclusions.Na__DataLib__PipelineExclusions__AmbientOcclusion;
+        const tokens    = (aoSection && Array.isArray(aoSection.Names)) ? aoSection.Names : [];
+        const matchMode = (typeof exclusions.MatchMode === 'string') ? exclusions.MatchMode : 'contains';
+        return { tokens, matchMode };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Test a Name Against Exclusion Tokens
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__NameMatchesExclusion(name, tokens, matchMode) {
+        if (!name || !tokens || tokens.length === 0) return false;
+        for (const token of tokens) {
+            if (!token) continue;
+            if (matchMode === 'contains') {
+                if (name.includes(token)) return true;
+            } else if (name.startsWith(token) || token.startsWith(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Test a Node or Any Ancestor Against Exclusion Tokens
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__NodeOrAncestorExcluded(node, tokens, matchMode) {
+        if (!tokens || tokens.length === 0) return false;
+        let current = node;
+        while (current) {
+            if (Na__MaterialsSystem__NameMatchesExclusion(current.name, tokens, matchMode)) {
+                return true;
+            }
+            current = current.parent;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Main Material Swap Function
 // -----------------------------------------------------------------------------
 
@@ -260,7 +338,9 @@ import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__Libra
     // material.name matches the lookup map, creates a new PBR
     // material from the library config and replaces the existing
     // material. Meshes with no match retain their current material
-    // (whitecard fallback preserved).
+    // (whitecard fallback preserved). Each node's pre-swap material
+    // is captured once in userData so the render engine switcher can
+    // restore the original appearance later.
     //
     // Parameters:
     //   modelGroup        - THREE.Group containing loaded model meshes
@@ -282,26 +362,28 @@ import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__Libra
         const materialCache   = new Map();                                    // <-- Cache created materials by SketchUpName
         const texturePromises = [];                                           // <-- Collect async texture loads
         let   swapCount       = 0;                                            // <-- Counter for logging
+        let   aoExcludedCount = 0;                                            // <-- Meshes assigned to AO-excluded layer 1
 
-        modelGroup.traverse((node) => {
-            if (!node.isMesh) return;                                         // <-- Skip non-mesh nodes
+        const { tokens: aoExclusionTokens, matchMode: aoExclusionMatchMode }  // <-- Name-based AO exclusion list from Components DataLib
+            = Na__MaterialsSystem__GetAoExclusionTokens();
 
-            const materialName = node.material ? node.material.name : null;
+        const Na__MaterialsSystem__ResolveSwappedMaterial = (sourceMaterial) => {
+            const materialName = sourceMaterial ? sourceMaterial.name : null;
 
             if (!materialName || !Na__MaterialsSystem__IsIndexedName(materialName)) {
-                return;                                                       // <-- No indexed name, keep whitecard
+                return sourceMaterial;                                         // <-- No indexed name, keep original material
             }
 
-            const config = lookupMap.get(materialName);                       // <-- O(1) lookup by SketchUpName
-            if (!config) return;                                              // <-- Not in library, keep whitecard
+            const config = lookupMap.get(materialName);                        // <-- O(1) lookup by SketchUpName
+            if (!config) return sourceMaterial;                                // <-- Not in library, keep existing material
 
             let pbrMaterial;
 
             if (materialCache.has(materialName)) {
-                pbrMaterial = materialCache.get(materialName);                // <-- Reuse cached material instance
+                pbrMaterial = materialCache.get(materialName);                 // <-- Reuse cached material instance
             } else {
                 pbrMaterial = Na__MaterialsSystem__CreatePbrMaterial(config, polygonOffsetConfig);
-                materialCache.set(materialName, pbrMaterial);                 // <-- Cache for reuse
+                materialCache.set(materialName, pbrMaterial);                  // <-- Cache for reuse
 
                 const hasTextures = config.TextureMaps && Object.values(config.TextureMaps).some((url) => url !== null);
                 if (hasTextures) {
@@ -311,17 +393,193 @@ import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__Libra
                 }
             }
 
-            node.material = pbrMaterial;                                      // <-- Swap the material
             swapCount++;
+            return pbrMaterial;
+        };
+
+        modelGroup.traverse((node) => {
+            if (!node.isMesh) return;                                         // <-- Skip non-mesh nodes
+
+            // ORIGINAL MATERIAL CAPTURE | Stored once (first swap only) so the
+            // render engine switcher can restore the pre-swap appearance later.
+            if (node.userData.na_originalMaterial === undefined) {
+                node.userData.na_originalMaterial = node.material;            // <-- Material or material array reference
+            }
+
+            if (Array.isArray(node.material)) {
+                node.material = node.material.map((material) => Na__MaterialsSystem__ResolveSwappedMaterial(material));
+            } else {
+                node.material = Na__MaterialsSystem__ResolveSwappedMaterial(node.material);
+            }
+
+            // AO EXCLUSION | Assign AO-exempt meshes to Three.js layer 1 so the
+            // MaxEngine pipeline can temporarily blind the camera to layer 1
+            // during depth pre-passes, preventing the SSAO shader from
+            // accumulating occlusion on foliage geometry. Two drivers:
+            // (a) material-level AoExclude flag, (b) name tokens from DataLib.
+            let   na_aoExclude    = false;
+            const primaryMaterial = Array.isArray(node.material) ? node.material[0] : node.material;
+            if (primaryMaterial && Na__MaterialsSystem__IsIndexedName(primaryMaterial.name)) {
+                const matConfig = lookupMap.get(primaryMaterial.name);
+                if (matConfig && matConfig.AoExclude === true) {
+                    na_aoExclude = true;                                      // <-- Material-driven AO exclusion
+                }
+            }
+            if (!na_aoExclude && Na__MaterialsSystem__NodeOrAncestorExcluded(node, aoExclusionTokens, aoExclusionMatchMode)) {
+                na_aoExclude = true;                                          // <-- Name-driven AO exclusion
+            }
+            if (na_aoExclude) {
+                node.layers.set(1);                                           // <-- Layer 1 = AO-excluded; camera.layers.enable(1) in MaxEngine setup keeps it visible
+                node.userData.na_aoExclude = true;                            // <-- Tag for debugging / identification
+                aoExcludedCount++;
+            }
         });
 
         if (texturePromises.length > 0) {
             await Promise.all(texturePromises);                               // <-- Wait for all texture loads
         }
 
-        if (swapCount > 0) {
-            console.log(`[MaterialsSystem] Swapped ${swapCount} mesh material(s) across ${materialCache.size} unique material(s)`);
+        if (swapCount > 0 || aoExcludedCount > 0) {
+            console.log(`[MaterialsSystem] Swapped ${swapCount} mesh material(s) across ${materialCache.size} unique material(s), AoExcluded=${aoExcludedCount}`);
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restore Original (Pre-Swap) Materials on a Model Group
+    // ------------------------------------------------------------
+    // Used when the render engine switches back to PureEngine at runtime.
+    // Restores each node's captured original material and clears any AO
+    // layer-1 assignment so meshes render normally on the default layer.
+    // Door animation / interaction systems are unaffected: they hold
+    // Object3D references and transforms, never material references.
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__RestoreOriginalMaterials(modelGroup) {
+        if (!modelGroup) return;
+
+        let restoredCount = 0;
+
+        modelGroup.traverse((node) => {
+            if (!node.isMesh) return;                                         // <-- Skip non-mesh nodes
+
+            if (node.userData.na_originalMaterial !== undefined) {
+                node.material = node.userData.na_originalMaterial;            // <-- Restore captured material (or array)
+                delete node.userData.na_originalMaterial;                     // <-- Allow fresh capture on next swap
+                restoredCount++;
+            }
+
+            if (node.userData.na_aoExclude) {
+                node.layers.set(0);                                           // <-- Return to default render layer
+                delete node.userData.na_aoExclude;
+            }
+        });
+
+        if (restoredCount > 0) {
+            console.log(`[MaterialsSystem] Restored ${restoredCount} original mesh material(s)`);
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Mirror and Glass Environment Overrides
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Apply Mirror-Only Environment and Brightness Overrides
+    // ------------------------------------------------------------
+    // Applies env reflections and optional brightness boost only to
+    // the targeted mirror material name, avoiding scene-wide tinting.
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides(modelGroup, envMapTexture, options = {}) {
+        if (!modelGroup || !envMapTexture) return;
+
+        const targetMaterialName = (typeof options.targetMaterialName === 'string' && options.targetMaterialName.length > 0)
+            ? options.targetMaterialName
+            : 'MAT140__Mirror__ClearDefault';
+
+        const envIntensity      = Number.isFinite(options.envMapIntensity) ? options.envMapIntensity : 1.6;
+        const brightnessBoost   = Number.isFinite(options.brightnessBoost) ? options.brightnessBoost : 1.15;
+        const roughnessOverride = Number.isFinite(options.roughnessOverride) ? options.roughnessOverride : null;
+
+        let mirrorMatchedCount = 0;
+
+        const applyToMaterial = (material) => {
+            if (!material || material.name !== targetMaterialName) return;
+
+            material.envMap = envMapTexture;
+            material.envMapIntensity = envIntensity;
+            if (roughnessOverride !== null && 'roughness' in material) {
+                material.roughness = roughnessOverride;
+            }
+
+            if (material.color && typeof material.color.multiplyScalar === 'function') {
+                material.color.multiplyScalar(brightnessBoost);
+            }
+
+            material.needsUpdate = true;
+            mirrorMatchedCount++;
+        };
+
+        modelGroup.traverse((node) => {
+            if (!node.isMesh || !node.material) return;
+
+            if (Array.isArray(node.material)) {
+                node.material.forEach(applyToMaterial);
+            } else {
+                applyToMaterial(node.material);
+            }
+        });
+
+        console.log(
+            `[MaterialsSystem] Mirror overrides applied: target=${targetMaterialName}, matched=${mirrorMatchedCount}, envIntensity=${envIntensity}`
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Apply Subtle Glass Environment Overrides
+    // ------------------------------------------------------------
+    // Applies a low-intensity environment reflection to window glass
+    // so it reflects slightly without affecting the full scene tone.
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__ApplyGlassEnvironmentOverrides(modelGroup, envMapTexture, options = {}) {
+        if (!modelGroup || !envMapTexture) return;
+
+        const targetMaterialName = (typeof options.targetMaterialName === 'string' && options.targetMaterialName.length > 0)
+            ? options.targetMaterialName
+            : 'MAT101__Glass__ClearDefault';
+
+        const envIntensity         = Number.isFinite(options.envMapIntensity) ? options.envMapIntensity : 0.3;
+        const brightnessMultiplier = Number.isFinite(options.brightnessMultiplier) ? options.brightnessMultiplier : 1.0;
+        let   glassMatchedCount    = 0;
+
+        const applyToMaterial = (material) => {
+            if (!material || material.name !== targetMaterialName) return;
+
+            material.envMap = envMapTexture;
+            material.envMapIntensity = envIntensity;
+            if (material.color && typeof material.color.multiplyScalar === 'function') {
+                material.color.multiplyScalar(brightnessMultiplier);
+            }
+            material.needsUpdate = true;
+            glassMatchedCount++;
+        };
+
+        modelGroup.traverse((node) => {
+            if (!node.isMesh || !node.material) return;
+
+            if (Array.isArray(node.material)) {
+                node.material.forEach(applyToMaterial);
+            } else {
+                applyToMaterial(node.material);
+            }
+        });
+
+        console.log(
+            `[MaterialsSystem] Glass overrides applied: target=${targetMaterialName}, matched=${glassMatchedCount}, envIntensity=${envIntensity}`
+        );
     }
     // ------------------------------------------------------------
 
@@ -335,7 +593,10 @@ import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__Libra
     // MODULE EXPORTS | Material Swap API
     // ------------------------------------------------------------
     export {
-        Na__MaterialsSystem__ApplyMaterials
+        Na__MaterialsSystem__ApplyMaterials,
+        Na__MaterialsSystem__RestoreOriginalMaterials,
+        Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides,
+        Na__MaterialsSystem__ApplyGlassEnvironmentOverrides
     };
     // ------------------------------------------------------------
 

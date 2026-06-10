@@ -18,6 +18,30 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.6 - 10-Jun-2026 - Max Models Tab + Builder Tagging
+
+### Overview
+Third gallery tab — **Max Models** — added to Whitecardopedia, sitting alongside Whitecard Models and Blockout Models. Max Models are premium full-PBR projects built with ValeVision3D's MaxEngine (ambient occlusion, physically-based materials, glass/mirror reflections). The gallery tab is driven by `ProjectType: "MaxModel"` in `project.json`. Both builder tools now recognise source folders suffixed `__MaxModel` and tag them automatically.
+
+### Features Added
+- **Max Models gallery tab**: A third button in the gallery mode toggle. Filters `ProjectType === "MaxModel"`. Default mode remains Whitecard Models — existing projects are unaffected.
+- **MaxModel info banner**: A blue informational banner appears above the grid when the Max Models tab is active, explaining what MaxEngine quality means for those projects.
+- **Empty state guidance**: When no MaxModel projects exist yet, the empty state message tells the developer how to create one (rename a source folder with the `__MaxModel` suffix and run the WCP builder).
+- **WCP builder (`AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py`)**: Recognises `__MaxModel` folder suffix (both legacy `EX-12345__Name__MaxModel` and new `12345__Name__MaxModel` formats). Writes `ProjectType: "MaxModel"` and additionally writes `RenderEngine__Config: { "RenderEngine__Active": "MaxEngine" }` into `project.json` so ValeVision3D automatically boots into MaxEngine for these models. The dry-run report highlights MaxModel projects in cyan and confirms the config that will be written. For non-MaxModel types, any stale `RenderEngine__Config` key is cleaned up from the template.
+- **GlbBot (`AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py`)**: `__MaxModel` added to folder scan pattern so MaxModel GLBs upload to Cloudflare R2 and the post-step `valeVision_ModelUrls` refresh covers MaxModel projects.
+
+### Technical Implementation
+- `02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__Blockoutopedia__GalleryModeToggle.jsx` — third button added (`onModeChange('maxmodel')`); mode check uses `galleryMode === 'maxmodel'`
+- `02__Src__AppModules/20__Feature__Blockoutopedia/Na__Feature__MaxModel__InfoBanner.jsx` — new `MaxModelInfoBanner` component (blue palette, parallel structure to `BlockoutWarningBanner`)
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx` — `filterProjectsByGalleryMode` extended with `maxmodel` branch (before `blockout`); `MaxModelInfoBanner` rendered on `galleryMode === 'maxmodel'`; empty-state message updated
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Blockoutopedia__.css` — added `.gallery-mode-toggle__button:not(:first-child):not(:last-child)` rule for correct three-button border layout; added `max-model-info-banner__*` styles (sky-blue palette); mobile adjustments extended
+- `app.html` — `Na__Feature__MaxModel__InfoBanner.jsx` script tag added after existing Blockoutopedia scripts
+
+### Cross-reference
+The `RenderEngine__Config` key written by the WCP builder is read on load by ValeVision3D (`Na__AppFlow__LoadingSequence.js`) which was built as part of the Dual Render Engine port (ValeVision3D v2.4.0). No ValeVision3D changes required for this feature.
+
+---
+
 ## Whitecardopedia v0.3.5 - 30-Apr-2026 - Portrait Mobile Layout Fix (Header + Project Viewer)
 ### Features Added
 - **Decluttered Mobile Header**: On portrait phones (≤600px viewport) the Whitecardopedia / Blockoutopedia title logo is now hidden so the Vale Garden Houses logo, hamburger menu, gallery-mode toggle, and search box can all share the limited horizontal space without truncation. The title logo continues to render exactly as before on landscape phones, iPad portrait, and desktop — only narrow portrait viewports are affected. Resolves the issue visible on the user's phone screenshot where "Whitecardope..." was clipping the search input

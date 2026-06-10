@@ -13,9 +13,25 @@
 // - Loads multiple GLB model pairs from an array of CDN URLs.
 // - Classifies each URL by parsing the ValeVision category and model type.
 // - Accepts both __ValeVision__ (preferred) and __NaModel__ (backstop) namespaces.
-// - Loads models sequentially in priority order defined by the GLB Builder tag ranges.
+// - Supports storey-based exports (Storey__{Name}__{Element}) producing distinct
+//   per-element category keys — TrueVision parity for MaxModel projects.
+// - Loads models sequentially in priority order defined by the GLB Builder tag ranges;
+//   storey and unrecognised-but-valid categories load via the unordered second pass.
+// - Indexed MAT###__ materials are preserved at load so the render-engine materials
+//   swap pass can match them by name (glass, mirrors, etc.).
 // - Each category gets its own THREE.Group for future per-category toggling.
 // - Material config and linework config are read from AppConfig (passed in).
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 10-Jun-2026 - Version 1.1.0
+// - Added Na__ModelUrl__StoreyParseRegex + storey branch in ParseModelUrl (before
+//   the legacy fallback) so storey GLB sets no longer collapse into the single
+//   ValeVision__LegacyModel bucket (was causing 5-of-13 file loads).
+// - LoadSingleMesh now preserves indexed MAT###__ materials (clone + polygon
+//   offset only) instead of whitecard-replacing them, and handles multi-material
+//   arrays. Non-indexed materials keep the exact previous whitecard treatment.
 //
 // =============================================================================
 
@@ -56,11 +72,14 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // Primary: Accepts __ValeVision__ (CDN rebranded) and __NaModel__ (raw SketchUp export).
     // Supports optional project prefix (e.g., DeLisle__ValeVision__).
     // Captures: [1] namespace (ValeVision|NaModel), [2] category, [3] model type.
+    // Storey:  Matches storey-based exports (e.g. Bagot__Storey__GroundFloor__ProposedWindows__MeshModel__.glb).
+    // Captures: [1] storey name (GroundFloor), [2] element type (ProposedWindows), [3] model type.
     // Legacy:  Matches older __Layer-XX__BaseMeshModel__ / __LineworkModel__ patterns.
     // Captures: [1] model type indicator (BaseMeshModel|LineworkModel).
     // OrbitHelperCube: Matches OrbitHelperCube GLB files exported from SketchUp for orbit target positioning.
     // ------------------------------------------------------------
     const Na__ModelUrl__ParseRegex        = /(?:.*?__)?(ValeVision|NaModel|TrueVision)__(.+?)__(MeshModel|LineworkModel)__\.glb/i;
+    const Na__ModelUrl__StoreyParseRegex  = /(?:.*?__)?Storey__([A-Za-z]+)__([A-Za-z]+)__(MeshModel|LineworkModel)__\.glb/i;  // <-- Storey-based export naming (TrueVision parity)
     const Na__ModelUrl__LegacyParseRegex  = /__(BaseMeshModel|LineworkModel|MeshModel)__/i;
     const Na__ModelUrl__LegacyCategoryKey = "ValeVision__LegacyModel";   // <-- Fallback category for legacy URLs
     const Na__ModelUrl__OrbitCubeRegex    = /OrbitHelperCube__MeshModel__\.glb$/i;  // <-- Orbit helper cube detection
@@ -95,6 +114,25 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 category       : normalizedCategory,                     // <-- Normalized category key
                 modelType      : modelType,                              // <-- MeshModel or LineworkModel
                 rawNamespace   : namespace                               // <-- Original namespace for logging
+            };
+        }
+
+        // STOREY REGEX | Storey-based exports (TrueVision parity — MUST run before legacy fallback)
+        // Produces distinct category keys per storey element (e.g. Storey__GroundFloor__ProposedDoors)
+        // so multi-storey GLB sets do not collapse into the single legacy bucket.
+        const storeyMatch = Na__ModelUrl__StoreyParseRegex.exec(filename);
+        if (storeyMatch) {
+            const storeyName  = storeyMatch[1];                          // <-- e.g. GroundFloor
+            const elementType = storeyMatch[2];                          // <-- e.g. ProposedWindows
+            const modelType   = storeyMatch[3];                          // <-- MeshModel or LineworkModel
+
+            const storeyCategory = `Storey__${storeyName}__${elementType}`;  // <-- Distinct per storey element
+
+            return {
+                url            : url,                                    // <-- Original full URL
+                category       : storeyCategory,                         // <-- Storey-scoped category key
+                modelType      : modelType,                              // <-- MeshModel or LineworkModel
+                rawNamespace   : 'Storey'                                // <-- Flag as storey for logging
             };
         }
 
@@ -234,6 +272,8 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
         const gltf         = await loader.loadAsync(modelUrl);           // <-- Load GLB file
         const meshRoot     = gltf.scene;                                 // <-- Extract scene graph
 
+        const indexedNameRegex = /^MAT\d{3}__/;                          // <-- Indexed materials that survive to the swap pass (TrueVision parity)
+
         const Na__Material__WhiteMat = new THREE.MeshStandardMaterial({
             color               : baseMeshConfig.material.whiteColor,    // <-- White base color
             roughness           : baseMeshConfig.material.roughness,     // <-- Surface roughness
@@ -244,31 +284,69 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
             polygonOffsetUnits  : baseMeshConfig.material.polygonOffsetUnits
         });
 
+        let indexedMaterialsSeen = 0;                                    // <-- Diagnostics: indexed materials preserved
+
+        // SUB HELPER FUNCTION | Resolve Prepared Material for a Mesh Node
+        // ------------------------------------------------------------
+        // Indexed MAT###__ materials are PRESERVED (cloned + polygon offset only)
+        // so the engine materials swap pass can match them by name (glass etc.).
+        // Non-indexed materials keep the exact pre-existing whitecard treatment:
+        // textured -> emissive prep, untextured -> shared whitecard material.
+        // ------------------------------------------------------------
+        const Na__ModelLoader__PrepareMeshMaterial = (sourceMaterial) => {
+            if (!sourceMaterial || !sourceMaterial.isMaterial) {
+                return Na__Material__WhiteMat;                           // <-- Missing material; apply shared whitecard
+            }
+
+            if (indexedNameRegex.test(sourceMaterial.name || '')) {
+                indexedMaterialsSeen++;
+                const preparedMaterial               = sourceMaterial.clone();  // <-- Preserve indexed material for swap pass
+                preparedMaterial.side                = THREE.DoubleSide;
+                preparedMaterial.polygonOffset       = true;
+                preparedMaterial.polygonOffsetFactor = baseMeshConfig.material.polygonOffsetFactor;
+                preparedMaterial.polygonOffsetUnits  = baseMeshConfig.material.polygonOffsetUnits;
+                return preparedMaterial;
+            }
+
+            if (sourceMaterial.map || sourceMaterial.emissiveMap) {
+                const preparedMaterial               = sourceMaterial.clone();  // <-- Textured: emissive whitecard treatment (unchanged)
+                preparedMaterial.side                = THREE.DoubleSide;
+                preparedMaterial.polygonOffset       = true;
+                preparedMaterial.polygonOffsetFactor = baseMeshConfig.material.polygonOffsetFactor;
+                preparedMaterial.polygonOffsetUnits  = baseMeshConfig.material.polygonOffsetUnits;
+                preparedMaterial.emissive            = new THREE.Color(baseMeshConfig.material.textureEmissive);
+                preparedMaterial.emissiveIntensity   = 0.0;
+
+                if (preparedMaterial.map && !preparedMaterial.emissiveMap) {
+                    preparedMaterial.emissiveMap = preparedMaterial.map; // <-- Use diffuse as emissive fallback
+                }
+
+                preparedMaterial.roughness = 1.0;                        // <-- Override roughness for textured
+                preparedMaterial.metalness = 0.0;                        // <-- Override metalness for textured
+                return preparedMaterial;
+            }
+
+            return Na__Material__WhiteMat;                               // <-- Untextured non-indexed: shared whitecard (unchanged)
+        };
+        // ------------------------------------------------------------
+
         meshRoot.traverse((node) => {
             if (!node.isMesh) return;                                    // <-- Skip non-mesh nodes
 
             node.castShadow    = true;                                   // <-- Enable shadow casting
             node.receiveShadow = true;                                   // <-- Enable shadow receiving
 
-            if (node.material && (node.material.map || node.material.emissiveMap)) {
-                node.material                    = node.material.clone();
-                node.material.side               = THREE.DoubleSide;
-                node.material.polygonOffset      = true;
-                node.material.polygonOffsetFactor = baseMeshConfig.material.polygonOffsetFactor;
-                node.material.polygonOffsetUnits  = baseMeshConfig.material.polygonOffsetUnits;
-                node.material.emissive           = new THREE.Color(baseMeshConfig.material.textureEmissive);
-                node.material.emissiveIntensity  = 0.0;
-
-                if (node.material.map && !node.material.emissiveMap) {
-                    node.material.emissiveMap = node.material.map;       // <-- Use diffuse as emissive fallback
-                }
-
-                node.material.roughness = 1.0;                          // <-- Override roughness for textured
-                node.material.metalness = 0.0;                          // <-- Override metalness for textured
+            if (Array.isArray(node.material)) {
+                node.material = node.material.map((mat) => Na__ModelLoader__PrepareMeshMaterial(mat));  // <-- Multi-material meshes
             } else {
-                node.material = Na__Material__WhiteMat;                  // <-- Apply white material
+                node.material = Na__ModelLoader__PrepareMeshMaterial(node.material);
             }
         });
+
+        if (indexedMaterialsSeen > 0) {
+            const modelNameForLog = (typeof modelUrl === 'string') ? modelUrl.split('/').pop() : 'UnknownModel.glb';
+            console.log(`[ValeVision3D] Mesh material prep ${modelNameForLog}: preserved ${indexedMaterialsSeen} indexed material(s) for swap pass`);
+        }
 
         return meshRoot;                                                 // <-- Return processed mesh root
     }

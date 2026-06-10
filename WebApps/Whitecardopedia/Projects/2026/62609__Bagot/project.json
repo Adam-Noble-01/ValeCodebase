@@ -1,0 +1,68 @@
+{
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
+    "ProjectType": "MaxModel",
+    "RenderEngine__Config": {
+        "RenderEngine__Active": "MaxEngine"
+    },
+    "basePath": "Projects/2026/62609__Bagot",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__10-Jun-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "62609",
+    "projectName": "Bagot",
+    "scheduleData": {
+        "dateFulfilled": "10-Jun-2026",
+        "dateReceived": "10-Oct-2025",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__10-Jun-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__FirstFloor__ExistingWalls__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__FirstFloor__ExistingWalls__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedDoors__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedDoors__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedRoofs__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedRoofs__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedWalls__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedWalls__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedWindows__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__Storey__GroundFloor__ProposedWindows__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot/Bagot__TrueVision__LandscapeEnvironment__MeshModel__.glb"
+    ],
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 32334,
+            "Camera__DefaultPos__PosY": 2439,
+            "Camera__DefaultPos__PosZ": 8617
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0385,
+            "Camera__DefaultRotation__RotY": 0.6729,
+            "Camera__DefaultRotation__RotZ": 0.024
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 19651,
+        "OrbitHelperCube__Position__PosY": 1826,
+        "OrbitHelperCube__Position__PosZ": -7286
+    }
+}

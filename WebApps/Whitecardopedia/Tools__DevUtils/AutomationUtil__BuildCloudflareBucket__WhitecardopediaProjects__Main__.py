@@ -11,7 +11,7 @@
 # CREATED    : 2025
 #
 # DESCRIPTION:
-# - Scans local Whitecard project folders for .glb model files
+# - Scans local Whitecard, Blockout, and MaxModel project folders for .glb model files
 # - Uploads models to Cloudflare R2 bucket for fast ValeVision3D serving
 # - Uses incremental sync strategy (only uploads new/changed files)
 # - Replicates local folder structure in cloud bucket
@@ -64,6 +64,8 @@ WHITECARD_FOLDER_PATTERN_OLD       = r'^([A-Z]{2}-\d+)__(.+?)__Whitecard$'  # <-
 WHITECARD_FOLDER_PATTERN_NEW       = r'^(\d+)__(.+?)__Whitecard$'           # <-- New pattern: 12345__Example__Whitecard
 BLOCKOUT_FOLDER_PATTERN_OLD        = r'^([A-Z]{2}-\d+)__(.+?)__Blockout$'   # <-- Legacy pattern: EX-12345__Example__Blockout
 BLOCKOUT_FOLDER_PATTERN_NEW        = r'^(\d+)__(.+?)__Blockout$'            # <-- New pattern: 12345__Example__Blockout
+MAXMODEL_FOLDER_PATTERN_OLD        = r'^([A-Z]{2}-\d+)__(.+?)__MaxModel$'   # <-- Legacy pattern: EX-12345__Example__MaxModel
+MAXMODEL_FOLDER_PATTERN_NEW        = r'^(\d+)__(.+?)__MaxModel$'            # <-- New pattern: 12345__Example__MaxModel
 GLB_FILE_PATTERN                   = r'^.+\.glb$'                            # <-- GLB file extension pattern
 GLB_ARCHIVE_SUBFOLDER              = "01__Archive"                           # <-- Archive subfolder to skip
 GLB_NAMODEL_NAMESPACE              = "__NaModel__"                           # <-- SketchUp export namespace marker
@@ -315,13 +317,15 @@ def upload_file_to_r2(s3_client: boto3.client, bucket_name: str, local_path: Pat
 # FUNCTION | Extract Project Metadata from Folder Name
 # ------------------------------------------------------------
 def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    """Extract project code and name from Whitecard or Blockout folder name"""
-    # TRY ALL PATTERNS (Whitecard and Blockout, legacy and new)
+    """Extract project code and name from Whitecard, Blockout, or MaxModel folder name"""
+    # TRY ALL PATTERNS (Whitecard, Blockout, and MaxModel — legacy and new)
     all_patterns = [
         WHITECARD_FOLDER_PATTERN_OLD,                                # <-- Legacy Whitecard
         WHITECARD_FOLDER_PATTERN_NEW,                                # <-- New Whitecard
         BLOCKOUT_FOLDER_PATTERN_OLD,                                 # <-- Legacy Blockout
         BLOCKOUT_FOLDER_PATTERN_NEW,                                 # <-- New Blockout
+        MAXMODEL_FOLDER_PATTERN_OLD,                                 # <-- Legacy MaxModel
+        MAXMODEL_FOLDER_PATTERN_NEW,                                 # <-- New MaxModel
     ]
 
     for pattern in all_patterns:
@@ -347,13 +351,15 @@ def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[
 # FUNCTION | Generate Destination Folder Name
 # ------------------------------------------------------------
 def generate_destination_folder_name(folder_name: str) -> Optional[str]:
-    """Generate R2 folder name by stripping __Whitecard or __Blockout suffix"""
-    # TRY ALL PATTERNS (Whitecard and Blockout, legacy and new)
+    """Generate R2 folder name by stripping __Whitecard, __Blockout, or __MaxModel suffix"""
+    # TRY ALL PATTERNS (Whitecard, Blockout, and MaxModel — legacy and new)
     all_patterns = [
         WHITECARD_FOLDER_PATTERN_OLD,                                # <-- Legacy Whitecard
         WHITECARD_FOLDER_PATTERN_NEW,                                # <-- New Whitecard
         BLOCKOUT_FOLDER_PATTERN_OLD,                                 # <-- Legacy Blockout
         BLOCKOUT_FOLDER_PATTERN_NEW,                                 # <-- New Blockout
+        MAXMODEL_FOLDER_PATTERN_OLD,                                 # <-- Legacy MaxModel
+        MAXMODEL_FOLDER_PATTERN_NEW,                                 # <-- New MaxModel
     ]
 
     for pattern in all_patterns:

@@ -45,6 +45,24 @@
 // - Reads Navmode__EnabledModes from project.json and forwards to
 //   Na__NavigationModes__State for dynamic Tools menu and hotkey gating.
 //
+// 10-Jun-2026 - Version 1.2.0
+// - Dual render engine support: PureEngine (default, unchanged) vs MaxEngine
+//   (PBR + SSAO, per-model opt-in via project.json RenderEngine__Config).
+// - Engine-aware composer builder with live runtime switching
+//   (na-render-engine-switch event) and engine-aware materials application
+//   (PureEngine local library vs MaxEngine DataLib SSOT from GitHub).
+// - RenderFrame gains optional MaxEngine calls: updateAoUniforms,
+//   monitorAoFrame, renderDepthPrePass, and distance culling update.
+// - Door animation init order unchanged (materials swap -> door registry scan)
+//   so doors work identically under both engines.
+//
+// 10-Jun-2026 - Version 1.2.1
+// - Door animation init now uses token-based category collection (TrueVision
+//   parity): matches CategoryNameTokens against loaded Map keys and resolves
+//   mesh/linework roots from children via userData.Na__ModelType. The previous
+//   includes('MeshModel') key check could never match v4 category keys and is
+//   removed. Multiple door categories (e.g. per-storey) all register.
+//
 // =============================================================================
 
 
@@ -57,9 +75,10 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     // ------------------------------------------------------------
 
-    // MODULE IMPORTS | Render Pipeline
+    // MODULE IMPORTS | Render Pipeline Engines (PureEngine = default, MaxEngine = opt-in PBR)
     // ------------------------------------------------------------
-    import { Na__RenderPipeline__SetupComposer } from '../05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js';
+    import { Na__RenderPipeline__PureEngine__SetupComposer } from '../05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js';
+    import { Na__RenderPipeline__MaxEngine__SetupComposer } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Model Loader
@@ -71,9 +90,42 @@
     } from '../15__ModelLoader/Na__ModelLoader__MultiModel.js';
     // ------------------------------------------------------------
 
-    // MODULE IMPORTS | Scene Lighting
+    // MODULE IMPORTS | Scene Lighting and Environment
     // ------------------------------------------------------------
-    import { Na__Scene__SetupDefaultSceneLighting } from '../06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
+    import {
+        Na__Scene__SetupDefaultSceneLighting,
+        Na__Scene__ApplyEnvironmentMap
+    } from '../06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Render Engine State (PureEngine / MaxEngine selection)
+    // ------------------------------------------------------------
+    import {
+        Na__RenderEngine__PURE,
+        Na__RenderEngine__MAX,
+        Na__RenderEngine__SetConfiguredEngine,
+        Na__RenderEngine__SetActiveEngine,
+        Na__RenderEngine__GetConfiguredEngine,
+        Na__RenderEngine__GetActiveEngine
+    } from '../05__RenderPipeline/Na__RenderEngine__State.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | DataLib Loader (SSOT materials data — MaxEngine only)
+    // ------------------------------------------------------------
+    import {
+        Na__DataLib__LoadAll,
+        Na__DataLib__GetMaterials
+    } from './AppCore__DataLib__Loader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Distance Culling (MaxEngine only, config-gated)
+    // ------------------------------------------------------------
+    import {
+        Na__DistanceCulling__Initialize,
+        Na__DistanceCulling__RegisterModelGroups,
+        Na__DistanceCulling__Update,
+        Na__DistanceCulling__SetEnabled
+    } from '../05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Math Utils
@@ -89,7 +141,12 @@
     // MODULE IMPORTS | Materials System
     // ------------------------------------------------------------
     import { Na__MaterialsSystem__LoadLibrary, Na__MaterialsSystem__BuildLookup } from '../20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js';
-    import { Na__MaterialsSystem__ApplyMaterials } from '../20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
+    import {
+        Na__MaterialsSystem__ApplyMaterials,
+        Na__MaterialsSystem__RestoreOriginalMaterials,
+        Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides,
+        Na__MaterialsSystem__ApplyGlassEnvironmentOverrides
+    } from '../20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Model Toggle Controls
@@ -257,16 +314,66 @@
             modelUrls                   : Na__ModelDefaults__ModelUrls,
             materialsSystem             : Na__Config__MaterialsSystem,
             doorAnimation               : Na__Config__DoorAnimation,
-            orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible
+            orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible,
+            ambientOcclusion            : Na__Config__AmbientOcclusion,
+            sceneEnvironment            : Na__Config__SceneEnvironment,
+            distanceCulling             : Na__Config__DistanceCulling
         } = configs;
         // ---------------------------------------------------------------
 
         Na__UiFeature__UpdateStatus('Creating scene...');
         Na__Scene__SetupDefaultSceneLighting(Na__Scene__Main, Na__Config__LightingConfig, Na__Config__GroundPlane);
 
-        const Na__RenderPipeline__State = Na__RenderPipeline__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines, null, Na__Controls__Orbit.target);
-        const Na__RenderComposer__Main  = Na__RenderPipeline__State.composer;
-        pipelineRef.current = Na__RenderPipeline__State;                     // <-- Write back to index.html ref for ImageExport
+        // RENDER PIPELINE | Engine-Aware Composer Builder
+        // ---------------------------------------------------------------
+        // PureEngine (default) is built immediately. If project.json selects
+        // MaxEngine the pipeline is rebuilt before models load, and the user
+        // can switch live at runtime via the na-render-engine-switch event.
+        // ---------------------------------------------------------------
+        let Na__RenderPipeline__State = null;                                // <-- Active pipeline state (mutable: engine switching)
+        let Na__RenderComposer__Main  = null;                                // <-- Active composer (mutable: engine switching)
+
+        // SUB FUNCTION | Build (or Rebuild) the Render Pipeline for an Engine
+        // ---------------------------------------------------------------
+        function Na__RenderEngine__BuildPipeline(engineName) {
+            const previousState = Na__RenderPipeline__State;                 // <-- Held for best-effort disposal
+
+            const newState = (engineName === Na__RenderEngine__MAX)
+                ? Na__RenderPipeline__MaxEngine__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines, null, Na__Controls__Orbit.target, Na__Config__AmbientOcclusion)
+                : Na__RenderPipeline__PureEngine__SetupComposer(Na__Renderer__Main, Na__Scene__Main, Na__Camera__Main, Na__Config__ProfileLines, null, Na__Controls__Orbit.target);
+
+            Na__RenderPipeline__State = newState;                            // <-- Swap module references to the new engine
+            Na__RenderComposer__Main  = newState.composer;
+            pipelineRef.current       = newState;                            // <-- ImageExport / ElevationView / dev controls follow the ref
+
+            const Na__FogPlane__ExistingPass = Na__FogPlaneSystem__GetFogPass();   // <-- Fog pass instance survives engine switches
+            if (Na__FogPlane__ExistingPass && newState.insertFogPass) {
+                newState.insertFogPass(Na__FogPlane__ExistingPass);          // <-- Rebinds tDepth to the new engine's depth texture
+            }
+
+            if (newState.invalidateProfileLinesCache) {
+                newState.invalidateProfileLinesCache();                      // <-- New profile lines instance must rescan the scene
+            }
+
+            // DISPOSE PREVIOUS COMPOSER (best-effort GPU memory cleanup; passes are not shared except fog)
+            if (previousState && previousState !== newState) {
+                if (previousState.composer && typeof previousState.composer.dispose === 'function') {
+                    previousState.composer.dispose();
+                }
+                if (previousState.profileNormalTarget && typeof previousState.profileNormalTarget.dispose === 'function') {
+                    previousState.profileNormalTarget.dispose();
+                }
+                if (previousState.profileColorTarget && typeof previousState.profileColorTarget.dispose === 'function') {
+                    previousState.profileColorTarget.dispose();
+                }
+            }
+
+            Na__RenderEngine__SetActiveEngine(engineName);                   // <-- Record active engine in shared state
+            console.log(`[ValeVision3D] Render pipeline built: ${engineName}`);
+        }
+        // ---------------------------------------------------------------
+
+        Na__RenderEngine__BuildPipeline(Na__RenderEngine__PURE);             // <-- PureEngine is ALWAYS the startup default
 
         let modelUrls = [...Na__ModelDefaults__ModelUrls];                   // <-- Start with config defaults
         let Na__Saved__ProjectCameraConfig = null;                           // <-- Hoisted for post-OrbitCube re-apply
@@ -293,6 +400,14 @@
                     }));
                 }
 
+                // APPLY PER-PROJECT RENDER ENGINE SELECTION (PureEngine when key absent)
+                if (projectData.RenderEngine__Config) {
+                    Na__RenderEngine__SetConfiguredEngine(projectData.RenderEngine__Config.RenderEngine__Active);
+                    window.dispatchEvent(new CustomEvent('na-render-engine-loaded', {
+                        detail: { renderEngineConfig: projectData.RenderEngine__Config }
+                    }));
+                }
+
                 // APPLY PER-PROJECT ORBIT MAX DISTANCE OVERRIDE
                 // Single value overrides BOTH PC and iPad equally; iPad bonus does NOT stack on top.
                 const Na__Saved__ProjectOrbitMaxDistanceMm = projectData.Navmode__OrbitMaxDistanceMm;
@@ -310,6 +425,110 @@
                 console.warn('[ValeVision3D] Project data load failed, using defaults', error);
             }
         }
+
+        // REBUILD PIPELINE FOR CONFIGURED ENGINE (PureEngine already built above)
+        if (Na__RenderEngine__GetConfiguredEngine() === Na__RenderEngine__MAX) {
+            Na__RenderEngine__BuildPipeline(Na__RenderEngine__MAX);
+        }
+
+        // LOADED MODEL GROUPS | Hoisted to function scope so the engine-switch
+        // materials helpers below can re-process groups after initial load.
+        let Na__LoadedModelGroups = null;                                    // <-- Map of category -> THREE.Group
+
+        // SCENE ENVIRONMENT | Lazy HDR + PMREM loader for MaxEngine reflections
+        // ---------------------------------------------------------------
+        let Na__Scene__EnvironmentTexture   = null;                          // <-- PMREM env texture (null when disabled / failed)
+        let Na__Scene__EnvironmentAttempted = false;                         // <-- Single load attempt per session
+
+        // SUB HELPER FUNCTION | Ensure the Environment Texture Is Loaded (MaxEngine)
+        // ---------------------------------------------------------------
+        async function Na__MaxEngine__EnsureEnvironmentTexture() {
+            if (Na__Scene__EnvironmentAttempted) return Na__Scene__EnvironmentTexture;
+            Na__Scene__EnvironmentAttempted = true;
+            Na__Scene__EnvironmentTexture = await Na__Scene__ApplyEnvironmentMap(Na__Scene__Main, Na__Renderer__Main, Na__Config__SceneEnvironment);
+            return Na__Scene__EnvironmentTexture;
+        }
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Apply PureEngine Local-Library Materials (Legacy Path — Unchanged Behaviour)
+        // ---------------------------------------------------------------
+        async function Na__PureEngine__ApplyLocalLibraryMaterials() {
+            if (!Na__Config__MaterialsSystem.MaterialsSystem__Config__Enabled || !Na__LoadedModelGroups) return;
+
+            const Na__MaterialsLibraryUrl  = Na__Config__MaterialsSystem.MaterialsSystem__Config__LibraryUrl;
+            const Na__MaterialsLibraryData = await Na__MaterialsSystem__LoadLibrary(Na__MaterialsLibraryUrl);
+            if (!Na__MaterialsLibraryData) return;
+
+            const Na__MaterialsLookupMap = Na__MaterialsSystem__BuildLookup(Na__MaterialsLibraryData, true);  // <-- Force rebuild: cache may hold the DataLib map
+            if (Na__MaterialsLookupMap.size === 0) return;
+
+            for (const [, group] of Na__LoadedModelGroups) {
+                await Na__MaterialsSystem__ApplyMaterials(group, Na__MaterialsLookupMap, Na__Config__MaterialsSystem);
+            }
+        }
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Apply Engine-Appropriate Materials to Loaded Model Groups
+        // ---------------------------------------------------------------
+        // MaxEngine : DataLib SSOT (GitHub) PBR swap + AO exclusions + glass /
+        //             mirror environment overrides. Falls back to PureEngine
+        //             materials if the DataLib fetch fails.
+        // PureEngine: restores pre-swap originals (on engine switch-back) then
+        //             re-runs the unchanged local-library swap.
+        // Door animations are unaffected in both directions: the door registry
+        // holds Object3D references and transforms, never material references.
+        // ---------------------------------------------------------------
+        async function Na__RenderEngine__ApplyEngineMaterials(engineName) {
+            if (!Na__LoadedModelGroups) return;
+
+            if (engineName === Na__RenderEngine__MAX) {
+                try {
+                    await Na__DataLib__LoadAll();                            // <-- SSOT fetch (cached after first call)
+                } catch (dataLibError) {
+                    console.error('[ValeVision3D] DataLib load failed — MaxEngine materials unavailable, keeping current materials:', dataLibError);
+                    return;
+                }
+
+                const Na__DataLibMaterialsData = Na__DataLib__GetMaterials();
+                const Na__MaterialsLookupMap   = Na__MaterialsSystem__BuildLookup(Na__DataLibMaterialsData, true);  // <-- Force rebuild from SSOT source
+                if (Na__MaterialsLookupMap.size === 0) return;
+
+                const Na__EnvTexture = await Na__MaxEngine__EnsureEnvironmentTexture();   // <-- Null when env disabled (glass stays transparent, no reflections)
+
+                for (const [, group] of Na__LoadedModelGroups) {
+                    await Na__MaterialsSystem__ApplyMaterials(group, Na__MaterialsLookupMap, Na__Config__MaterialsSystem);
+
+                    if (Na__EnvTexture && Na__Config__SceneEnvironment) {
+                        if (Na__Config__SceneEnvironment.Scene__Environment__MirrorOnly === true) {
+                            Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides(group, Na__EnvTexture, {
+                                targetMaterialName : Na__Config__SceneEnvironment.Scene__Environment__MirrorMaterialName,
+                                envMapIntensity    : Na__Config__SceneEnvironment.Scene__Environment__MirrorEnvMapIntensity,
+                                brightnessBoost    : Na__Config__SceneEnvironment.Scene__Environment__MirrorBrightnessBoost
+                            });
+                        }
+                        if (Na__Config__SceneEnvironment.Scene__Environment__GlassEnabled === true) {
+                            Na__MaterialsSystem__ApplyGlassEnvironmentOverrides(group, Na__EnvTexture, {
+                                targetMaterialName  : Na__Config__SceneEnvironment.Scene__Environment__GlassMaterialName,
+                                envMapIntensity     : Na__Config__SceneEnvironment.Scene__Environment__GlassEnvMapIntensity,
+                                brightnessMultiplier: Na__Config__SceneEnvironment.Scene__Environment__GlassBrightnessMultiplier
+                            });
+                        }
+                    }
+                }
+
+                // DISTANCE CULLING | MaxEngine-only optional feature (config-gated, off by default)
+                Na__DistanceCulling__Initialize(Na__Config__DistanceCulling);
+                Na__DistanceCulling__RegisterModelGroups(Na__LoadedModelGroups);
+            } else {
+                for (const [, group] of Na__LoadedModelGroups) {
+                    Na__MaterialsSystem__RestoreOriginalMaterials(group);    // <-- Back to pre-swap originals (also clears AO layer-1 tags)
+                }
+                await Na__PureEngine__ApplyLocalLibraryMaterials();          // <-- Recreate today's unchanged PureEngine appearance
+
+                Na__DistanceCulling__SetEnabled(false);                      // <-- MaxEngine-only feature; restores any culled items
+            }
+        }
+        // ---------------------------------------------------------------
 
         // SEPARATE ORBIT HELPER CUBE URL FROM MODEL URLS
         const { orbitCubeUrl, filteredUrls } = Na__ModelLoader__SeparateOrbitCubeUrl(modelUrls);
@@ -380,8 +599,6 @@
 
         // LOAD ALL MODELS VIA MULTI-MODEL LOADER
         try {
-            let Na__LoadedModelGroups = null;                                 // <-- Map of category -> THREE.Group
-
             if (modelUrls.length > 0) {
                 Na__LoadedModelGroups = await Na__ModelLoader__LoadAllModels(
                     modelUrls,                                               // <-- Array of CDN URLs (orbit cube already filtered out)
@@ -392,21 +609,10 @@
                 );
             }
 
-            // APPLY PBR MATERIALS FROM LIBRARY (second pass - selective override)
-            if (Na__Config__MaterialsSystem.MaterialsSystem__Config__Enabled && Na__LoadedModelGroups) {
-                const Na__MaterialsLibraryUrl  = Na__Config__MaterialsSystem.MaterialsSystem__Config__LibraryUrl;
-                const Na__MaterialsLibraryData = await Na__MaterialsSystem__LoadLibrary(Na__MaterialsLibraryUrl);
-
-                if (Na__MaterialsLibraryData) {
-                    const Na__MaterialsLookupMap = Na__MaterialsSystem__BuildLookup(Na__MaterialsLibraryData);
-
-                    if (Na__MaterialsLookupMap.size > 0) {
-                        for (const [, group] of Na__LoadedModelGroups) {
-                            await Na__MaterialsSystem__ApplyMaterials(group, Na__MaterialsLookupMap, Na__Config__MaterialsSystem);
-                        }
-                    }
-                }
-            }
+            // APPLY MATERIALS | Engine-aware second pass (selective override)
+            // PureEngine -> unchanged local-library swap; MaxEngine -> DataLib SSOT PBR swap.
+            // Runs BEFORE door animation init so the door registry scans final node state.
+            await Na__RenderEngine__ApplyEngineMaterials(Na__RenderEngine__GetActiveEngine());
 
             Na__UiFeature__ShowScene();                                      // <-- Reveal scene after all models loaded
 
@@ -414,29 +620,67 @@
             Na__UiFeature__InitializeModelToggleControls(Na__LoadedModelGroups);  // <-- Build toggle buttons from loaded groups
 
             // INITIALIZE DOOR ANIMATION (if enabled in config)
+            // Token-based collection (TrueVision parity): door categories are matched
+            // by name tokens against the loaded Map keys (covers both flat keys like
+            // 'ValeVision__MainBuildingModel__ProposedDoors' AND storey keys like
+            // 'Storey__GroundFloor__ProposedDoors'). Mesh/linework roots are resolved
+            // from group children via userData.Na__ModelType — category keys never
+            // contain 'MeshModel'/'LineworkModel' (those live on child root names).
             if (Na__Config__DoorAnimation['3dObject__Interaction__DoorAnimation__Enabled'] !== false) {
-                let doorMeshGroup     = null;                                // <-- Mesh version of door models
-                let doorLineworkGroup = null;                                // <-- Linework version of door models
 
-                Na__LoadedModelGroups.forEach((group, categoryKey) => {
-                    if (categoryKey.includes('ProposedDoors') && categoryKey.includes('MeshModel')) {
-                        doorMeshGroup = group;                               // <-- Found mesh door group
-                    }
-                    if (categoryKey.includes('ProposedDoors') && categoryKey.includes('LineworkModel')) {
-                        doorLineworkGroup = group;                           // <-- Found linework door group
-                    }
-                });
+                // SUB HELPER FUNCTION | Resolve Door Category Name Tokens from Config
+                // ---------------------------------------------------------------
+                const Na__ResolveDoorCategoryNameTokens = (doorAnimationConfig) => {
+                    const defaultTokens    = ['ProposedDoors', 'ExistingDoors'];     // <-- Fallback when config omits tokens
+                    const configuredTokens = doorAnimationConfig
+                        && doorAnimationConfig['3dObject__Interaction__DoorAnimation__CategoryNameTokens'];
 
-                if (doorMeshGroup || doorLineworkGroup) {
+                    const normalizedTokens = Array.isArray(configuredTokens)
+                        ? configuredTokens
+                            .filter((token) => typeof token === 'string')
+                            .map((token) => token.trim())
+                            .filter((token) => token.length > 0)
+                        : [];
+
+                    return normalizedTokens.length > 0 ? normalizedTokens : defaultTokens;
+                };
+                // ---------------------------------------------------------------
+
+                // SUB HELPER FUNCTION | Collect Door Mesh + Linework Groups by Token
+                // ---------------------------------------------------------------
+                const Na__CollectDoorModelGroups = (loadedModelGroups) => {
+                    const doorMeshGroups     = [];                           // <-- Mesh roots across all door categories
+                    const doorLineworkGroups = [];                           // <-- Linework roots across all door categories
+                    const doorCategoryTokens = Na__ResolveDoorCategoryNameTokens(Na__Config__DoorAnimation);
+
+                    loadedModelGroups.forEach((categoryGroup, categoryKey) => {
+                        const hasDoorCategoryToken = doorCategoryTokens.some((token) => categoryKey.includes(token));
+                        if (!hasDoorCategoryToken) return;                   // <-- Not a door category
+
+                        const children = categoryGroup.children || [];
+                        for (const child of children) {
+                            const modelType = child.userData && child.userData.Na__ModelType;
+                            if (modelType === 'mesh')     doorMeshGroups.push(child);      // <-- Tagged mesh root
+                            if (modelType === 'linework') doorLineworkGroups.push(child);  // <-- Tagged linework root
+                        }
+                    });
+
+                    return { doorMeshGroups, doorLineworkGroups };
+                };
+                // ---------------------------------------------------------------
+
+                const { doorMeshGroups, doorLineworkGroups } = Na__CollectDoorModelGroups(Na__LoadedModelGroups);
+
+                if (doorMeshGroups.length > 0 || doorLineworkGroups.length > 0) {
                     Na__DoorAnimation__Initialize(
                         Na__Scene__Main,                                     // <-- Scene reference
                         Na__Camera__Main,                                    // <-- Camera reference
                         Na__Renderer__Main.domElement,                       // <-- Canvas DOM element
-                        doorMeshGroup,                                       // <-- Mesh model group
-                        doorLineworkGroup,                                   // <-- Linework model group
+                        doorMeshGroups,                                      // <-- Mesh model groups (array)
+                        doorLineworkGroups,                                  // <-- Linework model groups (array)
                         Na__Config__DoorAnimation                            // <-- Door animation config
                     );
-                    console.log('[ValeVision3D] Door animation initialized');
+                    console.log(`[ValeVision3D] Door animation initialized (${doorMeshGroups.length} mesh group(s), ${doorLineworkGroups.length} linework group(s))`);
                 } else {
                     console.log('[ValeVision3D] Door animation enabled but no door model groups found');
                 }
@@ -505,6 +749,15 @@
         let Na__RenderLoop__ElevationActive    = false;                          // <-- True when ortho elevation camera is active
         let Na__RenderLoop__2dProfileNormals   = null;                           // <-- 2D profile lines render function (set via event)
 
+        // AO PERFORMANCE MONITOR | Startup delay before FPS sampling begins (MaxEngine)
+        const Na__AoPerformanceMonitorStartupDelayMs = (Na__Config__AmbientOcclusion && Number.isFinite(Na__Config__AmbientOcclusion.RenderEffect__AmbientOcclusion__PerformanceMonitorStartupDelayMs))
+            ? Na__Config__AmbientOcclusion.RenderEffect__AmbientOcclusion__PerformanceMonitorStartupDelayMs
+            : 3000;
+        let Na__RenderLoop__CanMonitorAoPerformance = false;                     // <-- Suppresses FPS sampling during load spikes
+        window.setTimeout(() => {
+            Na__RenderLoop__CanMonitorAoPerformance = true;
+        }, Math.max(0, Na__AoPerformanceMonitorStartupDelayMs));
+
         window.addEventListener('na-elevation-camera-changed', (event) => {
             if (event.detail && event.detail.camera) {
                 Na__RenderLoop__ActiveCamera = event.detail.camera;             // <-- Swap active camera for effects
@@ -532,7 +785,20 @@
 
             Na__FogPlaneSystem__UpdatePerFrame(Na__RenderLoop__ActiveCamera, Na__Controls__Orbit); // <-- Fog shader uniforms + camera constraint
 
+            Na__DistanceCulling__Update(Na__Camera__Main.position);          // <-- MaxEngine distance culling (internal no-op when disabled)
+
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
+                // MAXENGINE EXTRAS | No-ops under PureEngine (keys absent from its pipeline state)
+                if (Na__RenderPipeline__State.updateAoUniforms) {
+                    Na__RenderPipeline__State.updateAoUniforms(Na__RenderLoop__ActiveCamera);  // <-- Sync SSAO camera matrices
+                }
+                if (Na__RenderPipeline__State.monitorAoFrame && Na__RenderLoop__CanMonitorAoPerformance) {
+                    Na__RenderPipeline__State.monitorAoFrame(deltaMs);       // <-- FPS-based AO auto-disable sampling
+                }
+                if (Na__RenderPipeline__State.renderDepthPrePass) {
+                    Na__RenderPipeline__State.renderDepthPrePass();          // <-- Depth capture for SSAO/fog (no-op when profile lines share depth)
+                }
+
                 if (Na__RenderLoop__ElevationActive && Na__RenderLoop__2dProfileNormals) {
                     Na__RenderLoop__2dProfileNormals(Na__RenderLoop__ActiveCamera); // <-- 2D profile lines with ortho camera
                 } else {
@@ -589,6 +855,40 @@
         });
         Na__Controls__Orbit.addEventListener('change', Na__RenderLoop__RequestRenderOnce);
 
+        // RENDER ENGINE SWITCH | Live PureEngine <-> MaxEngine swap (UI dispatched)
+        // ---------------------------------------------------------------
+        // Rebuilds the composer for the requested engine and re-applies the
+        // engine-appropriate materials. Door animations, walk collision meshes,
+        // and the door registry are untouched: they reference Object3D nodes,
+        // which both the swap and the restore leave fully intact.
+        // ---------------------------------------------------------------
+        let Na__RenderEngine__SwitchInProgress = false;                      // <-- Re-entrancy guard for rapid toggling
+
+        window.addEventListener('na-render-engine-switch', async (event) => {
+            const requestedEngine = (event.detail && event.detail.engine === Na__RenderEngine__MAX)
+                ? Na__RenderEngine__MAX
+                : Na__RenderEngine__PURE;
+
+            if (requestedEngine === Na__RenderEngine__GetActiveEngine()) return;   // <-- Already active
+            if (Na__RenderEngine__SwitchInProgress) return;                        // <-- Ignore re-entrant requests mid-switch
+
+            Na__RenderEngine__SwitchInProgress = true;
+            try {
+                Na__RenderEngine__BuildPipeline(requestedEngine);            // <-- Rebuild composer chain for the new engine
+                await Na__RenderEngine__ApplyEngineMaterials(requestedEngine); // <-- Swap / restore materials to match
+            } catch (switchError) {
+                console.error('[ValeVision3D] Render engine switch failed:', switchError);
+            } finally {
+                Na__RenderEngine__SwitchInProgress = false;
+            }
+
+            Na__RenderLoop__RequestRenderOnce();                             // <-- Redraw with the new engine
+            window.dispatchEvent(new CustomEvent('na-render-engine-changed', {
+                detail: { engine: Na__RenderEngine__GetActiveEngine() }
+            }));
+        });
+        // ---------------------------------------------------------------
+
         Na__RenderLoop__RequestRenderOnce();
 
         // RESIZE HANDLER
@@ -603,6 +903,12 @@
                 Na__RenderComposer__Main.setSize(width, height);
                 Na__RenderPipeline__State.setProfileLinesSize(width, height);
                 Na__RenderPipeline__State.setFxaaSize(width, height);        // <-- Update FXAA resolution uniform
+                if (Na__RenderPipeline__State.setDepthPrePassSize) {
+                    Na__RenderPipeline__State.setDepthPrePassSize(width, height);  // <-- MaxEngine: resize depth pre-pass RT
+                }
+                if (Na__RenderPipeline__State.setAoSize) {
+                    Na__RenderPipeline__State.setAoSize(width, height);      // <-- MaxEngine: update SSAO resolution uniforms
+                }
             }
 
             Na__LineResolution__Screen.set(width, height);

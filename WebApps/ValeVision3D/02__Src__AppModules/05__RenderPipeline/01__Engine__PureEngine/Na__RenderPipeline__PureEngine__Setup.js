@@ -1,5 +1,36 @@
+// =============================================================================
+// VALEVISION3D - RENDER PIPELINE - PUREENGINE COMPOSER SETUP
+// =============================================================================
+//
+// FILE       : Na__RenderPipeline__PureEngine__Setup.js
+// NAMESPACE  : Na__RenderPipeline
+// MODULE     : PureEngine Composer Setup
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : ValeVision PureEngine — the default lightweight whitecard pipeline
+// CREATED    : 10-Jun-2026
+//
+// DESCRIPTION:
+// - This is ValeVision's ORIGINAL render pipeline, relocated unchanged into the
+//   PureEngine folder as part of the dual-render-engine architecture.
+// - PureEngine is the DEFAULT engine for every model and must remain the
+//   super-simplified whitecard pipeline: RenderPass -> ProfileLines (optional)
+//   -> Fog (optional, via insertFogPass) -> FXAA.
+// - NO MaxEngine systems (SSAO, DataLib, depth pre-pass, AO layers) may ever
+//   be imported here. See .cursor/rules/07-RenderEngine-Architecture-.mdc.
+//
 // -----------------------------------------------------------------------------
-// REGION | Render Pipeline - Post Processing Setup
+//
+// DEVELOPMENT LOG:
+// 10-Jun-2026 - Version 1.0.0
+// - Relocated verbatim from 05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js.
+// - Function renamed Na__RenderPipeline__SetupComposer -> Na__RenderPipeline__PureEngine__SetupComposer.
+// - No behavioural changes.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Render Pipeline - PureEngine Post Processing Setup
 // -----------------------------------------------------------------------------
 
     // MODULE IMPORTS | Three.js Post Processing
@@ -9,13 +40,13 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
     import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
-    import { Na__RenderEffect__ProfileLines__Create } from './Na__RenderEffect__ProfileLines__.js';
+    import { Na__RenderEffect__ProfileLines__Create } from '../Na__RenderEffect__ProfileLines__.js';
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Setup Post Processing Composer
+    // FUNCTION | Setup PureEngine Post Processing Composer
     // ------------------------------------------------------------
-    function Na__RenderPipeline__SetupComposer(renderer, scene, camera, profileLinesConfig, fogPass, orbitTarget) {
+    function Na__RenderPipeline__PureEngine__SetupComposer(renderer, scene, camera, profileLinesConfig, fogPass, orbitTarget) {
         const pixelRatio = renderer.getPixelRatio();
         const width      = window.innerWidth * pixelRatio;
         const height     = window.innerHeight * pixelRatio;
@@ -122,6 +153,7 @@
         }
         
         return {
+            engineName : 'PureEngine',                                     // <-- Identifies the active engine for diagnostics
             composer,
             renderProfileNormals,
             setProfileLinesSize,
@@ -141,7 +173,7 @@
     // MODULE EXPORTS | Render Pipeline API
     // ------------------------------------------------------------
     export {
-        Na__RenderPipeline__SetupComposer
+        Na__RenderPipeline__PureEngine__SetupComposer
     };
     // ------------------------------------------------------------
 

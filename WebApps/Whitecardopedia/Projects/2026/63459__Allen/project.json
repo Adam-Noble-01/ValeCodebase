@@ -15,6 +15,23 @@
             "Camera__DefaultRotation__RotZ": 0.0068
         }
     },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -38067
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 20480
+        }
+    },
     "Navmode__OrbitMaxDistanceMm": 35000,
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
@@ -23,7 +40,15 @@
         "OrbitHelperCube__Position__PosZ": -12484
     },
     "ProjectType": "Whitecard",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/63459__Allen",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
+    ],
+    "folderId": "2026/63459__Allen",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
     ],
@@ -52,29 +77,8 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63459__Allen/Allen__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "FogPlane__Config": {
-        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
-        "FogPlane__Config__Enabled": true,
-        "FogPlane__Config__FalloffDistanceMm": 2000,
-        "FogPlane__Config__PlaneA": {
-            "FogPlane__Config__PlaneA__Active": true,
-            "FogPlane__Config__PlaneA__PositionMm": -38067,
-            "FogPlane__Config__PlaneA__NormalX": 0,
-            "FogPlane__Config__PlaneA__NormalZ": 1
-        },
-        "FogPlane__Config__PlaneB": {
-            "FogPlane__Config__PlaneB__Active": true,
-            "FogPlane__Config__PlaneB__PositionMm": 20480,
-            "FogPlane__Config__PlaneB__NormalX": -1,
-            "FogPlane__Config__PlaneB__NormalZ": 0
-        }
-    },
-    "folderId": "2026/63459__Allen",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__05-Jun-2026.png"
-    ]
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Walk": true,
+        "Navmode__EnabledModes__Fly": true
+    }
 }

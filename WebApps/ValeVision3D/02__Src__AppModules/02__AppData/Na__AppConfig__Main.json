@@ -76,7 +76,18 @@
     },
     "Global__Hotkeys": {
         "Global__Hotkeys__Description"                             : "Global keyboard shortcuts. Modifier keys joined with '+'. Evaluated in keydown handlers.",
-        "Global__Hotkeys__ToggleWalkMode"                          : "Alt+Shift+W"
+        "Global__Hotkeys__ToggleWalkMode"                          : "Alt+Shift+W",
+        "Global__Hotkeys__ToggleFlyMode"                           : "Alt+Shift+F"
+    },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Description"                       : "Global defaults. Per-model overrides live in project.json under the same key. Orbit is always available.",
+        "Navmode__EnabledModes__Walk"                              : false,
+        "Navmode__EnabledModes__Fly"                               : false
+    },
+    "Navmode__FovCompensation": {
+        "Navmode__FovCompensation__Description"                    : "Compensates for the FOV change when entering walk or fly mode. The orbit lens is typically narrow; walk/fly use a wider FOV which makes the scene appear to jump back. Compensation moves the camera/capsule forward so the apparent visual scale of the scene is preserved. Scale 1.0 = full mathematical compensation; 0.0 = disabled. 0.65 is recommended as a starting value.",
+        "Navmode__FovCompensation__Enabled"                        : true,
+        "Navmode__FovCompensation__Scale"                          : 0.65
     },
     "Navmode__Settings": {
         "Navmode__Settings__Description": "All navmode values are integer millimeters where noted; convert to 3D units in code.",
@@ -103,13 +114,26 @@
             "Navmode__WalkMode__EyeHeightMm"                       : 1620,
             "Navmode__WalkMode__CapsuleHeightMm"                   : 1800,
             "Navmode__WalkMode__CapsuleRadiusMm"                   : 280,
-            "Navmode__WalkMode__HorizontalFovDeg"                  : 75,
+            "Navmode__WalkMode__HorizontalFovDeg"                  : 50,
             "Navmode__WalkMode__MovementSpeedMmPerSec"             : 3500,
             "Navmode__WalkMode__SprintMultiplier"                  : 1.8,
             "Navmode__WalkMode__GravityMmPerSecSq"                 : 9810,
             "Navmode__WalkMode__MaxStepHeightMm"                   : 350,
             "Navmode__WalkMode__MouseSensitivity"                  : 0.002,
             "Navmode__WalkMode__DoorProximityThresholdMm"          : 3000
+        },
+        "Navmode__FlyMode": {
+            "Navmode__FlyMode__Description"                        : "Free-fly camera mode settings. All distance values are integer millimeters; convert to 3D units in code.",
+            "Navmode__FlyMode__HorizontalFovDeg"                   : 50,
+            "Navmode__FlyMode__MovementSpeedMmPerSec"              : 5000,
+            "Navmode__FlyMode__VerticalSpeedMmPerSec"              : 4000,
+            "Navmode__FlyMode__BoostMultiplier"                    : 3.0,
+            "Navmode__FlyMode__SlowMultiplier"                     : 0.25,
+            "Navmode__FlyMode__MouseSensitivity"                   : 0.0018,
+            "Navmode__FlyMode__KeyboardRotateRadPerSec"            : 1.4,
+            "Navmode__FlyMode__MovementDampingFactor"              : 12.0,
+            "Navmode__FlyMode__DoorProximityEnabled"               : true,
+            "Navmode__FlyMode__DoorProximityThresholdMm"           : 3000
         }
     },
     "Navmode__Damping": {

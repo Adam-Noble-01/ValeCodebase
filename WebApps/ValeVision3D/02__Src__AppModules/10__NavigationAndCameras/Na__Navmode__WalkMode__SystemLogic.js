@@ -215,6 +215,11 @@
         Na__WalkMode__Camera             = camera;
         Na__WalkMode__RendererDomElement = rendererDomElement;
 
+        // LineSegments2 (fat linework meshes) requires Raycaster.camera to be set
+        // when worldUnits is false, or it throws "Cannot read properties of null (reading 'near')".
+        // Assigning once here covers all subsequent raycasts without per-call overhead.
+        Na__WalkMode__Raycaster.camera = camera;                             // <-- Required by LineSegments2 raycasting
+
         Na__WalkMode__ApplyConfig(walkModeConfig);
         Na__WalkMode__ConvertConfigToUnits();
 
@@ -659,10 +664,18 @@
 
     // FUNCTION | Deactivate Walk Mode (Switch Back to Orbit)
     // ------------------------------------------------------------
-    function Na__WalkMode__Deactivate(orbitControls) {
+    // overrideCameraPosition (optional Vector3): when provided the orbit
+    // camera is placed here instead of at the pre-walk snapshot position.
+    // The orbit target and FOV are always restored from the saved state.
+    // ------------------------------------------------------------
+    function Na__WalkMode__Deactivate(orbitControls, overrideCameraPosition) {
         if (!Na__WalkMode__Active) return false;
 
-        Na__WalkMode__Camera.position.copy(Na__WalkMode__SavedOrbitState.cameraPosition);
+        const restorePos = (overrideCameraPosition && overrideCameraPosition.isVector3)
+            ? overrideCameraPosition
+            : Na__WalkMode__SavedOrbitState.cameraPosition;
+
+        Na__WalkMode__Camera.position.copy(restorePos);
         Na__WalkMode__Camera.quaternion.copy(Na__WalkMode__SavedOrbitState.cameraQuaternion);
         Na__WalkMode__Camera.fov = Na__WalkMode__SavedOrbitState.cameraFov;
         Na__WalkMode__Camera.updateProjectionMatrix();
@@ -767,6 +780,57 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Get Saved Pre-Walk Orbit State (Read-Only Copy)
+    // ------------------------------------------------------------
+    // Returns a plain object so callers may read freely without touching
+    // the internal saved-state vectors.  ModeTransition uses this to
+    // compute where to reposition the orbit camera after walk ends.
+    // ------------------------------------------------------------
+    function Na__WalkMode__GetSavedOrbitState() {
+        if (!Na__WalkMode__Active && !Na__WalkMode__SavedOrbitState.orbitTarget) return null;
+        return {
+            cameraPosition : Na__WalkMode__SavedOrbitState.cameraPosition.clone(),
+            cameraFov      : Na__WalkMode__SavedOrbitState.cameraFov,
+            orbitTarget    : Na__WalkMode__SavedOrbitState.orbitTarget.clone()
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Clamp Entry Pitch After Orbit-to-Walk Transition
+    // ------------------------------------------------------------
+    // Called by ModeTransition after ground-snap so the player does not
+    // stare at the floor when entering walk mode from a top-down orbit view.
+    // ------------------------------------------------------------
+    function Na__WalkMode__ClampEntryPitch(maxPitchRad) {
+        if (!Number.isFinite(maxPitchRad)) return;
+        Na__WalkMode__CameraPitch = Math.max(
+            -Math.abs(maxPitchRad),
+            Math.min(Math.abs(maxPitchRad), Na__WalkMode__CameraPitch)
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Nudge Capsule Forward After Entry (Avoid Spawn Inside Wall)
+    // ------------------------------------------------------------
+    // Pushes the capsule one step along its look direction immediately
+    // after activation so the user starts slightly in front of where the
+    // orbit camera was hovering — reducing the chance of starting inside
+    // a wall or directly against a surface.
+    // ------------------------------------------------------------
+    function Na__WalkMode__NudgeCapsuleForward(distanceUnits) {
+        if (!Number.isFinite(distanceUnits) || distanceUnits <= 0) return;
+
+        const forwardX = -Math.sin(Na__WalkMode__CameraYaw);
+        const forwardZ = -Math.cos(Na__WalkMode__CameraYaw);
+
+        Na__WalkMode__CapsulePosition.x += forwardX * distanceUnits;
+        Na__WalkMode__CapsulePosition.z += forwardZ * distanceUnits;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -784,6 +848,9 @@
         Na__WalkMode__Update,
         Na__WalkMode__IsActive,
         Na__WalkMode__GetCapsulePosition,
+        Na__WalkMode__GetSavedOrbitState,
+        Na__WalkMode__ClampEntryPitch,
+        Na__WalkMode__NudgeCapsuleForward,
         Na__WalkMode__GetConfig,
         Na__WalkMode__SetMovementInput,
         Na__WalkMode__AccumulateLookInput

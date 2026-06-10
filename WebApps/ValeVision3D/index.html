@@ -454,6 +454,45 @@
                     </button>
                     <div class="na-dropdown-menu__panel" id="naSendEmailPanel" aria-hidden="true"></div>
                 </li>
+                <!-- ---------------------------------------------------------------- -->
+                <!-- UI MENU | Navigation Mode Selector (Dynamic - hidden by default) -->
+                <!-- ---------------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item" id="naNavigationModesItem" style="display:none;">
+                    <button
+                        class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
+                        type="button"
+                        id="naNavigationModesToggle"
+                        aria-expanded="false"
+                        aria-controls="naNavigationModesPanel"
+                    >
+                        <span class="na-dropdown-menu__btn-label">Navigation Mode</span>
+                        <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naNavigationModesPanel">
+                        <ul class="na-dropdown-menu__list" style="margin:0;padding:0;">
+                            <li id="naNavModeOrbitItem">
+                                <button class="na-navmode__btn" id="naNavModeOrbitBtn" type="button">
+                                    <span>Orbit</span>
+                                    <span class="na-navmode__status" id="naNavModeOrbitStatus">Active</span>
+                                </button>
+                            </li>
+                            <li id="naNavModeFlyItem" style="display:none;">
+                                <button class="na-navmode__btn" id="naNavModeFlyBtn" type="button">
+                                    <span>Fly</span>
+                                    <span class="na-navmode__status" id="naNavModeFlyStatus">Off</span>
+                                </button>
+                            </li>
+                            <li id="naNavModeWalkItem" style="display:none;">
+                                <button class="na-navmode__btn" id="naNavModeWalkBtn" type="button">
+                                    <span>Walk</span>
+                                    <span class="na-navmode__status" id="naNavModeWalkStatus">Off</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- endregion ----------------------------------------------------------------- -->
+
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--full-screen" id="naFullScreenMenuItem">
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
@@ -552,6 +591,30 @@
                     </div>
                 </li>
                 <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
+                <li class="na-dropdown-menu__item" id="naNavModesDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naNavModesDevToggle" aria-expanded="false">
+                        Navigation Modes
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naNavModesDevPanel">
+                        <div class="na-dropdown-menu__panel-title">Available Modes</div>
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title" style="font-weight:400;">Orbit</span>
+                            <input type="checkbox" class="na-dropdown-menu__checkbox" checked disabled title="Orbit is always enabled" />
+                        </div>
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title" style="font-weight:400;">Walk</span>
+                            <input type="checkbox" id="naNavModesDevWalkCheck" class="na-dropdown-menu__checkbox" />
+                        </div>
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title" style="font-weight:400;">Fly</span>
+                            <input type="checkbox" id="naNavModesDevFlyCheck" class="na-dropdown-menu__checkbox" />
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <button class="na-dropdown-menu__action" id="naNavModesDevSave">Save Navigation Modes</button>
+                    </div>
+                </li>
+                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naSceneInspectorToggle" aria-expanded="false">
                         Scene Inspector
@@ -622,6 +685,13 @@
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
     import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
+    import { Na__UiFeature__InitializeFlyModeSystem, Na__UiFeature__ToggleFlyMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js';
+    import { Na__UiFeature__InitializeFlyModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js';
+    import { Na__NavigationModes__IsWalkEnabled, Na__NavigationModes__IsFlyEnabled } from './02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js';
+    import { Na__WalkMode__IsActive } from './02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
+    import { Na__FlyMode__IsActive } from './02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js';
+    import { Na__UiFeature__InitializeNavigationModesControls, Na__UiFeature__RevealNavigationModesSection, Na__NavModesUi__UpdateModeStatus } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationModes__Controls.js';
+    import { Na__UiFeature__InitializeNavigationModesDevControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
     import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
     import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js';
@@ -677,6 +747,10 @@
     const Na__Config__WalkMode = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__WalkMode)
         ? Na__Config__NavmodeSettings.Navmode__WalkMode
         : {};                                                                     // <-- Walk mode config (MM)
+    const Na__Config__FlyMode = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__FlyMode)
+        ? Na__Config__NavmodeSettings.Navmode__FlyMode
+        : {};                                                                     // <-- Fly mode config (MM)
+    const Na__Config__FovCompensation = Na__AppConfig__Data.Navmode__FovCompensation || {}; // <-- FOV compensation config
     const Na__Config__GlobalHotkeys = Na__AppConfig__Data.Global__Hotkeys || {};  // <-- Global hotkeys config
     const Na__Config__MaterialsSystem = Na__AppConfig__Data.MaterialsSystem__Config || {};  // <-- Materials system config
     // ------------------------------------------------------------
@@ -868,16 +942,45 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Walk Mode System Initialization
+// REGION | Walk Mode and Fly Mode System Initialization
 // -----------------------------------------------------------------------------
 
     // MODULE INITIALIZATION | Walk Mode System
     // ------------------------------------------------------------
     // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js
-    Na__UiFeature__InitializeWalkModeSystem(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__Config__WalkMode, Na__Device__UseTouchControls);
+    Na__UiFeature__InitializeWalkModeSystem(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__Config__WalkMode, Na__Device__UseTouchControls, Na__Config__FovCompensation);
+    // ------------------------------------------------------------
 
+    // MODULE INITIALIZATION | Fly Mode System
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js
+    Na__UiFeature__InitializeFlyModeSystem(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__Config__FlyMode, Na__Device__UseTouchControls, Na__Config__FovCompensation);
+    // ------------------------------------------------------------
+
+    // MODULE INITIALIZATION | Walk Mode Hotkey (gated on per-model enabled flag)
+    // ------------------------------------------------------------
     // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
-    Na__UiFeature__InitializeWalkModeHotkey(() => Na__UiFeature__ToggleWalkMode());
+    // Walk mode hotkey fires the toggle only when Walk is enabled for the current model.
+    // Na__NavigationModes__IsWalkEnabled() is evaluated at keydown time (post-project-load).
+    Na__UiFeature__InitializeWalkModeHotkey(() => {
+        if (!Na__NavigationModes__IsWalkEnabled()) return;                   // <-- Guard: walk not available for this model
+        Na__UiFeature__ToggleWalkMode(
+            () => Na__NavModesUi__UpdateModeStatus('walk'),
+            () => Na__NavModesUi__UpdateModeStatus('orbit')
+        );
+    });
+    // ------------------------------------------------------------
+
+    // MODULE INITIALIZATION | Fly Mode Hotkey (gated on per-model enabled flag)
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js
+    Na__UiFeature__InitializeFlyModeHotkey(() => {
+        if (!Na__NavigationModes__IsFlyEnabled()) return;                    // <-- Guard: fly not available for this model
+        Na__UiFeature__ToggleFlyMode(
+            () => Na__NavModesUi__UpdateModeStatus('fly'),
+            () => Na__NavModesUi__UpdateModeStatus('orbit')
+        );
+    });
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -1052,6 +1155,92 @@
     });
     Na__UiFeature__InitializeProfileLinesControls(Na__AppFlow__PipelineRef, Na__Config__ProfileLines);
     Na__UiFeature__InitializeFogPlaneControls(null);
+
+    // HELPER | Walk/Fly Mutual Exclusivity Toggle Wrappers (Used by Navigation Modes UI)
+    // ------------------------------------------------------------
+    // 'silent-off'      : deactivates the mode if active, no UI callback (called by the
+    //                     other mode's button to ensure mutual exclusivity before activating).
+    // 'return-to-orbit' : deactivates the mode if active; always fires orbit status update.
+    // (no hint)         : standard toggle with full UI callbacks.
+    // ------------------------------------------------------------
+    function Na__UiFeature__WalkMode__ToggleFn(hint) {
+        if (hint === 'return-to-orbit') {
+            if (Na__WalkMode__IsActive()) {                                  // <-- Only act if walk is currently active
+                Na__UiFeature__ToggleWalkMode(null, () => Na__NavModesUi__UpdateModeStatus('orbit'));
+            }
+            return;
+        }
+        if (hint === 'silent-off') {
+            if (Na__WalkMode__IsActive()) {                                  // <-- Silently deactivate without UI callback
+                Na__UiFeature__ToggleWalkMode(null, null);
+            }
+            return;
+        }
+        Na__UiFeature__ToggleWalkMode(
+            () => Na__NavModesUi__UpdateModeStatus('walk'),
+            () => Na__NavModesUi__UpdateModeStatus('orbit')
+        );
+    }
+
+    function Na__UiFeature__FlyMode__ToggleFn(hint) {
+        if (hint === 'return-to-orbit') {
+            if (Na__FlyMode__IsActive()) {                                   // <-- Only act if fly is currently active
+                Na__UiFeature__ToggleFlyMode(null, () => Na__NavModesUi__UpdateModeStatus('orbit'));
+            }
+            return;
+        }
+        if (hint === 'silent-off') {
+            if (Na__FlyMode__IsActive()) {                                   // <-- Silently deactivate without UI callback
+                Na__UiFeature__ToggleFlyMode(null, null);
+            }
+            return;
+        }
+        Na__UiFeature__ToggleFlyMode(
+            () => Na__NavModesUi__UpdateModeStatus('fly'),
+            () => Na__NavModesUi__UpdateModeStatus('orbit')
+        );
+    }
+    // ------------------------------------------------------------
+
+    // INITIALIZE NAVIGATION MODES USER CONTROLS (Tools Menu)
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationModes__Controls.js
+    // Visibility is initially hidden; revealed by 'na-navigation-modes-loaded' event
+    // when project.json is read (async) inside the loading sequence.
+    Na__UiFeature__InitializeNavigationModesControls({
+        walkEnabled  : Na__NavigationModes__IsWalkEnabled(),    // <-- Initial state (false until project loads)
+        flyEnabled   : Na__NavigationModes__IsFlyEnabled(),     // <-- Initial state (false until project loads)
+        toggleWalk   : Na__UiFeature__WalkMode__ToggleFn,       // <-- Walk toggle wrapper with mutual exclusivity
+        toggleFly    : Na__UiFeature__FlyMode__ToggleFn         // <-- Fly toggle wrapper with mutual exclusivity
+    });
+    // ------------------------------------------------------------
+
+    // INITIALIZE NAVIGATION MODES DEV CONTROLS (Dev Menu)
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js
+    // Localhost-only; the module guards internally.  Checkbox state is updated after
+    // project data loads via the na-navigation-modes-loaded event.  After Save, calls
+    // onSaved to refresh the user-facing section visibility live.
+    Na__UiFeature__InitializeNavigationModesDevControls({
+        isWalkEnabled : false,                                  // <-- Set to false initially; updated below when project loads
+        isFlyEnabled  : false,                                  // <-- Set to false initially; updated below when project loads
+        showToast     : Na__UiFeature__ShowToast,               // <-- Toast feedback callback
+        onSaved       : ({ walkEnabled, flyEnabled }) => {
+            Na__UiFeature__RevealNavigationModesSection(walkEnabled, flyEnabled);
+        }
+    });
+
+    // UPDATE DEV CHECKBOXES once project.json loads (async timing)
+    window.addEventListener('na-navigation-modes-loaded', (event) => {
+        const modes = event.detail && event.detail.enabledModes;
+        if (!modes) return;
+        const walkCheck = document.getElementById('naNavModesDevWalkCheck');
+        const flyCheck  = document.getElementById('naNavModesDevFlyCheck');
+        if (walkCheck) walkCheck.checked = Boolean(modes.Navmode__EnabledModes__Walk);
+        if (flyCheck)  flyCheck.checked  = Boolean(modes.Navmode__EnabledModes__Fly);
+    }, { once: true });
+    // ------------------------------------------------------------
+
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
     Na__UiFeature__InitializeGridLineControls(Na__Scene__Main, Na__UiFeature__ShowToast, Na__AppFlow__PipelineRef);
     Na__UiFeature__InitializeElevationViewControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root, Na__Device__UseTouchControls);

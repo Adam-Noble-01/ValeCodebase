@@ -40,6 +40,11 @@
 // - Na__RenderPipeline__State written back to context.pipelineRef.current
 //   so the ImageExportControls lazy getter in index.html can read it.
 //
+// 09-Jun-2026 - Version 1.1.0
+// - Added Fly Mode branch to RenderFrame (Na__FlyMode__Update + door proximity).
+// - Reads Navmode__EnabledModes from project.json and forwards to
+//   Na__NavigationModes__State for dynamic Tools menu and hotkey gating.
+//
 // =============================================================================
 
 
@@ -111,9 +116,23 @@
     } from '../10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Fly Mode System
+    // ------------------------------------------------------------
+    import {
+        Na__FlyMode__IsActive,
+        Na__FlyMode__Update,
+        Na__FlyMode__GetCameraPosition
+    } from '../10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Door Proximity System
     // ------------------------------------------------------------
     import { Na__DoorProximity__Update } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Navigation Modes State
+    // ------------------------------------------------------------
+    import { Na__NavigationModes__SetEnabledModes } from '../10__NavigationAndCameras/Na__NavigationModes__State.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Vertical Perspective Correction
@@ -265,6 +284,14 @@
                     || projectData.valeVision_Camera__DefaultPosition
                     || null;
                 Na__Saved__ProjectOrbitTarget  = projectData.OrbitHelperCube__Position || null;
+
+                // APPLY PER-PROJECT NAVIGATION MODE ENABLE FLAGS
+                if (projectData.Navmode__EnabledModes) {
+                    Na__NavigationModes__SetEnabledModes(projectData.Navmode__EnabledModes);
+                    window.dispatchEvent(new CustomEvent('na-navigation-modes-loaded', {
+                        detail: { enabledModes: projectData.Navmode__EnabledModes }
+                    }));
+                }
 
                 // APPLY PER-PROJECT ORBIT MAX DISTANCE OVERRIDE
                 // Single value overrides BOTH PC and iPad equally; iPad bonus does NOT stack on top.
@@ -491,7 +518,10 @@
         function Na__RenderLoop__RenderFrame(deltaMs) {
             if (Na__WalkMode__IsActive()) {
                 Na__WalkMode__Update(deltaMs);                               // <-- Update walk mode physics and camera
-                Na__DoorProximity__Update(Na__WalkMode__GetCapsulePosition()); // <-- Proximity door triggers
+                Na__DoorProximity__Update(Na__WalkMode__GetCapsulePosition()); // <-- Proximity door triggers (walk capsule position)
+            } else if (Na__FlyMode__IsActive()) {
+                Na__FlyMode__Update(deltaMs);                                // <-- Update fly mode camera movement
+                Na__DoorProximity__Update(Na__FlyMode__GetCameraPosition()); // <-- Proximity door triggers (fly camera position)
             } else {
                 Na__Navmode__UpdateNavigation();                             // <-- Update orbit controls
             }
@@ -517,6 +547,7 @@
             }
 
             return Na__WalkMode__IsActive()
+                || Na__FlyMode__IsActive()
                 || Na__DoorAnimation__HasActiveAnimations()
                 || Na__RenderLoop__ActiveReasons.size > 0;
         }

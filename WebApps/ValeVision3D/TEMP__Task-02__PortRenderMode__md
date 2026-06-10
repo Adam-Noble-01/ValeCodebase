@@ -1,0 +1,155 @@
+# Objective: Port TrueVision's Full PBR Render System into ValeVision 3D as a Selectable Second Render Engine.
+
+## Engine Definitions
+
+### ValeVision PureEngine (current — always the default)
+ValeVision's existing render pipeline. It must **never change** as part of this task. Every existing project uses PureEngine and will continue to do so unless a developer explicitly opts a model into MaxEngine.
+
+PureEngine render pass order (current):
+1. RenderPass — renders scene to colour RT
+2. Profile Lines — architectural edge outlines (optional, configurable)
+3. Fog — distance-based atmospheric haze (optional, configurable)
+4. FXAA — fast approximate anti-aliasing
+
+PureEngine materials: ValeVision whitecard (no PBR, no materials library, no textures).
+
+### ValeVision MaxEngine (to be built — optional, per-model opt-in)
+The full TrueVision-equivalent render pipeline. Adds SSAO, PBR materials hot-swapping, glass rendering, and AO layer exclusion.
+
+MaxEngine render pass order (from TrueVision):
+1. RenderPass
+2. Profile Lines (same as PureEngine)
+3. Fog (same as PureEngine)
+4. SSAO — screen-space ambient occlusion
+5. AO Blur — 5×5 Gaussian to smooth AO noise
+6. FXAA
+
+MaxEngine materials: full PBR via `Na__MaterialsSystem__MaterialSwap.js`, driven by `Na__AppConfig__MaterialsLibrary.json` and the remote Na__DataLib (fetched at runtime from GitHub). Supports `MeshStandardMaterial` with roughness, metalness, envMap, textures, glass (transparent / double-sided), and AO layer exclusion (foliage on Three.js layer 1).
+
+---
+
+## Default
+- PureEngine is always the default for all models.
+- A model without a `RenderEngine__Config` key in its `project.json` uses PureEngine.
+- This guarantees all existing and future projects are unaffected unless the developer explicitly opts in.
+
+---
+
+## DevMode Menu
+- Add a new section in the localhost Dev Tools menu: **"Render Engine"**.
+- The section contains two radio-style toggles: `PureEngine` (selected by default) and `MaxEngine`.
+- An explicit **"Save Render Engine"** button writes the choice to `project.json` via the same `GET-merge-POST /api/projects/{code}` pattern used by camera, fog, and navigation mode settings.
+- Orbit is always available regardless of engine.
+- This section is localhost-only (`Na__AppUtils__IsRunningOnLocalhost()` guard).
+
+---
+
+## User Facing UI Menu (Tools & Settings Menu)
+- A new **"Render Engine"** section appears in the Tools & Settings menu **only when MaxEngine is enabled** for the current model (mirrors the Navigation Modes dynamic visibility pattern).
+- When visible, the section is nested like all other tools and contains:
+  - **PureEngine** button with active status badge
+  - **MaxEngine** button with active status badge
+- The user can switch between engines live at runtime without a page reload.
+- When PureEngine only is active (the default), this section is hidden entirely — users see no change.
+
+---
+
+## Persistent Data
+- `project.json` schema gains a new optional top-level key:
+```json
+"RenderEngine__Config": {
+    "RenderEngine__Active": "PureEngine"
+}
+```
+- Valid values: `"PureEngine"` (default if key absent) or `"MaxEngine"`.
+- Like camera, fog, orbit-max-distance, and navigation modes, the developer saves the choice via the Dev menu Save button. Production readers pick it up from GH Pages/CDN on next load.
+
+---
+
+## Folder Architecture (Critical — Do Not Violate)
+
+The two engines must live in separate, clearly bounded subfolders within `05__RenderPipeline/`. No file from one engine's subfolder should be imported by the other engine's subfolder. The shared pipeline infrastructure (render loop invalidation, profile lines, fog) lives in the parent `05__RenderPipeline/` folder and is imported by both engines.
+
+Proposed structure:
+```
+02__Src__AppModules/
+  05__RenderPipeline/
+    01__Engine__PureEngine/
+      Na__RenderPipeline__PureEngine__Setup.js     ← current PostProcessing__Setup.js, renamed + re-headered
+    02__Engine__MaxEngine/
+      Na__RenderPipeline__MaxEngine__Setup.js      ← ported + adapted from TrueVision PostProcessing__Setup.js
+    Na__RenderEffect__ProfileLines__.js            ← shared (unchanged)
+    Na__RenderLoop__Invalidation.js                ← shared (unchanged)
+  07__Scene__EnvironmentEffects/                   ← new folder (port from TrueVision)
+      Na__RenderEffect__AmbientOcclusion__.js      ← SSAO pass (MaxEngine only)
+      Na__RenderEffect__AmbientOcclusion__Shader.js← SSAO GLSL shader (MaxEngine only)
+  20__System__MaterialsSystem/
+      Na__MaterialsSystem__MaterialSwap.js         ← already exists; activated only by MaxEngine
+      Na__MaterialsSystem__LibraryLoader.js        ← already exists; activated only by MaxEngine
+  01__AppCore/
+      AppCore__DataLib__Loader.js                  ← new; port from TrueVision (fetches Na__DataLib from GitHub)
+```
+
+A new `.mdc` rule file must be created at `.cursor/rules/07-RenderEngine-Architecture-.mdc` that documents this two-engine design and instructs agents to never merge engine-specific code across folders or activate MaxEngine-only systems (SSAO, DataLib, MaterialSwap) from PureEngine paths.
+
+---
+
+## TrueVision Files to Port (MaxEngine only)
+
+| TrueVision source | ValeVision destination | Notes |
+|---|---|---|
+| `05__RenderPipeline/Na__RenderPipeline__PostProcessing__Setup.js` | `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js` | Full SSAO + depth pre-pass + AO layer variant |
+| `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js` | `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js` | SSAO pass constructor + perf monitor |
+| `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js` | `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js` | SSAO GLSL shader |
+| `01__AppCore/AppCore__DataLib__Loader.js` | `01__AppCore/AppCore__DataLib__Loader.js` | Fetches Na__DataLib JSON from GitHub at startup |
+| `05__RenderPipeline/Na__RenderEffect__DistanceCulling__.js` | `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js` | Optional distance culling pass (MaxEngine only) |
+
+The existing ValeVision files already ported/present that MaxEngine activates:
+- `20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js` — already in ValeVision, currently initialised by LoadingSequence but using a simplified path. MaxEngine wires the full DataLib-driven swap.
+- `20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js` — already in ValeVision.
+- `02__AppData/Na__AppConfig__MaterialsLibrary.json` — already in ValeVision.
+
+---
+
+## New Modules Required
+
+| Module | Purpose |
+|---|---|
+| `Na__RenderEngine__State.js` | Shared state accessor (mirrors `Na__NavigationModes__State.js`): stores which engine is active, exposes `Na__RenderEngine__IsMaxEngineEnabled()` |
+| `Na__UiFeature__RenderEngine__DevControls.js` | Localhost dev section: radio toggles + Save button (GET-merge-POST pattern) |
+| `Na__UiFeature__RenderEngine__Controls.js` | User-facing Tools section: PureEngine/MaxEngine buttons + active status badge; hidden when MaxEngine not enabled |
+
+---
+
+## Loading Sequence Changes
+- After reading `project.json`, read `RenderEngine__Config.RenderEngine__Active` and call `Na__RenderEngine__SetEnabledEngine()`.
+- Dispatch `na-render-engine-loaded` event so the user-facing UI can update visibility.
+- The LoadingSequence must call the correct engine's `SetupComposer` variant at startup based on the flag.
+- MaxEngine startup additionally: await `Na__DataLib__LoadAll()`, then run `Na__MaterialsSystem__ApplyMaterials()` after models load.
+- Runtime switching (user changes engine mid-session) tears down the current composer and rebuilds with the new engine. The profile lines and fog passes are preserved across the switch.
+
+---
+
+## Disambiguations
+- PureEngine code paths must not gain any MaxEngine dependencies (no SSAO, no DataLib, no MaterialSwap import). Any import of those systems from a PureEngine file is a bug.
+- You are not editing TrueVision 3D code — you are porting and adapting it for ValeVision 3D.
+- The Materials hot-swap system already partially exists in ValeVision but is wired differently. The MaxEngine implementation must not change ValeVision's existing PureEngine wiring.
+- The `.mdc` rule file is a hard requirement for this task, not optional. It prevents future agents from accidentally coupling the engines.
+- Distance culling (`Na__RenderEffect__DistanceCulling__.js`) is a MaxEngine-only optional feature; it does not exist in ValeVision today.
+
+---
+
+## Project Context
+- Projects are modular and split into many numbered subfolders.
+- Have sub-agents build file trees for both TrueVision 3D and ValeVision 3D before writing any code.
+- Stick to Adam Noble's coding standards and conventions (region headers, `Na__` three-part naming, 4-space region indentation, aligned `// <--` inline comments, column-aligned CSS properties).
+
+---
+
+## Conclusion
+When complete: in ValeVision localhost mode, a new **"Render Engine"** Dev menu section lets the developer switch the current model between PureEngine (default, unchanged whitecard) and MaxEngine (full PBR, SSAO, materials hot-swap, glass). The choice is saved to `project.json` via the standard Dev save pattern. When a user views the model in production, if MaxEngine is saved for that model, they see the full PBR render quality with the ability to switch back to PureEngine from the Tools & Settings menu. If MaxEngine is not enabled for a model, the Tools & Settings "Render Engine" section is invisible and the user experience is identical to the current ValeVision. All existing models remain on PureEngine by default with zero visible change.
+
+---
+
+## TrueVision 3D
+@REFERENCE ONLY!! | Cousin Project - Noble Architecture Apps/na-apps/30__TrueVision__CoreAppCode

@@ -2088,14 +2088,6 @@
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1780676317445",
-          "date": "2026-06-09",
-          "startTime": "11:15",
-          "endTime": "12:45",
-          "title": "REM |  Chse HEW",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1780564726896",
           "date": "2026-06-04",
           "startTime": "10:00",
@@ -2134,6 +2126,30 @@
           "endTime": "16:15",
           "title": "Dev |  Fixes To N3d",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1780998680860",
+          "date": "2026-06-09",
+          "startTime": "08:00",
+          "endTime": "09:15",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1780676317445",
+          "date": "2026-06-12",
+          "startTime": "11:00",
+          "endTime": "12:30",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1780998712024",
+          "date": "2026-06-09",
+          "startTime": "09:30",
+          "endTime": "16:00",
+          "title": "TEMP | Bagot",
+          "color": "na-shift-color-indigo"
         }
       ]
     }

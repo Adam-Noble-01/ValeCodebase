@@ -2,6 +2,39 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.3.7 - 09-Jun-2026
+### Navigation Modes — Walk and Fly Mode Port from TrueVision3D
+
+**Overview**
+Full port of Walk and Fly navigation modes from TrueVision3D into ValeVision3D. Both modes are gated by a per-model enable flag stored in `project.json` so legacy models are unaffected — Orbit remains the only mode unless a developer explicitly enables others. A new Dev-menu section lets the developer toggle Walk/Fly availability per model and save it to `project.json`. A new dynamic Tools menu section (hidden unless more than one mode is available) lets users switch between the enabled modes at runtime with a tri-state status indicator showing which mode is currently active. Doors open by proximity in both Walk and Fly modes, reusing ValeVision's existing door-proximity system unchanged.
+
+**Files Added**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js` — Free-fly camera: smoothed velocity, yaw/pitch from Euler, no gravity or collision. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js` — WASD/QE/Space keyboard + pointer-lock mouse look for fly mode. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__TouchScreenControls.js` — Single-finger move, two-finger look, pinch vertical for fly mode on touch devices. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js` — Fly mode orchestration layer: init, toggle, door proximity wiring, render loop requests. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js` — Alt+Shift+F hotkey and button wiring for fly mode. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__ModeTransition.js` — Smooth camera handoff between Orbit↔Walk and Orbit↔Fly; preserves orbit distance/elevation on return. Ported from TrueVision3D.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js` — Shared state accessor: stores Walk/Fly enabled flags read from project.json; drives hotkey gating and Tools menu visibility.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationModes__Controls.js` — User-facing Tools menu section: dynamically revealed when >1 mode is enabled; tri-state status badges; mutual exclusivity enforcement.
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js` — Localhost-only dev section: Walk/Fly checkboxes + Save button (GET-merge-POST to `/api/projects/{code}`).
+
+**Files Modified**
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js` — Added `Na__WalkMode__GetSavedOrbitState`, `Na__WalkMode__ClampEntryPitch`, `Na__WalkMode__NudgeCapsuleForward` (required by ModeTransition); updated `Na__WalkMode__Deactivate` to accept `overrideCameraPosition` parameter.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js` — Routed activate/deactivate through `Na__Navmode__ModeTransition` for spatial continuity; stores camera ref for transition.
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — Added Fly Mode imports; reads `Navmode__EnabledModes` from project.json and sets state accessor; dispatches `na-navigation-modes-loaded` event; added Fly branch to `RenderFrame` with door-proximity update using fly camera position.
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — Added `Navmode__Settings.Navmode__FlyMode` block (all fly defaults), `Global__Hotkeys__ToggleFlyMode: Alt+Shift+F`, and `Navmode__EnabledModes` global default block (`Walk: false, Fly: false`).
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css` — Added `.na-navmode__btn`, `.na-navmode__btn--active`, `.na-navmode__status` tri-state button styles.
+- `index.html` — Added Navigation Modes Tools menu HTML section (hidden by default); added Navigation Modes Dev menu HTML section; added Fly system imports; added FlyMode init; gated Walk/Fly hotkeys on per-model enable flags; added both new UI module init calls in Engine Entry Points.
+
+**Architecture**
+- Orbit is always on. Walk and Fly default to disabled in both AppConfig and project.json.
+- `project.json` now supports an optional `Navmode__EnabledModes` key: `{ Navmode__EnabledModes__Walk: bool, Navmode__EnabledModes__Fly: bool }`.
+- The loading sequence reads this key and broadcasts `na-navigation-modes-loaded` so the Tools menu and dev checkboxes update asynchronously without polling.
+- The dev save writes the key back via the standard Flask GET-merge-POST to `/api/projects/{code}`; published to CDN via the normal git/GH Pages deployment flow.
+- Door proximity is unchanged — fly mode reuses `3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js` as-is; the render loop calls `Na__DoorProximity__Update(Na__FlyMode__GetCameraPosition())` while fly is active.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.3.6 - 24-May-2026
 ### Profile Lines — Architectural Alignment with TrueVision (Mesh/Linework Discrimination Tags)
 

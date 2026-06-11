@@ -2,6 +2,24 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.7.0 - 11-Jun-2026 - MaxModel Load Speed + Model/HDRI/DataLib Caching Strategy
+
+### Overview
+MaxModel projects hung longer on load than whitecard models despite simpler geometry. The hang was a fixed MaxEngine overhead, not the GLB: 24.5 MB 4K HDRI fetch (uncached, awaited inside the materials swap), DataLib SSOT fetches from GitHub raw (uncached, cross-origin), and PMREM pre-filtering. Model GLBs from the R2 CDN were never service-worker cached at all (cross-origin → ignored), so offline sessions had no models.
+
+### Changes
+- **HDRI swapped to optimised 1024p version** (`HdriSkydome__...__OptimisedVersion__1024p__.hdr`, 1.46 MB vs 24.5 MB). `Scene__Environment__HdriUrl` updated; reflections-only use (glass/mirror env maps) is visually identical. RGBE decode + PMREM generation also drop sharply with the smaller source.
+- **Caching strategy (implemented in the shared Whitecardopedia SW — see Whitecardopedia DEVLOG v0.4.0)**:
+  - Model GLBs: network-first with 4 s slow-network grace fallback to cache + background refresh; offline fallback; 36-entry LRU.
+  - HDRI: cache-first (immutable) + precached at SW install.
+  - DataLib SSOT JSONs: network-first with offline fallback.
+  - R2 CDN + GitHub raw origins now SW-managed (CORS-enabled allowlist).
+
+### Files Changed
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.6.1 - 11-Jun-2026 - HOTFIX - Vendored Three.js Broken Module Graph (No Models Loading)
 
 ### Overview

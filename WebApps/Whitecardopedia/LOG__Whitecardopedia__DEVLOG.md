@@ -18,6 +18,29 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.4.0 - 11-Jun-2026 - Model / HDRI / DataLib Caching Strategy + MaxModel Load Speed
+
+### Overview
+MaxModel projects were hanging noticeably longer than whitecard models on load despite simpler geometry. Diagnosis: a fixed MaxEngine "tax" — 24.5 MB 4K HDRI download (never cached), DataLib SSOT fetches from GitHub raw (never cached), and no service-worker caching of model GLBs at all (R2 CDN is cross-origin so the SW ignored it entirely; offline = no models). This release fixes all three.
+
+### Changes
+- **Optimised HDRI adopted**: `Scene__Environment__HdriUrl` now points at the new 1024p HDRI (1.46 MB vs 24.5 MB — 94% smaller). Reflections-only usage (glass/mirror) makes it visually identical. Also added to the SW precache so installed clients never download it at model-load time.
+- **Model GLB caching (NEW `wpwa-models-` cache)**: new `NetworkFirstWithGrace` strategy —
+  - Good connection: fresh network copy always wins, cache refreshed.
+  - Slow connection: if network exceeds a 4 s grace window and a cached copy exists, the cached model is served instantly; the in-flight fetch still refreshes the cache in background for next load.
+  - Offline: cached copy served.
+  - LRU-capped at 36 entries so large GLBs cannot grow unbounded.
+- **Cross-origin caching enabled**: `cdn.noble-architecture.com` (R2 model CDN) and `raw.githubusercontent.com` (DataLib SSOT) added to an owned-remote-origins allowlist — the SW now manages these requests (both hosts are CORS-enabled).
+- **DataLib SSOT JSONs**: `Na__DataLib__CoreIndex*.json` added to the data-cache pattern — network-first with offline fallback, so MaxEngine materials survive flaky connections.
+- **HDRI route**: `.hdr` requests are cache-first (filename-versioned immutable asset) — downloaded once per SW version.
+- **SW version token bumped** to `2026-06-11-3`.
+
+### Files Changed
+- `ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — HdriUrl → 1024p optimised version
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js` — models cache, remote origins, new routes/strategy, precache, token bump
+
+---
+
 ## Whitecardopedia v0.3.8 - 11-Jun-2026 - HOTFIX - Vendored Three.js Broken Module Graph (No Models Loading)
 
 ### Overview

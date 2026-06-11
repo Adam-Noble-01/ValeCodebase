@@ -79,9 +79,9 @@
         "RenderEffect__AmbientOcclusion__DebugMode"        : 0
     },
     "Scene__Environment": {
-        "Scene__Environment__Description"                  : "HDR environment map for MaxEngine PBR reflections (glass/mirrors). MAXENGINE ONLY. Same HDRI asset as TrueVision (byte-identical local copy). Loaded lazily — only fetched when MaxEngine activates. Glass realism: BrightnessMultiplier darkens the DataLib glass colour (0.25 = dark reflective glass, TrueVision parity); RoughnessOverride sharpens reflections; OpacityOverride (null = use DataLib value) raises glass presence.",
+        "Scene__Environment__Description"                  : "HDR environment map for MaxEngine PBR reflections (glass/mirrors). MAXENGINE ONLY. Optimised 1024p version of the TrueVision HDRI (1.46 MB vs 24.5 MB 4k original) — reflections-only use means visually identical. Loaded lazily — only fetched when MaxEngine activates. Glass realism: BrightnessMultiplier darkens the DataLib glass colour (0.25 = dark reflective glass, TrueVision parity); RoughnessOverride sharpens reflections; OpacityOverride (null = use DataLib value) raises glass presence.",
         "Scene__Environment__Enabled"                      : true,
-        "Scene__Environment__HdriUrl"                      : "./01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__4k__.hdr",
+        "Scene__Environment__HdriUrl"                      : "./01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__OptimisedVersion__1024p__.hdr",
         "Scene__Environment__Intensity"                    : 1.0,
         "Scene__Environment__ApplyToScene"                 : false,
         "Scene__Environment__UseAsBackground"              : false,

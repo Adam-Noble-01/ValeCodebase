@@ -32,12 +32,15 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-06-11-2';                                                                       // <-- Bump to invalidate all caches (vendored Three.js dependency fix)
+    const PWA_SW_VERSION_TOKEN              = '2026-06-11-3';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
-    const PWA_SW_CACHE_PREFIXES_OWNED       = ['wpwa-shell-', 'wpwa-thumbs-', 'wpwa-data-'];                                        // <-- Owned cache prefixes (for cleanup)
+    const PWA_SW_CACHE_NAME_MODELS          = `wpwa-models-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Model GLB cache id (network-first, offline fallback)
+    const PWA_SW_CACHE_PREFIXES_OWNED       = ['wpwa-shell-', 'wpwa-thumbs-', 'wpwa-data-', 'wpwa-models-'];                        // <-- Owned cache prefixes (for cleanup)
     const PWA_SW_THUMBS_MAX_ENTRIES         = 256;                                                                                  // <-- LRU cap on thumbnail cache
+    const PWA_SW_MODELS_MAX_ENTRIES         = 36;                                                                                   // <-- LRU cap on model cache (GLBs are large; ~3-6 projects worth)
+    const PWA_SW_MODELS_NETWORK_TIMEOUT_MS  = 4000;                                                                                 // <-- Slow-network grace: serve cached model if network exceeds this (fresh copy still refreshes cache in background)
     // ------------------------------------------------------------
 
 
@@ -45,10 +48,16 @@
     // ------------------------------------------------------------
     const PWA_SW_PATH_PATTERN_THUMBNAIL     = /__Thumbnail__524p__\.(webp|jpg|jpeg|png)(\?.*)?$/i;                                  // <-- Gallery thumbnail filenames
     const PWA_SW_PATH_PATTERN_FULL_IMAGE    = /\/IMG\d{2}(?:_ART\d{2})?__[^\/]+\.(png|jpg|jpeg|svg|gif|webp)(\?.*)?$/i;             // <-- Full-resolution project images
-    const PWA_SW_PATH_PATTERN_PROJECT_JSON  = /\/(project|.+masterConfig.*|.+ValeDesignersList.*|.+ValeConceptArtistsList.*|.+Hotkeys.*|Na__AppConfig.*)\.json(\?.*)?$/i;   // <-- Data + app config JSONs
+    const PWA_SW_PATH_PATTERN_PROJECT_JSON  = /\/(project|.+masterConfig.*|.+ValeDesignersList.*|.+ValeConceptArtistsList.*|.+Hotkeys.*|Na__AppConfig.*|Na__DataLib__CoreIndex.*)\.json(\?.*)?$/i;   // <-- Data + app config + DataLib SSOT JSONs
     const PWA_SW_PATH_PATTERN_HTML          = /\.(html?)(\?.*)?$/i;                                                                 // <-- HTML documents
+    const PWA_SW_PATH_PATTERN_MODEL_GLB     = /\.(glb|gltf)(\?.*)?$/i;                                                              // <-- 3D model files (R2 CDN + local)
+    const PWA_SW_PATH_PATTERN_HDRI          = /\.hdr(\?.*)?$/i;                                                                     // <-- HDR environment maps (immutable, filename-versioned)
     const PWA_SW_PATH_PATTERN_SHELL_ASSET   = /\.(css|js|jsx|mjs|webmanifest|ico|png|svg|woff2?)(\?.*)?$/i;                         // <-- App shell assets
     const PWA_SW_APP_FOLDER_TOKENS          = ['/Whitecardopedia/', '/ValeVision3D/', '/assets__CommonApplicationAssets/'];          // <-- Folders we manage
+    const PWA_SW_REMOTE_ORIGINS_OWNED       = [                                                                                     // <-- Cross-origin hosts we cache (CORS-enabled)
+        'https://cdn.noble-architecture.com',                                                                                       // <-- Cloudflare R2 CDN (model GLBs)
+        'https://raw.githubusercontent.com'                                                                                         // <-- DataLib SSOT JSONs (MaxEngine materials)
+    ];
     // ------------------------------------------------------------
 
 
@@ -73,6 +82,8 @@
         'ValeVision3D/index.html',
         'ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json',
         'ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__MaterialsLibrary.json',
+        // VALEVISION3D HDRI ENVIRONMENT (MaxEngine reflections — optimised 1024p, 1.46 MB)
+        'ValeVision3D/01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__OptimisedVersion__1024p__.hdr',
         // VALEVISION3D VENDORED THREE.JS (full dependency graph — every relative import must be present)
         'ValeVision3D/04__Lib__ThirdParty__Three/three.module.js',
         'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/controls/OrbitControls.js',
@@ -165,7 +176,8 @@
     function Whitecardopedia__Pwa__ServiceWorker__Logic__IsOwnedRequest(requestUrl) {
         try {
             const targetUrl     = new URL(requestUrl);                                                                              // <-- Parse target URL
-            if (targetUrl.origin !== self.location.origin) return false;                                                            // <-- Skip cross-origin
+            if (PWA_SW_REMOTE_ORIGINS_OWNED.indexOf(targetUrl.origin) !== -1) return true;                                          // <-- Trusted CORS-enabled remote hosts (R2 CDN models, DataLib SSOT)
+            if (targetUrl.origin !== self.location.origin) return false;                                                            // <-- Skip all other cross-origin
             const pathname      = targetUrl.pathname;                                                                               // <-- Path-only segment
             return PWA_SW_APP_FOLDER_TOKENS.some(token => pathname.indexOf(token) !== -1);                                          // <-- Match against owned folders
         } catch (error) {
@@ -181,7 +193,9 @@
         const requestUrl        = request.url || '';                                                                                // <-- Snapshot URL
         if (PWA_SW_PATH_PATTERN_THUMBNAIL.test(requestUrl)) return 'thumbnail';                                                     // <-- Gallery thumbnail
         if (PWA_SW_PATH_PATTERN_FULL_IMAGE.test(requestUrl)) return 'full-image';                                                   // <-- Full-resolution image
-        if (PWA_SW_PATH_PATTERN_PROJECT_JSON.test(requestUrl)) return 'data';                                                       // <-- Project / config JSON
+        if (PWA_SW_PATH_PATTERN_MODEL_GLB.test(requestUrl)) return 'model';                                                         // <-- 3D model GLB/GLTF
+        if (PWA_SW_PATH_PATTERN_HDRI.test(requestUrl)) return 'hdri';                                                               // <-- HDR environment map
+        if (PWA_SW_PATH_PATTERN_PROJECT_JSON.test(requestUrl)) return 'data';                                                       // <-- Project / config / DataLib JSON
         if (PWA_SW_PATH_PATTERN_HTML.test(requestUrl)) return 'html';                                                               // <-- HTML document
         if (PWA_SW_PATH_PATTERN_SHELL_ASSET.test(requestUrl)) return 'shell';                                                       // <-- Shell asset
         return 'other';                                                                                                             // <-- Fall through
@@ -268,6 +282,46 @@
             if (cachedResponse) return cachedResponse;                                                                              // <-- Serve stale data when offline
             return Response.error();                                                                                                // <-- Fail closed when uncached
         }
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Network First With Slow-Network Grace (Model GLBs)
+    // ------------------------------------------------------------
+    // Behaviour contract (model caching strategy):
+    //   - Good connection  : fresh network copy always wins; cache refreshed.
+    //   - Slow connection  : if the network exceeds the grace timeout AND a
+    //                        cached copy exists, the cached model is served
+    //                        immediately. The in-flight network fetch still
+    //                        completes and refreshes the cache in background,
+    //                        so the NEXT load gets the fresh copy.
+    //   - Offline          : cached copy served; error only when uncached.
+    //   - Cache writes are LRU-trimmed so large GLBs cannot grow unbounded.
+    // ------------------------------------------------------------
+    async function Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirstWithGrace(request, cacheName, graceTimeoutMs, maxEntries) {
+        const cacheInstance     = await caches.open(cacheName);                                                                     // <-- Open named cache
+        const cachedResponse    = await cacheInstance.match(request);                                                               // <-- Existing cached copy (may be undefined)
+
+        const networkPromise    = fetch(request).then((networkResponse) => {
+            if (networkResponse && networkResponse.ok) {
+                cacheInstance.put(request, networkResponse.clone()).then(() => {
+                    Whitecardopedia__Pwa__ServiceWorker__Logic__TrimCacheLru(cacheName, maxEntries);                                // <-- LRU trim after successful put only
+                }).catch(() => {});                                                                                                 // <-- Quota failures must not break response
+            }
+            return networkResponse;                                                                                                 // <-- Live response
+        });
+
+        if (!cachedResponse) {
+            return networkPromise.catch(() => Response.error());                                                                    // <-- No fallback available; network is the only source
+        }
+
+        const graceTimer        = new Promise((resolve) => setTimeout(() => resolve('grace-expired'), graceTimeoutMs));            // <-- Slow-network grace window
+        const raceWinner        = await Promise.race([networkPromise.catch(() => 'network-failed'), graceTimer]);                  // <-- First settled outcome wins
+
+        if (raceWinner === 'grace-expired' || raceWinner === 'network-failed') {
+            return cachedResponse;                                                                                                  // <-- Serve cache; background fetch still refreshes for next load
+        }
+        return raceWinner;                                                                                                          // <-- Fresh network response (good connection path)
     }
     // ---------------------------------------------------------------
 
@@ -362,8 +416,20 @@
             return;
         }
 
+        if (classification === 'model') {
+            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirstWithGrace(
+                request, PWA_SW_CACHE_NAME_MODELS, PWA_SW_MODELS_NETWORK_TIMEOUT_MS, PWA_SW_MODELS_MAX_ENTRIES                      // <-- Fresh on good connection, cache on slow/offline
+            ));
+            return;
+        }
+
+        if (classification === 'hdri') {
+            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__CacheFirst(request, PWA_SW_CACHE_NAME_SHELL));       // <-- Immutable filename-versioned asset; one download per SW version
+            return;
+        }
+
         if (classification === 'data') {
-            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirst(request, PWA_SW_CACHE_NAME_DATA));      // <-- Network-first JSON (project.json + Na__AppConfig JSONs)
+            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirst(request, PWA_SW_CACHE_NAME_DATA));      // <-- Network-first JSON (project.json + Na__AppConfig + DataLib SSOT)
             return;
         }
 

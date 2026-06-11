@@ -18,6 +18,32 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.8 - 11-Jun-2026 - HOTFIX - Vendored Three.js Broken Module Graph (No Models Loading)
+
+### Overview
+v0.3.7 switched ValeVision3D from esm.sh CDN imports to a locally vendored Three.js, but four transitive dependency files were never vendored. Every `three/addons/` import chain failed to resolve (404), killing the entire ES module graph — **no model could load on any fresh client** (first seen on iPad, where no stale CDN-based cache existed to mask the fault).
+
+### Root Cause
+Missing files inside `ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/`:
+- `postprocessing/Pass.js` — required by `RenderPass.js`, `ShaderPass.js`, `MaskPass.js`
+- `postprocessing/MaskPass.js` — required by `EffectComposer.js`
+- `shaders/CopyShader.js` — required by `EffectComposer.js`
+- `utils/BufferGeometryUtils.js` — required by `GLTFLoader.js`
+
+### Changes
+- **Four missing files vendored** from `three@0.160.0` (matches vendored `three.module.js` REVISION `'160'`). Module graph now resolves completely.
+- **SW version token bumped** to `2026-06-11-2` — all clients drop v0.3.7 caches and adopt the repaired module graph.
+- **Vendored Three.js actually added to the precache list** — the v0.3.7 notes claimed this but the entries were never present. All 17 library files now precache.
+
+### Files Changed
+- `ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/Pass.js` (NEW)
+- `ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/MaskPass.js` (NEW)
+- `ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/shaders/CopyShader.js` (NEW)
+- `ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/utils/BufferGeometryUtils.js` (NEW)
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+
+---
+
 ## Whitecardopedia v0.3.7 - 11-Jun-2026 - PWA Stability Fix
 
 ### Overview

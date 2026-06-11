@@ -1,0 +1,85 @@
+{
+    "Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 20748,
+            "Camera__DefaultPos__PosY": 1399,
+            "Camera__DefaultPos__PosZ": 5365
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": 0.0188,
+            "Camera__DefaultRotation__RotY": 0.4383,
+            "Camera__DefaultRotation__RotZ": -0.008
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2500,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -18300
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 36920
+        }
+    },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
+    "Navmode__OrbitMaxDistanceMm": 37000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 13408,
+        "OrbitHelperCube__Position__PosY": 1693,
+        "OrbitHelperCube__Position__PosZ": -10292
+    },
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63476__Lang",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Steph's CAD File was amazing! a great quick and easy job. No Issues to report.",
+        "conceptArtist": "Steph",
+        "input": "CAD File"
+    },
+    "projectCode": "63476",
+    "projectName": "Lang",
+    "scheduleData": {
+        "dateFulfilled": "11-Jun-2026",
+        "dateReceived": "5-Jun-2026",
+        "timeAllocated": 2,
+        "timeTaken": 2
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026__Thumbnail__524p__.webp",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "folderId": "2026/63476__Lang",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
+    ]
+}

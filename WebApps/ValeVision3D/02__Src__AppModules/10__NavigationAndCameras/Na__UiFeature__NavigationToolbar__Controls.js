@@ -16,7 +16,9 @@
 //   controls live in their own pill toolbar rather than being buried in the
 //   right-hand Tools & Settings menu (which stays focused on technical and
 //   configuration tools).
-// - Button order: Orbit | Walk | Fly | Reset View | Help.
+// - Button order: Orbit | Walk | Fly | [Views] | Reset View | Help.
+// - Views button is hidden until a project with PresentationMode__SavedCameraScenes
+//   data loads; wiring is in index.html Engine Entry Points.
 // - Orbit is always available; Walk and Fly buttons reveal only when enabled
 //   for the current model (project.json Navmode__EnabledModes), matching the
 //   gating previously used by the retired Tools-menu Navigation Mode section.

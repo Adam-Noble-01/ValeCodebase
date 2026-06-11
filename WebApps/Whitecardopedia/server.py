@@ -401,6 +401,47 @@ def save_project(folder_id):
 # ------------------------------------------------------------
 
 
+# API ENDPOINT | Save Presentation Mode Thumbnail WebP
+# ------------------------------------------------------------
+# Receives a multipart/form-data POST with a 'thumbnail' file field.
+# Writes the WebP into Projects/{folder_id}/PresentationMode/Thumbnails/{scene_id}.webp
+# creating subdirectories if needed, then returns the relative URL.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>/presentation-thumbnail/<string:scene_id>', methods=['POST'])
+def save_presentation_thumbnail(folder_id, scene_id):
+    """Save a Presentation Mode scene thumbnail WebP to the project folder"""
+    try:
+        thumb_file = request.files.get('thumbnail')                          # <-- Get uploaded file from form-data
+        if not thumb_file:
+            return jsonify({'error': 'No thumbnail file provided'}), 400
+
+        project_path = get_project_path(folder_id)                           # <-- Resolve project directory
+        if not os.path.exists(project_path):
+            return jsonify({'error': f'Project folder not found: {folder_id}'}), 404
+
+        # BUILD TARGET PATH
+        thumbnails_dir = os.path.join(project_path, 'PresentationMode', 'Thumbnails')
+        os.makedirs(thumbnails_dir, exist_ok=True)                           # <-- Create dirs if missing
+
+        # SANITISE SCENE ID to prevent path traversal
+        safe_scene_id = os.path.basename(scene_id).replace('..', '').replace('/', '')
+        dest_path = os.path.join(thumbnails_dir, f'{safe_scene_id}.webp')
+
+        thumb_file.save(dest_path)                                           # <-- Write WebP file to disk
+
+        rel_url = f'PresentationMode/Thumbnails/{safe_scene_id}.webp'       # <-- Relative URL stored in scene JSON
+
+        return jsonify({
+            'success' : True,
+            'url'     : rel_url,
+            'message' : f'Thumbnail saved: {rel_url}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
 # API ENDPOINT | Discover All Project Folders
 # ------------------------------------------------------------
 @app.route('/api/projects/discover', methods=['GET'])

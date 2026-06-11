@@ -1,18 +1,18 @@
 {
     "Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
         "Camera__DefaultPos": {
             "Camera__DefaultPos__PosX": 20748,
             "Camera__DefaultPos__PosY": 1399,
             "Camera__DefaultPos__PosZ": 5365
         },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultRotation": {
             "Camera__DefaultRotation__RotX": 0.0188,
             "Camera__DefaultRotation__RotY": 0.4383,
             "Camera__DefaultRotation__RotZ": -0.008
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
         }
     },
     "FogPlane__Config": {
@@ -43,8 +43,85 @@
         "OrbitHelperCube__Position__PosY": 1693,
         "OrbitHelperCube__Position__PosZ": -10292
     },
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "Scene_001",
+        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 20748,
+                        "Camera__DefaultPos__PosY": 1399,
+                        "Camera__DefaultPos__PosZ": 5365
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0.0188,
+                        "Camera__DefaultRotation__RotY": 0.4383,
+                        "Camera__DefaultRotation__RotZ": -0.008
+                    }
+                },
+                "PresentationMode__Scene__Id": "Scene_001",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "View 01",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 13408,
+                    "OrbitHelperCube__Position__PosY": 1693,
+                    "OrbitHelperCube__Position__PosZ": -10292
+                },
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 3326,
+                        "Camera__DefaultPos__PosY": 1695,
+                        "Camera__DefaultPos__PosZ": 3817
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0109,
+                        "Camera__DefaultRotation__RotY": -0.548,
+                        "Camera__DefaultRotation__RotZ": -0.0057
+                    }
+                },
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "View 02",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 12336,
+                    "OrbitHelperCube__Position__PosY": 1534,
+                    "OrbitHelperCube__Position__PosZ": -10945
+                },
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
+            }
+        ],
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true
+    },
     "ProjectType": "Whitecard",
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
+    ],
+    "artPairsMap": {},
     "basePath": "Projects/2026/63476__Lang",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
+    ],
+    "folderId": "2026/63476__Lang",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
     ],
@@ -73,13 +150,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63476__Lang/Lang__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "folderId": "2026/63476__Lang",
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
-    ],
-    "artPairsMap": {},
-    "allImages": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__11-Jun-2026.png"
     ]
 }

@@ -2,6 +2,36 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.7.1 - 11-Jun-2026 - Presentation Mode Saved Camera Scenes
+
+### Overview
+Full Presentation Mode system for per-project saved camera scenes. Each project stores its own scene data inside its `project.json` under `PresentationMode__SavedCameraScenes`. Projects without this section are completely unaffected.
+
+### Changes
+- **New module folder:** `02__Src__AppModules/21__System__PresentationMode/`
+- **`Na__PresentationMode__ProjectJson__SceneData.js`** — reads, validates, sorts and exposes saved scenes; thumbnail URL resolution; active scene id state.
+- **`Na__PresentationMode__Camera__SceneTransition.js`** — captures/builds/applies/animates camera between scenes using quaternion slerp + position/target/FOV lerp with `easeInOutCubic`, `easeInOutQuad`, `linear` easing; uses `RequestActiveRender` during transitions.
+- **`Na__PresentationMode__UI__SceneCarousel.js`** — bottom carousel (thumbnail cards, prev/next, pagination dots, play/pause); adaptive layout (adds `na-presentation-mode-active` to `<body>` → top toolbar); listens for `na-presentation-mode-scenes-loaded`.
+- **`Na__PresentationMode__DevMenu__SceneEditor.js`** — localhost-only scene editor (add/update/rename/delete/reorder, FOV slider with live lens-mm readout, transition time slider, easing dropdown, WebP thumbnail regeneration, Save to Flask, Export JSON, Clear All).
+- **`Na__PresentationMode__Thumbnail__Renderer.js`** — renders current WebGL framebuffer to a 480px WebP blob via offscreen 2D canvas downscale.
+- **`Na__PresentationMode__DevTools__CameraPathVisualizer.js`** — CatmullRomCurve3 spline tube through scene camera positions + per-scene camera frustum markers + orbit target sphere markers; toggled from dev menu.
+- **`Na__AppFlow__LoadingSequence.js`** (v1.4.0) — detects `PresentationMode__SavedCameraScenes` and dispatches `na-presentation-mode-scenes-loaded` with `sceneConfig` + `projectCode`.
+- **`index.html`** — Views button added (hidden until scenes load), `#naPresentationCarousel` container, `#naPmDevEditorItem` dev section, all Presentation Mode init calls in Engine Entry Points.
+- **`Na__PresentationMode__Styles__SceneCarousel__.css`** (new) — carousel layout, card styles, adaptive top-toolbar positioning, inactive-fade for toolbar and Tools menu.
+- **`Na__UiFeature__Styles__DropdownAndToast__.css`** — collapsed Tools/Dev menu inactive opacity fade (0.78 → 1 on hover/focus/open).
+- **`Na__CoreUi__Styles__Index__.css`** — added `@import` for the new carousel stylesheet.
+- **`Whitecardopedia/server.py`** — new `POST /api/projects/<folder_id>/presentation-thumbnail/<scene_id>` endpoint to save WebP thumbnails into `PresentationMode/Thumbnails/`.
+
+### Files Changed
+- `02__Src__AppModules/21__System__PresentationMode/` (new folder, 6 new modules)
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `index.html`
+- `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css` (new)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`
+- `../Whitecardopedia/server.py`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.7.0 - 11-Jun-2026 - MaxModel Load Speed + Model/HDRI/DataLib Caching Strategy
 
 ### Overview

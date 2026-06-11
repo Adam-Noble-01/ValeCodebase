@@ -75,6 +75,12 @@
 // - LoadAllModels receives a status+progress wrapper so watchdog stall clock resets
 //   on each file.
 //
+// 11-Jun-2026 - Version 1.4.0
+// - Presentation Mode: reads PresentationMode__SavedCameraScenes from project.json
+//   and dispatches 'na-presentation-mode-scenes-loaded' with sceneConfig + projectCode
+//   when the section is present, enabled, and contains at least one valid scene.
+//   Projects without this section are unaffected.
+//
 // =============================================================================
 
 
@@ -203,6 +209,15 @@
     // MODULE IMPORTS | Navigation Modes State
     // ------------------------------------------------------------
     import { Na__NavigationModes__SetEnabledModes } from '../10__NavigationAndCameras/Na__NavigationModes__State.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Presentation Mode Scene Data (per-project saved camera scenes)
+    // @delegate: ../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js
+    // ------------------------------------------------------------
+    import {
+        Na__PresentationMode__ProjectJson__HasValidSavedScenes,
+        Na__PresentationMode__ProjectJson__GetSavedCameraScenes
+    } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Camera Project Start State (Reset View canonical state)
@@ -493,6 +508,16 @@
                     Na__RenderEngine__SetConfiguredEngine(projectData.RenderEngine__Config.RenderEngine__Active);
                     window.dispatchEvent(new CustomEvent('na-render-engine-loaded', {
                         detail: { renderEngineConfig: projectData.RenderEngine__Config }
+                    }));
+                }
+
+                // DETECT PER-PROJECT PRESENTATION MODE SAVED SCENES
+                if (Na__PresentationMode__ProjectJson__HasValidSavedScenes(projectData)) {
+                    window.dispatchEvent(new CustomEvent('na-presentation-mode-scenes-loaded', {
+                        detail: {
+                            sceneConfig : Na__PresentationMode__ProjectJson__GetSavedCameraScenes(projectData),
+                            projectCode : projectCode
+                        }
                     }));
                 }
 

@@ -43,6 +43,21 @@
     font-family                        : 'Open Sans', sans-serif;
     transform                          : scale(1.2);
     transform-origin                   : top right;
+    /* Inactive fade: collapsed menu is slightly translucent when idle */
+    opacity                            : 0.78;
+    transition                         : opacity 0.3s ease;
+}
+
+/* Fully opaque on hover, focus, or when the menu is expanded (open) */
+.na-dropdown-menu:hover,
+.na-dropdown-menu:focus-within,
+.na-dropdown-menu .na-dropdown-menu__details[open] {
+    opacity                            : 1;
+}
+
+/* Force full opacity on the entire menu when any details element is open */
+.na-dropdown-menu:has(.na-dropdown-menu__details[open]) {
+    opacity                            : 1;
 }
 
 .na-dropdown-menu--dev-localhost {

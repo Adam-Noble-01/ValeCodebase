@@ -11,6 +11,7 @@
 //
 // DESCRIPTION:
 // - Owns the Dev Tools UI state for the Profile Lines runtime toggle.
+// - Hosts Profile Lines inside the Visual Settings Dev Tools submenu.
 // - Keeps the button label, status text, and pressed state in sync with the
 //   existing render-pipeline toggle function.
 // - Extracts the remaining inline profile-lines menu logic from index.html into
@@ -21,6 +22,9 @@
 // DEVELOPMENT LOG:
 // 11-Mar-2026 - Version 1.0.0
 // - Initial extraction from index.html into a standalone Dev Tools module.
+//
+// 11-Jun-2026 - Version 1.1.0
+// - Profile Lines moved into new Visual Settings Dev Tools submenu.
 //
 // =============================================================================
 
@@ -46,6 +50,8 @@
     const Na__ProfileLines__ButtonId      = 'naProfileLinesToggle';            // <-- Profile Lines toggle button
     const Na__ProfileLines__StatusId      = 'naProfileLinesStatus';            // <-- Profile Lines status label
     const Na__ProfileLines__ActiveClass   = 'na-dev-toggle--active';           // <-- Active button class
+    const Na__VisualSettings__ToggleId    = 'naVisualSettingsToggle';          // <-- Visual Settings submenu button
+    const Na__VisualSettings__PanelId     = 'naVisualSettingsPanel';           // <-- Visual Settings submenu panel
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -84,12 +90,36 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Visual Settings Submenu
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Wire Visual Settings Panel Open/Close Toggle
+    // ------------------------------------------------------------
+    function Na__VisualSettings__InitPanelToggle() {
+        const toggleBtn = document.getElementById(Na__VisualSettings__ToggleId);
+        const panel     = document.getElementById(Na__VisualSettings__PanelId);
+        if (!toggleBtn || !panel) return;
+
+        toggleBtn.addEventListener('click', () => {
+            const isOpen = panel.classList.contains('is-open');
+            panel.classList.toggle('is-open', !isOpen);                        // <-- Toggle submenu open state
+            toggleBtn.setAttribute('aria-expanded', String(!isOpen));          // <-- Sync accessibility state
+        });
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Initialization
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Initialize Profile Lines Dev Tools Control
     // ------------------------------------------------------------
     function Na__UiFeature__InitializeProfileLinesControls(pipelineRef, profileLinesConfig) {
+        Na__VisualSettings__InitPanelToggle();                                 // <-- Wire Visual Settings submenu
+
         const toggleButton  = document.getElementById(Na__ProfileLines__ButtonId);
         const statusElement = document.getElementById(Na__ProfileLines__StatusId);
         if (!toggleButton) return;                                             // <-- Exit if markup is unavailable

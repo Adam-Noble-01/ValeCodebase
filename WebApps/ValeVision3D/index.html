@@ -567,14 +567,6 @@
                         <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naOrbitMaxDistanceClear">Clear from Project</button>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
-                <li class="na-dropdown-menu__item">
-                    <button class="na-dropdown-menu__button na-dev-toggle na-dev-toggle--active" id="naProfileLinesToggle" aria-pressed="true">
-                        <span class="na-dev-toggle__label">Profile Lines</span>
-                        <span class="na-dev-toggle__status" id="naProfileLinesStatus">ON</span>
-                    </button>
-                </li>
-                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naFogPlaneToggle" aria-expanded="false">
                         Fog Effect
@@ -612,7 +604,6 @@
                         <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naFogPlaneSaveSettings">Save Fog Settings</button>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item" id="naNavModesDevItem" style="display:none;">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naNavModesDevToggle" aria-expanded="false">
                         Navigation Modes
@@ -636,7 +627,6 @@
                         <button class="na-dropdown-menu__action" id="naNavModesDevSave">Save Navigation Modes</button>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
                 <li class="na-dropdown-menu__item" id="naRenderEngineDevItem" style="display:none;">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naRenderEngineDevToggle" aria-expanded="false">
                         Render Engine
@@ -656,7 +646,32 @@
                         <button class="na-dropdown-menu__action" id="naRenderEngineDevSave">Save Render Engine</button>
                     </div>
                 </li>
-                <li class="na-dropdown-menu__divider" role="separator" aria-hidden="true"></li>
+                <!-- -------------------------------------------------------- -->
+                <!-- PRESENTATION MODE SCENES (localhost dev only)           -->
+                <!-- -------------------------------------------------------- -->
+                <!-- @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naPmDevEditorItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naPmDevEditorToggle" aria-expanded="false">
+                        Presentation Mode Scenes
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-pm-dev__panel" id="naPmDevEditorPanel">
+                        <!-- Scene rows and global actions are injected by Na__PresentationMode__DevMenu__SceneEditor.js -->
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naVisualSettingsToggle" aria-expanded="false">
+                        Visual Settings
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naVisualSettingsPanel">
+                        <button class="na-dev-toggle na-dev-toggle--active" id="naProfileLinesToggle" aria-pressed="true">
+                            <span class="na-dev-toggle__label">Profile Lines</span>
+                            <span class="na-dev-toggle__status" id="naProfileLinesStatus">ON</span>
+                        </button>
+                    </div>
+                </li>
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naSceneInspectorToggle" aria-expanded="false">
                         Scene Inspector
@@ -700,6 +715,12 @@
             <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__FlyMode__.png" alt="" />
             <span class="na-nav-toolbar__label">Fly</span>
         </button>
+        <!-- Views button — hidden until a project with Presentation Mode scenes loads -->
+        <!-- @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js -->
+        <button class="na-nav-toolbar__btn" id="naNavToolbarViewsBtn" type="button" aria-pressed="false" title="Toggle saved scene carousel" style="display:none;">
+            <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.png" alt="" />
+            <span class="na-nav-toolbar__label">Views</span>
+        </button>
         <button class="na-nav-toolbar__btn" id="naNavToolbarResetBtn" type="button" title="Reset view to project start position">
             <img class="na-nav-toolbar__icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__NavigationMenu/Icon__NavigationMenu__ResetView__.png" alt="" />
             <span class="na-nav-toolbar__label">Reset View</span>
@@ -709,6 +730,12 @@
             <span class="na-nav-toolbar__label">Help</span>
         </button>
     </nav>
+
+    <!-- Presentation Mode Scene Carousel (bottom, shown when scenes are active) -->
+    <!-- @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js -->
+    <div class="na-pm-carousel" id="naPresentationCarousel" aria-label="Presentation scenes" role="navigation">
+        <!-- Cards, nav buttons, dots and play/pause injected by Na__PresentationMode__UI__SceneCarousel.js -->
+    </div>
 
     <!-- endregion -------------------------------------------------------- -->
 
@@ -856,6 +883,17 @@
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
     import { Na__GpuLifecycle__AttachContextLossHandlers, Na__GpuLifecycle__DisposeAll } from './02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js';
+
+    // MODULE IMPORTS | Presentation Mode System
+    // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js
+    // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js
+    // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js
+    // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js
+    // ------------------------------------------------------------
+    import { Na__PresentationMode__UI__InitializeSceneCarousel } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js';
+    import { Na__PresentationMode__DevMenu__InitializeSceneEditor } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js';
+    import { Na__PresentationMode__DevTools__InitializeCameraPathVisualizer, Na__PresentationMode__DevTools__ToggleCameraPathVisualizer } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js';
+    import { Na__PresentationMode__Thumbnail__SetRenderContext } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -1514,6 +1552,54 @@
     Na__Feature__FullScreenMode__Initialize({
         showToast     : Na__UiFeature__ShowToast,
         targetElement : document.documentElement
+    });
+    // ------------------------------------------------------------
+
+    // PRESENTATION MODE | Initialize scene carousel, thumbnail renderer, and dev tools
+    // @delegate: ./02__Src__AppModules/21__System__PresentationMode/
+    // ------------------------------------------------------------
+    Na__PresentationMode__UI__InitializeSceneCarousel(Na__Camera__Main, Na__Controls__Orbit);
+
+    Na__PresentationMode__Thumbnail__SetRenderContext(                          // <-- Register render context for WebP capture
+        Na__Renderer__Main,
+        Na__Scene__Main,
+        Na__Camera__Main,
+        () => Na__AppFlow__PipelineRef.current                                  // <-- Lazy pipeline getter (built after load)
+    );
+
+    Na__PresentationMode__DevMenu__InitializeSceneEditor(                       // <-- Localhost-only scene editor
+        Na__Camera__Main,
+        Na__Controls__Orbit,
+        Na__UiFeature__ShowToast
+    );
+
+    Na__PresentationMode__DevTools__InitializeCameraPathVisualizer(Na__Scene__Main); // <-- 3D path visualizer (localhost-only)
+
+    // WIRE VIEWS BUTTON: dispatch toggle event when clicked
+    const Na__PmViewsBtn = document.getElementById('naNavToolbarViewsBtn');
+    if (Na__PmViewsBtn) {
+        Na__PmViewsBtn.addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('na-presentation-carousel-toggle')); // <-- Carousel module listens for this
+        });
+        window.addEventListener('na-presentation-views-btn-state', (event) => {
+            const active = event.detail && event.detail.active;
+            Na__PmViewsBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+            Na__PmViewsBtn.classList.toggle('na-nav-toolbar__btn--active', active === true);
+        });
+        window.addEventListener('na-presentation-mode-scenes-loaded', () => {
+            Na__PmViewsBtn.style.display = '';                              // <-- Reveal Views button when scenes are present
+        });
+        window.addEventListener('na-presentation-mode-scenes-cleared', () => {
+            Na__PmViewsBtn.style.display = 'none';                          // <-- Hide Views button when all scenes removed
+            Na__PmViewsBtn.classList.remove('na-nav-toolbar__btn--active');
+            Na__PmViewsBtn.setAttribute('aria-pressed', 'false');
+        });
+    }
+
+    // WIRE DEV CAMERA PATH TOGGLE: checkbox in dev editor panel
+    window.addEventListener('na-pm-toggle-camera-path', (event) => {
+        const visible = event.detail && event.detail.visible;
+        Na__PresentationMode__DevTools__ToggleCameraPathVisualizer(visible);
     });
     // ------------------------------------------------------------
 

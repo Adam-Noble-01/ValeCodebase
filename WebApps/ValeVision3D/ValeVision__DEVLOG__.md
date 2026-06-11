@@ -2,6 +2,28 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.6.1 - 11-Jun-2026 - HOTFIX - Vendored Three.js Broken Module Graph (No Models Loading)
+
+### Overview
+v2.6.0's local Three.js vendoring (fix M3) shipped an incomplete dependency graph — four transitive imports inside the vendored addons were never copied across, so every `three/addons/` import chain 404'd and the entire ES module graph failed to evaluate. **No model could load on any fresh client** (first observed on iPad).
+
+### Root Cause
+Vendored addons import relative files that were missing from `04__Lib__ThirdParty__Three/examples/jsm/`:
+- `RenderPass.js` / `ShaderPass.js` → `postprocessing/Pass.js` (MISSING)
+- `EffectComposer.js` → `postprocessing/MaskPass.js` + `shaders/CopyShader.js` (MISSING)
+- `GLTFLoader.js` → `utils/BufferGeometryUtils.js` (MISSING)
+
+### Fix
+- Vendored the four missing files from `three@0.160.0` (exact match for the vendored core's `REVISION '160'`). Verified no further unresolved relative imports remain anywhere under `04__Lib__ThirdParty__Three/`.
+- Whitecardopedia SW: version token bumped to `2026-06-11-2` (cache purge on all clients) and the vendored Three.js files added to the shell precache list (v2.6.0 claimed this but the entries were absent).
+
+### New Files
+- `04__Lib__ThirdParty__Three/examples/jsm/postprocessing/Pass.js`
+- `04__Lib__ThirdParty__Three/examples/jsm/postprocessing/MaskPass.js`
+- `04__Lib__ThirdParty__Three/examples/jsm/shaders/CopyShader.js`
+- `04__Lib__ThirdParty__Three/examples/jsm/utils/BufferGeometryUtils.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.6.0 - 11-Jun-2026 - PWA Stability Fix
 
 ### Overview

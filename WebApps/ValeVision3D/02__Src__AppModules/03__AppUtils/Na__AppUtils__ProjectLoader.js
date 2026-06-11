@@ -15,6 +15,9 @@
 // - Fetches project.json from either the local Flask API or GH Pages CDN.
 // - Normalises all four historical project.json model URL formats into a
 //   flat array of GLB URLs for the model loader.
+// - Promise-memoises the fetch result per project code so a second call
+//   (e.g. from the fog system) reuses the first settled promise rather than
+//   issuing a duplicate network request.
 //
 // -----------------------------------------------------------------------------
 //
@@ -23,7 +26,26 @@
 // - Extracted from index.html inline script block (lines 617-721).
 // - No logic changes; pure lift-and-shift into standalone module.
 //
+// 11-Jun-2026 - Version 1.1.0
+// - Added resilient fetch via Na__ResilientLoad__FetchWithTimeout (timeout +
+//   retry) to prevent stalled iOS connections hanging the load pipeline.
+// - Added promise-memoization keyed by project code (L2 fix: single fetch
+//   per boot regardless of how many callers invoke FetchProjectJson).
+//
 // =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Resilient Fetch Helper
+    // @delegate: ./Na__AppUtils__ResilientLoad__.js
+    // ------------------------------------------------------------
+    import { Na__ResilientLoad__FetchWithTimeout } from './Na__AppUtils__ResilientLoad__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
@@ -34,6 +56,18 @@
     // ------------------------------------------------------------
     const Na__AppUtils__WebProjectsBaseUrl = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages base
     const Na__AppUtils__DefaultProjectYear = '2026';                                                                          // <-- Legacy fallback
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Fetch Memoization Cache
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | Promise Cache Keyed by Project Code
+    // ------------------------------------------------------------
+    const Na__AppUtils__FetchCache = new Map();                             // <-- Settled or in-flight promises keyed by project code
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -91,11 +125,27 @@
 // REGION | Project JSON Fetching
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Fetch Whitecardopedia project.json
+    // FUNCTION | Fetch Whitecardopedia project.json (Resilient + Memoised)
     // ------------------------------------------------------------
-    async function Na__AppUtils__FetchProjectJson(projectCode) {
-        let projectJsonUrl;
+    // resilienceConfig {object} - LoadResilience__Config block from Na__AppConfig__Main.json.
+    //   Expected keys used here:
+    //     LoadResilience__Config__FetchTimeoutMs  {number}
+    //     LoadResilience__Config__RetryCount      {number}
+    //     LoadResilience__Config__RetryBaseDelayMs{number}
+    // If resilienceConfig is omitted sensible hardcoded defaults are used.
+    // ------------------------------------------------------------
+    function Na__AppUtils__FetchProjectJson(projectCode, resilienceConfig) {
+        const cacheKey = projectCode || '__no_project__';                   // <-- Stable key for memoization
 
+        if (Na__AppUtils__FetchCache.has(cacheKey)) {
+            return Na__AppUtils__FetchCache.get(cacheKey);                  // <-- Return existing in-flight or settled promise
+        }
+
+        const timeoutMs    = (resilienceConfig && resilienceConfig.LoadResilience__Config__FetchTimeoutMs)   || 15000; // <-- Per-attempt fetch timeout
+        const retries      = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryCount)       || 2;     // <-- Number of retries
+        const retryDelayMs = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;  // <-- Base retry delay
+
+        let projectJsonUrl;
         if (Na__AppUtils__IsRunningOnLocalhost()) {
             projectJsonUrl = `${window.location.origin}/api/projects/${projectCode}`;  // <-- Flask API endpoint
         } else {
@@ -103,12 +153,16 @@
             projectJsonUrl = `${Na__AppUtils__WebProjectsBaseUrl}/${projectFolderId}/project.json`;  // <-- GH Pages path
         }
 
-        const response = await fetch(projectJsonUrl);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch project.json: ${response.status} ${response.statusText}`);
-        }
+        const fetchPromise = Na__ResilientLoad__FetchWithTimeout(projectJsonUrl, { timeoutMs, retries, retryDelayMs }) // <-- Resilient fetch
+            .then((response) => response.json())
+            .catch((err) => {
+                Na__AppUtils__FetchCache.delete(cacheKey);                  // <-- Evict cache on failure so caller can retry
+                throw err;
+            });
 
-        return response.json();
+        Na__AppUtils__FetchCache.set(cacheKey, fetchPromise);               // <-- Cache in-flight promise immediately
+
+        return fetchPromise;                                                 // <-- Return promise (caller awaits)
     }
     // ------------------------------------------------------------
 

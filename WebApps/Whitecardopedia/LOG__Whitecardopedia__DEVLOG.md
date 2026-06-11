@@ -18,6 +18,29 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.3.7 - 11-Jun-2026 - PWA Stability Fix
+
+### Overview
+Shared PWA stability pass covering the Whitecardopedia + ValeVision3D combined PWA.
+
+### Changes
+- **SW version token bumped** to `2026-06-11-1` — forces all clients to adopt the new cache configuration.
+- **HTML → network-first** in the SW: `index.html` / `app.html` now use network-first (not SWR) so deploys cannot pair stale HTML with freshly-revalidated modules.
+- **Na__AppConfig JSONs added** to the data-cache pattern and precache list so `Na__AppConfig__Main.json` and `Na__AppConfig__MaterialsLibrary.json` ride network-first-with-fallback rather than always requiring a live network connection.
+- **Expanded ValeVision3D precache**: all `02__Src__AppModules/` entry-point JS files, CSS stylesheets, and the vendored Three.js modules added to the precache list. The viewer now boots from cache on poor connections.
+- **`controllerchange` reload bridge** implemented in `Whitecardopedia__Pwa__ServiceWorker__Registrar__.js` — reloads exactly once per session, only when no ValeVision model load is in flight.
+- **Thumbnail LRU trim** now runs only after a successful cache `put` (was running on every thumbnail request).
+- **Legacy manifest deleted**: `Na__AppInstallability__Manifest.webmanifest` removed (was unreferenced).
+- **React production builds** + pinned Babel @7.29.7 in `app.html` — removes React dev overhead and floating Babel version.
+
+### Files Changed
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js`
+- `app.html`
+- DELETED: `02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest`
+
+---
+
 ## Whitecardopedia v0.3.6 - 10-Jun-2026 - Max Models Tab + Builder Tagging
 
 ### Overview

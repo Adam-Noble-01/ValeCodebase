@@ -63,6 +63,18 @@
 //   includes('MeshModel') key check could never match v4 category keys and is
 //   removed. Multiple door categories (e.g. per-storey) all register.
 //
+// 11-Jun-2026 - Version 1.3.0
+// - PWA stability fix: imports Na__ResilientLoad__ and Na__LoadWatchdog__ modules.
+// - Watchdog started at beginning of sequence; cleared inside ShowScene.
+// - Na__UiFeature__ShowLoadError added: transitions overlay to error state with
+//   Retry button on any load failure (orbit cube, project JSON, all models).
+// - project.json failure with ?project= now calls ShowLoadError (stops sequence)
+//   instead of silently falling back to the Clough default model.
+// - Model load catch block replaced with ShowLoadError call.
+// - Orbit cube and all GLB loads pass resilienceConfig through to bounded helpers.
+// - LoadAllModels receives a status+progress wrapper so watchdog stall clock resets
+//   on each file.
+//
 // =============================================================================
 
 
@@ -212,6 +224,27 @@
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Resilient Load Helpers (timeouts, retries, concurrency)
+    // @delegate: ../03__AppUtils/Na__AppUtils__ResilientLoad__.js
+    // ------------------------------------------------------------
+    import {
+        Na__ResilientLoad__FetchWithTimeout,
+        Na__ResilientLoad__GltfLoadWithTimeout,
+        Na__ResilientLoad__RunWithConcurrencyCap
+    } from '../03__AppUtils/Na__AppUtils__ResilientLoad__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Load Watchdog (stall detection + visibilitychange recovery)
+    // @delegate: ./Na__AppCore__LoadWatchdog__.js
+    // ------------------------------------------------------------
+    import {
+        Na__LoadWatchdog__Start,
+        Na__LoadWatchdog__Clear,
+        Na__LoadWatchdog__NotifyProgress,
+        Na__LoadWatchdog__SetIsLoadingFlag
+    } from './Na__AppCore__LoadWatchdog__.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Render Loop Invalidation
     // ------------------------------------------------------------
     import {
@@ -263,6 +296,8 @@
         const canvas           = document.getElementById('renderCanvas');    // <-- Render canvas
         const loadingIndicator = document.getElementById('loadingIndicator'); // <-- Loading overlay text
 
+        Na__LoadWatchdog__Clear();                                           // <-- Dismiss watchdog on success
+
         if (statusText) statusText.textContent = 'Complete - ValeVision3D Ready';
 
         if (loadingOverlay) {
@@ -280,6 +315,44 @@
         if (loadingIndicator) {
             loadingIndicator.style.display = 'none';
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Show Load Error State with Retry Button
+    // ------------------------------------------------------------
+    function Na__UiFeature__ShowLoadError(message) {
+        const loadingOverlay   = document.getElementById('loadingOverlay');  // <-- Loading overlay container
+        const loadingIndicator = document.getElementById('loadingIndicator'); // <-- Loading indicator element
+        const statusText       = document.getElementById('statusText');       // <-- Debug status element
+
+        Na__LoadWatchdog__Clear();                                            // <-- Stop watchdog — error path owns the state now
+
+        if (statusText) statusText.textContent = `Error: ${message}`;
+
+        if (loadingIndicator) loadingIndicator.style.display = 'none';       // <-- Hide progress text
+
+        if (!loadingOverlay) return;
+
+        loadingOverlay.classList.add('loading-overlay--error');              // <-- Switch overlay to error mode (hides spinner)
+
+        // BUILD ERROR UI | Icon + message + retry button
+        const errorIcon     = document.createElement('div');
+        errorIcon.className = 'loading-error-icon';
+        errorIcon.textContent = '⚠';                                        // <-- Warning symbol
+
+        const errorMsg      = document.createElement('p');
+        errorMsg.className  = 'loading-error-message';
+        errorMsg.textContent = message || 'An error occurred. Please retry.'; // <-- Caller-supplied message
+
+        const retryBtn      = document.createElement('button');
+        retryBtn.className  = 'loading-error-retry-btn';
+        retryBtn.textContent = 'Retry';
+        retryBtn.addEventListener('click', () => window.location.reload());  // <-- Reload on click
+
+        loadingOverlay.appendChild(errorIcon);                               // <-- Append icon
+        loadingOverlay.appendChild(errorMsg);                                // <-- Append message
+        loadingOverlay.appendChild(retryBtn);                                // <-- Append retry button
     }
     // ------------------------------------------------------------
 
@@ -323,9 +396,17 @@
             orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible,
             ambientOcclusion            : Na__Config__AmbientOcclusion,
             sceneEnvironment            : Na__Config__SceneEnvironment,
-            distanceCulling             : Na__Config__DistanceCulling
+            distanceCulling             : Na__Config__DistanceCulling,
+            resilienceConfig            : Na__Config__Resilience
         } = configs;
         // ---------------------------------------------------------------
+
+        // START LOAD WATCHDOG (total budget timer + visibilitychange stall recovery)
+        // @delegate: ./Na__AppCore__LoadWatchdog__.js
+        const Na__Watchdog__BudgetMs        = (Na__Config__Resilience && Na__Config__Resilience.LoadResilience__Config__WatchdogBudgetMs)       || 120000; // <-- Total load budget (ms)
+        const Na__Watchdog__StallThresholdMs = (Na__Config__Resilience && Na__Config__Resilience.LoadResilience__Config__WatchdogStallThresholdMs) || 30000; // <-- Stall threshold (ms)
+        Na__LoadWatchdog__Start(Na__UiFeature__ShowLoadError, Na__Watchdog__BudgetMs, Na__Watchdog__StallThresholdMs); // <-- Arms budget + attaches visibilitychange handler
+        Na__LoadWatchdog__SetIsLoadingFlag(true);                             // <-- Expose flag for SW controllerchange bridge
 
         Na__UiFeature__UpdateStatus('Creating scene...');
         Na__Scene__SetupDefaultSceneLighting(Na__Scene__Main, Na__Config__LightingConfig, Na__Config__GroundPlane);
@@ -390,7 +471,8 @@
         if (projectCode) {
             try {
                 Na__UiFeature__UpdateStatus('Loading project data...');
-                const projectData = await Na__AppUtils__FetchProjectJson(projectCode);
+                Na__LoadWatchdog__NotifyProgress();                           // <-- Reset stall clock on meaningful step
+                const projectData = await Na__AppUtils__FetchProjectJson(projectCode, Na__Config__Resilience); // <-- Resilient + memoised
 
                 // STORE CAMERA CONFIG FROM PROJECT (supports both key formats)
                 Na__Saved__ProjectCameraConfig = projectData.Camera__DefaultPosition
@@ -428,10 +510,11 @@
                     modelUrls = projectUrls;                                 // <-- Override defaults with project URLs
                 }
             } catch (error) {
-                console.warn('[ValeVision3D] Project data load failed, using defaults', error);
-                window.dispatchEvent(new CustomEvent('na-show-toast', {
-                    detail: { message: `Project data (project.json) failed to load — using defaults. (${error.message})`, isError: true }
-                }));
+                // ?project= was present but fetch failed — surface error instead of silently falling back.
+                // The user asked for a specific project; loading Clough defaults masks the failure.
+                console.error('[ValeVision3D] Project data load failed', error);
+                Na__UiFeature__ShowLoadError(`Project failed to load — ${error.message}`);
+                return;                                                       // <-- Halt sequence; overlay shows error + Retry
             }
         }
 
@@ -549,8 +632,9 @@
         if (orbitCubeUrl) {
             try {
                 Na__UiFeature__UpdateStatus('Loading orbit helper cube...');
+                Na__LoadWatchdog__NotifyProgress();                          // <-- Reset stall clock
                 const loader = new GLTFLoader();
-                const orbitCubeResult = await Na__ModelLoader__LoadOrbitHelperCube(orbitCubeUrl, loader);
+                const orbitCubeResult = await Na__ModelLoader__LoadOrbitHelperCube(orbitCubeUrl, loader, Na__Config__Resilience); // <-- Resilient load
 
                 if (orbitCubeResult && orbitCubeResult.mesh && orbitCubeResult.centerPosition) {
                     Na__OrbitHelperCube__Mesh = orbitCubeResult.mesh;        // <-- Store mesh reference
@@ -614,12 +698,14 @@
         // LOAD ALL MODELS VIA MULTI-MODEL LOADER
         try {
             if (modelUrls.length > 0) {
+                Na__LoadWatchdog__NotifyProgress();                          // <-- Reset stall clock before model loop
                 Na__LoadedModelGroups = await Na__ModelLoader__LoadAllModels(
                     modelUrls,                                               // <-- Array of CDN URLs (orbit cube already filtered out)
                     Na__ModelGroup__Root,                                    // <-- Scene root group
                     Na__Config__Models,                                      // <-- Material configs (baseMesh + linework)
                     Na__LineResolution__Screen,                              // <-- Screen resolution for line width
-                    Na__UiFeature__UpdateStatus                              // <-- Status callback for loading overlay
+                    (msg) => { Na__UiFeature__UpdateStatus(msg); Na__LoadWatchdog__NotifyProgress(); }, // <-- Status + stall reset
+                    Na__Config__Resilience                                   // <-- Resilience config (timeouts, retries, cap)
                 );
             }
 
@@ -705,10 +791,7 @@
 
         } catch (error) {
             console.error('[ValeVision3D] Model load error:', error);
-            Na__UiFeature__UpdateStatus('Model load error - check console', true);
-            window.dispatchEvent(new CustomEvent('na-show-toast', {
-                detail: { message: `Model load error — ${error.message}. Check console for details.`, isError: true }
-            }));
+            Na__UiFeature__ShowLoadError(`Model load failed — ${error.message}`); // <-- Show overlay error with Retry button
         }
 
         // INVALIDATE PROFILE LINES CACHE (scene objects changed after model load)

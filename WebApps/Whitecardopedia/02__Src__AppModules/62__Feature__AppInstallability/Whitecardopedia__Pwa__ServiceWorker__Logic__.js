@@ -32,7 +32,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-04-28-1';                                                                       // <-- Bump to invalidate all caches
+    const PWA_SW_VERSION_TOKEN              = '2026-06-11-1';                                                                       // <-- Bump to invalidate all caches (PWA stability fix)
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -45,7 +45,7 @@
     // ------------------------------------------------------------
     const PWA_SW_PATH_PATTERN_THUMBNAIL     = /__Thumbnail__524p__\.(webp|jpg|jpeg|png)(\?.*)?$/i;                                  // <-- Gallery thumbnail filenames
     const PWA_SW_PATH_PATTERN_FULL_IMAGE    = /\/IMG\d{2}(?:_ART\d{2})?__[^\/]+\.(png|jpg|jpeg|svg|gif|webp)(\?.*)?$/i;             // <-- Full-resolution project images
-    const PWA_SW_PATH_PATTERN_PROJECT_JSON  = /\/(project|.+masterConfig.*|.+ValeDesignersList.*|.+ValeConceptArtistsList.*|.+Hotkeys.*)\.json(\?.*)?$/i;   // <-- Data JSON files
+    const PWA_SW_PATH_PATTERN_PROJECT_JSON  = /\/(project|.+masterConfig.*|.+ValeDesignersList.*|.+ValeConceptArtistsList.*|.+Hotkeys.*|Na__AppConfig.*)\.json(\?.*)?$/i;   // <-- Data + app config JSONs
     const PWA_SW_PATH_PATTERN_HTML          = /\.(html?)(\?.*)?$/i;                                                                 // <-- HTML documents
     const PWA_SW_PATH_PATTERN_SHELL_ASSET   = /\.(css|js|jsx|mjs|webmanifest|ico|png|svg|woff2?)(\?.*)?$/i;                         // <-- App shell assets
     const PWA_SW_APP_FOLDER_TOKENS          = ['/Whitecardopedia/', '/ValeVision3D/', '/assets__CommonApplicationAssets/'];          // <-- Folders we manage
@@ -55,6 +55,7 @@
     // MODULE CONSTANTS | App Shell Pre-cache List (Relative to scope)
     // ------------------------------------------------------------
     const PWA_SW_SHELL_PRECACHE_RELATIVE    = [                                                                                     // <-- Best-effort pre-cache list (relative to scope)
+        // WHITECARDOPEDIA SHELL
         'Whitecardopedia/app.html',
         'Whitecardopedia/index.html',
         'Whitecardopedia/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css',
@@ -68,7 +69,59 @@
         'Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Manifest__.webmanifest',
         'Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png',
         'Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__512x512.png',
-        'ValeVision3D/index.html'
+        // VALEVISION3D SHELL + CONFIG (mandatory for boot; boot hangs without these)
+        'ValeVision3D/index.html',
+        'ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json',
+        'ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__MaterialsLibrary.json',
+        // VALEVISION3D STYLESHEETS
+        'ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css',
+        'ValeVision3D/03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css',
+        'ValeVision3D/03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css',
+        'ValeVision3D/03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css',
+        // VALEVISION3D APP CORE MODULES
+        'ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppConfig__Loader.js',
+        'ValeVision3D/02__Src__AppModules/01__AppCore/AppCore__DataLib__Loader.js',
+        'ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js',
+        'ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js',
+        'ValeVision3D/02__Src__AppModules/01__AppCore/Na__AppCore__LoadWatchdog__.js',
+        'ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js',
+        'ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__ResilientLoad__.js',
+        'ValeVision3D/02__Src__AppModules/04__MathUtils/Na__Math__Units.js',
+        // VALEVISION3D RENDER PIPELINE
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/01__Engine__PureEngine/Na__RenderPipeline__PureEngine__Setup.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEngine__State.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js',
+        // VALEVISION3D SCENE + MODEL LOADER
+        'ValeVision3D/02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js',
+        'ValeVision3D/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js',
+        'ValeVision3D/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js',
+        'ValeVision3D/02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js',
+        // VALEVISION3D NAVIGATION + CAMERAS
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__Camera__ProjectStartState.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__IpadControls.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__DefaultNavmode__MouseControls.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js',
+        'ValeVision3D/02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js',
+        'ValeVision3D/02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js',
+        'ValeVision3D/02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraLens__Controls.js',
+        'ValeVision3D/02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js',
+        // VALEVISION3D MATERIALS + INTERACTIONS + SYSTEMS
+        'ValeVision3D/02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__LibraryLoader.js',
+        'ValeVision3D/02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js',
+        'ValeVision3D/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js',
+        'ValeVision3D/02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js',
+        'ValeVision3D/02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js',
+        'ValeVision3D/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js',
+        'ValeVision3D/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js'
     ];
     // ------------------------------------------------------------
 
@@ -271,20 +324,38 @@
 
         if (classification === 'thumbnail') {
             fetchEvent.respondWith((async () => {
-                const response  = await Whitecardopedia__Pwa__ServiceWorker__Logic__CacheFirst(request, PWA_SW_CACHE_NAME_THUMBS); // <-- Cache-first thumbnails
-                Whitecardopedia__Pwa__ServiceWorker__Logic__TrimCacheLru(PWA_SW_CACHE_NAME_THUMBS, PWA_SW_THUMBS_MAX_ENTRIES);     // <-- Background LRU trim
-                return response;
+                const cacheInstance = await caches.open(PWA_SW_CACHE_NAME_THUMBS);
+                const cachedThumb   = await cacheInstance.match(request);   // <-- Check cache first
+                if (cachedThumb) return cachedThumb;                         // <-- Cache hit: no LRU work needed
+
+                try {
+                    const networkThumb = await fetch(request);
+                    if (networkThumb && networkThumb.ok) {
+                        cacheInstance.put(request, networkThumb.clone()).then(() => {
+                            // LRU trim only runs after a successful put (L3 fix: not on every request)
+                            Whitecardopedia__Pwa__ServiceWorker__Logic__TrimCacheLru(PWA_SW_CACHE_NAME_THUMBS, PWA_SW_THUMBS_MAX_ENTRIES);
+                        }).catch(() => {});
+                    }
+                    return networkThumb;
+                } catch (error) {
+                    return Response.error();
+                }
             })());
             return;
         }
 
         if (classification === 'data') {
-            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirst(request, PWA_SW_CACHE_NAME_DATA));      // <-- Network-first JSON
+            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirst(request, PWA_SW_CACHE_NAME_DATA));      // <-- Network-first JSON (project.json + Na__AppConfig JSONs)
             return;
         }
 
-        if (classification === 'html' || classification === 'shell') {
-            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__StaleWhileRevalidate(request, PWA_SW_CACHE_NAME_SHELL)); // <-- SWR shell + HTML
+        if (classification === 'html') {
+            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirst(request, PWA_SW_CACHE_NAME_SHELL));     // <-- HTML: network-first to prevent stale/module mismatch (C4 fix)
+            return;
+        }
+
+        if (classification === 'shell') {
+            fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__StaleWhileRevalidate(request, PWA_SW_CACHE_NAME_SHELL)); // <-- JS/CSS: stale-while-revalidate (fast, background refresh)
             return;
         }
     });

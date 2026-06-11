@@ -117,6 +117,68 @@
 
 
 /* -----------------------------------------------------------------------------
+ * REGION | Load Error State
+ * ----------------------------------------------------------------------------- */
+
+    /* LOAD ERROR CONTAINER | Replaces spinner when a fatal load error occurs */
+    /* ------------------------------------------------------------ */
+    .loading-overlay--error .loading-spinner {
+        display                            : none;                          /* <-- Hide spinner on error */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR ICON | Warning symbol */
+    /* ------------------------------------------------------------ */
+    .loading-error-icon {
+        font-size                          : 48px;                          /* <-- Large icon */
+        line-height                        : 1;                             /* <-- Tight leading */
+        margin-bottom                      : 20px;                          /* <-- Space below icon */
+        color                              : #b71c1c;                       /* <-- Dark red */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR MESSAGE | Descriptive error text */
+    /* ------------------------------------------------------------ */
+    .loading-error-message {
+        font-family                        : 'Open Sans', sans-serif;       /* <-- Vale standard font */
+        font-size                          : 15px;                          /* <-- Readable size */
+        font-weight                        : 400;                           /* <-- Regular weight */
+        color                              : #b71c1c;                       /* <-- Dark red */
+        text-align                         : center;                        /* <-- Center text */
+        max-width                          : 360px;                         /* <-- Prevent over-wide lines */
+        margin-bottom                      : 28px;                          /* <-- Space before button */
+        line-height                        : 1.5;                           /* <-- Comfortable reading */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR RETRY BUTTON | Reload page action */
+    /* ------------------------------------------------------------ */
+    .loading-error-retry-btn {
+        font-family                        : 'Open Sans', sans-serif;       /* <-- Vale standard font */
+        font-size                          : 14px;                          /* <-- Readable size */
+        font-weight                        : 600;                           /* <-- Semi-bold label */
+        color                              : #ffffff;                       /* <-- White label */
+        background-color                   : #172b3a;                       /* <-- Vale blue */
+        border                             : none;                          /* <-- No border */
+        border-radius                      : 4px;                           /* <-- Slightly rounded */
+        padding                            : 10px 28px;                     /* <-- Comfortable touch target */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        letter-spacing                     : 0.5px;                         /* <-- Slight tracking */
+        transition                         : background-color 0.2s ease;    /* <-- Hover transition */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* LOAD ERROR RETRY BUTTON HOVER STATE */
+    /* ------------------------------------------------------------ */
+    .loading-error-retry-btn:hover {
+        background-color                   : #243d50;                       /* <-- Slightly lighter Vale blue */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
  * REGION | Layout View Loading Overlay
  * ----------------------------------------------------------------------------- */
 

@@ -270,6 +270,17 @@
                 "ExistingDoors"
             ]
         }
+    },
+    "LoadResilience__Config": {
+        "LoadResilience__Config__Description"           : "Timeouts, retries, and concurrency caps for the load pipeline. All time values are milliseconds. Bump these on slow-CDN deployments; do NOT hardcode in modules.",
+        "LoadResilience__Config__ConfigFetchTimeoutMs"  : 10000,
+        "LoadResilience__Config__FetchTimeoutMs"        : 15000,
+        "LoadResilience__Config__GltfTimeoutMs"         : 45000,
+        "LoadResilience__Config__RetryCount"            : 2,
+        "LoadResilience__Config__RetryBaseDelayMs"      : 1000,
+        "LoadResilience__Config__GlbConcurrencyCap"     : 3,
+        "LoadResilience__Config__WatchdogBudgetMs"      : 120000,
+        "LoadResilience__Config__WatchdogStallThresholdMs" : 30000
     }
 }
 

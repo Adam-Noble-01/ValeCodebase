@@ -33,6 +33,17 @@
 //   offset only) instead of whitecard-replacing them, and handles multi-material
 //   arrays. Non-indexed materials keep the exact previous whitecard treatment.
 //
+// 11-Jun-2026 - Version 1.2.0
+// - PWA stability fix: LoadSingleMesh, LoadSingleLinework, LoadOrbitHelperCube
+//   now use Na__ResilientLoad__GltfLoadWithTimeout (timeout + retry) instead of
+//   bare loader.loadAsync, preventing stalled iOS connections from hanging the
+//   pipeline indefinitely.
+// - LoadAllModels accepts resilienceConfig parameter and uses
+//   Na__ResilientLoad__RunWithConcurrencyCap to load categories in parallel
+//   (default cap 3) instead of fully sequential. Mesh+linework within each
+//   category remain sequential. Results are ordered to preserve Map insertion
+//   order matching priority order.
+//
 // =============================================================================
 
 import * as THREE from 'three';
@@ -40,6 +51,13 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
+
+// MODULE IMPORTS | Resilient Load Helpers (timeout, retry, concurrency cap)
+// @delegate: ../03__AppUtils/Na__AppUtils__ResilientLoad__.js
+import {
+    Na__ResilientLoad__GltfLoadWithTimeout,
+    Na__ResilientLoad__RunWithConcurrencyCap
+} from '../03__AppUtils/Na__AppUtils__ResilientLoad__.js';
 
 
 // -----------------------------------------------------------------------------
@@ -230,13 +248,17 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // Returns the loaded mesh root and the center position as a THREE.Vector3.
     // The center position is in 3D units (not millimeters).
     // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadOrbitHelperCube(orbitCubeUrl, loader) {
+    async function Na__ModelLoader__LoadOrbitHelperCube(orbitCubeUrl, loader, resilienceConfig) {
         if (!orbitCubeUrl || typeof orbitCubeUrl !== 'string') {
             return null;                                      // <-- Guard against invalid input
         }
 
+        const gltfTimeoutMs = (resilienceConfig && resilienceConfig.LoadResilience__Config__GltfTimeoutMs)   || 45000;
+        const retries       = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryCount)       || 2;
+        const retryDelayMs  = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;
+
         try {
-            const gltf = await loader.loadAsync(orbitCubeUrl);  // <-- Load GLB file
+            const gltf = await Na__ResilientLoad__GltfLoadWithTimeout(loader, orbitCubeUrl, { timeoutMs: gltfTimeoutMs, retries, retryDelayMs }); // <-- Bounded load
             const meshRoot = gltf.scene;                      // <-- Extract scene graph
 
             // CALCULATE BOUNDING BOX CENTER
@@ -268,8 +290,11 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 
     // FUNCTION | Load Single Base Mesh GLB (Faces)
     // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadSingleMesh(modelUrl, baseMeshConfig, loader) {
-        const gltf         = await loader.loadAsync(modelUrl);           // <-- Load GLB file
+    async function Na__ModelLoader__LoadSingleMesh(modelUrl, baseMeshConfig, loader, resilienceConfig) {
+        const gltfTimeoutMs    = (resilienceConfig && resilienceConfig.LoadResilience__Config__GltfTimeoutMs)   || 45000;
+        const retries          = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryCount)       || 2;
+        const retryDelayMs     = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;
+        const gltf             = await Na__ResilientLoad__GltfLoadWithTimeout(loader, modelUrl, { timeoutMs: gltfTimeoutMs, retries, retryDelayMs }); // <-- Bounded load
         const meshRoot     = gltf.scene;                                 // <-- Extract scene graph
 
         const indexedNameRegex = /^MAT\d{3}__/;                          // <-- Indexed materials that survive to the swap pass (TrueVision parity)
@@ -636,8 +661,11 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 
     // FUNCTION | Load Single Linework GLB (Fat Lines)
     // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadSingleLinework(modelUrl, lineworkConfig, loader, lineResolution) {
-        const gltf         = await loader.loadAsync(modelUrl);           // <-- Load GLB file
+    async function Na__ModelLoader__LoadSingleLinework(modelUrl, lineworkConfig, loader, lineResolution, resilienceConfig) {
+        const gltfTimeoutMs = (resilienceConfig && resilienceConfig.LoadResilience__Config__GltfTimeoutMs)   || 45000;
+        const retries       = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryCount)       || 2;
+        const retryDelayMs  = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;
+        const gltf          = await Na__ResilientLoad__GltfLoadWithTimeout(loader, modelUrl, { timeoutMs: gltfTimeoutMs, retries, retryDelayMs }); // <-- Bounded load
         const lineworkRoot = gltf.scene;                                 // <-- Extract scene graph
         return Na__ModelLoader__UpgradeLineworkRoot(lineworkRoot, lineworkConfig, lineResolution);
     }
@@ -660,46 +688,54 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Load All Models in Priority Order
+    // FUNCTION | Load All Models — Concurrency-Capped Parallel Categories
     // ------------------------------------------------------------
     // Main entry point. Accepts an array of CDN URLs, classifies them by
-    // category and type, then loads each category pair (Mesh + Linework)
-    // sequentially in the priority order defined by Na__ModelCategories__LoadOrder.
+    // category and type, then loads all category pairs (Mesh + Linework)
+    // in parallel with a concurrency cap from resilienceConfig. Within each
+    // category, Mesh is loaded before Linework (Linework references Mesh for
+    // profile-line colour application). Individual file failures are caught,
+    // logged, and toasted — they do not abort sibling categories.
     // Returns a Map of category -> THREE.Group for future toggling support.
+    //
+    // resilienceConfig {object} - LoadResilience__Config block (timeouts, retries, cap).
+    //   Expected key: LoadResilience__Config__GlbConcurrencyCap {number}
     // ------------------------------------------------------------
-    async function Na__ModelLoader__LoadAllModels(modelUrls, modelGroupRoot, config, lineResolution, statusCallback) {
-        const loader      = new GLTFLoader();                            // <-- Create shared GLB loader
-        const categoryMap = Na__ModelLoader__ClassifyUrls(modelUrls);    // <-- Classify URLs by category
-        const loadedGroups = new Map();                                  // <-- Map of category -> THREE.Group
+    async function Na__ModelLoader__LoadAllModels(modelUrls, modelGroupRoot, config, lineResolution, statusCallback, resilienceConfig) {
+        const concurrencyCap  = (resilienceConfig && resilienceConfig.LoadResilience__Config__GlbConcurrencyCap) || 3; // <-- Max simultaneous category loads
+        const loader          = new GLTFLoader();                         // <-- Shared GLB loader instance
+        const categoryMap     = Na__ModelLoader__ClassifyUrls(modelUrls); // <-- Classify URLs by category
+        const loadedGroups    = new Map();                                // <-- Ordered result Map (category -> Group)
 
         // LOG DISCOVERY SUMMARY
-        const discoveredCategories = Object.keys(categoryMap);           // <-- List discovered categories
-        console.log(`[ValeVision3D] Discovered ${discoveredCategories.length} model categories:`);
+        const discoveredCategories = Object.keys(categoryMap);
+        console.log(`[ValeVision3D] Discovered ${discoveredCategories.length} model categories (concurrency cap: ${concurrencyCap}):`);
         discoveredCategories.forEach((cat) => {
             const entry = categoryMap[cat];
             console.log(`  - ${cat}: Mesh=${entry.meshUrl ? 'YES' : 'NO'}, Linework=${entry.lineworkUrl ? 'YES' : 'NO'}`);
         });
 
-        // LOAD IN PRIORITY ORDER
-        for (const category of Na__ModelCategories__LoadOrder) {
-            const entry = categoryMap[category];                         // <-- Look up category in classified map
-            if (!entry) continue;                                        // <-- Skip categories not in this project
+        // BUILD ORDERED CATEGORY LIST (priority order first, then unordered)
+        const orderedCategories = [
+            ...Na__ModelCategories__LoadOrder.filter((cat) => !!categoryMap[cat]),       // <-- Priority categories in order
+            ...Object.keys(categoryMap).filter((cat) => !Na__ModelCategories__LoadOrder.includes(cat)) // <-- Remaining (unordered)
+        ];
 
-            const categoryGroup       = new THREE.Group();               // <-- Create group for this category
-            categoryGroup.name        = category;                        // <-- Name group for debugging
-            const shortName           = category.replace('ValeVision__', '');  // <-- Short name for status display
+        // SUB HELPER FUNCTION | Load a Single Category (Mesh then Linework, sequential within)
+        // ---------------------------------------------------------------
+        async function Na__ModelLoader__LoadCategory(category) {
+            const entry           = categoryMap[category];
+            const categoryGroup   = new THREE.Group();
+            categoryGroup.name    = category;
+            const shortName       = category.replace('ValeVision__', '').replace('Storey__', 'Storey.');
 
-            // LOAD MESH MODEL FOR THIS CATEGORY
+            // LOAD MESH
             if (entry.meshUrl) {
                 if (statusCallback) statusCallback(`Loading ${shortName} Mesh...`);
                 try {
-                    const meshRoot = await Na__ModelLoader__LoadSingleMesh(
-                        entry.meshUrl,
-                        config.baseMesh,                                 // <-- Base mesh material config
-                        loader
-                    );
-                    meshRoot.userData.Na__ModelType = 'mesh';            // <-- Tag for downstream render passes & collision filters
-                    categoryGroup.add(meshRoot);                         // <-- Add mesh to category group
+                    const meshRoot = await Na__ModelLoader__LoadSingleMesh(entry.meshUrl, config.baseMesh, loader, resilienceConfig);
+                    meshRoot.userData.Na__ModelType = 'mesh';             // <-- Tag for render passes & collision filters
+                    categoryGroup.add(meshRoot);
                     console.log(`[ValeVision3D] Loaded Mesh: ${shortName}`);
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Mesh for ${shortName}:`, error);
@@ -707,18 +743,13 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 }
             }
 
-            // LOAD LINEWORK MODEL FOR THIS CATEGORY
+            // LOAD LINEWORK (after mesh; references mesh for profile colour application)
             if (entry.lineworkUrl) {
                 if (statusCallback) statusCallback(`Loading ${shortName} Linework...`);
                 try {
-                    const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(
-                        entry.lineworkUrl,
-                        config.RenderConfig__Linework,                   // <-- Linework rendering config
-                        loader,
-                        lineResolution
-                    );
-                    lineworkRoot.userData.Na__ModelType = 'linework';    // <-- Tag for downstream render passes & collision filters
-                    categoryGroup.add(lineworkRoot);                     // <-- Add linework to category group
+                    const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(entry.lineworkUrl, config.RenderConfig__Linework, loader, lineResolution, resilienceConfig);
+                    lineworkRoot.userData.Na__ModelType = 'linework';     // <-- Tag for render passes & collision filters
+                    categoryGroup.add(lineworkRoot);
                     Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
                     console.log(`[ValeVision3D] Loaded Linework: ${shortName}`);
                 } catch (error) {
@@ -727,51 +758,24 @@ import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
                 }
             }
 
-            modelGroupRoot.add(categoryGroup);                           // <-- Add category group to scene root
-            loadedGroups.set(category, categoryGroup);                   // <-- Store reference for toggling
+            return { category, categoryGroup };                           // <-- Return for ordered map insertion
         }
+        // ---------------------------------------------------------------
 
-        // HANDLE UNCATEGORIZED URLS (not in load order but still valid)
-        for (const [category, entry] of Object.entries(categoryMap)) {
-            if (loadedGroups.has(category)) continue;                    // <-- Already loaded in priority pass
+        // RUN CATEGORIES VIA CONCURRENCY-CAPPED POOL
+        const taskFactories = orderedCategories.map((cat) => () => Na__ModelLoader__LoadCategory(cat)); // <-- Zero-arg factories
+        const results       = await Na__ResilientLoad__RunWithConcurrencyCap(taskFactories, concurrencyCap);
 
-            const categoryGroup       = new THREE.Group();
-            categoryGroup.name        = category;
-            const shortName           = category.replace('ValeVision__', '');
-
-            if (entry.meshUrl) {
-                if (statusCallback) statusCallback(`Loading ${shortName} Mesh...`);
-                try {
-                    const meshRoot = await Na__ModelLoader__LoadSingleMesh(entry.meshUrl, config.baseMesh, loader);
-                    meshRoot.userData.Na__ModelType = 'mesh';            // <-- Tag for downstream render passes & collision filters
-                    categoryGroup.add(meshRoot);
-                    console.log(`[ValeVision3D] Loaded Mesh (unordered): ${shortName}`);
-                } catch (error) {
-                    console.error(`[ValeVision3D] Failed to load Mesh for ${shortName}:`, error);
-                    Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Mesh)`);
-                }
-            }
-
-            if (entry.lineworkUrl) {
-                if (statusCallback) statusCallback(`Loading ${shortName} Linework...`);
-                try {
-                    const lineworkRoot = await Na__ModelLoader__LoadSingleLinework(entry.lineworkUrl, config.RenderConfig__Linework, loader, lineResolution);
-                    lineworkRoot.userData.Na__ModelType = 'linework';    // <-- Tag for downstream render passes & collision filters
-                    categoryGroup.add(lineworkRoot);
-                    Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
-                    console.log(`[ValeVision3D] Loaded Linework (unordered): ${shortName}`);
-                } catch (error) {
-                    console.error(`[ValeVision3D] Failed to load Linework for ${shortName}:`, error);
-                    Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Linework)`);
-                }
-            }
-
-            modelGroupRoot.add(categoryGroup);
-            loadedGroups.set(category, categoryGroup);
+        // COLLECT RESULTS INTO ORDERED MAP (preserves priority order)
+        for (const result of results) {
+            if (!result || result instanceof Error) continue;             // <-- Skip pool-level failures (task errors are already caught inside)
+            const { category, categoryGroup } = result;
+            modelGroupRoot.add(categoryGroup);                            // <-- Add to scene
+            loadedGroups.set(category, categoryGroup);                    // <-- Store for toggling
         }
 
         console.log(`[ValeVision3D] Multi-model loading complete. ${loadedGroups.size} categories loaded.`);
-        return loadedGroups;                                             // <-- Return loaded groups map
+        return loadedGroups;
     }
     // ------------------------------------------------------------
 

@@ -2,6 +2,48 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.6.0 - 11-Jun-2026 - PWA Stability Fix
+
+### Overview
+Comprehensive PWA stability pass addressing first-load hangs on iOS (especially from Whitecardopedia gallery → viewer handoff), progressive degradation after repeated loads, and service-worker version coherence.
+
+### Critical Fixes
+- **C1 — Unbounded load pipeline**: All `fetch` and `GLTFLoader.loadAsync` calls now go through `Na__AppUtils__ResilientLoad__` helpers (timeout + exponential-backoff retry). The loading overlay now transitions to an error state with a Retry button on any failure path — the overlay can no longer hang in a silent spinner state indefinitely.
+- **C2 — GPU/memory leaks**: `Na__AppCore__GpuLifecycle__.js` wires `webglcontextlost`/`webglcontextrestored` handlers immediately after renderer creation, and registers a `pagehide` listener that disposes scene geometry, materials, textures, composer render targets, and the WebGLRenderer before the iOS WebContent process boots the next page.
+- **C3 — Top-level config await**: The `await Na__AppConfig__LoadConfig()` call in `index.html` is now guarded by a `Promise.race` with a 10 s timeout and a visible error UI (error message + Retry button) rather than hanging silently.
+- **C4 — SW version skew**: HTML responses now use network-first (not stale-while-revalidate) so deploys cannot pair stale HTML with freshly-revalidated modules. `controllerchange` bridge implemented in the SW Registrar (idle-only, single-session guard).
+
+### Moderate Fixes
+- **M1 — project.json timeout**: `Na__AppUtils__FetchProjectJson` uses `Na__ResilientLoad__FetchWithTimeout` (configurable via `LoadResilience__Config`). Promise-memoised per project code so duplicate calls (loading sequence + fog system) share one in-flight request.
+- **M2 — Silent project fallback**: When `?project=` is present and `project.json` fails after retries, `Na__UiFeature__ShowLoadError` is shown instead of silently loading the legacy Clough default model.
+- **M3 — Three.js CDN eliminated**: three@0.160.0 vendored locally under `04__Lib__ThirdParty__Three/`. Import map updated to local paths. All Three.js module files now ride the SW shell cache; no esm.sh cold-start cost on navigation.
+- **M4 — Whitecardopedia memory**: React production builds + pinned Babel @7.29.7 in `app.html` (removes React dev overhead from shared iOS process memory budget).
+- **M5 — Sequential GLB loads**: `Na__ModelLoader__LoadAllModels` now runs categories via a concurrency-capped pool (default 3 simultaneous, configurable). Mesh+linework within each category remain sequential.
+- **M6 — No stall recovery**: `Na__AppCore__LoadWatchdog__.js` provides a total-budget timer (default 120 s) and a `visibilitychange` stall detector (default 30 s silence threshold) — iOS recovery hook so backgrounded mid-load sessions surface a Retry overlay rather than a frozen spinner.
+
+### Low Fixes
+- **L1 — SW controllerchange bridge**: Implemented (was documented but missing). Reloads exactly once per session, only when no load is in flight.
+- **L2 — Duplicate project.json fetch**: Fixed via promise memoisation in `Na__AppUtils__ProjectLoader.js`.
+- **L3 — Thumbnail LRU trim**: Now runs only after a successful cache `put` rather than on every thumbnail request.
+- **L4 — Legacy manifest**: `Na__AppInstallability__Manifest.webmanifest` deleted (was unreferenced; could cause stale PWA identity for legacy installs).
+- **L5 — Import map guard**: Inline script in `index.html` surfaces a readable unsupported-browser message when `HTMLScriptElement.supports('importmap')` returns false.
+- **L6 — SW precache gap**: Expanded precache to include all `02__Src__AppModules/` entry-point JS files, both stylesheets, and `Na__AppConfig__Main.json` so the viewer boots from cache on poor connections.
+
+### New Files
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ResilientLoad__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppCore__LoadWatchdog__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js`
+- `04__Lib__ThirdParty__Three/three.module.js` (+ all required jsm addons)
+
+### Modified Files
+- `index.html` — config await guard, import map local paths, GPU lifecycle wiring, import-map guard, `resilienceConfig` in loading sequence context
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` — `LoadResilience__Config` block added
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` — watchdog, resilient helpers, error overlay, project failure surfacing
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js` — resilient fetch, memoization
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js` — resilient GLTF loads, concurrency-capped pool
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css` — error state styles
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.5.0 - 10-Jun-2026
 ### Floating Navigation Toolbar + Project-JSON Reset View + Navigation Help Panel
 

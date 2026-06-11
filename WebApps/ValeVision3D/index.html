@@ -44,14 +44,39 @@
     
     
     <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Import Map Browser Support Guard                       -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <script>
+        // GUARD | Import map support check (requires iOS 16.4+ / Chrome 89+ / Firefox 108+)
+        // --------------------------------------------------------
+        (function Na__Boot__ImportMapGuard() {
+            if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('importmap')) {
+                var overlay   = document.getElementById('loadingOverlay');
+                var indicator = document.getElementById('loadingIndicator');
+                if (indicator) {
+                    indicator.style.display = 'block';
+                    indicator.style.color   = '#b71c1c';
+                    indicator.textContent   = 'Your browser is not supported. ValeVision3D requires iOS 16.4+, Chrome 89+, or Firefox 108+.';
+                }
+                if (overlay) overlay.classList.add('loading-overlay--error');
+            }
+        })();
+        // --------------------------------------------------------
+    </script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Three.js Import Map                                    -->
     <!-- ----------------------------------------------------------------- -->
     
     <script type="importmap">
     {
         "imports": {
-            "three": "https://esm.sh/three@0.160.0",
-            "three/addons/": "https://esm.sh/three@0.160.0/examples/jsm/"
+            "three": "./04__Lib__ThirdParty__Three/three.module.js",
+            "three/addons/": "./04__Lib__ThirdParty__Three/examples/jsm/"
         }
     }
     </script>
@@ -830,6 +855,7 @@
     import { Na__Feature__EmailWorkers__Initialize } from './02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
+    import { Na__GpuLifecycle__AttachContextLossHandlers, Na__GpuLifecycle__DisposeAll } from './02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -856,7 +882,32 @@
 
     // MODULE VARIABLES | App Config (JSON Source of Truth)
     // ------------------------------------------------------------
-    const Na__AppConfig__Data = await Na__AppConfig__LoadConfig();
+    // GUARD | Top-level await with hardcoded timeout (chicken-and-egg: config IS the resilience config).
+    // 10 s is conservative; config is ~3 KB and SW-cached after first load.
+    const NA__CONFIG_BOOT_TIMEOUT_MS = 10000;                                // <-- Hardcoded constant (only acceptable location)
+    let Na__AppConfig__Data;
+    try {
+        Na__AppConfig__Data = await Promise.race([
+            Na__AppConfig__LoadConfig(),
+            new Promise((_, reject) => setTimeout(
+                () => reject(new Error(`Config fetch timed out after ${NA__CONFIG_BOOT_TIMEOUT_MS / 1000}s`)),
+                NA__CONFIG_BOOT_TIMEOUT_MS
+            ))
+        ]);
+    } catch (configError) {
+        console.error('[ValeVision3D] Fatal: app config failed to load.', configError);
+        const indicator = document.getElementById('loadingIndicator');
+        const overlay   = document.getElementById('loadingOverlay');
+        if (indicator) { indicator.style.display = 'block'; indicator.style.color = '#b71c1c'; indicator.textContent = `Failed to load app config — ${configError.message}`; }
+        if (overlay)   { overlay.classList.add('loading-overlay--error'); }
+        const retryBtn       = document.createElement('button');
+        retryBtn.className   = 'loading-error-retry-btn';
+        retryBtn.textContent = 'Retry';
+        retryBtn.style.marginTop = '20px';
+        retryBtn.addEventListener('click', () => window.location.reload());
+        if (overlay) overlay.appendChild(retryBtn);
+        throw configError;                                                    // <-- Halt module execution; overlay shows error
+    }
     
     const Na__Config__ModelDefaults = Na__AppConfig__Data.modelDefaults;            // <-- Model defaults
     const Na__Config__CameraConfig = Na__AppConfig__Data.Scene__Default__CameraConfig;      // <-- Camera settings
@@ -887,6 +938,7 @@
     const Na__Config__AmbientOcclusion = Na__AppConfig__Data.RenderEffect__AmbientOcclusion || null;  // <-- SSAO config (MaxEngine only)
     const Na__Config__SceneEnvironment = Na__AppConfig__Data.Scene__Environment || null;    // <-- HDR environment config (MaxEngine only)
     const Na__Config__DistanceCulling  = Na__AppConfig__Data.RenderEffect__DistanceCulling || null;   // <-- Distance culling config (MaxEngine only)
+    const Na__Config__Resilience       = Na__AppConfig__Data.LoadResilience__Config || null; // <-- Load resilience config (timeouts, retries, concurrency)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -1007,7 +1059,29 @@
     Na__Renderer__Main.outputColorSpace = THREE.SRGBColorSpace;
     Na__Renderer__Main.toneMapping = THREE.NoToneMapping;
     Na__Renderer__Main.toneMappingExposure = 1.0;
-    
+
+    // GPU LIFECYCLE | Context loss handler + pagehide disposal
+    // @delegate: ./02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js
+    // ------------------------------------------------------------
+    let Na__Lifecycle__RafHandle = null;                                     // <-- RAF handle exposed to lifecycle module
+    function Na__Lifecycle__StopRenderLoop() {
+        if (Na__Lifecycle__RafHandle !== null) {
+            cancelAnimationFrame(Na__Lifecycle__RafHandle);                  // <-- Cancel any pending frame
+            Na__Lifecycle__RafHandle = null;
+        }
+    }
+    Na__GpuLifecycle__AttachContextLossHandlers(Na__Renderer__Main, canvas, Na__Lifecycle__StopRenderLoop); // <-- Wire context-loss events immediately
+
+    window.addEventListener('pagehide', () => {
+        Na__GpuLifecycle__DisposeAll({
+            renderer      : Na__Renderer__Main,
+            scene         : Na__Scene__Main,
+            pipelineState : Na__AppFlow__PipelineRef.current,               // <-- Shared pipeline state surface
+            stopRenderLoop: Na__Lifecycle__StopRenderLoop
+        });
+    });
+    // ------------------------------------------------------------
+
     const Na__LineResolution__Screen = new THREE.Vector2(window.innerWidth, window.innerHeight);
     const Na__AppFlow__PipelineRef   = { current: null };                  // <-- Mutable ref; AppFlow writes pipeline state here
     const Na__Navmode__InitializeControls = Na__Device__UseTouchControls
@@ -1288,7 +1362,8 @@
             orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible,
             ambientOcclusion            : Na__Config__AmbientOcclusion,
             sceneEnvironment            : Na__Config__SceneEnvironment,
-            distanceCulling             : Na__Config__DistanceCulling
+            distanceCulling             : Na__Config__DistanceCulling,
+            resilienceConfig            : Na__Config__Resilience
         }
     });
     Na__UiFeature__PromptToolsMenu();

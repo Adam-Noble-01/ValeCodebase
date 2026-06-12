@@ -80,14 +80,10 @@
                 "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             },
             {
-                "PresentationMode__Scene__Id": "Scene_002",
-                "PresentationMode__Scene__Name": "View - 02",
-                "PresentationMode__Scene__Order": 2,
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
-                "PresentationMode__Scene__LensMm": 45,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 2556,
                         "Camera__DefaultPos__PosY": 1390,
@@ -97,6 +93,40 @@
                         "Camera__DefaultRotation__RotX": 0.0308,
                         "Camera__DefaultRotation__RotY": -0.5083,
                         "Camera__DefaultRotation__RotZ": 0.015
+                    }
+                },
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "View - 02",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 11977,
+                    "OrbitHelperCube__Position__PosY": 1910,
+                    "OrbitHelperCube__Position__PosZ": -11079
+                },
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_003",
+                "PresentationMode__Scene__Name": "View - 03",
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 3304,
+                        "Camera__DefaultPos__PosY": 13982,
+                        "Camera__DefaultPos__PosZ": 1319
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.7721,
+                        "Camera__DefaultRotation__RotY": -0.4646,
+                        "Camera__DefaultRotation__RotZ": -0.4114
                     },
                     "Camera__DefaultMisc": {
                         "Camera__DefaultMisc__Fov": 29.8628
@@ -107,6 +137,36 @@
                     "OrbitHelperCube__Position__PosX": 11977,
                     "OrbitHelperCube__Position__PosY": 1910,
                     "OrbitHelperCube__Position__PosZ": -11079
+                }
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_004",
+                "PresentationMode__Scene__Name": "View - 04",
+                "PresentationMode__Scene__Order": 4,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_004.webp",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 20940,
+                        "Camera__DefaultPos__PosY": 15460,
+                        "Camera__DefaultPos__PosZ": -68
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.873,
+                        "Camera__DefaultRotation__RotY": 0.419,
+                        "Camera__DefaultRotation__RotZ": 0.4517
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 12964,
+                    "OrbitHelperCube__Position__PosY": 1736,
+                    "OrbitHelperCube__Position__PosZ": -11576
                 }
             }
         ],

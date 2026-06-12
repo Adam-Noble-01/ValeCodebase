@@ -17,3 +17,8 @@
 2026-06-10 15:41:23,525 | INFO | Batch started: 1 file(s) | white=238 black=135
 2026-06-10 15:41:23,562 | INFO | Saved: C:\Users\adamw\Downloads\ChatGPT Image Jun 10, 2026, 03_40_42 PM__BackroundRemvoed.png
 2026-06-10 15:41:27,816 | INFO | Batch complete: 1 ok, 0 failed
+2026-06-12 11:40:56,573 | INFO | Noble Architecture icon loader imported successfully
+2026-06-12 11:40:56,665 | INFO | CadBackgroundRemoverApp initialised
+2026-06-12 11:41:01,098 | INFO | Batch started: 1 file(s) | white=238 black=135
+2026-06-12 11:41:01,149 | INFO | Saved: C:\Users\adamw\Downloads\ChatGPT Image Jun 12, 2026, 11_40_35 AM__BackroundRemvoed.png
+2026-06-12 11:41:02,116 | INFO | Batch complete: 1 ok, 0 failed

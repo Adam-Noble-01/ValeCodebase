@@ -2136,14 +2136,6 @@
           "color": "na-shift-color-emerald"
         },
         {
-          "id": "new-1780676317445",
-          "date": "2026-06-12",
-          "startTime": "11:00",
-          "endTime": "12:30",
-          "title": "REM |  Chse HEW",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1780998712024",
           "date": "2026-06-09",
           "startTime": "09:30",
@@ -2158,6 +2150,70 @@
           "endTime": "12:45",
           "title": "Whitecard |  Lang",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1781258655980",
+          "date": "2026-06-12",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "title": "Meeting |  SB",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1780676317445",
+          "date": "2026-06-12",
+          "startTime": "17:30",
+          "endTime": "19:00",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1781258687128",
+          "date": "2026-06-19",
+          "startTime": "13:30",
+          "endTime": "15:00",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1781259314151",
+          "date": "2026-06-12",
+          "startTime": "11:15",
+          "endTime": "13:00",
+          "title": "Whitecard |  Rosalie",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1781271212853",
+          "date": "2026-06-12",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Meeting |  LM",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1781271230516",
+          "date": "2026-06-12",
+          "startTime": "14:00",
+          "endTime": "14:30",
+          "title": "Whitecard |  Rosalie",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1781274387035",
+          "date": "2026-06-12",
+          "startTime": "14:30",
+          "endTime": "15:00",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1781274404421",
+          "date": "2026-06-12",
+          "startTime": "15:30",
+          "endTime": "17:30",
+          "title": "Amend |  Baggot",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

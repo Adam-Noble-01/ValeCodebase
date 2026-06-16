@@ -37,6 +37,7 @@
     let Na__CameraFollow__Initialized           = false;                         // <-- Init flag
     let Na__CameraFollow__Enabled               = true;                          // <-- Feature enabled flag
     let Na__CameraFollow__FlatShadingEnabled    = true;                          // <-- Global flat-shading enable
+    let Na__CameraFollow__DefaultShadeFlatness  = 0.85;                          // <-- Fallback flatness when not baked in GLB
     let Na__CameraFollow__ModelGroupsMesh       = [];                            // <-- Mesh category roots
     let Na__CameraFollow__ModelGroupsLinework   = [];                            // <-- Linework category roots
 
@@ -56,12 +57,18 @@
     // ------------------------------------------------------------
     // shadeFlatness is baked into the assembly node extras by the SketchUp
     // exporter (per-component, SSOT-driven). 0 = full directional shading,
-    // 1 = fully flat (directional darkening removed).
+    // 1 = fully flat (directional darkening removed). When the GLB predates the
+    // exporter field (no baked value) we fall back to the config default so
+    // existing models flatten without needing a re-export.
     function Na__CameraFollow__ReadShadeFlatness(object) {
         const userData = object.userData || {};
         const value    = Number(userData.shadeFlatness);
-        if (!Number.isFinite(value)) return 0;
-        return Math.min(1, Math.max(0, value));                                  // <-- Clamp to 0..1
+
+        if (Number.isFinite(value)) {
+            return Math.min(1, Math.max(0, value));                              // <-- Baked value (clamped)
+        }
+
+        return Math.min(1, Math.max(0, Na__CameraFollow__DefaultShadeFlatness)); // <-- Config fallback (clamped)
     }
     // ------------------------------------------------------------
 
@@ -331,6 +338,11 @@
         if (config) {
             Na__CameraFollow__Enabled            = config['3dObject__Interaction__CameraFollow__Enabled'] !== false;
             Na__CameraFollow__FlatShadingEnabled = config['3dObject__Interaction__CameraFollow__FlatShadingEnabled'] !== false;
+
+            const configDefaultFlatness = Number(config['3dObject__Interaction__CameraFollow__DefaultShadeFlatness']);
+            if (Number.isFinite(configDefaultFlatness)) {
+                Na__CameraFollow__DefaultShadeFlatness = Math.min(1, Math.max(0, configDefaultFlatness)); // <-- Clamp config default
+            }
         }
 
         Na__CameraFollow__ScanForBillboards();

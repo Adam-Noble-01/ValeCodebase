@@ -31,6 +31,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Jun-2026 - Version 1.4.1
+// - Camera-follow billboards: collection now scans ALL loaded categories for
+//   billboard nodes instead of restricting to a SiteVegetation2D category
+//   token. The baked GLB node extras (type === "CameraFollowBillboard") are the
+//   true source of truth, so billboards animate regardless of which category
+//   GLB file the exporter bundled them into (e.g. when range 9 falls back into
+//   the LandscapeEnvironment file).
+//
 // 24-Feb-2026 - Version 1.0.0
 // - Extracted from index.html inline script block (lines 604-849).
 // - Na__UiFeature__UpdateStatus and Na__UiFeature__ShowScene moved to private
@@ -823,35 +831,22 @@
             // INITIALIZE CAMERA-FOLLOW BILLBOARDS (if enabled in config)
             if (Na__Config__CameraFollow['3dObject__Interaction__CameraFollow__Enabled'] !== false) {
 
-                const Na__ResolveCameraFollowCategoryTokens = (cameraFollowConfig) => {
-                    const defaultTokens    = ['SiteVegetation2D'];
-                    const configuredTokens = cameraFollowConfig
-                        && cameraFollowConfig['3dObject__Interaction__CameraFollow__CategoryNameTokens'];
-
-                    const normalizedTokens = Array.isArray(configuredTokens)
-                        ? configuredTokens
-                            .filter((token) => typeof token === 'string')
-                            .map((token) => token.trim())
-                            .filter((token) => token.length > 0)
-                        : [];
-
-                    return normalizedTokens.length > 0 ? normalizedTokens : defaultTokens;
-                };
-
+                // COLLECT ALL CATEGORY MESH/LINEWORK ROOTS - extras flag is the source of truth
+                // ------------------------------------------------------------
+                // Billboards are identified by the baked GLB node extras
+                // (type === "CameraFollowBillboard"), NOT by which category GLB file
+                // they were bundled into. We therefore scan every loaded category so
+                // the behaviour is robust to tag-segmentation differences at export.
                 const Na__CollectCameraFollowModelGroups = (loadedModelGroups) => {
-                    const cameraFollowMeshGroups     = [];
-                    const cameraFollowLineworkGroups = [];
-                    const categoryTokens             = Na__ResolveCameraFollowCategoryTokens(Na__Config__CameraFollow);
+                    const cameraFollowMeshGroups     = [];                       // <-- All mesh roots across categories
+                    const cameraFollowLineworkGroups = [];                       // <-- All linework roots across categories
 
-                    loadedModelGroups.forEach((categoryGroup, categoryKey) => {
-                        const hasToken = categoryTokens.some((token) => categoryKey.includes(token));
-                        if (!hasToken) return;
-
-                        const children = categoryGroup.children || [];
+                    loadedModelGroups.forEach((categoryGroup) => {
+                        const children = categoryGroup.children || [];           // <-- Category child roots
                         for (const child of children) {
                             const modelType = child.userData && child.userData.Na__ModelType;
-                            if (modelType === 'mesh')     cameraFollowMeshGroups.push(child);
-                            if (modelType === 'linework') cameraFollowLineworkGroups.push(child);
+                            if (modelType === 'mesh')     cameraFollowMeshGroups.push(child);     // <-- Mesh root
+                            if (modelType === 'linework') cameraFollowLineworkGroups.push(child); // <-- Linework root
                         }
                     });
 
@@ -861,15 +856,15 @@
                 const { cameraFollowMeshGroups, cameraFollowLineworkGroups } = Na__CollectCameraFollowModelGroups(Na__LoadedModelGroups);
 
                 if (cameraFollowMeshGroups.length > 0 || cameraFollowLineworkGroups.length > 0) {
-                    Na__CameraFollow__Initialize(
+                    const Na__CameraFollow__Count = Na__CameraFollow__Initialize(
                         cameraFollowMeshGroups,
                         cameraFollowLineworkGroups,
                         Na__Config__CameraFollow,
                         Na__Camera__Main
                     );
-                    console.log(`[ValeVision3D] Camera-follow billboards initialized (${cameraFollowMeshGroups.length} mesh group(s), ${cameraFollowLineworkGroups.length} linework group(s))`);
+                    console.log(`[ValeVision3D] Camera-follow scan complete (${cameraFollowMeshGroups.length} mesh root(s), ${cameraFollowLineworkGroups.length} linework root(s)); ${Na__CameraFollow__Count || 0} billboard(s) registered`);
                 } else {
-                    console.log('[ValeVision3D] Camera-follow enabled but no SiteVegetation2D model groups found');
+                    console.log('[ValeVision3D] Camera-follow enabled but no model roots found to scan');
                 }
             }
 

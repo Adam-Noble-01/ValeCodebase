@@ -74,30 +74,66 @@
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | Build a Stable Location Key for Mesh/Linework Pairing
+    // ------------------------------------------------------------
+    // Multiple billboard instances share an identical node name, so name alone
+    // cannot pair a mesh assembly with its linework counterpart. Each instance
+    // does, however, occupy a unique world position, so we pair by name + the
+    // node's world position (rounded to millimetre precision).
+    function Na__CameraFollow__BuildLocationKey(object) {
+        object.updateMatrixWorld(true);                                          // <-- Ensure world matrix current
+        const worldPos = new THREE.Vector3();
+        object.getWorldPosition(worldPos);                                       // <-- Node world position
+
+        const rx = Math.round(worldPos.x * 1000) / 1000;                        // <-- Round X to mm
+        const ry = Math.round(worldPos.y * 1000) / 1000;                        // <-- Round Y to mm
+        const rz = Math.round(worldPos.z * 1000) / 1000;                        // <-- Round Z to mm
+
+        return `${object.name}|${rx}|${ry}|${rz}`;                              // <-- Composite pairing key
+    }
+    // ------------------------------------------------------------
+
+    // SUB HELPER FUNCTION | Compute Parent-Space Pivot from Local Pivot
+    // ------------------------------------------------------------
+    // pivotLocal (from extras) is expressed in the assembly node's own LOCAL
+    // space. To rotate the node about that pivot we must express the pivot in
+    // the node's PARENT space: pivotParent = position + quaternion * pivotLocal.
+    function Na__CameraFollow__ComputePivotParent(object, pivotLocal) {
+        const pivotParent = pivotLocal.clone();
+        pivotParent.multiply(object.scale);                                      // <-- Apply node scale (component-wise)
+        pivotParent.applyQuaternion(object.quaternion);                          // <-- Rotate local offset into parent frame
+        pivotParent.add(object.position);                                        // <-- Offset by node translation
+        return pivotParent;
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Scan Scene Graph and Build Billboard Registry
     // ------------------------------------------------------------
     function Na__CameraFollow__ScanForBillboards() {
         Na__CameraFollow__Registry.clear();
 
+        const locationIndex = new Map();                                         // <-- Map<locationKey, record> for pairing
+
         for (const meshGroup of Na__CameraFollow__ModelGroupsMesh) {
             meshGroup.traverse((object) => {
                 if (!Na__CameraFollow__IsBillboardNode(object)) return;
 
-                const assemblyName = object.name;
-                const pivotLocal   = Na__CameraFollow__ReadPivotLocal(object);
+                const pivotLocal = Na__CameraFollow__ReadPivotLocal(object);
 
                 const record = {
-                    assemblyName,
+                    assemblyName        : object.name,
                     rootObjectMesh      : object,
                     rootObjectLinework  : null,
                     pivotLocalPosition  : pivotLocal,
+                    pivotParentPosition : Na__CameraFollow__ComputePivotParent(object, pivotLocal),
                     initialPosition     : object.position.clone(),
                     initialQuaternion   : object.quaternion.clone(),
                     initialReferenceYaw : 0
                 };
 
-                Na__CameraFollow__Registry.set(assemblyName, record);
-                console.log(`[CameraFollow] Registered billboard (mesh): "${assemblyName}"`);
+                Na__CameraFollow__Registry.set(object.uuid, record);            // <-- Key by UUID (always unique)
+                locationIndex.set(Na__CameraFollow__BuildLocationKey(object), record);
+                console.log(`[CameraFollow] Registered billboard (mesh): "${object.name}"`);
             });
         }
 
@@ -105,16 +141,16 @@
             lineworkGroup.traverse((object) => {
                 if (!Na__CameraFollow__IsBillboardNode(object)) return;
 
-                const assemblyName = object.name;
-                const record = Na__CameraFollow__Registry.get(assemblyName);
+                const locationKey = Na__CameraFollow__BuildLocationKey(object);
+                const record      = locationIndex.get(locationKey);
 
                 if (!record) {
-                    console.warn(`[CameraFollow] Linework billboard "${assemblyName}" has no mesh counterpart, skipping`);
+                    console.warn(`[CameraFollow] Linework billboard "${object.name}" has no mesh counterpart at its location, skipping`);
                     return;
                 }
 
                 record.rootObjectLinework = object;
-                console.log(`[CameraFollow] Linked linework for billboard: "${assemblyName}"`);
+                console.log(`[CameraFollow] Linked linework for billboard: "${object.name}"`);
             });
         }
 
@@ -132,7 +168,7 @@
     // HELPER FUNCTION | Apply Yaw Rotation Around Pivot to Root Objects
     // ------------------------------------------------------------
     function Na__CameraFollow__ApplyPivotRotation(record, angleRad) {
-        const pivot   = record.pivotLocalPosition;
+        const pivot   = record.pivotParentPosition;                             // <-- Pivot in node parent space
         const targets = [record.rootObjectMesh, record.rootObjectLinework].filter(Boolean);
 
         Na__CameraFollow__ScratchRotQuat.setFromAxisAngle(Na__CameraFollow__Y_AXIS, angleRad);
@@ -201,8 +237,12 @@
     // ------------------------------------------------------------
     function Na__CameraFollow__Initialize(meshGroups, lineworkGroups, config, camera) {
         if (Na__CameraFollow__Initialized) {
-            console.warn('[CameraFollow] Already initialized, skipping');
-            return;
+            console.warn('[CameraFollow] Already initialized, re-scanning');
+            Na__CameraFollow__ScanForBillboards();
+            if (camera && Na__CameraFollow__Registry.size > 0) {
+                Na__CameraFollow__CaptureInitialReferenceYaw(camera);
+            }
+            return Na__CameraFollow__Registry.size;
         }
 
         Na__CameraFollow__ModelGroupsMesh     = Array.isArray(meshGroups)     ? meshGroups     : (meshGroups     ? [meshGroups]     : []);
@@ -220,6 +260,7 @@
 
         Na__CameraFollow__Initialized = true;
         console.log('[CameraFollow] Camera-follow billboard system initialized');
+        return Na__CameraFollow__Registry.size;                                  // <-- Number of billboards registered
     }
     // ------------------------------------------------------------
 

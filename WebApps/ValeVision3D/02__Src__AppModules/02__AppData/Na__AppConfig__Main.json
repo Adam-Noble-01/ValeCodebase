@@ -271,13 +271,12 @@
             ]
         },
         "3dObject__Interaction__CameraFollowComponents": {
-            "3dObject__Interaction__CameraFollow__Description"        : "2D camera-follow billboard components exported from SketchUp with CameraFollowBillboard glTF extras. CategoryNameTokens match loaded model category keys to locate SiteVegetation2D mesh and linework groups.",
-            "3dObject__Interaction__CameraFollow__Enabled"            : true,
-            "3dObject__Interaction__CameraFollow__CategoryNameTokens" : [
-                "SiteVegetation2D"
-            ],
-            "3dObject__Interaction__CameraFollow__RotationAxis"       : "Y",
-            "3dObject__Interaction__CameraFollow__YawOnly"            : true
+            "3dObject__Interaction__CameraFollow__Description"          : "2D camera-follow billboard components exported from SketchUp with CameraFollowBillboard glTF extras. All loaded categories are scanned for billboard nodes (the baked extras flag is the source of truth), so behaviour is robust to which category GLB the exporter bundled them into.",
+            "3dObject__Interaction__CameraFollow__Enabled"             : true,
+            "3dObject__Interaction__CameraFollow__RotationAxis"        : "Y",
+            "3dObject__Interaction__CameraFollow__YawOnly"             : true,
+            "3dObject__Interaction__CameraFollow__FlatShadingEnabled"  : true,
+            "3dObject__Interaction__CameraFollow__FlatShadingNote"     : "Master switch for per-component flat shading. The flatness amount itself (0=full directional, 1=fully flat) is data-driven per component via the Components DataLib (Behaviours.ShadeFlatness) and baked into each billboard's glTF node extras as shadeFlatness. Set this to false to globally ignore flatness and render all billboards with normal directional lighting."
         }
     },
     "LoadResilience__Config": {

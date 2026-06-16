@@ -36,6 +36,7 @@
 
     let Na__CameraFollow__Initialized           = false;                         // <-- Init flag
     let Na__CameraFollow__Enabled               = true;                          // <-- Feature enabled flag
+    let Na__CameraFollow__FlatShadingEnabled    = true;                          // <-- Global flat-shading enable
     let Na__CameraFollow__ModelGroupsMesh       = [];                            // <-- Mesh category roots
     let Na__CameraFollow__ModelGroupsLinework   = [];                            // <-- Linework category roots
 
@@ -43,6 +44,81 @@
 
     const Na__CameraFollow__ScratchPivotWorld   = new THREE.Vector3();           // <-- Reusable pivot vector
     const Na__CameraFollow__ScratchRotQuat     = new THREE.Quaternion();       // <-- Reusable rotation quat
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Flat Shading Material Patch
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Read Shade Flatness (0..1) from Node Extras
+    // ------------------------------------------------------------
+    // shadeFlatness is baked into the assembly node extras by the SketchUp
+    // exporter (per-component, SSOT-driven). 0 = full directional shading,
+    // 1 = fully flat (directional darkening removed).
+    function Na__CameraFollow__ReadShadeFlatness(object) {
+        const userData = object.userData || {};
+        const value    = Number(userData.shadeFlatness);
+        if (!Number.isFinite(value)) return 0;
+        return Math.min(1, Math.max(0, value));                                  // <-- Clamp to 0..1
+    }
+    // ------------------------------------------------------------
+
+    // SUB HELPER FUNCTION | Patch a Single Material to Blend Lit -> Flat Albedo
+    // ------------------------------------------------------------
+    // Injects an onBeforeCompile shader edit (three.js r160 safe) that mixes the
+    // final lit colour toward the unlit albedo (diffuseColor) by `flatness`. The
+    // material is cloned first so shared material instances on non-billboard
+    // meshes are never affected.
+    function Na__CameraFollow__PatchMaterialFlatShading(material, flatness) {
+        if (!material || !material.isMaterial)        return material;           // <-- Guard non-materials
+        if (material.userData && material.userData.naFlatShadePatched) return material; // <-- Idempotent
+
+        const patched = material.clone();                                        // <-- Isolate from shared instances
+        patched.userData = Object.assign({}, patched.userData, {
+            naFlatShadePatched : true,
+            naFlatShadeValue   : flatness
+        });
+
+        patched.onBeforeCompile = (shader) => {
+            shader.uniforms.naShadeFlatness = { value: flatness };               // <-- Flatness uniform
+            shader.fragmentShader = 'uniform float naShadeFlatness;\n' + shader.fragmentShader;
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <opaque_fragment>',
+                '#include <opaque_fragment>\n\tgl_FragColor.rgb = mix( gl_FragColor.rgb, diffuseColor.rgb, naShadeFlatness );'
+            );
+        };
+        patched.customProgramCacheKey = () => 'naFlatShade_' + flatness.toFixed(3); // <-- Distinct program per flatness
+        patched.needsUpdate = true;
+
+        return patched;
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Apply Flat Shading to All Meshes Beneath a Billboard Node
+    // ------------------------------------------------------------
+    function Na__CameraFollow__ApplyFlatShadingToSubtree(rootObject, flatness) {
+        if (!Na__CameraFollow__FlatShadingEnabled) return;                       // <-- Global gate
+        if (!(flatness > 0))                        return;                       // <-- 0 = leave directional shading intact
+
+        let patchedCount = 0;
+        rootObject.traverse((node) => {
+            if (!node.isMesh || !node.material) return;                          // <-- Mesh fill only (linework uses LineMaterial)
+
+            if (Array.isArray(node.material)) {
+                node.material = node.material.map((mat) => Na__CameraFollow__PatchMaterialFlatShading(mat, flatness));
+            } else {
+                node.material = Na__CameraFollow__PatchMaterialFlatShading(node.material, flatness);
+            }
+            patchedCount += 1;
+        });
+
+        if (patchedCount > 0) {
+            console.log(`[CameraFollow] Flat shading applied (flatness=${flatness}) to ${patchedCount} mesh(es) under "${rootObject.name}"`);
+        }
+    }
+    // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
@@ -133,6 +209,10 @@
 
                 Na__CameraFollow__Registry.set(object.uuid, record);            // <-- Key by UUID (always unique)
                 locationIndex.set(Na__CameraFollow__BuildLocationKey(object), record);
+
+                const shadeFlatness = Na__CameraFollow__ReadShadeFlatness(object); // <-- SSOT-baked flatness
+                Na__CameraFollow__ApplyFlatShadingToSubtree(object, shadeFlatness);
+
                 console.log(`[CameraFollow] Registered billboard (mesh): "${object.name}"`);
             });
         }
@@ -249,7 +329,8 @@
         Na__CameraFollow__ModelGroupsLinework = Array.isArray(lineworkGroups) ? lineworkGroups : (lineworkGroups ? [lineworkGroups] : []);
 
         if (config) {
-            Na__CameraFollow__Enabled = config['3dObject__Interaction__CameraFollow__Enabled'] !== false;
+            Na__CameraFollow__Enabled            = config['3dObject__Interaction__CameraFollow__Enabled'] !== false;
+            Na__CameraFollow__FlatShadingEnabled = config['3dObject__Interaction__CameraFollow__FlatShadingEnabled'] !== false;
         }
 
         Na__CameraFollow__ScanForBillboards();

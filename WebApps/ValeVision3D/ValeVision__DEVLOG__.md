@@ -2,6 +2,20 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.7.2 - 16-Jun-2026 - Carousel UI Cleanup: Remove Play Button and Pagination Dots
+
+### Overview
+Removed the play/pause slideshow button and pagination dot indicators from the Presentation Mode scene carousel. The slideshow auto-advance feature and all related state management were removed entirely; the dots were deemed redundant as thumbnails make the scene count self-evident.
+
+### Changes
+- **`Na__PresentationMode__UI__SceneCarousel.js`** — removed `DWELL_MS` constant; removed `IsPlaying` and `PlayTimer` state; removed `BuildDots`, `SlideshowAdvance`, `StartPlayback`, `StopPlayback`, `UpdatePlayButton`, `HandlePlayPauseClick` functions; removed `CancelCurrentTransition` import (now unused); removed dot-update logic from `SetActiveScene`; removed `StopPlayback` call-sites from `HandleCardClick`, `HandlePrevClick`, `HandleNextClick`, and `ToggleSceneCarousel`; removed auto-play startup block from `na-presentation-mode-scenes-loaded` handler; removed `StartPlayback`/`StopPlayback` from module exports.
+- **`Na__PresentationMode__Styles__SceneCarousel__.css`** — removed Pagination Dots region (`.na-pm-carousel__dots`, `.na-pm-carousel__dot`, `.na-pm-carousel__dot--active`) and Play/Pause Button region (`.na-pm-carousel__play`, hover, `--playing` states).
+
+### Files Changed
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+- `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.7.1 - 11-Jun-2026 - Presentation Mode Saved Camera Scenes
 
 ### Overview

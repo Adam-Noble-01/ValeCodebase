@@ -168,63 +168,6 @@
 
 
 /* #Region ---
- * REGION | Pagination Dots
- * ----- */
-
-    .na-pm-carousel__dots {
-        display                            : flex;
-        gap                                : 5px;
-        align-items                        : center;
-        flex-shrink                        : 0;
-        padding                            : 0 4px;
-    }
-
-    .na-pm-carousel__dot {
-        width                              : 6px;
-        height                             : 6px;
-        border-radius                      : 50%;
-        background                         : #ccc;
-        transition                         : background 0.18s, transform 0.18s;
-    }
-
-    .na-pm-carousel__dot--active {
-        background                         : #1a7fc4;
-        transform                          : scale(1.35);
-    }
-
-/* endregion ---- */
-
-
-/* #Region ---
- * REGION | Play / Pause Button
- * ----- */
-
-    .na-pm-carousel__play {
-        flex-shrink                        : 0;
-        background                         : transparent;
-        border                             : none;
-        font-size                          : 1rem;
-        color                              : #555;
-        cursor                             : pointer;
-        padding                            : 4px 8px;
-        border-radius                      : 8px;
-        line-height                        : 1;
-        transition                         : background 0.15s, color 0.15s;
-    }
-
-    .na-pm-carousel__play:hover {
-        background                         : #eef3f8;
-        color                              : #0066cc;
-    }
-
-    .na-pm-carousel__play--playing {
-        color                              : #1a7fc4;        /* blue when playing          */
-    }
-
-/* endregion ---- */
-
-
-/* #Region ---
  * REGION | Adaptive Layout - Top Toolbar Position
  * ----- */
 

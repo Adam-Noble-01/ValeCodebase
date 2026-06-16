@@ -68,8 +68,7 @@
     // ------------------------------------------------------------
     import {
         Na__PresentationMode__Camera__AnimateToScene,
-        Na__PresentationMode__Camera__ApplySceneCameraState,
-        Na__PresentationMode__Camera__CancelCurrentTransition
+        Na__PresentationMode__Camera__ApplySceneCameraState
     } from './Na__PresentationMode__Camera__SceneTransition.js';
     // ------------------------------------------------------------
 
@@ -82,7 +81,6 @@
 
     // MODULE CONSTANTS | Configuration Defaults
     // ------------------------------------------------------------
-    const Na__PresentationMode__UI__DWELL_MS           = 2500;                          // <-- Pause between auto-advance steps
     const Na__PresentationMode__UI__ACTIVE_BODY_CLASS  = 'na-presentation-mode-active'; // <-- Body class that drives top-toolbar layout
     const Na__PresentationMode__UI__CAROUSEL_ID        = 'naPresentationCarousel';      // <-- Root carousel container id
     const Na__PresentationMode__UI__VIEWS_STATE_EVENT  = 'na-presentation-views-btn-state'; // <-- Event to sync Views button
@@ -100,8 +98,6 @@
     let Na__PresentationMode__UI__Camera       = null;   // <-- Live Three.js PerspectiveCamera reference
     let Na__PresentationMode__UI__Controls     = null;   // <-- Live OrbitControls reference
     let Na__PresentationMode__UI__IsVisible    = false;  // <-- Whether the carousel is currently shown
-    let Na__PresentationMode__UI__IsPlaying    = false;  // <-- Whether auto-play slideshow is active
-    let Na__PresentationMode__UI__PlayTimer    = null;   // <-- setTimeout handle for next auto-advance
     let Na__PresentationMode__UI__IsInitialized = false; // <-- Guard against double initialization
     // ------------------------------------------------------------
 
@@ -169,24 +165,6 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build Pagination Dots
-    // ------------------------------------------------------------
-    function Na__PresentationMode__UI__BuildDots(count, activeIndex) {
-        const dots = document.createElement('div');
-        dots.className = 'na-pm-carousel__dots';
-
-        for (let i = 0; i < count; i++) {
-            const dot = document.createElement('span');
-            dot.className = 'na-pm-carousel__dot' + (i === activeIndex ? ' na-pm-carousel__dot--active' : '');
-            dot.dataset.dotIndex = i;
-            dots.appendChild(dot);
-        }
-
-        return dots;
-    }
-    // ------------------------------------------------------------
-
-
     // FUNCTION | Render the Full Carousel into #naPresentationCarousel
     // ------------------------------------------------------------
     function Na__PresentationMode__UI__RenderSceneCarousel(config) {
@@ -232,21 +210,6 @@
         nextBtn.setAttribute('aria-label', 'Next scene');
         nextBtn.addEventListener('click', Na__PresentationMode__UI__HandleNextClick);
         container.appendChild(nextBtn);
-
-        // DOTS
-        const activeIndex = scenes.findIndex(s => s.PresentationMode__Scene__Id === activeId);
-        const dots        = Na__PresentationMode__UI__BuildDots(scenes.length, activeIndex >= 0 ? activeIndex : 0);
-        container.appendChild(dots);
-
-        // PLAY/PAUSE BUTTON
-        const playBtn = document.createElement('button');
-        playBtn.type      = 'button';
-        playBtn.id        = 'naPmCarouselPlayBtn';
-        playBtn.className = 'na-pm-carousel__play' + (Na__PresentationMode__UI__IsPlaying ? ' na-pm-carousel__play--playing' : '');
-        playBtn.setAttribute('aria-label', Na__PresentationMode__UI__IsPlaying ? 'Pause slideshow' : 'Play slideshow');
-        playBtn.innerHTML = Na__PresentationMode__UI__IsPlaying ? '&#9646;&#9646;' : '&#9654;'; // <-- Pause/Play unicode
-        playBtn.addEventListener('click', Na__PresentationMode__UI__HandlePlayPauseClick);
-        container.appendChild(playBtn);
     }
     // ------------------------------------------------------------
 
@@ -268,14 +231,6 @@
             const isActive = card.dataset.sceneId === sceneId;
             card.classList.toggle('na-pm-carousel__card--active', isActive);
             card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
-
-        // UPDATE DOTS
-        const scenes      = Na__PresentationMode__ProjectJson__GetSortedScenes();
-        const activeIndex = scenes.findIndex(s => s.PresentationMode__Scene__Id === sceneId);
-        const dots        = document.querySelectorAll('.na-pm-carousel__dot');
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('na-pm-carousel__dot--active', i === activeIndex);
         });
 
         // SCROLL ACTIVE CARD INTO VIEW
@@ -306,99 +261,12 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Slideshow Playback
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Advance to Next Scene in Slideshow
-    // ------------------------------------------------------------
-    function Na__PresentationMode__UI__SlideshowAdvance() {
-        if (!Na__PresentationMode__UI__IsPlaying) return;
-
-        const nextScene = Na__PresentationMode__UI__GetAdjacentScene(1);
-        if (!nextScene) return;
-
-        const durationMs = nextScene.PresentationMode__Scene__TransitionTimeToNextSceneMs
-            ?? 1800;                                                         // <-- Use scene's own transition time
-
-        Na__PresentationMode__Camera__AnimateToScene(
-            Na__PresentationMode__UI__Camera,
-            Na__PresentationMode__UI__Controls,
-            nextScene,
-            {
-                durationMs,
-                onComplete : () => {
-                    Na__PresentationMode__UI__SetActiveScene(nextScene.PresentationMode__Scene__Id);
-                    if (Na__PresentationMode__UI__IsPlaying) {
-                        Na__PresentationMode__UI__PlayTimer = setTimeout(   // <-- Schedule next advance after dwell
-                            Na__PresentationMode__UI__SlideshowAdvance,
-                            Na__PresentationMode__UI__DWELL_MS
-                        );
-                    }
-                }
-            }
-        );
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Start Automatic Slideshow Playback
-    // ------------------------------------------------------------
-    function Na__PresentationMode__UI__StartPlayback() {
-        if (Na__PresentationMode__UI__IsPlaying) return;  // <-- Already playing
-
-        Na__PresentationMode__UI__IsPlaying = true;
-        Na__PresentationMode__UI__UpdatePlayButton();
-        Na__PresentationMode__UI__PlayTimer = setTimeout(Na__PresentationMode__UI__SlideshowAdvance, Na__PresentationMode__UI__DWELL_MS);
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Stop Automatic Slideshow Playback
-    // ------------------------------------------------------------
-    function Na__PresentationMode__UI__StopPlayback() {
-        Na__PresentationMode__UI__IsPlaying = false;
-        Na__PresentationMode__UI__UpdatePlayButton();
-
-        if (Na__PresentationMode__UI__PlayTimer) {
-            clearTimeout(Na__PresentationMode__UI__PlayTimer);              // <-- Cancel pending advance
-            Na__PresentationMode__UI__PlayTimer = null;
-        }
-
-        Na__PresentationMode__Camera__CancelCurrentTransition();            // <-- Halt any in-flight camera move
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Sync Play Button Icon and Aria Label
-    // ------------------------------------------------------------
-    function Na__PresentationMode__UI__UpdatePlayButton() {
-        const playBtn = document.getElementById('naPmCarouselPlayBtn');
-        if (!playBtn) return;
-
-        if (Na__PresentationMode__UI__IsPlaying) {
-            playBtn.innerHTML = '&#9646;&#9646;';                           // <-- Pause symbol
-            playBtn.setAttribute('aria-label', 'Pause slideshow');
-            playBtn.classList.add('na-pm-carousel__play--playing');
-        } else {
-            playBtn.innerHTML = '&#9654;';                                  // <-- Play triangle
-            playBtn.setAttribute('aria-label', 'Play slideshow');
-            playBtn.classList.remove('na-pm-carousel__play--playing');
-        }
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
 // REGION | User Interaction Handlers
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Handle Thumbnail Card Click
     // ------------------------------------------------------------
     function Na__PresentationMode__UI__HandleCardClick(sceneId) {
-        Na__PresentationMode__UI__StopPlayback();                            // <-- Manual click stops auto-play
-
         const config    = Na__PresentationMode__ProjectJson__GetActiveConfig();
         const scene     = Na__PresentationMode__ProjectJson__GetSceneById(config, sceneId);
         if (!scene) return;
@@ -420,8 +288,6 @@
     // FUNCTION | Handle Previous Button Click
     // ------------------------------------------------------------
     function Na__PresentationMode__UI__HandlePrevClick() {
-        Na__PresentationMode__UI__StopPlayback();
-
         const prevScene = Na__PresentationMode__UI__GetAdjacentScene(-1);
         if (!prevScene) return;
 
@@ -441,8 +307,6 @@
     // FUNCTION | Handle Next Button Click
     // ------------------------------------------------------------
     function Na__PresentationMode__UI__HandleNextClick() {
-        Na__PresentationMode__UI__StopPlayback();
-
         const nextScene = Na__PresentationMode__UI__GetAdjacentScene(1);
         if (!nextScene) return;
 
@@ -458,17 +322,6 @@
     }
     // ------------------------------------------------------------
 
-
-    // FUNCTION | Handle Play/Pause Button Click
-    // ------------------------------------------------------------
-    function Na__PresentationMode__UI__HandlePlayPauseClick() {
-        if (Na__PresentationMode__UI__IsPlaying) {
-            Na__PresentationMode__UI__StopPlayback();
-        } else {
-            Na__PresentationMode__UI__StartPlayback();
-        }
-    }
-    // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
@@ -489,10 +342,6 @@
 
         Na__PresentationMode__UI__IsVisible = targetVisible;
         container.classList.toggle('na-pm-carousel--visible', targetVisible);
-
-        if (!targetVisible) {
-            Na__PresentationMode__UI__StopPlayback();                       // <-- Stop playback when hidden
-        }
 
         // NOTIFY VIEWS BUTTON of new state
         window.dispatchEvent(new CustomEvent(Na__PresentationMode__UI__VIEWS_STATE_EVENT, {
@@ -557,18 +406,11 @@
             const showByDefault = sceneConfig.PresentationMode__SavedCameraScenes__ShowCarouselByDefault;
             Na__PresentationMode__UI__ToggleSceneCarousel(showByDefault === true);
 
-            // START AUTO-PLAY IF CONFIGURED (never auto-play during live editing)
-            const autoPlay = sceneConfig.PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault;
-            if (autoPlay === true && !skipCameraApply) {
-                Na__PresentationMode__UI__StartPlayback();
-            }
-
             console.log('[ValeVision3D] Presentation Mode carousel initialized.');
         });
 
         // LISTEN FOR SCENES CLEARED (dev editor removed all scenes)
         window.addEventListener('na-presentation-mode-scenes-cleared', () => {
-            Na__PresentationMode__UI__StopPlayback();
             Na__PresentationMode__UI__ToggleSceneCarousel(false);            // <-- Hide carousel
             Na__PresentationMode__UI__ApplyAdaptiveLayout(false);            // <-- Restore bottom-centre toolbar layout
         });
@@ -589,9 +431,7 @@
         Na__PresentationMode__UI__RenderSceneCarousel,
         Na__PresentationMode__UI__ToggleSceneCarousel,
         Na__PresentationMode__UI__SetActiveScene,
-        Na__PresentationMode__UI__ApplyAdaptiveLayout,
-        Na__PresentationMode__UI__StartPlayback,
-        Na__PresentationMode__UI__StopPlayback
+        Na__PresentationMode__UI__ApplyAdaptiveLayout
     };
     // ------------------------------------------------------------
 

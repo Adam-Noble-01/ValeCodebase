@@ -1,25 +1,169 @@
 {
-    "projectName": "Rosalie",
-    "projectCode": "63442",
-    "productionData": {
-        "input": "Default Input Type",
-        "conceptArtist": "Default Concept Artist",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    "Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 31660,
+            "Camera__DefaultPos__PosY": 1549,
+            "Camera__DefaultPos__PosZ": 27013
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.0021,
+            "Camera__DefaultRotation__RotY": 0.4554,
+            "Camera__DefaultRotation__RotZ": 0.0009
+        }
     },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 10000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -33827
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": -14497
+        }
+    },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
+    "Navmode__OrbitMaxDistanceMm": 40000,
+    "OrbitHelperCube__Position": {
+        "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
+        "OrbitHelperCube__Position__PosX": 15168,
+        "OrbitHelperCube__Position__PosY": 1479,
+        "OrbitHelperCube__Position__PosZ": -6661
+    },
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "Scene_001",
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__Id": "Scene_001",
+                "PresentationMode__Scene__Name": "Main View",
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 31660,
+                        "Camera__DefaultPos__PosY": 1549,
+                        "Camera__DefaultPos__PosZ": 27013
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0021,
+                        "Camera__DefaultRotation__RotY": 0.4554,
+                        "Camera__DefaultRotation__RotZ": 0.0009
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 15168,
+                    "OrbitHelperCube__Position__PosY": 1479,
+                    "OrbitHelperCube__Position__PosZ": -6661
+                }
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__Name": "Orangery Front",
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 24106,
+                        "Camera__DefaultPos__PosY": 2142,
+                        "Camera__DefaultPos__PosZ": 1008
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.028,
+                        "Camera__DefaultRotation__RotY": 0.4783,
+                        "Camera__DefaultRotation__RotZ": 0.0129
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 18264,
+                    "OrbitHelperCube__Position__PosY": 1827,
+                    "OrbitHelperCube__Position__PosZ": -10257
+                }
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_003",
+                "PresentationMode__Scene__Name": "Orangery Rear",
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 29777,
+                        "Camera__DefaultPos__PosY": 2265,
+                        "Camera__DefaultPos__PosZ": -29861
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -3.103,
+                        "Camera__DefaultRotation__RotY": 0.6177,
+                        "Camera__DefaultRotation__RotZ": 3.1192
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 16689,
+                    "OrbitHelperCube__Position__PosY": 1554,
+                    "OrbitHelperCube__Position__PosZ": -11453
+                }
+            }
+        ]
+    },
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63442__Rosalie",
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Default Concept Artist",
+        "input": "Default Input Type"
+    },
+    "projectCode": "63442",
+    "projectName": "Rosalie",
     "scheduleData": {
-        "dateReceived": "10-Oct-2025",
         "dateFulfilled": "16-Jun-2026",
+        "dateReceived": "10-Oct-2025",
         "timeAllocated": 2,
         "timeTaken": 2
     },
     "sketchUpModel": {
         "url": "Nil"
     },
-    "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026.png"
-    ],
-    "ProjectType": "Whitecard",
-    "basePath": "Projects/2026/63442__Rosalie",
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
@@ -28,27 +172,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "valeVision_Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
-        "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -5000,
-            "Camera__DefaultPos__PosY": 2800,
-            "Camera__DefaultPos__PosZ": 3250
-        },
-        "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX": -1250,
-            "Camera__DefaultTarget__TargetY": 2570,
-            "Camera__DefaultTarget__TargetZ": -350
-        },
-        "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.073,
-            "Camera__DefaultRotation__RotY": -0.8346,
-            "Camera__DefaultRotation__RotZ": -0.0541
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
-        }
-    },
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026__Thumbnail__524p__.webp"
+    ]
 }

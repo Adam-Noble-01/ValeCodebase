@@ -44,21 +44,16 @@
         "OrbitHelperCube__Position__PosZ": -6661
     },
     "PresentationMode__SavedCameraScenes": {
-        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
-        "PresentationMode__SavedCameraScenes__Enabled": true,
-        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
         "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
         "PresentationMode__SavedCameraScenes__DefaultSceneId": "Scene_001",
+        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
         "PresentationMode__SavedCameraScenes__Scenes": [
             {
-                "PresentationMode__Scene__Id": "Scene_001",
-                "PresentationMode__Scene__Name": "Main View",
-                "PresentationMode__Scene__Order": 1,
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
-                "PresentationMode__Scene__LensMm": 45,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 31660,
                         "Camera__DefaultPos__PosY": 1549,
@@ -68,27 +63,27 @@
                         "Camera__DefaultRotation__RotX": -0.0021,
                         "Camera__DefaultRotation__RotY": 0.4554,
                         "Camera__DefaultRotation__RotZ": 0.0009
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 29.8628
                     }
                 },
+                "PresentationMode__Scene__Id": "Scene_001",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "Main View",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 15168,
                     "OrbitHelperCube__Position__PosY": 1479,
                     "OrbitHelperCube__Position__PosZ": -6661
-                }
+                },
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             },
             {
-                "PresentationMode__Scene__Id": "Scene_002",
-                "PresentationMode__Scene__Name": "Orangery Front",
-                "PresentationMode__Scene__Order": 2,
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
-                "PresentationMode__Scene__LensMm": 45,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 24106,
                         "Camera__DefaultPos__PosY": 2142,
@@ -98,27 +93,27 @@
                         "Camera__DefaultRotation__RotX": -0.028,
                         "Camera__DefaultRotation__RotY": 0.4783,
                         "Camera__DefaultRotation__RotZ": 0.0129
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 29.8628
                     }
                 },
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "Orangery Front",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 18264,
                     "OrbitHelperCube__Position__PosY": 1827,
                     "OrbitHelperCube__Position__PosZ": -10257
-                }
+                },
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             },
             {
-                "PresentationMode__Scene__Id": "Scene_003",
-                "PresentationMode__Scene__Name": "Orangery Rear",
-                "PresentationMode__Scene__Order": 3,
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
-                "PresentationMode__Scene__LensMm": 45,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 29777,
                         "Camera__DefaultPos__PosY": 2265,
@@ -128,19 +123,24 @@
                         "Camera__DefaultRotation__RotX": -3.103,
                         "Camera__DefaultRotation__RotY": 0.6177,
                         "Camera__DefaultRotation__RotZ": 3.1192
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 29.8628
                     }
                 },
+                "PresentationMode__Scene__Id": "Scene_003",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "Orangery Rear",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 16689,
                     "OrbitHelperCube__Position__PosY": 1554,
                     "OrbitHelperCube__Position__PosZ": -11453
-                }
+                },
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             }
-        ]
+        ],
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true
     },
     "ProjectType": "Whitecard",
     "basePath": "Projects/2026/63442__Rosalie",

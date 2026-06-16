@@ -962,6 +962,7 @@
     const Na__Config__ProfileLines = Na__AppConfig__Data.RenderEffect__ProfileLines || null;  // <-- Profile lines effect (enable/disable + params)
     const Na__Config__3dObjectInteractions = Na__AppConfig__Data['3dObject__InteractionsSystem'] || {};                 // <-- 3D object interactions configuration
     const Na__Config__DoorAnimation = Na__Config__3dObjectInteractions['3dObject__Interaction__DoorAnimation'] || {};  // <-- Door animation configuration
+    const Na__Config__CameraFollow  = Na__Config__3dObjectInteractions['3dObject__Interaction__CameraFollowComponents'] || {};  // <-- Camera-follow billboards
     
     const Na__ModelDefaults__ModelUrls = Na__Config__ModelDefaults.modelUrls || [];  // <-- Default model URLs array
     const Na__Config__WalkMode = (Na__Config__NavmodeSettings && Na__Config__NavmodeSettings.Navmode__WalkMode)
@@ -1397,6 +1398,7 @@
             modelUrls                   : Na__ModelDefaults__ModelUrls,
             materialsSystem             : Na__Config__MaterialsSystem,
             doorAnimation               : Na__Config__DoorAnimation,
+            cameraFollow                : Na__Config__CameraFollow,
             orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible,
             ambientOcclusion            : Na__Config__AmbientOcclusion,
             sceneEnvironment            : Na__Config__SceneEnvironment,

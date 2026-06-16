@@ -53,6 +53,7 @@
         "ValeVision__FirstFloorFurniture"              : "First Floor Furniture",  // <-- Tag 40-48
         "ValeVision__FirstFloorDecor"                  : "First Floor Decor",      // <-- Tag 49
         "ValeVision__Vegetation"                       : "Vegetation",             // <-- Tag 50-59
+        "ValeVision__SiteVegetation2D"                 : "Site Vegetation 2D",     // <-- Tag 09 camera-follow billboards
         "ValeVision__SceneContextual"                  : "Scene Context",          // <-- Tag 60-70
         "ValeVision__LegacyModel"                      : "Model"                   // <-- Legacy fallback
     };

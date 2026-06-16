@@ -269,6 +269,15 @@
                 "ProposedDoors",
                 "ExistingDoors"
             ]
+        },
+        "3dObject__Interaction__CameraFollowComponents": {
+            "3dObject__Interaction__CameraFollow__Description"        : "2D camera-follow billboard components exported from SketchUp with CameraFollowBillboard glTF extras. CategoryNameTokens match loaded model category keys to locate SiteVegetation2D mesh and linework groups.",
+            "3dObject__Interaction__CameraFollow__Enabled"            : true,
+            "3dObject__Interaction__CameraFollow__CategoryNameTokens" : [
+                "SiteVegetation2D"
+            ],
+            "3dObject__Interaction__CameraFollow__RotationAxis"       : "Y",
+            "3dObject__Interaction__CameraFollow__YawOnly"            : true
         }
     },
     "LoadResilience__Config": {

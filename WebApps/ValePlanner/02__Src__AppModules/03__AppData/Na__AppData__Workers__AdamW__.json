@@ -2160,20 +2160,12 @@
           "color": "na-shift-color-purple"
         },
         {
-          "id": "new-1780676317445",
-          "date": "2026-06-12",
-          "startTime": "17:30",
-          "endTime": "19:00",
-          "title": "REM |  Chse HEW",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1781258687128",
           "date": "2026-06-19",
           "startTime": "13:30",
           "endTime": "15:00",
           "title": "REM |  Chse HEW",
-          "color": "na-shift-color-purple"
+          "color": "na-shift-color-rose"
         },
         {
           "id": "new-1781259314151",
@@ -2211,9 +2203,17 @@
           "id": "new-1781274404421",
           "date": "2026-06-12",
           "startTime": "15:30",
-          "endTime": "17:30",
+          "endTime": "19:00",
           "title": "Amend |  Baggot",
           "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1781594003032",
+          "date": "2026-06-15",
+          "startTime": "08:30",
+          "endTime": "10:30",
+          "title": "Whitecard |  Rosalie",
+          "color": "na-shift-color-lime"
         }
       ]
     }

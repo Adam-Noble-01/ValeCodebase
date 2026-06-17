@@ -261,23 +261,20 @@
     .project-gallery__controls {
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Vertical centering */
-        justify-content                    : space-between;                /* <-- Search left, sort right */
-        gap                                : 0;                            /* <-- No gap, components control their own spacing */
         margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Space below controls */
-        flex-wrap                          : wrap;                         /* <-- Wrap on small screens */
     }
     
     .project-gallery__controls-left {
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Vertical centering */
-        gap                                : 0;                            /* <-- No gap, components control their own spacing */
+        width                              : 100%;                         /* <-- Full width so sort reaches the right edge */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Consistent spacing between all toolbar items */
     }
     
     .project-gallery__search-box {
         position                           : relative;                     /* <-- Relative for clear button positioning */
-        flex                               : 1;                            /* <-- Grow to fill available space */
-        min-width                          : 600px;                        /* <-- Minimum width */
-        max-width                          : 900px;                        /* <-- Maximum width */
+        flex                               : 1;                            /* <-- Fill all space between tabs and sort */
+        min-width                          : 0;                            /* <-- Allow flex to shrink; tablet/mobile breakpoints cap width */
     }
     
     .project-gallery__search-input {
@@ -336,13 +333,11 @@
     .project-gallery__sort-control {
         display                            : flex;                         /* <-- Flexbox layout */
         align-items                        : center;                       /* <-- Vertical centering */
-        gap                                : var(--Vale_Spacing_Medium);   /* <-- Gap between label and select */
+        flex                               : 0 0 auto;                     /* <-- Fixed-size; search flex:1 fills the gap left of sort */
     }
     
     .project-gallery__sort-label {
-        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
-        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
-        color                              : var(--Vale_TextSecondary);    /* <-- Secondary text color */
+        display                            : none;                         /* <-- Hidden; dropdown content makes context self-evident */
     }
     
     .project-gallery__sort-select {
@@ -1489,20 +1484,93 @@
  * REGION | Responsive Design Adjustments
  * ----------------------------------------------------------------------------- */
 
-    /* RESPONSIVE | Mobile and Tablet Adjustments */
+    /*
+     * RESPONSIVE DESIGN | 3-Level Layout System
+     * ------------------------------------------------------------
+     * Whitecardopedia uses a three-tier responsive layout:
+     *
+     * 1. Desktop (> 1024px)
+     *    Primary target — full toolbar on one row; search grows between tabs and sort.
+     *
+     * 2. Tablet Portrait (769px–1024px)
+     *    iPad portrait and similar widths — search bar width is capped so sort stays
+     *    inline on the same row (no awkward line break after the search field).
+     *
+     * 3. Mobile (≤ 768px)
+     *    Least priority — tabs on row 1; search and sort on row 2 at 85% scale.
+     *    Tablet landscape typically falls in the Desktop tier when width exceeds 1024px.
+     * ------------------------------------------------------------
+     */
+
+    /* RESPONSIVE | Tablet Portrait Adjustments (769px–1024px) */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 1024px) and (min-width: 769px) {
+
+        .project-gallery__controls-left {
+            flex-wrap                      : nowrap;                       /* <-- Keep toolbar on one row */
+            width                          : 100%;                         /* <-- Full width for inline layout */
+        }
+
+        .project-gallery__search-box {
+            min-width                      : 180px;                        /* <-- Remove desktop 600px minimum */
+            max-width                      : 300px;                        /* <-- Cap search length for portrait tablets */
+            flex                           : 0 1 300px;                    /* <-- Allow shrink but prefer capped width */
+        }
+
+        .project-gallery__sort-control {
+            margin-left                    : auto;                         /* <-- Keep sort inline on the right */
+            flex                           : 0 0 auto;                     /* <-- Prevent sort from wrapping alone */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Mobile Adjustments (≤768px) */
     /* ------------------------------------------------------------ */
     @media (max-width: 768px) {
         .project-gallery__controls {
-            flex-direction                 : column;                       /* <-- Stack vertically on mobile */
+            flex-direction                 : column;                       /* <-- Stack controls block */
             align-items                    : stretch;                      /* <-- Full width elements */
         }
-        
-        .project-gallery__search-box {
-            max-width                      : 100%;                         /* <-- Full width on mobile */
+
+        .project-gallery__controls-left {
+            flex-wrap                      : wrap;                         /* <-- Tabs row 1; search + sort row 2 */
+            column-gap                     : 4px;                          /* <-- Tight column gap so tabs have max room on row 1 */
+            row-gap                        : 6px;                          /* <-- Row gap between tab row and search/sort row */
+            width                          : 100%;                         /* <-- Full width toolbar */
         }
-        
+
+        .project-gallery__controls-left::after {
+            content                        : '';                           /* <-- Flex line break before search row */
+            flex-basis                     : 100%;                         /* <-- Force search and sort onto row 2 */
+            width                          : 0;
+            height                         : 0;
+            order                          : 3;                            /* <-- After hamburger and tabs */
+        }
+
+        .project-gallery__search-box {
+            min-width                      : 0;                            /* <-- Allow search to shrink on narrow screens */
+            max-width                      : none;                         /* <-- Override tablet cap */
+            flex                           : 1 1 160px;                    /* <-- Grow on row 2 beside sort */
+            order                          : 4;                            /* <-- After tabs on wrapped layout */
+        }
+
+        .project-gallery__search-input {
+            font-size                      : calc(var(--Vale_FontSize_Standard) * 0.85);  /* <-- 15% smaller than desktop/tablet */
+            padding                        : calc(var(--Vale_Spacing_Small) * 0.85) calc(var(--Vale_Spacing_Medium) * 0.85);
+            padding-right                  : 34px;                         /* <-- Clear button space at reduced scale */
+        }
+
         .project-gallery__sort-control {
-            justify-content                : center;                       /* <-- Center sort control on mobile */
+            flex                           : 0 0 auto;                     /* <-- Fixed width sort cluster */
+            min-width                      : 130px;                        /* <-- Compact sort width on mobile */
+            order                          : 5;                            /* <-- Immediately after search */
+        }
+
+        .project-gallery__sort-select {
+            font-size                      : calc(var(--Vale_FontSize_Standard) * 0.85);  /* <-- 15% smaller select text */
+            padding                        : calc(var(--Vale_Spacing_Small) * 0.85) calc(var(--Vale_Spacing_Medium) * 0.85);
+            min-width                      : 130px;                        /* <-- Narrower than desktop 200px */
         }
         
         .project-gallery__grid {

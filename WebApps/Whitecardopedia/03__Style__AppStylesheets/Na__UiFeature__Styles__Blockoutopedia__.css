@@ -29,7 +29,6 @@
         display                            : flex;                          /* <-- Flexbox layout */
         gap                                : 0;                             /* <-- No gap between buttons */
         flex-shrink                        : 0;                             /* <-- Prevent shrinking */
-        margin-right                       : var(--Vale_Spacing_Medium);    /* <-- Space between toggle and search bar */
     }
 
     /* GALLERY MODE TOGGLE | Button Base */
@@ -214,13 +213,30 @@
  * REGION | Responsive Design Adjustments
  * ----------------------------------------------------------------------------- */
 
+    /*
+     * RESPONSIVE DESIGN | 3-Level Layout System (Gallery Mode Toggle)
+     * ------------------------------------------------------------
+     * See Na__CoreUi__Styles__App__.css for full tier documentation:
+     * Desktop (>1024px) → Tablet Portrait (769–1024px) → Mobile (≤768px).
+     * Mobile is the least-priority tier; tab cluster stays compact on row 1.
+     * ------------------------------------------------------------
+     */
+
     @media (max-width: 768px) {
 
         /* GALLERY MODE TOGGLE | Mobile Adjustments */
         /* ------------------------------------------------------------ */
+        .gallery-mode-toggle {
+            flex                               : 0 0 auto;                      /* <-- Pin tabs on row 1; no stretch/wrap */
+            margin-right                       : 0;                             /* <-- Remove desktop spacing; gap on controls-left handles it */
+        }
+
         .gallery-mode-toggle__button {
-            padding                        : 6px 10px;                      /* <-- Smaller padding on mobile */
-            font-size                      : 11px;                          /* <-- Smaller font on mobile */
+            /* Scale font and padding with viewport so all three tabs always fit
+             * on one row beside the hamburger without breaking. The clamp floors
+             * ensure legibility at the narrowest phone viewports (~320px). */
+            font-size                          : clamp(9px, 2.6vw, 11px);      /* <-- Scales 9px (320px screen) → 11px (≥423px) */
+            padding                            : clamp(5px, 1.1vw, 6px) clamp(5px, 2vw, 10px); /* <-- Compact but touch-friendly */
         }
         /* ------------------------------------------------------------ */
 

@@ -27,7 +27,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 # MODULE CONSTANTS | Server Configuration
 # ------------------------------------------------------------
-SERVER_PORT             = 8001                                           # <-- Development server port
+SERVER_PORT             = 8055                                           # <-- Development server port
 SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
 DEFAULT_FILE            = 'Babylon__TestingEnvironment__.html'          # <-- Default file to serve
 # ------------------------------------------------------------

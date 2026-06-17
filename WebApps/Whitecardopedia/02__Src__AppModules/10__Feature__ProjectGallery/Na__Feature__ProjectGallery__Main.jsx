@@ -132,11 +132,11 @@
                                 searchTerm={searchTerm}
                                 onSearchChange={handleSearchChange}
                             />
+                            <SortControls 
+                                sortBy={sortBy}
+                                onSortChange={handleSortChange}
+                            />
                         </div>
-                        <SortControls 
-                            sortBy={sortBy}
-                            onSortChange={handleSortChange}
-                        />
                     </div>
 
                     {galleryMode === 'blockout' && (

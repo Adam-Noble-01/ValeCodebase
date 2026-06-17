@@ -18,6 +18,27 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.4.1 - 17-Jun-2026 - Responsive Toolbar Layout
+
+### Overview
+Gallery toolbar (hamburger, filter tabs, search, sort) was breaking on iPad Portrait and clipping off-screen on mobile. Implemented a 3-tier responsive layout: Desktop → Tablet Portrait → Mobile.
+
+### Changes
+- **Sort control moved inside `controls-left`** — sort now shares a single flex row with all other toolbar items, allowing CSS to manage alignment without hacks
+- **Sort always right-aligned** — `controls-left` is `width: 100%`; search `flex: 1` fills the gap so sort is always pinned to the far right edge
+- **"Sort by:" label removed** — dropdown content is self-explanatory; label was redundant at all screen sizes
+- **Tablet Portrait (769px–1024px)** — new breakpoint caps search width at 300px so sort stays inline on one row without line-breaking
+- **Mobile (≤768px)** — tabs + hamburger on row 1; search + sort on row 2 at 85% scale; no inter-row conflicts via flex `order` + `::after` line-break element
+- **Tab scaling on narrow phones** — `clamp()` on tab font-size and padding so all three tabs fit inline at any viewport width without wrapping
+- **Consistent search spacing** — `margin-right` removed from toggle; `gap: var(--Vale_Spacing_Medium)` on `controls-left` gives equal spacing between every toolbar item
+
+### Files Changed
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx` — `<SortControls>` moved inside `controls-left`
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css` — base toolbar layout, 3-tier responsive breakpoints
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Blockoutopedia__.css` — tab scaling with `clamp()`, mobile toggle pin
+
+---
+
 ## Whitecardopedia v0.4.0 - 11-Jun-2026 - Model / HDRI / DataLib Caching Strategy + MaxModel Load Speed
 
 ### Overview

@@ -337,8 +337,22 @@
     {
       "Timecard__Date": "2026-06-16",
       "Timcard__Clock-In__": "08:05",
+      "Timcard__Clock-Out__": "18:05",
+      "Timecard__AuthHash": "sha256__1be2aab3ef4a1cba70e080887cd855203e584391e3c80db914b33bceb1084a52",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-06-17T07:05:12.325248Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:05",
+        "Timecard__OriginalClockOut": "08:00"
+      }
+    },
+    {
+      "Timecard__Date": "2026-06-17",
+      "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__aebce2cc51a3f8991db874879ee75fa9f4d6ebe871768952160bbe1c62ff051b"
+      "Timecard__AuthHash": "sha256__26d356d32ecfcaa83ae51f4b12028cd4d7ea65b796c0ba1a2a50704cd77b9918"
     }
   ]
 }

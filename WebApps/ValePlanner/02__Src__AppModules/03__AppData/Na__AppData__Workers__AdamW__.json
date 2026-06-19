@@ -2160,14 +2160,6 @@
           "color": "na-shift-color-purple"
         },
         {
-          "id": "new-1781258687128",
-          "date": "2026-06-19",
-          "startTime": "13:30",
-          "endTime": "15:00",
-          "title": "REM |  Chse HEW",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1781259314151",
           "date": "2026-06-12",
           "startTime": "11:15",
@@ -2211,9 +2203,41 @@
           "id": "new-1781594003032",
           "date": "2026-06-16",
           "startTime": "08:30",
-          "endTime": "10:30",
+          "endTime": "12:00",
           "title": "Whitecard |  Rosalie",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1781693115775",
+          "date": "2026-06-16",
+          "startTime": "12:00",
+          "endTime": "18:00",
+          "title": "Dev |  Standards",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1781693146325",
+          "date": "2026-06-17",
+          "startTime": "08:00",
+          "endTime": "10:15",
+          "title": "Dev |  Whitecardopedia UI Improvements",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1781693129750",
+          "date": "2026-06-17",
+          "startTime": "10:15",
+          "endTime": "14:45",
+          "title": "Dev | Vale Components Editor",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1781258687128",
+          "date": "2026-06-19",
+          "startTime": "13:30",
+          "endTime": "15:00",
+          "title": "REM |  Chse HEW",
+          "color": "na-shift-color-rose"
         }
       ]
     }

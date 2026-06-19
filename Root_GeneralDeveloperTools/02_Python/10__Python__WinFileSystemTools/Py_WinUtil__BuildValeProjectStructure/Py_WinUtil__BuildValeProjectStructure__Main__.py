@@ -46,6 +46,11 @@
 # - Template names: {ProjectName}__WhiteCardModel__0.0.1__.skp
 #                   {ProjectName}__CadConversionModel__0.0.1__.skp
 #
+# 19-Jun-2026 - Version 1.4.0
+# - Updated SketchUp template to Na__WhitecardStandards__.skp
+# - Removed 02__CadConversionModel subfolder and duplicate .skp copy
+# - Now creates a single .skp file in 02__SketchUp/01__MainModel only
+#
 # =============================================================================
 
 import os
@@ -70,7 +75,7 @@ DEV_CONSOLE_ON           =   False                                            # 
 
     # MODULE CONSTANTS | SketchUp Template Configuration (EASY TO CHANGE PER PC)
     # ------------------------------------------------------------
-SKETCHUP_TEMPLATE_PATH   =   "D:\\02_CoreLib__SketchUp\\06__CoreLib__SketchUp__FileTemplates\\SketchUp__MasterTemplate__Active__.skp"  # <-- Path to SketchUp template file
+SKETCHUP_TEMPLATE_PATH   =   "D:\\06_CoreLib__Web3D\\SketchUp__SourceFiles\\01__SketchUp__CoreStandards\\Na__WhitecardStandards__.skp"  # <-- Path to SketchUp template file
     # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -161,8 +166,7 @@ CONTENT_DELIVERED_SUBS   =   [                                               # <
     # MODULE CONSTANTS | SketchUp Subfolders
     # ------------------------------------------------------------
 SKETCHUP_SUBFOLDERS      =   [                                               # <-- Subfolders within 02__SketchUp
-    "01__MainModel",
-    "02__CadConversionModel"
+    "01__MainModel"
 ]
     # ---------------------------------------------------------------
 
@@ -461,12 +465,12 @@ def build_primary_model_label(project_type):
     return f"{project_type_clean}Model"                                       # <-- Build generic type-based label
     # ---------------------------------------------------------------
 
-    # FUNCTION | Copy SketchUp Template Files to Project
+    # FUNCTION | Copy SketchUp Template File to Project
     # ------------------------------------------------------------
 def copy_sketchup_templates(project_root_path, project_name, project_type):
     """
-    Copy the SketchUp template file to the project's SketchUp subfolders.
-    Creates renamed copies for MainModel and CadConversionModel.
+    Copy the SketchUp template file to the project's 01__MainModel subfolder.
+    Creates a single renamed copy named by project type.
     Returns tuple: (success: bool, error_message: str or None)
     """
     # Check if template file exists
@@ -482,12 +486,6 @@ def copy_sketchup_templates(project_root_path, project_name, project_type):
         main_model_filename = f"{project_name}__{primary_model_label}__0.0.1__.skp"  # <-- Build filename
         main_model_path = os.path.join(main_model_folder, main_model_filename)  # <-- Full destination path
         shutil.copy2(SKETCHUP_TEMPLATE_PATH, main_model_path)                 # <-- Copy with metadata
-        
-        # Copy template to 02__CadConversionModel folder
-        cad_model_folder = os.path.join(sketchup_folder, "02__CadConversionModel")  # <-- CadConversion folder path
-        cad_model_filename = f"{project_name}__CadConversionModel__0.0.1__.skp"     # <-- Build filename
-        cad_model_path = os.path.join(cad_model_folder, cad_model_filename)   # <-- Full destination path
-        shutil.copy2(SKETCHUP_TEMPLATE_PATH, cad_model_path)                  # <-- Copy with metadata
         
         return True, None                                                      # <-- Return success
         

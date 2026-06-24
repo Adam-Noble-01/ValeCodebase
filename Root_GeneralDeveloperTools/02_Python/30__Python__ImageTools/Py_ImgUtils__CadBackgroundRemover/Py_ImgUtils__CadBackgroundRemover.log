@@ -27,3 +27,8 @@
 2026-06-17 12:05:24,620 | INFO | Batch started: 1 file(s) | white=238 black=135
 2026-06-17 12:05:24,648 | INFO | Saved: C:\Users\adamw\Downloads\Test001____BackroundRemvoed.png
 2026-06-17 12:05:25,948 | INFO | Batch complete: 1 ok, 0 failed
+2026-06-24 13:06:55,751 | INFO | Noble Architecture icon loader imported successfully
+2026-06-24 13:06:55,846 | INFO | CadBackgroundRemoverApp initialised
+2026-06-24 13:07:00,015 | INFO | Batch started: 1 file(s) | white=238 black=135
+2026-06-24 13:07:00,067 | INFO | Saved: D:\06_CoreLib__Web3D\SketchUp__SourceFiles\11__SketchUp__PngAssets\Magnolia__Simple____BackroundRemvoed.png
+2026-06-24 13:07:00,837 | INFO | Batch complete: 1 ok, 0 failed

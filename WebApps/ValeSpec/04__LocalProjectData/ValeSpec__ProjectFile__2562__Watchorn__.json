@@ -1,0 +1,60 @@
+{
+    "ValeSpec__ProjectFile__Metadata": {
+        "ValeSpec__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "ValeSpec__ProjectFile__Metadata__ProjectCode": "2562",
+        "ValeSpec__ProjectFile__Metadata__ProjectName": "Watchorn",
+        "ValeSpec__ProjectFile__Metadata__DocumentName": "Doors",
+        "ValeSpec__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-06-23",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-06-23",
+        "ValeSpec__ProjectFile__Metadata__DateIssued": "",
+        "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
+        "ValeSpec__ProjectFile__Metadata__Author": ""
+    },
+    "ValeSpec__ProjectFile__GlobalSettings": {
+        "ValeSpec__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all assemblies.",
+        "ValeSpec__ProjectFile__GlobalSettings__IronmongeryFinish": "",
+        "ValeSpec__ProjectFile__GlobalSettings__LeverType": "",
+        "ValeSpec__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "ValeSpec__ProjectFile__Assemblies": [
+        {
+            "Assembly__Identity__Config": {
+                "Assembly__Identity__Config__Id": "asm_994184",
+                "Assembly__Identity__Config__Title": "",
+                "Assembly__Identity__Config__SortOrder": 0
+            },
+            "Assembly__DoorType__Config": {
+                "Assembly__DoorType__Config__Type": "None",
+                "Assembly__DoorType__Config__OpeningDirection": "Outward"
+            },
+            "Assembly__Dimensions__Config": {
+                "Assembly__Dimensions__Config__WidthMm": 1800,
+                "Assembly__Dimensions__Config__HeightMm": 2100
+            },
+            "Handing": "Left",
+            "Assembly__ProgressState__Config": {
+                "Assembly__ProgressState__Config__CompletedSteps": {
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Finish": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Misc": false
+                },
+                "Assembly__ProgressState__Config__ActiveStepId": "doorType"
+            },
+            "Assembly__Opening__Config": {
+                "Assembly__Opening__Config__FixedPanel": "none"
+            },
+            "Assembly__Lever__Config": {
+                "Assembly__Lever__Config__Type": "",
+                "Assembly__Lever__Config__HeightMm": 1000
+            },
+            "Assembly__Hinge__Config": {
+                "Assembly__Hinge__Config__Style": "Decorative"
+            }
+        }
+    ]
+}

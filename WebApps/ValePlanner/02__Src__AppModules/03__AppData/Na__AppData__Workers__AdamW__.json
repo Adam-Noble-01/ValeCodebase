@@ -2238,6 +2238,46 @@
           "endTime": "15:00",
           "title": "REM |  Chse HEW",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1782222096570",
+          "date": "2026-06-23",
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "title": "Meeting | JW",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1782295628492",
+          "date": "2026-06-23",
+          "startTime": "11:30",
+          "endTime": "12:45",
+          "title": "Whitecard |  Bressard-Kayode",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1782302695295",
+          "date": "2026-06-23",
+          "startTime": "12:45",
+          "endTime": "13:15",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1782305591773",
+          "date": "2026-06-24",
+          "startTime": "13:45",
+          "endTime": "14:15",
+          "title": "Tree",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1782302687261",
+          "date": "2026-06-23",
+          "startTime": "13:15",
+          "endTime": "18:15",
+          "title": "Whitecard |  Bressard-Kayode",
+          "color": "na-shift-color-purple"
         }
       ]
     }

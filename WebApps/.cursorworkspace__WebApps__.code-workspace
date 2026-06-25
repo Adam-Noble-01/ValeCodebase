@@ -61,6 +61,11 @@
         "description"  : "A collection of useful small utilities and modules for SketchUp Noble Architecture tooling (shared path resolution, toolbar assets, and related helpers)."
 	  },
       {
+        "path"         : "C:/Users/adamw/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__TrueVision__GlbBuilderUtility__Modules__",
+        "name"         : "SketchUp utilities | Na__TrueVision__GlbBuilderUtility__Modules__",
+        "description"  : "The Exporter to convert SketchUp models to GLB files for TrueVision 3D."
+	  },
+      {
         "name"         : "Obsidian Notebook |  General Knowledge Base",
         "Description"  : "This is a general knowledge base for the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project.",
         "path"         : "C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Documents/Remote__KnowledgeBase__General"

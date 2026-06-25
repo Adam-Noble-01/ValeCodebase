@@ -55,6 +55,7 @@ if str(_SCRIPT_DIR) not in sys.path:
 LOCAL_PROJECTS_BASE          = Path(r"C:\01__ValeProjects")          # <-- Base folder with year subfolders
 WCP_PROJECTS_BASE            = _SCRIPT_DIR.parent / "Projects"       # <-- Whitecardopedia projects root
 CONTENT_DELIVERED_SUBFOLDER  = "10__ContentDelivered__Local"         # <-- Content delivery subfolder
+GLB_SYNC_SUBFOLDER           = "ValeVision__GlbFileSync"             # <-- Local folder the GLB builder writes fresh GLBs into
 IMAGE_SUFFIX_PATTERN         = r'__WhitecardImage__'                 # <-- Image filename marker
 CAMERA_DATA_KEY              = "ValeVison3D__SketchUpCameraData"     # <-- Key to merge (one 'i' — matches web app)
 PROJECT_DATA_SUBFOLDER       = "00__ProjectData"                     # <-- Local project data folder
@@ -178,6 +179,11 @@ def na_find_project_data_file(project_root: Path) -> Optional[Path]:
         return None
     matches = list(data_dir.glob('*__ProjectData__.json'))
     return matches[0] if matches else None
+
+
+def na_resolve_local_glb_dir(local_project_root: Path) -> Path:
+    """Return the local folder the GLB builder writes fresh GLBs into."""
+    return local_project_root / CONTENT_DELIVERED_SUBFOLDER / GLB_SYNC_SUBFOLDER
 
 # endregion -------------------------------------------------------------------
 
@@ -399,6 +405,55 @@ def na_upload_folder_to_r2(s3_client, bucket: str, local_dir: Path, r2_prefix: s
     report.uploaded += uploaded
 
 
+def na_purge_stale_r2_glbs(s3_client, bucket: str, r2_prefix: str, keep_names: set) -> int:
+    """Delete .glb objects under r2_prefix that are no longer present locally so
+    renamed / removed models (e.g. Existing -> Proposed) do not linger on R2."""
+    purged = 0
+    try:
+        response = s3_client.list_objects_v2(Bucket=bucket, Prefix=f"{r2_prefix}/")
+        for obj in response.get('Contents', []):
+            key  = obj['Key']
+            name = key.rsplit('/', 1)[-1]
+            if name.lower().endswith('.glb') and name not in keep_names:
+                s3_client.delete_object(Bucket=bucket, Key=key)
+                purged += 1
+    except Exception:
+        pass                                          # <-- Purge is best-effort; never fail the sync on cleanup
+    return purged
+
+
+def na_upload_glbs_to_r2(s3_client, bucket: str, glb_dir: Path, r2_prefix: str, report: SyncReport):
+    """Upload the freshly-exported top-level *.glb files to R2 and purge stale
+    GLBs so R2 mirrors the local GLB set exactly. Archived models and export
+    logs (subfolder / .txt) are intentionally skipped."""
+    label = 'Upload GLB Models to R2'
+    if not glb_dir.is_dir():
+        report.add_step(label, False, f'GLB folder not found: {glb_dir}')
+        return
+
+    glb_files = [f for f in glb_dir.iterdir() if f.is_file() and f.suffix.lower() == '.glb']
+    if not glb_files:
+        report.add_step(label, False, f'No .glb files found in {glb_dir.name} — nothing uploaded.')
+        return
+
+    uploaded    = 0
+    local_names = set()
+    for f in glb_files:
+        local_names.add(f.name)
+        key = f"{r2_prefix}/{f.name}"
+        try:
+            s3_client.upload_file(str(f), bucket, key)
+            uploaded += 1
+        except Exception as exc:
+            report.add_step(label, False, f'GLB upload failed for {f.name}: {exc}')
+            return
+
+    purged     = na_purge_stale_r2_glbs(s3_client, bucket, r2_prefix, local_names)
+    purge_note = f' (purged {purged} stale)' if purged else ''
+    report.add_step(label, True, f'Uploaded {uploaded} GLB(s) to R2 under {r2_prefix}/{purge_note}.')
+    report.uploaded += uploaded
+
+
 def na_upload_project_json_to_r2(s3_client, bucket: str, project_json_path: Path, r2_prefix: str, report: SyncReport):
     """Upload project.json to R2 under the given prefix."""
     label = 'Upload project.json to R2'
@@ -457,6 +512,7 @@ def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path,
 
         na_upload_folder_to_r2(s3, bucket, wcp_dir, r2_prefix, ['.png', '.jpg', '.webp'], report, 'Upload Images to R2')
         na_upload_project_json_to_r2(s3, bucket, wcp_dir / PROJECT_JSON_FILENAME, r2_prefix, report)
+        na_upload_glbs_to_r2(s3, bucket, na_resolve_local_glb_dir(local_root), r2_prefix, report)  # <-- Mirror fresh GLBs to R2
 
         camera_data = na_read_camera_data_from_project_data(local_root)
         if camera_data:
@@ -480,6 +536,23 @@ def na_sync_images(project_folder: str, year: str, local_root: Path, wcp_dir: Pa
         na_upload_folder_to_r2(s3, bucket, wcp_dir, r2_prefix, ['.png', '.jpg', '.webp'], report, 'Upload Images to R2')
     else:
         report.add_step('R2 Upload', False, 'boto3 not available or credentials missing.')
+
+
+def na_sync_glb(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
+    """GLB-only sync: upload the freshly-exported GLBs from the local GLB folder
+    to R2 (with stale purge). Used by the 'Update GLB Models' button."""
+    glb_dir = na_resolve_local_glb_dir(local_root)
+
+    creds = na_load_r2_credentials()
+    s3    = na_build_r2_client(creds)
+    if not s3:
+        report.add_step('R2 Upload', False, 'boto3 not available or credentials missing.')
+        return
+
+    bucket    = creds.get('R2_BUCKET_NAME', '')
+    full_year = f"20{year}" if len(year) == 2 else year
+    r2_prefix = f"{R2_BASE_PREFIX}/{full_year}/{project_folder}"
+    na_upload_glbs_to_r2(s3, bucket, glb_dir, r2_prefix, report)
 
 
 def na_sync_cameras(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
@@ -597,7 +670,7 @@ def main():
     parser = argparse.ArgumentParser(description='ValeVision Cloud Sync — Single Project Orchestrator')
     parser.add_argument('--project', required=True,  help='Project folder name (e.g. AB01__MyHouse__Whitecard)')
     parser.add_argument('--year',    required=True,  help='Two-digit year (e.g. 26 for 2026)')
-    parser.add_argument('--action',  default='all',  choices=['all', 'images', 'cameras'], help='Sync scope')
+    parser.add_argument('--action',  default='all',  choices=['all', 'images', 'cameras', 'glb'], help='Sync scope')
     parser.add_argument('--json',    action='store_true', help='Emit JSON report on stdout at the end')
     parser.add_argument('--report-file', default='', help='Write the JSON report to this path (robust channel for GUI-host callers)')
     args = parser.parse_args()
@@ -634,6 +707,8 @@ def main():
         na_sync_images(web_folder, year, local_root, wcp_dir, report)
     elif action == 'cameras':
         na_sync_cameras(web_folder, year, local_root, wcp_dir, report)
+    elif action == 'glb':
+        na_sync_glb(web_folder, year, local_root, wcp_dir, report)
 
     na_update_master_index_for_project(web_folder, year, wcp_dir, report)  # <-- Keep the master index fresh after every sync
 

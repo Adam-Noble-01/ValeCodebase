@@ -44,6 +44,18 @@
 //   FetchProjectJson and ResolveAssetUrl fetch the correct source directly,
 //   eliminating the blind-R2 404 flood. Index URLs from AppConfig SSOT.
 //
+// 25-Jun-2026 - Version 1.3.1
+// - Race fix: FetchProjectJson now awaits Na__AppUtils__InitMasterIndex
+//   internally before resolving the folder id. Previously an early caller
+//   (GridLines / FogPlane / ElevationView) could invoke FetchProjectJson
+//   before the index finished loading, producing the wrong code-only
+//   "{year}/{code}" URL (e.g. 2026/63592 instead of 2026/63592__Bressard-
+//   Kayode). That bad promise was memoised and reused by the loading sequence,
+//   causing a 404 that halted the load and suppressed the SketchUp camera
+//   auto-build (no Presentation Mode carousel/animation). Awaiting the
+//   memoised, never-throwing index load makes folder resolution deterministic
+//   for every caller regardless of ordering.
+//
 // =============================================================================
 
 
@@ -305,17 +317,26 @@
 
         const fetchOpts    = { timeoutMs, retries: 1, retryDelayMs };       // <-- Reduced retries on first attempt; full retries on GH fallback
 
-        let fetchPromise;
+        // GUARANTEE THE MASTER INDEX IS READY BEFORE RESOLVING THE FOLDER ID
+        // Any caller (GridLines, FogPlane, ElevationView, loading sequence) may
+        // hit this first. Awaiting the memoised, never-throwing index load here
+        // ensures NormalizeProjectFolderId always sees populated maps, so the
+        // wrong code-only "{year}/{code}" fallback URL can never be built and
+        // then memoised — the race that previously 404'd and halted the load.
+        const fetchPromise = (async () => {
+            await Na__AppUtils__InitMasterIndex();                          // <-- Index maps populated before any URL is built
 
-        if (Na__AppUtils__IsRunningOnLocalhost()) {
-            const localUrl = `${window.location.origin}/api/projects/${projectCode}`; // <-- Flask API endpoint
-            fetchPromise = Na__ResilientLoad__FetchWithTimeout(localUrl, { timeoutMs, retries, retryDelayMs })
-                .then(r => r.json())
-                .catch(err => {
-                    Na__AppUtils__FetchCache.delete(cacheKey);
+            if (Na__AppUtils__IsRunningOnLocalhost()) {
+                const localUrl = `${window.location.origin}/api/projects/${projectCode}`; // <-- Flask API endpoint
+                try {
+                    const resp = await Na__ResilientLoad__FetchWithTimeout(localUrl, { timeoutMs, retries, retryDelayMs });
+                    return await resp.json();
+                } catch (err) {
+                    Na__AppUtils__FetchCache.delete(cacheKey);             // <-- Evict so a later call can retry
                     throw err;
-                });
-        } else {
+                }
+            }
+
             const projectFolderId = Na__AppUtils__NormalizeProjectFolderId(projectCode);
             const r2Url           = `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/project.json`;   // <-- R2 CDN (primary)
             const ghUrl           = `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/project.json`;   // <-- GH Pages (fallback)
@@ -324,30 +345,28 @@
                                     || Na__AppUtils__LookupIndexEntry(projectCode);                 // <-- Resolve asset home from index
             const ghOnly          = indexEntry && indexEntry.assetHome === 'gh';                    // <-- Index says project.json is GH-only
 
-            if (ghOnly) {
-                // INDEX SAYS GH-ONLY | Skip the doomed R2 request entirely (no 404)
-                fetchPromise = Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs })
-                    .then(r => r.json())
-                    .catch(err => {
-                        Na__AppUtils__FetchCache.delete(cacheKey);          // <-- GH failed; evict cache
-                        throw err;
-                    });
-            } else {
+            try {
+                if (ghOnly) {
+                    // INDEX SAYS GH-ONLY | Skip the doomed R2 request entirely (no 404)
+                    const resp = await Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs });
+                    return await resp.json();
+                }
+
                 // INDEX SAYS R2 (or unknown) | Try R2 first, then GH Pages
-                fetchPromise = Na__ResilientLoad__FetchWithTimeout(r2Url, fetchOpts)
-                    .then(r => r.json())
-                    .catch(() => {
-                        // R2 failed — fall back to GH Pages and notify the user
-                        Na__AppUtils__EmitFallbackToast();                  // <-- Notify user of R2 failure
-                        return Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs })
-                            .then(r => r.json());
-                    })
-                    .catch(err => {
-                        Na__AppUtils__FetchCache.delete(cacheKey);          // <-- Both sources failed; evict cache
-                        throw err;
-                    });
+                try {
+                    const r2Resp = await Na__ResilientLoad__FetchWithTimeout(r2Url, fetchOpts);
+                    return await r2Resp.json();
+                } catch (_) {
+                    // R2 failed — fall back to GH Pages and notify the user
+                    Na__AppUtils__EmitFallbackToast();                      // <-- Notify user of R2 failure
+                    const ghResp = await Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs });
+                    return await ghResp.json();
+                }
+            } catch (err) {
+                Na__AppUtils__FetchCache.delete(cacheKey);                  // <-- All sources failed; evict so a later call can retry
+                throw err;
             }
-        }
+        })();
 
         Na__AppUtils__FetchCache.set(cacheKey, fetchPromise);               // <-- Cache in-flight promise immediately
 

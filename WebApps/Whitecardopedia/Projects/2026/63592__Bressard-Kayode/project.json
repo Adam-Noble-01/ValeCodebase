@@ -25,7 +25,8 @@
     "basePath": "Projects/2026/63592__Bressard-Kayode",
     "images": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026.png",
-        "IMG02__3dView__ViewOption-02____WhitecardImage__25-Jun-2026.png"
+        "IMG02__3dView__ViewOption-02____WhitecardImage__25-Jun-2026.png",
+        "IMG03__3dView__Roof____WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
@@ -71,15 +72,15 @@
         }
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "25-Jun-2026 at 14:16",
-        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.3__",
+        "captured_at": "25-Jun-2026 at 15:18",
+        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.6__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
                 "scene_name": "IMG01__3dView__ViewOption-01__",
-                "scene_description": "",
+                "scene_description": "Shot-01 |  Garden",
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
@@ -111,7 +112,7 @@
             },
             {
                 "scene_name": "IMG02__3dView__ViewOption-02__",
-                "scene_description": "",
+                "scene_description": "Shot-02 |  Steps Down",
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
@@ -133,6 +134,38 @@
                         "x": -0.659022,
                         "y": 0.723501,
                         "z": -0.205514
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0.0
+                }
+            },
+            {
+                "scene_name": "IMG03__3dView__Roof__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 14056.8587,
+                        "y": -28021.6413,
+                        "z": 22972.2157
+                    },
+                    "target": {
+                        "x": 13948.7662,
+                        "y": 12132.131,
+                        "z": 2945.443
+                    },
+                    "up": {
+                        "x": -0.001201,
+                        "y": 0.446317,
+                        "z": 0.894874
+                    },
+                    "direction": {
+                        "x": -0.002409,
+                        "y": 0.894871,
+                        "z": -0.446319
                     },
                     "fov_degrees": 30.9573,
                     "fov_is_height": false,

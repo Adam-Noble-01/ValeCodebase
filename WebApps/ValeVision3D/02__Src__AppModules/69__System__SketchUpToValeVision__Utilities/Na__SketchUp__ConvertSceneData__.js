@@ -47,6 +47,21 @@
 // - Stores the RELATIVE 524p thumbnail filename so the carousel handles the
 //   R2-first + GH-fallback resolution.
 //
+// 25-Jun-2026 - Version 1.0.2
+// - ConvertBlock now emits ShowCarouselByDefault: true (and AutoPlayEnabledBy
+//   Default: false) so SketchUp-driven scenes auto-show their carousel on load,
+//   matching the localhost dev-menu BuildDefaultConfig behaviour. Previously the
+//   carousel was built but left hidden until the user clicked Views.
+// - ConvertBlock now requires MORE THAN ONE scene (length >= 2) before
+//   activating Presentation Mode; a single SketchUp camera no longer triggers it.
+//
+// 25-Jun-2026 - Version 1.0.3
+// - Carousel card name now prefers the SketchUp scene DESCRIPTION (e.g.
+//   "Shot-01 | Garden", captured by the Cloud Sync plugin as scene_description)
+//   instead of the raw IMG## page name. Falls back to the page name, then a
+//   generic "Scene N" label. scene_name is unchanged so image/thumbnail file
+//   matching and IMG## ordering remain intact.
+//
 // =============================================================================
 
 
@@ -88,6 +103,7 @@
         const fovVertical = na_vertical_fov(cam);
         const sceneNumber = na_scene_number_from_name(sceneEntry.scene_name, sceneIndex); // <-- IMG## number or index+1
         const sceneId     = `${Na__SketchUp__Convert__SCENE_ID_PREFIX}${sceneNumber}`;
+        const sceneName   = na_scene_display_name(sceneEntry, sceneNumber);   // <-- SketchUp scene description preferred
 
         // NOTE: Under OrbitControls the camera framing is driven by the orbit
         // target (PresentationMode__Scene__OrbitHelperCubePosition), which the
@@ -96,7 +112,7 @@
         // part of the runtime schema and is intentionally omitted.
         return {
             PresentationMode__Scene__Id        : sceneId,                    // <-- Stable ID keyed off IMG## number
-            PresentationMode__Scene__Name      : sceneEntry.scene_name || `Scene ${sceneNumber}`,
+            PresentationMode__Scene__Name      : sceneName,                  // <-- Scene description (falls back to page name)
             PresentationMode__Scene__Order     : sceneNumber,                // <-- Preserve SketchUp IMG## order
             PresentationMode__Scene__ThumbnailUrl : thumbName || '',         // <-- Relative 524p thumbnail filename
             PresentationMode__Scene__CameraPosition: {
@@ -147,13 +163,15 @@
             ))
             .filter(Boolean);                                                // <-- Discard any null entries
 
-        if (convertedScenes.length === 0) return null;
+        if (convertedScenes.length < 2) return null;                          // <-- Only activate for MORE THAN ONE SketchUp camera
 
         return {
-            PresentationMode__SavedCameraScenes__Enabled        : true,
-            PresentationMode__SavedCameraScenes__Source         : 'SketchUpCameraData', // <-- Provenance marker
-            PresentationMode__SavedCameraScenes__DefaultSceneId : convertedScenes[0].PresentationMode__Scene__Id,
-            PresentationMode__SavedCameraScenes__Scenes         : convertedScenes
+            PresentationMode__SavedCameraScenes__Enabled                 : true,
+            PresentationMode__SavedCameraScenes__Source                  : 'SketchUpCameraData', // <-- Provenance marker
+            PresentationMode__SavedCameraScenes__ShowCarouselByDefault   : true,  // <-- Carousel auto-shows (parity with dev-menu BuildDefaultConfig)
+            PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault: false, // <-- No auto slideshow (parity with dev menu)
+            PresentationMode__SavedCameraScenes__DefaultSceneId          : convertedScenes[0].PresentationMode__Scene__Id,
+            PresentationMode__SavedCameraScenes__Scenes                  : convertedScenes
         };
     }
     // ------------------------------------------------------------
@@ -177,6 +195,26 @@
             if (Number.isFinite(parsed) && parsed > 0) return parsed;        // <-- Use the IMG## number
         }
         return sceneIndex + 1;                                               // <-- Fallback to capture order
+    }
+
+    // HELPER FUNCTION | Resolve the Carousel Card Display Name
+    // ------------------------------------------------------------
+    // Prefers the SketchUp scene DESCRIPTION (e.g. "Shot-01 | Garden") so the
+    // carousel card reads cleanly instead of the raw IMG## page name. Falls
+    // back to the page name, then a generic "Scene N" label when both blank.
+    // ------------------------------------------------------------
+    function na_scene_display_name(sceneEntry, sceneNumber) {
+        const description = typeof sceneEntry.scene_description === 'string'
+            ? sceneEntry.scene_description.trim()
+            : '';
+        if (description) return description;                                 // <-- Use SketchUp scene description
+
+        const pageName = typeof sceneEntry.scene_name === 'string'
+            ? sceneEntry.scene_name.trim()
+            : '';
+        if (pageName) return pageName;                                       // <-- Fall back to raw page name
+
+        return `Scene ${sceneNumber}`;                                      // <-- Last-resort generic label
     }
 
     // HELPER FUNCTION | Apply SketchUp Z-up -> Three.js Y-up Axis Swap

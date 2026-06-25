@@ -37,6 +37,7 @@
 
 import os
 import json
+import time
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, List
@@ -63,6 +64,15 @@ INDEX_FILENAME               = "Na__MasterIndex__ProjectLocations__.json"   # <-
 R2_INDEX_KEY                 = f"{R2_INDEX_PREFIX}/{INDEX_FILENAME}"        # <-- Full R2 object key for the index
 GH_INDEX_PATH                = APP_DATA_DIR / INDEX_FILENAME                 # <-- Committed GitHub Pages fallback copy
 PROJECT_JSON_FILENAME        = "project.json"                              # <-- Web project metadata file
+    # ------------------------------------------------------------
+
+    # MODULE CONSTANTS | Shared Build Manifest + Master Config Mirror
+    # ------------------------------------------------------------
+BUILD_MANIFEST_FILENAME      = "Na__BuildVersion__Manifest__.json"         # <-- Shared build-version manifest filename
+R2_BUILD_MANIFEST_KEY        = f"{R2_INDEX_PREFIX}/{BUILD_MANIFEST_FILENAME}"  # <-- Full R2 key for the build manifest
+MASTER_CONFIG_FILENAME       = "Na__AppData__MasterConfig__Main.json"      # <-- Whitecardopedia master config filename
+R2_MASTER_CONFIG_KEY         = f"{R2_INDEX_PREFIX}/{MASTER_CONFIG_FILENAME}"   # <-- Full R2 key for the master config mirror
+MANIFEST_CACHE_CONTROL       = "no-cache, max-age=0"                       # <-- Origin hint so the edge revalidates manifest/config
     # ------------------------------------------------------------
 
     # MODULE CONSTANTS | Public Asset Base URLs (kept in step with web SSOT)
@@ -452,6 +462,63 @@ def na_probe_project_r2(client, bucket: str, folder_id: str) -> Dict:
         'hasGlb_R2'         : len(glb_names) > 0,
         'imageCount'        : len(image_names)
     }
+    # ------------------------------------------------------------
+
+# endregion -------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
+# REGION | Shared Build Manifest + Master Config Mirror
+# -----------------------------------------------------------------------------
+
+    # FUNCTION | Write the Shared Build-Version Manifest to R2
+    # ------------------------------------------------------------
+def na_write_build_manifest(client, bucket: str, last_project: str = "") -> bool:
+    """Write VaApps/Index/Na__BuildVersion__Manifest__.json with an increasing
+    Unix-timestamp buildVersion. Both web apps read this on load to decide
+    whether their cached content is stale. Returns True on success."""
+    if not client or not bucket:
+        return False
+    manifest = {
+        'buildVersion' : int(time.time()),                                  # <-- Unix timestamp (always increases)
+        'buildDate'    : datetime.now().strftime('%d-%b-%Y at %H:%M'),       # <-- Human-readable build time
+        'lastProject'  : last_project                                       # <-- Last project that triggered a build
+    }
+    payload = json.dumps(manifest, indent=4).encode('utf-8')
+    try:
+        client.put_object(
+            Bucket       = bucket,
+            Key          = R2_BUILD_MANIFEST_KEY,
+            Body         = payload,
+            ContentType  = "application/json",
+            CacheControl = MANIFEST_CACHE_CONTROL                           # <-- Edge revalidation hint
+        )
+        return True
+    except Exception:
+        return False
+    # ------------------------------------------------------------
+
+
+    # FUNCTION | Mirror the Local Master Config to R2
+    # ------------------------------------------------------------
+def na_upload_master_config(client, bucket: str) -> bool:
+    """Mirror Na__AppData__MasterConfig__Main.json to R2 so the web app can fetch
+    the project list directly from the CDN — removing the GH Pages push + deploy
+    wait when adding or enabling a project. Returns True on success."""
+    if not client or not bucket or not MASTER_CONFIG_PATH.is_file():
+        return False
+    try:
+        payload = MASTER_CONFIG_PATH.read_bytes()
+        client.put_object(
+            Bucket       = bucket,
+            Key          = R2_MASTER_CONFIG_KEY,
+            Body         = payload,
+            ContentType  = "application/json",
+            CacheControl = MANIFEST_CACHE_CONTROL                           # <-- Edge revalidation hint
+        )
+        return True
+    except Exception:
+        return False
     # ------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

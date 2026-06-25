@@ -15,12 +15,13 @@
 //   the broad service-worker scope required to cover both apps.
 // - Cache buckets:
 //     * pwa-shell-vN  : HTML / CSS / JSX / JS / manifest / fonts / icons
-//     * pwa-thumbs-vN : 524p gallery thumbnail images (cache-first, capped)
+//     * pwa-thumbs-vN : 524p gallery thumbnail images (stale-while-revalidate, capped)
 //     * pwa-data-vN   : project.json / masterConfig.json (network-first)
 // - Full-resolution IMG##__* project images are intentionally NOT cached so
 //   the project view always shows the latest delivered art.
 // - Bumping VERSION_TOKEN below invalidates everything via the activate
-//   cleanup step.
+//   cleanup step. The app also evicts the thumbnail bucket on its own when the
+//   shared R2 build-version manifest reports a newer build (see ProjectLoader).
 //
 // =============================================================================
 
@@ -32,7 +33,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-06-11-3';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
+    const PWA_SW_VERSION_TOKEN              = '2026-06-25-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -397,11 +398,11 @@
         if (classification === 'thumbnail') {
             fetchEvent.respondWith((async () => {
                 const cacheInstance = await caches.open(PWA_SW_CACHE_NAME_THUMBS);
-                const cachedThumb   = await cacheInstance.match(request);   // <-- Check cache first
-                if (cachedThumb) return cachedThumb;                         // <-- Cache hit: no LRU work needed
+                const cachedThumb   = await cacheInstance.match(request);   // <-- Serve cache immediately if present
 
-                try {
-                    const networkThumb = await fetch(request);
+                // STALE-WHILE-REVALIDATE | Always refresh in the background so a re-synced
+                // thumbnail (same URL) is picked up on the next view rather than locked forever.
+                const networkRefresh = fetch(request).then((networkThumb) => {
                     if (networkThumb && networkThumb.ok) {
                         cacheInstance.put(request, networkThumb.clone()).then(() => {
                             // LRU trim only runs after a successful put (L3 fix: not on every request)
@@ -409,9 +410,11 @@
                         }).catch(() => {});
                     }
                     return networkThumb;
-                } catch (error) {
-                    return Response.error();
-                }
+                }).catch(() => null);                                        // <-- Network failure: keep the cached copy
+
+                if (cachedThumb) return cachedThumb;                         // <-- Fast path: cache now, refresh in background
+                const networkThumb = await networkRefresh;                   // <-- Cache miss: wait for the network
+                return networkThumb || Response.error();
             })());
             return;
         }

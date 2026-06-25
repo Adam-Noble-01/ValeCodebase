@@ -1140,6 +1140,13 @@ def regenerate_master_index(s3_client, bucket_name: str):
               f"(R2:{'OK' if results.get('r2') else 'no'} GH:{'OK' if results.get('gh') else 'no'}).{COLOR_RESET}\n")
     except Exception as exc:
         print(f"{COLOR_YELLOW}Master index regeneration failed: {exc}{COLOR_RESET}")
+
+    # Bump the shared build manifest + mirror master config so both web apps
+    # detect the new content immediately (cache invalidation + real-time list).
+    manifest_ok = r2lib.na_write_build_manifest(s3_client, bucket_name, "BulkGlbSync")
+    config_ok   = r2lib.na_upload_master_config(s3_client, bucket_name)
+    print(f"{COLOR_GREEN}Build manifest {'updated' if manifest_ok else 'skipped'}; "
+          f"master config {'mirrored to R2' if config_ok else 'skipped'}.{COLOR_RESET}\n")
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

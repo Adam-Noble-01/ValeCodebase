@@ -286,7 +286,8 @@
         "ProjectData__AssetUrls__GhBaseUrl"         : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
         "ProjectData__AssetUrls__FallbackToastMsg"  : "Failed to fetch live assets — using static assets instead.",
         "ProjectData__AssetUrls__IndexUrl"          : "https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json",
-        "ProjectData__AssetUrls__IndexFallbackUrl"  : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json"
+        "ProjectData__AssetUrls__IndexFallbackUrl"  : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json",
+        "ProjectData__AssetUrls__BuildManifestUrl"  : "https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json"
     },
     "LoadResilience__Config": {
         "LoadResilience__Config__Description"           : "Timeouts, retries, and concurrency caps for the load pipeline. All time values are milliseconds. Bump these on slow-CDN deployments; do NOT hardcode in modules.",

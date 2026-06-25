@@ -43,6 +43,15 @@
 //   and images now fetch the correct source directly, killing the blind-R2
 //   404 flood. Index URLs seeded from masterConfig SSOT.
 //
+// 25-Jun-2026 - Version 0.2.3
+// - R2-driven cache invalidation: na_check_and_clear_on_build_change reads the
+//   shared build-version manifest (cache-busted) on load and evicts the
+//   wpwa-thumbs-* Service Worker cache when buildVersion increases, so
+//   re-synced gallery thumbnails appear without a manual SW version bump.
+// - loadMasterConfig now fetches the R2 master config mirror first (cache-
+//   busted) and falls back to the GH Pages copy, removing the GH push + deploy
+//   wait when adding or enabling a project.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -52,7 +61,10 @@
     // MODULE VARIABLES | Project Loading State
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
-        masterConfigPath    : '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json', // <-- Master configuration file path
+        masterConfigPath    : '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json', // <-- Master configuration file path (GH Pages fallback)
+        masterConfigR2Url   : 'https://cdn.noble-architecture.com/VaApps/Index/Na__AppData__MasterConfig__Main.json', // <-- R2 mirror (real-time, no GH push)
+        buildManifestUrl    : 'https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json', // <-- Shared build-version manifest
+        buildVersionKey     : 'wcp_last_build_version',                  // <-- localStorage key holding the last-seen buildVersion
         designersListPath   : '02__Src__AppModules/03__AppData/Na__AppData__ValeDesignersList__Main.json', // <-- Dedicated designers options file
         artistsListPath     : '02__Src__AppModules/03__AppData/Na__AppData__ValeConceptArtistsList__Main.json', // <-- Dedicated concept artists options file
         projectBasePath     : 'Projects',                                // <-- Base path for projects (year comes from folderId)
@@ -279,10 +291,61 @@
 
     // FUNCTION | Load Master Configuration
     // ------------------------------------------------------------
-    async function loadMasterConfig() {
+    // HELPER FUNCTION | Clear Only the Thumbnail Service Worker Cache Bucket
+    // ---------------------------------------------------------------
+    // Evicts the wpwa-thumbs-* Cache Storage bucket(s) without touching the app
+    // shell, data or model caches. The Service Worker re-fetches fresh thumbnails
+    // from R2 on the next gallery render.
+    // ---------------------------------------------------------------
+    async function na_clear_thumbnail_cache() {
+        if (!('caches' in window)) return;                               // <-- No Cache Storage API (older browsers)
         try {
-            const response = await fetch(PROJECT_LOADER_CONFIG.masterConfigPath);  // <-- Fetch master config
-            
+            const all    = await caches.keys();                          // <-- All cache bucket names
+            const thumbs = all.filter(n => n.startsWith('wpwa-thumbs-')); // <-- Only the thumbnail buckets
+            await Promise.all(thumbs.map(n => caches.delete(n)));        // <-- Drop them so SW refetches from R2
+        } catch (_) {}                                                   // <-- Best-effort; never break the load
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Fetch the R2 Build Manifest and Evict Thumbs If Newer
+    // ---------------------------------------------------------------
+    // Reads the shared build-version manifest (written by the sync pipeline) with
+    // a cache-bust query param so the Cloudflare edge cannot serve a stale copy.
+    // When the buildVersion is newer than the last-seen value, the thumbnail
+    // cache is cleared so re-synced images appear immediately. Non-blocking:
+    // any failure leaves the app on its current behaviour.
+    // ---------------------------------------------------------------
+    async function na_check_and_clear_on_build_change() {
+        try {
+            const url  = `${PROJECT_LOADER_CONFIG.buildManifestUrl}?t=${Date.now()}`; // <-- Bust the edge cache
+            const resp = await fetch(url, { cache: 'no-store' });        // <-- Bust the browser cache
+            if (!resp.ok) return;
+
+            const manifest     = await resp.json();
+            const buildVersion = manifest && manifest.buildVersion;      // <-- Unix timestamp from the sync pipeline
+            if (!buildVersion) return;
+
+            const stored = parseInt(localStorage.getItem(PROJECT_LOADER_CONFIG.buildVersionKey) || '0', 10);
+            if (buildVersion > stored) {
+                localStorage.setItem(PROJECT_LOADER_CONFIG.buildVersionKey, String(buildVersion)); // <-- Remember new build
+                await na_clear_thumbnail_cache();                        // <-- Evict stale thumbs; SW refetches fresh from R2
+            }
+        } catch (_) {}                                                   // <-- Non-blocking: never break the app on manifest failure
+    }
+    // ---------------------------------------------------------------
+
+
+    async function loadMasterConfig() {
+        await na_check_and_clear_on_build_change();                      // <-- Check build version BEFORE loading any data
+        try {
+            const r2Url    = `${PROJECT_LOADER_CONFIG.masterConfigR2Url}?t=${Date.now()}`; // <-- R2 mirror, cache-busted
+            let   response = await fetch(r2Url, { cache: 'no-store' }).catch(() => null);   // <-- Try R2 first (real-time)
+
+            if (!response || !response.ok) {
+                response = await fetch(PROJECT_LOADER_CONFIG.masterConfigPath); // <-- GH Pages fallback
+            }
+
             if (!response.ok) {
                 throw new Error('Failed to load master configuration');  // <-- Handle fetch error
             }

@@ -422,6 +422,44 @@ def na_purge_stale_r2_glbs(s3_client, bucket: str, r2_prefix: str, keep_names: s
     return purged
 
 
+def na_collect_local_image_names(wcp_dir: Path) -> set:
+    """Return the set of current image + thumbnail filenames in the WCP project
+    folder (source PNGs and their generated 524p WebP/JPG derivatives). Used as
+    the keep-set so the R2 purge only removes superseded images."""
+    keep = set()
+    if not wcp_dir.is_dir():
+        return keep
+    image_exts = ('.png', '.jpg', '.jpeg', '.webp')
+    for f in wcp_dir.iterdir():
+        if f.is_file() and f.suffix.lower() in image_exts:
+            keep.add(f.name)                          # <-- Mirror local image/thumbnail set exactly
+    return keep
+
+
+def na_purge_stale_r2_images(s3_client, bucket: str, r2_prefix: str, keep_names: set, report: SyncReport) -> int:
+    """Delete image objects (.png/.jpg/.jpeg/.webp) under r2_prefix that are no
+    longer present locally so old date-stamped scenes + thumbnails do not linger
+    on R2. project.json and .glb files are never touched (extension-gated)."""
+    label      = 'Purge Stale R2 Images'
+    image_exts = ('.png', '.jpg', '.jpeg', '.webp')
+    purged     = 0
+    try:
+        response = s3_client.list_objects_v2(Bucket=bucket, Prefix=f"{r2_prefix}/")
+        for obj in response.get('Contents', []):
+            key  = obj['Key']
+            name = key.rsplit('/', 1)[-1]
+            if name.lower().endswith(image_exts) and name not in keep_names:
+                s3_client.delete_object(Bucket=bucket, Key=key)
+                purged += 1
+    except Exception as exc:
+        report.add_step(label, False, f'Image purge failed (non-fatal): {exc}')  # <-- Best-effort; never fail the sync
+        return purged
+
+    if purged:
+        report.add_step(label, True, f'Purged {purged} stale image(s) from R2 under {r2_prefix}/.')
+    return purged
+
+
 def na_upload_glbs_to_r2(s3_client, bucket: str, glb_dir: Path, r2_prefix: str, report: SyncReport):
     """Upload the freshly-exported top-level *.glb files to R2 and purge stale
     GLBs so R2 mirrors the local GLB set exactly. Archived models and export
@@ -511,6 +549,7 @@ def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path,
         r2_prefix = f"{R2_BASE_PREFIX}/{full_year}/{project_folder}"
 
         na_upload_folder_to_r2(s3, bucket, wcp_dir, r2_prefix, ['.png', '.jpg', '.webp'], report, 'Upload Images to R2')
+        na_purge_stale_r2_images(s3, bucket, r2_prefix, na_collect_local_image_names(wcp_dir), report)  # <-- Remove superseded images/thumbnails
         na_upload_project_json_to_r2(s3, bucket, wcp_dir / PROJECT_JSON_FILENAME, r2_prefix, report)
         na_upload_glbs_to_r2(s3, bucket, na_resolve_local_glb_dir(local_root), r2_prefix, report)  # <-- Mirror fresh GLBs to R2
 
@@ -534,6 +573,7 @@ def na_sync_images(project_folder: str, year: str, local_root: Path, wcp_dir: Pa
         full_year = f"20{year}" if len(year) == 2 else year
         r2_prefix = f"{R2_BASE_PREFIX}/{full_year}/{project_folder}"
         na_upload_folder_to_r2(s3, bucket, wcp_dir, r2_prefix, ['.png', '.jpg', '.webp'], report, 'Upload Images to R2')
+        na_purge_stale_r2_images(s3, bucket, r2_prefix, na_collect_local_image_names(wcp_dir), report)  # <-- Remove superseded images/thumbnails
     else:
         report.add_step('R2 Upload', False, 'boto3 not available or credentials missing.')
 
@@ -636,6 +676,50 @@ def na_update_master_index_for_project(web_folder: str, year: str, wcp_dir: Path
     except Exception as exc:
         report.add_step(label, False, f'Index update failed: {exc}')
 
+
+def na_update_build_manifest(project_folder: str, report: SyncReport):
+    """Write the shared build-version manifest to R2 (delegated to the shared
+    lib for a single source of truth). The buildVersion is a Unix timestamp that
+    both web apps read on load to decide whether their cached content is stale."""
+    label = 'Update Build Manifest'
+    try:
+        import AutomationUtil__R2Common__Lib__ as r2lib       # @delegate: ./AutomationUtil__R2Common__Lib__.py
+    except Exception as exc:
+        report.add_step(label, False, f'Manifest lib import failed: {exc}')
+        return
+
+    creds  = r2lib.na_load_r2_credentials()
+    client = r2lib.na_create_r2_client(creds)
+    bucket = creds.get('R2_BUCKET_NAME', '')
+    if not client or not bucket:
+        report.add_step(label, False, 'R2 client unavailable; build manifest not updated.')
+        return
+
+    ok = r2lib.na_write_build_manifest(client, bucket, project_folder)  # <-- Shared logic (DRY)
+    report.add_step(label, ok, f'Build manifest {"updated" if ok else "write failed"} ({r2lib.R2_BUILD_MANIFEST_KEY}).')
+
+
+def na_upload_master_config_to_r2(report: SyncReport):
+    """Mirror the local master config to R2 (delegated to the shared lib) so the
+    web app fetches the project list from the CDN — eliminating the GH Pages
+    push + deploy wait when adding or enabling a project."""
+    label = 'Upload Master Config to R2'
+    try:
+        import AutomationUtil__R2Common__Lib__ as r2lib       # @delegate: ./AutomationUtil__R2Common__Lib__.py
+    except Exception as exc:
+        report.add_step(label, False, f'Config lib import failed: {exc}')
+        return
+
+    creds  = r2lib.na_load_r2_credentials()
+    client = r2lib.na_create_r2_client(creds)
+    bucket = creds.get('R2_BUCKET_NAME', '')
+    if not client or not bucket:
+        report.add_step(label, False, 'R2 client unavailable; master config not mirrored.')
+        return
+
+    ok = r2lib.na_upload_master_config(client, bucket)                 # <-- Shared logic (DRY)
+    report.add_step(label, ok, f'Master config {"mirrored to R2" if ok else "mirror failed"} ({r2lib.R2_MASTER_CONFIG_KEY}).')
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -711,6 +795,8 @@ def main():
         na_sync_glb(web_folder, year, local_root, wcp_dir, report)
 
     na_update_master_index_for_project(web_folder, year, wcp_dir, report)  # <-- Keep the master index fresh after every sync
+    na_update_build_manifest(project_folder, report)                       # <-- Bump shared build version so both apps refresh
+    na_upload_master_config_to_r2(report)                                  # <-- Mirror master config to R2 (no GH push needed)
 
     final = report.finalise()
 

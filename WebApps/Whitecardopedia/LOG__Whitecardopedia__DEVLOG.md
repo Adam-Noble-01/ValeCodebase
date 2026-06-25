@@ -18,6 +18,25 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.0 - 25-Jun-2026 - R2-Driven Cache Invalidation + Real-Time Master Config
+
+### Overview
+Replaced the manual Service Worker version bump with an automated, R2-driven build-version manifest shared by Whitecardopedia and ValeVision3D. Every sync (plugin or manual) now writes `VaApps/Index/Na__BuildVersion__Manifest__.json` with an increasing Unix-timestamp `buildVersion`. The gallery reads it on load (cache-busted) and evicts only the `wpwa-thumbs-*` Service Worker bucket when the build is newer, so re-synced thumbnails appear without a manual `PWA_SW_VERSION_TOKEN` change. The master config is also mirrored to R2, so adding or enabling a project goes live without a GitHub Pages push + deploy wait. The sync now purges superseded images from R2.
+
+### Changes
+- **NEW build-version manifest (sync)** — `na_update_build_manifest()` writes an increasing `buildVersion` to R2 after every sync (own R2 client; `put_object` with `CacheControl`).
+- **NEW R2 master-config mirror (sync)** — `na_upload_master_config_to_r2()` mirrors `Na__AppData__MasterConfig__Main.json` to `VaApps/Index/`.
+- **NEW stale-image purge (sync)** — `na_purge_stale_r2_images()` (mirrors `na_purge_stale_r2_glbs`) deletes old PNG/WebP/JPG not in the current local keep-set; wired into `na_sync_all` and `na_sync_images`.
+- **SW thumbnail strategy** — thumbnail handler switched from CacheFirst to StaleWhileRevalidate (background refresh, preserves LRU trim); `PWA_SW_VERSION_TOKEN` bumped to `2026-06-25-1` for a one-time stale-cache wipe.
+- **App build check (ProjectLoader v0.2.3)** — `na_check_and_clear_on_build_change` + `na_clear_thumbnail_cache`; `loadMasterConfig` now R2-first (cache-busted) with GH Pages fallback.
+
+### Files Changed
+- `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`
+- `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.5.0 - 25-Jun-2026 - R2 Master Index + Full CDN Mirror + SketchUp Sync Tooling
 
 ### Overview

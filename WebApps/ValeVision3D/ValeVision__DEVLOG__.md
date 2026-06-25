@@ -2,6 +2,23 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.0 - 25-Jun-2026 - Build-Version Cache-Bust (Real-Time R2 Assets)
+
+### Overview
+ValeVision3D now consumes the shared R2 build-version manifest (written by the Whitecardopedia sync pipeline, see Whitecardopedia v0.6.0). As it has no Service Worker, freshness is achieved with a cache-bust token rather than cache eviction: the manifest `buildVersion` is appended as `?v=<buildVersion>` to `project.json` and GLB model URLs. A sync makes re-synced camera data and models visible immediately, while assets stay edge/browser-cacheable between builds so large GLB downloads remain cheap.
+
+### Changes
+- **Build manifest (ProjectLoader v1.4.0)** — `Na__AppUtils__InitBuildManifest` fetches the shared manifest (cache-busted, memoised, non-throwing) and stores the `buildVersion` token.
+- **Cache-bust token** — `Na__AppUtils__WithBuildToken` appends `?v=<buildVersion>`; applied to `project.json` URLs in `FetchProjectJson` and to all GLB URL formats in `ExtractModelUrls`.
+- **Loading sequence** — `InitBuildManifest()` kicked off early alongside `InitMasterIndex()`.
+- **Config SSOT** — `ProjectData__AssetUrls__BuildManifestUrl` added to `Na__AppConfig__Main.json`.
+
+### Files Changed
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.8.0 - 25-Jun-2026 - SketchUp Camera Auto-Animation + R2 Master Index
 
 ### Overview

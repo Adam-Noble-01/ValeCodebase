@@ -24,8 +24,11 @@
     "ProjectType": "Whitecard",
     "basePath": "Projects/2026/63592__Bressard-Kayode",
     "images": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__25-Jun-2026.png",
         "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__25-Jun-2026.png",
         "IMG02__3dView__ViewOption-02____WhitecardImage__25-Jun-2026.png",
+        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png",
         "IMG03__3dView__Roof____WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
@@ -72,15 +75,15 @@
         }
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "25-Jun-2026 at 15:18",
-        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.6__",
+        "captured_at": "25-Jun-2026 at 16:18",
+        "model_name": "Bressard-Kayode__WhiteCardModel__1.3.0__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
-                "scene_name": "IMG01__3dView__ViewOption-01__",
-                "scene_description": "Shot-01 |  Garden",
+                "scene_name": "IMG01__3dView__ViewOption-01__MainView",
+                "scene_description": "Whole Building",
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
@@ -111,29 +114,29 @@
                 }
             },
             {
-                "scene_name": "IMG02__3dView__ViewOption-02__",
-                "scene_description": "Shot-02 |  Steps Down",
+                "scene_name": "IMG02__3dView__DoorsView__",
+                "scene_description": "Main Doors",
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 27043.734,
-                        "y": -2392.8478,
-                        "z": 3625.3733
+                        "x": -1136.8544,
+                        "y": 7125.0997,
+                        "z": 2000.0
                     },
                     "target": {
-                        "x": 2165.8265,
-                        "y": 24919.1152,
-                        "z": -4132.7068
+                        "x": 12647.5917,
+                        "y": 7075.3071,
+                        "z": 1930.3178
                     },
                     "up": {
-                        "x": -0.138392,
-                        "y": 0.151932,
-                        "z": 0.978654
+                        "x": 0.005055,
+                        "y": -1.8e-05,
+                        "z": 0.999987
                     },
                     "direction": {
-                        "x": -0.659022,
-                        "y": 0.723501,
-                        "z": -0.205514
+                        "x": 0.999981,
+                        "y": -0.003612,
+                        "z": -0.005055
                     },
                     "fov_degrees": 30.9573,
                     "fov_is_height": false,
@@ -143,31 +146,31 @@
                 }
             },
             {
-                "scene_name": "IMG03__3dView__Roof__",
-                "scene_description": "",
+                "scene_name": "IMG03__3dView__RoofView__",
+                "scene_description": "Roof View",
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 14056.8587,
-                        "y": -28021.6413,
-                        "z": 22972.2157
+                        "x": 7393.5336,
+                        "y": -2919.0567,
+                        "z": 14550.5867
                     },
                     "target": {
-                        "x": 13948.7662,
-                        "y": 12132.131,
-                        "z": 2945.443
+                        "x": 15280.468,
+                        "y": 5732.8302,
+                        "z": 4000.1593
                     },
                     "up": {
-                        "x": -0.001201,
-                        "y": 0.446317,
-                        "z": 0.894874
+                        "x": 0.450998,
+                        "y": 0.49474,
+                        "z": 0.742854
                     },
                     "direction": {
-                        "x": -0.002409,
-                        "y": 0.894871,
-                        "z": -0.446319
+                        "x": 0.500447,
+                        "y": 0.548986,
+                        "z": -0.669453
                     },
-                    "fov_degrees": 30.9573,
+                    "fov_degrees": 43.6028,
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,

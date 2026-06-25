@@ -262,6 +262,7 @@
         Na__AppUtils__ExtractModelUrls,
         Na__AppUtils__InitFromConfig,
         Na__AppUtils__InitMasterIndex,
+        Na__AppUtils__InitBuildManifest,
         Na__AppUtils__ResolveAssetUrl
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
@@ -454,6 +455,7 @@
 
         Na__AppUtils__InitFromConfig(Na__FullAppConfig);                      // <-- Seed R2 + GH base URLs from appConfig SSOT
         Na__AppUtils__InitMasterIndex();                                      // <-- Begin master index load (R2-first, GH fallback; memoised, awaited at fetch)
+        Na__AppUtils__InitBuildManifest();                                    // <-- Begin build-version manifest load (cache-bust token; memoised, awaited at fetch)
 
         // FALLBACK TOAST LISTENER | R2 -> GH Pages fallback notification
         // ---------------------------------------------------------------

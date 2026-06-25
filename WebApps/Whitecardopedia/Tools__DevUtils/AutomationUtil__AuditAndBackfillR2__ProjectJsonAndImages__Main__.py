@@ -360,6 +360,13 @@ def main():
     print(f"  Index projects          : {len(index['projects'])}")
     print(f"  R2 index write          : {COLOR_GREEN+'OK'+COLOR_RESET if results['r2'] else COLOR_RED+'FAILED'+COLOR_RESET}  ({r2lib.R2_INDEX_KEY})")
     print(f"  GH fallback copy write  : {COLOR_GREEN+'OK'+COLOR_RESET if results['gh'] else COLOR_RED+'FAILED'+COLOR_RESET}  ({r2lib.GH_INDEX_PATH})")
+
+    # Bump build manifest + mirror master config so the web apps refresh stale
+    # content immediately after backfilling new files to R2.
+    manifest_ok = r2lib.na_write_build_manifest(client, bucket, "AuditBackfill")
+    config_ok   = r2lib.na_upload_master_config(client, bucket)
+    print(f"  Build manifest          : {COLOR_GREEN+'OK'+COLOR_RESET if manifest_ok else COLOR_YELLOW+'SKIPPED'+COLOR_RESET}  ({r2lib.R2_BUILD_MANIFEST_KEY})")
+    print(f"  Master config mirror    : {COLOR_GREEN+'OK'+COLOR_RESET if config_ok else COLOR_YELLOW+'SKIPPED'+COLOR_RESET}  ({r2lib.R2_MASTER_CONFIG_KEY})")
     print(f"\n{COLOR_GREEN}Backfill complete.{COLOR_RESET}\n")
     # ------------------------------------------------------------
 

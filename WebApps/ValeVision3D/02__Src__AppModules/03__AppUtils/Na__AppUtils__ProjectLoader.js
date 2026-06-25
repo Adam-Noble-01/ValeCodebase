@@ -56,6 +56,14 @@
 //   memoised, never-throwing index load makes folder resolution deterministic
 //   for every caller regardless of ordering.
 //
+// 25-Jun-2026 - Version 1.4.0
+// - Build-version cache-bust: Na__AppUtils__InitBuildManifest fetches the shared
+//   R2 build manifest (cache-busted) and stores the buildVersion token.
+//   FetchProjectJson and ExtractModelUrls now append ?v=<buildVersion> to
+//   project.json + GLB URLs via Na__AppUtils__WithBuildToken, so a sync makes
+//   re-synced camera data and models visible immediately while keeping assets
+//   edge/browser-cacheable between builds. Manifest URL from AppConfig SSOT.
+//
 // =============================================================================
 
 
@@ -108,6 +116,19 @@
     let Na__AppUtils__IndexByFolderName   = null;                                // <-- Map<folderName, entry>
     // ------------------------------------------------------------
 
+    // MODULE VARIABLES | Shared Build-Version Manifest (cache-bust token source)
+    // ------------------------------------------------------------
+    // ValeVision3D has no Service Worker, so freshness is achieved by appending
+    // the build version as a ?v= cache-bust token to project.json + GLB URLs.
+    // A sync bumps buildVersion (see the Python sync pipeline), so re-synced
+    // assets are fetched fresh while staying edge/browser-cacheable between
+    // builds (keeps large GLB downloads cheap). Sourced from AppConfig SSOT.
+    // ------------------------------------------------------------
+    let Na__AppUtils__BuildManifestUrl    = 'https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json'; // <-- Shared manifest (overridable from AppConfig)
+    let Na__AppUtils__BuildVersion        = '';                                  // <-- '' until manifest resolves (empty = legacy behaviour)
+    let Na__AppUtils__BuildManifestPromise = null;                               // <-- Memoised manifest load promise
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -131,6 +152,8 @@
             Na__AppUtils__IndexUrl = urlConfig['ProjectData__AssetUrls__IndexUrl'];               // <-- Override R2 index URL
         if (urlConfig['ProjectData__AssetUrls__IndexFallbackUrl'])
             Na__AppUtils__IndexFallbackUrl = urlConfig['ProjectData__AssetUrls__IndexFallbackUrl']; // <-- Override GH index fallback
+        if (urlConfig['ProjectData__AssetUrls__BuildManifestUrl'])
+            Na__AppUtils__BuildManifestUrl = urlConfig['ProjectData__AssetUrls__BuildManifestUrl']; // <-- Override shared build-version manifest URL
     }
     // ------------------------------------------------------------
 
@@ -186,6 +209,48 @@
         })();
 
         return Na__AppUtils__IndexLoadPromise;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialise the Shared Build-Version Manifest (Memoised, Non-Throwing)
+    // ------------------------------------------------------------
+    // Fetches the build manifest from R2 with a ?t= cache-bust so the Cloudflare
+    // edge cannot serve a stale copy, then stores the buildVersion token. Call
+    // once before the first Na__AppUtils__FetchProjectJson (FetchProjectJson also
+    // awaits it internally). Never throws — on failure the token stays '' and
+    // URLs are returned unchanged (legacy behaviour).
+    // ------------------------------------------------------------
+    function Na__AppUtils__InitBuildManifest() {
+        if (Na__AppUtils__BuildManifestPromise) return Na__AppUtils__BuildManifestPromise; // <-- Single fetch per session
+
+        Na__AppUtils__BuildManifestPromise = (async () => {
+            try {
+                const url  = `${Na__AppUtils__BuildManifestUrl}?t=${Date.now()}`; // <-- Bust the edge cache
+                const resp = await fetch(url, { cache: 'no-store' });            // <-- Bust the browser cache
+                if (resp.ok) {
+                    const data = await resp.json();
+                    if (data && data.buildVersion) {
+                        Na__AppUtils__BuildVersion = String(data.buildVersion);  // <-- Stable token until next build
+                    }
+                }
+            } catch (_) {}                                                       // <-- Non-blocking; '' = legacy behaviour
+            return Na__AppUtils__BuildVersion;
+        })();
+
+        return Na__AppUtils__BuildManifestPromise;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Append the Build-Version Cache-Bust Token to a URL
+    // ------------------------------------------------------------
+    // Returns the URL unchanged when no build version is known yet, otherwise
+    // appends ?v=<buildVersion> (or &v= when the URL already has a query string).
+    // ------------------------------------------------------------
+    function Na__AppUtils__WithBuildToken(url) {
+        if (!url || !Na__AppUtils__BuildVersion) return url;                     // <-- No token yet -> unchanged
+        return url + (url.includes('?') ? '&' : '?') + `v=${Na__AppUtils__BuildVersion}`;
     }
     // ------------------------------------------------------------
 
@@ -325,6 +390,7 @@
         // then memoised — the race that previously 404'd and halted the load.
         const fetchPromise = (async () => {
             await Na__AppUtils__InitMasterIndex();                          // <-- Index maps populated before any URL is built
+            await Na__AppUtils__InitBuildManifest();                        // <-- Build-version token ready before URLs are built
 
             if (Na__AppUtils__IsRunningOnLocalhost()) {
                 const localUrl = `${window.location.origin}/api/projects/${projectCode}`; // <-- Flask API endpoint
@@ -338,8 +404,8 @@
             }
 
             const projectFolderId = Na__AppUtils__NormalizeProjectFolderId(projectCode);
-            const r2Url           = `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/project.json`;   // <-- R2 CDN (primary)
-            const ghUrl           = `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/project.json`;   // <-- GH Pages (fallback)
+            const r2Url           = Na__AppUtils__WithBuildToken(`${Na__AppUtils__R2BaseUrl}/${projectFolderId}/project.json`);   // <-- R2 CDN (primary), build-versioned
+            const ghUrl           = Na__AppUtils__WithBuildToken(`${Na__AppUtils__GhBaseUrl}/${projectFolderId}/project.json`);   // <-- GH Pages (fallback), build-versioned
 
             const indexEntry      = Na__AppUtils__LookupIndexEntry(projectFolderId)
                                     || Na__AppUtils__LookupIndexEntry(projectCode);                 // <-- Resolve asset home from index
@@ -429,7 +495,7 @@
 
         // V4 FORMAT | New multi-model array (preferred)
         if (Array.isArray(projectData.valeVision_ModelUrls) && projectData.valeVision_ModelUrls.length > 0) {
-            return projectData.valeVision_ModelUrls;                     // <-- Pass through directly
+            return projectData.valeVision_ModelUrls.map(Na__AppUtils__WithBuildToken); // <-- Build-versioned for cache freshness
         }
 
         // V3 FORMAT | Layered BaseMesh + Linework pair
@@ -439,18 +505,18 @@
             const urls = [];
             if (baseMeshUrl) urls.push(baseMeshUrl);                     // <-- Add base mesh URL
             if (lineworkUrl) urls.push(lineworkUrl);                     // <-- Add linework URL
-            return urls;
+            return urls.map(Na__AppUtils__WithBuildToken);              // <-- Build-versioned for cache freshness
         }
 
         // V2 FORMAT | Array of versioned URLs (take latest)
         if (Array.isArray(projectData.valeVision_ModelUrl) && projectData.valeVision_ModelUrl.length > 0) {
             const latestUrl = projectData.valeVision_ModelUrl[projectData.valeVision_ModelUrl.length - 1];
-            return [latestUrl];                                          // <-- Use last (latest) version
+            return [Na__AppUtils__WithBuildToken(latestUrl)];            // <-- Use last (latest) version, build-versioned
         }
 
         // V1 FORMAT | Single string URL (legacy)
         if (typeof projectData.valeVision_ModelUrl === 'string' && projectData.valeVision_ModelUrl) {
-            return [projectData.valeVision_ModelUrl];                    // <-- Wrap single URL in array
+            return [Na__AppUtils__WithBuildToken(projectData.valeVision_ModelUrl)]; // <-- Wrap single URL in array, build-versioned
         }
 
         return [];                                                       // <-- No model URLs found
@@ -474,6 +540,7 @@
         Na__AppUtils__ExtractModelUrls,
         Na__AppUtils__InitFromConfig,
         Na__AppUtils__InitMasterIndex,
+        Na__AppUtils__InitBuildManifest,
         Na__AppUtils__ResolveAssetUrl,
         Na__AppUtils__EmitFallbackToast,
         Na__AppUtils__R2BaseUrl_Fallback,

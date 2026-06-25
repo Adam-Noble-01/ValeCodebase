@@ -74,6 +74,21 @@
     let Na__AppUtils__FallbackToastMsg    = 'Failed to fetch live assets — using static assets instead.'; // <-- Set from appConfig
     // ------------------------------------------------------------
 
+    // MODULE VARIABLES | Master Index (authoritative per-project asset locations)
+    // ------------------------------------------------------------
+    // The index (built by the R2 automation lib) lets ValeVision3D resolve a
+    // project's real year/folderId from its numeric code and learn whether its
+    // assets live on R2 or GH Pages — replacing the hardcoded 2026 default and
+    // killing the blind-R2 404 flood. Sourced from Na__AppConfig__Main.json SSOT.
+    // ------------------------------------------------------------
+    let Na__AppUtils__IndexUrl            = 'https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json'; // <-- R2 primary index
+    let Na__AppUtils__IndexFallbackUrl    = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json'; // <-- GH fallback copy
+    let Na__AppUtils__IndexLoadPromise    = null;                                // <-- Memoised index load promise
+    let Na__AppUtils__IndexByFolderId     = null;                                // <-- Map<folderId, entry>
+    let Na__AppUtils__IndexByCode         = null;                                // <-- Map<projectCode, entry> (newest year wins)
+    let Na__AppUtils__IndexByFolderName   = null;                                // <-- Map<folderName, entry>
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 

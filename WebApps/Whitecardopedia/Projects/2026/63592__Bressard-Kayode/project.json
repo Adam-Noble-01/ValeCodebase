@@ -26,7 +26,8 @@
     "images": [
         "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__25-Jun-2026.png",
         "IMG02__3dView__DoorsView____WhitecardImage__25-Jun-2026.png",
-        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png"
+        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png",
+        "IMG04__FrontElevation__WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
@@ -72,7 +73,7 @@
         }
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "25-Jun-2026 at 16:33",
+        "captured_at": "25-Jun-2026 at 17:09",
         "model_name": "Bressard-Kayode__WhiteCardModel__1.3.0__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
@@ -170,6 +171,38 @@
                     "fov_degrees": 43.6028,
                     "fov_is_height": false,
                     "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0.0
+                }
+            },
+            {
+                "scene_name": "IMG04__FrontElevation",
+                "scene_description": "Front Elevation",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 14252.7422,
+                        "y": -20015.24,
+                        "z": 4724.7702
+                    },
+                    "target": {
+                        "x": 14252.7422,
+                        "y": 4935.0698,
+                        "z": 4724.7702
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "is_perspective": false,
                     "aspect_ratio": 1.5,
                     "image_width": 0.0
                 }

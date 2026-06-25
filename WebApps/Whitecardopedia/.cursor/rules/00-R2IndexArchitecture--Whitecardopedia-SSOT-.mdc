@@ -1,0 +1,67 @@
+---
+alwaysApply: true
+---
+
+# Whitecardopedia | R2 Index Architecture — Primary Sources of Truth (Critical)
+
+Whitecardopedia's data pipeline is built on three **machine-generated** JSON files on Cloudflare R2. These are the primary runtime sources of truth. They are **never edited by hand** and **never duplicated** in application code.
+
+---
+
+## The Three R2 Index Files
+
+| File | R2 URL | Local GH Fallback |
+|------|--------|--------------------|
+| Master Config Mirror | `https://cdn.noble-architecture.com/VaApps/Index/Na__AppData__MasterConfig__Main.json` | `02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json` |
+| Build Version Manifest | `https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json` | — (R2 only) |
+| Master Project Index | `https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json` | `02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json` |
+
+---
+
+## How the App Consumes Them
+
+All access goes through **`Na__AppData__ProjectLoader.js`** — the single consumer. No other module should fetch these files directly.
+
+### Load sequence in `ProjectLoader`
+1. `loadMasterConfig()` — fetches R2 mirror first (cache-busted), falls back to GH. Seeds `Na__AssetUrls__R2Base`, `Na__AssetUrls__GhBase`, and index URLs. Also calls `na_check_and_clear_on_build_change()` which reads the build manifest and evicts the `wpwa-thumbs-*` SW cache when `buildVersion` is newer.
+2. `na_load_master_index()` — fetches the project index (R2-first, memoised). Builds `Na__MasterIndex__EntryMap` (a `Map<folderId, entry>`).
+3. `loadProjectData(folderId)` — resolves asset home from the index, fetches `project.json` from the correct source, then **forwards index flags onto the project object**:
+   - `project.r2BasePath` — R2 base URL for this project's images (or `null` for GH-only)
+   - `project.hasGlb_R2` — `true` if the project has 3D GLB models on R2 → **drives carousel gate**
+   - `project.isR2Loaded` — whether `project.json` itself came from R2
+
+### Index fields available on every loaded project object
+
+| Field | Type | Source | Used by |
+|-------|------|--------|---------|
+| `hasGlb_R2` | `boolean` | Master index | `ProjectViewer__Main.jsx` — carousel gate (IMG01 only when `true`) |
+| `r2BasePath` | `string \| null` | Master index + R2 base | `ProjectLoader` image URL helpers |
+| `isR2Loaded` | `boolean` | Fetch provenance | Debug / provenance tracking |
+| `displayImages` | `string[]` | Derived from `project.images` | Carousel — base images only (no ART variants) |
+| `artPairsMap` | `Map` | Derived from `project.images` | `ImageCarousel` — drag-to-reveal ART pairs |
+
+---
+
+## Who Writes These Files
+
+The sync pipeline writes them — triggered by the **ValeVision Cloud Sync SketchUp plugin** or by running the scripts below manually.
+
+### Build Scripts (relative to `Whitecardopedia/`)
+
+| Script | Role |
+|--------|------|
+| `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` | **Primary sync orchestrator** — uploads images/GLBs/thumbnails, rebuilds `project.json`, upserts master index, writes build manifest, mirrors master config to R2 |
+| `Tools__DevUtils/AutomationUtil__R2Common__Lib__.py` | **Shared R2 library** used by all other scripts — boto3 client, master index read/upsert/write |
+| `Tools__DevUtils/AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py` | Audits R2 for missing assets and backfills; rebuilds index |
+| `Tools__DevUtils/AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py` | Bulk upload; regenerates master index |
+
+---
+
+## Rules for Agents — ALWAYS Follow
+
+- **NEVER manually edit** `Na__MasterIndex__ProjectLocations__.json` (local copy or R2). It is generated output — run the sync script instead.
+- **NEVER add independent fetches** of the R2 index files in new modules. `ProjectLoader` is the only consumer.
+- **NEVER read `hasGlb_R2`, `imageCount`, or `assetHome` from the local JSON copy** in application code. These are forwarded by `loadProjectData()` onto the project object — use `project.hasGlb_R2` etc.
+- **NEVER hardcode CDN base URLs** in JS/JSX. They come from `Na__AppData__MasterConfig__Main.json` and are stored in `Na__AssetUrls__R2Base`.
+- **To expose a new index field in the UI** — add its forwarding in `loadProjectData()` in `Na__AppData__ProjectLoader.js` (pattern: `projectData.fieldName = indexEntry.fieldName`) and consume it from `project.fieldName` in the component.
+- **The local `Na__MasterIndex__ProjectLocations__.json`** under `02__Src__AppModules/03__AppData/` is a committed GH Pages fallback copy, not a source of truth. Do not treat it as editable config.

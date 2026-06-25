@@ -1,0 +1,75 @@
+{
+    "Na__ValeVision__HotkeysDictionary": [
+
+        {
+            "Na__Hotkey__Id"          : "navmode_reset_view",
+            "Na__Hotkey__Key"         : "0",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__NavMode__ResetView",
+            "Na__Hotkey__Description" : "Reset camera to project start position"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "navmode_set_orbit",
+            "Na__Hotkey__Key"         : "1",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__NavMode__SetOrbitMode",
+            "Na__Hotkey__Description" : "Switch to orbit navigation mode"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "navmode_set_walk",
+            "Na__Hotkey__Key"         : "2",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__NavMode__SetWalkMode",
+            "Na__Hotkey__Description" : "Switch to walk navigation mode"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "navmode_set_fly",
+            "Na__Hotkey__Key"         : "3",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__NavMode__SetFlyMode",
+            "Na__Hotkey__Description" : "Switch to fly navigation mode"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_toggle_views_panel",
+            "Na__Hotkey__Key"         : "4",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__ToggleViewsPanel",
+            "Na__Hotkey__Description" : "Toggle the presentation scene views panel"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_next_scene",
+            "Na__Hotkey__Key"         : "PageUp",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__NextScene",
+            "Na__Hotkey__Description" : "Advance to next presentation scene"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_prev_scene",
+            "Na__Hotkey__Key"         : "PageDown",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__PrevScene",
+            "Na__Hotkey__Description" : "Return to previous presentation scene"
+        }
+
+    ]
+}

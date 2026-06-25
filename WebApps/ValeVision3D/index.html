@@ -864,13 +864,12 @@
     import { Na__UiFeature__InitializeSceneInspector } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__SceneInspector__Controls.js';
     import { Na__Math__ConvertMmToUnits } from './02__Src__AppModules/04__MathUtils/Na__Math__Units.js';
     import { Na__UiFeature__InitializeWalkModeSystem, Na__UiFeature__ToggleWalkMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeControls.js';
-    import { Na__UiFeature__InitializeWalkModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js';
     import { Na__UiFeature__InitializeFlyModeSystem, Na__UiFeature__ToggleFlyMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeControls.js';
-    import { Na__UiFeature__InitializeFlyModeHotkey } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js';
     import { Na__NavigationModes__IsWalkEnabled, Na__NavigationModes__IsFlyEnabled } from './02__Src__AppModules/10__NavigationAndCameras/Na__NavigationModes__State.js';
     import { Na__WalkMode__IsActive } from './02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__WalkMode__SystemLogic.js';
     import { Na__FlyMode__IsActive } from './02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__FlyMode__SystemLogic.js';
-    import { Na__UiFeature__InitializeNavigationToolbar, Na__UiFeature__RevealNavigationToolbarModes, Na__NavToolbar__SetActiveMode } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js';
+    import { Na__UiFeature__InitializeNavigationToolbar, Na__UiFeature__RevealNavigationToolbarModes, Na__NavToolbar__SetActiveMode, Na__NavToolbar__SetOrbitMode, Na__NavToolbar__SetWalkMode, Na__NavToolbar__SetFlyMode, Na__NavToolbar__ResetView } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js';
+    import { Na__ValeVision__HotkeyHandler__Initialize } from './02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js';
     import { Na__UiFeature__InitializeNavigationHelpPanel, Na__UiFeature__OpenNavigationHelpPanel } from './02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js';
     import { Na__UiFeature__InitializeNavigationModesDevControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js';
     import { Na__UiFeature__InitializeRenderEngineDevControls, Na__UiFeature__SyncRenderEngineDevRadios } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js';
@@ -890,7 +889,7 @@
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js
     // ------------------------------------------------------------
-    import { Na__PresentationMode__UI__InitializeSceneCarousel } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js';
+    import { Na__PresentationMode__UI__InitializeSceneCarousel, Na__PresentationMode__UI__ToggleSceneCarousel, Na__PresentationMode__UI__GoToNextScene, Na__PresentationMode__UI__GoToPreviousScene, Na__PresentationMode__UI__IsCarouselVisible } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js';
     import { Na__PresentationMode__DevMenu__InitializeSceneEditor } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js';
     import { Na__PresentationMode__DevTools__InitializeCameraPathVisualizer, Na__PresentationMode__DevTools__ToggleCameraPathVisualizer } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js';
     import { Na__PresentationMode__Thumbnail__SetRenderContext } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js';
@@ -972,7 +971,6 @@
         ? Na__Config__NavmodeSettings.Navmode__FlyMode
         : {};                                                                     // <-- Fly mode config (MM)
     const Na__Config__FovCompensation = Na__AppConfig__Data.Navmode__FovCompensation || {}; // <-- FOV compensation config
-    const Na__Config__GlobalHotkeys = Na__AppConfig__Data.Global__Hotkeys || {};  // <-- Global hotkeys config
     const Na__Config__MaterialsSystem = Na__AppConfig__Data.MaterialsSystem__Config || {};  // <-- Materials system config
     const Na__Config__AmbientOcclusion = Na__AppConfig__Data.RenderEffect__AmbientOcclusion || null;  // <-- SSAO config (MaxEngine only)
     const Na__Config__SceneEnvironment = Na__AppConfig__Data.Scene__Environment || null;    // <-- HDR environment config (MaxEngine only)
@@ -1204,29 +1202,20 @@
     Na__UiFeature__InitializeFlyModeSystem(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__Config__FlyMode, Na__Device__UseTouchControls, Na__Config__FovCompensation);
     // ------------------------------------------------------------
 
-    // MODULE INITIALIZATION | Walk Mode Hotkey (gated on per-model enabled flag)
+    // MODULE INITIALIZATION | Global Hotkey Handler
     // ------------------------------------------------------------
-    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__WalkModeEventListeners.js
-    // Walk mode hotkey fires the toggle only when Walk is enabled for the current model.
-    // Na__NavigationModes__IsWalkEnabled() is evaluated at keydown time (post-project-load).
-    Na__UiFeature__InitializeWalkModeHotkey(() => {
-        if (!Na__NavigationModes__IsWalkEnabled()) return;                   // <-- Guard: walk not available for this model
-        Na__UiFeature__ToggleWalkMode(
-            () => Na__NavToolbar__SetActiveMode('walk'),
-            () => Na__NavToolbar__SetActiveMode('orbit')
-        );
-    });
-    // ------------------------------------------------------------
-
-    // MODULE INITIALIZATION | Fly Mode Hotkey (gated on per-model enabled flag)
-    // ------------------------------------------------------------
-    // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__FlyModeEventListeners.js
-    Na__UiFeature__InitializeFlyModeHotkey(() => {
-        if (!Na__NavigationModes__IsFlyEnabled()) return;                    // <-- Guard: fly not available for this model
-        Na__UiFeature__ToggleFlyMode(
-            () => Na__NavToolbar__SetActiveMode('fly'),
-            () => Na__NavToolbar__SetActiveMode('orbit')
-        );
+    // @delegate: ./02__Src__AppModules/03__AppUtils/Na__AppUtils__ValeVision__HotkeyHandler__.js
+    // @delegate: ./02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json
+    // Loads bindings from the dictionary JSON and dispatches to action callbacks.
+    // Guards on walk/fly availability and carousel visibility are evaluated at keydown time.
+    Na__ValeVision__HotkeyHandler__Initialize({
+        'ValeVision__NavMode__ResetView'                 : () => Na__NavToolbar__ResetView(),
+        'ValeVision__NavMode__SetOrbitMode'              : () => Na__NavToolbar__SetOrbitMode(),
+        'ValeVision__NavMode__SetWalkMode'               : () => { if (!Na__NavigationModes__IsWalkEnabled()) return; Na__NavToolbar__SetWalkMode(); }, // <-- Guard: walk not enabled for model
+        'ValeVision__NavMode__SetFlyMode'                : () => { if (!Na__NavigationModes__IsFlyEnabled())  return; Na__NavToolbar__SetFlyMode();  }, // <-- Guard: fly not enabled for model
+        'ValeVision__PresentationMode__ToggleViewsPanel' : () => Na__PresentationMode__UI__ToggleSceneCarousel(),
+        'ValeVision__PresentationMode__NextScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToNextScene();      }, // <-- Guard: carousel visible + not flying
+        'ValeVision__PresentationMode__PrevScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToPreviousScene(); }  // <-- Guard: carousel visible + not flying
     });
     // ------------------------------------------------------------
 

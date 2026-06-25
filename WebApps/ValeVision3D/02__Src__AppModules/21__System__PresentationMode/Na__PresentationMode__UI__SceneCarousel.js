@@ -436,6 +436,28 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Public Hotkey API
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Go to Next Scene (Public - for hotkey dispatch)
+    // ------------------------------------------------------------
+    function Na__PresentationMode__UI__GoToNextScene()     { Na__PresentationMode__UI__HandleNextClick(); }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Go to Previous Scene (Public - for hotkey dispatch)
+    // ------------------------------------------------------------
+    function Na__PresentationMode__UI__GoToPreviousScene() { Na__PresentationMode__UI__HandlePrevClick(); }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Is Carousel Currently Visible (Public - for hotkey guard)
+    // ------------------------------------------------------------
+    function Na__PresentationMode__UI__IsCarouselVisible() { return Na__PresentationMode__UI__IsVisible; }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
@@ -446,7 +468,10 @@
         Na__PresentationMode__UI__RenderSceneCarousel,
         Na__PresentationMode__UI__ToggleSceneCarousel,
         Na__PresentationMode__UI__SetActiveScene,
-        Na__PresentationMode__UI__ApplyAdaptiveLayout
+        Na__PresentationMode__UI__ApplyAdaptiveLayout,
+        Na__PresentationMode__UI__GoToNextScene,
+        Na__PresentationMode__UI__GoToPreviousScene,
+        Na__PresentationMode__UI__IsCarouselVisible
     };
     // ------------------------------------------------------------
 

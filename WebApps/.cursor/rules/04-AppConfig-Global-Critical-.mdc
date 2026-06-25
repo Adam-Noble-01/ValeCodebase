@@ -6,3 +6,5 @@ alwaysApply: true
 - Do not hardcode values in modules; read from config and pass values through.
 - App config path (relative): `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
 
+**Whitecardopedia Note:** The master app config also has a **real-time R2 mirror** at `https://cdn.noble-architecture.com/VaApps/Index/Na__AppData__MasterConfig__Main.json` which the app fetches first (cache-busted). This mirror and the project master index are machine-generated — see `14-R2IndexArchitecture--VaApps-SSOT-.mdc` for the full architecture.
+

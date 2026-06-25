@@ -117,11 +117,6 @@
         "ImageExport__Config__Resolutions"              : [1024, 2048, 4096],
         "ImageExport__Config__DefaultResolutionIndex"   : 2
     },
-    "Global__Hotkeys": {
-        "Global__Hotkeys__Description"                             : "Global keyboard shortcuts. Modifier keys joined with '+'. Evaluated in keydown handlers.",
-        "Global__Hotkeys__ToggleWalkMode"                          : "Alt+Shift+W",
-        "Global__Hotkeys__ToggleFlyMode"                           : "Alt+Shift+F"
-    },
     "Navmode__EnabledModes": {
         "Navmode__EnabledModes__Description"                       : "Global defaults. Per-model overrides live in project.json under the same key. Orbit is always available.",
         "Navmode__EnabledModes__Walk"                              : false,

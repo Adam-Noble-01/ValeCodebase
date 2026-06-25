@@ -1,0 +1,74 @@
+---
+alwaysApply: true
+---
+
+# ValeVision3D | R2 Index Architecture — Primary Sources of Truth (Critical)
+
+ValeVision3D shares the same Cloudflare R2 index infrastructure as Whitecardopedia. Three **machine-generated** JSON files are the authoritative runtime sources. They are **never edited by hand** and **never duplicated** in application code.
+
+---
+
+## The Three R2 Index Files
+
+| File | R2 URL |
+|------|--------|
+| Master Config Mirror | `https://cdn.noble-architecture.com/VaApps/Index/Na__AppData__MasterConfig__Main.json` |
+| Build Version Manifest | `https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json` |
+| Master Project Index | `https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json` |
+
+---
+
+## Relationship to ValeVision3D
+
+### Project data lives on R2
+All ValeVision3D project assets (GLBs, `project.json`) are stored at:
+`https://cdn.noble-architecture.com/VaApps/Projects/{folderId}/`
+
+The `folderId` (e.g. `2026/63592__Bressard-Kayode`) is the stable identifier shared between Whitecardopedia, ValeVision3D, and all index files. It **always** includes the year prefix.
+
+### The master index drives routing
+When ValeVision3D loads a project (via `?project=<folderId>` URL param), the master index entry determines:
+- `assetHome` — whether `project.json` is on R2 (`"r2"`) or GH Pages (`"gh"`)
+- `hasGlb_R2` — whether GLB model files are present on R2 (false = project has no 3D content)
+- `imageCount` — number of whitecard images (also used by Whitecardopedia carousel gate)
+
+### `project.json` fields populated by the sync pipeline
+The sync pipeline writes these fields into `project.json` on R2 (and locally):
+- `valeVision_ModelUrls` — array of CDN GLB URLs (v4 format, preferred)
+- `ValeVison3D__SketchUpCameraData` — per-scene camera data exported from SketchUp for the animation system
+- `Camera__DefaultPosition`, `OrbitHelperCube__Position`, `FogPlane__Config`, `RenderEngine__Config`
+
+**Do not hand-write or hardcode these fields** — they are populated by the SketchUp ValeVision Cloud Sync plugin calling the Python sync orchestrator.
+
+### GLB URL pattern
+```
+https://cdn.noble-architecture.com/VaApps/Projects/{folderId}/{ProjectName}__{Role}__Model__.glb
+```
+Where `{Role}` is one of: `TrueVision__MainBuildingModel__Existing__MeshModel`, `TrueVision__MainBuildingModel__Proposed__MeshModel`, `TrueVision__LandscapeEnvironment__MeshModel`, `01__OrbitHelperCube__MeshModel`, etc.
+
+---
+
+## Who Writes These Files
+
+The sync pipeline writes them — triggered by the **ValeVision Cloud Sync SketchUp plugin** or by running the scripts manually from Whitecardopedia's dev tools.
+
+### Build Scripts (relative to `WebApps/Whitecardopedia/`)
+
+| Script | Role |
+|--------|------|
+| `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` | **Primary orchestrator** — uploads GLBs, images, thumbnails; merges SketchUp camera data; upserts master index; writes build manifest |
+| `Tools__DevUtils/AutomationUtil__R2Common__Lib__.py` | Shared R2 library — boto3 client, master index read/upsert/write |
+| `Tools__DevUtils/AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py` | Audits and backfills missing R2 assets; rebuilds index |
+
+---
+
+## Rules for Agents — ALWAYS Follow
+
+- **NEVER manually edit** `Na__MasterIndex__ProjectLocations__.json` or the build manifest. They are generated output — run the sync pipeline instead.
+- **NEVER hardcode R2 CDN base URLs** (`https://cdn.noble-architecture.com/VaApps/...`) in application modules. Read them from the app config SSOT.
+- **NEVER construct GLB URLs by string concatenation** using a hardcoded base — use the URL helpers from `Na__AppUtils__ProjectLoader.js` or read `valeVision_ModelUrls` from the loaded `project.json`.
+- **`hasGlb_R2` in the index vs `valeVision_ModelUrls` in `project.json`** — these serve different purposes:
+  - `hasGlb_R2` (index) → fast audit flag used by Whitecardopedia carousel gate; does NOT list the actual URLs
+  - `valeVision_ModelUrls` (project.json) → the actual GLB URL array consumed by ValeVision3D's model loader
+- **The `folderId` is the stable project key** — always use the full `year/code__Name` format, not just the project code, when constructing URLs or looking up index entries.
+- **Two render engines share the same project data** — PureEngine and MaxEngine both read from the same `project.json`; `RenderEngine__Config.RenderEngine__Active` determines which engine activates. Do not change this field manually.

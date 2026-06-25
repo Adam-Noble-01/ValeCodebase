@@ -6,3 +6,5 @@ alwaysApply: true
 - Do not hardcode values in modules; read from config and pass values through.
 - App config path (relative): `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
 
+**R2 Index Architecture Note:** ValeVision3D project data (`project.json`, GLBs) and routing flags (`hasGlb_R2`, `assetHome`) are governed by the shared R2 master index pipeline — not by this app config. See `08-R2IndexArchitecture--ValeVision3D-SSOT-.mdc` for the full architecture, build scripts, and agent rules covering the R2 index files.
+

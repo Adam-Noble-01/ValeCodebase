@@ -52,13 +52,18 @@
 //   busted) and falls back to the GH Pages copy, removing the GH push + deploy
 //   wait when adding or enabling a project.
 //
+// 25-Jun-2026 - Version 0.2.4
+// - Carousel gate: loadProjectData now forwards hasGlb_R2 from the master
+//   index onto the project object so the viewer can suppress carousel
+//   navigation for 3D projects without reading valeVision_ModelUrls.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// REGION | Project Loading Functions
+// REGION | Module Constants & State
 // -----------------------------------------------------------------------------
 
-    // MODULE VARIABLES | Project Loading State
+    // MODULE CONSTANTS | Loader Configuration
     // ------------------------------------------------------------
     const PROJECT_LOADER_CONFIG = {
         masterConfigPath    : '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json', // <-- Master configuration file path (GH Pages fallback)
@@ -71,7 +76,7 @@
     };
     // ------------------------------------------------------------
 
-    // MODULE VARIABLES | R2-First Asset URL Bases (populated from masterConfig)
+    // MODULE VARIABLES | R2 Asset URL State (populated from masterConfig)
     // ------------------------------------------------------------
     let Na__AssetUrls__R2Base      = 'https://cdn.noble-architecture.com/VaApps/Projects';       // <-- R2 CDN primary base
     let Na__AssetUrls__GhBase      = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages fallback base
@@ -79,7 +84,7 @@
     let Na__AssetUrls__Initialised = false;                              // <-- Prevents re-seeding after first load
     // ------------------------------------------------------------
 
-    // MODULE VARIABLES | Master Index (authoritative per-project asset locations)
+    // MODULE VARIABLES | Master Index State (authoritative per-project asset locations)
     // ------------------------------------------------------------
     let Na__MasterIndex__Url         = 'https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json'; // <-- R2 primary index
     let Na__MasterIndex__FallbackUrl = '02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json';                 // <-- GH Pages fallback (same-origin)
@@ -93,6 +98,18 @@
     const THUMBNAIL_WEBP_EXTENSION = '.webp';                            // <-- Thumbnail file extension
     // ------------------------------------------------------------
 
+    // MODULE CONSTANTS | Batch Loading Configuration
+    // ------------------------------------------------------------
+    const GALLERY_INITIAL_BATCH_SIZE     = 20;                           // <-- First batch revealed to user (fast first paint)
+    const GALLERY_SUBSEQUENT_BATCH_SIZE  = 20;                           // <-- Each follow-up batch streamed in background
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | R2 Asset URL System - URL Construction & Fallback Handling
+// -----------------------------------------------------------------------------
 
     // HELPER FUNCTION | Build An R2-Primary / GH-Fallback Asset URL Pair
     // ---------------------------------------------------------------
@@ -117,9 +134,9 @@
     function Na__AssetUrls__InitFromConfig(masterConfig) {
         if (Na__AssetUrls__Initialised || !masterConfig) return;
 
-        if (masterConfig.AssetUrls__R2BaseUrl)      Na__AssetUrls__R2Base      = masterConfig.AssetUrls__R2BaseUrl;
-        if (masterConfig.AssetUrls__GhBaseUrl)      Na__AssetUrls__GhBase      = masterConfig.AssetUrls__GhBaseUrl;
-        if (masterConfig.AssetUrls__FallbackToastMsg) Na__AssetUrls__FallbackMsg = masterConfig.AssetUrls__FallbackToastMsg;
+        if (masterConfig.AssetUrls__R2BaseUrl)        Na__AssetUrls__R2Base        = masterConfig.AssetUrls__R2BaseUrl;
+        if (masterConfig.AssetUrls__GhBaseUrl)        Na__AssetUrls__GhBase        = masterConfig.AssetUrls__GhBaseUrl;
+        if (masterConfig.AssetUrls__FallbackToastMsg) Na__AssetUrls__FallbackMsg   = masterConfig.AssetUrls__FallbackToastMsg;
         if (masterConfig.AssetUrls__IndexUrl)         Na__MasterIndex__Url         = masterConfig.AssetUrls__IndexUrl;
         if (masterConfig.AssetUrls__IndexFallbackUrl) Na__MasterIndex__FallbackUrl = masterConfig.AssetUrls__IndexFallbackUrl;
 
@@ -165,6 +182,12 @@
     }
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Master Index - Loading, Caching & Project Source Resolution
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Load the Master Project Index (R2-first, GH Fallback, Memoised)
     // ---------------------------------------------------------------
@@ -267,30 +290,13 @@
     }
     // ---------------------------------------------------------------
 
-    // HELPER FUNCTION | Load Option List from Dedicated Data File
-    // ---------------------------------------------------------------
-    async function loadOptionsListFromFile(filePath, keyName) {
-        try {
-            const response = await fetch(filePath);                      // <-- Fetch dedicated options file
-
-            if (!response.ok) {
-                return null;                                             // <-- Return null if file missing/unreadable
-            }
-
-            const data = await response.json();                          // <-- Parse JSON response
-            const optionsList = data[keyName];                           // <-- Read expected list key
-
-            return Array.isArray(optionsList) ? optionsList : null;      // <-- Return list or null if invalid shape
-        } catch (error) {
-            console.warn(`Warning loading ${keyName} from ${filePath}:`, error); // <-- Log non-blocking warning
-            return null;                                                 // <-- Return null on any fetch/parse error
-        }
-    }
-    // ---------------------------------------------------------------
+// endregion -------------------------------------------------------------------
 
 
-    // FUNCTION | Load Master Configuration
-    // ------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// REGION | Service Worker Cache Management
+// -----------------------------------------------------------------------------
+
     // HELPER FUNCTION | Clear Only the Thumbnail Service Worker Cache Bucket
     // ---------------------------------------------------------------
     // Evicts the wpwa-thumbs-* Cache Storage bucket(s) without touching the app
@@ -335,7 +341,37 @@
     }
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------------
+// REGION | Master Config & Options Lists Loading
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Load Option List from Dedicated Data File
+    // ---------------------------------------------------------------
+    async function loadOptionsListFromFile(filePath, keyName) {
+        try {
+            const response = await fetch(filePath);                      // <-- Fetch dedicated options file
+
+            if (!response.ok) {
+                return null;                                             // <-- Return null if file missing/unreadable
+            }
+
+            const data       = await response.json();                    // <-- Parse JSON response
+            const optionsList = data[keyName];                           // <-- Read expected list key
+
+            return Array.isArray(optionsList) ? optionsList : null;      // <-- Return list or null if invalid shape
+        } catch (error) {
+            console.warn(`Warning loading ${keyName} from ${filePath}:`, error); // <-- Log non-blocking warning
+            return null;                                                 // <-- Return null on any fetch/parse error
+        }
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Load Master Configuration (R2 mirror first, GH Pages fallback)
+    // ---------------------------------------------------------------
     async function loadMasterConfig() {
         await na_check_and_clear_on_build_change();                      // <-- Check build version BEFORE loading any data
         try {
@@ -349,7 +385,7 @@
             if (!response.ok) {
                 throw new Error('Failed to load master configuration');  // <-- Handle fetch error
             }
-            
+
             const config = await response.json();                        // <-- Parse JSON response
 
             Na__AssetUrls__InitFromConfig(config);                       // <-- Seed R2/GH base URLs from masterConfig SSOT
@@ -374,7 +410,7 @@
             }
 
             return config;                                               // <-- Return configuration object
-            
+
         } catch (error) {
             console.error('Error loading master config:', error);        // <-- Log error
             return null;                                                 // <-- Return null on error
@@ -382,22 +418,28 @@
     }
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Project Data Loading - Individual & Batched
+// -----------------------------------------------------------------------------
 
     // FUNCTION | Load Individual Project Data (R2-first with GH fallback)
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     async function loadProjectData(folderId) {
         const localProjectPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}`;  // <-- GH Pages relative path
-        
+
         try {
             const { response, isR2 } = await na_fetch_project_json_r2_first(folderId);  // <-- R2-first fetch
-            
+
             if (!response.ok) {
                 throw new Error(`Failed to load project: ${folderId}`);  // <-- Handle fetch error
             }
-            
-            const projectData = await response.json();                   // <-- Parse JSON response
-            projectData.folderId = folderId;                             // <-- Add folder ID to data
-            projectData.basePath = localProjectPath;                     // <-- GH relative path (fallback image resolution)
+
+            const projectData      = await response.json();              // <-- Parse JSON response
+            projectData.folderId   = folderId;                           // <-- Add folder ID to data
+            projectData.basePath   = localProjectPath;                   // <-- GH relative path (fallback image resolution)
             projectData.isR2Loaded = isR2;                               // <-- Provenance flag for callers
 
             // RESOLVE IMAGE BASE | Use R2 only when the index confirms images live there
@@ -406,17 +448,22 @@
             projectData.r2BasePath = imagesOnR2
                 ? `${Na__AssetUrls__R2Base}/${folderId}`                 // <-- R2 primary for images/thumbnails
                 : null;                                                   // <-- Index says GH-only — make GH the primary (no 404)
-            
+
+            // MERGE INDEX FLAGS | Expose hasGlb_R2 from master index onto the project object
+            if (indexEntry) {
+                projectData.hasGlb_R2 = indexEntry.hasGlb_R2 === true;  // <-- 3D model present in R2 (drives carousel gate)
+            }
+
             // PRE-PROCESS IMAGES | Build pairs map from JSON images array
             if (projectData.images && projectData.images.length > 0) {
                 const { baseImages, pairsMap } = buildImagePairsMap(projectData.images);  // <-- Build pairs map
                 projectData.displayImages = baseImages;                  // <-- Base images for carousel
-                projectData.artPairsMap = pairsMap;                      // <-- Pre-built pairs map
-                projectData.allImages = projectData.images;              // <-- Keep original for downloads
+                projectData.artPairsMap   = pairsMap;                    // <-- Pre-built pairs map
+                projectData.allImages     = projectData.images;          // <-- Keep original for downloads
             }
-            
+
             return projectData;                                          // <-- Return project data object
-            
+
         } catch (error) {
             console.error(`Error loading project ${folderId}:`, error);  // <-- Log error
             return null;                                                 // <-- Return null on error
@@ -426,30 +473,23 @@
 
 
     // FUNCTION | Load All Projects from Master Config
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     async function loadAllProjects() {
         const masterConfig = await loadMasterConfig();                   // <-- Load master configuration
-        
+
         if (!masterConfig || !masterConfig.projects) {
             return [];                                                   // <-- Return empty array on error
         }
-        
+
         const projectPromises = masterConfig.projects
             .filter(project => project.enabled)                          // <-- Filter enabled projects only
             .map(project => loadProjectData(project.folderId));          // <-- Map to load promises
-        
+
         const projects = await Promise.all(projectPromises);             // <-- Wait for all projects to load
-        
+
         return projects.filter(project => project !== null);             // <-- Filter out failed loads
     }
     // ---------------------------------------------------------------
-
-
-    // MODULE CONSTANTS | Batch Loading Configuration
-    // ------------------------------------------------------------
-    const GALLERY_INITIAL_BATCH_SIZE     = 20;                           // <-- First batch revealed to user (fast first paint)
-    const GALLERY_SUBSEQUENT_BATCH_SIZE  = 20;                           // <-- Each follow-up batch streamed in background
-    // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Extract Year Prefix From Folder Identifier
@@ -490,7 +530,7 @@
 
 
     // FUNCTION | Load Projects Progressively in Batches
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     // Streams enabled projects to the caller in chunks via onBatchLoaded
     // so the gallery can render the first batch immediately while
     // subsequent batches continue loading in the background. Projects
@@ -500,43 +540,49 @@
     // ---------------------------------------------------------------
     async function loadProjectsInBatches(initialBatchSize, subsequentBatchSize, onBatchLoaded) {
         const masterConfig = await loadMasterConfig();                   // <-- Load master configuration
-        
+
         if (!masterConfig || !masterConfig.projects) {
             return [];                                                   // <-- Return empty array on error
         }
-        
+
         const enabledProjects = sortProjectEntriesNewestFirst(
             masterConfig.projects.filter(project => project.enabled)     // <-- Filter enabled projects only
         );                                                               // <-- Reorder so newest entries load first
-        
-        const totalEnabled    = enabledProjects.length;                  // <-- Total projects to load
-        const allLoaded       = [];                                      // <-- Aggregate of every loaded project
-        let cursor            = 0;                                       // <-- Position in enabled list
-        
+
+        const totalEnabled = enabledProjects.length;                     // <-- Total projects to load
+        const allLoaded    = [];                                         // <-- Aggregate of every loaded project
+        let   cursor       = 0;                                          // <-- Position in enabled list
+
         while (cursor < enabledProjects.length) {
             const batchSize = cursor === 0 ? initialBatchSize : subsequentBatchSize;  // <-- First batch may differ from rest
             const chunk     = enabledProjects.slice(cursor, cursor + batchSize);       // <-- Slice next chunk
-            
+
             const chunkPromises = chunk.map(project => loadProjectData(project.folderId));  // <-- Fetch project.json per item
             const chunkResults  = (await Promise.all(chunkPromises))
                 .filter(project => project !== null);                    // <-- Drop failed loads
-            
+
             allLoaded.push(...chunkResults);                             // <-- Append to aggregate
-            
+
             if (typeof onBatchLoaded === 'function') {
                 onBatchLoaded(chunkResults, allLoaded.length, totalEnabled);  // <-- Notify caller with progress
             }
-            
+
             cursor += batchSize;                                         // <-- Advance cursor
         }
-        
+
         return allLoaded;                                                // <-- Return full list when done
     }
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // FUNCTION | Get Image URL for Project (R2-first with GH fallback)
-    // ------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Image URL Resolution - R2-First with GH Pages Fallback
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Get Image URL for Project (R2 primary, GH fallback)
+    // ---------------------------------------------------------------
     function getImageUrl(projectData, imageName) {
         if (!projectData || !imageName) return '';                        // <-- Guard missing args
 
@@ -550,7 +596,7 @@
 
 
     // FUNCTION | Get Full Image URL Pair (R2 primary + GH fallback)
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     function getImageUrlPair(projectData, imageName) {
         return na_build_asset_url_pair(projectData, imageName);          // <-- { primary, fallback }
     }
@@ -574,8 +620,8 @@
     // ---------------------------------------------------------------
 
 
-    // FUNCTION | Get Thumbnail Image for Project (R2-first with GH fallback)
-    // ------------------------------------------------------------
+    // FUNCTION | Get Thumbnail Image URL for Project (R2 primary)
+    // ---------------------------------------------------------------
     function getThumbnailImage(projectData) {
         const pair = getThumbnailImagePair(projectData);                  // <-- Reuse pair builder for the primary URL
         return pair ? pair.primary : null;                               // <-- Primary (R2 when available)
@@ -584,7 +630,7 @@
 
 
     // FUNCTION | Get Thumbnail Image URL Pair (R2 primary + GH fallback)
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     function getThumbnailImagePair(projectData) {
         if (!projectData) return null;                                    // <-- Guard missing project
 
@@ -598,13 +644,19 @@
     }
     // ---------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // FUNCTION | Parse Image Filename to Extract Details
-    // ------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// REGION | Image Filename Parsing & ART Overlay Pairs
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Parse Image Filename to Extract Image Number & ART Code
+    // ---------------------------------------------------------------
     function parseImageFileName(filename) {
-        const artPattern = /^IMG(\d{2})_ART(\d{2})__/;                   // <-- Pattern for ART images
+        const artPattern    = /^IMG(\d{2})_ART(\d{2})__/;               // <-- Pattern for ART images
         const normalPattern = /^IMG(\d{2})__/;                           // <-- Pattern for normal images
-        
+
         const artMatch = filename.match(artPattern);                     // <-- Check for ART pattern
         if (artMatch) {
             return {
@@ -613,7 +665,7 @@
                 isArtImage  : true                                       // <-- Flag as ART image
             };
         }
-        
+
         const normalMatch = filename.match(normalPattern);               // <-- Check for normal pattern
         if (normalMatch) {
             return {
@@ -622,33 +674,47 @@
                 isArtImage  : false                                      // <-- Flag as normal image
             };
         }
-        
+
         return null;                                                     // <-- Return null if no match
     }
     // ---------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Get Human-Readable Label for ART Code
+    // ---------------------------------------------------------------
+    function getArtCodeLabel(artCode) {
+        const ART_CODE_LABELS = {
+            '00' : 'Preliminary Sketch',                                 // <-- ART00 label
+            '05' : '2D CAD Drafting',                                    // <-- ART05 label
+            '10' : 'Hand Drawn Technical Pen Linework',                  // <-- ART10 label
+            '20' : 'Hand Drawn Watercolour Painting'                     // <-- ART20 label
+        };
+
+        return ART_CODE_LABELS[artCode] || 'Artistic Rendering';         // <-- Return label or default
+    }
+    // ---------------------------------------------------------------
+
+
     // FUNCTION | Build Image Pairs Map from JSON Images Array
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     function buildImagePairsMap(images) {
-        const pairsMap = new Map();                                      // <-- Map: base image -> ART data
+        const pairsMap   = new Map();                                    // <-- Map: base image -> ART data
         const baseImages = [];                                           // <-- Array of base images only
-        
+
         for (const imageName of images) {
             const parsed = parseImageFileName(imageName);                // <-- Parse filename
-            
+
             if (!parsed) continue;                                       // <-- Skip invalid filenames
-            
+
             if (parsed.isArtImage) {
-                // ART VARIANT - Find its base image in the map
+                // ART VARIANT | Find the base image this variant belongs to
                 const baseImgNum = parsed.imageNumber;                   // <-- Get image number (01, 02, etc)
-                
-                // Find the base image this ART variant belongs to
+
                 const baseImage = images.find(img => {
                     const baseParsed = parseImageFileName(img);
                     return baseParsed && !baseParsed.isArtImage && baseParsed.imageNumber === baseImgNum;
                 });
-                
+
                 if (baseImage) {
                     const artData = {
                         filename : imageName,                            // <-- ART filename
@@ -662,39 +728,21 @@
                 baseImages.push(imageName);                              // <-- Add to base images array
             }
         }
-        
+
         return { baseImages, pairsMap };                                 // <-- Return structured data
-    }
-    // ---------------------------------------------------------------
-
-    // -----------------------------------------------------------------------------
-    // REGION | ART Image Loading Functions
-    // -----------------------------------------------------------------------------
-
-    // FUNCTION | Get ART Code Label Description
-    // ------------------------------------------------------------
-    function getArtCodeLabel(artCode) {
-        const ART_CODE_LABELS = {
-            '00' : 'Preliminary Sketch',                                 // <-- ART00 label
-            '05' : '2D CAD Drafting',                                    // <-- ART05 label
-            '10' : 'Hand Drawn Technical Pen Linework',                  // <-- ART10 label
-            '20' : 'Hand Drawn Watercolour Painting'                     // <-- ART20 label
-        };
-        
-        return ART_CODE_LABELS[artCode] || 'Artistic Rendering';         // <-- Return label or default
     }
     // ---------------------------------------------------------------
 
 
     // FUNCTION | Get ART Pair for Base Image (Direct Lookup)
-    // ------------------------------------------------------------
+    // ---------------------------------------------------------------
     function getArtPairForImage(projectData, baseImageName) {
         if (!projectData.artPairsMap) {
             return null;                                                 // <-- No pairs map available
         }
-        
+
         const artData = projectData.artPairsMap.get(baseImageName);      // <-- Direct map lookup
-        
+
         if (artData) {
             return {
                 filename : artData.filename,
@@ -703,12 +751,9 @@
                 url      : getImageUrl(projectData, artData.filename)    // <-- R2-first URL via shared helper
             };
         }
-        
+
         return null;                                                     // <-- No ART pair exists
     }
     // ---------------------------------------------------------------
 
-    // endregion -------------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
-

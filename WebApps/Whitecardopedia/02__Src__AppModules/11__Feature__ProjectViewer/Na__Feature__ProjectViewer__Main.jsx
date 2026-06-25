@@ -138,11 +138,12 @@
             );
         }
 
-        // DERIVE CAROUSEL IMAGES | When a ValeVision model exists, show IMG01 only —
-        // the remaining IMG## scenes are intended as ValeVision animation thumbnails.
+        // DERIVE CAROUSEL IMAGES | 3D projects show IMG01 only — nudges user to ValeVision3D.
+        // Uses hasGlb_R2 from the master index (forwarded by ProjectLoader) rather than
+        // reading valeVision_ModelUrls from project.json, keeping detection simple and consistent.
         const baseImages     = project.displayImages || project.images || [];  // <-- Pre-filtered base scenes
-        const carouselImages = checkValeVisionModelUrl(project)
-            ? baseImages.slice(0, 1)                                 // <-- ValeVision present: IMG01 only
+        const carouselImages = project.hasGlb_R2
+            ? baseImages.slice(0, 1)                                 // <-- 3D model: IMG01 only, nav hidden by carousel
             : baseImages;                                            // <-- No 3D model: full whitecard carousel
 
         return (

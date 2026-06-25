@@ -18,6 +18,17 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.1 - 25-Jun-2026 - Carousel Gate for ValeVision 3D Projects
+
+### Overview
+Projects with a 3D model (`hasGlb_R2: true` in the master index) now display only IMG01 in the project viewer with no carousel navigation controls (no prev/next arrows, no counter, no thumbnail strip). This nudges users to open the ValeVision 3D viewer rather than paging through static whitecard images. Projects without a 3D model are unaffected and retain the full carousel.
+
+### Changes
+- **ProjectLoader** — `loadProjectData()` now forwards `hasGlb_R2` from the master index entry onto the project data object, making the flag available to all downstream components.
+- **ProjectViewer** — `carouselImages` derivation replaced `checkValeVisionModelUrl()` with `project.hasGlb_R2`, using the index flag directly. When `true`, the carousel receives only the first image; the `ImageCarousel` component already suppresses all navigation when `images.length === 1`.
+
+---
+
 ## Whitecardopedia v0.6.0 - 25-Jun-2026 - R2-Driven Cache Invalidation + Real-Time Master Config
 
 ### Overview

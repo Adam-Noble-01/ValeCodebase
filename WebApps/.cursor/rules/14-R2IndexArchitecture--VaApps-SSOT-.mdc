@@ -1,0 +1,85 @@
+---
+alwaysApply: true
+---
+
+# VaApps R2 Index Architecture | Primary Sources of Truth (Critical)
+
+Three JSON files on Cloudflare R2 are the **authoritative runtime sources** for the entire Whitecardopedia + ValeVision3D platform. They are **machine-generated** by the sync pipeline — never edited by hand and never duplicated in application code.
+
+---
+
+## The Three Index Files
+
+### 1. Master App Config Mirror
+**Purpose:** Real-time mirror of the master application config. The app fetches this first (cache-busted) so project additions go live without a GitHub Pages push and deploy wait.
+
+| Source | URL |
+|--------|-----|
+| R2 (primary, real-time) | `https://cdn.noble-architecture.com/VaApps/Index/Na__AppData__MasterConfig__Main.json` |
+| GH Pages (fallback) | `02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json` (Whitecardopedia) |
+
+Contains: project folder list with `enabled` flags, asset URL bases, index URL pointers.
+
+---
+
+### 2. Build Version Manifest
+**Purpose:** Monotonically increasing Unix timestamp written after every sync. The app reads this on load (cache-busted) to detect when new images have been synced and evicts the `wpwa-thumbs-*` Service Worker cache bucket automatically — no manual SW version bump needed.
+
+| Source | URL |
+|--------|-----|
+| R2 (only) | `https://cdn.noble-architecture.com/VaApps/Index/Na__BuildVersion__Manifest__.json` |
+
+Schema: `{ "buildVersion": <unix_timestamp>, "buildDate": "DD-MMM-YYYY at HH:MM", "lastProject": "<name>" }`
+
+---
+
+### 3. Master Project Index
+**Purpose:** Authoritative per-project asset location table. Tells the loader whether each project's `project.json` and images live on R2 or GH Pages, and carries audit flags (`hasGlb_R2`, `hasImages_R2`, `imageCount`) that drive UI decisions (carousel gate, 3D badge, etc.).
+
+| Source | URL |
+|--------|-----|
+| R2 (primary) | `https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json` |
+| GH Pages (fallback) | `02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json` (Whitecardopedia) |
+
+Per-project entry schema:
+```json
+{
+  "folderId"        : "2026/63592__Bressard-Kayode",
+  "year"            : "2026",
+  "projectCode"     : "63592",
+  "name"            : "Bressard-Kayode",
+  "enabled"         : true,
+  "assetHome"       : "r2",
+  "hasProjectJson_R2" : true,
+  "hasImages_R2"    : true,
+  "hasThumbnails_R2": true,
+  "hasGlb_R2"       : true,
+  "imageCount"      : 4,
+  "lastSynced"      : "25-Jun-2026 at 16:41"
+}
+```
+
+---
+
+## Who Writes These Files
+
+These files are written **exclusively** by the Python sync pipeline, triggered either by the **ValeVision Cloud Sync SketchUp plugin** or by running the scripts manually.
+
+### Build Scripts (relative to `WebApps/Whitecardopedia/`)
+
+| Script | Purpose |
+|--------|---------|
+| `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` | **Primary orchestrator** — uploads images, GLBs, thumbnails; rebuilds `project.json`; upserts master index; writes build manifest; mirrors master config to R2 |
+| `Tools__DevUtils/AutomationUtil__R2Common__Lib__.py` | **Shared R2 library** — boto3 client, HEAD/list/upload, master index read/upsert/write |
+| `Tools__DevUtils/AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py` | Dry-run/apply audit for missing R2 assets; rebuilds index after apply |
+| `Tools__DevUtils/AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py` | Bulk upload tool; regenerates master index |
+
+---
+
+## Rules for Agents — ALWAYS Follow
+
+- **NEVER manually edit** `Na__MasterIndex__ProjectLocations__.json`, `Na__AppData__MasterConfig__Main.json` (R2 mirror), or `Na__BuildVersion__Manifest__.json`. They are generated output.
+- **NEVER duplicate** index data (e.g. `hasGlb_R2`, `imageCount`, `assetHome`) by hardcoding it in JS/JSX. Read it through `Na__AppData__ProjectLoader.js` which forwards index fields onto each project object.
+- **NEVER add logic** that fetches these index files independently in new modules. The `ProjectLoader` is the single consumer; build on the fields it exposes (`project.hasGlb_R2`, `project.r2BasePath`, etc.).
+- **NEVER hardcode CDN base URLs** (`https://cdn.noble-architecture.com/VaApps/...`) in application code. They are sourced from `Na__AppData__MasterConfig__Main.json` → `Na__AssetUrls__R2Base`.
+- If a project's UI behaviour must depend on index data, add the field forwarding in `loadProjectData()` inside `Na__AppData__ProjectLoader.js` and consume `project.<field>` in the component — exactly as `hasGlb_R2` was added.

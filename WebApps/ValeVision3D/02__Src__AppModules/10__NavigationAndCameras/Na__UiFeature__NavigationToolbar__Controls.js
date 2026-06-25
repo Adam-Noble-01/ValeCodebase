@@ -251,6 +251,33 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Public Hotkey API
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Set Orbit Mode (Public - for hotkey dispatch)
+    // ------------------------------------------------------------
+    function Na__NavToolbar__SetOrbitMode() { Na__NavToolbar__HandleOrbitClick(); }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Set Walk Mode (Public - for hotkey dispatch)
+    // ------------------------------------------------------------
+    function Na__NavToolbar__SetWalkMode()  { Na__NavToolbar__HandleWalkClick();  }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Set Fly Mode (Public - for hotkey dispatch)
+    // ------------------------------------------------------------
+    function Na__NavToolbar__SetFlyMode()   { Na__NavToolbar__HandleFlyClick();   }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Reset View (Public - for hotkey dispatch)
+    // ------------------------------------------------------------
+    function Na__NavToolbar__ResetView()    { Na__NavToolbar__HandleResetClick(); }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
@@ -261,6 +288,10 @@
         Na__UiFeature__RevealNavigationToolbarModes,
         Na__NavToolbar__SetActiveMode,
         Na__NavToolbar__GetActiveMode,
+        Na__NavToolbar__SetOrbitMode,
+        Na__NavToolbar__SetWalkMode,
+        Na__NavToolbar__SetFlyMode,
+        Na__NavToolbar__ResetView,
         NA__NAV_MODE_CHANGED_EVENT
     };
     // ------------------------------------------------------------

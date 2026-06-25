@@ -24,7 +24,8 @@
     "ProjectType": "Whitecard",
     "basePath": "Projects/2026/63592__Bressard-Kayode",
     "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__24-Jun-2026.png"
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026.png",
+        "IMG02__3dView__ViewOption-02____WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
@@ -70,8 +71,8 @@
         }
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "25-Jun-2026 at 12:42",
-        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.0__",
+        "captured_at": "25-Jun-2026 at 13:22",
+        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.1__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",

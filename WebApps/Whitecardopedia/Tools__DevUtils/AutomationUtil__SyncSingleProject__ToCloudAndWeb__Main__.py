@@ -221,6 +221,44 @@ def na_clone_images_to_wcp(local_project_root: Path, wcp_project_dir: Path, repo
     report.mirrored += copied
     return copied
 
+
+def na_update_project_json_images(wcp_project_dir: Path, report: SyncReport) -> List[str]:
+    """Rebuild project.json 'images' from the IMG## PNGs actually present in the
+    Whitecardopedia folder, so freshly-cloned scenes (e.g. IMG02) appear and stale
+    filenames (old dates / removed scenes) are dropped. Returns the new list."""
+    project_json_path = wcp_project_dir / PROJECT_JSON_FILENAME
+    if not project_json_path.exists():
+        report.add_step('Update Image List', False, f'project.json not found at {project_json_path}.')
+        return []
+
+    # Collect current IMG## source PNGs (exclude our generated thumbnails)
+    img_pattern   = re.compile(r'^IMG\d{2,3}.*__WhitecardImage__.*\.png$', re.IGNORECASE)
+    source_images = sorted(
+        f.name for f in wcp_project_dir.iterdir()
+        if f.is_file() and img_pattern.match(f.name) and '__Thumbnail__524p__' not in f.name
+    )
+
+    if not source_images:
+        report.add_step('Update Image List', False, 'No IMG## source PNGs found in Whitecardopedia folder.')
+        return []
+
+    try:
+        existing            = json.loads(project_json_path.read_text(encoding='utf-8'))
+        previous            = existing.get('images', [])
+        existing['images']  = source_images
+
+        tmp_path = project_json_path.with_suffix('.tmp.json')
+        tmp_path.write_text(json.dumps(existing, indent=4), encoding='utf-8')
+        tmp_path.replace(project_json_path)
+
+        changed = 'updated' if previous != source_images else 'unchanged'
+        report.add_step('Update Image List', True,
+                        f"project.json images {changed} — {len(source_images)} scene(s): {', '.join(source_images)}.")
+        return source_images
+    except Exception as exc:
+        report.add_step('Update Image List', False, f'Could not rewrite images array: {exc}')
+        return []
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -240,7 +278,8 @@ def na_generate_thumbnails(year: str, web_folder: str, report: SyncReport):
         sys.executable,
         str(THUMBNAIL_SCRIPT),
         '--project', folder_id,                      # <-- Thumbnail script resolves Projects/<folderId> itself
-        '--force'                                    # <-- Always refresh thumbnails on an explicit sync
+        '--force',                                   # <-- Always refresh thumbnails on an explicit sync
+        '--all-scenes'                               # <-- Produce a 524p thumbnail per IMG## scene for the ValeVision animation carousel
     ]
 
     try:
@@ -402,8 +441,9 @@ def na_merge_camera_in_r2_project_json(s3_client, bucket: str, r2_key: str, came
 # -----------------------------------------------------------------------------
 
 def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
-    """Full sync: images -> thumbnails -> R2 upload -> camera merge."""
+    """Full sync: images -> rebuild image list -> thumbnails -> R2 upload -> camera merge."""
     na_clone_images_to_wcp(local_root, wcp_dir, report)
+    na_update_project_json_images(wcp_dir, report)            # <-- Keep project.json images in step with cloned files
     na_generate_thumbnails(year, project_folder, report)
 
     creds = na_load_r2_credentials()
@@ -426,8 +466,9 @@ def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path,
 
 
 def na_sync_images(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
-    """Images-only sync: clone + thumbnails + R2 images."""
+    """Images-only sync: clone + rebuild image list + thumbnails + R2 images."""
     na_clone_images_to_wcp(local_root, wcp_dir, report)
+    na_update_project_json_images(wcp_dir, report)            # <-- Keep project.json images in step with cloned files
     na_generate_thumbnails(year, project_folder, report)
 
     creds = na_load_r2_credentials()

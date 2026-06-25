@@ -63,7 +63,8 @@ THUMBNAIL_WEBP_EXTENSION        = '.webp'                                       
 THUMBNAIL_JPG_EXTENSION         = '.jpg'                                                                                            # <-- Fallback thumbnail extension
 THUMBNAIL_QUALITY_WEBP          = 82                                                                                                # <-- WebP quality (good size/quality balance)
 THUMBNAIL_QUALITY_JPG           = 88                                                                                                # <-- JPG fallback quality
-SOURCE_IMAGE_PREFIX_PATTERN     = re.compile(r'^IMG01(?:_ART\d{2})?__.*\.(png|jpg|jpeg|webp)$', re.IGNORECASE)                      # <-- IMG01 source pattern
+SOURCE_IMAGE_PREFIX_PATTERN     = re.compile(r'^IMG01(?:_ART\d{2})?__.*\.(png|jpg|jpeg|webp)$', re.IGNORECASE)                      # <-- IMG01 source pattern (gallery card)
+ALL_SCENE_IMAGE_PREFIX_PATTERN  = re.compile(r'^IMG\d{2,3}(?:_ART\d{2})?__.*\.(png|jpg|jpeg|webp)$', re.IGNORECASE)                 # <-- Every IMG## scene source (animation thumbnails)
 PROJECT_JSON_THUMBNAIL_KEY      = 'thumbnailImage'                                                                                  # <-- New project.json field
 # ------------------------------------------------------------
 
@@ -143,6 +144,30 @@ def Whitecardopedia__GalleryThumbnails__FindSourceImage(projectFolderPath: Path)
 
     candidateMatches.sort(key=lambda matchedFile: matchedFile.name.lower())                                                          # <-- Stable ordering
     return candidateMatches[0]                                                                                                      # <-- First match wins
+# ---------------------------------------------------------------
+
+
+# HELPER FUNCTION | Locate Every IMG## Scene Source Image for Project Folder
+# ---------------------------------------------------------------
+# Used by the --all-scenes mode so each SketchUp animation scene (IMG01, IMG02,
+# ...) receives its own 524p thumbnail.  Our own generated thumbnails are
+# excluded so they are never treated as sources.
+# ---------------------------------------------------------------
+def Whitecardopedia__GalleryThumbnails__FindAllSceneImages(projectFolderPath: Path) -> List[Path]:
+    if not projectFolderPath.exists():
+        return []                                                                                                                   # <-- Project folder missing
+
+    sceneMatches                = []
+    for entry in projectFolderPath.iterdir():
+        if not entry.is_file():
+            continue                                                                                                                # <-- Skip folders
+        if THUMBNAIL_SUFFIX_TOKEN in entry.name:
+            continue                                                                                                                # <-- Skip our own thumbnails
+        if ALL_SCENE_IMAGE_PREFIX_PATTERN.match(entry.name):
+            sceneMatches.append(entry)                                                                                              # <-- IMG## scene candidate
+
+    sceneMatches.sort(key=lambda matchedFile: matchedFile.name.lower())                                                             # <-- Stable IMG01, IMG02, ... ordering
+    return sceneMatches                                                                                                             # <-- All scene sources
 # ---------------------------------------------------------------
 
 
@@ -269,35 +294,54 @@ def Whitecardopedia__GalleryThumbnails__ProcessSingleProject(
     projectsBasePath: Path,
     folderIdValue: str,
     forceRebuild: bool,
-    dryRun: bool
+    dryRun: bool,
+    generateAllScenes: bool = False
 ) -> Dict:
 
     projectFolderPath           = projectsBasePath / folderIdValue                                                                  # <-- Resolve absolute project folder
-    sourceImagePath             = Whitecardopedia__GalleryThumbnails__FindSourceImage(projectFolderPath)                            # <-- Locate source image
+    sourceImagePath             = Whitecardopedia__GalleryThumbnails__FindSourceImage(projectFolderPath)                            # <-- Locate IMG01 gallery source
 
     if not sourceImagePath:
         return {'folderId': folderIdValue, 'status': 'skipped-no-source', 'thumbnail': None}                                        # <-- No source -> skip
 
     try:
-        webpFilename, _jpg      = Whitecardopedia__GalleryThumbnails__GenerateThumbnails(                                           # <-- Generate thumbnails
+        webpFilename, _jpg      = Whitecardopedia__GalleryThumbnails__GenerateThumbnails(                                           # <-- Gallery card thumbnail (IMG01)
             sourceImagePath        = sourceImagePath,
             targetFolderPath       = projectFolderPath,
             forceRebuild           = forceRebuild,
             dryRun                 = dryRun
         )
+
+        sceneThumbCount         = 0                                                                                                 # <-- Count of per-scene animation thumbnails
+        if generateAllScenes:
+            # GENERATE A 524p THUMBNAIL FOR EVERY IMG## ANIMATION SCENE
+            # The gallery card still uses the IMG01 thumbnail; this only adds the
+            # missing per-scene thumbnails consumed by the ValeVision carousel.
+            for sceneImagePath in Whitecardopedia__GalleryThumbnails__FindAllSceneImages(projectFolderPath):
+                if sceneImagePath.name == sourceImagePath.name:
+                    sceneThumbCount += 1                                                                                            # <-- IMG01 already generated above
+                    continue
+                Whitecardopedia__GalleryThumbnails__GenerateThumbnails(                                                             # <-- One thumbnail per scene
+                    sourceImagePath    = sceneImagePath,
+                    targetFolderPath   = projectFolderPath,
+                    forceRebuild       = forceRebuild,
+                    dryRun             = dryRun
+                )
+                sceneThumbCount += 1
     except Exception as generationError:
         return {'folderId': folderIdValue, 'status': 'error', 'error': str(generationError), 'thumbnail': None}                     # <-- Surface generation error
 
-    didPatchJson                = Whitecardopedia__GalleryThumbnails__PatchProjectJson(                                             # <-- Patch project.json
+    didPatchJson                = Whitecardopedia__GalleryThumbnails__PatchProjectJson(                                             # <-- Patch project.json (gallery card)
         projectFolderPath          = projectFolderPath,
         thumbnailFilename          = webpFilename,
         dryRun                     = dryRun
     )
 
     return {
-        'folderId'  : folderIdValue,
-        'status'    : 'updated' if didPatchJson else 'fresh',
-        'thumbnail' : webpFilename
+        'folderId'        : folderIdValue,
+        'status'          : 'updated' if didPatchJson else 'fresh',
+        'thumbnail'       : webpFilename,
+        'sceneThumbnails' : sceneThumbCount if generateAllScenes else 0
     }
 # ---------------------------------------------------------------
 
@@ -307,7 +351,8 @@ def Whitecardopedia__GalleryThumbnails__ProcessSingleProject(
 def Whitecardopedia__GalleryThumbnails__ProcessAllProjects(
     forceRebuild: bool,
     dryRun: bool,
-    singleProject: Optional[str]
+    singleProject: Optional[str],
+    generateAllScenes: bool = False
 ) -> List[Dict]:
 
     projectsBasePath            = Whitecardopedia__GalleryThumbnails__ResolveRelativePath(PROJECTS_BASE_FOLDER)                     # <-- Resolve projects root
@@ -323,7 +368,8 @@ def Whitecardopedia__GalleryThumbnails__ProcessAllProjects(
             projectsBasePath       = projectsBasePath,
             folderIdValue          = folderIdValue,
             forceRebuild           = forceRebuild,
-            dryRun                 = dryRun
+            dryRun                 = dryRun,
+            generateAllScenes      = generateAllScenes
         )
         resultsList.append(result)                                                                                                  # <-- Track outcome
 
@@ -377,6 +423,7 @@ def Whitecardopedia__GalleryThumbnails__ParseArguments() -> argparse.Namespace:
     parser.add_argument('--dry-run', action='store_true', help='Report intended changes without writing files.')
     parser.add_argument('--force', action='store_true', help='Re-create thumbnails even if up to date.')
     parser.add_argument('--project', type=str, default=None, help='Process a single project folder identifier (e.g. 2025/00__ExampleProject).')
+    parser.add_argument('--all-scenes', action='store_true', help='Generate a 524p thumbnail for every IMG## scene (animation), not just IMG01.')
     return parser.parse_args()                                                                                                       # <-- Return parsed args
 # ---------------------------------------------------------------
 
@@ -389,7 +436,8 @@ def Whitecardopedia__GalleryThumbnails__Main() -> int:
     resultsList                 = Whitecardopedia__GalleryThumbnails__ProcessAllProjects(                                           # <-- Run pipeline
         forceRebuild               = bool(parsedArgs.force),
         dryRun                     = bool(parsedArgs.dry_run),
-        singleProject              = parsedArgs.project
+        singleProject              = parsedArgs.project,
+        generateAllScenes          = bool(parsedArgs.all_scenes)
     )
 
     Whitecardopedia__GalleryThumbnails__PrintSummary(resultsList, bool(parsedArgs.dry_run))                                         # <-- Output summary

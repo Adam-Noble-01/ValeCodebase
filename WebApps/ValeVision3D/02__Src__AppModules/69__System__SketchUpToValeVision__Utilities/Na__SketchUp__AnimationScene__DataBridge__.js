@@ -20,6 +20,18 @@
 // - Does not overwrite explicit presentation scenes; only fills the gap when
 //   none exist.
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 25-Jun-2026 - Version 1.0.0
+// - Initial placeholder scaffolding.
+//
+// 25-Jun-2026 - Version 1.0.1
+// - Fixed the event contract: now dispatches detail.sceneConfig with the INNER
+//   PresentationMode__SavedCameraScenes block (was detail.config + a wrapped
+//   object), matching the carousel listener so auto-built scenes actually load.
+// - Passes projectData.images to the loader for real dated-filename matching.
+//
 // =============================================================================
 
 
@@ -32,7 +44,7 @@
     // ------------------------------------------------------------
     import {
         Na__SketchUp__LoadSceneData__ReadBlock,
-        Na__SketchUp__LoadSceneData__ResolveSceneUrls
+        Na__SketchUp__LoadSceneData__ResolveSceneFiles
     } from './Na__SketchUp__LoadSceneData__.js';
     // ------------------------------------------------------------
 
@@ -48,8 +60,7 @@
     // @delegate: ../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js
     // ------------------------------------------------------------
     import {
-        Na__PresentationMode__ProjectJson__HasValidSavedScenes,
-        Na__PresentationMode__ProjectJson__SetActiveConfig
+        Na__PresentationMode__ProjectJson__HasValidSavedScenes
     } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
@@ -76,25 +87,20 @@
         const block = Na__SketchUp__LoadSceneData__ReadBlock(projectData);
         if (!block) return false;                                             // <-- No SketchUp camera data in this project
 
-        const resolvedUrls = Na__SketchUp__LoadSceneData__ResolveSceneUrls(block, projectCode);
+        const sceneFiles = Na__SketchUp__LoadSceneData__ResolveSceneFiles(block, projectData.images);
 
-        const savedScenesBlock = Na__SketchUp__ConvertSceneData__ConvertBlock(block, resolvedUrls);
+        const savedScenesBlock = Na__SketchUp__ConvertSceneData__ConvertBlock(block, sceneFiles);
         if (!savedScenesBlock) return false;                                  // <-- Conversion produced no valid scenes
 
-        const wrappedConfig = {
-            PresentationMode__SavedCameraScenes: savedScenesBlock            // <-- Wrap in root key for SetActiveConfig
-        };
-
-        Na__PresentationMode__ProjectJson__SetActiveConfig(
-            { PresentationMode__SavedCameraScenes: savedScenesBlock },
-            projectCode
-        );
-
+        // DISPATCH IN THE SAME SHAPE AS THE EXPLICIT-SCENES PATH
+        // The carousel listener reads detail.sceneConfig (the INNER block) and
+        // calls SetActiveConfig itself — mirror that contract exactly so the
+        // auto-built scenes flow through the identical code path.
         window.dispatchEvent(new CustomEvent('na-presentation-mode-scenes-loaded', {
             detail: {
-                config      : wrappedConfig,
+                sceneConfig : savedScenesBlock,                              // <-- Inner block (matches carousel listener)
                 projectCode : projectCode,
-                source      : 'SketchUpCameraData'
+                source      : 'SketchUpCameraData'                           // <-- Provenance marker for diagnostics
             }
         }));
 

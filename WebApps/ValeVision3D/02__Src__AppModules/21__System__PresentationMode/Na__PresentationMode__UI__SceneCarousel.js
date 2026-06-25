@@ -57,10 +57,15 @@
         Na__PresentationMode__ProjectJson__GetSortedScenes,
         Na__PresentationMode__ProjectJson__GetDefaultScene,
         Na__PresentationMode__ProjectJson__GetSceneById,
-        Na__PresentationMode__ProjectJson__ResolveThumbnailUrl,
+        Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair,
         Na__PresentationMode__ProjectJson__SetActiveSceneId,
         Na__PresentationMode__ProjectJson__GetActiveSceneId
     } from './Na__PresentationMode__ProjectJson__SceneData.js';
+
+    // MODULE IMPORTS | Asset Fallback Toast Emitter
+    // @delegate: ../03__AppUtils/Na__AppUtils__ProjectLoader.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__EmitFallbackToast } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Camera Scene Transition
@@ -139,14 +144,24 @@
         card.title           = scene.PresentationMode__Scene__Name || '';
         card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 
-        const thumbUrl = Na__PresentationMode__ProjectJson__ResolveThumbnailUrl(scene, projectCode);
+        const thumbPair = Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair(scene, projectCode);  // <-- { primary, fallback }
 
-        if (thumbUrl) {
+        if (thumbPair && thumbPair.primary) {
             const img = document.createElement('img');
             img.className = 'na-pm-carousel__thumb';
-            img.src       = thumbUrl;
+            img.src       = thumbPair.primary;                              // <-- R2-first primary URL
             img.alt       = scene.PresentationMode__Scene__Name || '';
             img.loading   = 'lazy';
+
+            // R2 -> GH PAGES FALLBACK | Swap once on load failure and notify
+            if (thumbPair.fallback && thumbPair.fallback !== thumbPair.primary) {
+                img.addEventListener('error', function na_thumb_fallback() {
+                    img.removeEventListener('error', na_thumb_fallback);    // <-- Only swap once
+                    img.src = thumbPair.fallback;                           // <-- Fall back to GH Pages
+                    Na__AppUtils__EmitFallbackToast();                      // <-- Notify the user
+                });
+            }
+
             card.appendChild(img);
         } else {
             const placeholder = document.createElement('div');

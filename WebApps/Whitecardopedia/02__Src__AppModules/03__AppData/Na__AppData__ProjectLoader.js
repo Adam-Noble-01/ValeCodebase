@@ -29,6 +29,13 @@
 // - getImageUrl and getThumbnailImage return R2-first URLs.
 // - Na__AssetUrls__InitFromConfig seeds R2/GH bases from masterConfig.
 //
+// 25-Jun-2026 - Version 0.2.1
+// - Fixed blank gallery thumbnails: thumbnails live in the project root as
+//   <base>__Thumbnail__524p__.webp (not a Thumbnails__524p__WebP/ sub-path).
+//   Removed na_get_thumbnail_sub_path; added na_derive_thumbnail_filename.
+// - Added getImageUrlPair / getThumbnailImagePair returning { primary, fallback }
+//   and Na__AssetUrls__HandleImgError for R2->GH onError fallback + toast.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -53,6 +60,30 @@
     let Na__AssetUrls__Initialised = false;                              // <-- Prevents re-seeding after first load
     // ------------------------------------------------------------
 
+    // MODULE CONSTANTS | Thumbnail Naming Convention (mirrors generator script)
+    // ------------------------------------------------------------
+    const THUMBNAIL_SUFFIX_TOKEN   = '__Thumbnail__524p__';              // <-- Appended to source image base name
+    const THUMBNAIL_WEBP_EXTENSION = '.webp';                            // <-- Thumbnail file extension
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build An R2-Primary / GH-Fallback Asset URL Pair
+    // ---------------------------------------------------------------
+    // Returns { primary, fallback }: R2 CDN URL first (when available) and a
+    // same-origin GH Pages relative URL as the fallback for onError swapping.
+    // ---------------------------------------------------------------
+    function na_build_asset_url_pair(projectData, fileName) {
+        if (!projectData || !fileName) return null;                       // <-- Guard missing args
+
+        const ghUrl = `${projectData.basePath}/${fileName}`;             // <-- GH Pages relative (same-origin fallback)
+        const primary = projectData.r2BasePath
+            ? `${projectData.r2BasePath}/${fileName}`                    // <-- R2 CDN primary when available
+            : ghUrl;                                                     // <-- Otherwise GH is the primary
+
+        return { primary, fallback: ghUrl };                             // <-- Pair for src + onError
+    }
+    // ---------------------------------------------------------------
+
 
     // HELPER FUNCTION | Seed Asset Base URLs From masterConfig (call once)
     // ---------------------------------------------------------------
@@ -76,6 +107,32 @@
                 detail: { message: Na__AssetUrls__FallbackMsg }
             }));
         } catch (_) {}
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Shared <img> onError Handler — Swap R2 To GH Pages Once
+    // ---------------------------------------------------------------
+    // Attach to any <img> that was sourced from an R2 primary URL and given a
+    // `data-fallback-src` (the GH Pages relative URL). On the first load
+    // failure it swaps to the fallback once and emits the fallback toast.
+    // ---------------------------------------------------------------
+    function Na__AssetUrls__HandleImgError(event) {
+        const img = event && event.currentTarget;                         // <-- The failing <img>
+        if (!img) return;
+
+        const fallback = img.getAttribute('data-fallback-src');          // <-- GH Pages relative URL
+        if (!fallback) return;                                            // <-- Nothing to fall back to
+        if (img.getAttribute('data-fallback-applied') === '1') return;   // <-- Already fell back once
+
+        if (img.getAttribute('src') === fallback) {                      // <-- Primary already equalled fallback
+            img.setAttribute('data-fallback-applied', '1');
+            return;
+        }
+
+        img.setAttribute('data-fallback-applied', '1');                  // <-- Mark so we only swap once
+        img.src = fallback;                                              // <-- Swap to same-origin GH Pages asset
+        Na__AssetUrls__EmitFallbackToast();                             // <-- Notify the user
     }
     // ---------------------------------------------------------------
 
@@ -332,11 +389,27 @@
     // ---------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Get Thumbnail Sub-path For A Given Image
+    // FUNCTION | Get Full Image URL Pair (R2 primary + GH fallback)
+    // ------------------------------------------------------------
+    function getImageUrlPair(projectData, imageName) {
+        return na_build_asset_url_pair(projectData, imageName);          // <-- { primary, fallback }
+    }
     // ---------------------------------------------------------------
-    function na_get_thumbnail_sub_path(filename) {
-        const thumbName = filename.replace(/\.\w+$/, '.webp');           // <-- Swap extension to WebP
-        return `Thumbnails__524p__WebP/${thumbName}`;                    // <-- Return thumbnail sub-path
+
+
+    // HELPER FUNCTION | Derive Root-Level Thumbnail Filename
+    // ---------------------------------------------------------------
+    // Thumbnails are generated alongside their source image in the project
+    // root using the suffix token "__Thumbnail__524p__" + ".webp"
+    // (see AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py).
+    // project.json.thumbnailImage usually already holds this full filename;
+    // if a bare source image is passed we derive it here.
+    // ---------------------------------------------------------------
+    function na_derive_thumbnail_filename(filename) {
+        if (!filename) return null;                                       // <-- Guard missing filename
+        if (filename.includes(THUMBNAIL_SUFFIX_TOKEN)) return filename;   // <-- Already a thumbnail filename
+        const base = filename.replace(/\.[^.]+$/, '');                    // <-- Strip source extension
+        return `${base}${THUMBNAIL_SUFFIX_TOKEN}${THUMBNAIL_WEBP_EXTENSION}`;  // <-- <base>__Thumbnail__524p__.webp
     }
     // ---------------------------------------------------------------
 
@@ -344,20 +417,24 @@
     // FUNCTION | Get Thumbnail Image for Project (R2-first with GH fallback)
     // ------------------------------------------------------------
     function getThumbnailImage(projectData) {
+        const pair = getThumbnailImagePair(projectData);                  // <-- Reuse pair builder for the primary URL
+        return pair ? pair.primary : null;                               // <-- Primary (R2 when available)
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Get Thumbnail Image URL Pair (R2 primary + GH fallback)
+    // ------------------------------------------------------------
+    function getThumbnailImagePair(projectData) {
         if (!projectData) return null;                                    // <-- Guard missing project
 
         const sourceFile = projectData.thumbnailImage
             || (projectData.images && projectData.images.length > 0 ? projectData.images[0] : null);  // <-- Prefer explicit thumbnail key
 
-        if (!sourceFile) return null;                                     // <-- No images available
+        const thumbFile = na_derive_thumbnail_filename(sourceFile);       // <-- Root-level thumbnail filename
+        if (!thumbFile) return null;                                      // <-- No images available
 
-        const thumbSubPath = na_get_thumbnail_sub_path(sourceFile);      // <-- Build thumbnail sub-path
-
-        if (projectData.r2BasePath) {
-            return `${projectData.r2BasePath}/${thumbSubPath}`;          // <-- R2 primary thumbnail URL
-        }
-
-        return `${projectData.basePath}/${thumbSubPath}`;                // <-- GH Pages relative fallback
+        return na_build_asset_url_pair(projectData, thumbFile);          // <-- { primary, fallback }
     }
     // ---------------------------------------------------------------
 

@@ -296,7 +296,9 @@
             );
         }
         
-        const currentImageUrl = getImageUrl(projectData, images[currentIndex]);  // <-- Get current image URL
+        const currentImagePair = getImageUrlPair(projectData, images[currentIndex]);  // <-- { primary, fallback }
+        const currentImageUrl  = currentImagePair ? currentImagePair.primary : '';    // <-- R2-first current image URL
+        const currentImageFallback = currentImagePair ? currentImagePair.fallback : '';  // <-- GH Pages fallback URL
         const hasArtPair = artImageData !== null;                        // <-- Check if ART pair exists
         
         return (
@@ -307,6 +309,8 @@
                         <div className="image-carousel__image-wrapper">
                             <img 
                                 src={currentImageUrl} 
+                                data-fallback-src={currentImageFallback}
+                                onError={Na__AssetUrls__HandleImgError}
                                 alt={`Project image ${currentIndex + 1}`}
                                 className="image-carousel__image"
                                 onContextMenu={(e) => e.preventDefault()}
@@ -333,6 +337,8 @@
                             {/* BASE LAYER - WHITECARD IMAGE */}
                             <img 
                                 src={currentImageUrl} 
+                                data-fallback-src={currentImageFallback}
+                                onError={Na__AssetUrls__HandleImgError}
                                 alt={`Project image ${currentIndex + 1}`}
                                 className="image-carousel__image image-carousel__image--base"
                                 onContextMenu={(e) => e.preventDefault()}
@@ -346,6 +352,8 @@
                             >
                                 <img 
                                     src={artImageData.url} 
+                                    data-fallback-src={getImageUrlPair(projectData, artImageData.filename)?.fallback || ''}
+                                    onError={Na__AssetUrls__HandleImgError}
                                     alt={`${artImageData.label} version`}
                                     className="image-carousel__image image-carousel__image--art"
                                     onContextMenu={(e) => e.preventDefault()}
@@ -434,6 +442,8 @@
                             <img
                                 key={index}
                                 src={getImageUrl(projectData, image)}
+                                data-fallback-src={getImageUrlPair(projectData, image)?.fallback || ''}
+                                onError={Na__AssetUrls__HandleImgError}
                                 alt={`Thumbnail ${index + 1}`}
                                 className={`image-carousel__thumbnail ${index === currentIndex ? 'image-carousel__thumbnail--active' : ''}`}
                                 loading="lazy"

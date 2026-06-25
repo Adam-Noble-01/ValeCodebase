@@ -164,8 +164,13 @@
                                 onClick={() => onSelectProject(project)}
                             >
                                 <div className={`project-card__image-container ${getImageEffectClass(project)}`}>
+                                    {(() => {
+                                        const thumbPair = getThumbnailImagePair(project);  // <-- { primary, fallback }
+                                        return (
                                     <img 
-                                        src={getThumbnailImage(project)} 
+                                        src={thumbPair ? thumbPair.primary : ''} 
+                                        data-fallback-src={thumbPair ? thumbPair.fallback : ''}
+                                        onError={Na__AssetUrls__HandleImgError}
                                         alt={project.projectName}
                                         className="project-card__image"
                                         loading="lazy"
@@ -173,6 +178,8 @@
                                         onContextMenu={(e) => e.preventDefault()}
                                         draggable="false"
                                     />
+                                        );
+                                    })()}
                                     {isHandDrawnProject(project) && (
                                         <div className="project-card__white-overlay"></div>
                                     )}

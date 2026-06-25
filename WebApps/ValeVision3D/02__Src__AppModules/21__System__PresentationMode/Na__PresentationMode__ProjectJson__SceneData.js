@@ -40,7 +40,12 @@
 
     // MODULE IMPORTS | Project URL Utilities
     // ------------------------------------------------------------
-    import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__NormalizeProjectFolderId } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import {
+        Na__AppUtils__IsRunningOnLocalhost,
+        Na__AppUtils__NormalizeProjectFolderId,
+        Na__AppUtils__ResolveAssetUrl,
+        Na__AppUtils__EmitFallbackToast
+    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -196,11 +201,24 @@
     // Resolved against the project base path depending on environment.
     // ------------------------------------------------------------
     function Na__PresentationMode__ProjectJson__ResolveThumbnailUrl(scene, projectCode) {
+        const pair = Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair(scene, projectCode);
+        return pair ? pair.primary : null;                                   // <-- Primary (R2-first on production)
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve Thumbnail URL Pair (R2 primary + GH fallback)
+    // ------------------------------------------------------------
+    // Returns { primary, fallback } so the carousel can swap from the R2 CDN
+    // to GH Pages via an onerror handler, matching the Whitecardopedia
+    // R2-first + fallback-toast behaviour.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair(scene, projectCode) {
         const rawUrl = scene && scene.PresentationMode__Scene__ThumbnailUrl;
         if (!rawUrl) return null;
 
         if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('/')) {
-            return rawUrl;                                                   // <-- Already absolute, pass through
+            return { primary: rawUrl, fallback: rawUrl };                    // <-- Already absolute, pass through
         }
 
         const code = projectCode || Na__PresentationMode__ActiveProjectCode;
@@ -209,10 +227,15 @@
         const folderId = Na__AppUtils__NormalizeProjectFolderId(code);
 
         if (Na__AppUtils__IsRunningOnLocalhost()) {
-            return `/Projects/${folderId}/${rawUrl}?t=${Date.now()}`;        // <-- Flask static catch-all path + cache-bust for regenerated thumbs
+            const localUrl = `/Projects/${folderId}/${rawUrl}?t=${Date.now()}`; // <-- Flask static path + cache-bust
+            return { primary: localUrl, fallback: localUrl };
         }
 
-        return `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${rawUrl}`; // <-- Production GH Pages path
+        const resolved = Na__AppUtils__ResolveAssetUrl(folderId, rawUrl);    // <-- { primary: R2, fallback: GH }
+        return resolved || {
+            primary:  `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${rawUrl}`,  // <-- Defensive GH fallback
+            fallback: `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${rawUrl}`
+        };
     }
     // ------------------------------------------------------------
 
@@ -285,6 +308,7 @@
         Na__PresentationMode__ProjectJson__GetDefaultScene,
         Na__PresentationMode__ProjectJson__GetSceneById,
         Na__PresentationMode__ProjectJson__ResolveThumbnailUrl,
+        Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair,
         Na__PresentationMode__ProjectJson__SetActiveConfig,
         Na__PresentationMode__ProjectJson__GetActiveConfig,
         Na__PresentationMode__ProjectJson__SetActiveSceneId,

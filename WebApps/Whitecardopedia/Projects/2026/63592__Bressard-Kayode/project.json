@@ -42,7 +42,7 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__24-Jun-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
@@ -68,5 +68,78 @@
             "FogPlane__Config__PlaneB__NormalX": -1,
             "FogPlane__Config__PlaneB__NormalZ": 0
         }
+    },
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "25-Jun-2026 at 12:42",
+        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__ViewOption-01__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -10972.5791,
+                        "y": -22854.8168,
+                        "z": 3500.0
+                    },
+                    "target": {
+                        "x": 11227.8405,
+                        "y": 9442.6582,
+                        "z": 3500.0
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.566458,
+                        "y": 0.824091,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0.0
+                }
+            },
+            {
+                "scene_name": "IMG02__3dView__ViewOption-02__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 27043.734,
+                        "y": -2392.8478,
+                        "z": 3625.3733
+                    },
+                    "target": {
+                        "x": 2165.8265,
+                        "y": 24919.1152,
+                        "z": -4132.7068
+                    },
+                    "up": {
+                        "x": -0.138392,
+                        "y": 0.151932,
+                        "z": 0.978654
+                    },
+                    "direction": {
+                        "x": -0.659022,
+                        "y": 0.723501,
+                        "z": -0.205514
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0.0
+                }
+            }
+        ]
     }
 }

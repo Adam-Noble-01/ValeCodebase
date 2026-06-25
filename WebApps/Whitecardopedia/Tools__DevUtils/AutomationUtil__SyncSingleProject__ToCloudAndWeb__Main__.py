@@ -126,13 +126,31 @@ class SyncReport:
 # -----------------------------------------------------------------------------
 
 def na_resolve_local_project_root(project_folder: str, year: str) -> Optional[Path]:
-    """Walk LOCAL_PROJECTS_BASE/{year}/ and find the project folder."""
+    """Walk LOCAL_PROJECTS_BASE/ValeProjects__{year}/ and find the project folder."""
     full_year = f"20{year}" if len(year) == 2 else year
-    year_dir  = LOCAL_PROJECTS_BASE / full_year
+    year_dir  = LOCAL_PROJECTS_BASE / f"ValeProjects__{full_year}"   # <-- Local year folder carries ValeProjects__ prefix
     if not year_dir.is_dir():
         return None
     candidate = year_dir / project_folder
     return candidate if candidate.is_dir() else None
+
+
+def na_derive_web_folder_name(local_folder: str) -> str:
+    """Local '..__Whitecard' folder -> Whitecardopedia/R2 folder name (suffix stripped)."""
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("na_fetch_local_projects", FETCH_SCRIPT)
+        mod  = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        web = mod.generate_destination_folder_name(local_folder)   # <-- Canonical transform (strips type suffix)
+        if web:
+            return web
+    except Exception:
+        pass
+    for suffix in ('__Whitecard', '__Blockout', '__MaxModel'):     # <-- Fallback strip if import unavailable
+        if local_folder.endswith(suffix):
+            return local_folder[: -len(suffix)]
+    return local_folder
 
 
 def na_resolve_wcp_project_dir(project_folder: str, year: str) -> Path:
@@ -184,13 +202,22 @@ def na_clone_images_to_wcp(local_project_root: Path, wcp_project_dir: Path, repo
         report.add_step('Clone Images', False, f'No IMG## WhitecardImage PNG files found in {edition_folder.name}.')
         return 0
 
+    # PURGE STALE IMG SOURCES + THUMBNAILS | Keep the destination mirroring the latest edition only
+    stale_pattern = re.compile(r'^IMG.*\.(png|jpg|jpeg|webp)$', re.IGNORECASE)
+    purged        = 0
+    for existing in wcp_project_dir.iterdir():
+        if existing.is_file() and stale_pattern.match(existing.name):
+            existing.unlink()                        # <-- Remove superseded image / thumbnail
+            purged += 1
+
     copied = 0
     for img_file in img_files:
         dest = wcp_project_dir / img_file.name
         shutil.copy2(img_file, dest)
         copied += 1
 
-    report.add_step('Clone Images', True, f'Cloned {copied} image(s) from {edition_folder.name}.')
+    purge_note = f' (purged {purged} stale)' if purged else ''
+    report.add_step('Clone Images', True, f'Cloned {copied} image(s) from {edition_folder.name}{purge_note}.')
     report.mirrored += copied
     return copied
 
@@ -200,17 +227,20 @@ def na_clone_images_to_wcp(local_project_root: Path, wcp_project_dir: Path, repo
 # REGION | Thumbnail Generation
 # -----------------------------------------------------------------------------
 
-def na_generate_thumbnails(wcp_project_dir: Path, project_folder: str, report: SyncReport):
+def na_generate_thumbnails(year: str, web_folder: str, report: SyncReport):
     """Call the 524p thumbnail generator for the project."""
     if not THUMBNAIL_SCRIPT.exists():
         report.add_step('Generate Thumbnails', False, f'Thumbnail script not found: {THUMBNAIL_SCRIPT.name}')
         return
 
+    full_year = f"20{year}" if len(year) == 2 else year
+    folder_id = f"{full_year}/{web_folder}"          # <-- folderId is relative to Projects/ (e.g. 2026/63592__Bressard-Kayode)
+
     cmd = [
         sys.executable,
         str(THUMBNAIL_SCRIPT),
-        '--project', project_folder,
-        '--input-dir', str(wcp_project_dir)
+        '--project', folder_id,                      # <-- Thumbnail script resolves Projects/<folderId> itself
+        '--force'                                    # <-- Always refresh thumbnails on an explicit sync
     ]
 
     try:
@@ -374,7 +404,7 @@ def na_merge_camera_in_r2_project_json(s3_client, bucket: str, r2_key: str, came
 def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
     """Full sync: images -> thumbnails -> R2 upload -> camera merge."""
     na_clone_images_to_wcp(local_root, wcp_dir, report)
-    na_generate_thumbnails(wcp_dir, project_folder, report)
+    na_generate_thumbnails(year, project_folder, report)
 
     creds = na_load_r2_credentials()
     s3    = na_build_r2_client(creds)
@@ -398,7 +428,7 @@ def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path,
 def na_sync_images(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
     """Images-only sync: clone + thumbnails + R2 images."""
     na_clone_images_to_wcp(local_root, wcp_dir, report)
-    na_generate_thumbnails(wcp_dir, project_folder, report)
+    na_generate_thumbnails(year, project_folder, report)
 
     creds = na_load_r2_credentials()
     s3    = na_build_r2_client(creds)
@@ -440,7 +470,17 @@ def na_sync_cameras(project_folder: str, year: str, local_root: Path, wcp_dir: P
 # REGION | CLI Entry Point
 # -----------------------------------------------------------------------------
 
+def na_force_utf8_streams():
+    """Force UTF-8 stdout/stderr so status glyphs survive cp1252 consoles + pipes."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding='utf-8')   # <-- Python 3.7+; no-op if already utf-8
+        except Exception:
+            pass
+
+
 def main():
+    na_force_utf8_streams()                        # <-- Guard against UnicodeEncodeError on Windows
     parser = argparse.ArgumentParser(description='ValeVision Cloud Sync — Single Project Orchestrator')
     parser.add_argument('--project', required=True,  help='Project folder name (e.g. AB01__MyHouse__Whitecard)')
     parser.add_argument('--year',    required=True,  help='Two-digit year (e.g. 26 for 2026)')
@@ -469,14 +509,16 @@ def main():
         sys.exit(1 if not final['success'] else 0)
 
     report.add_step('Resolve Project Root', True, f'Found project at {local_root}.')
-    wcp_dir = na_resolve_wcp_project_dir(project_folder, year)
+
+    web_folder = na_derive_web_folder_name(project_folder)            # <-- Stripped web/R2 folder name
+    wcp_dir    = na_resolve_wcp_project_dir(web_folder, year)         # <-- Whitecardopedia dir uses web name
 
     if action == 'all':
-        na_sync_all(project_folder, year, local_root, wcp_dir, report)
+        na_sync_all(web_folder, year, local_root, wcp_dir, report)
     elif action == 'images':
-        na_sync_images(project_folder, year, local_root, wcp_dir, report)
+        na_sync_images(web_folder, year, local_root, wcp_dir, report)
     elif action == 'cameras':
-        na_sync_cameras(project_folder, year, local_root, wcp_dir, report)
+        na_sync_cameras(web_folder, year, local_root, wcp_dir, report)
 
     final = report.finalise()
 

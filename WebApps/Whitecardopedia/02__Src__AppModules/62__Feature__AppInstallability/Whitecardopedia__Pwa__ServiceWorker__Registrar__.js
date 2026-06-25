@@ -22,6 +22,20 @@
 //   window.Na__LoadWatchdog__IsLoadingActive (set by the LoadWatchdog module)
 //   to avoid yanking a mid-load ValeVision3D session.
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2026 - Version 1.0.0
+// - Initial service worker registrar with controllerchange idle-reload bridge.
+//
+// 25-Jun-2026 - Version 1.1.0
+// - Added Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload:
+//   controller-independent full reset (wipes all Cache Storage buckets,
+//   unregisters every SW, clears the build-version marker, then reloads).
+// - Installed the `--ClearCache` console shortcut (window.ClearCache getter)
+//   plus the window.na_clear_cache() programmatic alias for one-keystroke
+//   stale-PWA recovery from the browser console.
+//
 // =============================================================================
 
 (function () {
@@ -189,12 +203,80 @@
     }
     // ---------------------------------------------------------------
 
+
+    // FUNCTION | Hard Reset — Wipe All Caches, Unregister SW, Then Reload
+    // ------------------------------------------------------------
+    // Robust one-shot reset that does NOT depend on an active SW controller:
+    //   1. Deletes every Cache Storage bucket (shell, thumbs, data, models).
+    //   2. Unregisters all service workers under this scope.
+    //   3. Clears the build-version marker so build-change logic re-runs.
+    //   4. Reloads so a fresh module graph + fresh R2 config load occurs.
+    // ------------------------------------------------------------
+    async function Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload() {
+        try {
+            if ('caches' in window) {
+                const allCacheNames = await caches.keys();                                                                          // <-- Every Cache Storage bucket
+                await Promise.all(allCacheNames.map(name => caches.delete(name)));                                                   // <-- Drop them all (best-effort)
+            }
+        } catch (cacheError) {
+            console.warn('[ClearCache] Cache deletion failed:', cacheError);                                                        // <-- Non-blocking
+        }
+
+        try {
+            if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+                const registrations = await navigator.serviceWorker.getRegistrations();                                             // <-- All SW registrations
+                await Promise.all(registrations.map(reg => reg.unregister()));                                                      // <-- Unregister each
+            }
+        } catch (swError) {
+            console.warn('[ClearCache] Service worker unregister failed:', swError);                                                // <-- Non-blocking
+        }
+
+        try {
+            localStorage.removeItem('wcp_last_build_version');                                                                      // <-- Force build-change eviction to re-run next load
+        } catch (storageError) {}                                                                                                   // <-- Ignore storage failures
+
+        console.log('%c[ClearCache] Caches cleared + service worker unregistered — reloading…', 'color:#006600;font-weight:bold;'); // <-- User feedback
+        window.location.reload();                                                                                                   // <-- Fresh load (a clean SW reinstalls)
+        return true;                                                                                                                // <-- Indicator (page unloads before this matters)
+    }
+    // ---------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
 // REGION | Bootstrap
 // -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Install "--ClearCache" Console Shortcut
+    // ---------------------------------------------------------------
+    // Defines a side-effecting getter on window named `ClearCache` so a
+    // developer can simply type `--ClearCache` (or `ClearCache`) into the
+    // browser console to wipe every PWA cache, unregister the service worker
+    // and reload — no postMessage boilerplate. The getter only fires on Enter:
+    // Chrome's side-effect-free eager-evaluation preview never triggers it,
+    // and the `--` decrement's write-back to a getter-only property is a
+    // silent no-op in the console's sloppy-mode evaluation.
+    // ---------------------------------------------------------------
+    function Whitecardopedia__Pwa__ServiceWorker__Registrar__InstallConsoleShortcut() {
+        if (typeof window === 'undefined') return;                                                                                  // <-- Guard non-window contexts
+
+        try {
+            Object.defineProperty(window, 'ClearCache', {                                                                          // <-- Type `--ClearCache` or `ClearCache` in console
+                configurable : true,                                                                                                // <-- Allow redefine on hot reload
+                get() {
+                    Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload();                                          // <-- Fire the full reset
+                    return 'Clearing Whitecardopedia caches and reloading…';                                                       // <-- Friendly console echo
+                }
+            });
+        } catch (defineError) {
+            console.warn('[ClearCache] Could not install console shortcut:', defineError);                                          // <-- Non-blocking
+        }
+
+        window.na_clear_cache = Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload;                                 // <-- Programmatic alias: na_clear_cache()
+    }
+    // ---------------------------------------------------------------
+
 
     // SUB FUNCTION | Bootstrap Registration
     // ---------------------------------------------------------------
@@ -204,8 +286,11 @@
         window.Whitecardopedia__Pwa__ServiceWorker__Registrar = {                                                                   // <-- Expose registrar API
             register        : Whitecardopedia__Pwa__ServiceWorker__Registrar__Register,
             getRegistration : Whitecardopedia__Pwa__ServiceWorker__Registrar__GetRegistration,
-            clearCaches     : Whitecardopedia__Pwa__ServiceWorker__Registrar__ClearCaches
+            clearCaches     : Whitecardopedia__Pwa__ServiceWorker__Registrar__ClearCaches,
+            hardReset       : Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload
         };
+
+        Whitecardopedia__Pwa__ServiceWorker__Registrar__InstallConsoleShortcut();                                                  // <-- Wire the `--ClearCache` console helper
 
         const startRegistration = () => Whitecardopedia__Pwa__ServiceWorker__Registrar__Register();                                 // <-- Local reference
 

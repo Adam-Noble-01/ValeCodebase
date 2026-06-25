@@ -25,6 +25,19 @@
 # - python AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py --dry-run-only     # Preview only
 # - python AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py --project <name>   # Clone specific project
 #
+# -----------------------------------------------------------------------------
+#
+# DEVELOPMENT LOG:
+# 2025 - Version 1.0.0
+# - Initial Whitecard project auto-cloner from local ValeProjects folders.
+#
+# 25-Jun-2026 - Version 1.1.0
+# - read_local_project_metadata(): pulls Project__ConceptArtist and Project__Designer
+#   from 00__ProjectData/*__ProjectData__.json (write once locally, auto-sync to web).
+# - create_project_json() rewritten: NOT YET REVIEWED sentinels for unreviewed fields,
+#   productionData.designer field, dateFulfilled drives gallery sort, timeAllocated omitted
+#   until review (Efficiency Scale hidden until numeric hours are set).
+#
 # =============================================================================
 
 import os
@@ -50,6 +63,19 @@ MASTER_CONFIG_PATH                 = "../02__Src__AppModules/03__AppData/Na__App
 CONTENT_DELIVERED_SUBFOLDER        = "10__ContentDelivered__Local"          # <-- Content delivery subfolder name
 GLB_SYNC_SUBFOLDER                 = "ValeVision__GlbFileSync"              # <-- GLB files subfolder name
 PROJECT_JSON_FILENAME              = "project.json"                          # <-- Project metadata filename
+LOCAL_PROJECT_DATA_SUBFOLDER       = "00__ProjectData"                       # <-- Local master data folder (private, not synced)
+LOCAL_PROJECT_DATA_SUFFIX          = "__ProjectData__.json"                 # <-- Local master data file suffix
+# ------------------------------------------------------------
+
+
+# MODULE CONSTANTS | Production Data Defaults
+# ------------------------------------------------------------
+NOT_YET_REVIEWED                   = "NOT YET REVIEWED"                      # <-- Sentinel for fields filled during later review
+DEFAULT_ADDITIONAL_NOTES           = "Write a description here. Credit artists or add critique if work is subpar and caused issues."  # <-- Editable notes placeholder
+LOCAL_META_PLACEHOLDERS            = {                                       # <-- Local values that should be treated as "unset"
+    'DD-MMM-YYYY', 'TBD', 'N/A', 'NONE', 'NIL',
+    'DEFAULT CONCEPT ARTIST', 'DEFAULT DESIGNER'
+}
 # ------------------------------------------------------------
 
 
@@ -311,6 +337,66 @@ def extract_project_metadata(folder_name: str) -> Tuple[Optional[str], Optional[
             return full_code, project_code, project_name, project_type  # <-- Return metadata with type
 
     return None, None, None, None                                    # <-- Return None if no pattern matches
+# ---------------------------------------------------------------
+
+
+# HELPER FUNCTION | Clean a Local Metadata String Value
+# ---------------------------------------------------------------
+def clean_local_meta_value(value) -> Optional[str]:
+    """Return a trimmed string, or None for empty/placeholder local values."""
+    if not value or not isinstance(value, str):
+        return None                                                  # <-- Reject non-strings / empty
+    stripped = value.strip()                                         # <-- Trim surrounding whitespace
+    if not stripped:
+        return None                                                  # <-- Reject whitespace-only
+    if stripped.upper() in LOCAL_META_PLACEHOLDERS:
+        return None                                                  # <-- Treat placeholder values as unset
+    return stripped                                                  # <-- Return cleaned value
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Read Designer + Concept Artist From Local ProjectData JSON
+# ------------------------------------------------------------
+def read_local_project_metadata(project_source_path) -> Dict:
+    """Read Project__MetaData (designer, concept artist, dates, description) from the
+    local 00__ProjectData/<...>__ProjectData__.json so the data is authored once
+    locally and auto-carried into the Whitecardopedia project.json. Returns {} when
+    the file is missing or malformed (callers fall back to NOT_YET_REVIEWED)."""
+    try:
+        data_dir = Path(project_source_path) / LOCAL_PROJECT_DATA_SUBFOLDER  # <-- Local private data folder
+        if not data_dir.is_dir():
+            return {}                                                # <-- No data folder present
+
+        candidates = sorted(data_dir.glob(f"*{LOCAL_PROJECT_DATA_SUFFIX}"))  # <-- Locate the data file
+        if not candidates:
+            return {}                                                # <-- No data file present
+
+        with open(candidates[0], 'r', encoding='utf-8') as file:
+            doc = json.load(file)                                    # <-- Parse the local data document
+
+        # LOCATE Project__MetaData (file is an array of single-key blocks, or a flat dict)
+        meta = None                                                  # <-- Metadata block reference
+        if isinstance(doc, list):
+            for block in doc:
+                if isinstance(block, dict) and 'Project__MetaData' in block:
+                    meta = block['Project__MetaData']                # <-- Found metadata block in array
+                    break
+        elif isinstance(doc, dict):
+            meta = doc.get('Project__MetaData')                      # <-- Flat dict variant
+
+        if not isinstance(meta, dict):
+            return {}                                                # <-- No usable metadata block
+
+        return {
+            'conceptArtist' : clean_local_meta_value(meta.get('Project__ConceptArtist')),  # <-- Artist name
+            'designer'      : clean_local_meta_value(meta.get('Project__Designer')),       # <-- Designer name
+            'startDate'     : clean_local_meta_value(meta.get('Project__StartDate')),      # <-- Project start date
+            'deliveryDate'  : clean_local_meta_value(meta.get('Project__DeliveryDate')),   # <-- Delivery date
+            'description'   : clean_local_meta_value(meta.get('Project__Description')),     # <-- Short description
+        }
+    except Exception as error:
+        print(f"{COLOR_YELLOW}[!] Could not read local project metadata: {error}{COLOR_RESET}")  # <-- Non-fatal warning
+        return {}                                                    # <-- Fall back to empty metadata
 # ---------------------------------------------------------------
 
 
@@ -698,7 +784,7 @@ def load_template_json(template_path: Path) -> Optional[Dict]:
 
 # FUNCTION | Create Project JSON File with Year-Aware basePath
 # ------------------------------------------------------------
-def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, model_urls: List[str], dest_folder_name: str, year: str, project_type: str = "Whitecard") -> bool:
+def create_project_json(dest_folder: Path, template: Dict, project_code: str, project_name: str, images: List[str], project_date: str, model_urls: List[str], dest_folder_name: str, year: str, project_type: str = "Whitecard", production_meta: Optional[Dict] = None) -> bool:
     project_json_path = dest_folder / PROJECT_JSON_FILENAME           # <-- Construct project.json path
     
     project_data = template.copy()                                    # <-- Copy template data
@@ -718,10 +804,28 @@ def create_project_json(dest_folder: Path, template: Dict, project_code: str, pr
     # SET YEAR-AWARE BASE PATH
     project_data['basePath'] = f"Projects/{year}/{dest_folder_name}" # <-- Set basePath with year included
     
-    # SET DATE FULFILLED IN SCHEDULE DATA INSTEAD OF PROJECT DATE
-    if 'scheduleData' not in project_data:
-        project_data['scheduleData'] = {}                             # <-- Create scheduleData if missing
-    project_data['scheduleData']['dateFulfilled'] = project_date      # <-- Set extracted date as dateFulfilled
+    # PRODUCTION DATA | Designer + concept artist auto-pulled from the local ProjectData JSON
+    meta             = production_meta or {}                          # <-- Local metadata (may be empty)
+    concept_artist   = meta.get('conceptArtist') or NOT_YET_REVIEWED # <-- Project__ConceptArtist or sentinel
+    designer         = meta.get('designer')      or NOT_YET_REVIEWED # <-- Project__Designer or sentinel
+    template_notes   = (template.get('productionData') or {}).get('additionalNotes') or DEFAULT_ADDITIONAL_NOTES  # <-- Keep editable notes
+    project_data['productionData'] = {
+        "input"           : NOT_YET_REVIEWED,                        # <-- Filled in during later review
+        "conceptArtist"   : concept_artist,                          # <-- Auto-carried from local data (write once)
+        "designer"        : designer,                                # <-- Auto-carried from local data (write once)
+        "additionalNotes" : template_notes                           # <-- Editable description / critique field
+    }
+
+    # SCHEDULE DATA | Use the creation/fulfilment date so the project sorts to the top of the gallery
+    today_str        = datetime.now().strftime(DATE_FORMAT)          # <-- Date the gallery entry was created
+    date_fulfilled   = project_date if (project_date and project_date != 'TBD') else today_str  # <-- Real date, never "TBD"
+    project_data['scheduleData'] = {
+        "dateReceived"  : NOT_YET_REVIEWED,                          # <-- Filled in during later review
+        "dateFulfilled" : date_fulfilled,                            # <-- Drives default 'date-newest' gallery sort
+        "timeTaken"     : NOT_YET_REVIEWED                           # <-- Filled in during later review
+    }
+    # NOTE: timeAllocated is intentionally omitted — the Efficiency Scale and Time Analysis
+    # both skip a project until it has numeric timeAllocated + timeTaken (i.e. once reviewed).
     
     # CLEAN LEGACY MODEL URL FIELDS (remove old v3 format keys if present)
     project_data.pop('valeVision_ModelUrl_BaseMesh', None)            # <-- Remove legacy base mesh key
@@ -875,6 +979,8 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         result['error'] = "Failed to load template JSON"              # <-- Set error message
         return result                                                 # <-- Return error result
     
+    production_meta = read_local_project_metadata(project_info['source_path'])  # <-- Designer + artist from local data (write once)
+    
     json_success = create_project_json(
         dest_folder,
         template,
@@ -885,7 +991,8 @@ def process_single_project(project_info: Dict, dest_base_path: Path, template_pa
         model_urls,
         project_info['dest_folder_name'],
         year,
-        project_info.get('project_type', 'Whitecard')               # <-- Pass detected project type
+        project_info.get('project_type', 'Whitecard'),              # <-- Pass detected project type
+        production_meta=production_meta                              # <-- Carry local designer/artist into project.json
     )
     
     if not json_success:

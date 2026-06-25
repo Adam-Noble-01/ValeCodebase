@@ -8,6 +8,17 @@ ValeVision3D shares the same Cloudflare R2 index infrastructure as Whitecardoped
 
 ---
 
+## ⚠️ WHY R2-FIRST LOADING IS CRITICAL — NO GH PUSH FOR PROJECTS
+
+**The point of the R2 index is that a project (and its GLBs / `project.json`) goes live WITHOUT a GitHub Pages push.** ValeVision3D resolves the project from the R2 master index and loads `project.json` + models from the R2 CDN. The GitHub Pages copies are **fallback only**.
+
+- **R2 = live runtime source. GitHub Pages = fallback only.** A project synced by the ValeVision Cloud Sync plugin must be openable via `?project=<folderId>` immediately, with zero git activity.
+- **NEVER add logic that requires a GH push to make a project loadable.** Read routing flags (`assetHome`, `hasGlb_R2`) and GLB URLs from the R2-fetched index/`project.json`, never from a committed local copy.
+- **NEVER weaken the R2-first fetch order** in `Na__AppUtils__ProjectLoader.js` / the master-index loader. That regression reintroduces "synced but won't load until I push to GH".
+- **Code vs data:** only **app code** changes need a GH push (and a `PWA_SW_VERSION_TOKEN` bump for the shared PWA service worker). **Project/data additions never need a push.**
+
+---
+
 ## The Three R2 Index Files
 
 | File | R2 URL |

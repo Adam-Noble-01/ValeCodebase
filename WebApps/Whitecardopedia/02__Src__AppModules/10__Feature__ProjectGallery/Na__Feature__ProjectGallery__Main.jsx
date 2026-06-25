@@ -17,6 +17,7 @@
 // - Supports gallery mode toggle between Whitecard and Blockout views
 // - Filters projects by ProjectType field in project.json
 // - Shows warning banner when in Blockout mode
+// - Supports filtering by concept artist and designer via productionData fields
 //
 // =============================================================================
 
@@ -34,6 +35,24 @@
             return projects.filter(p => p.ProjectType === 'Blockout');        // <-- Show only Blockout projects
         }
         return projects.filter(p => p.ProjectType === 'Whitecard' || !p.ProjectType);  // <-- Show Whitecard or untagged projects
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Filter Projects by Concept Artist
+    // ------------------------------------------------------------
+    function filterByArtist(projects, filterArtist) {
+        if (filterArtist === 'all') return projects;                          // <-- Skip filter when set to all
+        return projects.filter(p => p.productionData?.conceptArtist === filterArtist);  // <-- Match artist name
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Filter Projects by Designer
+    // ------------------------------------------------------------
+    function filterByDesigner(projects, filterDesigner) {
+        if (filterDesigner === 'all') return projects;                        // <-- Skip filter when set to all
+        return projects.filter(p => p.productionData?.designer === filterDesigner);     // <-- Match designer name
     }
     // ---------------------------------------------------------------
 

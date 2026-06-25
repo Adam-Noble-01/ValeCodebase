@@ -16,6 +16,16 @@
 // - Generates statistics tables and efficiency metrics
 // - All dimensions follow Vale Design Suite standards
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 24-Oct-2025 - Version 1.0.0
+// - Initial Time Analysis tool with D3 bar charts and Gantt timeline.
+//
+// 25-Jun-2026 - Version 1.1.0
+// - Skips not-yet-reviewed projects (non-numeric timeAllocated/timeTaken) so
+//   first-sync NOT YET REVIEWED sentinels do not pollute artist statistics.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -217,6 +227,10 @@
                 loadedProjects.forEach(project => {                              // <-- Iterate through each project
                     const artist = project.productionData?.conceptArtist;         // <-- Get artist name
                     if (!artist) return;                                         // <-- Skip if no artist specified
+                    
+                    const isReviewed = typeof project.scheduleData?.timeAllocated === 'number'
+                        && typeof project.scheduleData?.timeTaken === 'number';   // <-- Reviewed projects carry numeric schedule data
+                    if (!isReviewed) return;                                      // <-- Skip not-yet-reviewed projects (placeholder schedule data)
                     
                     if (!stats[artist]) {                                        // <-- Initialize artist entry if needed
                         stats[artist] = {

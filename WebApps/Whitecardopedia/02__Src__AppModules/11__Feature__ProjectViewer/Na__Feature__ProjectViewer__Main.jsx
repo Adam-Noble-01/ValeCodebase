@@ -15,6 +15,17 @@
 // - Displays time efficiency scale for schedule performance
 // - Provides back navigation to project gallery
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2025 - Version 1.0.0
+// - Initial project detail viewer with carousel and efficiency scale.
+//
+// 25-Jun-2026 - Version 1.1.0
+// - Added Designer field to Production Data panel (productionData.designer).
+// - Time Taken displays sentinel text without "Hours" suffix when non-numeric.
+// - Efficiency Scale hidden until scheduleData has numeric timeAllocated + timeTaken.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -191,7 +202,9 @@
                                     {project.scheduleData?.timeTaken && (
                                         <div className="project-viewer__data-field">
                                             <span className="project-viewer__data-label">Time Taken</span>
-                                            <span className="project-viewer__data-value">{project.scheduleData.timeTaken} Hours</span>
+                                            <span className="project-viewer__data-value">
+                                                {typeof project.scheduleData.timeTaken === 'number' ? `${project.scheduleData.timeTaken} Hours` : project.scheduleData.timeTaken}
+                                            </span>
                                         </div>
                                     )}
                                     
@@ -199,6 +212,13 @@
                                         <div className="project-viewer__data-field">
                                             <span className="project-viewer__data-label">Concept Artist</span>
                                             <span className="project-viewer__data-value">{project.productionData.conceptArtist}</span>
+                                        </div>
+                                    )}
+                                    
+                                    {project.productionData.designer && (
+                                        <div className="project-viewer__data-field">
+                                            <span className="project-viewer__data-label">Designer</span>
+                                            <span className="project-viewer__data-value">{project.productionData.designer}</span>
                                         </div>
                                     )}
                                     
@@ -312,7 +332,9 @@
                             </div>
                             </div>
 
-                            {project.scheduleData && (
+                            {project.scheduleData &&
+                             typeof project.scheduleData.timeAllocated === 'number' &&
+                             typeof project.scheduleData.timeTaken === 'number' && (
                                 <div className="project-viewer__panel-section project-viewer__panel-section--efficiency">
                                     <hr className="project-viewer__divider" />
                                     <h3 className="project-viewer__production-title">Efficiency Scale</h3>

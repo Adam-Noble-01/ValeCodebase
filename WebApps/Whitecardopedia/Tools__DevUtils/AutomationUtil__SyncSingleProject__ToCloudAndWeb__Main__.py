@@ -27,6 +27,19 @@
 #   python AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py \
 #       --project "AB01__MyHouse__Whitecard" --year 26 --action all --json
 #
+# -----------------------------------------------------------------------------
+#
+# DEVELOPMENT LOG:
+# 25-Jun-2026 - Version 1.0.0
+# - Initial single-project sync orchestrator for the ValeVision Cloud Sync plugin.
+#
+# 25-Jun-2026 - Version 1.1.0
+# - na_ensure_wcp_project_scaffold: creates Whitecardopedia folder + project.json
+#   on first sync when missing (DRY-reuses FetchLocalProjects build module).
+# - First-sync production metadata: reads local ProjectData JSON for designer +
+#   concept artist; stamps dateFulfilled with creation date for gallery sort.
+# - report.first_sync flag for downstream Ruby/UI consumers.
+#
 # =============================================================================
 
 import os
@@ -94,6 +107,7 @@ class SyncReport:
         self.uploaded        = 0
         self.mirrored        = 0
         self.elapsed_ms      = 0
+        self.first_sync      = False                # <-- True when this run scaffolded a brand-new Whitecardopedia project
         self._start_time     = time.time()
 
     def add_step(self, label: str, success: bool, message: str, **extras):
@@ -116,6 +130,7 @@ class SyncReport:
             'elapsed_ms': self.elapsed_ms,
             'uploaded':   self.uploaded,
             'mirrored':   self.mirrored,
+            'first_sync': self.first_sync,
             'steps':      self.steps
         }
         return report
@@ -125,6 +140,28 @@ class SyncReport:
 # -----------------------------------------------------------------------------
 # REGION | Path Resolution
 # -----------------------------------------------------------------------------
+
+_FETCH_MODULE_CACHE = None                                         # <-- Lazily-loaded build script module (cached)
+
+
+def na_load_fetch_module():
+    """Import + cache the FetchLocalProjects build module so its canonical
+    project-scaffold helpers (folder-name transform, metadata extraction,
+    template loading, project.json + masterConfig writers) are reused (DRY)
+    rather than duplicated here. Returns the module or None on failure."""
+    global _FETCH_MODULE_CACHE
+    if _FETCH_MODULE_CACHE is not None:
+        return _FETCH_MODULE_CACHE
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("na_fetch_local_projects", FETCH_SCRIPT)
+        mod  = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _FETCH_MODULE_CACHE = mod
+    except Exception:
+        _FETCH_MODULE_CACHE = None
+    return _FETCH_MODULE_CACHE
+
 
 def na_resolve_local_project_root(project_folder: str, year: str) -> Optional[Path]:
     """Walk LOCAL_PROJECTS_BASE/ValeProjects__{year}/ and find the project folder."""
@@ -138,16 +175,14 @@ def na_resolve_local_project_root(project_folder: str, year: str) -> Optional[Pa
 
 def na_derive_web_folder_name(local_folder: str) -> str:
     """Local '..__Whitecard' folder -> Whitecardopedia/R2 folder name (suffix stripped)."""
-    try:
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("na_fetch_local_projects", FETCH_SCRIPT)
-        mod  = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        web = mod.generate_destination_folder_name(local_folder)   # <-- Canonical transform (strips type suffix)
-        if web:
-            return web
-    except Exception:
-        pass
+    mod = na_load_fetch_module()
+    if mod:
+        try:
+            web = mod.generate_destination_folder_name(local_folder)   # <-- Canonical transform (strips type suffix)
+            if web:
+                return web
+        except Exception:
+            pass
     for suffix in ('__Whitecard', '__Blockout', '__MaxModel'):     # <-- Fallback strip if import unavailable
         if local_folder.endswith(suffix):
             return local_folder[: -len(suffix)]
@@ -541,6 +576,91 @@ def na_merge_camera_in_r2_project_json(s3_client, bucket: str, r2_key: str, came
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | Project Scaffold (First Sync)
+# -----------------------------------------------------------------------------
+
+def na_ensure_wcp_project_scaffold(project_folder: str, web_folder: str, year: str,
+                                   local_root: Path, wcp_dir: Path, report: SyncReport) -> bool:
+    """Guarantee the Whitecardopedia project folder + project.json exist before
+    any project.json-dependent step runs. For a brand-new project this scaffolds
+    the folder + project.json (DRY-reusing the FetchLocalProjects build script)
+    and registers it in the local masterConfig, exactly as the bulk cloner does.
+
+    Returns True when a NEW project was scaffolded (first sync); False when an
+    existing project.json was found (normal re-sync) or scaffolding failed."""
+    project_json_path = wcp_dir / PROJECT_JSON_FILENAME
+
+    if project_json_path.exists():
+        report.add_step('Whitecardopedia Project Scaffold', True,
+                        'Existing project found — continuing sync.')
+        return False
+
+    mod = na_load_fetch_module()
+    if not mod:
+        report.add_step('Build New Whitecardopedia Project', False,
+                        'Build module unavailable — cannot scaffold project.json.')
+        return False
+
+    try:
+        full_year = f"20{year}" if len(year) == 2 else year
+
+        # METADATA | Code / name / type from the local source folder name
+        _full_code, project_code, project_name, project_type = mod.extract_project_metadata(project_folder)
+        if not project_name:                                        # <-- Fall back to the web folder name parts
+            project_code = project_code or web_folder.split('__')[0]
+            project_name = web_folder.split('__')[1] if '__' in web_folder else web_folder
+        project_type = project_type or 'Whitecard'
+
+        # MODEL URLS | Discover GLBs locally and build the v4 CDN URL array
+        glb_files  = mod.discover_glb_files(local_root)
+        model_urls = mod.build_valevision_model_urls_array(full_year, web_folder, glb_files)
+
+        # DATE FULFILLED | Use the creation (sync) date so the new project sorts to the top of the gallery
+        project_date = datetime.now().strftime('%d-%b-%Y')          # <-- "Date created" — keeps new projects at the top
+
+        # PRODUCTION META | Designer + concept artist auto-pulled from the local ProjectData JSON (write once)
+        production_meta = mod.read_local_project_metadata(local_root)
+
+        # TEMPLATE | Load the canonical project.json template
+        template_path = WCP_PROJECTS_BASE / '2025' / '01__TemplateProject'
+        template      = mod.load_template_json(template_path)
+        if not template:
+            report.add_step('Build New Whitecardopedia Project', False,
+                            f'Template project.json not found at {template_path}.')
+            return False
+
+        # WRITE | Create folder + project.json (camera defaults, basePath, ProjectType, model URLs)
+        wcp_dir.mkdir(parents=True, exist_ok=True)
+        json_ok = mod.create_project_json(
+            wcp_dir, template, project_code, project_name, [],
+            project_date, model_urls, web_folder, full_year, project_type,
+            production_meta=production_meta
+        )
+        if not json_ok:
+            report.add_step('Build New Whitecardopedia Project', False,
+                            'Failed to write project.json from template.')
+            return False
+
+        # MASTER CONFIG | Register the new project (mirrored to R2 later in this run)
+        try:
+            import AutomationUtil__R2Common__Lib__ as r2lib       # @delegate: ./AutomationUtil__R2Common__Lib__.py
+            mod.add_project_to_master_config(r2lib.MASTER_CONFIG_PATH, f"{full_year}/{web_folder}")
+        except Exception as cfg_exc:
+            report.add_step('Register Project In Master Config', False,
+                            f'masterConfig update failed (non-fatal): {cfg_exc}')
+
+        report.add_step('Build New Whitecardopedia Project', True,
+                        f'Created {full_year}/{web_folder} folder + project.json from template (first sync).')
+        return True
+
+    except Exception as exc:
+        report.add_step('Build New Whitecardopedia Project', False,
+                        f'Scaffold failed: {exc}')
+        return False
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | Main Sync Actions
 # -----------------------------------------------------------------------------
 
@@ -795,6 +915,10 @@ def main():
 
     web_folder = na_derive_web_folder_name(project_folder)            # <-- Stripped web/R2 folder name
     wcp_dir    = na_resolve_wcp_project_dir(web_folder, year)         # <-- Whitecardopedia dir uses web name
+
+    # SCAFFOLD GATE | Build the WCP folder + project.json on first sync so the
+    # project.json-dependent steps below have something to read/upload/merge.
+    report.first_sync = na_ensure_wcp_project_scaffold(project_folder, web_folder, year, local_root, wcp_dir, report)
 
     if action == 'all':
         na_sync_all(web_folder, year, local_root, wcp_dir, report)

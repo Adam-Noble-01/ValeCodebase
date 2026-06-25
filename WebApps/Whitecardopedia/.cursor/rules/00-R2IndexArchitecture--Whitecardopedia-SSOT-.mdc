@@ -8,6 +8,18 @@ Whitecardopedia's data pipeline is built on three **machine-generated** JSON fil
 
 ---
 
+## ⚠️ WHY R2-FIRST LOADING IS CRITICAL — NO GH PUSH FOR PROJECTS
+
+**The entire point of this architecture is that adding/enabling a project must go live WITHOUT a GitHub Pages push or deploy wait.** The app fetches the R2 master config + master index FIRST (cache-busted) so a project synced by the ValeVision Cloud Sync plugin appears in the gallery within seconds.
+
+- **R2 is the live runtime source. GitHub Pages copies are FALLBACK ONLY** — used only when an R2 fetch fails. Never treat the committed `Na__AppData__MasterConfig__Main.json` / `Na__MasterIndex__ProjectLocations__.json` as the source the app reads first.
+- **NEVER add code that requires a GH push to make a project visible.** Gallery membership comes from the R2 master config; asset routing comes from the R2 master index. Both are fetched live.
+- **NEVER weaken or remove the R2-first fetch order** in `Na__AppData__ProjectLoader.js` (`loadMasterConfig` → `masterConfigR2Url` first; `na_load_master_index` → R2 first). Doing so reintroduces the "synced but not showing until I push to GH" failure.
+- **Keep the GH fallback copies fresh anyway** (commit the sync-updated local copies) so that *if* R2 is ever unreachable the fallback isn't stale — but the fallback must never be the primary path.
+- **Shell-cache caveat:** app JS/CSS is served stale-while-revalidate by the service worker, so **code** changes still need a GH push AND a `PWA_SW_VERSION_TOKEN` bump to reach users promptly. This only affects code — **project/data additions never need a push** because of R2-first loading.
+
+---
+
 ## The Three R2 Index Files
 
 | File | R2 URL | Local GH Fallback |

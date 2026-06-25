@@ -18,6 +18,38 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.2 - 25-Jun-2026 - First-Sync Scaffold, Production Data Automation, PWA Cache Recovery
+
+### Overview
+Completes the ValeVision Cloud Sync first-sync workflow so a brand-new project can be pushed to R2 from SketchUp without a pre-existing Whitecardopedia folder. Production metadata (designer, concept artist) is now authored once in the local `*__ProjectData__.json` and auto-carried into `project.json`. New projects stamp `dateFulfilled` with the creation/sync date so they sort to the top of the default gallery. Adds a one-keystroke PWA cache reset for stale shell-cache recovery after loader changes.
+
+### Changes
+- **First-sync scaffold (Python orchestrator)** — `na_ensure_wcp_project_scaffold()` runs before any `project.json`-dependent step. When no Whitecardopedia folder exists it creates `{year}/{code}__Name/` + `project.json` from the canonical template (DRY-reusing `AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py`), registers the project in local masterConfig, and sets `report.first_sync = true`. See ValeVision Cloud Sync v0.2.1 for the matching SketchUp UI (Update cards locked until first successful sync).
+- **Production data automation** — `read_local_project_metadata()` reads `Project__MetaData` from `00__ProjectData/*__ProjectData__.json` and maps `Project__ConceptArtist` + `Project__Designer` into `productionData.conceptArtist` / `productionData.designer`. Unreviewed fields use the `NOT YET REVIEWED` sentinel; `timeAllocated` is omitted until review so the Efficiency Scale stays hidden. Both the bulk cloner and the single-project sync orchestrator call this helper.
+- **Gallery sort fix** — `create_project_json()` now sets `scheduleData.dateFulfilled` to the creation/sync date (`datetime.now()` in the plugin path; content-folder date or today in the bulk cloner). Eliminates `TBD` / template dates that pushed new projects to the bottom of the default `date-newest` sort.
+- **ProjectViewer** — new **Designer** field in Production Data; Time Taken only appends "Hours" when numeric; Efficiency Scale gated on numeric `timeAllocated` + `timeTaken`.
+- **Time Analysis** — skips projects whose schedule data is still placeholder (non-numeric hours) so analytics are not polluted by first-sync sentinels.
+- **PWA cache recovery** — `Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload()` wipes all Cache Storage buckets, unregisters every service worker, clears `wcp_last_build_version`, and reloads. Exposed as `--ClearCache` in the browser console (`window.ClearCache` getter) and `window.na_clear_cache()`.
+- **PWA shell cache bump** — `PWA_SW_VERSION_TOKEN` bumped to `2026-06-25-2` so clients force-evict stale shell caches after ProjectLoader / registrar changes without requiring a double reload.
+- **R2-first architecture docs** — MDC rules (`14-R2IndexArchitecture--VaApps-SSOT-.mdc`, Whitecardopedia + ValeVision3D SSOT rules) now document that R2 is the live runtime source for project/index data and must not require a GitHub Pages push to go live.
+
+### Files Changed
+- `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`
+- `Tools__DevUtils/AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py`
+- `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx`
+- `02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js`
+- `Projects/2026/63770__Warwick/project.json` (corrected production/schedule data for Warwick)
+- `.cursor/rules/14-R2IndexArchitecture--VaApps-SSOT-.mdc`
+- `.cursor/rules/00-R2IndexArchitecture--Whitecardopedia-SSOT-.mdc` (Whitecardopedia)
+- `.cursor/rules/08-R2IndexArchitecture--ValeVision3D-SSOT-.mdc` (ValeVision3D)
+
+### Cross-reference
+- **ValeVision Cloud Sync v0.2.1** — first-sync UI state (`first_sync_complete` model-dictionary flag, greyed Update cards until first successful sync).
+
+---
+
 ## Whitecardopedia v0.6.1 - 25-Jun-2026 - Carousel Gate for ValeVision 3D Projects
 
 ### Overview
@@ -473,5 +505,5 @@ The `RenderEngine__Config` key written by the WCP builder is read on load by Val
 
 # -----------------------------------------------------------------------------
 
-**Last Updated**: 28-Apr-2026
+**Last Updated**: 25-Jun-2026
 

@@ -4,11 +4,11 @@
     "deploymentModeNotes": "Live deployment for Pushed Branches, Dev deployment for Local Development",
     "deploymentMode": "Live",
     "projectsBasePath": "Projects",
-    "AssetUrls__R2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
-    "AssetUrls__GhBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
-    "AssetUrls__FallbackToastMsg": "Failed to fetch live assets — using static assets instead.",
-    "AssetUrls__IndexUrl": "https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json",
-    "AssetUrls__IndexFallbackUrl": "02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json",
+    "AssetUrls__R2BaseUrl"      : "https://cdn.noble-architecture.com/VaApps/Projects",
+    "AssetUrls__GhBaseUrl"      : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
+    "AssetUrls__FallbackToastMsg" : "Failed to fetch live assets — using static assets instead.",
+    "AssetUrls__IndexUrl"       : "https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json",
+    "AssetUrls__IndexFallbackUrl" : "02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json",
     "projectFoldersBlacklist": [
         "01__TemplateProject",
         "00__ExampleProject",
@@ -527,10 +527,6 @@
         },
         {
             "folderId": "2026/63592__Bressard-Kayode",
-            "enabled": true
-        },
-        {
-            "folderId": "2026/63770__Warwick",
             "enabled": true
         }
     ]

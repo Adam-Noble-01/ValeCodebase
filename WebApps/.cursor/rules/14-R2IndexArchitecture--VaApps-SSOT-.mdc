@@ -8,6 +8,17 @@ Three JSON files on Cloudflare R2 are the **authoritative runtime sources** for 
 
 ---
 
+## ⚠️ WHY R2-FIRST LOADING IS CRITICAL — NO GH PUSH FOR PROJECTS
+
+**The whole reason these files live on R2 is so that adding/enabling a project goes live WITHOUT a GitHub Pages push or deploy wait.** Both apps fetch the R2 master config + master index FIRST (cache-busted); the GitHub Pages copies are **fallback only**, used solely when an R2 fetch fails.
+
+- **R2 = live runtime source. GitHub Pages = fallback only.** A project synced by the ValeVision Cloud Sync plugin must appear in seconds with zero git activity.
+- **NEVER add logic that requires a GH push to make a project visible or loadable.** If a feature depends on index data, read it from the R2-fetched objects (forwarded onto each project object by the loaders) — not from a committed local copy.
+- **NEVER weaken the R2-first fetch order** in either app's project loader. That regression is exactly what produces "synced successfully but the app doesn't show it until I push to GH".
+- **Code vs data:** only **app code** (JS/CSS/HTML) changes need a GH push (and, for the PWA, a `PWA_SW_VERSION_TOKEN` bump). **Project/data additions never need a push** — that is the contract this architecture guarantees.
+
+---
+
 ## The Three Index Files
 
 ### 1. Master App Config Mirror

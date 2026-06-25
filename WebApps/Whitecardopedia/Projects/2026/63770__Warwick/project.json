@@ -1,0 +1,95 @@
+{
+    "projectName": "Warwick",
+    "projectCode": "63770",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "Rachael",
+        "designer": "Steve",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "NOT YET REVIEWED",
+        "dateFulfilled": "25-Jun-2026",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63770__Warwick",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "25-Jun-2026 at 18:29",
+        "model_name": "Warwick__WhiteCardModel__0.2.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__ViewOption-01__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 25005.6783,
+                        "y": -8023.5146,
+                        "z": 1892.5697
+                    },
+                    "target": {
+                        "x": 12327.6926,
+                        "y": 15091.6817,
+                        "z": 1892.5697
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": -0.480888,
+                        "y": 0.876782,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            }
+        ]
+    }
+}

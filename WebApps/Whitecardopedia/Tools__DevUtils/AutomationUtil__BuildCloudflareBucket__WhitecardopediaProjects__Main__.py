@@ -36,6 +36,9 @@ from typing import List, Dict, Tuple, Optional
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError, NoCredentialsError
 
+# Shared R2 plumbing + master index (creds/client, HEAD/upload, index read/write)
+# @delegate: ./AutomationUtil__R2Common__Lib__.py
+
 # -----------------------------------------------------------------------------
 # REGION | Module Constants and Configuration
 # -----------------------------------------------------------------------------

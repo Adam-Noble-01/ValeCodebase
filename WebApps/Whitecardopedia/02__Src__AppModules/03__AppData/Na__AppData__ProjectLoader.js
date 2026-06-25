@@ -36,6 +36,13 @@
 // - Added getImageUrlPair / getThumbnailImagePair returning { primary, fallback }
 //   and Na__AssetUrls__HandleImgError for R2->GH onError fallback + toast.
 //
+// 25-Jun-2026 - Version 0.2.2
+// - Master index integration: na_load_master_index (R2-first, GH fallback,
+//   memoised) + na_resolve_project_base resolve each project's true asset home
+//   from VaApps/Index/Na__MasterIndex__ProjectLocations__.json. project.json
+//   and images now fetch the correct source directly, killing the blind-R2
+//   404 flood. Index URLs seeded from masterConfig SSOT.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -58,6 +65,14 @@
     let Na__AssetUrls__GhBase      = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages fallback base
     let Na__AssetUrls__FallbackMsg = 'Failed to fetch live assets — using static assets instead.'; // <-- Toast message
     let Na__AssetUrls__Initialised = false;                              // <-- Prevents re-seeding after first load
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Master Index (authoritative per-project asset locations)
+    // ------------------------------------------------------------
+    let Na__MasterIndex__Url         = 'https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json'; // <-- R2 primary index
+    let Na__MasterIndex__FallbackUrl = '02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json';                 // <-- GH Pages fallback (same-origin)
+    let Na__MasterIndex__LoadPromise = null;                             // <-- Memoised load promise (R2-first, GH fallback)
+    let Na__MasterIndex__EntryMap    = null;                             // <-- Map<folderId, indexEntry> once loaded
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | Thumbnail Naming Convention (mirrors generator script)
@@ -93,6 +108,8 @@
         if (masterConfig.AssetUrls__R2BaseUrl)      Na__AssetUrls__R2Base      = masterConfig.AssetUrls__R2BaseUrl;
         if (masterConfig.AssetUrls__GhBaseUrl)      Na__AssetUrls__GhBase      = masterConfig.AssetUrls__GhBaseUrl;
         if (masterConfig.AssetUrls__FallbackToastMsg) Na__AssetUrls__FallbackMsg = masterConfig.AssetUrls__FallbackToastMsg;
+        if (masterConfig.AssetUrls__IndexUrl)         Na__MasterIndex__Url         = masterConfig.AssetUrls__IndexUrl;
+        if (masterConfig.AssetUrls__IndexFallbackUrl) Na__MasterIndex__FallbackUrl = masterConfig.AssetUrls__IndexFallbackUrl;
 
         Na__AssetUrls__Initialised = true;
     }
@@ -137,13 +154,86 @@
     // ---------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Fetch project.json from R2 First Then GH Pages
+    // FUNCTION | Load the Master Project Index (R2-first, GH Fallback, Memoised)
+    // ---------------------------------------------------------------
+    // The index lists every project's year, asset home (r2|gh) and R2 presence
+    // flags so the loader can fetch each project from the correct source
+    // directly — eliminating the blind-R2 404 flood. Resolves to a
+    // Map<folderId, entry>. Never throws; resolves to an empty Map on failure
+    // so callers transparently fall back to the legacy R2-then-GH behaviour.
+    // ---------------------------------------------------------------
+    function na_load_master_index() {
+        if (Na__MasterIndex__LoadPromise) return Na__MasterIndex__LoadPromise; // <-- Single fetch per session
+
+        Na__MasterIndex__LoadPromise = (async () => {
+            const tryFetch = async (url) => {
+                try {
+                    const resp = await fetch(url);                        // <-- Attempt one source
+                    if (resp.ok) return await resp.json();
+                } catch (_) {}
+                return null;
+            };
+
+            let index = await tryFetch(Na__MasterIndex__Url);            // <-- R2 CDN primary
+            if (!index) index = await tryFetch(Na__MasterIndex__FallbackUrl); // <-- GH Pages fallback copy
+
+            const map = new Map();
+            if (index && Array.isArray(index.projects)) {
+                for (const entry of index.projects) {
+                    if (entry && entry.folderId) map.set(entry.folderId, entry); // <-- Key by folderId
+                }
+            }
+            Na__MasterIndex__EntryMap = map;                             // <-- Cache resolved map
+            return map;
+        })();
+
+        return Na__MasterIndex__LoadPromise;
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve the Correct Asset Base For a Project
+    // ---------------------------------------------------------------
+    // Uses the master index (when loaded) to decide whether a project's
+    // project.json lives on R2 or GH Pages, returning the matching base + a
+    // flag. Falls back to R2 (legacy behaviour) when the index is unavailable
+    // or has no entry for the project.
+    // ---------------------------------------------------------------
+    function na_resolve_project_base(folderId) {
+        const entry = Na__MasterIndex__EntryMap ? Na__MasterIndex__EntryMap.get(folderId) : null;
+
+        if (entry && entry.assetHome === 'gh') {
+            return { base: Na__AssetUrls__GhBase, isR2: false, indexed: true }; // <-- Index says GH-only
+        }
+        if (entry && entry.assetHome === 'r2') {
+            return { base: Na__AssetUrls__R2Base, isR2: true, indexed: true };  // <-- Index says R2
+        }
+        return { base: Na__AssetUrls__R2Base, isR2: true, indexed: false };     // <-- No index info — try R2 first (legacy)
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fetch project.json from the Indexed Source (R2 or GH)
     // ---------------------------------------------------------------
     async function na_fetch_project_json_r2_first(folderId) {
         const r2Url  = `${Na__AssetUrls__R2Base}/${folderId}/project.json`;
         const ghUrl  = `${Na__AssetUrls__GhBase}/${folderId}/project.json`;
         const ghPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}/project.json`; // <-- Local/GH Pages relative
 
+        await na_load_master_index();                                     // <-- Ensure index is available (memoised)
+        const resolved = na_resolve_project_base(folderId);               // <-- Index-driven source decision
+
+        // INDEX SAYS GH-ONLY | Skip the doomed R2 request entirely (kills 404 noise)
+        if (resolved.indexed && !resolved.isR2) {
+            try {
+                const ghResponse = await fetch(ghPath);                   // <-- Same-origin GH Pages first
+                if (ghResponse.ok) return { response: ghResponse, isR2: false };
+            } catch (_) {}
+            const ghAbsoluteResponse = await fetch(ghUrl);                // <-- Absolute GH Pages fallback
+            return { response: ghAbsoluteResponse, isR2: false };
+        }
+
+        // INDEX SAYS R2 (or unknown) | Try R2 first, then GH Pages
         try {
             const r2Response = await fetch(r2Url);
             if (r2Response.ok) return { response: r2Response, isR2: true };
@@ -200,6 +290,7 @@
             const config = await response.json();                        // <-- Parse JSON response
 
             Na__AssetUrls__InitFromConfig(config);                       // <-- Seed R2/GH base URLs from masterConfig SSOT
+            na_load_master_index();                                      // <-- Kick off master index load (R2-first, GH fallback; memoised)
 
             // LOAD DEDICATED LIST FILES | Canonical source with masterConfig fallback
             const designersList = await loadOptionsListFromFile(
@@ -244,8 +335,14 @@
             const projectData = await response.json();                   // <-- Parse JSON response
             projectData.folderId = folderId;                             // <-- Add folder ID to data
             projectData.basePath = localProjectPath;                     // <-- GH relative path (fallback image resolution)
-            projectData.r2BasePath = `${Na__AssetUrls__R2Base}/${folderId}`;  // <-- R2 base for image resolution
             projectData.isR2Loaded = isR2;                               // <-- Provenance flag for callers
+
+            // RESOLVE IMAGE BASE | Use R2 only when the index confirms images live there
+            const indexEntry = Na__MasterIndex__EntryMap ? Na__MasterIndex__EntryMap.get(folderId) : null;
+            const imagesOnR2 = !indexEntry || indexEntry.hasImages_R2 !== false;  // <-- Unknown -> assume R2 (legacy + onError safety net)
+            projectData.r2BasePath = imagesOnR2
+                ? `${Na__AssetUrls__R2Base}/${folderId}`                 // <-- R2 primary for images/thumbnails
+                : null;                                                   // <-- Index says GH-only — make GH the primary (no 404)
             
             // PRE-PROCESS IMAGES | Build pairs map from JSON images array
             if (projectData.images && projectData.images.length > 0) {

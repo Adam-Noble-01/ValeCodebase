@@ -2,7 +2,7 @@
 // WHITECARDOPEDIA - PROJECT LOADER UTILITY
 // =============================================================================
 //
-// FILE       : projectLoader.js
+// FILE       : Na__AppData__ProjectLoader.js
 // NAMESPACE  : Whitecardopedia
 // MODULE     : ProjectLoader
 // AUTHOR     : Adam Noble - Noble Architecture
@@ -10,10 +10,24 @@
 // CREATED    : 2025
 //
 // DESCRIPTION:
-// - Utility functions for loading project data from folder structure
-// - Reads masterConfig.json for project index
-// - Loads individual project.json files for project metadata
-// - Handles image path resolution for project galleries
+// - Utility functions for loading project data from folder structure.
+// - Reads masterConfig.json for project index.
+// - Loads individual project.json files for project metadata.
+// - Handles image path resolution for project galleries.
+// - R2-first loading: project.json and images are fetched from Cloudflare R2
+//   CDN first and fall back to GH Pages on failure. Base URLs are driven from
+//   masterConfig (SSOT); a fallback toast is emitted on GH Pages fallback.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2025 - Version 0.1.0
+// - Initial implementation.
+//
+// 25-Jun-2026 - Version 0.2.0
+// - R2-first loading: loadProjectData tries R2 CDN first then GH Pages.
+// - getImageUrl and getThumbnailImage return R2-first URLs.
+// - Na__AssetUrls__InitFromConfig seeds R2/GH bases from masterConfig.
 //
 // =============================================================================
 
@@ -30,6 +44,69 @@
         projectBasePath     : 'Projects',                                // <-- Base path for projects (year comes from folderId)
     };
     // ------------------------------------------------------------
+
+    // MODULE VARIABLES | R2-First Asset URL Bases (populated from masterConfig)
+    // ------------------------------------------------------------
+    let Na__AssetUrls__R2Base      = 'https://cdn.noble-architecture.com/VaApps/Projects';       // <-- R2 CDN primary base
+    let Na__AssetUrls__GhBase      = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages fallback base
+    let Na__AssetUrls__FallbackMsg = 'Failed to fetch live assets — using static assets instead.'; // <-- Toast message
+    let Na__AssetUrls__Initialised = false;                              // <-- Prevents re-seeding after first load
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Seed Asset Base URLs From masterConfig (call once)
+    // ---------------------------------------------------------------
+    function Na__AssetUrls__InitFromConfig(masterConfig) {
+        if (Na__AssetUrls__Initialised || !masterConfig) return;
+
+        if (masterConfig.AssetUrls__R2BaseUrl)      Na__AssetUrls__R2Base      = masterConfig.AssetUrls__R2BaseUrl;
+        if (masterConfig.AssetUrls__GhBaseUrl)      Na__AssetUrls__GhBase      = masterConfig.AssetUrls__GhBaseUrl;
+        if (masterConfig.AssetUrls__FallbackToastMsg) Na__AssetUrls__FallbackMsg = masterConfig.AssetUrls__FallbackToastMsg;
+
+        Na__AssetUrls__Initialised = true;
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Emit Fallback Toast When R2 Fails
+    // ---------------------------------------------------------------
+    function Na__AssetUrls__EmitFallbackToast() {
+        try {
+            window.dispatchEvent(new CustomEvent('wcp-asset-fallback-toast', {
+                detail: { message: Na__AssetUrls__FallbackMsg }
+            }));
+        } catch (_) {}
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fetch project.json from R2 First Then GH Pages
+    // ---------------------------------------------------------------
+    async function na_fetch_project_json_r2_first(folderId) {
+        const r2Url  = `${Na__AssetUrls__R2Base}/${folderId}/project.json`;
+        const ghUrl  = `${Na__AssetUrls__GhBase}/${folderId}/project.json`;
+        const ghPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}/project.json`; // <-- Local/GH Pages relative
+
+        try {
+            const r2Response = await fetch(r2Url);
+            if (r2Response.ok) return { response: r2Response, isR2: true };
+        } catch (_) {}
+
+        // R2 failed — try GH Pages relative path first (same origin for GitHub Pages deployment)
+        try {
+            const ghResponse = await fetch(ghPath);
+            if (ghResponse.ok) {
+                Na__AssetUrls__EmitFallbackToast();
+                return { response: ghResponse, isR2: false };
+            }
+        } catch (_) {}
+
+        // Last resort: absolute GH Pages URL
+        Na__AssetUrls__EmitFallbackToast();
+        const ghAbsoluteResponse = await fetch(ghUrl);
+        return { response: ghAbsoluteResponse, isR2: false };
+    }
+    // ---------------------------------------------------------------
 
     // HELPER FUNCTION | Load Option List from Dedicated Data File
     // ---------------------------------------------------------------
@@ -65,6 +142,8 @@
             
             const config = await response.json();                        // <-- Parse JSON response
 
+            Na__AssetUrls__InitFromConfig(config);                       // <-- Seed R2/GH base URLs from masterConfig SSOT
+
             // LOAD DEDICATED LIST FILES | Canonical source with masterConfig fallback
             const designersList = await loadOptionsListFromFile(
                 PROJECT_LOADER_CONFIG.designersListPath,
@@ -93,13 +172,13 @@
     // ---------------------------------------------------------------
 
 
-    // FUNCTION | Load Individual Project Data
+    // FUNCTION | Load Individual Project Data (R2-first with GH fallback)
     // ------------------------------------------------------------
     async function loadProjectData(folderId) {
-        const projectPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}`;  // <-- Construct project path
+        const localProjectPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}`;  // <-- GH Pages relative path
         
         try {
-            const response = await fetch(`${projectPath}/project.json`);  // <-- Fetch project metadata
+            const { response, isR2 } = await na_fetch_project_json_r2_first(folderId);  // <-- R2-first fetch
             
             if (!response.ok) {
                 throw new Error(`Failed to load project: ${folderId}`);  // <-- Handle fetch error
@@ -107,7 +186,9 @@
             
             const projectData = await response.json();                   // <-- Parse JSON response
             projectData.folderId = folderId;                             // <-- Add folder ID to data
-            projectData.basePath = projectPath;                          // <-- Add base path to data
+            projectData.basePath = localProjectPath;                     // <-- GH relative path (fallback image resolution)
+            projectData.r2BasePath = `${Na__AssetUrls__R2Base}/${folderId}`;  // <-- R2 base for image resolution
+            projectData.isR2Loaded = isR2;                               // <-- Provenance flag for callers
             
             // PRE-PROCESS IMAGES | Build pairs map from JSON images array
             if (projectData.images && projectData.images.length > 0) {
@@ -237,26 +318,46 @@
     // ---------------------------------------------------------------
 
 
-    // FUNCTION | Get Image URL for Project
+    // FUNCTION | Get Image URL for Project (R2-first with GH fallback)
     // ------------------------------------------------------------
     function getImageUrl(projectData, imageName) {
-        return `${projectData.basePath}/${imageName}`;                   // <-- Construct full image URL
+        if (!projectData || !imageName) return '';                        // <-- Guard missing args
+
+        if (projectData.r2BasePath) {
+            return `${projectData.r2BasePath}/${imageName}`;             // <-- R2 primary URL when available
+        }
+
+        return `${projectData.basePath}/${imageName}`;                   // <-- GH Pages relative fallback
     }
     // ---------------------------------------------------------------
 
 
-    // FUNCTION | Get Thumbnail Image for Project
+    // HELPER FUNCTION | Get Thumbnail Sub-path For A Given Image
+    // ---------------------------------------------------------------
+    function na_get_thumbnail_sub_path(filename) {
+        const thumbName = filename.replace(/\.\w+$/, '.webp');           // <-- Swap extension to WebP
+        return `Thumbnails__524p__WebP/${thumbName}`;                    // <-- Return thumbnail sub-path
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Get Thumbnail Image for Project (R2-first with GH fallback)
     // ------------------------------------------------------------
     function getThumbnailImage(projectData) {
-        if (projectData && projectData.thumbnailImage) {
-            return getImageUrl(projectData, projectData.thumbnailImage); // <-- Prefer the 524p thumbnail when available
+        if (!projectData) return null;                                    // <-- Guard missing project
+
+        const sourceFile = projectData.thumbnailImage
+            || (projectData.images && projectData.images.length > 0 ? projectData.images[0] : null);  // <-- Prefer explicit thumbnail key
+
+        if (!sourceFile) return null;                                     // <-- No images available
+
+        const thumbSubPath = na_get_thumbnail_sub_path(sourceFile);      // <-- Build thumbnail sub-path
+
+        if (projectData.r2BasePath) {
+            return `${projectData.r2BasePath}/${thumbSubPath}`;          // <-- R2 primary thumbnail URL
         }
 
-        if (!projectData.images || projectData.images.length === 0) {
-            return null;                                                 // <-- Return null if no images
-        }
-
-        return getImageUrl(projectData, projectData.images[0]);          // <-- Fallback to first full-resolution image
+        return `${projectData.basePath}/${thumbSubPath}`;                // <-- GH Pages relative fallback
     }
     // ---------------------------------------------------------------
 
@@ -362,7 +463,7 @@
                 filename : artData.filename,
                 artCode  : artData.artCode,
                 label    : artData.label,
-                url      : `${projectData.basePath}/${artData.filename}`
+                url      : getImageUrl(projectData, artData.filename)    // <-- R2-first URL via shared helper
             };
         }
         

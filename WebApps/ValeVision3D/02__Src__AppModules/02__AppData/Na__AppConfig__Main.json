@@ -280,6 +280,12 @@
             "3dObject__Interaction__CameraFollow__FlatShadingNote"     : "Master switch for per-component flat shading. The flatness amount itself (0=full directional, 1=fully flat) is data-driven per component via the Components DataLib (Behaviours.ShadeFlatness) and baked into each billboard's glTF node extras as shadeFlatness. DefaultShadeFlatness is the fallback applied to billboards whose GLB predates the exporter field (no baked shadeFlatness) so existing models flatten without a re-export; any baked per-component value overrides it. Set FlatShadingEnabled to false to globally ignore flatness and render all billboards with normal directional lighting."
         }
     },
+    "ProjectData__AssetUrls": {
+        "ProjectData__AssetUrls__Description"       : "Base URLs for project.json and image assets. R2 is tried first; if it fails the GH Pages base is used as fallback. Kept here as SSOT — do not hardcode in modules.",
+        "ProjectData__AssetUrls__R2BaseUrl"         : "https://cdn.noble-architecture.com/VaApps/Projects",
+        "ProjectData__AssetUrls__GhBaseUrl"         : "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
+        "ProjectData__AssetUrls__FallbackToastMsg"  : "Failed to fetch live assets — using static assets instead."
+    },
     "LoadResilience__Config": {
         "LoadResilience__Config__Description"           : "Timeouts, retries, and concurrency caps for the load pipeline. All time values are milliseconds. Bump these on slow-CDN deployments; do NOT hardcode in modules.",
         "LoadResilience__Config__ConfigFetchTimeoutMs"  : 10000,

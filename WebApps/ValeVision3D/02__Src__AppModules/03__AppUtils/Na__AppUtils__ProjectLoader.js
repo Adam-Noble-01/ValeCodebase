@@ -32,6 +32,11 @@
 // - Added promise-memoization keyed by project code (L2 fix: single fetch
 //   per boot regardless of how many callers invoke FetchProjectJson).
 //
+// 25-Jun-2026 - Version 1.2.0
+// - R2-first loading: FetchProjectJson now tries the CDN R2 URL first then
+//   falls back to GH Pages; emits a "Failed to fetch live assets" toast on
+//   fallback. Base URLs driven from Na__AppConfig__Main.json SSOT.
+//
 // =============================================================================
 
 
@@ -52,10 +57,43 @@
 // REGION | Module Constants - Web Project Data Paths
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | GH Pages Base URL and Year Fallback
+    // MODULE CONSTANTS | Base URLs (sourced from Na__AppConfig__Main.json SSOT at runtime)
     // ------------------------------------------------------------
-    const Na__AppUtils__WebProjectsBaseUrl = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages base
-    const Na__AppUtils__DefaultProjectYear = '2026';                                                                          // <-- Legacy fallback
+    // These fallback constants are only used when appConfig is unavailable.
+    // The live values come from ProjectData__AssetUrls in Na__AppConfig__Main.json.
+    // ------------------------------------------------------------
+    const Na__AppUtils__R2BaseUrl_Fallback  = 'https://cdn.noble-architecture.com/VaApps/Projects';     // <-- R2 CDN fallback default
+    const Na__AppUtils__GhBaseUrl_Fallback  = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- GH Pages fallback default
+    const Na__AppUtils__DefaultProjectYear  = '2026';                                                   // <-- Legacy year fallback
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Runtime Base URLs (populated by Na__AppUtils__InitFromConfig)
+    // ------------------------------------------------------------
+    let Na__AppUtils__R2BaseUrl           = Na__AppUtils__R2BaseUrl_Fallback;    // <-- Set from appConfig at init time
+    let Na__AppUtils__GhBaseUrl           = Na__AppUtils__GhBaseUrl_Fallback;    // <-- Set from appConfig at init time
+    let Na__AppUtils__FallbackToastMsg    = 'Failed to fetch live assets — using static assets instead.'; // <-- Set from appConfig
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Config Initialisation
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Initialise Base URLs From AppConfig (call once after config loads)
+    // ------------------------------------------------------------
+    function Na__AppUtils__InitFromConfig(appConfig) {
+        const urlConfig = appConfig && appConfig['ProjectData__AssetUrls'];
+        if (!urlConfig) return;
+
+        if (urlConfig['ProjectData__AssetUrls__R2BaseUrl'])
+            Na__AppUtils__R2BaseUrl = urlConfig['ProjectData__AssetUrls__R2BaseUrl'];   // <-- Override R2 base from config
+        if (urlConfig['ProjectData__AssetUrls__GhBaseUrl'])
+            Na__AppUtils__GhBaseUrl = urlConfig['ProjectData__AssetUrls__GhBaseUrl'];   // <-- Override GH base from config
+        if (urlConfig['ProjectData__AssetUrls__FallbackToastMsg'])
+            Na__AppUtils__FallbackToastMsg = urlConfig['ProjectData__AssetUrls__FallbackToastMsg']; // <-- Override toast message
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -125,7 +163,7 @@
 // REGION | Project JSON Fetching
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Fetch Whitecardopedia project.json (Resilient + Memoised)
+    // FUNCTION | Fetch Whitecardopedia project.json (R2-first, GH fallback, Memoised)
     // ------------------------------------------------------------
     // resilienceConfig {object} - LoadResilience__Config block from Na__AppConfig__Main.json.
     //   Expected keys used here:
@@ -133,6 +171,8 @@
     //     LoadResilience__Config__RetryCount      {number}
     //     LoadResilience__Config__RetryBaseDelayMs{number}
     // If resilienceConfig is omitted sensible hardcoded defaults are used.
+    // On production, tries R2 CDN first; falls back to GH Pages and emits a
+    // fallback toast so the user knows they may be on stale assets.
     // ------------------------------------------------------------
     function Na__AppUtils__FetchProjectJson(projectCode, resilienceConfig) {
         const cacheKey = projectCode || '__no_project__';                   // <-- Stable key for memoization
@@ -145,24 +185,69 @@
         const retries      = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryCount)       || 2;     // <-- Number of retries
         const retryDelayMs = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;  // <-- Base retry delay
 
-        let projectJsonUrl;
+        const fetchOpts    = { timeoutMs, retries: 1, retryDelayMs };       // <-- Reduced retries on first attempt; full retries on GH fallback
+
+        let fetchPromise;
+
         if (Na__AppUtils__IsRunningOnLocalhost()) {
-            projectJsonUrl = `${window.location.origin}/api/projects/${projectCode}`;  // <-- Flask API endpoint
+            const localUrl = `${window.location.origin}/api/projects/${projectCode}`; // <-- Flask API endpoint
+            fetchPromise = Na__ResilientLoad__FetchWithTimeout(localUrl, { timeoutMs, retries, retryDelayMs })
+                .then(r => r.json())
+                .catch(err => {
+                    Na__AppUtils__FetchCache.delete(cacheKey);
+                    throw err;
+                });
         } else {
             const projectFolderId = Na__AppUtils__NormalizeProjectFolderId(projectCode);
-            projectJsonUrl = `${Na__AppUtils__WebProjectsBaseUrl}/${projectFolderId}/project.json`;  // <-- GH Pages path
-        }
+            const r2Url           = `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/project.json`;   // <-- R2 CDN (primary)
+            const ghUrl           = `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/project.json`;   // <-- GH Pages (fallback)
 
-        const fetchPromise = Na__ResilientLoad__FetchWithTimeout(projectJsonUrl, { timeoutMs, retries, retryDelayMs }) // <-- Resilient fetch
-            .then((response) => response.json())
-            .catch((err) => {
-                Na__AppUtils__FetchCache.delete(cacheKey);                  // <-- Evict cache on failure so caller can retry
-                throw err;
-            });
+            fetchPromise = Na__ResilientLoad__FetchWithTimeout(r2Url, fetchOpts)
+                .then(r => r.json())
+                .catch(() => {
+                    // R2 failed — fall back to GH Pages and notify the user
+                    Na__AppUtils__EmitFallbackToast();                      // <-- Notify user of R2 failure
+                    return Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs })
+                        .then(r => r.json());
+                })
+                .catch(err => {
+                    Na__AppUtils__FetchCache.delete(cacheKey);              // <-- Both sources failed; evict cache
+                    throw err;
+                });
+        }
 
         Na__AppUtils__FetchCache.set(cacheKey, fetchPromise);               // <-- Cache in-flight promise immediately
 
         return fetchPromise;                                                 // <-- Return promise (caller awaits)
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Emit General Fallback Toast Notification
+    // ------------------------------------------------------------
+    function Na__AppUtils__EmitFallbackToast() {
+        try {
+            window.dispatchEvent(new CustomEvent('na-asset-fallback-toast', {
+                detail: { message: Na__AppUtils__FallbackToastMsg }
+            }));
+        } catch (_) {
+            // Non-critical; silently ignore if CustomEvent is unavailable
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve Asset URL (R2-first, GH fallback)
+    // ------------------------------------------------------------
+    // Used by callers that need to resolve image/thumbnail URLs for a known
+    // project folder ID (e.g. Presentation Mode scene images).
+    // Returns the R2 URL and the GH fallback URL as a pair.
+    // ------------------------------------------------------------
+    function Na__AppUtils__ResolveAssetUrl(projectFolderId, filename) {
+        return {
+            primary:  `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/${filename}`,   // <-- R2 CDN
+            fallback: `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/${filename}`    // <-- GH Pages
+        };
     }
     // ------------------------------------------------------------
 
@@ -228,7 +313,12 @@
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__NormalizeProjectFolderId,
         Na__AppUtils__FetchProjectJson,
-        Na__AppUtils__ExtractModelUrls
+        Na__AppUtils__ExtractModelUrls,
+        Na__AppUtils__InitFromConfig,
+        Na__AppUtils__ResolveAssetUrl,
+        Na__AppUtils__EmitFallbackToast,
+        Na__AppUtils__R2BaseUrl_Fallback,
+        Na__AppUtils__GhBaseUrl_Fallback
     };
     // ------------------------------------------------------------
 

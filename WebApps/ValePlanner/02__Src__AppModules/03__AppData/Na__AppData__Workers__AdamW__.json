@@ -2286,6 +2286,14 @@
           "endTime": "18:00",
           "title": "Whitecard |  Bressard-Kayode",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1782382571157",
+          "date": "2026-06-24",
+          "startTime": "11:30",
+          "endTime": "16:15",
+          "title": "Warwick",
+          "color": "na-shift-color-orange"
         }
       ]
     }

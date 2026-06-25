@@ -45,6 +45,7 @@
         const [pendingUrlProjectId, setPendingUrlProjectId] = React.useState(null);  // <-- Store project ID from URL until authenticated
         const [showPinEntry, setShowPinEntry] = React.useState(false);        // <-- Control PIN modal visibility
         const [urlProjectHandled, setUrlProjectHandled] = React.useState(false);  // <-- Track if URL project has been processed
+        const [assetFallbackToast, setAssetFallbackToast] = React.useState(null);  // <-- R2-to-GH fallback toast message
         
         // EFFECT | Check for URL Project ID on Mount
         // ---------------------------------------------------------------
@@ -194,6 +195,19 @@
         };
         // ---------------------------------------------------------------
         
+        // EFFECT | Listen for R2 Asset Fallback Toast Event (once per session)
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            const na_handle_fallback_toast = (evt) => {
+                const msg = (evt.detail && evt.detail.message) || 'Using static assets — live assets unavailable.';
+                setAssetFallbackToast(msg);                              // <-- Show toast
+                setTimeout(() => setAssetFallbackToast(null), 6000);    // <-- Auto-dismiss after 6s
+            };
+            window.addEventListener('wcp-asset-fallback-toast', na_handle_fallback_toast, { once: true });
+            return () => window.removeEventListener('wcp-asset-fallback-toast', na_handle_fallback_toast);
+        }, []);                                                          // <-- Register once on mount
+        // ---------------------------------------------------------------
+
         // EFFECT | Register Global Keyboard Hotkeys
         // ---------------------------------------------------------------
         React.useEffect(() => {
@@ -217,6 +231,27 @@
         // ---------------------------------------------------------------
         return (
             <>
+                {/* R2 Asset Fallback Toast - Shown when CDN unavailable, loading from GH Pages */}
+                {assetFallbackToast && (
+                    <div style={{
+                        position        : 'fixed',
+                        bottom          : '1.5rem',
+                        left            : '50%',
+                        transform       : 'translateX(-50%)',
+                        background      : 'rgba(23, 43, 58, 0.93)',
+                        color           : '#e8e4df',
+                        padding         : '0.6rem 1.2rem',
+                        borderRadius    : '6px',
+                        fontSize        : '0.82rem',
+                        zIndex          : 9999,
+                        pointerEvents   : 'none',
+                        boxShadow       : '0 2px 8px rgba(0,0,0,0.35)',
+                        whiteSpace      : 'nowrap',
+                    }}>
+                        {assetFallbackToast}
+                    </div>
+                )}
+
                 {/* PIN Entry Modal - Shows when authentication required for shared links */}
                 {showPinEntry && (
                     <PinEntry 

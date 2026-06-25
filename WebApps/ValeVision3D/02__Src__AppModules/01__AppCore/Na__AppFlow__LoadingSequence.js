@@ -251,8 +251,18 @@
     import {
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__FetchProjectJson,
-        Na__AppUtils__ExtractModelUrls
+        Na__AppUtils__ExtractModelUrls,
+        Na__AppUtils__InitFromConfig,
+        Na__AppUtils__ResolveAssetUrl
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | SketchUp To ValeVision Animation Scene Bridge
+    // @delegate: ../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js
+    // ------------------------------------------------------------
+    import {
+        Na__SketchUp__AnimationScene__TryBuildScenesFromSketchUp
+    } from '../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Resilient Load Helpers (timeouts, retries, concurrency)
@@ -417,6 +427,7 @@
         // DESTRUCTURE CONTEXT | Config Values
         // ---------------------------------------------------------------
         const {
+            fullAppConfig               : Na__FullAppConfig,
             lightingConfig              : Na__Config__LightingConfig,
             groundPlane                 : Na__Config__GroundPlane,
             profileLines                : Na__Config__ProfileLines,
@@ -431,6 +442,16 @@
             distanceCulling             : Na__Config__DistanceCulling,
             resilienceConfig            : Na__Config__Resilience
         } = configs;
+
+        Na__AppUtils__InitFromConfig(Na__FullAppConfig);                      // <-- Seed R2 + GH base URLs from appConfig SSOT
+
+        // FALLBACK TOAST LISTENER | R2 -> GH Pages fallback notification
+        // ---------------------------------------------------------------
+        window.addEventListener('na-asset-fallback-toast', (evt) => {
+            if (Na__ShowToast__Callback) {
+                Na__ShowToast__Callback(evt.detail && evt.detail.message || 'Using static assets — live assets unavailable.');
+            }
+        }, { once: true });                                                    // <-- Fire once per session to avoid repeated toasts
         // ---------------------------------------------------------------
 
         // START LOAD WATCHDOG (total budget timer + visibilitychange stall recovery)
@@ -536,6 +557,10 @@
                             projectCode : projectCode
                         }
                     }));
+                } else {
+                    // AUTO-BUILD SCENES FROM SKETCHUP CAMERA DATA (if present, no explicit scenes)
+                    // @delegate: ../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js
+                    Na__SketchUp__AnimationScene__TryBuildScenesFromSketchUp(projectData, projectCode); // <-- Fills gap when no manual scenes defined
                 }
 
                 // APPLY PER-PROJECT ORBIT MAX DISTANCE OVERRIDE

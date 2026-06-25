@@ -66,6 +66,10 @@
         const [sortBy, setSortBy] = React.useState('date-newest');       // <-- Sort option state
         const [searchTerm, setSearchTerm] = React.useState('');          // <-- Search term state
         const [galleryMode, setGalleryMode] = React.useState('whitecard');  // <-- Gallery mode state (whitecard or blockout)
+        const [filterArtist, setFilterArtist] = React.useState('all');   // <-- Active concept artist filter ('all' = unfiltered)
+        const [filterDesigner, setFilterDesigner] = React.useState('all');  // <-- Active designer filter ('all' = unfiltered)
+        const [artistOptions, setArtistOptions] = React.useState([]);    // <-- Artist names from master config
+        const [designerOptions, setDesignerOptions] = React.useState([]); // <-- Designer names from master config
         
         // EFFECT | Load Projects Progressively in Batches
         // ---------------------------------------------------------------
@@ -86,8 +90,20 @@
             return () => { cancelled = true; };                          // <-- Cleanup on unmount
         }, []);
         // ---------------------------------------------------------------
-        
-        
+
+
+        // EFFECT | Load Artist and Designer Option Lists from Master Config
+        // ---------------------------------------------------------------
+        React.useEffect(() => {
+            loadMasterConfig().then(config => {
+                if (!config) return;                                     // <-- Bail if config unavailable
+                setArtistOptions(config.vale__ConceptArtist__OptionsList || []);   // <-- Populate artist dropdown
+                setDesignerOptions(config.vale__Designer__OptionsList   || []);    // <-- Populate designer dropdown
+            });
+        }, []);
+        // ---------------------------------------------------------------
+
+
         // SUB FUNCTION | Handle Sort Option Change
         // ---------------------------------------------------------------
         const handleSortChange = (newSortBy) => {
@@ -104,11 +120,29 @@
         // ---------------------------------------------------------------
 
 
+        // SUB FUNCTION | Handle Concept Artist Filter Change
+        // ---------------------------------------------------------------
+        const handleArtistChange = (newArtist) => {
+            setFilterArtist(newArtist);                                  // <-- Update artist filter state
+        };
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Handle Designer Filter Change
+        // ---------------------------------------------------------------
+        const handleDesignerChange = (newDesigner) => {
+            setFilterDesigner(newDesigner);                              // <-- Update designer filter state
+        };
+        // ---------------------------------------------------------------
+
+
         // SUB FUNCTION | Handle Gallery Mode Change
         // ---------------------------------------------------------------
         const handleModeChange = (newMode) => {
             setGalleryMode(newMode);                                     // <-- Update gallery mode state
             setSearchTerm('');                                           // <-- Clear search when switching modes
+            setFilterArtist('all');                                      // <-- Reset artist filter when switching modes
+            setFilterDesigner('all');                                    // <-- Reset designer filter when switching modes
         };
         // ---------------------------------------------------------------
         
@@ -128,9 +162,11 @@
             );
         }
         
-        const modeFilteredProjects = filterProjectsByGalleryMode(projects, galleryMode);  // <-- Filter by gallery mode
-        const sortedProjects = sortProjects(modeFilteredProjects, sortBy);                // <-- Apply sorting
-        const filteredProjects = filterProjects(sortedProjects, searchTerm);              // <-- Apply search filtering
+        const modeFilteredProjects     = filterProjectsByGalleryMode(projects, galleryMode);          // <-- Filter by gallery mode
+        const artistFilteredProjects   = filterByArtist(modeFilteredProjects, filterArtist);          // <-- Filter by concept artist
+        const designerFilteredProjects = filterByDesigner(artistFilteredProjects, filterDesigner);    // <-- Filter by designer
+        const sortedProjects           = sortProjects(designerFilteredProjects, sortBy);              // <-- Apply sorting
+        const filteredProjects         = filterProjects(sortedProjects, searchTerm);                  // <-- Apply search filtering
         
         return (
             <>
@@ -150,6 +186,14 @@
                             <SearchBox 
                                 searchTerm={searchTerm}
                                 onSearchChange={handleSearchChange}
+                            />
+                            <FilterControls
+                                filterArtist={filterArtist}
+                                filterDesigner={filterDesigner}
+                                artistOptions={artistOptions}
+                                designerOptions={designerOptions}
+                                onArtistChange={handleArtistChange}
+                                onDesignerChange={handleDesignerChange}
                             />
                             <SortControls 
                                 sortBy={sortBy}

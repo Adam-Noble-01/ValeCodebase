@@ -460,19 +460,23 @@ def extract_image_number(filename: str) -> Tuple[int, int]:
 # FUNCTION | Discover Images in Content Folder
 # ------------------------------------------------------------
 def discover_image_files(content_folder: Path) -> List[str]:
-    images = []                                                       # <-- Initialize images list
-    
     if not content_folder.exists() or not content_folder.is_dir():
-        return images                                                 # <-- Return empty if path invalid
-    
+        return []                                                     # <-- Return empty if path invalid
+
+    # DEDUPE BY SLOT | A sync keeps only the latest render per IMG## (and IMG##_ART##) scene
+    latest_by_slot = {}
     for item in content_folder.iterdir():
-        if item.is_file():                                            # <-- Check if item is file
-            filename = item.name                                      # <-- Get filename
-            if re.match(IMAGE_PREFIX_PATTERN, filename, re.IGNORECASE):  # <-- Check pattern match
-                images.append(filename)                               # <-- Add to images list
-    
-    images.sort(key=extract_image_number)                             # <-- Sort by numeric prefix
-    return images                                                     # <-- Return sorted images list
+        if not item.is_file():
+            continue                                                  # <-- Skip folders
+        if not re.match(IMAGE_PREFIX_PATTERN, item.name, re.IGNORECASE):
+            continue                                                  # <-- Skip non-image files
+        slot = extract_image_number(item.name)                        # <-- (img_num, art_num) slot identity
+        cur  = latest_by_slot.get(slot)
+        if cur is None or item.stat().st_mtime > cur.stat().st_mtime:  # <-- Newest mtime wins
+            latest_by_slot[slot] = item
+
+    images = sorted((p.name for p in latest_by_slot.values()), key=extract_image_number)  # <-- Sort by numeric prefix
+    return images                                                     # <-- Return deduped, sorted images list
 # ---------------------------------------------------------------
 
 

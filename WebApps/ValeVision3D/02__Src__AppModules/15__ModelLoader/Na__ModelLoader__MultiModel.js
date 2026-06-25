@@ -44,6 +44,11 @@
 //   category remain sequential. Results are ordered to preserve Map insertion
 //   order matching priority order.
 //
+// 25-Jun-2026 - Version 1.2.1
+// - Orbit Helper Cube visibility regression fix (ValeVision3D v2.9.1): strip ?query
+//   from filename before OrbitHelperCube regex and ParseModelUrl classification so
+//   v2.9.0 build-version cache-bust (?v=) no longer prevents cube separation.
+//
 // =============================================================================
 
 import * as THREE from 'three';
@@ -115,7 +120,7 @@ import {
     function Na__ModelLoader__ParseModelUrl(url) {
         if (!url || typeof url !== 'string') return null;                // <-- Guard against invalid input
 
-        const filename  = url.split('/').pop();                          // <-- Extract filename from URL
+        const filename  = url.split('/').pop().split('?')[0];            // <-- Filename without any ?query (robust to cache-bust tokens)
 
         // PRIMARY REGEX | New ValeVision / NaModel naming convention
         const match = Na__ModelUrl__ParseRegex.exec(filename);           // <-- Run primary regex
@@ -228,7 +233,7 @@ import {
         for (const url of modelUrls) {
             if (typeof url !== 'string') continue;            // <-- Skip invalid URLs
 
-            const filename = url.split('/').pop();            // <-- Extract filename from URL
+            const filename = url.split('/').pop().split('?')[0];  // <-- Strip ?v= cache-bust token before matching
             if (Na__ModelUrl__OrbitCubeRegex.test(filename)) {
                 orbitCubeUrl = url;                           // <-- Found orbit cube URL
                 console.log('[ValeVision3D] Found OrbitHelperCube:', url);

@@ -137,7 +137,14 @@
                 </div>
             );
         }
-        
+
+        // DERIVE CAROUSEL IMAGES | When a ValeVision model exists, show IMG01 only —
+        // the remaining IMG## scenes are intended as ValeVision animation thumbnails.
+        const baseImages     = project.displayImages || project.images || [];  // <-- Pre-filtered base scenes
+        const carouselImages = checkValeVisionModelUrl(project)
+            ? baseImages.slice(0, 1)                                 // <-- ValeVision present: IMG01 only
+            : baseImages;                                            // <-- No 3D model: full whitecard carousel
+
         return (
             <>
                 <Header />
@@ -155,7 +162,7 @@
                     <div className="project-viewer__content">
                         <div className="project-viewer__carousel-container">
                             <ImageCarousel 
-                                images={project.displayImages || project.images}  // <-- Use pre-filtered base images
+                                images={carouselImages}  // <-- IMG01-only when ValeVision model present
                                 projectData={project}
                             />
                         </div>

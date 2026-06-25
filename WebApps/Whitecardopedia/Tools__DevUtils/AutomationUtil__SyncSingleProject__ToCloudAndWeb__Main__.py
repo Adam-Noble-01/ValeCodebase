@@ -201,12 +201,23 @@ def na_clone_images_to_wcp(local_project_root: Path, wcp_project_dir: Path, repo
         return 0
 
     wcp_project_dir.mkdir(parents=True, exist_ok=True)
-    img_pattern = re.compile(r'^IMG\d{2,3}.*__WhitecardImage__.*\.png$', re.IGNORECASE)
-    img_files   = [f for f in edition_folder.iterdir() if f.is_file() and img_pattern.match(f.name)]
+    img_pattern  = re.compile(r'^IMG\d{2,3}.*__WhitecardImage__.*\.png$', re.IGNORECASE)
+    slot_pattern = re.compile(r'^(IMG\d{2,3}(?:_ART\d{2})?)', re.IGNORECASE)   # <-- Slot identity (ART variants kept separate)
+    all_matches  = [f for f in edition_folder.iterdir() if f.is_file() and img_pattern.match(f.name)]
 
-    if not img_files:
+    if not all_matches:
         report.add_step('Clone Images', False, f'No IMG## WhitecardImage PNG files found in {edition_folder.name}.')
         return 0
+
+    # DEDUPE BY SLOT | A sync keeps only the latest render per IMG## scene
+    latest_by_slot = {}
+    for f in all_matches:
+        m    = slot_pattern.match(f.name)                                 # <-- Extract slot key (IMG01, IMG02, IMG01_ART20, ...)
+        slot = m.group(1).upper() if m else f.name.upper()
+        cur  = latest_by_slot.get(slot)
+        if cur is None or f.stat().st_mtime > cur.stat().st_mtime:        # <-- Newest mtime wins
+            latest_by_slot[slot] = f
+    img_files = sorted(latest_by_slot.values(), key=lambda p: p.name.lower())  # <-- Stable IMG01, IMG02, ... order
 
     # PURGE STALE IMG SOURCES + THUMBNAILS | Keep the destination mirroring the latest edition only
     stale_pattern = re.compile(r'^IMG.*\.(png|jpg|jpeg|webp)$', re.IGNORECASE)

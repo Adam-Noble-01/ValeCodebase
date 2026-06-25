@@ -2,6 +2,28 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.1 - 25-Jun-2026 - Orbit Helper Cube Visibility Regression Fix
+
+### Overview
+Patch release fixing a regression introduced in v2.9.0: the shared build-version cache-bust token (`?v=<buildVersion>`) appended to GLB URLs caused the Orbit Helper Cube to render as a visible grey mesh instead of being filtered out for orbit-centre calculation only.
+
+### Root Cause
+`Na__ModelLoader__SeparateOrbitCubeUrl` identifies orbit-cube URLs with a `$`-anchored regex (`OrbitHelperCube__MeshModel__\.glb$`). After v2.9.0, model URLs arrive as `...__OrbitHelperCube__MeshModel__.glb?v=1782400744`, so the regex no longer matches, the cube is not separated from `filteredUrls`, and it loads and renders like any other MeshModel GLB.
+
+### Changes
+- **Filename parsing (MultiModel v1.2.1)** — strip any `?query` suffix before filename-based matching so cache-bust tokens cannot defeat `$`-anchored patterns.
+- **`Na__ModelLoader__SeparateOrbitCubeUrl`** — `url.split('/').pop().split('?')[0]` before the OrbitHelperCube regex test (restores hide-from-scene / use-for-orbit-centre behaviour).
+- **`Na__ModelLoader__ParseModelUrl`** — same query-strip applied defensively so category/storey/legacy classification stays robust to cache-bust or signed-URL query strings.
+- **Cache-bust preserved** — the full URL (including `?v=`) is still passed to the GLTF loader; only filename interpretation strips the query.
+
+### Verification
+- Load a project with an orbit cube (e.g. `63592__Bressard-Kayode`): grey helper cube should not render; console should still log `OrbitHelperCube loaded. Center: ...`; orbit controls should centre correctly.
+- Normal MeshModel/LineworkModel GLBs should still request with `?v=` on the network URL.
+
+### Files Changed
+- `02__Src__AppModules/15__ModelLoader/Na__ModelLoader__MultiModel.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.0 - 25-Jun-2026 - Build-Version Cache-Bust (Real-Time R2 Assets)
 
 ### Overview

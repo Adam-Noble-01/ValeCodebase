@@ -25,11 +25,8 @@
     "basePath": "Projects/2026/63592__Bressard-Kayode",
     "images": [
         "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__25-Jun-2026.png",
-        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026.png",
         "IMG02__3dView__DoorsView____WhitecardImage__25-Jun-2026.png",
-        "IMG02__3dView__ViewOption-02____WhitecardImage__25-Jun-2026.png",
-        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png",
-        "IMG03__3dView__Roof____WhitecardImage__25-Jun-2026.png"
+        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
@@ -47,7 +44,7 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
@@ -75,7 +72,7 @@
         }
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "25-Jun-2026 at 16:18",
+        "captured_at": "25-Jun-2026 at 16:33",
         "model_name": "Bressard-Kayode__WhiteCardModel__1.3.0__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",

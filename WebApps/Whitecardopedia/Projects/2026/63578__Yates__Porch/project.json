@@ -50,7 +50,7 @@
     ],
     "folderId": "2026/63578__Yates__Porch",
     "images": [
-        "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
+        "IMG01__3dView__FrontElevation__PorchView____WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Nothing to report, had to model from a hand drawing which takes longer than the CAD pipeline, but no issues.",
@@ -76,5 +76,47 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Porch/Yates__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ]
+    ],
+    "thumbnailImage": "IMG01__3dView__FrontElevation__PorchView____WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "25-Jun-2026 at 14:09",
+        "model_name": "Yates__WhiteCardModel__Porch__1.1.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__FrontElevation__PorchView__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 11890.5122,
+                        "y": -17465.9407,
+                        "z": 3385.0
+                    },
+                    "target": {
+                        "x": 19676.6912,
+                        "y": 10043.7398,
+                        "z": 3385.0
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.272336,
+                        "y": 0.962202,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            }
+        ]
+    }
 }

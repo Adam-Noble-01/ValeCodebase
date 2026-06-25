@@ -37,6 +37,13 @@
 //   falls back to GH Pages; emits a "Failed to fetch live assets" toast on
 //   fallback. Base URLs driven from Na__AppConfig__Main.json SSOT.
 //
+// 25-Jun-2026 - Version 1.3.0
+// - Master index integration: Na__AppUtils__InitMasterIndex (R2-first, GH
+//   fallback) resolves each project's real year/folderId from its numeric code
+//   (replacing the hardcoded 2026 default) and its asset home (r2|gh) so
+//   FetchProjectJson and ResolveAssetUrl fetch the correct source directly,
+//   eliminating the blind-R2 404 flood. Index URLs from AppConfig SSOT.
+//
 // =============================================================================
 
 
@@ -108,6 +115,90 @@
             Na__AppUtils__GhBaseUrl = urlConfig['ProjectData__AssetUrls__GhBaseUrl'];   // <-- Override GH base from config
         if (urlConfig['ProjectData__AssetUrls__FallbackToastMsg'])
             Na__AppUtils__FallbackToastMsg = urlConfig['ProjectData__AssetUrls__FallbackToastMsg']; // <-- Override toast message
+        if (urlConfig['ProjectData__AssetUrls__IndexUrl'])
+            Na__AppUtils__IndexUrl = urlConfig['ProjectData__AssetUrls__IndexUrl'];               // <-- Override R2 index URL
+        if (urlConfig['ProjectData__AssetUrls__IndexFallbackUrl'])
+            Na__AppUtils__IndexFallbackUrl = urlConfig['ProjectData__AssetUrls__IndexFallbackUrl']; // <-- Override GH index fallback
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Initialise the Master Project Index (R2-first, GH Fallback, Memoised)
+    // ------------------------------------------------------------
+    // Fetches Na__MasterIndex__ProjectLocations__.json (R2 first, GH copy
+    // fallback) and builds lookup maps by folderId, numeric projectCode and
+    // folder name. Call once after Na__AppUtils__InitFromConfig and before the
+    // first Na__AppUtils__FetchProjectJson. Never throws — resolves with empty
+    // maps on failure so the loader transparently uses the legacy behaviour.
+    // ------------------------------------------------------------
+    function Na__AppUtils__InitMasterIndex() {
+        if (Na__AppUtils__IndexLoadPromise) return Na__AppUtils__IndexLoadPromise; // <-- Single fetch per session
+
+        Na__AppUtils__IndexLoadPromise = (async () => {
+            const tryFetch = async (url) => {
+                try {
+                    const resp = await fetch(url);                              // <-- Attempt one source
+                    if (resp.ok) return await resp.json();
+                } catch (_) {}
+                return null;
+            };
+
+            let index = await tryFetch(Na__AppUtils__IndexUrl);                 // <-- R2 CDN primary
+            if (!index) index = await tryFetch(Na__AppUtils__IndexFallbackUrl); // <-- GH Pages fallback copy
+
+            const byFolderId   = new Map();
+            const byCode       = new Map();
+            const byFolderName = new Map();
+
+            if (index && Array.isArray(index.projects)) {
+                for (const entry of index.projects) {
+                    if (!entry || !entry.folderId) continue;
+                    byFolderId.set(entry.folderId, entry);                      // <-- Exact folderId key
+
+                    const folderName = entry.folderId.split('/')[1] || entry.folderId;
+                    byFolderName.set(folderName, entry);                        // <-- Folder name without year
+
+                    if (entry.projectCode) {
+                        const existing = byCode.get(entry.projectCode);         // <-- Resolve numeric-code collisions
+                        if (!existing || (parseInt(entry.year, 10) || 0) >= (parseInt(existing.year, 10) || 0)) {
+                            byCode.set(entry.projectCode, entry);               // <-- Prefer the newest year on collision
+                        }
+                    }
+                }
+            }
+
+            Na__AppUtils__IndexByFolderId   = byFolderId;
+            Na__AppUtils__IndexByCode       = byCode;
+            Na__AppUtils__IndexByFolderName = byFolderName;
+            return byFolderId;
+        })();
+
+        return Na__AppUtils__IndexLoadPromise;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Look Up an Index Entry by Code / Folder Name / FolderId
+    // ------------------------------------------------------------
+    function Na__AppUtils__LookupIndexEntry(token) {
+        if (!token) return null;
+        const trimmed = String(token).replace(/^\/+|\/+$/g, '');
+
+        if (Na__AppUtils__IndexByFolderId && Na__AppUtils__IndexByFolderId.has(trimmed))
+            return Na__AppUtils__IndexByFolderId.get(trimmed);                  // <-- Direct folderId hit
+
+        if (Na__AppUtils__IndexByCode && Na__AppUtils__IndexByCode.has(trimmed))
+            return Na__AppUtils__IndexByCode.get(trimmed);                      // <-- Numeric project code hit
+
+        if (Na__AppUtils__IndexByFolderName && Na__AppUtils__IndexByFolderName.has(trimmed))
+            return Na__AppUtils__IndexByFolderName.get(trimmed);               // <-- Folder name (no year) hit
+
+        if (Na__AppUtils__IndexByFolderName) {
+            for (const [folderName, entry] of Na__AppUtils__IndexByFolderName) {
+                if (folderName.startsWith(`${trimmed}__`)) return entry;        // <-- '63592' -> '63592__Bressard-Kayode'
+            }
+        }
+        return null;
     }
     // ------------------------------------------------------------
 
@@ -155,7 +246,14 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Normalize Project Folder ID
+    // HELPER FUNCTION | Normalize Project Folder ID (index-aware year lookup)
+    // ------------------------------------------------------------
+    // Resolves a `?project=` value into a full `{year}/{folder}` folderId.
+    // When the value already carries a year prefix it is used verbatim.
+    // Otherwise the master index is consulted to find the real year/folderId
+    // by numeric code or folder name (so 2025 projects no longer get a wrong
+    // hardcoded 2026 prefix). Falls back to the legacy default only when the
+    // index has no matching entry.
     // ------------------------------------------------------------
     function Na__AppUtils__NormalizeProjectFolderId(projectCode) {
         if (!projectCode) return null;
@@ -164,10 +262,15 @@
         const hasYearPrefix = /^\d{4}\//.test(trimmed);
 
         if (hasYearPrefix) {
-            return trimmed;
+            return trimmed;                                                  // <-- Already a full folderId
         }
 
-        return `${Na__AppUtils__DefaultProjectYear}/${trimmed}`;
+        const entry = Na__AppUtils__LookupIndexEntry(trimmed);              // <-- Index-driven year/folder resolution
+        if (entry && entry.folderId) {
+            return entry.folderId;                                          // <-- Real folderId (correct year)
+        }
+
+        return `${Na__AppUtils__DefaultProjectYear}/${trimmed}`;            // <-- Legacy fallback when index unavailable
     }
     // ------------------------------------------------------------
 
@@ -217,18 +320,33 @@
             const r2Url           = `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/project.json`;   // <-- R2 CDN (primary)
             const ghUrl           = `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/project.json`;   // <-- GH Pages (fallback)
 
-            fetchPromise = Na__ResilientLoad__FetchWithTimeout(r2Url, fetchOpts)
-                .then(r => r.json())
-                .catch(() => {
-                    // R2 failed — fall back to GH Pages and notify the user
-                    Na__AppUtils__EmitFallbackToast();                      // <-- Notify user of R2 failure
-                    return Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs })
-                        .then(r => r.json());
-                })
-                .catch(err => {
-                    Na__AppUtils__FetchCache.delete(cacheKey);              // <-- Both sources failed; evict cache
-                    throw err;
-                });
+            const indexEntry      = Na__AppUtils__LookupIndexEntry(projectFolderId)
+                                    || Na__AppUtils__LookupIndexEntry(projectCode);                 // <-- Resolve asset home from index
+            const ghOnly          = indexEntry && indexEntry.assetHome === 'gh';                    // <-- Index says project.json is GH-only
+
+            if (ghOnly) {
+                // INDEX SAYS GH-ONLY | Skip the doomed R2 request entirely (no 404)
+                fetchPromise = Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs })
+                    .then(r => r.json())
+                    .catch(err => {
+                        Na__AppUtils__FetchCache.delete(cacheKey);          // <-- GH failed; evict cache
+                        throw err;
+                    });
+            } else {
+                // INDEX SAYS R2 (or unknown) | Try R2 first, then GH Pages
+                fetchPromise = Na__ResilientLoad__FetchWithTimeout(r2Url, fetchOpts)
+                    .then(r => r.json())
+                    .catch(() => {
+                        // R2 failed — fall back to GH Pages and notify the user
+                        Na__AppUtils__EmitFallbackToast();                  // <-- Notify user of R2 failure
+                        return Na__ResilientLoad__FetchWithTimeout(ghUrl, { timeoutMs, retries, retryDelayMs })
+                            .then(r => r.json());
+                    })
+                    .catch(err => {
+                        Na__AppUtils__FetchCache.delete(cacheKey);          // <-- Both sources failed; evict cache
+                        throw err;
+                    });
+            }
         }
 
         Na__AppUtils__FetchCache.set(cacheKey, fetchPromise);               // <-- Cache in-flight promise immediately
@@ -259,10 +377,16 @@
     // Returns the R2 URL and the GH fallback URL as a pair.
     // ------------------------------------------------------------
     function Na__AppUtils__ResolveAssetUrl(projectFolderId, filename) {
-        return {
-            primary:  `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/${filename}`,   // <-- R2 CDN
-            fallback: `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/${filename}`    // <-- GH Pages
-        };
+        const r2Url = `${Na__AppUtils__R2BaseUrl}/${projectFolderId}/${filename}`;   // <-- R2 CDN
+        const ghUrl = `${Na__AppUtils__GhBaseUrl}/${projectFolderId}/${filename}`;   // <-- GH Pages
+
+        const entry      = Na__AppUtils__LookupIndexEntry(projectFolderId);          // <-- Index entry (if any)
+        const imagesOnGh = entry && entry.hasImages_R2 === false;                    // <-- Index says images are GH-only
+
+        if (imagesOnGh) {
+            return { primary: ghUrl, fallback: ghUrl };                              // <-- Go straight to GH (no 404)
+        }
+        return { primary: r2Url, fallback: ghUrl };                                  // <-- R2 primary, GH fallback
     }
     // ------------------------------------------------------------
 
@@ -330,6 +454,7 @@
         Na__AppUtils__FetchProjectJson,
         Na__AppUtils__ExtractModelUrls,
         Na__AppUtils__InitFromConfig,
+        Na__AppUtils__InitMasterIndex,
         Na__AppUtils__ResolveAssetUrl,
         Na__AppUtils__EmitFallbackToast,
         Na__AppUtils__R2BaseUrl_Fallback,

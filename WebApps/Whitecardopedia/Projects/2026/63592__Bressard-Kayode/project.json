@@ -71,8 +71,8 @@
         }
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "25-Jun-2026 at 13:22",
-        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.1__",
+        "captured_at": "25-Jun-2026 at 14:12",
+        "model_name": "Bressard-Kayode__WhiteCardModel__1.2.3__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",

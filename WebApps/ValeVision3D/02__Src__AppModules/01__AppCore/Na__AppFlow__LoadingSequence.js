@@ -253,6 +253,7 @@
         Na__AppUtils__FetchProjectJson,
         Na__AppUtils__ExtractModelUrls,
         Na__AppUtils__InitFromConfig,
+        Na__AppUtils__InitMasterIndex,
         Na__AppUtils__ResolveAssetUrl
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
@@ -444,6 +445,7 @@
         } = configs;
 
         Na__AppUtils__InitFromConfig(Na__FullAppConfig);                      // <-- Seed R2 + GH base URLs from appConfig SSOT
+        Na__AppUtils__InitMasterIndex();                                      // <-- Begin master index load (R2-first, GH fallback; memoised, awaited at fetch)
 
         // FALLBACK TOAST LISTENER | R2 -> GH Pages fallback notification
         // ---------------------------------------------------------------
@@ -525,6 +527,7 @@
             try {
                 Na__UiFeature__UpdateStatus('Loading project data...');
                 Na__LoadWatchdog__NotifyProgress();                           // <-- Reset stall clock on meaningful step
+                await Na__AppUtils__InitMasterIndex();                        // <-- Ensure index maps are ready for year/asset-home resolution
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode, Na__Config__Resilience); // <-- Resilient + memoised
 
                 // STORE CAMERA CONFIG FROM PROJECT (supports both key formats)

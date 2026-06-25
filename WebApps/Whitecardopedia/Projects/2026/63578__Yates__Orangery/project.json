@@ -35,8 +35,7 @@
     ],
     "folderId": "2026/63578__Yates__Orangery",
     "images": [
-        "IMG01__3dView__ReartElevation__OrangeryView____WhitecardImage__27-May-2026.png",
-        "IMG02__3dView__FrontElevation__PorchView____WhitecardImage__27-May-2026.png"
+        "IMG01__3dView__ReartElevation__OrangeryView____WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Quite a tricky one, none-standard orangery, had to Photomatch to get the side of the elevation existing conditions so this added time, I also had to model from a hand drawing which takes longer than the CAD pipeline, but no issues.",
@@ -54,7 +53,7 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "thumbnailImage": "IMG01__3dView__ReartElevation__OrangeryView____WhitecardImage__27-May-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__ReartElevation__OrangeryView____WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Orangery/Yates__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63578__Yates__Orangery/Yates__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
@@ -80,5 +79,46 @@
             "FogPlane__Config__PlaneB__NormalX": 0,
             "FogPlane__Config__PlaneB__NormalZ": -1
         }
+    },
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "25-Jun-2026 at 14:05",
+        "model_name": "Yates__WhiteCardModel__1.0.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__ReartElevation__OrangeryView__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 11890.5122,
+                        "y": -17465.9407,
+                        "z": 3385.0
+                    },
+                    "target": {
+                        "x": 19676.6912,
+                        "y": 10043.7398,
+                        "z": 3385.0
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.272336,
+                        "y": 0.962202,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            }
+        ]
     }
 }

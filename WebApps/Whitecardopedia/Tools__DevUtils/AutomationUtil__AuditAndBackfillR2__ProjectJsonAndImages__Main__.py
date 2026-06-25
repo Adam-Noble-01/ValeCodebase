@@ -221,43 +221,8 @@ def na_apply_project(client, bucket: str, record: Dict, force: bool = False) -> 
     # FUNCTION | Rebuild the Full Master Index From Post-Upload R2 State
     # ------------------------------------------------------------
 def na_rebuild_master_index(client, bucket: str, projects: List[Dict]) -> Dict:
-    """Probe R2 per project, derive metadata, and assemble a fresh index."""
-    index = r2lib.na_index_new()
-
-    for project in projects:
-        folder_id = project.get('folderId')
-        if not folder_id:
-            continue
-
-        probe   = r2lib.na_probe_project_r2(client, bucket, folder_id)       # <-- One list per project
-        repo_dir = r2lib.WCP_PROJECTS_BASE / folder_id
-        pj_path  = repo_dir / r2lib.PROJECT_JSON_FILENAME
-
-        project_json = {}
-        if pj_path.is_file():
-            try:
-                project_json = json.loads(pj_path.read_text(encoding='utf-8'))
-            except Exception:
-                project_json = {}
-
-        meta       = r2lib.na_derive_project_meta(project_json, folder_id)
-        asset_home = 'r2' if probe['hasProjectJson_R2'] else 'gh'            # <-- Where project.json actually lives
-
-        entry = r2lib.na_make_index_entry(
-            folder_id           = folder_id,
-            project_code        = meta['projectCode'],
-            name                = meta['name'],
-            enabled             = bool(project.get('enabled', True)),
-            asset_home          = asset_home,
-            has_project_json_r2 = probe['hasProjectJson_R2'],
-            has_images_r2       = probe['hasImages_R2'],
-            has_thumbnails_r2   = probe['hasThumbnails_R2'],
-            has_glb_r2          = probe['hasGlb_R2'],
-            image_count         = probe['imageCount']
-        )
-        r2lib.na_index_upsert_project(index, entry)
-
-    return index
+    """Thin wrapper — index rebuild logic lives in the shared lib (DRY)."""
+    return r2lib.na_index_rebuild_all(client, bucket, projects)
     # ------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------
@@ -291,9 +256,22 @@ def na_resolve_projects(only_project: Optional[str], only_year: Optional[str]) -
 # REGION | Main Entry Point
 # -----------------------------------------------------------------------------
 
+    # HELPER FUNCTION | Force UTF-8 Console Streams (Windows cp1252 guard)
+    # ------------------------------------------------------------
+def na_force_utf8_streams():
+    """Reconfigure stdout/stderr to UTF-8 so glyphs survive cp1252 consoles."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding='utf-8')                            # <-- Python 3.7+; no-op if already utf-8
+        except Exception:
+            pass
+    # ------------------------------------------------------------
+
+
     # FUNCTION | Parse Arguments, Audit, Optionally Backfill, Rebuild Index
     # ------------------------------------------------------------
 def main():
+    na_force_utf8_streams()                                                 # <-- Guard against UnicodeEncodeError on Windows
     parser = argparse.ArgumentParser(description='Audit + backfill Cloudflare R2 project.json / images / thumbnails and rebuild the master index.')
     parser.add_argument('--apply',        action='store_true', help='Upload missing files to R2 and write the rebuilt master index.')
     parser.add_argument('--dry-run-only', action='store_true', help='Force audit only (no uploads, no index write). Default behaviour.')
@@ -370,7 +348,7 @@ def main():
         uploaded = na_apply_project(client, bucket, record, force=args.force)
         total_uploaded += uploaded
         if uploaded:
-            print(f"  {COLOR_GREEN}↑{COLOR_RESET} {record['folderId']}: uploaded {uploaded} file(s).")
+            print(f"  {COLOR_GREEN}+{COLOR_RESET} {record['folderId']}: uploaded {uploaded} file(s).")
     print(f"  {COLOR_GREEN}Uploaded {total_uploaded} file(s) total.{COLOR_RESET}")
 
     # REBUILD + WRITE INDEX (probe post-upload R2 state, include all enabled projects)

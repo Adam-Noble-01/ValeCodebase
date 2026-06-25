@@ -386,6 +386,51 @@ def na_index_write(client, bucket: str, index: Dict, write_gh_copy: bool = True)
     # ------------------------------------------------------------
 
 
+    # FUNCTION | Rebuild the Full Master Index From Current R2 + Local State
+    # ------------------------------------------------------------
+def na_index_rebuild_all(client, bucket: str, projects: Optional[List[Dict]] = None) -> Dict:
+    """Probe R2 + read local project.json per enabled project to assemble a
+    fresh index. Reused by the audit/backfill tool and the GLB builder (DRY)."""
+    if projects is None:
+        projects = na_read_master_config_projects(only_enabled=True)        # <-- Default: every enabled project
+
+    index = na_index_new()
+    for project in projects:
+        folder_id = project.get('folderId')
+        if not folder_id:
+            continue
+
+        probe   = na_probe_project_r2(client, bucket, folder_id)            # <-- One list per project
+        pj_path = WCP_PROJECTS_BASE / folder_id / PROJECT_JSON_FILENAME
+
+        project_json = {}
+        if pj_path.is_file():
+            try:
+                project_json = json.loads(pj_path.read_text(encoding='utf-8'))
+            except Exception:
+                project_json = {}
+
+        meta       = na_derive_project_meta(project_json, folder_id)
+        asset_home = 'r2' if probe['hasProjectJson_R2'] else 'gh'           # <-- Where project.json actually lives
+
+        entry = na_make_index_entry(
+            folder_id           = folder_id,
+            project_code        = meta['projectCode'],
+            name                = meta['name'],
+            enabled             = bool(project.get('enabled', True)),
+            asset_home          = asset_home,
+            has_project_json_r2 = probe['hasProjectJson_R2'],
+            has_images_r2       = probe['hasImages_R2'],
+            has_thumbnails_r2   = probe['hasThumbnails_R2'],
+            has_glb_r2          = probe['hasGlb_R2'],
+            image_count         = probe['imageCount']
+        )
+        na_index_upsert_project(index, entry)
+
+    return index
+    # ------------------------------------------------------------
+
+
     # FUNCTION | Probe R2 Presence Flags for One Project
     # ------------------------------------------------------------
 def na_probe_project_r2(client, bucket: str, folder_id: str) -> Dict:

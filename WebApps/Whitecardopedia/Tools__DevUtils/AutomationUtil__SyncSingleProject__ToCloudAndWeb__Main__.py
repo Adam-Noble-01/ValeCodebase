@@ -508,6 +508,64 @@ def na_sync_cameras(project_folder: str, year: str, local_root: Path, wcp_dir: P
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
+# REGION | Master Index Update
+# -----------------------------------------------------------------------------
+
+def na_update_master_index_for_project(web_folder: str, year: str, wcp_dir: Path, report: SyncReport):
+    """Upsert this project's master-index entry (R2 presence flags + lastSynced)
+    and write the index to R2 + the committed GH copy via the shared lib."""
+    label = 'Update Master Index'
+    try:
+        import AutomationUtil__R2Common__Lib__ as r2lib       # @delegate: ./AutomationUtil__R2Common__Lib__.py
+    except Exception as exc:
+        report.add_step(label, False, f'Index lib import failed: {exc}')
+        return
+
+    creds  = r2lib.na_load_r2_credentials()
+    client = r2lib.na_create_r2_client(creds)
+    bucket = creds.get('R2_BUCKET_NAME', '')
+    if not client or not bucket:
+        report.add_step(label, False, 'R2 client unavailable; master index not updated.')
+        return
+
+    full_year = f"20{year}" if len(year) == 2 else year
+    folder_id = f"{full_year}/{web_folder}"
+    try:
+        index = r2lib.na_index_read(client, bucket)                       # <-- R2-first, GH copy fallback
+        probe = r2lib.na_probe_project_r2(client, bucket, folder_id)      # <-- Live R2 presence flags
+
+        project_json = {}
+        pj_path = wcp_dir / r2lib.PROJECT_JSON_FILENAME
+        if pj_path.is_file():
+            project_json = json.loads(pj_path.read_text(encoding='utf-8'))
+
+        meta       = r2lib.na_derive_project_meta(project_json, folder_id)
+        asset_home = 'r2' if probe['hasProjectJson_R2'] else 'gh'
+        entry      = r2lib.na_make_index_entry(
+            folder_id           = folder_id,
+            project_code        = meta['projectCode'],
+            name                = meta['name'],
+            enabled             = True,
+            asset_home          = asset_home,
+            has_project_json_r2 = probe['hasProjectJson_R2'],
+            has_images_r2       = probe['hasImages_R2'],
+            has_thumbnails_r2   = probe['hasThumbnails_R2'],
+            has_glb_r2          = probe['hasGlb_R2'],
+            image_count         = probe['imageCount']
+        )
+        r2lib.na_index_upsert_project(index, entry)
+        results = r2lib.na_index_write(client, bucket, index, write_gh_copy=True)
+
+        ok = bool(results.get('r2') or results.get('gh'))
+        report.add_step(label, ok,
+                        f"Index entry upserted for {folder_id} (home={asset_home}, "
+                        f"R2:{'OK' if results.get('r2') else 'no'} GH:{'OK' if results.get('gh') else 'no'}).")
+    except Exception as exc:
+        report.add_step(label, False, f'Index update failed: {exc}')
+
+# endregion -------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # REGION | CLI Entry Point
 # -----------------------------------------------------------------------------
 
@@ -520,6 +578,20 @@ def na_force_utf8_streams():
             pass
 
 
+def na_write_report_file(report_path: str, report: Dict):
+    """Write the JSON report to a file path supplied by the caller.
+
+    GUI-host callers (the SketchUp plugin) cannot reliably capture a child
+    process's stdout, so the report file is the PRIMARY hand-off channel. Stdout
+    JSON is kept as a secondary channel for plain command-line use."""
+    if not report_path:
+        return
+    try:
+        Path(report_path).write_text(json.dumps(report, indent=2), encoding='utf-8')
+    except Exception as exc:
+        print(f"  {COLOR_YELLOW}Warning: could not write report file '{report_path}': {exc}{COLOR_RESET}")
+
+
 def main():
     na_force_utf8_streams()                        # <-- Guard against UnicodeEncodeError on Windows
     parser = argparse.ArgumentParser(description='ValeVision Cloud Sync — Single Project Orchestrator')
@@ -527,6 +599,7 @@ def main():
     parser.add_argument('--year',    required=True,  help='Two-digit year (e.g. 26 for 2026)')
     parser.add_argument('--action',  default='all',  choices=['all', 'images', 'cameras'], help='Sync scope')
     parser.add_argument('--json',    action='store_true', help='Emit JSON report on stdout at the end')
+    parser.add_argument('--report-file', default='', help='Write the JSON report to this path (robust channel for GUI-host callers)')
     args = parser.parse_args()
 
     project_folder = args.project
@@ -545,6 +618,7 @@ def main():
     if not local_root:
         report.add_step('Resolve Project Root', False, f'Project folder not found under {LOCAL_PROJECTS_BASE}/{year}/.')
         final = report.finalise()
+        na_write_report_file(args.report_file, final)     # <-- Primary hand-off channel (even on early exit)
         if args.json:
             print(json.dumps(final))
         sys.exit(1 if not final['success'] else 0)
@@ -561,7 +635,11 @@ def main():
     elif action == 'cameras':
         na_sync_cameras(web_folder, year, local_root, wcp_dir, report)
 
+    na_update_master_index_for_project(web_folder, year, wcp_dir, report)  # <-- Keep the master index fresh after every sync
+
     final = report.finalise()
+
+    na_write_report_file(args.report_file, final)     # <-- Primary hand-off channel for GUI-host callers
 
     print()
     color = COLOR_GREEN if final['success'] else COLOR_RED

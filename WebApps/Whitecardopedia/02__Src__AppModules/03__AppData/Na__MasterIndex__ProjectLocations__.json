@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "25-Jun-2026 at 13:43",
+    "generatedAt": "25-Jun-2026 at 14:12",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -10,13 +10,13 @@
             "projectCode": "61557",
             "name": "Shillabeer",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 3,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/AN-61960__Acton",
@@ -24,13 +24,13 @@
             "projectCode": "61960",
             "name": "Acton",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/BL-61732__Ball",
@@ -38,13 +38,13 @@
             "projectCode": "61732",
             "name": "Ball",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/BX-61511__Baxter",
@@ -52,13 +52,13 @@
             "projectCode": "61511",
             "name": "Baxter",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 11,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/CF-61898__Chadfield",
@@ -66,13 +66,13 @@
             "projectCode": "61898",
             "name": "Chadfield",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 7,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/CS-61737__Conyers",
@@ -80,13 +80,13 @@
             "projectCode": "61737",
             "name": "Conyers",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/FM-56662__Foreman",
@@ -94,13 +94,13 @@
             "projectCode": "56662",
             "name": "Foreman",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 17,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/FN-62104__Fenner Scheme-01",
@@ -108,13 +108,13 @@
             "projectCode": "62104",
             "name": "Fenner Scheme-01",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 4,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/FN-62104__Fenner Scheme-02",
@@ -122,13 +122,13 @@
             "projectCode": "62104",
             "name": "Fenner Scheme-02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/FN-62104__Fenner Scheme-03",
@@ -136,13 +136,13 @@
             "projectCode": "62104",
             "name": "Fenner Scheme-03",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 8,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/GS-61695__Gibbs",
@@ -150,13 +150,13 @@
             "projectCode": "61695",
             "name": "Gibbs",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/GY-60937__Gray",
@@ -164,13 +164,13 @@
             "projectCode": "60937",
             "name": "Gray",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 3,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/HD-61716__Holland",
@@ -178,13 +178,13 @@
             "projectCode": "61716",
             "name": "Holland",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/HN-61484__Hannan",
@@ -192,13 +192,13 @@
             "projectCode": "61484",
             "name": "Hannan",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/HS-61747__Harris",
@@ -206,13 +206,13 @@
             "projectCode": "61747",
             "name": "Harris",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/HT-59908__Hewitt",
@@ -220,13 +220,13 @@
             "projectCode": "59908",
             "name": "Hewitt",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 6,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/HT-60180__Hurst",
@@ -234,13 +234,13 @@
             "projectCode": "60180",
             "name": "Hurst",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 6,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/HY-55239__Hendry",
@@ -248,13 +248,13 @@
             "projectCode": "55239",
             "name": "Hendry",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/JF-61131__Jolliffe",
@@ -262,13 +262,13 @@
             "projectCode": "61131",
             "name": "Jolliffe",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 8,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/JN-2906__Johnstone",
@@ -276,13 +276,13 @@
             "projectCode": "2906",
             "name": "Johnstone",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/LW-60678__Lawrence",
@@ -290,13 +290,13 @@
             "projectCode": "60678",
             "name": "Lawrence",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 10,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/LX-61040__Loxton",
@@ -304,13 +304,13 @@
             "projectCode": "61040",
             "name": "Loxton",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 10,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/MH-61603__Mottershead",
@@ -318,13 +318,13 @@
             "projectCode": "61603",
             "name": "Mottershead",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/MJ-59473__Mukherjee",
@@ -332,13 +332,13 @@
             "projectCode": "59473",
             "name": "Mukherjee",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/MS-62254__Meister",
@@ -346,13 +346,13 @@
             "projectCode": "62254",
             "name": "Meister",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 10,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/MU-61478__Mashru",
@@ -360,13 +360,13 @@
             "projectCode": "61478",
             "name": "Mashru",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/NY-29951__McNerney",
@@ -374,13 +374,13 @@
             "projectCode": "29951",
             "name": "McNerney",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 7,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/PC-61922__PlumblyClegg__Scheme-01",
@@ -388,13 +388,13 @@
             "projectCode": "61922",
             "name": "Plumbly-Clegg\u200e \u200e \u200e \u2014\u200e \u200e \u200e Scheme-01",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 4,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/PC-61922__PlumblyClegg__Scheme-02",
@@ -402,13 +402,13 @@
             "projectCode": "61922",
             "name": "Plumbly-Clegg\u200e \u200e \u200e \u2014\u200e \u200e \u200e Scheme-02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
             "hasThumbnails_R2": false,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 4,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/PH-59512__Phillips",
@@ -416,13 +416,13 @@
             "projectCode": "59512",
             "name": "Phillips",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/PY-61616__Pilley",
@@ -430,13 +430,13 @@
             "projectCode": "61616",
             "name": "Pilley",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 3,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/RC-62302__Richards",
@@ -444,13 +444,13 @@
             "projectCode": "62302",
             "name": "Richards",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 19,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/RD-61662__Rodger",
@@ -458,13 +458,13 @@
             "projectCode": "61662",
             "name": "Rodger",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/RS-59923__Richards",
@@ -472,13 +472,13 @@
             "projectCode": "59923",
             "name": "Richards",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/SD-61866__Sheppard",
@@ -486,13 +486,13 @@
             "projectCode": "61866",
             "name": "Sheppard",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 8,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/VB-60009__VanDenBorn",
@@ -500,13 +500,13 @@
             "projectCode": "60009",
             "name": "VanDenBorn",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/VE-61058__Staley",
@@ -514,13 +514,13 @@
             "projectCode": "61058",
             "name": "Staley",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/VN-61445__Vaughan",
@@ -528,13 +528,13 @@
             "projectCode": "61445",
             "name": "Vaughan",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 10,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/WK-3007__Weeks",
@@ -542,13 +542,13 @@
             "projectCode": "59494",
             "name": "Weeks",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 11,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/WR-60556__Winter",
@@ -556,13 +556,13 @@
             "projectCode": "60556",
             "name": "Winter",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/WS-61782__Wiltshire",
@@ -570,13 +570,13 @@
             "projectCode": "61782",
             "name": "Wiltshire",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/BX-61511__Baxter__Scheme-02",
@@ -584,13 +584,13 @@
             "projectCode": "61511",
             "name": "Baxter  -  Scheme No.02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 5,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/PN-62106__Pennington",
@@ -598,13 +598,13 @@
             "projectCode": "62106",
             "name": "Pennington",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 7,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/ED-62117__Edmiston",
@@ -612,13 +612,13 @@
             "projectCode": "62117",
             "name": "Edmiston",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/NW-61997__Newby",
@@ -626,13 +626,13 @@
             "projectCode": "61997",
             "name": "Newby",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 10,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/FM-56662__Foreman__Scheme-02",
@@ -640,13 +640,13 @@
             "projectCode": "56662",
             "name": "Foreman  -  Scheme No.02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/CC-62383__CapeConstruction__EgyptHouse",
@@ -654,13 +654,13 @@
             "projectCode": "62383",
             "name": "Cape Const.  -  Egypt House",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
             "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
             "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/NW-62108__Newington",
@@ -668,13 +668,13 @@
             "projectCode": "62108",
             "name": "Newington",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/55876__Swain",
@@ -682,13 +682,13 @@
             "projectCode": "55876",
             "name": "Swain",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 7,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/62361__Gordon",
@@ -696,13 +696,13 @@
             "projectCode": "62361",
             "name": "Gordon",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 27,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/43822__Napthine",
@@ -710,13 +710,13 @@
             "projectCode": "43822",
             "name": "Napthine",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 7,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/59908__Hewitt__Scheme-03",
@@ -724,13 +724,13 @@
             "projectCode": "59908",
             "name": "Hewitt  - Scheme No.02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/62258__Gray",
@@ -738,13 +738,13 @@
             "projectCode": "62258",
             "name": "Gray",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/62451__Cross",
@@ -752,13 +752,13 @@
             "projectCode": "62451",
             "name": "Cross",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 12,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/62444__Curtis",
@@ -766,13 +766,13 @@
             "projectCode": "62444",
             "name": "Curtis",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 13,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2025/62361__Gordon__Scheme-03",
@@ -780,13 +780,13 @@
             "projectCode": "62361",
             "name": "Gordon__Scheme-03",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 14,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/53948__Hurst-Cox",
@@ -794,13 +794,13 @@
             "projectCode": "53948",
             "name": "Hurst-Cox",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 12,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62388__Leuenberger",
@@ -808,13 +808,13 @@
             "projectCode": "62388",
             "name": "Leuenberger",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62565__Spalton",
@@ -822,13 +822,13 @@
             "projectCode": "62565",
             "name": "Spalton",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 9,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62460__Catchpole",
@@ -836,13 +836,13 @@
             "projectCode": "62460",
             "name": "Catchpole",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 7,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62538__Gunton",
@@ -850,13 +850,13 @@
             "projectCode": "62538",
             "name": "Gunton",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 11,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62514__Footitt",
@@ -864,13 +864,13 @@
             "projectCode": "62514",
             "name": "Footitt",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 17,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62275__Doouss",
@@ -878,13 +878,13 @@
             "projectCode": "62275",
             "name": "Doouss",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 8,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62475__Hickie",
@@ -892,13 +892,13 @@
             "projectCode": "62475",
             "name": "Hickie",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 8,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62615__Edwards",
@@ -906,13 +906,13 @@
             "projectCode": "62615",
             "name": "Edwards",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": false,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 8,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/60834__Clough",
@@ -920,13 +920,13 @@
             "projectCode": "60834",
             "name": "Clough",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/61721__Payne",
@@ -934,13 +934,13 @@
             "projectCode": "61721",
             "name": "Payne",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 2,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/59964__DeLisle",
@@ -948,13 +948,13 @@
             "projectCode": "59964",
             "name": "De Lisle",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62084__Rowbotham",
@@ -962,13 +962,13 @@
             "projectCode": "62084",
             "name": "Rowbotham",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/59443__Moore",
@@ -976,13 +976,13 @@
             "projectCode": "59443",
             "name": "Moore",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/59280__Itier",
@@ -990,13 +990,13 @@
             "projectCode": "59280",
             "name": "Itier",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62639__Yandell",
@@ -1004,13 +1004,13 @@
             "projectCode": "62639",
             "name": "Yandell",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62665__Hevey",
@@ -1018,13 +1018,13 @@
             "projectCode": "62665",
             "name": "Hevey",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62780__Steer",
@@ -1032,13 +1032,13 @@
             "projectCode": "62780",
             "name": "Steer",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/57876__Lane",
@@ -1046,13 +1046,13 @@
             "projectCode": "57876",
             "name": "Lane",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/3005__Marten",
@@ -1060,13 +1060,13 @@
             "projectCode": "3005",
             "name": "Marten",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62386__Hardy",
@@ -1074,13 +1074,13 @@
             "projectCode": "62386",
             "name": "Hardy",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62785__Carey",
@@ -1088,13 +1088,13 @@
             "projectCode": "62785",
             "name": "Carey",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62854__Ribbins",
@@ -1102,13 +1102,13 @@
             "projectCode": "62854",
             "name": "Ribbins",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62526__Russell",
@@ -1116,13 +1116,13 @@
             "projectCode": "62526",
             "name": "Russell",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62430__Lawrence",
@@ -1130,13 +1130,13 @@
             "projectCode": "62430",
             "name": "Lawrence",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62722__Parkes",
@@ -1144,13 +1144,13 @@
             "projectCode": "62722",
             "name": "Parkes",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62775__Slater",
@@ -1158,13 +1158,13 @@
             "projectCode": "62775",
             "name": "Slater",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/61721__Payne__Scheme-02",
@@ -1172,13 +1172,13 @@
             "projectCode": "61721",
             "name": "Payne  -  Scheme-02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62912__Lamming",
@@ -1186,13 +1186,13 @@
             "projectCode": "62912",
             "name": "Lamming",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62557__Lister",
@@ -1200,13 +1200,13 @@
             "projectCode": "62557",
             "name": "Lister",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62841__Smee",
@@ -1214,13 +1214,13 @@
             "projectCode": "62841",
             "name": "Smee",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63034__Lorriman",
@@ -1228,13 +1228,13 @@
             "projectCode": "63034",
             "name": "Lorriman",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/57744__King",
@@ -1242,13 +1242,13 @@
             "projectCode": "57744",
             "name": "King",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62970__Hampson",
@@ -1256,13 +1256,13 @@
             "projectCode": "62970",
             "name": "Hampson",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63008__Lee-Smith",
@@ -1270,13 +1270,13 @@
             "projectCode": "63008",
             "name": "Lee-Smith",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62902__McLoughlin",
@@ -1284,13 +1284,13 @@
             "projectCode": "62902",
             "name": "McLoughlin",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63086__Matharu",
@@ -1298,13 +1298,13 @@
             "projectCode": "63086",
             "name": "Matharu",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63002__Thorpe",
@@ -1312,13 +1312,13 @@
             "projectCode": "63002",
             "name": "Thorpe",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62737__Berry",
@@ -1326,13 +1326,13 @@
             "projectCode": "62737",
             "name": "Berry",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62934__James",
@@ -1340,13 +1340,13 @@
             "projectCode": "62934",
             "name": "James",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63148__Marsh",
@@ -1354,13 +1354,13 @@
             "projectCode": "63148",
             "name": "Marsh",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63076__Thompson",
@@ -1368,13 +1368,13 @@
             "projectCode": "63076",
             "name": "Thompson",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62921__Hendy",
@@ -1382,13 +1382,13 @@
             "projectCode": "62921",
             "name": "Hendy",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63184__Beevers",
@@ -1396,13 +1396,13 @@
             "projectCode": "63184",
             "name": "Beevers",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63232__Davies",
@@ -1410,13 +1410,13 @@
             "projectCode": "63232",
             "name": "Davies",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63072__Armstrong",
@@ -1424,13 +1424,13 @@
             "projectCode": "63072",
             "name": "Armstrong",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63295__Majid",
@@ -1438,13 +1438,13 @@
             "projectCode": "63295",
             "name": "Majid",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63231__Sellon",
@@ -1452,13 +1452,13 @@
             "projectCode": "63231",
             "name": "Sellon",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63271__Robson",
@@ -1466,13 +1466,13 @@
             "projectCode": "63271",
             "name": "Robson",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63345__Martin",
@@ -1480,13 +1480,13 @@
             "projectCode": "63345",
             "name": "Martin",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/55164__Quinn",
@@ -1494,13 +1494,13 @@
             "projectCode": "55164",
             "name": "Quinn |  Scheme - 01",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 2,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63418__Kedia",
@@ -1508,13 +1508,13 @@
             "projectCode": "63418",
             "name": "Kedia",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/55164__Quinn__Scheme-02",
@@ -1522,13 +1522,13 @@
             "projectCode": "55164",
             "name": "Quinn |  Scheme - 02",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/41352__Brown",
@@ -1536,13 +1536,13 @@
             "projectCode": "41352",
             "name": "Brown",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63396__Kalson",
@@ -1550,13 +1550,13 @@
             "projectCode": "63396",
             "name": "Kalson",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/60906__Dawson-Smith",
@@ -1564,13 +1564,13 @@
             "projectCode": "60906",
             "name": "Dawson-Smith",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63578__Yates__Orangery",
@@ -1578,13 +1578,13 @@
             "projectCode": "63578",
             "name": "Yates |  Orangery",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 3,
+            "lastSynced": "25-Jun-2026 at 14:05"
         },
         {
             "folderId": "2026/63578__Yates__Porch",
@@ -1592,13 +1592,13 @@
             "projectCode": "63578",
             "name": "Yates |  Front Porch",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 2,
+            "lastSynced": "25-Jun-2026 at 14:09"
         },
         {
             "folderId": "2026/63568__Jones",
@@ -1606,13 +1606,13 @@
             "projectCode": "63568",
             "name": "Jones |  Early Stage",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 2,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63568__Jones__FullVersion",
@@ -1620,13 +1620,13 @@
             "projectCode": "63568",
             "name": "Jones",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/55495__Barrett",
@@ -1634,13 +1634,13 @@
             "projectCode": "55495",
             "name": "Barrett",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63324__King",
@@ -1648,13 +1648,13 @@
             "projectCode": "63324",
             "name": "King",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63459__Allen",
@@ -1662,13 +1662,13 @@
             "projectCode": "63459",
             "name": "Allen",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/62609__Bagot",
@@ -1676,13 +1676,13 @@
             "projectCode": "62609",
             "name": "Bagot",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63476__Lang",
@@ -1690,13 +1690,13 @@
             "projectCode": "63476",
             "name": "Lang",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63442__Rosalie",
@@ -1704,13 +1704,13 @@
             "projectCode": "63442",
             "name": "Rosalie",
             "enabled": true,
-            "assetHome": "gh",
-            "hasProjectJson_R2": false,
-            "hasImages_R2": false,
-            "hasThumbnails_R2": false,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 0,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "imageCount": 1,
+            "lastSynced": "25-Jun-2026 at 13:54"
         },
         {
             "folderId": "2026/63592__Bressard-Kayode",
@@ -1724,7 +1724,7 @@
             "hasThumbnails_R2": true,
             "hasGlb_R2": true,
             "imageCount": 3,
-            "lastSynced": "25-Jun-2026 at 13:43"
+            "lastSynced": "25-Jun-2026 at 14:12"
         }
     ]
 }

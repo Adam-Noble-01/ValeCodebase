@@ -1108,6 +1108,38 @@ def main():
     # Runs regardless of whether R2 uploads occurred, so the URL index is always
     # kept in sync with whatever GLBs are in the local sync folder / R2 bucket.
     refresh_all_project_json_urls(all_dry_run_records)
+
+    # STEP 9: Regenerate the authoritative master index from current R2 state
+    # so GLB-only build runs keep the project-locations index fresh for both
+    # web apps (R2 copy + committed GH Pages fallback copy).
+    regenerate_master_index(s3_client, bucket_name)
+# ---------------------------------------------------------------
+
+
+# FUNCTION | Regenerate the Master Project Index (delegated to shared lib)
+# ---------------------------------------------------------------
+# @delegate: ./AutomationUtil__R2Common__Lib__.py
+def regenerate_master_index(s3_client, bucket_name: str):
+    """Rebuild + write the master index (R2 + GH copy) via the shared R2 lib."""
+    try:
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent))                      # <-- Allow sibling lib import
+        import AutomationUtil__R2Common__Lib__ as r2lib
+    except Exception as exc:
+        print(f"{COLOR_YELLOW}Master index skipped — lib import failed: {exc}{COLOR_RESET}")
+        return
+
+    if not s3_client or not bucket_name:
+        print(f"{COLOR_YELLOW}Master index skipped — R2 client unavailable.{COLOR_RESET}")
+        return
+
+    try:
+        index   = r2lib.na_index_rebuild_all(s3_client, bucket_name)        # <-- Probe R2 for every enabled project
+        results = r2lib.na_index_write(s3_client, bucket_name, index, write_gh_copy=True)
+        print(f"{COLOR_GREEN}Master index regenerated: {len(index['projects'])} project(s) "
+              f"(R2:{'OK' if results.get('r2') else 'no'} GH:{'OK' if results.get('gh') else 'no'}).{COLOR_RESET}\n")
+    except Exception as exc:
+        print(f"{COLOR_YELLOW}Master index regeneration failed: {exc}{COLOR_RESET}")
 # ---------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

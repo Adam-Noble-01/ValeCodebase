@@ -18,6 +18,35 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.5.0 - 25-Jun-2026 - R2 Master Index + Full CDN Mirror + SketchUp Sync Tooling
+
+### Overview
+Whitecardopedia and ValeVision3D now share an authoritative **master project index** on Cloudflare R2 (`VaApps/Index/Na__MasterIndex__ProjectLocations__.json`) with a committed GitHub Pages fallback copy. The gallery and ValeVision3D resolve each project's true year, folder id, and asset home (R2 vs GH-only) before fetching — eliminating the blind-R2 404 flood. New Python tooling backs the ValeVision Cloud Sync SketchUp plugin for single-project sync, R2 audit/backfill, and shared R2 plumbing. See ValeVision3D v2.8.0 and ValeVision Cloud Sync v0.2.0 for the upstream/downstream pipeline.
+
+### Changes
+- **R2-first loading (v0.2.0)** — `loadProjectData`, `getImageUrl`, and `getThumbnailImage` try CDN before GH Pages; fallback toast on GH fallback.
+- **Thumbnail path fix (v0.2.1)** — correct `__Thumbnail__524p__.webp` sibling naming (not a subfolder path); `getImageUrlPair` / `getThumbnailImagePair` return `{ primary, fallback }` with `onerror` swap.
+- **Master index (v0.2.2)** — `na_load_master_index` (R2-first, memoised) + `na_resolve_project_base`; skip doomed R2 request when index marks project as `assetHome: gh`.
+- **Config SSOT** — `AssetUrls__IndexUrl` and `AssetUrls__IndexFallbackUrl` added to `Na__AppData__MasterConfig__Main.json`.
+- **NEW shared R2 library** — `AutomationUtil__R2Common__Lib__.py`: boto3 client, HEAD/list/upload, content-type map, master index read/upsert/write (R2 + GH copy).
+- **NEW single-project sync orchestrator** — `AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`: clone images → 524p thumbnails → upload R2 → rebuild `images[]` → merge `ValeVison3D__SketchUpCameraData` → upsert index; `--report-file` for SketchUp GUI host.
+- **NEW audit + backfill tool** — `AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py`: dry-run/apply missing `project.json`/images/thumbnails per project; rebuild index after apply.
+- **Bulk GLB builder** — regenerates master index after bulk upload via shared lib (`AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py`).
+- **Initial master index seed** — `Na__MasterIndex__ProjectLocations__.json` committed under `02__Src__AppModules/03__AppData/` and uploaded to R2.
+- **Synced project data** — projects such as `63592__Bressard-Kayode` now carry updated images, thumbnails, GLBs, and SketchUp camera data on R2 and in the local repo.
+
+### Files Changed
+- `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js`
+- `02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json`
+- `02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json` (new)
+- `Tools__DevUtils/AutomationUtil__R2Common__Lib__.py` (new)
+- `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` (new)
+- `Tools__DevUtils/AutomationUtil__AuditAndBackfillR2__ProjectJsonAndImages__Main__.py` (new)
+- `Tools__DevUtils/AutomationUtil__BuildCloudflareBucket__WhitecardopediaProjects__Main__.py`
+- `Projects/2026/*/` (synced project content)
+
+---
+
 ## Whitecardopedia v0.4.1 - 17-Jun-2026 - Responsive Toolbar Layout
 
 ### Overview

@@ -31,6 +31,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 25-Jun-2026 - Version 1.5.0
+// - Master index: calls Na__AppUtils__InitMasterIndex early in the sequence and
+//   awaits it before FetchProjectJson so year/folderId resolution is ready.
+// - SketchUp auto-animation: when project.json has ValeVison3D__SketchUpCameraData
+//   but no explicit PresentationMode__SavedCameraScenes, delegates to
+//   Na__SketchUp__AnimationScene__TryBuildScenesFromSketchUp (DataBridge) to
+//   build scenes and dispatch na-presentation-mode-scenes-loaded.
+//
 // 16-Jun-2026 - Version 1.4.1
 // - Camera-follow billboards: collection now scans ALL loaded categories for
 //   billboard nodes instead of restricting to a SiteVegetation2D category

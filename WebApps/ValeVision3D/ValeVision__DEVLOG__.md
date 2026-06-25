@@ -2,6 +2,33 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.8.0 - 25-Jun-2026 - SketchUp Camera Auto-Animation + R2 Master Index
+
+### Overview
+ValeVision3D now auto-builds Presentation Mode scenes from SketchUp-exported camera data (`ValeVison3D__SketchUpCameraData`), shows the scene carousel by default when two or more cameras exist, and uses human-readable card titles from the SketchUp scene description. All project assets resolve via the shared R2 master index (eliminating the 404 flood and the code-only folderId race that previously halted loading). See Whitecardopedia v0.5.0 for index generation/sync tooling and ValeVision Cloud Sync v0.2.0 for the SketchUp export pipeline.
+
+### Changes
+- **NEW `69__System__SketchUpToValeVision__Utilities/`** — three modules:
+  - `Na__SketchUp__LoadSceneData__.js` — reads camera block; matches IMG## images/thumbnails from `project.json.images`.
+  - `Na__SketchUp__ConvertSceneData__.js` — Z-up mm → Y-up PresentationMode schema; axis swap; vertical FOV; orbit target; `ShowCarouselByDefault: true`; >=2 scene gate; description-as-card-title.
+  - `Na__SketchUp__AnimationScene__DataBridge__.js` — auto-build when no explicit PresentationMode block; dispatches `na-presentation-mode-scenes-loaded`.
+- **R2-first assets (ProjectLoader v1.2.0)** — `FetchProjectJson` and `ResolveAssetUrl` try CDN then GH Pages; fallback toast.
+- **Master index (ProjectLoader v1.3.0)** — `Na__AppUtils__InitMasterIndex`; resolves real `year/folderId` from numeric project code; honours `assetHome`.
+- **Race fix (ProjectLoader v1.3.1)** — `FetchProjectJson` awaits index before building URLs; prevents memoised wrong `2026/63592` 404 that halted load and suppressed Presentation Mode.
+- **Loading sequence (v1.5.0)** — early `InitMasterIndex`; SketchUp bridge after project.json load when no manual PresentationMode scenes.
+- **Config SSOT** — `ProjectData__AssetUrls__IndexUrl` + fallback in `Na__AppConfig__Main.json`.
+- **Reference doc** — `Research__RubySceneData__RIPDOWN__.md` (SketchUp Page/Camera API fields).
+
+### Files Changed
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__LoadSceneData__.js` (new)
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__ConvertSceneData__.js` (new)
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js` (new)
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__ProjectLoader.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `Research__RubySceneData__RIPDOWN__.md` (new)
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.7.2 - 16-Jun-2026 - Carousel UI Cleanup: Remove Play Button and Pagination Dots
 
 ### Overview

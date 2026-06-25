@@ -298,6 +298,17 @@
         flex-shrink                        : 0;
         pointer-events                     : none;
     }
+
+    /* SECTION ICON TEXT | Unicode glyph variant for sections with no PNG asset */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__section-icon--text {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : 16px;
+        line-height                        : 1;
+        user-select                        : none;
+    }
     /* ------------------------------------------------------------ */
 
 

@@ -18,6 +18,9 @@
 // - Walk and Fly instruction sections show only when those modes are
 //   enabled for the current model (project.json Navmode__EnabledModes),
 //   keeping the instructions relevant to what the user can actually do.
+// - Keyboard Shortcuts section is populated dynamically from
+//   Na__ValeVision__HotkeysDictionary__.json so the panel stays in sync
+//   with the dictionary without any manual HTML edits.
 //
 // INTEGRATION:
 // - Call Na__UiFeature__InitializeNavigationHelpPanel() from index.html.
@@ -27,6 +30,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 25-Jun-2026 - Version 1.2.0
+// - Keyboard Shortcuts section added; rows populated from the hotkey
+//   dictionary JSON so the panel stays in sync automatically.
+//
 // 10-Jun-2026 - Version 1.1.0
 // - Collapsible sections: each mode section now has a fold/unfold toggle.
 // - Section headers display matching toolbar icons (Orbit/Walk/Fly/ResetView).
@@ -49,6 +56,12 @@
     const Na__NavHelp__CloseBtnId     = 'naNavHelpCloseBtn';        // <-- Close (X) button
     const Na__NavHelp__WalkSectionId  = 'naNavHelpWalkSection';     // <-- Walk instructions section
     const Na__NavHelp__FlySectionId   = 'naNavHelpFlySection';      // <-- Fly instructions section
+    const Na__NavHelp__HotkeyListId   = 'naNavHelpHotkeysList';     // <-- Keyboard shortcuts row container
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Hotkey Dictionary Path
+    // ------------------------------------------------------------
+    const Na__NavHelp__HotkeyDictPath = '02__Src__AppModules/02__AppData/Na__ValeVision__HotkeysDictionary__.json'; // <-- Source JSON for keyboard shortcut rows
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | CSS Classes
@@ -151,6 +164,79 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Keyboard Shortcuts Section - Dynamic Population
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Format a Key Binding Object Into a Display Label
+    // ------------------------------------------------------------
+    function Na__NavHelp__FormatKeyLabel(binding) {
+        const parts = [];
+        if (binding.Na__Hotkey__CtrlKey)  parts.push('Ctrl');    // <-- Ctrl modifier
+        if (binding.Na__Hotkey__AltKey)   parts.push('Alt');     // <-- Alt modifier
+        if (binding.Na__Hotkey__ShiftKey) parts.push('Shift');   // <-- Shift modifier
+
+        const keyName = binding.Na__Hotkey__Key
+            .replace('PageUp',   'Page Up')                      // <-- Pretty-print browser key names
+            .replace('PageDown', 'Page Down')
+            .replace('ArrowUp',    '↑')
+            .replace('ArrowDown',  '↓')
+            .replace('ArrowLeft',  '←')
+            .replace('ArrowRight', '→');
+
+        parts.push(keyName);
+        return parts.join(' + ');                                 // <-- e.g. "Alt + Shift + W" or "Page Up"
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build a Single Row Element for a Hotkey Binding
+    // ------------------------------------------------------------
+    function Na__NavHelp__BuildHotkeyRow(binding) {
+        const row   = document.createElement('div');
+        const key   = document.createElement('span');
+        const desc  = document.createElement('span');
+
+        row.className  = 'na-nav-help__row';
+        key.className  = 'na-nav-help__key';
+        desc.className = 'na-nav-help__desc';
+
+        key.textContent  = Na__NavHelp__FormatKeyLabel(binding);          // <-- Formatted key combo
+        desc.textContent = binding.Na__Hotkey__Description;               // <-- Description from dictionary
+
+        row.appendChild(key);
+        row.appendChild(desc);
+        return row;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fetch Dictionary and Inject Keyboard Shortcut Rows
+    // ------------------------------------------------------------
+    function Na__NavHelp__PopulateHotkeySection() {
+        const container = document.getElementById(Na__NavHelp__HotkeyListId);
+        if (!container) return;                                           // <-- Guard: section not in DOM
+
+        fetch(Na__NavHelp__HotkeyDictPath)
+            .then(response => {
+                if (!response.ok) throw new Error(`NavHelp: Failed to load hotkey dictionary (${response.status})`); // <-- HTTP guard
+                return response.json();
+            })
+            .then(data => {
+                const bindings = data.Na__ValeVision__HotkeysDictionary || [];
+                bindings.forEach(binding => {
+                    container.appendChild(Na__NavHelp__BuildHotkeyRow(binding)); // <-- Append one row per binding
+                });
+            })
+            .catch(err => {
+                console.warn('[ValeVision3D] NavHelpPanel: Could not load hotkey dictionary -', err); // <-- Graceful failure
+            });
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Initialization
 // -----------------------------------------------------------------------------
 
@@ -164,6 +250,7 @@
         if (backdrop) backdrop.addEventListener('click', Na__UiFeature__CloseNavigationHelpPanel);   // <-- Click outside to close
 
         Na__NavHelp__InitializeSectionToggles();                                     // <-- Wire fold/unfold on all section headers
+        Na__NavHelp__PopulateHotkeySection();                                        // <-- Inject keyboard shortcut rows from dictionary JSON
 
         // CLOSE ON ESCAPE KEY (only while open — leaves other Escape handlers untouched)
         window.addEventListener('keydown', (event) => {

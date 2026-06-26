@@ -14,7 +14,8 @@
     "productionData": {
         "additionalNotes": "Went slightly over, need to figure out a solution for bay windows, also took a while for me to figure out how the main house roofs merged so had do a little digging looking at satelite views etc so added a little extra time. Great CAD File from Amy on this one though.",
         "conceptArtist": "Amy",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "62970",
     "projectName": "Hampson",

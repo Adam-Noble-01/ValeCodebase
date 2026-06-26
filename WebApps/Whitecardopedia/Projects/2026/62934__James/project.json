@@ -20,7 +20,8 @@
     "productionData": {
         "additionalNotes": "Nothing to report.",
         "conceptArtist": "Amy",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Tom"
     },
     "projectCode": "62934",
     "projectName": "James",

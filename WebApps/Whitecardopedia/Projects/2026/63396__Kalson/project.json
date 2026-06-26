@@ -30,7 +30,8 @@
     "productionData": {
         "additionalNotes": "Nothing To Report. Nice easy one, Good CAD File",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Tom"
     },
     "projectCode": "63396",
     "projectName": "Kalson",

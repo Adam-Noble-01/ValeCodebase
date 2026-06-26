@@ -6,7 +6,8 @@
     "productionData": {
         "additionalNotes": "Went a little over, probably should not have modelled rafter feet. Anna's CAD File provided was excellent though as always.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63034",
     "projectName": "Lorriman",

@@ -6,7 +6,8 @@
     "productionData": {
         "additionalNotes": "Anna requested Landscape on this one but James said to first model the basic Whitecard model and take the view whether its needed after presenting the first iteration of the model to Anna, so I will await feedback before adding the Site context. I overran slightly over the estimated 2 Hours, due to needed to model the openings and windows on the elevation the request arrow pointed to, so I had to use texture projection method to get the best site photo and project the window positions and style to the mesh etc, which added some time.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "57876",
     "projectName": "Lane",

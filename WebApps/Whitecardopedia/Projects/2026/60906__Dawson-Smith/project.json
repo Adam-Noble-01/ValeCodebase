@@ -46,7 +46,8 @@
     "productionData": {
         "additionalNotes": "Audit required, I had to fill out tons of context so time budget went way over what it should have been. had to use photo-match alignment & Texture projection to add façade context etc. found a few discrepancies whilst modelling out the roof and slope etc so I carefully traced through the survey info etc and corrected some errors highlighted by the photo-match alignment process.",
         "conceptArtist": "Amy",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Tom"
     },
     "projectCode": "60906",
     "projectName": "Dawson-Smith",

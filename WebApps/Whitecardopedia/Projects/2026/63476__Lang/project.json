@@ -188,7 +188,8 @@
     "productionData": {
         "additionalNotes": "Steph's CAD File was amazing! a great quick and easy job. No Issues to report.",
         "conceptArtist": "Steph",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63476",
     "projectName": "Lang",

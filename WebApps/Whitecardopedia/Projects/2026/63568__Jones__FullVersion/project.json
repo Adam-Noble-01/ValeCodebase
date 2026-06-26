@@ -55,7 +55,8 @@
     "productionData": {
         "additionalNotes": "Additional detail required, added the frontage context. Moved garden wall onto boundary layer.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Martin"
     },
     "projectCode": "63568",
     "projectName": "Jones",

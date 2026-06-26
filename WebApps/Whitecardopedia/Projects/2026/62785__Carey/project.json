@@ -14,7 +14,8 @@
     "productionData": {
         "additionalNotes": "A pretty standard project, used Steph's hand drawn concept, no issues to report.",
         "conceptArtist": "Steph",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "62785",
     "projectName": "Carey",

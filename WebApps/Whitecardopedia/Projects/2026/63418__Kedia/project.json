@@ -47,7 +47,8 @@
     "productionData": {
         "additionalNotes": "A Big complex existing house, allowed a little extra time, completed within expected time.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "63418",
     "projectName": "Kedia",

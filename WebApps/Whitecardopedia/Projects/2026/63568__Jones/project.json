@@ -4,7 +4,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "Typical Job, nothing to report."
+        "additionalNotes": "Typical Job, nothing to report.",
+        "designer": "Martin"
     },
     "scheduleData": {
         "dateReceived": "29-May-2026",

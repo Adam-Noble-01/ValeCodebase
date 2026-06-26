@@ -55,7 +55,8 @@
     "productionData": {
         "additionalNotes": "Nothing to report, no issues.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Martin"
     },
     "projectCode": "63232",
     "projectName": "Davies",

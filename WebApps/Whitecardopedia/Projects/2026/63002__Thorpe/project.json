@@ -46,7 +46,8 @@
     "productionData": {
         "additionalNotes": "First ever test of the new Blockout system, will seek feedback from Rachael, Amy & James.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63002",
     "projectName": "Thorpe",

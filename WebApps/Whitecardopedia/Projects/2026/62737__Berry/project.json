@@ -30,7 +30,8 @@
     "productionData": {
         "additionalNotes": "Second test of the new Blockout system, will seek feedback from Rachael.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "62737",
     "projectName": "Berry",

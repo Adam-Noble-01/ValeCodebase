@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "A good CAD File from Rachael, Allowed a little longer due to the complex chimney design and modelling multiple roofs etc, I managed to finish it in the time anticipated."
+        "additionalNotes": "A good CAD File from Rachael, Allowed a little longer due to the complex chimney design and modelling multiple roofs etc, I managed to finish it in the time anticipated.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "02-Feb-2026",

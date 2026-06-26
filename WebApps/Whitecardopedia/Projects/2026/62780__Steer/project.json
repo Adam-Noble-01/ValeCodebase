@@ -6,7 +6,8 @@
     "productionData": {
         "additionalNotes": "A typical job, nothing to report, Anna provided a decent CAD File as per usual.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "62780",
     "projectName": "Steer",

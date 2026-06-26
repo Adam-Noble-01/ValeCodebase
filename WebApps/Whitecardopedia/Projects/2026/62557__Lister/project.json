@@ -14,7 +14,8 @@
     "productionData": {
         "additionalNotes": "A Tricky job with two seperate structures, sliding sash windows, and a Belton Cresting, I had to model up the cresting so this added extra time, saved it to my components library now though so will save an hour next time. CAD File provided was good, Anna did a great job.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Gary"
     },
     "projectCode": "62557",
     "projectName": "Lister",

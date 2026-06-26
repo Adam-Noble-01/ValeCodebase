@@ -47,7 +47,8 @@
     "productionData": {
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
         "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type"
+        "input": "Default Input Type",
+        "designer": "Martin"
     },
     "projectCode": "63568",
     "projectName": "Jones",

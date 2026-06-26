@@ -50,7 +50,8 @@
     "productionData": {
         "additionalNotes": "Amy prepared the CAD file for me and it was perfect, very easy to work with. The design was a little none standard and I ended up having to bring in some mapping data to model the wall as the architects drawings and survey cut the wall off fairly close to the Orangery, so I have to research and model the true conditions which made the job take a little longer than usual.",
         "conceptArtist": "Amy",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "62444",
     "projectName": "Curtis",

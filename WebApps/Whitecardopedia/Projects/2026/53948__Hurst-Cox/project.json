@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "A nice quick project, great CAD File from Anna as always, I used this project to record footage to  show the directors in the meeting on 21-Jan-2026."
+        "additionalNotes": "A nice quick project, great CAD File from Anna as always, I used this project to record footage to  show the directors in the meeting on 21-Jan-2026.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "20-Jan-2026",

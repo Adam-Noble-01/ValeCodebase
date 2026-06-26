@@ -18,6 +18,19 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.3 - 26-Jun-2026 - Designer & Artist Backfill (All Projects)
+
+### Overview
+One-off backfill of `productionData.designer` (and `productionData.conceptArtist` where missing) across all 127 Whitecardopedia `project.json` files. 80 projects patched automatically from the master CSV; 47 legacy 2025 projects have a pre-filled supplement CSV generated for manual completion. All updated files pushed to Cloudflare R2 via the audit backfill script.
+
+### Changes
+- **Designer backfill pipeline** — new one-off dev utility at `Tools__DevUtils/OneOff__DesignerArtistBackfill__/`. Contains the CSV extractor (`AutomationUtil__ExtractProjectDesignersAndArtists__Main__.py`), the apply script (`AutomationUtil__ApplyDesignersToWhitecardopedia__Main__.py`), the master CSV, and the legacy supplement template.
+- **79 project.json files updated** — `designer` field written for all 2026 projects and 11 2025 projects that had a `*__ProjectData__.json` source. 1 project (Warwick) already had the correct value and was skipped.
+- **Supplement template generated** — `Project__Data__Query__Legacy2025Supplement__.csv` lists the 45 real legacy 2025 projects with `conceptArtist` pre-filled and a notes snippet; user fills `Designer` column then re-runs `--apply --supplement` for the second pass.
+- **R2 CDN updated** — 866 files force-uploaded; master index, build manifest, and master config mirror all rebuilt.
+
+---
+
 ## Whitecardopedia v0.6.2 - 25-Jun-2026 - First-Sync Scaffold, Production Data Automation, PWA Cache Recovery
 
 ### Overview
@@ -504,6 +517,4 @@ The `RenderEngine__Config` key written by the WCP builder is read on load by Val
 - Basic project structure
 
 # -----------------------------------------------------------------------------
-
-**Last Updated**: 25-Jun-2026
 

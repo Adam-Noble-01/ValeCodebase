@@ -5,7 +5,8 @@
     "productionData": {
         "input": "Early Stage Sketch",
         "conceptArtist": "Steph",
-        "additionalNotes": "Took a little longer than expected. I had to draw a couple of extra windows, and all windows had lead line divisions. I worked from a hand drawing, so I had to convert it to SketchUp. It might be worth adding a lead line configurator to the existing window generator tool. I will plot out how long this would take to build on a rainy day, as it may have saved me around 30 minutes on this one."
+        "additionalNotes": "Took a little longer than expected. I had to draw a couple of extra windows, and all windows had lead line divisions. I worked from a hand drawing, so I had to convert it to SketchUp. It might be worth adding a lead line configurator to the existing window generator tool. I will plot out how long this would take to build on a rainy day, as it may have saved me around 30 minutes on this one.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "23-Jan-2026",

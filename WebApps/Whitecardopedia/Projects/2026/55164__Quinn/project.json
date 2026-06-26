@@ -55,7 +55,8 @@
     "productionData": {
         "additionalNotes": "Only recieved CAD For the Orangery aspect, had to use a mix of hand-drawn/CAD/Photomatch to fill out the context. Added the site levels and the steps down.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Gary"
     },
     "projectCode": "55164",
     "projectName": "Quinn |  Scheme - 01",

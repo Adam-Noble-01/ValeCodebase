@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "The existing host dwelling was a bit more complex than a typical job, The Vale Orangery itself was very easy though, A really clean and easy to work with CAD file was provided by Anna making my life as easy as could be. The landscape took a little longer than usual to model due to drastically differing levels."
+        "additionalNotes": "The existing host dwelling was a bit more complex than a typical job, The Vale Orangery itself was very easy though, A really clean and easy to work with CAD file was provided by Anna making my life as easy as could be. The landscape took a little longer than usual to model due to drastically differing levels.",
+        "designer": "Gary"
     },
     "scheduleData": {
         "dateReceived": "18-Dec-2025",

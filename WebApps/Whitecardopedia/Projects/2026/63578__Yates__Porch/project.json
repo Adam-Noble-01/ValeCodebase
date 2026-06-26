@@ -55,7 +55,8 @@
     "productionData": {
         "additionalNotes": "Nothing to report, had to model from a hand drawing which takes longer than the CAD pipeline, but no issues.",
         "conceptArtist": "Dan",
-        "input": "Early Stage Sketch"
+        "input": "Early Stage Sketch",
+        "designer": "Dan"
     },
     "projectCode": "63578",
     "projectName": "Yates |  Front Porch",

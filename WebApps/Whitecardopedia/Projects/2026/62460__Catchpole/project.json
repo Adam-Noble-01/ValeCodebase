@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "A typical Job, only slight delays was clarifying the breakfront detail with James & Tom, other than than it went smoothly, CAD File was easy to work with."
+        "additionalNotes": "A typical Job, only slight delays was clarifying the breakfront detail with James & Tom, other than than it went smoothly, CAD File was easy to work with.",
+        "designer": "Tom"
     },
     "scheduleData": {
         "dateReceived": "23-Jan-2026",

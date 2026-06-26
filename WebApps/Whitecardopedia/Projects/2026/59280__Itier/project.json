@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Amy",
-        "additionalNotes": "Took a little longer than expected, complex existing conditions, had to model side elevation out."
+        "additionalNotes": "Took a little longer than expected, complex existing conditions, had to model side elevation out.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "13-Feb-2026",

@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "Took longer than expected due to landscape modelling and needing to align multiple photo matches to ensure accuracy with the rather complex patio situation."
+        "additionalNotes": "Took longer than expected due to landscape modelling and needing to align multiple photo matches to ensure accuracy with the rather complex patio situation.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "28-Jan-2026",

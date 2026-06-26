@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "Took a bit longer than expected because the building is segmented and not all the walls run straight. Looking back, I should have modelled it flat first to speed things up, since the angle changes aren’t noticeable in the exported views anyway, this was my error, Rachael's work was good."
+        "additionalNotes": "Took a bit longer than expected because the building is segmented and not all the walls run straight. Looking back, I should have modelled it flat first to speed things up, since the angle changes aren’t noticeable in the exported views anyway, this was my error, Rachael's work was good.",
+        "designer": "House"
     },
     "scheduleData": {
         "dateReceived": "05-Dec-2025",

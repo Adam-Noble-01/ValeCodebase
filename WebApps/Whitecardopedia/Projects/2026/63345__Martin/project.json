@@ -30,7 +30,8 @@
     "productionData": {
         "additionalNotes": "Quick & Easy job, nothing to report, complete within time budget.",
         "conceptArtist": "Steph",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63345",
     "projectName": "Martin",

@@ -5,7 +5,8 @@
     "productionData": {
         "input": "Hand Drawn Concept",
         "conceptArtist": "James",
-        "additionalNotes": "Only one view required for James to deliver to Andy in an in-person meeting, fairly standard project using a decent enough artists drawing as an input, nothing negative to report."
+        "additionalNotes": "Only one view required for James to deliver to Andy in an in-person meeting, fairly standard project using a decent enough artists drawing as an input, nothing negative to report.",
+        "designer": "House"
     },
     "scheduleData": {
         "dateReceived": "22-Oct-2025",

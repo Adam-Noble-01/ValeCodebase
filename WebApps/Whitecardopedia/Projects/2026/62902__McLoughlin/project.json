@@ -36,7 +36,8 @@
     "productionData": {
         "additionalNotes": "A absolute breeze, a simple job, Anna's CAD File was very high quality and complete, I had to figure nothing out.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "62902",
     "projectName": "McLoughlin",

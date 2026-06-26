@@ -59,7 +59,8 @@
     "productionData": {
         "additionalNotes": "Took longer than typical as I agreed to draw up some extra elements such as the front elevation, this added a couple of hours extra. I got a little caught out with the roof as I did not have any standards so had to do a little research and trial and error which wasted a little time, we should in the future look at ways to trace profiles around the hips and ridge automatically",
         "conceptArtist": "Amy",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63459",
     "projectName": "Allen",

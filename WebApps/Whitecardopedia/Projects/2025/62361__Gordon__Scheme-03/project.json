@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "An easy set of amendments, got them done ahead of time."
+        "additionalNotes": "An easy set of amendments, got them done ahead of time.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "08-Jan-2026",

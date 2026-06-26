@@ -40,7 +40,8 @@
     "productionData": {
         "additionalNotes": "Quite a tricky one, none-standard orangery, had to Photomatch to get the side of the elevation existing conditions so this added time, I also had to model from a hand drawing which takes longer than the CAD pipeline, but no issues.",
         "conceptArtist": "Dan",
-        "input": "Early Stage Sketch"
+        "input": "Early Stage Sketch",
+        "designer": "Dan"
     },
     "projectCode": "63578",
     "projectName": "Yates |  Orangery",

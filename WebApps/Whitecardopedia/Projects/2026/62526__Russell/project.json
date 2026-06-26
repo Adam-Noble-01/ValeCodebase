@@ -14,7 +14,8 @@
     "productionData": {
         "additionalNotes": "Flawless CAD file, Anna did a great job as always. Nothing else to report.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Gary"
     },
     "projectCode": "62526",
     "projectName": "Russell",

@@ -54,7 +54,8 @@
     "productionData": {
         "additionalNotes": "None standard Job, Took a little longer than expected.",
         "conceptArtist": "Steph",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "63076",
     "projectName": "Thompson",

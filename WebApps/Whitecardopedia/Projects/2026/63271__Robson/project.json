@@ -47,7 +47,8 @@
     "productionData": {
         "additionalNotes": "A nice & easy one, Amy's CAD File was perfectly prepared and standards purged etc. there was scope to add furniture and a patio but these didn't take long, I used a reference Image of the clients furniture and it took me 1 hour to model those additions, but I've banked them in our assets library so they can be infinitely used from here out.",
         "conceptArtist": "Amy",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63271",
     "projectName": "Robson",

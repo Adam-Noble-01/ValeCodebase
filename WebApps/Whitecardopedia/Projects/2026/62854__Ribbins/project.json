@@ -28,7 +28,8 @@
     "productionData": {
         "additionalNotes": "A slightly more complex than usual job, allowed 3 hours and didn't exceed that. Rachael's CAD File was great. A great design by Dan, nothing else to report.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Dan"
     },
     "projectCode": "62854",
     "projectName": "Ribbins",

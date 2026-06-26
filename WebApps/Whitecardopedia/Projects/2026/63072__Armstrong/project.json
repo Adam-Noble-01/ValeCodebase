@@ -33,7 +33,8 @@
     "productionData": {
         "additionalNotes": "Took me a little while to figure out buildings depth, used SU Geolocated to draw footprint, added a little extra time.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Tom"
     },
     "projectCode": "63072",
     "projectName": "Armstrong",

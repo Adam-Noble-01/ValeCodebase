@@ -25,7 +25,8 @@
     "productionData": {
         "additionalNotes": "Took much longer than expected as I had to fill out lots of context not included in the CAD.",
         "conceptArtist": "Steph",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63231",
     "projectName": "Sellon",

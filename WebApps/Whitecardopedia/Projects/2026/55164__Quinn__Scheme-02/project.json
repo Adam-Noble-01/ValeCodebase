@@ -44,7 +44,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "Scheme Revised to Belton Columns & Eaves Gutter"
+        "additionalNotes": "Scheme Revised to Belton Columns & Eaves Gutter",
+        "designer": "Gary"
     },
     "scheduleData": {
         "dateReceived": "14-May-2026",

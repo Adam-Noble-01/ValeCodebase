@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "A fairly piecemeal job, completed on time. Good CAD work by Rachael was provided."
+        "additionalNotes": "A fairly piecemeal job, completed on time. Good CAD work by Rachael was provided.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "16-Dec-2025",

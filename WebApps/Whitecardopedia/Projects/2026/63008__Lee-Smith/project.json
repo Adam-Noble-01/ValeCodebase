@@ -36,7 +36,8 @@
     "productionData": {
         "additionalNotes": "A decent sized job, but completed in the expected schedule, nothing else to report, CAD File was good from Rachael as always.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Steve"
     },
     "projectCode": "63008",
     "projectName": "Lee-Smith",

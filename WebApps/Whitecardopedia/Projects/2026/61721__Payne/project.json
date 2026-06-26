@@ -36,7 +36,8 @@
     "productionData": {
         "additionalNotes": "PLACEHOLDER, FILL THIS OUT WHEN YOUR BACK TUESDAY ADAM!",
         "conceptArtist": "Steph",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Gary"
     },
     "projectCode": "61721",
     "projectName": "Payne",

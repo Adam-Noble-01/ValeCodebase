@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Amy",
-        "additionalNotes": "No issues to report, Great CAD File, complete, well drawn etc, Amy did a great job."
+        "additionalNotes": "No issues to report, Great CAD File, complete, well drawn etc, Amy did a great job.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "17-Feb-2026",

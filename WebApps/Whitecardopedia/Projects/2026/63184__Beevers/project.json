@@ -46,7 +46,8 @@
     "productionData": {
         "additionalNotes": "Dan provided a Sketch Drawing which I converted to the model, a pretty complex building. A great design though, so kudos to Dan!",
         "conceptArtist": "Dan",
-        "input": "Early Stage Sketch"
+        "input": "Early Stage Sketch",
+        "designer": "Dan"
     },
     "projectCode": "63184",
     "projectName": "Beevers",

@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Dan",
-        "additionalNotes": "An amazing design by Dan, Amy originally drafted the CAD up to a point and Anna finished it off. The project took a reasonable amount of time but was like 3 Projects in one."
+        "additionalNotes": "An amazing design by Dan, Amy originally drafted the CAD up to a point and Anna finished it off. The project took a reasonable amount of time but was like 3 Projects in one.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "09-Dec-2025",

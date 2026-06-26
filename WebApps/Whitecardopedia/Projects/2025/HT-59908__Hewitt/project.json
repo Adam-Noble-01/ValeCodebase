@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A Standard Job, Rachael provided a good CAD File, No Issues to report.",
-        "conceptArtist": "Rachael"
+        "conceptArtist": "Rachael",
+        "designer": "Steve"
     },
     "sketchUpModel": {
         "url": "Nil"

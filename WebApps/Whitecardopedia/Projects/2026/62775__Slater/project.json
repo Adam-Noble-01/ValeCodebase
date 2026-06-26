@@ -28,7 +28,8 @@
     "productionData": {
         "additionalNotes": "An extremely difficult and time consuming project, large commercial sized existing building with extreme amounts of ornamentation. The orangery itself also had bespoke elements not in my standards library so these also had to be modelled, I over-ran quite dramatically on this project, but I cant think what I could have done to turn this one around faster.",
         "conceptArtist": "Rachael",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Gary"
     },
     "projectCode": "62775",
     "projectName": "Slater",

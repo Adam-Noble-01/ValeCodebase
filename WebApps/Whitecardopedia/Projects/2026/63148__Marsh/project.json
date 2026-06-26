@@ -37,7 +37,8 @@
     "productionData": {
         "additionalNotes": "Nothing to report.",
         "conceptArtist": "Anna",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "Tom"
     },
     "projectCode": "63148",
     "projectName": "Marsh",

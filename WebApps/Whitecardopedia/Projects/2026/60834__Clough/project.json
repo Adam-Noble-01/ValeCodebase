@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Amy",
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "03-Feb-2026",

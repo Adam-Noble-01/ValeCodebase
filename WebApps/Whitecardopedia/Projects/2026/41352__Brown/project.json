@@ -55,7 +55,8 @@
     "productionData": {
         "additionalNotes": "An easy orangery but a pretty complex house, I had only a hand drawn PDF to work with too so took longer than a regular Whitecard job.",
         "conceptArtist": "James",
-        "input": "CAD File"
+        "input": "CAD File",
+        "designer": "James"
     },
     "projectCode": "41352",
     "projectName": "Brown",

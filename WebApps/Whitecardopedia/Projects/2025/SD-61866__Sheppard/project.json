@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "Top notch CAD Work by Anna as always, slight bit of extra time allocated due to complexity of existing conditions, added an extra 1 Hour to my typical expectation which seems accurate now. Credit also to Dan on this, the situation is very tricky and the design fits into an awkward space and works really well in my opinion."
+        "additionalNotes": "Top notch CAD Work by Anna as always, slight bit of extra time allocated due to complexity of existing conditions, added an extra 1 Hour to my typical expectation which seems accurate now. Credit also to Dan on this, the situation is very tricky and the design fits into an awkward space and works really well in my opinion.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "29-Oct-2025",

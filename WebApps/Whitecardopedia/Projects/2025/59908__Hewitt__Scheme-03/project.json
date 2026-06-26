@@ -5,7 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "Everything went smoothly, got things done a little quicker than expected. Whilst the scheme was fairly complex, I managed to reuse the existing building from the last proposal which saved time."
+        "additionalNotes": "Everything went smoothly, got things done a little quicker than expected. Whilst the scheme was fairly complex, I managed to reuse the existing building from the last proposal which saved time.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "11-Dec-2025",

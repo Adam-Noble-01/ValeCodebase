@@ -1,0 +1,7 @@
+{
+    "ProjectEditor__Config" : {
+        "ProjectEditor__WorkerApiBaseUrl"            : "https://whitecardopedia-editor-api.adam-fb3.workers.dev/api/editor",
+        "ProjectEditor__WorkerApiBaseUrl__Localhost"  : "http://127.0.0.1:8787/api/editor",
+        "ProjectEditor__RequestTimeoutMs"             : 15000
+    }
+}

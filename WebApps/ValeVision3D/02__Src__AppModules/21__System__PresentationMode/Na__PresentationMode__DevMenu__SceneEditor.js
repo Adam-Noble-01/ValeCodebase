@@ -20,9 +20,9 @@
 //   movement speed), Easing dropdown, Update From Camera, Regenerate
 //   Thumbnail, Save Scene, Delete Scene.
 // - Global controls: Add New Scene From Camera, Export JSON, Save All To
-//   Project (Flask GET-merge-POST), Clear All Scenes.
-// - Save All / Save Scene use the same Flask POST /api/projects/<code>
-//   pattern as all other Dev menu saves (Na__UiFeature__SaveCameraSettings).
+//   Project (R2-first two-phase save), Clear All Scenes.
+// - Save All / Save Scene use the R2-first two-phase save: Worker SSOT write
+//   first, then Flask local mirror — same as all other Dev menu saves.
 // - Thumbnail regeneration renders the Three.js composer to a small WebP
 //   via the thumbnail renderer module and POSTs the file to the Flask
 //   /api/projects/<code>/presentation-thumbnail/<scene_id> endpoint.
@@ -40,6 +40,10 @@
 // DEVELOPMENT LOG:
 // 11-Jun-2026 - Version 1.0.0
 // - Initial implementation for Presentation Mode system.
+//
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
 //
 // =============================================================================
 
@@ -84,6 +88,12 @@
         Na__AppUtils__IsRunningOnLocalhost,
         Na__AppUtils__GetProjectCodeFromUrl
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | R2-First Save Utility
+    // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Confirm Dialog
@@ -529,10 +539,10 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Flask Save (GET-Merge-POST)
+// REGION | R2-First Save
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Save PresentationMode Block to project.json via Flask
+    // FUNCTION | Save PresentationMode Block to project.json — R2-First
     // ------------------------------------------------------------
     async function Na__PmDev__SaveToFlask(updatedScenes, projectCode) {
         if (!projectCode) {
@@ -543,7 +553,8 @@
         const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
 
         try {
-            const getResponse = await fetch(fetchUrl);                       // <-- Fetch current project.json
+            // FETCH EXISTING PROJECT DATA FOR MERGE
+            const getResponse = await fetch(fetchUrl);
             if (!getResponse.ok) {
                 Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Project not found: ${projectCode}`, true);
                 return false;
@@ -559,31 +570,22 @@
             }
 
             projectData.PresentationMode__SavedCameraScenes = config || {
-                PresentationMode__SavedCameraScenes__Enabled         : true,
-                PresentationMode__SavedCameraScenes__ShowCarouselByDefault : true,
+                PresentationMode__SavedCameraScenes__Enabled                  : true,
+                PresentationMode__SavedCameraScenes__ShowCarouselByDefault    : true,
                 PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault : false,
-                PresentationMode__SavedCameraScenes__DefaultSceneId  : updatedScenes[0]?.PresentationMode__Scene__Id || null,
-                PresentationMode__SavedCameraScenes__Scenes          : updatedScenes
+                PresentationMode__SavedCameraScenes__DefaultSceneId           : updatedScenes[0]?.PresentationMode__Scene__Id || null,
+                PresentationMode__SavedCameraScenes__Scenes                   : updatedScenes
             };
 
-            const postResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData, null, 4)               // <-- Preserve indentation for readability
-            });
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, Na__PmDev__ShowToast);
 
-            if (postResponse.ok) {
-                Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Presentation scenes saved to ${projectCode}`);
-                return true;
-            }
-
-            const err = await postResponse.json().catch(() => ({}));
-            Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Save failed: ${err.error || 'Unknown error'}`, true);
-            return false;
+            Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Presentation scenes saved to ${projectCode}`);
+            return true;
 
         } catch (error) {
             console.error('[ValeVision3D] Presentation mode save error:', error);
-            Na__PmDev__ShowToast && Na__PmDev__ShowToast('Save failed — server unreachable.', true);
+            Na__PmDev__ShowToast && Na__PmDev__ShowToast(`Save failed — ${error.message}`, true);
             return false;
         }
     }

@@ -2,11 +2,11 @@
 // WHITECARDOPEDIA - PROJECT EDITOR FORM COMPONENT
 // =============================================================================
 //
-// FILE       : ProjectEditorForm.jsx
+// FILE       : Na__Feature__ProjectEditor__Form.jsx
 // NAMESPACE  : Whitecardopedia
 // MODULE     : ProjectEditorForm Component
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Form for editing project.json fields
+// PURPOSE    : Form for editing project.json fields with R2-first two-phase save
 // CREATED    : 2025
 //
 // DESCRIPTION:
@@ -15,11 +15,93 @@
 // - Production data: input type (dropdown), concept artist (dropdown), additional notes
 // - Schedule data: timeAllocated, timeTaken, dateReceived, dateFulfilled
 // - Dropdown options dynamically loaded from masterConfig.json
-// - Validates input before saving to Flask API (positive numbers, date format DD-MMM-YYYY)
-// - Displays success/error messages after save operation
-// - Disabled state during save operation
+// - Validates input before saving (positive numbers, date format DD-MMM-YYYY)
+// - Two-phase save: R2 SSOT first (via Cloudflare Worker), then local mirror (via Flask)
+// - Phase 1 (R2) must succeed before Phase 2 (local mirror) runs
+// - Worker config (URL + API key) fetched from Flask GET /api/editor-config on mount
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2025 - Version 1.0.0
+// - Initial implementation.
+//
+// 26-Jun-2026 - Version 2.1.0
+// - Added floating toast notification system (green/red/amber).
+// - Green toast on R2 write success and full project save.
+// - Red toast on R2 write failure (hard error).
+// - Amber toast when local mirror fails after successful R2 write.
+// - Toasts auto-dismiss after 4 seconds.
+//
+// 26-Jun-2026 - Version 2.0.0
+// - R2-first two-phase save implemented.
+// - Worker config fetched securely from Flask /api/editor-config on mount.
+// - Inline helpers: na_save_project_to_r2, na_mirror_project_to_local.
+// - Phase status messages during save ("Saving to cloud...", "Mirroring locally...").
+// - Local mirror failure is non-fatal (R2 is the SSOT).
 //
 // =============================================================================
+
+// -----------------------------------------------------------------------------
+// REGION | Worker Client Helper Functions
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Save Project to R2 via Cloudflare Worker (Phase 1 — SSOT)
+    // ------------------------------------------------------------
+    async function na_save_project_to_r2(workerApiBaseUrl, apiKey, folderId, projectData, timeoutMs) {
+        const encodedFolderId = encodeURIComponent(folderId);                // <-- Encode slashes in folderId
+        const workerUrl       = `${workerApiBaseUrl}/projects/${encodedFolderId}`; // <-- Full Worker endpoint URL
+
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), timeoutMs || 15000); // <-- Abort on timeout
+
+        try {
+            const response = await fetch(workerUrl, {
+                method  : 'POST',
+                headers : {
+                    'Content-Type'       : 'application/json',
+                    'X-Editor-Api-Key'   : apiKey                            // <-- Worker auth header
+                },
+                body    : JSON.stringify(projectData),
+                signal  : controller.signal
+            });
+
+            clearTimeout(timeoutId);                                         // <-- Cancel timeout on response
+
+            if (!response.ok) {
+                const errorBody = await response.json().catch(() => ({}));
+                throw new Error(errorBody.error || `Worker responded with status ${response.status}`);
+            }
+
+            return await response.json();                                    // <-- Return Worker success payload
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;                                                     // <-- Rethrow for handleSubmit to catch
+        }
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Mirror Saved Project to Local Disk via Flask (Phase 2 — Mirror)
+    // ------------------------------------------------------------
+    async function na_mirror_project_to_local(folderId, projectData) {
+        const response = await fetch(`/api/projects/${folderId}`, {
+            method  : 'POST',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify(projectData)
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({}));
+            throw new Error(errorBody.error || `Flask responded with status ${response.status}`);
+        }
+
+        return await response.json();                                        // <-- Return Flask success payload
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
 
 // -----------------------------------------------------------------------------
 // REGION | ProjectEditorForm Component
@@ -40,37 +122,66 @@
             dateReceived        : project.scheduleData?.dateReceived || '',  // <-- Date received field
             dateFulfilled       : project.scheduleData?.dateFulfilled || ''  // <-- Date fulfilled field
         });
-        
-        const [isSaving, setIsSaving] = React.useState(false);               // <-- Saving state
-        const [message, setMessage] = React.useState(null);                  // <-- Status message state
+
+        const [isSaving, setIsSaving]           = React.useState(false);          // <-- Saving state
+        const [message, setMessage]             = React.useState(null);           // <-- Inline status message state
+        const [savePhase, setSavePhase]         = React.useState(null);           // <-- Current save phase label
+        const [workerConfig, setWorkerConfig]   = React.useState(null);           // <-- Cached Worker URL + API key
+        const [toasts, setToasts]               = React.useState([]);             // <-- Floating toast notifications
         const [dropdownOptions, setDropdownOptions] = React.useState({
-            inputTypes          : [],                                        // <-- Input type options from config
-            artists             : []                                         // <-- Artist options from config
+            inputTypes          : [],                                              // <-- Input type options from config
+            artists             : []                                               // <-- Artist options from config
         });
-        
-        
-        // EFFECT | Load Dropdown Options from Master Config
+
+
+        // HELPER FUNCTION | Add a Floating Toast Notification
+        // ---------------------------------------------------------------
+        const na_add_toast = (text, type) => {
+            const id = Date.now() + Math.random();                           // <-- Unique ID for each toast
+            setToasts(prev => [...prev, { id, text, type }]);
+            setTimeout(() => {
+                setToasts(prev => prev.filter(t => t.id !== id));           // <-- Auto-dismiss after 4 seconds
+            }, 4000);
+        };
+        // ---------------------------------------------------------------
+
+
+        // EFFECT | Load Dropdown Options and Worker Config on Mount
         // ---------------------------------------------------------------
         React.useEffect(() => {
-            const loadDropdownOptions = async () => {
+            const loadMountData = async () => {
+                // LOAD DROPDOWN OPTIONS FROM MASTER CONFIG
                 try {
-                    const config = await loadMasterConfig();                 // <-- Load master configuration
+                    const config = await loadMasterConfig();
                     if (config) {
                         setDropdownOptions({
                             inputTypes  : config.vale__ProductionInput__OptionsList || [],  // <-- Input types list
-                            artists     : config.vale__ConceptArtist__OptionsList || [] // <-- Artists list
+                            artists     : config.vale__ConceptArtist__OptionsList || []     // <-- Artists list
                         });
                     }
                 } catch (error) {
-                    console.error('Error loading dropdown options:', error);  // <-- Log error
+                    console.error('[ProjectEditor] Error loading dropdown options:', error); // <-- Log error
+                }
+
+                // FETCH WORKER CONFIG (URL + API KEY) FROM FLASK
+                try {
+                    const configResponse = await fetch('/api/editor-config');
+                    if (configResponse.ok) {
+                        const config = await configResponse.json();
+                        setWorkerConfig(config);                             // <-- Cache: { workerApiBaseUrl, apiKey }
+                    } else {
+                        console.warn('[ProjectEditor] Worker config unavailable — saves will be local only.');
+                    }
+                } catch (error) {
+                    console.warn('[ProjectEditor] Could not fetch worker config:', error);
                 }
             };
-            
-            loadDropdownOptions();                                           // <-- Execute on mount
+
+            loadMountData();                                                 // <-- Execute on mount
         }, []);
         // ---------------------------------------------------------------
-        
-        
+
+
         // SUB FUNCTION | Handle Input Field Changes
         // ---------------------------------------------------------------
         const handleInputChange = (field, value) => {
@@ -81,178 +192,209 @@
             setMessage(null);                                                // <-- Clear message on change
         };
         // ---------------------------------------------------------------
-        
-        
+
+
         // SUB FUNCTION | Validate Form Data
         // ---------------------------------------------------------------
         const validateForm = () => {
             if (!formData.projectName.trim()) {
                 setMessage({ type: 'error', text: 'Project name is required' });  // <-- Validation error
-                return false;                                                // <-- Validation failed
+                return false;
             }
-            
+
             if (!formData.projectCode.trim()) {
                 setMessage({ type: 'error', text: 'Project code is required' });  // <-- Validation error
-                return false;                                                // <-- Validation failed
+                return false;
             }
-            
-            // VALIDATE TIME ALLOCATED (OPTIONAL BUT MUST BE POSITIVE IF PROVIDED)
+
             if (formData.timeAllocated !== '') {
-                const timeAllocatedNum = parseFloat(formData.timeAllocated);     // <-- Parse to number
+                const timeAllocatedNum = parseFloat(formData.timeAllocated);
                 if (isNaN(timeAllocatedNum) || timeAllocatedNum < 0) {
-                    setMessage({ type: 'error', text: 'Time expected must be a positive number' });  // <-- Validation error
-                    return false;                                            // <-- Validation failed
+                    setMessage({ type: 'error', text: 'Time expected must be a positive number' });
+                    return false;
                 }
             }
-            
-            // VALIDATE TIME TAKEN (OPTIONAL BUT MUST BE POSITIVE IF PROVIDED)
+
             if (formData.timeTaken !== '') {
-                const timeTakenNum = parseFloat(formData.timeTaken);             // <-- Parse to number
+                const timeTakenNum = parseFloat(formData.timeTaken);
                 if (isNaN(timeTakenNum) || timeTakenNum < 0) {
-                    setMessage({ type: 'error', text: 'Time taken must be a positive number' });  // <-- Validation error
-                    return false;                                            // <-- Validation failed
+                    setMessage({ type: 'error', text: 'Time taken must be a positive number' });
+                    return false;
                 }
             }
-            
-            // VALIDATE DATE RECEIVED FORMAT (OPTIONAL BUT MUST MATCH DD-MMM-YYYY IF PROVIDED)
+
             if (formData.dateReceived !== '') {
-                const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{4}$/;           // <-- DD-MMM-YYYY pattern
+                const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{4}$/;
                 if (!datePattern.test(formData.dateReceived.trim())) {
-                    setMessage({ type: 'error', text: 'Date received must be in DD-MMM-YYYY format (e.g., 10-Oct-2025)' });  // <-- Validation error
-                    return false;                                            // <-- Validation failed
+                    setMessage({ type: 'error', text: 'Date received must be in DD-MMM-YYYY format (e.g., 10-Oct-2025)' });
+                    return false;
                 }
             }
-            
-            // VALIDATE DATE FULFILLED FORMAT (OPTIONAL BUT MUST MATCH DD-MMM-YYYY IF PROVIDED)
+
             if (formData.dateFulfilled !== '') {
-                const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{4}$/;           // <-- DD-MMM-YYYY pattern
+                const datePattern = /^\d{1,2}-[A-Za-z]{3}-\d{4}$/;
                 if (!datePattern.test(formData.dateFulfilled.trim())) {
-                    setMessage({ type: 'error', text: 'Date fulfilled must be in DD-MMM-YYYY format (e.g., 12-Oct-2025)' });  // <-- Validation error
-                    return false;                                            // <-- Validation failed
+                    setMessage({ type: 'error', text: 'Date fulfilled must be in DD-MMM-YYYY format (e.g., 12-Oct-2025)' });
+                    return false;
                 }
             }
-            
-            return true;                                                     // <-- Validation passed
+
+            return true;
         };
         // ---------------------------------------------------------------
-        
-        
+
+
         // SUB FUNCTION | Build Updated Project JSON Object
         // ---------------------------------------------------------------
         const buildUpdatedProject = () => {
             const updatedProject = {
                 ...project,                                                  // <-- Spread existing project data
-                projectName         : formData.projectName.trim(),           // <-- Update project name
-                projectCode         : formData.projectCode.trim(),           // <-- Update project code
+                projectName         : formData.projectName.trim(),
+                projectCode         : formData.projectCode.trim(),
                 productionData      : {
-                    ...project.productionData,                               // <-- Spread existing production data
-                    input           : formData.productionInput.trim(),       // <-- Update input field
-                    additionalNotes : formData.productionNotes.trim()        // <-- Update notes field
+                    ...project.productionData,
+                    input           : formData.productionInput.trim(),
+                    additionalNotes : formData.productionNotes.trim()
                 },
                 sketchUpModel       : {
-                    ...project.sketchUpModel,                                // <-- Spread existing SketchUp data
-                    url             : formData.sketchUpUrl.trim()            // <-- Update URL field
+                    ...project.sketchUpModel,
+                    url             : formData.sketchUpUrl.trim()
                 }
             };
-            
-            // ADD CONCEPT ARTIST IF PROVIDED
+
             if (formData.conceptArtist !== '') {
-                updatedProject.productionData.conceptArtist = formData.conceptArtist.trim();  // <-- Set concept artist
+                updatedProject.productionData.conceptArtist = formData.conceptArtist.trim();
             }
-            
-            // ADD SCHEDULE DATA IF ANY VALUES PROVIDED
+
             if (formData.timeAllocated !== '' || formData.timeTaken !== '' || formData.dateReceived !== '' || formData.dateFulfilled !== '') {
-                updatedProject.scheduleData = {
-                    ...project.scheduleData                                  // <-- Spread existing schedule data
-                };
-                
+                updatedProject.scheduleData = { ...project.scheduleData };
+
                 if (formData.timeAllocated !== '') {
-                    updatedProject.scheduleData.timeAllocated = parseFloat(formData.timeAllocated);  // <-- Set time allocated (supports decimals)
+                    updatedProject.scheduleData.timeAllocated = parseFloat(formData.timeAllocated);
                 }
-                
                 if (formData.timeTaken !== '') {
-                    updatedProject.scheduleData.timeTaken = parseFloat(formData.timeTaken);  // <-- Set time taken (supports decimals)
+                    updatedProject.scheduleData.timeTaken = parseFloat(formData.timeTaken);
                 }
-                
                 if (formData.dateReceived !== '') {
-                    updatedProject.scheduleData.dateReceived = formData.dateReceived.trim();  // <-- Set date received
+                    updatedProject.scheduleData.dateReceived = formData.dateReceived.trim();
                 }
-                
                 if (formData.dateFulfilled !== '') {
-                    updatedProject.scheduleData.dateFulfilled = formData.dateFulfilled.trim();  // <-- Set date fulfilled
+                    updatedProject.scheduleData.dateFulfilled = formData.dateFulfilled.trim();
                 }
             }
-            
-            return updatedProject;                                           // <-- Return updated project
+
+            return updatedProject;
         };
         // ---------------------------------------------------------------
-        
-        
-        // FUNCTION | Handle Form Submission
+
+
+        // FUNCTION | Handle Form Submission — Two-Phase R2-First Save
         // ------------------------------------------------------------
         const handleSubmit = async (e) => {
-            e.preventDefault();                                              // <-- Prevent default form submit
-            
-            if (!validateForm()) {
-                return;                                                      // <-- Exit if validation fails
-            }
-            
-            setIsSaving(true);                                               // <-- Set saving state
-            setMessage(null);                                                // <-- Clear previous message
-            
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            setIsSaving(true);
+            setMessage(null);
+            setSavePhase(null);
+
+            const updatedProject = buildUpdatedProject();
+            const folderId       = project.folderId;
+
             try {
-                const updatedProject = buildUpdatedProject();                // <-- Build updated JSON
-                
-                const response = await fetch(`/api/projects/${project.folderId}`, {
-                    method  : 'POST',                                        // <-- POST request
-                    headers : {
-                        'Content-Type': 'application/json'                   // <-- JSON content type
-                    },
-                    body    : JSON.stringify(updatedProject)                 // <-- Send updated data
-                });
-                
-                const result = await response.json();                        // <-- Parse response
-                
-                if (!response.ok) {
-                    throw new Error(result.error || 'Failed to save project');  // <-- Handle error response
+                // PHASE 1 | R2 SSOT WRITE (must succeed before Phase 2)
+                if (workerConfig && workerConfig.workerApiBaseUrl && workerConfig.apiKey) {
+                    setSavePhase('Saving to cloud...');
+                    await na_save_project_to_r2(
+                        workerConfig.workerApiBaseUrl,
+                        workerConfig.apiKey,
+                        folderId,
+                        updatedProject,
+                        15000
+                    );
+                    na_add_toast('Saved to R2 ✓', 'success');               // <-- GREEN: R2 write confirmed
+                } else {
+                    // WORKER CONFIG NOT AVAILABLE — abort with clear error
+                    throw new Error('Worker config unavailable — cannot write to R2. Check Flask is running and Token__CloudflareAPI.env has EDITOR_WORKER_URL and EDITOR_API_KEY set.');
                 }
-                
-                setMessage({
-                    type : 'success',                                        // <-- Success message type
-                    text : 'Project saved successfully!'                     // <-- Success message text
-                });
-                
+
+                // PHASE 2 | LOCAL MIRROR (best-effort — non-fatal on failure)
+                setSavePhase('Mirroring locally...');
+                try {
+                    await na_mirror_project_to_local(folderId, updatedProject);
+                } catch (mirrorError) {
+                    // R2 already written — local mirror failure is recoverable
+                    console.warn('[ProjectEditor] Local mirror failed after R2 write:', mirrorError.message);
+                    na_add_toast('Local mirror failed — restart Flask to resync', 'warning'); // <-- AMBER: non-fatal
+                    setMessage({
+                        type : 'warning',
+                        text : 'Saved to cloud. Local mirror failed — restart Flask to resync.'
+                    });
+                    setSavePhase(null);
+                    if (onSaveSuccess) {
+                        setTimeout(() => onSaveSuccess(updatedProject), 2000);
+                    }
+                    return;
+                }
+
+                // BOTH PHASES SUCCEEDED
+                setSavePhase(null);
+                na_add_toast('Project saved!', 'success');                   // <-- GREEN: full success
+                setMessage({ type: 'success', text: 'Project saved!' });
+
                 if (onSaveSuccess) {
-                    setTimeout(() => {
-                        onSaveSuccess(updatedProject);                       // <-- Call success callback
-                    }, 1500);                                                // <-- Delay for user to see message
+                    setTimeout(() => onSaveSuccess(updatedProject), 1500);
                 }
-                
+
             } catch (error) {
-                console.error('Error saving project:', error);               // <-- Log error
+                console.error('[ProjectEditor] Save error:', error);
+                setSavePhase(null);
+                na_add_toast(`Save failed — ${error.message}`, 'error');    // <-- RED: hard failure
                 setMessage({
-                    type : 'error',                                          // <-- Error message type
-                    text : `Error: ${error.message}`                         // <-- Error message text
+                    type : 'error',
+                    text : `Error: ${error.message}`
                 });
             } finally {
-                setIsSaving(false);                                          // <-- Clear saving state
+                setIsSaving(false);
             }
         };
         // ---------------------------------------------------------------
-        
-        
+
+
+        // HELPER | Derive save button label from phase and saving state
+        // ---------------------------------------------------------------
+        const saveBtnLabel = isSaving
+            ? (savePhase || 'Saving...')
+            : 'Save Changes';
+        // ---------------------------------------------------------------
+
+
         return (
+            <React.Fragment>
+
+                {/* TOAST OVERLAY — floating save-phase feedback */}
+                {toasts.length > 0 && (
+                    <div className="wcp-toast-container">
+                        {toasts.map(t => (
+                            <div key={t.id} className={`wcp-toast wcp-toast--${t.type}`}>
+                                {t.text}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             <form className="editor-form" onSubmit={handleSubmit}>
                 <h2 className="editor-form__title">
                     Edit Project: {project.projectName}
                 </h2>
-                
+
                 {message && (
                     <div className={`editor-form__message editor-form__message--${message.type}`}>
                         {message.text}
                     </div>
                 )}
-                
+
                 {/* PROJECT NAME FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="projectName">
@@ -268,7 +410,7 @@
                         required
                     />
                 </div>
-                
+
                 {/* PROJECT CODE FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="projectCode">
@@ -284,7 +426,7 @@
                         required
                     />
                 </div>
-                
+
                 {/* PRODUCTION INPUT FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="productionInput">
@@ -303,7 +445,7 @@
                         ))}
                     </select>
                 </div>
-                
+
                 {/* CONCEPT ARTIST FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="conceptArtist">
@@ -325,7 +467,7 @@
                         Optional - Select the designer who created the concept
                     </span>
                 </div>
-                
+
                 {/* PRODUCTION NOTES FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="productionNotes">
@@ -340,7 +482,7 @@
                         disabled={isSaving}
                     />
                 </div>
-                
+
                 {/* TIME EXPECTED FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="timeAllocated">
@@ -359,7 +501,7 @@
                         Optional - Planned time for project in hours (supports decimals, e.g., 0.25 for 15 minutes, 0.5 for 30 minutes)
                     </span>
                 </div>
-                
+
                 {/* TIME TAKEN FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="timeTaken">
@@ -378,7 +520,7 @@
                         Optional - Actual time taken to complete project in hours (supports decimals, e.g., 0.25 for 15 minutes, 0.5 for 30 minutes)
                     </span>
                 </div>
-                
+
                 {/* DATE RECEIVED FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="dateReceived">
@@ -397,7 +539,7 @@
                         Optional - Date project was received (DD-MMM-YYYY format)
                     </span>
                 </div>
-                
+
                 {/* DATE FULFILLED FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="dateFulfilled">
@@ -416,7 +558,7 @@
                         Optional - Date project was completed (DD-MMM-YYYY format)
                     </span>
                 </div>
-                
+
                 {/* SKETCHUP MODEL URL FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="sketchUpUrl">
@@ -435,7 +577,7 @@
                         Leave blank or set to 'None', 'nil', or 'False' if not available
                     </span>
                 </div>
-                
+
                 {/* FORM BUTTONS */}
                 <div className="editor-form__buttons">
                     <button
@@ -451,13 +593,14 @@
                         className="editor-form__button editor-form__button--primary"
                         disabled={isSaving}
                     >
-                        {isSaving ? 'Saving...' : 'Save Changes'}
+                        {saveBtnLabel}
                     </button>
                 </div>
             </form>
+
+            </React.Fragment>
         );
     }
     // ---------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
-

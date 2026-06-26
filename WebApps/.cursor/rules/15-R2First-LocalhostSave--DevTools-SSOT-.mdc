@@ -1,0 +1,124 @@
+---
+description: Any localhost/Flask save, Dev menu save, project editor save, or R2 write utility across Whitecardopedia and ValeVision3D dev tools.
+globs:
+  - "**/server.py"
+  - "**/*ProjectEditor*Form*"
+  - "**/*DevControls*.js"
+  - "**/*SaveSettings*.js"
+  - "**/*SaveCamera*.js"
+  - "**/*R2Save*.js"
+  - "**/*CloudflareHandler__ProjectEditor*"
+  - "**/Na__AppUtils__R2Save*.js"
+alwaysApply: false
+---
+
+# R2-First Localhost Save Pattern | Dev Tools — SSOT (Critical)
+
+All project data saves originating from localhost dev tools (Whitecardopedia Project Editor, ValeVision3D Dev menu) MUST follow the two-phase R2-first write pattern. This rule applies whenever a save function, Flask endpoint, or R2 write utility is in scope.
+
+---
+
+## ⚠️ CORE MANDATE — R2 IS THE LIVE SSOT FOR ALL PROJECT DATA WRITES
+
+**R2 is written first. Local disk is a mirror only. Never reverse this order.**
+
+When a developer saves project data from any localhost dev tool:
+
+1. **Phase 1 — R2 write (SSOT, MUST succeed first):** POST the full merged `project.json` to the Cloudflare Worker (`whitecardopedia-editor-api`). The Worker writes `project.json` to R2, upserts `Na__MasterIndex__ProjectLocations__.json`, and bumps `Na__BuildVersion__Manifest__.json` to trigger Service Worker cache eviction on live clients.
+2. **Phase 2 — local mirror (parity, runs only after Phase 1 succeeds):** POST the identical payload to Flask (`server.py`) which writes `Projects/{folderId}/project.json` to disk.
+
+**Phase 2 MUST NOT run unless Phase 1 confirms success.** If Phase 1 fails, abort and surface the error to the user — do NOT silently fall back to a local-only write.
+
+---
+
+## Why This Matters for GitHub Push Parity
+
+The local `Projects/` folder is committed to the GitHub Pages repo and serves as the `ProjectLoader` fallback when R2 is unreachable. If the local copy diverges from R2 (local written, R2 not), then:
+
+- The committed GH copy becomes a stale fallback that contradicts live R2 state.
+- A subsequent `git push` locks that stale data into the GH fallback path.
+- On next load, if R2 fetch fails, users see the old data — not the edit they just saved.
+
+**R2-first + mirror parity guarantees the committed GH copy is always consistent with R2.** When pushed to GH, there are no discrepancies because the local copy was only ever written after R2 confirmed the write.
+
+---
+
+## Two-Phase Save Contract (Code Pattern)
+
+```javascript
+// Phase 1 — R2 SSOT write (MUST succeed first)
+const r2Response = await fetch(workerUrl, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json', 'X-Api-Key': apiKey },
+    body    : JSON.stringify(projectData)
+});
+if (!r2Response.ok) {
+    throw new Error(`R2 write failed: ${r2Response.status}`); // <-- abort, do NOT continue to Phase 2
+}
+
+// Phase 2 — local mirror (only runs after R2 confirms success)
+const localResponse = await fetch(`/api/projects/${folderId}`, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify(projectData)
+});
+if (!localResponse.ok) {
+    // Log warning but do not treat this as a fatal error
+    // R2 is already updated — local mirror failure is recoverable on next sync
+    console.warn('Local mirror write failed after successful R2 write');
+}
+```
+
+---
+
+## Affected Save Paths (Current)
+
+| File | Purpose |
+|------|---------|
+| `Whitecardopedia/02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx` | Project editor save (inline two-phase pattern) |
+| `ValeVision3D/02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js` | Dev menu — nav modes save |
+| `ValeVision3D/02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js` | Dev menu — fog plane save |
+| `ValeVision3D/02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js` | Dev menu — camera settings save |
+| Any future save under `ValeVision3D/02__Src__AppModules/70__System__DevTools/` | All future Dev menu saves |
+
+---
+
+## Shared Utility — ValeVision3D Dev Menu Saves
+
+All ValeVision3D Dev menu save functions route through one shared utility. Do NOT re-implement the two-phase pattern inline in individual save files.
+
+**Shared utility path:**
+`ValeVision3D/02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js`
+
+This module exports `Na__AppUtils__R2SaveProjectJson(projectData, folderId, workerConfig, showToast)` and handles both phases internally.
+
+---
+
+## Master Index Upsert — Field Preservation (Critical)
+
+When the Cloudflare Worker upserts `Na__MasterIndex__ProjectLocations__.json` after a project editor save, it MUST preserve all fields maintained exclusively by the Python sync pipeline. Only the following fields may be updated by an editor save:
+
+| Field | Editor save may update |
+|-------|----------------------|
+| `lastSynced` | Yes — set to current timestamp |
+| `hasProjectJson_R2` | Yes — set to `true` |
+| `hasImages_R2` | **NO — preserve existing value** |
+| `hasThumbnails_R2` | **NO — preserve existing value** |
+| `hasGlb_R2` | **NO — preserve existing value** |
+| `imageCount` | **NO — preserve existing value** |
+| `assetHome` | **NO — preserve existing value** |
+
+Overwriting pipeline fields from the editor path corrupts the index for Whitecardopedia's carousel gate and ValeVision3D's model loader.
+
+---
+
+## Rules for Agents — ALWAYS Follow
+
+- **NEVER** write to Flask / `server.py` without first writing to R2 and receiving a success response.
+- **NEVER** create a new Dev menu save function that talks to Flask only (local-only write is incomplete).
+- **NEVER** treat a local-only write as a successful save — local disk is a mirror, not the source.
+- **NEVER** fall back silently to Flask if the R2/Worker call fails — surface the error so the developer knows R2 was not updated.
+- **ALWAYS** use `Na__AppUtils__R2SaveProjectJson__` in ValeVision3D for any new Dev menu save.
+- **ALWAYS** confirm Phase 1 (R2 write) before executing Phase 2 (local mirror).
+- **ALWAYS** preserve pipeline-only index fields (`hasImages_R2`, `hasThumbnails_R2`, `hasGlb_R2`, `imageCount`, `assetHome`) in the Worker's master index upsert.
+- **ALWAYS** read the Worker URL from `Na__Feature__ProjectEditor__Config.json` (not hardcoded) and the API key from Flask's `GET /api/editor-config` endpoint (not from source files).

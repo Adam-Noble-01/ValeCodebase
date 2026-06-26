@@ -14,10 +14,10 @@
 //   clear a per-project orbit max zoom distance (radius from helper cube, mm).
 // - Apply Live: mutates controls.maxDistance instantly via the nav bundle
 //   setter, with no persistence to project.json.
-// - Save to Project: writes Navmode__OrbitMaxDistanceMm into the active
-//   project's project.json via the local Flask API.
+// - Save to Project: writes Navmode__OrbitMaxDistanceMm via R2-first two-phase
+//   save (Worker SSOT, then Flask mirror).
 // - Clear from Project: deletes Navmode__OrbitMaxDistanceMm from project.json
-//   and resets controls.maxDistance to the per-device default.
+//   via R2-first save, and resets controls.maxDistance to the per-device default.
 // - Per-project override applies equally to PC and iPad devices; the iPad
 //   bonus multiplier does NOT stack on top of a project override (decision
 //   confirmed before implementation).
@@ -28,6 +28,10 @@
 // 29-Apr-2026 - Version 1.0.0
 // - Initial implementation alongside iPad +50% bonus multiplier and AppFlow
 //   project.json override read.
+//
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
 //
 // =============================================================================
 
@@ -44,6 +48,12 @@
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
     import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | R2-First Save Utility
+    // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Confirm Dialog (gates destructive write)
@@ -158,7 +168,7 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Save Override Value to Project JSON (Localhost Only)
+    // FUNCTION | Save Override Value to Project JSON — R2-First (Localhost Only)
     // ------------------------------------------------------------
     async function Na__OrbitMaxDistance__SaveToProject(mmValue, setMaxDistanceMm, controls, currentEl, showToast) {
         if (!Number.isFinite(mmValue) || mmValue <= 0) {
@@ -182,8 +192,9 @@
         if (!confirmed) return;
 
         try {
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-            const projectResponse = await fetch(fetchUrl);                       // <-- Fetch existing project.json
+            // FETCH EXISTING PROJECT DATA FOR MERGE
+            const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;
+            const projectResponse = await fetch(fetchUrl);
             if (!projectResponse.ok) {
                 if (showToast) showToast(`Project not found: ${projectCode}`, true);
                 return;
@@ -192,31 +203,23 @@
             const projectData = await projectResponse.json();
             projectData[Na__OrbitMaxDistance__ProjectJsonKey] = mmValue;         // <-- Merge override key
 
-            const saveResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData)
-            });
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, showToast);
 
-            if (saveResponse.ok) {
-                if (typeof setMaxDistanceMm === 'function') {
-                    setMaxDistanceMm(mmValue);                                   // <-- Reflect saved value live
-                }
-                Na__OrbitMaxDistance__RefreshDisplay(controls, currentEl);
-                if (showToast) showToast(`Orbit max ${Math.round(mmValue).toLocaleString()} mm saved to ${projectCode}.`);
-            } else {
-                const errorData = await saveResponse.json().catch(() => ({}));
-                if (showToast) showToast(`Save failed: ${errorData.error || 'Unknown error'}`, true);
+            if (typeof setMaxDistanceMm === 'function') {
+                setMaxDistanceMm(mmValue);                                       // <-- Reflect saved value live
             }
+            Na__OrbitMaxDistance__RefreshDisplay(controls, currentEl);
+            if (showToast) showToast(`Orbit max ${Math.round(mmValue).toLocaleString()} mm saved to ${projectCode}.`);
         } catch (error) {
             console.error('[ValeVision3D] Save orbit max distance error:', error);
-            if (showToast) showToast('Save failed — server unreachable.', true);
+            if (showToast) showToast(`Save failed — ${error.message}`, true);
         }
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Clear Override From Project JSON (Restore Per-Device Default)
+    // FUNCTION | Clear Override From Project JSON — R2-First (Restore Per-Device Default)
     // ------------------------------------------------------------
     async function Na__OrbitMaxDistance__ClearFromProject(setMaxDistanceMm, controls, currentEl, deviceConfig, inputEl, showToast) {
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
@@ -226,7 +229,8 @@
         }
 
         try {
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
+            // FETCH EXISTING PROJECT DATA FOR MERGE
+            const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;
             const projectResponse = await fetch(fetchUrl);
             if (!projectResponse.ok) {
                 if (showToast) showToast(`Project not found: ${projectCode}`, true);
@@ -239,17 +243,8 @@
                 delete projectData[Na__OrbitMaxDistance__ProjectJsonKey];        // <-- Remove override key
             }
 
-            const saveResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData)
-            });
-
-            if (!saveResponse.ok) {
-                const errorData = await saveResponse.json().catch(() => ({}));
-                if (showToast) showToast(`Clear failed: ${errorData.error || 'Unknown error'}`, true);
-                return;
-            }
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, showToast);
 
             const defaultMm = Na__OrbitMaxDistance__ComputeDeviceDefaultMm(deviceConfig);
             if (Number.isFinite(defaultMm) && typeof setMaxDistanceMm === 'function') {
@@ -268,7 +263,7 @@
             }
         } catch (error) {
             console.error('[ValeVision3D] Clear orbit max distance error:', error);
-            if (showToast) showToast('Clear failed — server unreachable.', true);
+            if (showToast) showToast(`Clear failed — ${error.message}`, true);
         }
     }
     // ------------------------------------------------------------

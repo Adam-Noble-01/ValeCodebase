@@ -15,6 +15,23 @@
             "Camera__DefaultRotation__RotZ": 0
         }
     },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 5000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -23802,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": -5130,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
+        }
+    },
     "Navmode__EnabledModes": {
         "Navmode__EnabledModes__Fly": true,
         "Navmode__EnabledModes__Walk": true
@@ -29,117 +46,123 @@
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {
         "captured_at": "26-Jun-2026 at 11:41",
-        "model_name": "Warwick__WhiteCardModel__0.5.0__",
         "coordinate_system": "SketchUp_Z_up",
-        "units": "mm",
+        "model_name": "Warwick__WhiteCardModel__0.5.0__",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
-                "scene_name": "IMG01__3dView__ViewOption-01__MainView__",
-                "scene_description": "01 |  Full Context",
-                "include_in_animation": true,
                 "camera": {
-                    "eye": {
-                        "x": 25622.615,
-                        "y": -9184.8577,
-                        "z": 3300.0
-                    },
-                    "target": {
-                        "x": 15917.5552,
-                        "y": 9144.1553,
-                        "z": 3300.0
-                    },
-                    "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
-                    },
+                    "aspect_ratio": 0,
                     "direction": {
                         "x": -0.467943,
                         "y": 0.883759,
-                        "z": 0.0
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 25622.615,
+                        "y": -9184.8577,
+                        "z": 3300
                     },
                     "fov_degrees": 33.3985,
                     "fov_is_height": true,
+                    "image_width": 0,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
-                }
+                    "target": {
+                        "x": 15917.5552,
+                        "y": 9144.1553,
+                        "z": 3300
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "scene_description": "01 |  Full Context",
+                "scene_name": "IMG01__3dView__ViewOption-01__MainView__"
             },
             {
-                "scene_name": "IMG02__3dView__FrontDoors__",
-                "scene_description": "02 |  Double Doors",
-                "include_in_animation": true,
                 "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0,
+                        "y": 1,
+                        "z": 0
+                    },
                     "eye": {
                         "x": 12598.5713,
                         "y": -3236.1549,
-                        "z": 3000.0
-                    },
-                    "target": {
-                        "x": 12598.5713,
-                        "y": 8946.2074,
-                        "z": 3000.0
-                    },
-                    "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
-                    },
-                    "direction": {
-                        "x": 0.0,
-                        "y": 1.0,
-                        "z": 0.0
+                        "z": 3000
                     },
                     "fov_degrees": 33.3985,
                     "fov_is_height": true,
+                    "image_width": 0,
                     "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
-                }
+                    "target": {
+                        "x": 12598.5713,
+                        "y": 8946.2074,
+                        "z": 3000
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "scene_description": "02 |  Double Doors",
+                "scene_name": "IMG02__3dView__FrontDoors__"
             },
             {
-                "scene_name": "IMG03__3dView__Closer__LeftSide",
-                "scene_description": "03 |  Close-Up 01",
-                "include_in_animation": true,
                 "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.369538,
+                        "y": 0.929215,
+                        "z": 0
+                    },
                     "eye": {
                         "x": 8827.1757,
                         "y": 2597.6536,
                         "z": 1943.0273
                     },
+                    "fov_degrees": 39.5978,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
                     "target": {
                         "x": 17206.0089,
                         "y": 23666.479,
                         "z": 1943.0273
                     },
                     "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
-                    },
-                    "direction": {
-                        "x": 0.369538,
-                        "y": 0.929215,
-                        "z": 0.0
-                    },
-                    "fov_degrees": 39.5978,
-                    "fov_is_height": true,
-                    "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
-                }
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "scene_description": "03 |  Close-Up 01",
+                "scene_name": "IMG03__3dView__Closer__LeftSide"
             },
             {
-                "scene_name": "IMG04__3dView__Closer__RightSide",
-                "scene_description": "04 |  Close-Up 02",
-                "include_in_animation": true,
                 "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.504755,
+                        "y": 0.863023,
+                        "z": -0.020369
+                    },
                     "eye": {
                         "x": 20440.8525,
                         "y": 1216.3768,
                         "z": 2024.0494
                     },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
                     "target": {
                         "x": 16854.0293,
                         "y": 7349.0791,
@@ -149,20 +172,14 @@
                         "x": -0.010284,
                         "y": 0.017583,
                         "z": 0.999793
-                    },
-                    "direction": {
-                        "x": -0.504755,
-                        "y": 0.863023,
-                        "z": -0.020369
-                    },
-                    "fov_degrees": 30.9573,
-                    "fov_is_height": true,
-                    "is_perspective": true,
-                    "aspect_ratio": 0.0,
-                    "image_width": 0.0
-                }
+                    }
+                },
+                "include_in_animation": true,
+                "scene_description": "04 |  Close-Up 02",
+                "scene_name": "IMG04__3dView__Closer__RightSide"
             }
-        ]
+        ],
+        "units": "mm"
     },
     "basePath": "Projects/2026/63770__Warwick",
     "images": [
@@ -196,22 +213,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "FogPlane__Config": {
-        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
-        "FogPlane__Config__Enabled": true,
-        "FogPlane__Config__FalloffDistanceMm": 5000,
-        "FogPlane__Config__PlaneA": {
-            "FogPlane__Config__PlaneA__Active": true,
-            "FogPlane__Config__PlaneA__PositionMm": -23802,
-            "FogPlane__Config__PlaneA__NormalX": 0,
-            "FogPlane__Config__PlaneA__NormalZ": 1
-        },
-        "FogPlane__Config__PlaneB": {
-            "FogPlane__Config__PlaneB__Active": true,
-            "FogPlane__Config__PlaneB__PositionMm": -4952,
-            "FogPlane__Config__PlaneB__NormalX": 1,
-            "FogPlane__Config__PlaneB__NormalZ": 0
-        }
-    }
+    ]
 }

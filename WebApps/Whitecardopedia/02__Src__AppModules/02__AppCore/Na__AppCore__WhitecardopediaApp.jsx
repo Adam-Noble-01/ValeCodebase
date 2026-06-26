@@ -194,6 +194,23 @@
             setCurrentView(APP_VIEWS.TIME_ANALYSIS);                     // <-- Navigate to time analysis tool
         };
         // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Handle Purge App Cache
+        // ---------------------------------------------------------------
+        const handlePurgeCache = () => {
+            const confirmed = window.confirm(                            // <-- Confirm before destructive action
+                'Purge App Cache?\n\nThis will clear all cached data and reload the app from scratch.\nYour login will be preserved.'
+            );
+            if (!confirmed) return;                                      // <-- Bail if user cancels
+
+            const registrar = window.Whitecardopedia__Pwa__ServiceWorker__Registrar;
+            if (registrar && typeof registrar.purgeAppCache === 'function') {
+                registrar.purgeAppCache();                               // <-- Brutal full purge via shared registrar
+            } else {
+                window.location.reload();                                // <-- Fallback: plain reload if registrar unavailable
+            }
+        };
+        // ---------------------------------------------------------------
         
         // EFFECT | Listen for R2 Asset Fallback Toast Event (once per session)
         // ---------------------------------------------------------------
@@ -270,6 +287,7 @@
                         onSelectProject={handleSelectProject}
                         onOpenProjectEditor={handleOpenProjectEditor}
                         onOpenTimeAnalysis={handleOpenTimeAnalysis}
+                        onPurgeCacheClick={handlePurgeCache}
                     />
                 )}
                 

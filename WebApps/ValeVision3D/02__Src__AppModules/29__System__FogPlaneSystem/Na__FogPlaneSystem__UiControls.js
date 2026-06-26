@@ -13,7 +13,20 @@
 // - Caches DOM element references for the fog plane Dev Tools controls.
 // - Wires toggle, slider, button, and save events to system logic functions.
 // - Listens for na-fogplane-state-changed events to update button visibility.
+// - Listens for na-fogplane-settings-loaded to sync slider + toggle once the
+//   system has loaded the per-project saved settings (avoids 1 m default flash).
 // - Localhost-only: fog plane controls only appear on localhost.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 07-Apr-2026 - Version 1.0.0
+// - Initial implementation.
+//
+// 26-Jun-2026 - Version 1.1.0
+// - Fixed falloff slider always showing 1 m default: UI initialised before the
+//   fog system finished loading project.json. Now re-syncs on the new
+//   na-fogplane-settings-loaded event via Na__FogUi__SyncControlsFromSystem().
 //
 // =============================================================================
 
@@ -137,6 +150,33 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Sync Slider + Toggle From Authoritative System State
+    // ------------------------------------------------------------
+    // Re-reads the falloff + enabled values from the fog system and pushes
+    // them into the DOM. Called during initial defaults AND when the system
+    // finishes loading the per-project saved settings, so the Dev menu reflects
+    // project.json (e.g. 5 m) rather than the 1 m hardcoded default.
+    // ------------------------------------------------------------
+    function Na__FogUi__SyncControlsFromSystem() {
+        const savedFalloffMm = Na__FogPlaneSystem__GetFalloffMm();           // <-- Authoritative value from system
+        const matchIndex     = Na__FogUi__FalloffSteps.indexOf(savedFalloffMm);
+        if (matchIndex >= 0) {
+            Na__FogUi__FalloffIndex = matchIndex;                            // <-- Snap to the saved step
+        }
+
+        if (Na__FogUi__FalloffSlider) {
+            Na__FogUi__FalloffSlider.value = Na__FogUi__FalloffIndex;        // <-- Reflect on slider position
+        }
+
+        if (Na__FogUi__FogEnable) {
+            Na__FogUi__FogEnable.checked = Na__FogPlaneSystem__IsFogEnabled(); // <-- Reflect enabled state
+        }
+
+        Na__FogUi__UpdateFalloffLabel();                                     // <-- Refresh "N m" / "N mm" label
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -219,6 +259,12 @@
                 Na__FogUi__RemoveBBtn.style.display = detail.active ? '' : 'none';
             }
         });
+
+        // SYNC ON SAVED-SETTINGS LOAD | Fog system loads project.json async,
+        // after this UI initialises — re-sync slider + toggle when it completes.
+        window.addEventListener('na-fogplane-settings-loaded', () => {
+            Na__FogUi__SyncControlsFromSystem();
+        });
     }
     // ------------------------------------------------------------
 
@@ -247,11 +293,6 @@
             Na__FogUi__FalloffSlider.min   = 0;
             Na__FogUi__FalloffSlider.max   = Na__FogUi__FalloffSteps.length - 1;
             Na__FogUi__FalloffSlider.step  = 1;
-            Na__FogUi__FalloffSlider.value = Na__FogUi__FalloffIndex;
-        }
-
-        if (Na__FogUi__FogEnable) {
-            Na__FogUi__FogEnable.checked = Na__FogPlaneSystem__IsFogEnabled();
         }
 
         if (Na__FogUi__PlaneVisible) {
@@ -261,7 +302,7 @@
         if (Na__FogUi__RemoveABtn) Na__FogUi__RemoveABtn.style.display = 'none';
         if (Na__FogUi__RemoveBBtn) Na__FogUi__RemoveBBtn.style.display = 'none';
 
-        Na__FogUi__UpdateFalloffLabel();
+        Na__FogUi__SyncControlsFromSystem();                                 // <-- Set slider value, label, enable toggle
     }
     // ------------------------------------------------------------
 

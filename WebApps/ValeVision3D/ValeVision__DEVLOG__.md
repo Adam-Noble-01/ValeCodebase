@@ -2,6 +2,50 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.3 - 26-Jun-2026 - R2-First Dev Menu Saves + Fog Dev UI Sync Fix
+
+### Overview
+All localhost Dev menu functions that write to `project.json` now use the same **R2-first, Flask-mirror-second** contract as the Whitecardopedia Project Editor. Saves go live on R2 immediately (no GitHub push required for nav modes, fog, camera, orbit max distance, render engine, grid lines, or presentation mode scene data). Toast feedback confirms R2 success (green) or failure (red). Fog Effect Dev menu falloff distance no longer sticks at 1 m when `project.json` holds a different saved value.
+
+### Changes
+
+**R2-first two-phase save (shared utility)**
+- `Na__AppUtils__R2SaveProjectJson__.js` (v1.1.0) — resolves full `folderId` via master index, lazy-fetches Worker config from Flask `GET /api/editor-config`, Phase 1 POST to `whitecardopedia-editor-api`, Phase 2 POST to Flask `/api/projects/{projectCode}`. Phase 1 failure throws; Phase 2 failure is non-fatal with red toast.
+- Replaced prior GET-merge-POST-to-Flask-only pattern in:
+  - `Na__UiFeature__NavigationModes__DevControls.js`
+  - `Na__FogPlaneSystem__SaveSettings.js`
+  - `Na__UiFeature__SaveCameraSettings.js`
+  - `Na__UiFeature__OrbitMaxDistance__DevControls.js`
+  - `Na__UiFeature__RenderEngine__DevControls.js`
+  - `Na__GridLineSystem__UiElement.js`
+  - `Na__PresentationMode__DevMenu__SceneEditor.js`
+
+**Save feedback toasts**
+- Green toast `"Saved to R2 ✓"` after successful Phase 1 write.
+- Red toast on R2 failure (surfaced by each caller's existing `showToast(..., true)` catch path).
+- Red toast on Phase 2 local mirror failure (previously showed as neutral/green).
+
+**Fog Effect Dev menu — falloff slider sync (v1.1.0)**
+- **Root cause:** `Na__UiFeature__InitializeFogPlaneControls()` runs in `index.html` immediately after `StartLoadingSequence()` (fire-and-forget). `Na__FogPlaneSystem__Initialize()` loads `FogPlane__Config` from `project.json` asynchronously *after* model load; UI `ApplyDefaults` read `GetFalloffMm()` while it was still the hardcoded 1000 mm (1 m) default.
+- **Fix:** `Na__FogPlaneSystem__SystemLogic.js` dispatches `na-fogplane-settings-loaded` when saved settings are applied. `Na__FogPlaneSystem__UiControls.js` listens and calls `Na__FogUi__SyncControlsFromSystem()` to refresh slider position, "N m" label, and Enable Fog checkbox from authoritative system state.
+
+### Cross-reference
+- **Whitecardopedia v0.7.0** — Editor API Worker, Flask `/api/editor-config`, CORS fix for `127.0.0.1:8000`, Project Editor toasts.
+- **Agent rule** — `WebApps/.cursor/rules/15-R2First-LocalhostSave--DevTools-SSOT-.mdc`.
+
+### Files Changed
+- `02__Src__AppModules/03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js` (new)
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SaveSettings.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js`
+- `02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__SaveCameraSettings.js`
+- `02__Src__AppModules/11__CameraUtils/Na__UiFeature__OrbitMaxDistance__DevControls.js`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js`
+- `02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.2 - 26-Jun-2026 - Match SketchUp Scene-First Default Camera Position (Scene 1 First Camera Position)
 
 ### Overview

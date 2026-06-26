@@ -13,8 +13,8 @@
 // - Localhost-only dev menu section.  Allows the developer to enable or disable
 //   Walk and Fly navigation modes for the current model.
 // - On "Save Navigation Modes", merges the new Navmode__EnabledModes block into
-//   project.json via the same GET-merge-POST pattern used by camera and fog
-//   settings (Flask /api/projects/{code} endpoint).
+//   project.json via the R2-first two-phase save: R2 SSOT (Worker) first, then
+//   local disk mirror (Flask).
 // - Orbit mode is always enabled (displayed read-only) — only Walk and Fly are
 //   configurable toggles.
 // - After saving, calls the provided onSaved callback so the caller can show a
@@ -31,6 +31,10 @@
 // 09-Jun-2026 - Version 1.0.0
 // - Initial implementation as part of navigation modes port.
 //
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
+//
 // =============================================================================
 
 
@@ -44,6 +48,12 @@
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__IsRunningOnLocalhost
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | R2-First Save Utility
+    // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Confirm Dialog
@@ -75,7 +85,7 @@
 // REGION | Save Logic
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Save Navigation Mode Flags to project.json
+    // FUNCTION | Save Navigation Mode Flags to project.json (R2-First)
     // ------------------------------------------------------------
     async function Na__NavModesDevMenu__SaveToProject(walkEnabled, flyEnabled, showToast) {
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
@@ -85,30 +95,26 @@
         }
 
         try {
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-
+            // FETCH EXISTING PROJECT DATA FOR MERGE
+            const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;
             const projectResponse = await fetch(fetchUrl);
             if (!projectResponse.ok) throw new Error(`Failed to fetch project: ${projectResponse.status}`);
             const projectData = await projectResponse.json();
 
+            // MERGE NAVIGATION MODE FLAGS
             projectData.Navmode__EnabledModes = {
                 "Navmode__EnabledModes__Walk" : walkEnabled,                 // <-- Walk mode enabled for this model
                 "Navmode__EnabledModes__Fly"  : flyEnabled                   // <-- Fly mode enabled for this model
             };
 
-            const saveResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData, null, 4)
-            });
-
-            if (!saveResponse.ok) throw new Error(`Failed to save project: ${saveResponse.status}`);
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, showToast);
 
             console.log(`[NavModesDevMenu] Navigation modes saved — Walk: ${walkEnabled}, Fly: ${flyEnabled}`);
             if (showToast) showToast('Navigation modes saved.');
         } catch (error) {
             console.error('[NavModesDevMenu] Save failed:', error);
-            if (showToast) showToast('Save failed — see console.', true);
+            if (showToast) showToast(`Save failed — ${error.message}`, true);
         }
     }
     // ------------------------------------------------------------

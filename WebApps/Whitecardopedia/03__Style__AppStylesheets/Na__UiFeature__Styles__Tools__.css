@@ -104,6 +104,19 @@
     .hamburger-menu__item:active {
         background                         : var(--Vale_ActiveBackground);  /* <-- Active state background */
     }
+
+    .hamburger-menu__item--danger {
+        color                              : #8b2a2a;                       /* <-- Muted red text for destructive action */
+    }
+
+    .hamburger-menu__item--danger:hover {
+        background                         : #fdf0f0;                       /* <-- Soft red tint on hover */
+        color                              : #6b1c1c;                       /* <-- Deeper red on hover */
+    }
+
+    .hamburger-menu__item--danger:active {
+        background                         : #f5dede;                       /* <-- Active press state */
+    }
     /* ------------------------------------------------------------ */
 
 /* endregion ------------------------------------------------------------------- */
@@ -299,6 +312,61 @@
         color                              : #721c24;                       /* <-- Dark red text */
         background-color                   : #f8d7da;                       /* <-- Light red background */
         border                             : 2px solid #dc3545;             /* <-- Red border */
+    }
+
+    .editor-form__message--warning {
+        color                              : #6d4c00;                       /* <-- Dark amber text */
+        background-color                   : #fff3cd;                       /* <-- Light amber background */
+        border                             : 2px solid #ffc107;             /* <-- Amber border */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOAST NOTIFICATIONS | Floating overlay toasts (R2 save feedback) */
+    /* ------------------------------------------------------------ */
+    .wcp-toast-container {
+        position                           : fixed;                         /* <-- Overlay, outside document flow */
+        bottom                             : 28px;                          /* <-- Anchored to bottom edge */
+        right                              : 28px;                          /* <-- Anchored to right edge */
+        z-index                            : 9999;                          /* <-- Always on top */
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 10px;
+        pointer-events                     : none;                          /* <-- Don't block clicks behind */
+    }
+
+    .wcp-toast {
+        padding                            : 12px 20px;
+        border-radius                      : 6px;
+        font-size                          : 0.82rem;
+        font-weight                        : 600;
+        letter-spacing                     : 0.01em;
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.35);
+        max-width                          : 380px;
+        animation                          : wcp-toast-in 0.25s ease;
+    }
+
+    .wcp-toast--success {
+        background-color                   : #155724;                       /* <-- Deep green */
+        color                              : #ffffff;
+        border-left                        : 5px solid #28a745;             /* <-- Bright green accent */
+    }
+
+    .wcp-toast--error {
+        background-color                   : #721c24;                       /* <-- Deep red */
+        color                              : #ffffff;
+        border-left                        : 5px solid #dc3545;             /* <-- Bright red accent */
+    }
+
+    .wcp-toast--warning {
+        background-color                   : #6d4c00;                       /* <-- Deep amber */
+        color                              : #ffffff;
+        border-left                        : 5px solid #ffc107;             /* <-- Bright amber accent */
+    }
+
+    @keyframes wcp-toast-in {
+        from { opacity: 0; transform: translateX(24px); }
+        to   { opacity: 1; transform: translateX(0);    }
     }
     /* ------------------------------------------------------------ */
 

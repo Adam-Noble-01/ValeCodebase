@@ -12,9 +12,10 @@
 // DESCRIPTION:
 // - Provides a save action inside the localhost-only Dev Tools menu that writes
 //   the current camera position and orbit target back into the active project's
-//   project.json via the local Flask API.
+//   project.json via the R2-first two-phase save.
 // - Fetches the existing project.json, merges Camera__DefaultPosition and
-//   OrbitHelperCube__Position, then POSTs the updated document back.
+//   OrbitHelperCube__Position, then saves: R2 SSOT (Worker) first, then local
+//   disk mirror (Flask).
 // - Button is hidden on production (non-localhost) environments.
 //
 // -----------------------------------------------------------------------------
@@ -24,6 +25,10 @@
 // - Extracted from index.html inline script block (lines 888-949).
 // - Refactored closures: camera, controls, and showToast are now explicit
 //   parameters rather than captured from the parent script scope.
+//
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
 //
 // =============================================================================
 
@@ -42,6 +47,12 @@
     import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | R2-First Save Utility
+    // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Confirm Dialog (gates destructive write)
     // ------------------------------------------------------------
     import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
@@ -54,7 +65,7 @@
 // REGION | Save Camera Settings
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Save Camera Settings to Project JSON (Localhost Only)
+    // FUNCTION | Save Camera Settings to Project JSON — R2-First (Localhost Only)
     // ------------------------------------------------------------
     async function Na__UiFeature__SaveCameraSettings(camera, controls, showToast) {
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
@@ -80,14 +91,15 @@
             );
             const cameraData = JSON.parse(cameraJsonString);                 // <-- Parse built camera JSON
 
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-            const projectResponse = await fetch(fetchUrl);                   // <-- Fetch existing project.json
+            // FETCH EXISTING PROJECT DATA FOR MERGE
+            const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;
+            const projectResponse = await fetch(fetchUrl);
             if (!projectResponse.ok) {
                 showToast(`Project not found: ${projectCode}`, true);
                 return;
             }
 
-            const projectData = await projectResponse.json();                // <-- Parse project data
+            const projectData = await projectResponse.json();
 
             // CLEANUP LEGACY CAMERA BLOCKS
             if (projectData.valeVision_Camera__DefaultPosition) {
@@ -97,24 +109,17 @@
                 delete projectData.Camera__DefaultPosition.Camera__DefaultTarget; // <-- Remove deprecated target key from modern camera block
             }
 
+            // MERGE CAMERA DATA
             projectData.Camera__DefaultPosition  = cameraData.Camera__DefaultPosition;  // <-- Merge camera position
             projectData.OrbitHelperCube__Position = cameraData.OrbitHelperCube__Position; // <-- Merge orbit target
 
-            const saveResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData)                        // <-- Send merged project data
-            });
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, showToast);
 
-            if (saveResponse.ok) {
-                showToast(`Camera settings saved to ${projectCode}`);
-            } else {
-                const errorData = await saveResponse.json().catch(() => ({}));
-                showToast(`Save failed: ${errorData.error || 'Unknown error'}`, true);
-            }
+            showToast(`Camera settings saved to ${projectCode}`);
         } catch (error) {
             console.error('[ValeVision3D] Save camera settings error:', error);
-            showToast('Save failed — server unreachable.', true);
+            showToast(`Save failed — ${error.message}`, true);
         }
     }
     // ------------------------------------------------------------

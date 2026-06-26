@@ -376,6 +376,16 @@
             Na__FogPlane__SetPlanesVisible(false);
         }
 
+        // NOTIFY UI | Saved settings now loaded — Dev menu syncs slider + toggle
+        // The Dev menu UI initialises before this async load completes, so it
+        // would otherwise display the 1 m default rather than the project value.
+        window.dispatchEvent(new CustomEvent('na-fogplane-settings-loaded', {
+            detail : {
+                falloffMm  : Na__FogPlane__SysFalloffMm,                      // <-- Authoritative loaded falloff
+                fogEnabled : Na__FogPlane__SysFogEnabled                      // <-- Authoritative loaded enabled state
+            }
+        }));
+
         console.log('[ValeVision3D] Fog Plane System initialized');
     }
     // ------------------------------------------------------------

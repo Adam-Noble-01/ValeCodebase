@@ -386,6 +386,15 @@
     background                          : #1e3a4f;
 }
 
+.na-dropdown-menu__action--danger {
+    background                          : #5c2020;                          /* <-- Muted dark red for destructive action */
+    color                               : #ffffff;
+}
+
+.na-dropdown-menu__action--danger:hover {
+    background                          : #6e2828;                          /* <-- Slightly lighter red on hover */
+}
+
 
 /* Debug Info Overlay - Top Left Panel (Below Header) */
 /* ----------------------------------------------------------------- */

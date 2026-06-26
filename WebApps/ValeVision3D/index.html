@@ -527,6 +527,32 @@
                         <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
                     </button>
                 </li>
+
+                <!-- ---------------------------------------------------------------- -->
+                <!-- UI MENU | App Settings                                          -->
+                <!-- ---------------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item">
+                    <button
+                        class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
+                        type="button"
+                        id="naAppSettingsToggle"
+                    >
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__MainMenuIcon__540p__.png" alt="" />
+                        <span class="na-dropdown-menu__btn-label">App Settings</span>
+                        <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naAppSettingsPanel">
+                        <button
+                            class="na-dropdown-menu__action na-dropdown-menu__action--danger"
+                            type="button"
+                            id="naPurgeAppCacheAction"
+                        >
+                            Purge App Cache
+                        </button>
+                    </div>
+                </li>
+                <!-- ---------------------------------------------------------------- -->
+
             </ul>
             
         </details>
@@ -895,6 +921,7 @@
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
     import { Na__GpuLifecycle__AttachContextLossHandlers, Na__GpuLifecycle__DisposeAll } from './02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js';
+    import { Na__UiFeature__InitializePurgeAppCacheButton } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js';
 
     // MODULE IMPORTS | Presentation Mode System
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js
@@ -1558,6 +1585,7 @@
         showToast     : Na__UiFeature__ShowToast,
         targetElement : document.documentElement
     });
+    Na__UiFeature__InitializePurgeAppCacheButton();                              // <-- Wire Purge App Cache button in Tools menu
     // ------------------------------------------------------------
 
     // PRESENTATION MODE | Initialize scene carousel, thumbnail renderer, and dev tools

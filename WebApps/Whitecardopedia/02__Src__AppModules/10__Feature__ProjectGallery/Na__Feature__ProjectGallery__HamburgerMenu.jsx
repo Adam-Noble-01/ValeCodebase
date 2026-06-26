@@ -24,7 +24,7 @@
 
     // COMPONENT | Hamburger Menu Navigation
     // ------------------------------------------------------------
-    function HamburgerMenu({ onProjectEditorClick, onTimeAnalysisClick }) {
+    function HamburgerMenu({ onProjectEditorClick, onTimeAnalysisClick, onPurgeCacheClick }) {
         const [isOpen, setIsOpen] = React.useState(false);                   // <-- Menu open state
         const menuRef = React.useRef(null);                                  // <-- Menu DOM reference
         
@@ -49,6 +49,14 @@
         const handleTimeAnalysisClick = () => {
             setIsOpen(false);                                                // <-- Close menu
             onTimeAnalysisClick();                                           // <-- Call parent handler
+        };
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Handle Purge App Cache Click
+        // ---------------------------------------------------------------
+        const handlePurgeCacheClick = () => {
+            setIsOpen(false);                                                // <-- Close menu before dialog
+            onPurgeCacheClick();                                             // <-- Call parent handler
         };
         // ---------------------------------------------------------------
         
@@ -99,7 +107,12 @@
                         >
                             Time Analysis Tool
                         </button>
-                        {/* FUTURE TOOLS: Additional menu items will be added here */}
+                        <button 
+                            className="hamburger-menu__item hamburger-menu__item--danger"
+                            onClick={handlePurgeCacheClick}
+                        >
+                            Purge App Cache
+                        </button>
                     </div>
                 )}
             </div>

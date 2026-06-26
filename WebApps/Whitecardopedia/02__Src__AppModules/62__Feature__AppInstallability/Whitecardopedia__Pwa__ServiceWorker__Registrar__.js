@@ -36,6 +36,14 @@
 //   plus the window.na_clear_cache() programmatic alias for one-keystroke
 //   stale-PWA recovery from the browser console.
 //
+// 26-Jun-2026 - Version 1.2.0
+// - Added PWA_PRESERVE_LOCALSTORAGE_KEYS constant: single source of truth for
+//   auth keys that survive a full purge.
+// - Added Whitecardopedia__Pwa__ServiceWorker__Registrar__PurgeAppCacheAndReload:
+//   brutal full reset that wipes Cache Storage, SW registrations, localStorage,
+//   sessionStorage, and IndexedDB while preserving the user's login tokens.
+//   Exposed on the global API as purgeAppCache().
+//
 // =============================================================================
 
 (function () {
@@ -48,6 +56,17 @@
     // ------------------------------------------------------------
     let Whitecardopedia__Pwa__ServiceWorker__Registrar__Started     = false;                                                        // <-- Idempotent boot flag
     let Whitecardopedia__Pwa__ServiceWorker__Registrar__Registration = null;                                                        // <-- Active ServiceWorkerRegistration
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | localStorage Keys Preserved During Full Purge
+    // ------------------------------------------------------------
+    const PWA_PRESERVE_LOCALSTORAGE_KEYS = [
+        'whitecardopedia_auth_token',                                                                                                // <-- Whitecardopedia 30-day login token
+        'whitecardopedia_auth_expiry',                                                                                               // <-- Whitecardopedia token expiry timestamp
+        'valevision3d_email_auth_token',                                                                                             // <-- ValeVision3D email worker auth token
+        'valevision3d_email_authExpiry',                                                                                             // <-- ValeVision3D email token expiry timestamp
+    ];
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -241,6 +260,79 @@
     }
     // ---------------------------------------------------------------
 
+
+    // FUNCTION | Purge App Cache — Brutal Full Reset, Auth Preserved
+    // ------------------------------------------------------------
+    // Nuclear one-shot reset that wipes ALL client-side state so the app
+    // behaves as though it has never been opened, while preserving the
+    // user's saved login tokens so they stay signed in after reload.
+    //
+    // Clears in order:
+    //   1. All Cache Storage buckets (shell, thumbs, data, models).
+    //   2. All service worker registrations.
+    //   3. All localStorage keys except PWA_PRESERVE_LOCALSTORAGE_KEYS.
+    //   4. All sessionStorage keys.
+    //   5. All IndexedDB databases (best-effort; browsers may not support .databases()).
+    // Then reloads the page for a completely fresh session.
+    // ------------------------------------------------------------
+    async function Whitecardopedia__Pwa__ServiceWorker__Registrar__PurgeAppCacheAndReload() {
+
+        // STEP 1 — snapshot auth keys before any storage mutation
+        const na__preserved = {};
+        try {
+            for (const key of PWA_PRESERVE_LOCALSTORAGE_KEYS) {
+                const value = localStorage.getItem(key);
+                if (value !== null) na__preserved[key] = value;                                                                      // <-- Save value to restore after clear
+            }
+        } catch (snapError) {}                                                                                                       // <-- Ignore storage access failures
+
+        // STEP 2 — delete all Cache Storage buckets
+        try {
+            if ('caches' in window) {
+                const na__allCacheNames = await caches.keys();                                                                       // <-- Every Cache Storage bucket
+                await Promise.all(na__allCacheNames.map(name => caches.delete(name)));                                               // <-- Wipe every bucket
+            }
+        } catch (cacheError) {
+            console.warn('[PurgeCache] Cache deletion failed:', cacheError);                                                         // <-- Non-blocking
+        }
+
+        // STEP 3 — unregister all service workers
+        try {
+            if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+                const na__registrations = await navigator.serviceWorker.getRegistrations();                                          // <-- All SW registrations
+                await Promise.all(na__registrations.map(reg => reg.unregister()));                                                   // <-- Unregister each
+            }
+        } catch (swError) {
+            console.warn('[PurgeCache] Service worker unregister failed:', swError);                                                 // <-- Non-blocking
+        }
+
+        // STEP 4 — wipe localStorage/sessionStorage, then restore auth tokens
+        try {
+            localStorage.clear();                                                                                                    // <-- Nuclear clear of all keys
+            for (const [key, value] of Object.entries(na__preserved)) {
+                localStorage.setItem(key, value);                                                                                    // <-- Restore preserved auth values
+            }
+            sessionStorage.clear();                                                                                                  // <-- Clear all session state
+        } catch (storageError) {
+            console.warn('[PurgeCache] Storage clear failed:', storageError);                                                        // <-- Non-blocking
+        }
+
+        // STEP 5 — delete all IndexedDB databases (best-effort, future-proofing)
+        try {
+            if (typeof indexedDB !== 'undefined' && typeof indexedDB.databases === 'function') {
+                const na__databases = await indexedDB.databases();                                                                   // <-- List all IDB databases
+                await Promise.all(na__databases.map(db => indexedDB.deleteDatabase(db.name)));                                       // <-- Delete each
+            }
+        } catch (idbError) {
+            console.warn('[PurgeCache] IndexedDB clear failed:', idbError);                                                          // <-- Non-blocking
+        }
+
+        console.log('%c[PurgeCache] Full cache purge complete — reloading for a clean session…', 'color:#006600;font-weight:bold;'); // <-- User feedback
+        window.location.reload();                                                                                                    // <-- Brutally fresh load
+        return true;                                                                                                                 // <-- Indicator (page unloads before this matters)
+    }
+    // ---------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -287,7 +379,8 @@
             register        : Whitecardopedia__Pwa__ServiceWorker__Registrar__Register,
             getRegistration : Whitecardopedia__Pwa__ServiceWorker__Registrar__GetRegistration,
             clearCaches     : Whitecardopedia__Pwa__ServiceWorker__Registrar__ClearCaches,
-            hardReset       : Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload
+            hardReset       : Whitecardopedia__Pwa__ServiceWorker__Registrar__HardResetAndReload,
+            purgeAppCache   : Whitecardopedia__Pwa__ServiceWorker__Registrar__PurgeAppCacheAndReload   // <-- Brutal full purge (preserves auth tokens)
         };
 
         Whitecardopedia__Pwa__ServiceWorker__Registrar__InstallConsoleShortcut();                                                  // <-- Wire the `--ClearCache` console helper

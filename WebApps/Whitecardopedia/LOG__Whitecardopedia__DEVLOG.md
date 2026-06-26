@@ -16,7 +16,40 @@
 #
 # =============================================================================
 
+
 # -----------------------------------------------------------------------------
+
+## Whitecardopedia v0.7.0 - 26-Jun-2026 - R2-First Localhost Project Data Saves (Editor API Worker)
+
+### Overview
+Localhost project editing and ValeVision3D Dev menu saves now follow an **R2-first, local-mirror-second** contract: `project.json` changes go live on the CDN without a GitHub Pages push. A new Cloudflare Worker (`whitecardopedia-editor-api`) is the write path to R2; Flask remains the local disk mirror and serves Worker URL + API key to the browser at runtime. Phase 1 (R2) must succeed; Phase 2 (Flask mirror) is best-effort.
+
+### Changes
+- **Editor API Worker** — new `CloudflareWorker/` scaffold (`wrangler.jsonc`, deploy/dev batch scripts). `POST /api/editor/projects/{folderId}` writes `VaApps/Projects/{folderId}/project.json`, upserts master index (`hasProjectJson_R2`, `lastSynced` only — all sync-pipeline fields preserved), and bumps `Na__BuildVersion__Manifest__.json` for SW cache eviction on next gallery load.
+- **Shared CORS helper (v1.1.0)** — `CloudflareHelper__Cors__.js` centralises origin allow-listing. Permits `localhost` and `127.0.0.1` on any port for local dev, plus GH Pages and noble-architecture.com domains. Fixes preflight rejection when ValeVision3D/Whitecardopedia run on `http://127.0.0.1:8000` (previously only `http://localhost` was recognised).
+- **Flask runtime config** — `GET /api/editor-config` reads `EDITOR_WORKER_URL` and `EDITOR_API_KEY` from `Tools__DevUtils/API__Cloudflare/Token__CloudflareAPI.env` and returns them to frontends (secrets never committed).
+- **Project Editor (v2.1.0)** — `Na__Feature__ProjectEditor__Form.jsx` two-phase save: Worker R2 write then Flask mirror; phase status on Save button ("Saving to cloud…", "Mirroring locally…"). Floating toast overlay (green success, red hard failure, amber local-mirror-only failure) with 4 s auto-dismiss.
+- **Project Editor config** — `Na__Feature__ProjectEditor__Config.json` holds production + localhost Worker base URLs and request timeout (no secrets).
+- **Agent rule** — `.cursor/rules/15-R2First-LocalhostSave--DevTools-SSOT-.mdc` documents the two-phase contract for all localhost dev tools that mutate `project.json`.
+
+### Cross-reference
+- **ValeVision3D v2.9.3** — shared `Na__AppUtils__R2SaveProjectJson__.js`; all Dev menu `project.json` writers migrated off GET-merge-POST-to-Flask-only.
+
+### Files Changed
+- `CloudflareWorker/` (new: `src/index.js`, `src/handlers/CloudflareHandler__ProjectEditor__.js`, `src/CloudflareHelper__Cors__.js`, `wrangler.jsonc`, `package.json`, deploy scripts)
+- `server.py` (`/api/editor-config`)
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx`
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Config.json` (new)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Tools__.css` (toast overlay + warning message variant)
+- `Tools__DevUtils/API__Cloudflare/Token__CloudflareAPI.env` (`EDITOR_WORKER_URL`, `EDITOR_API_KEY`)
+- `.cursor/rules/15-R2First-LocalhostSave--DevTools-SSOT-.mdc` (new, WebApps root)
+
+### Deployment notes
+- Worker deployed to `https://whitecardopedia-editor-api.adam-fb3.workers.dev`
+- Secrets: `EDITOR_API_KEY`, `ALLOWED_ORIGIN` via `wrangler secret put`
+- Direct browser GET to `/api/editor` without `X-Editor-Api-Key` correctly returns 401; `/api/editor/health` is unauthenticated
+
+---
 
 ## Whitecardopedia v0.6.3 - 26-Jun-2026 - Designer & Artist Backfill (All Projects)
 

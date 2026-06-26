@@ -17,7 +17,18 @@
 // - Shows localhost-only position controls via Na__AppUtils__IsRunningOnLocalhost.
 // - On init, loads persisted grid offsets from the project JSON via Flask API.
 // - Provides a Save Position button that writes the current grid offsets
-//   (X, Z, and Height) to the project JSON via the Flask API.
+//   (X, Z, and Height) to project.json via R2-first two-phase save (Worker
+//   SSOT, then Flask mirror).
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 13-Mar-2026 - Version 1.0.0
+// - Initial implementation.
+//
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
 //
 // =============================================================================
 
@@ -42,6 +53,12 @@
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__FetchProjectJson
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | R2-First Save Utility
+    // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Confirm Dialog (gates destructive write)
@@ -356,7 +373,7 @@
 // REGION | Save Position (Localhost Only)
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Save Grid Position to Project JSON via Flask API
+    // FUNCTION | Save Grid Position to Project JSON — R2-First
     // ------------------------------------------------------------
     async function Na__GridUi__SavePositionToProject() {
         const toast       = Na__GridUi__ShowToast || (() => {});
@@ -377,15 +394,17 @@
         if (!confirmed) return;
 
         try {
+            // FETCH EXISTING PROJECT DATA FOR MERGE
             const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;
-            const projectResponse = await fetch(fetchUrl);                   // <-- Fetch existing project.json
+            const projectResponse = await fetch(fetchUrl);
             if (!projectResponse.ok) {
                 toast(`Project not found: ${projectCode}`, true);
                 return;
             }
 
-            const projectData = await projectResponse.json();                // <-- Parse existing project data
+            const projectData = await projectResponse.json();
 
+            // MERGE GRID OFFSET CONFIG
             projectData.GridLine__Grid__Offset__Config = {
                 "GridLine__Grid__Config__Offset__Description" : "Grid origin offset on X and Z axes in millimeters.",
                 "GridLine__Grid__Config__Offset__OffsetXMm"   : parseInt(Na__GridUi__PosXSlider.value, 10),
@@ -393,21 +412,13 @@
                 "GridLine__Grid__Config__Offset__HeightMm"    : parseInt(Na__GridUi__HeightSlider.value, 10)
             };
 
-            const saveResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData)                        // <-- Send merged project data
-            });
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, toast);
 
-            if (saveResponse.ok) {
-                toast(`Grid position saved to ${projectCode}`);
-            } else {
-                const errorData = await saveResponse.json().catch(() => ({}));
-                toast(`Save failed: ${errorData.error || 'Unknown error'}`, true);
-            }
+            toast(`Grid position saved to ${projectCode}`);
         } catch (error) {
             console.error('[ValeVision3D] Save grid position error:', error);
-            toast('Save failed — server unreachable.', true);
+            toast(`Save failed — ${error.message}`, true);
         }
     }
     // ------------------------------------------------------------

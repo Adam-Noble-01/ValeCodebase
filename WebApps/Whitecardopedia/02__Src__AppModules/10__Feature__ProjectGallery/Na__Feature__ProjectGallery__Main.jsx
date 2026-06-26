@@ -59,7 +59,7 @@
 
     // COMPONENT | Project Gallery Grid View
     // ------------------------------------------------------------
-    function ProjectGallery({ onSelectProject, onOpenProjectEditor, onOpenTimeAnalysis }) {
+    function ProjectGallery({ onSelectProject, onOpenProjectEditor, onOpenTimeAnalysis, onPurgeCacheClick }) {
         const [projects, setProjects] = React.useState([]);              // <-- Projects array state
         const [loading, setLoading] = React.useState(true);              // <-- Loading state (true until first batch arrives)
         const [loadProgress, setLoadProgress] = React.useState({ loaded: 0, total: 0 });  // <-- Progressive load progress
@@ -178,6 +178,7 @@
                             <HamburgerMenu 
                                 onProjectEditorClick={onOpenProjectEditor}
                                 onTimeAnalysisClick={onOpenTimeAnalysis}
+                                onPurgeCacheClick={onPurgeCacheClick}
                             />
                             <GalleryModeToggle
                                 galleryMode={galleryMode}

@@ -1,0 +1,28 @@
+{
+    // =============================================================================
+    // WHITECARDOPEDIA - EDITOR API WORKER - WRANGLER CONFIG
+    // =============================================================================
+    //
+    // FILE    : wrangler.jsonc
+    // PURPOSE : Cloudflare Worker deployment configuration for the project editor API
+    // CREATED : 26-Jun-2026
+    //
+    // SECRETS (set via CLI before deploying):
+    //   npx wrangler secret put EDITOR_API_KEY
+    //   npx wrangler secret put ALLOWED_ORIGIN
+    //
+    // =============================================================================
+
+    "name"               : "whitecardopedia-editor-api",
+    "account_id"         : "fb32e89aeb7dce82f8391f6496ec8b34",
+    "main"               : "src/index.js",
+    "compatibility_date" : "2026-04-09",
+    "workers_dev"        : true,
+    "observability"      : { "enabled": true },
+    "r2_buckets"         : [
+        {
+            "binding"     : "R2_BUCKET",
+            "bucket_name" : "noble-architecture-cdn"
+        }
+    ]
+}

@@ -16,8 +16,8 @@
 // - Selecting an engine immediately switches the live preview (dispatches
 //   na-render-engine-switch) so the developer can see the result before saving.
 // - On "Save Render Engine", merges the RenderEngine__Config block into
-//   project.json via the same GET-merge-POST pattern used by camera, fog,
-//   orbit-max-distance, and navigation mode settings (Flask /api/projects).
+//   project.json via the R2-first two-phase save (Worker SSOT, then Flask
+//   mirror).
 // - After saving, calls the provided onSaved callback so the caller can show
 //   a toast and update the user-facing Tools menu visibility in real time.
 //
@@ -32,6 +32,10 @@
 // 10-Jun-2026 - Version 1.0.0
 // - Initial implementation as part of the dual render engine port.
 //
+// 26-Jun-2026 - Version 1.1.0
+// - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
+//   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
+//
 // =============================================================================
 
 
@@ -45,6 +49,12 @@
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__IsRunningOnLocalhost
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | R2-First Save Utility
+    // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Confirm Dialog
@@ -85,7 +95,7 @@
 // REGION | Save Logic
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Save Render Engine Selection to project.json
+    // FUNCTION | Save Render Engine Selection to project.json — R2-First
     // ------------------------------------------------------------
     async function Na__EngineDevMenu__SaveToProject(engineName, showToast) {
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
@@ -95,29 +105,25 @@
         }
 
         try {
-            const fetchUrl = `${window.location.origin}/api/projects/${projectCode}`;
-
+            // FETCH EXISTING PROJECT DATA FOR MERGE
+            const fetchUrl        = `${window.location.origin}/api/projects/${projectCode}`;
             const projectResponse = await fetch(fetchUrl);
             if (!projectResponse.ok) throw new Error(`Failed to fetch project: ${projectResponse.status}`);
             const projectData = await projectResponse.json();
 
+            // MERGE RENDER ENGINE CONFIG
             projectData.RenderEngine__Config = {
                 "RenderEngine__Active" : engineName                          // <-- 'PureEngine' or 'MaxEngine'
             };
 
-            const saveResponse = await fetch(fetchUrl, {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(projectData, null, 4)
-            });
-
-            if (!saveResponse.ok) throw new Error(`Failed to save project: ${saveResponse.status}`);
+            // TWO-PHASE R2-FIRST SAVE
+            await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, showToast);
 
             console.log(`[RenderEngineDevMenu] Render engine saved: ${engineName}`);
             if (showToast) showToast(`Render engine saved: ${engineName}.`);
         } catch (error) {
             console.error('[RenderEngineDevMenu] Save failed:', error);
-            if (showToast) showToast('Save failed — see console.', true);
+            if (showToast) showToast(`Save failed — ${error.message}`, true);
         }
     }
     // ------------------------------------------------------------

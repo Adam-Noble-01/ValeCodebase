@@ -19,11 +19,12 @@
 #
 # API ENDPOINTS:
 # - GET  /api/check-localhost     : Localhost detection endpoint
+# - GET  /api/editor-config       : Return Worker URL + API key for the project editor (reads Token__CloudflareAPI.env)
 # - GET  /api/refresh-status      : Get refresh counter for client polling
 # - GET  /api/projects            : List all projects from masterConfig.json
 # - GET  /api/projects/discover   : Discover all project folders by scanning filesystem
 # - GET  /api/projects/<folder>   : Get specific project.json data
-# - POST /api/projects/<folder>   : Save updated project.json data
+# - POST /api/projects/<folder>   : Save updated project.json data (local mirror — called AFTER R2 write)
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
 # - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
 # - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
@@ -63,6 +64,7 @@ SERVER_PORT             = 8000                                           # <-- D
 SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
 PROJECTS_BASE_FOLDER    = 'Projects'                                     # <-- Projects base folder (contains year subfolders)
 MASTER_CONFIG_PATH      = '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json'  # <-- Master config file path
+CLOUDFLARE_ENV_PATH     = 'Tools__DevUtils/API__Cloudflare/Token__CloudflareAPI.env'              # <-- Cloudflare API credentials env file
 REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
 # ------------------------------------------------------------
 
@@ -235,6 +237,28 @@ def discover_project_folders():
 # ------------------------------------------------------------
 
 
+# HELPER FUNCTION | Parse KEY=VALUE Lines from an Env File
+# ------------------------------------------------------------
+def parse_env_file(env_file_path):
+    """Parse a KEY=VALUE env file into a dict, ignoring comments and blank lines"""
+    env_vars = {}                                                             # <-- Result dict
+
+    if not os.path.exists(env_file_path):
+        return env_vars                                                       # <-- Return empty dict if file missing
+
+    with open(env_file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue                                                      # <-- Skip blank lines and comments
+            if '=' in line:
+                key, _, value = line.partition('=')                          # <-- Split on first '=' only
+                env_vars[key.strip()] = value.strip()                        # <-- Store trimmed key/value
+
+    return env_vars
+# ------------------------------------------------------------
+
+
 # HELPER FUNCTION | Console Command Handler Thread
 # ------------------------------------------------------------
 def console_command_handler():
@@ -273,6 +297,36 @@ def check_localhost():
         'isLocalhost': True,                                             # <-- Confirm localhost status
         'message': 'Server running on localhost'                         # <-- Status message
     })
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Get Project Editor Worker Configuration
+# ------------------------------------------------------------
+@app.route('/api/editor-config', methods=['GET'])
+def get_editor_config():
+    """Return Worker URL and API key for the project editor — reads from Token__CloudflareAPI.env"""
+    try:
+        base_dir    = os.path.dirname(os.path.abspath(__file__))              # <-- Get server directory
+        env_path    = os.path.join(base_dir, CLOUDFLARE_ENV_PATH)             # <-- Build env file path
+        env_vars    = parse_env_file(env_path)                                # <-- Parse env file into dict
+
+        worker_url  = env_vars.get('EDITOR_WORKER_URL', '')                  # <-- Worker base URL
+        api_key     = env_vars.get('EDITOR_API_KEY', '')                      # <-- API key for X-Editor-Api-Key header
+
+        if not worker_url or not api_key:
+            return jsonify({
+                'error'   : 'Editor worker config missing — add EDITOR_WORKER_URL and EDITOR_API_KEY to Token__CloudflareAPI.env'
+            }), 503                                                           # <-- Service unavailable until configured
+
+        return jsonify({
+            'workerApiBaseUrl' : worker_url,                                  # <-- Passed to X-Editor-Api-Key fetch
+            'apiKey'           : api_key                                      # <-- Passed as X-Editor-Api-Key header
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error reading editor config: {str(e)}'          # <-- Generic error
+        }), 500
 # ------------------------------------------------------------
 
 

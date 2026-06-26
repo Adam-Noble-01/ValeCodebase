@@ -23,6 +23,17 @@
 //   cleanup step. The app also evicts the thumbnail bucket on its own when the
 //   shared R2 build-version manifest reports a newer build (see ProjectLoader).
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 26-Jun-2026 - Version 1.2.0
+// - PWA_SW_VERSION_TOKEN bumped to 2026-06-26-1 (force shell cache eviction after
+//   designer/artist filter feature; ensures FilterControls.jsx, updated Main.jsx,
+//   and ProjectLoader loadOptionsListFromFile changes are served fresh to all users).
+//
+// 2026 - Version 1.0.0
+// - Initial PWA service worker with shell / thumbs / data / models cache buckets.
+//
 // =============================================================================
 
 (function () {
@@ -33,7 +44,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-06-25-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
+    const PWA_SW_VERSION_TOKEN              = '2026-06-26-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

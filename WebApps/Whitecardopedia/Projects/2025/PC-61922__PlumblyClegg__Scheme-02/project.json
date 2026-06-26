@@ -39,7 +39,147 @@
     ],
     "thumbnailImage": "IMG01__3dView__MainShot__Closer__WhitecardImage__26-Jun-2026__Thumbnail__524p__.webp",
     "ValeVison3D__SketchUpCameraData": {
-        "note": "Placeholder \u2014 camera data not yet captured from SketchUp model.",
-        "scenes": []
-    }
+        "captured_at": "26-Jun-2026 at 14:18",
+        "model_name": "Plumbly-Clegg__WhiteCardModel__2.2.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__Closer",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 24491.5077,
+                        "y": -4819.4898,
+                        "z": 2216.8857
+                    },
+                    "target": {
+                        "x": 22748.2746,
+                        "y": -3019.2403,
+                        "z": 2216.8857
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": -0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": -0.695639,
+                        "y": 0.718391,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 37.4824,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            },
+            {
+                "scene_name": "IMG02__3dView__MainShot__Further",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 26320.7833,
+                        "y": -6708.596,
+                        "z": 2216.8857
+                    },
+                    "target": {
+                        "x": 17686.986,
+                        "y": 2207.5893,
+                        "z": 2216.8857
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": -0.695639,
+                        "y": 0.718391,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 37.4824,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            },
+            {
+                "scene_name": "IMG03__3dView__MainShot__EvenFurtherAway",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 27301.0589,
+                        "y": -7720.9337,
+                        "z": 2800.0
+                    },
+                    "target": {
+                        "x": 15961.1767,
+                        "y": 3989.845,
+                        "z": 2800.0
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": -0.695639,
+                        "y": 0.718391,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 37.4824,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            },
+            {
+                "scene_name": "IMG04__3dView__FrontViewOfDoors",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 13106.3666,
+                        "y": -6917.1368,
+                        "z": 1667.6484
+                    },
+                    "target": {
+                        "x": 13235.4427,
+                        "y": 1203.6961,
+                        "z": 1667.6484
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.015892,
+                        "y": 0.999874,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 34.3665,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                }
+            }
+        ]
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/PC-61922__PlumblyClegg__Scheme-02/Plumbly-Clegg__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/PC-61922__PlumblyClegg__Scheme-02/Plumbly-Clegg__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/PC-61922__PlumblyClegg__Scheme-02/Plumbly-Clegg__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/PC-61922__PlumblyClegg__Scheme-02/Plumbly-Clegg__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2025/PC-61922__PlumblyClegg__Scheme-02/Plumbly-Clegg__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
 }

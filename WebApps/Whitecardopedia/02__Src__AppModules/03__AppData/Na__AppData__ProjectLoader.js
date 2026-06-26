@@ -57,6 +57,13 @@
 //   index onto the project object so the viewer can suppress carousel
 //   navigation for 3D projects without reading valeVision_ModelUrls.
 //
+// 26-Jun-2026 - Version 0.2.5
+// - Cache-bust the master index fetch: na_load_master_index now appends
+//   ?t=<timestamp> + cache:'no-store' to the R2 primary URL (matching
+//   the pattern already used for masterConfig and the build manifest).
+//   Fixes stale-session issue where hasGlb_R2 flag changes made by a sync
+//   mid-session were invisible until the user did a hard refresh.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -201,15 +208,19 @@
         if (Na__MasterIndex__LoadPromise) return Na__MasterIndex__LoadPromise; // <-- Single fetch per session
 
         Na__MasterIndex__LoadPromise = (async () => {
-            const tryFetch = async (url) => {
+            const cacheBust = `?t=${Date.now()}`;                         // <-- Prevent stale cached index hiding new hasGlb_R2 flags
+
+            const tryFetch = async (url, bust = false) => {
                 try {
-                    const resp = await fetch(url);                        // <-- Attempt one source
+                    const fetchUrl  = bust ? `${url}${cacheBust}` : url;  // <-- Append cache-bust to R2 URLs
+                    const fetchOpts = bust ? { cache: 'no-store' } : {};  // <-- Bypass browser cache on R2 fetch
+                    const resp = await fetch(fetchUrl, fetchOpts);        // <-- Attempt one source
                     if (resp.ok) return await resp.json();
                 } catch (_) {}
                 return null;
             };
 
-            let index = await tryFetch(Na__MasterIndex__Url);            // <-- R2 CDN primary
+            let index = await tryFetch(Na__MasterIndex__Url, true);      // <-- R2 CDN primary (cache-busted)
             if (!index) index = await tryFetch(Na__MasterIndex__FallbackUrl); // <-- GH Pages fallback copy
 
             const map = new Map();

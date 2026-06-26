@@ -188,15 +188,13 @@
                                 searchTerm={searchTerm}
                                 onSearchChange={handleSearchChange}
                             />
-                            <FilterControls
+                            <FilterPanel
                                 filterArtist={filterArtist}
                                 filterDesigner={filterDesigner}
                                 artistOptions={artistOptions}
                                 designerOptions={designerOptions}
                                 onArtistChange={handleArtistChange}
                                 onDesignerChange={handleDesignerChange}
-                            />
-                            <SortControls 
                                 sortBy={sortBy}
                                 onSortChange={handleSortChange}
                             />

@@ -362,7 +362,93 @@
         border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand color border on focus */
         box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1);  /* <-- Subtle focus ring */
     }
-    
+
+    /* FILTER PANEL | Collapsible Toggle and Animated Drawer */
+    /* ------------------------------------------------------------ */
+    .filter-panel {
+        display                            : flex;                         /* <-- Horizontal layout for button + drawer */
+        align-items                        : center;                       /* <-- Vertically centred */
+        flex                               : 0 0 auto;                     /* <-- Fixed size; does not stretch */
+    }
+
+    .filter-panel__toggle {
+        display                            : flex;                         /* <-- Icon and text side by side */
+        align-items                        : center;                       /* <-- Vertically centred */
+        gap                                : 6px;                          /* <-- Tight gap between icon and text */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium); /* <-- Match dropdown padding */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard interface text */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match application font */
+        font-weight                        : var(--Vale_FontWeight_Regular); /* <-- Regular weight */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White background to match dropdowns */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderMedium); /* <-- Match dropdown border */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        cursor                             : pointer;                      /* <-- Pointer cursor */
+        transition                         : all var(--Vale_Transition_Fast); /* <-- Fast hover transition */
+        white-space                        : nowrap;                       /* <-- Prevent text wrap */
+        line-height                        : 1;                            /* <-- Tight line height for icon alignment */
+    }
+
+    .filter-panel__toggle:hover {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on hover */
+    }
+
+    .filter-panel__toggle:focus {
+        outline                            : none;                         /* <-- Remove default outline */
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border on focus */
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.1); /* <-- Subtle focus ring */
+    }
+
+    .filter-panel__toggle-icon {
+        display                            : block;                        /* <-- Remove inline baseline gap */
+        flex-shrink                        : 0;                            /* <-- Prevent icon squishing */
+    }
+
+    .filter-panel__toggle--open {
+        border-color                       : var(--Vale_PrimaryBrand);     /* <-- Brand border when active */
+        background                         : var(--Vale_HoverBackground);  /* <-- Subtle active state background */
+    }
+
+    .filter-panel__toggle-text {
+        display                            : inline-block;                 /* <-- Needed for max-width transition */
+        max-width                          : 100px;                        /* <-- Wide enough to show "Project Filters" */
+        opacity                            : 1;                            /* <-- Fully visible when closed */
+        overflow                           : hidden;                       /* <-- Clips text during collapse */
+        transition                         : max-width var(--Vale_Transition_Standard),
+                                             opacity 0.2s ease,
+                                             margin-left var(--Vale_Transition_Standard); /* <-- Fade and collapse text */
+        margin-left                        : 2px;                          /* <-- Small nudge between icon and text */
+    }
+
+    .filter-panel__toggle-text--hidden {
+        max-width                          : 0;                            /* <-- Collapse text width to zero */
+        opacity                            : 0;                            /* <-- Fade text out */
+        margin-left                        : 0;                            /* <-- Remove gap as text disappears */
+    }
+
+    .filter-panel__drawer {
+        display                            : flex;                         /* <-- Horizontal row of dropdowns */
+        align-items                        : center;                       /* <-- Vertically centred */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Consistent gap between dropdowns */
+        padding-left                       : 0;                            /* <-- No leading space when closed */
+        max-width                          : 0;                            /* <-- Collapsed: zero width */
+        opacity                            : 0;                            /* <-- Collapsed: invisible */
+        overflow                           : hidden;                       /* <-- Clip content during animation */
+        pointer-events                     : none;                         /* <-- Prevent interaction when hidden */
+        transition                         : max-width var(--Vale_Transition_Standard),
+                                             opacity 0.25s ease,
+                                             padding-left var(--Vale_Transition_Standard); /* <-- Smooth reveal animation */
+        box-sizing                         : content-box;                  /* <-- Ensure padding does not count against max-width */
+    }
+
+    .filter-panel__drawer--open {
+        max-width                          : 720px;                        /* <-- Open: wide enough for 3 dropdowns + gaps */
+        opacity                            : 1;                            /* <-- Open: fully visible */
+        padding-left                       : var(--Vale_Spacing_Medium);   /* <-- Adds spacing between toggle button and first dropdown */
+        pointer-events                     : auto;                         /* <-- Allow interaction when visible */
+    }
+    /* ------------------------------------------------------------ */
+
     .project-gallery__grid {
         display                            : grid;                         /* <-- CSS Grid layout */
         grid-template-columns              : repeat(auto-fill, minmax(350px, 1fr));  /* <-- Responsive columns */

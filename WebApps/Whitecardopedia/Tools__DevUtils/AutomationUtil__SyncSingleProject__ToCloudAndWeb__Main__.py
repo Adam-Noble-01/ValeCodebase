@@ -40,6 +40,16 @@
 #   concept artist; stamps dateFulfilled with creation date for gallery sort.
 # - report.first_sync flag for downstream Ruby/UI consumers.
 #
+# 26-Jun-2026 - Version 1.2.0
+# - na_build_model_urls_from_glb_dir: build the v4 CDN URL array from the
+#   local GLB sync folder (DRY-delegates to FetchLocalProjects build module).
+# - na_merge_model_urls_into_project_json: atomic local project.json patch.
+# - na_merge_model_urls_in_r2_project_json: R2 download-patch-reupload.
+# - na_sync_all + na_sync_glb now call all three after every GLB upload so
+#   valeVision_ModelUrls stays in sync — fixes ValeVision3D opening a project
+#   without loading the 3D model because the URL array was only written once
+#   (on first scaffold) and never refreshed on subsequent syncs.
+#
 # =============================================================================
 
 import os
@@ -573,6 +583,62 @@ def na_merge_camera_in_r2_project_json(s3_client, bucket: str, r2_key: str, came
     except Exception as exc:
         report.add_step(label, False, f'R2 camera merge failed: {exc}')
 
+
+def na_build_model_urls_from_glb_dir(glb_dir: Path, full_year: str, web_folder: str) -> List[str]:
+    """Discover GLB files in glb_dir and return the v4 CDN URL array.
+    Returns an empty list when the dir is absent or contains no GLBs."""
+    if not glb_dir or not glb_dir.is_dir():
+        return []                                                          # <-- No GLB folder; skip silently
+    mod = na_load_fetch_module()
+    if not mod:
+        return []                                                          # <-- Build module unavailable; skip
+    glb_names = [f.name for f in glb_dir.iterdir() if f.is_file() and f.suffix.lower() == '.glb']
+    if not glb_names:
+        return []                                                          # <-- No GLB files found
+    return mod.build_valevision_model_urls_array(full_year, web_folder, glb_names)
+
+
+def na_merge_model_urls_into_project_json(project_json_path: Path, model_urls: List[str], report: SyncReport):
+    """Patch valeVision_ModelUrls into the local project.json (atomic write)."""
+    label = 'Merge Model URLs into project.json (local)'
+    if not project_json_path.exists():
+        report.add_step(label, False, f'project.json not found: {project_json_path}')
+        return
+    if not model_urls:
+        report.add_step(label, False, 'No model URLs to write — GLB dir empty or build module unavailable.')
+        return
+    try:
+        existing = json.loads(project_json_path.read_text(encoding='utf-8'))
+        existing['valeVision_ModelUrls'] = model_urls                     # <-- Patch / overwrite the URL array
+        tmp_path = project_json_path.with_suffix('.json.tmp')
+        tmp_path.write_text(json.dumps(existing, indent=4), encoding='utf-8')
+        tmp_path.replace(project_json_path)                               # <-- Atomic rename
+        report.add_step(label, True, f'Set {len(model_urls)} model URL(s) in local project.json.')
+    except Exception as exc:
+        report.add_step(label, False, f'Local model URL patch failed: {exc}')
+
+
+def na_merge_model_urls_in_r2_project_json(s3_client, bucket: str, r2_key: str, model_urls: List[str], report: SyncReport):
+    """Download project.json from R2, patch valeVision_ModelUrls, re-upload."""
+    label = 'Merge Model URLs into R2 project.json'
+    if not model_urls:
+        report.add_step(label, False, 'No model URLs to write — skipped.')
+        return
+    try:
+        response = s3_client.get_object(Bucket=bucket, Key=r2_key)
+        existing = json.loads(response['Body'].read().decode('utf-8'))
+        existing['valeVision_ModelUrls'] = model_urls                     # <-- Patch / overwrite the URL array
+        merged_bytes = json.dumps(existing, indent=4).encode('utf-8')
+        s3_client.put_object(
+            Bucket      = bucket,
+            Key         = r2_key,
+            Body        = merged_bytes,
+            ContentType = 'application/json'
+        )
+        report.add_step(label, True, f'Set {len(model_urls)} model URL(s) in R2 project.json.')
+    except Exception as exc:
+        report.add_step(label, False, f'R2 model URL patch failed: {exc}')
+
 # endregion -------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -665,7 +731,7 @@ def na_ensure_wcp_project_scaffold(project_folder: str, web_folder: str, year: s
 # -----------------------------------------------------------------------------
 
 def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
-    """Full sync: images -> rebuild image list -> thumbnails -> R2 upload -> camera merge."""
+    """Full sync: images -> rebuild image list -> thumbnails -> R2 upload -> camera merge -> model URL patch."""
     na_clone_images_to_wcp(local_root, wcp_dir, report)
     na_update_project_json_images(wcp_dir, report)            # <-- Keep project.json images in step with cloned files
     na_generate_thumbnails(year, project_folder, report)
@@ -677,12 +743,22 @@ def na_sync_all(project_folder: str, year: str, local_root: Path, wcp_dir: Path,
     else:
         bucket    = creds.get('R2_BUCKET_NAME', '')
         full_year = f"20{year}" if len(year) == 2 else year
-        r2_prefix = f"{R2_BASE_PREFIX}/{full_year}/{project_folder}"
+        web_folder = na_derive_web_folder_name(project_folder)        # <-- Web folder name (Whitecardopedia/R2 key segment)
+        r2_prefix = f"{R2_BASE_PREFIX}/{full_year}/{web_folder}"
 
         na_upload_folder_to_r2(s3, bucket, wcp_dir, r2_prefix, ['.png', '.jpg', '.webp'], report, 'Upload Images to R2')
         na_purge_stale_r2_images(s3, bucket, r2_prefix, na_collect_local_image_names(wcp_dir), report)  # <-- Remove superseded images/thumbnails
         na_upload_project_json_to_r2(s3, bucket, wcp_dir / PROJECT_JSON_FILENAME, r2_prefix, report)
         na_upload_glbs_to_r2(s3, bucket, na_resolve_local_glb_dir(local_root), r2_prefix, report)  # <-- Mirror fresh GLBs to R2
+
+        # MODEL URLS | Rebuild valeVision_ModelUrls after every GLB upload so ValeVision3D
+        # can always load the model (was only written on first scaffold, never on re-sync).
+        model_urls = na_build_model_urls_from_glb_dir(na_resolve_local_glb_dir(local_root), full_year, web_folder)
+        if model_urls:
+            r2_project_key = f"{r2_prefix}/{PROJECT_JSON_FILENAME}"
+            na_merge_model_urls_into_project_json(wcp_dir / PROJECT_JSON_FILENAME, model_urls, report)
+            na_upload_project_json_to_r2(s3, bucket, wcp_dir / PROJECT_JSON_FILENAME, r2_prefix, report)
+            na_merge_model_urls_in_r2_project_json(s3, bucket, r2_project_key, model_urls, report)
 
         camera_data = na_read_camera_data_from_project_data(local_root)
         if camera_data:
@@ -711,7 +787,8 @@ def na_sync_images(project_folder: str, year: str, local_root: Path, wcp_dir: Pa
 
 def na_sync_glb(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):
     """GLB-only sync: upload the freshly-exported GLBs from the local GLB folder
-    to R2 (with stale purge). Used by the 'Update GLB Models' button."""
+    to R2 (with stale purge) then patch valeVision_ModelUrls in project.json.
+    Used by the 'Update GLB Models' button."""
     glb_dir = na_resolve_local_glb_dir(local_root)
 
     creds = na_load_r2_credentials()
@@ -720,10 +797,19 @@ def na_sync_glb(project_folder: str, year: str, local_root: Path, wcp_dir: Path,
         report.add_step('R2 Upload', False, 'boto3 not available or credentials missing.')
         return
 
-    bucket    = creds.get('R2_BUCKET_NAME', '')
-    full_year = f"20{year}" if len(year) == 2 else year
-    r2_prefix = f"{R2_BASE_PREFIX}/{full_year}/{project_folder}"
+    bucket     = creds.get('R2_BUCKET_NAME', '')
+    full_year  = f"20{year}" if len(year) == 2 else year
+    web_folder = na_derive_web_folder_name(project_folder)              # <-- Web folder name (Whitecardopedia/R2 key segment)
+    r2_prefix  = f"{R2_BASE_PREFIX}/{full_year}/{web_folder}"
     na_upload_glbs_to_r2(s3, bucket, glb_dir, r2_prefix, report)
+
+    # MODEL URLS | Patch valeVision_ModelUrls so ValeVision3D immediately reflects the new GLB set
+    model_urls = na_build_model_urls_from_glb_dir(glb_dir, full_year, web_folder)
+    if model_urls:
+        r2_project_key = f"{r2_prefix}/{PROJECT_JSON_FILENAME}"
+        na_merge_model_urls_into_project_json(wcp_dir / PROJECT_JSON_FILENAME, model_urls, report)
+        na_upload_project_json_to_r2(s3, bucket, wcp_dir / PROJECT_JSON_FILENAME, r2_prefix, report)
+        na_merge_model_urls_in_r2_project_json(s3, bucket, r2_project_key, model_urls, report)
 
 
 def na_sync_cameras(project_folder: str, year: str, local_root: Path, wcp_dir: Path, report: SyncReport):

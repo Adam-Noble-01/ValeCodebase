@@ -19,6 +19,25 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.7 - 26-Jun-2026 - Fix: ValeVision3D Badge Stale Index + Missing Model URLs
+
+### Overview
+Two separate bugs prevented the ValeVision3D badge from appearing after a sync and the 3D model from loading after clicking it.
+
+**Bug 1 — Stale master index in open sessions:** `na_load_master_index()` in `Na__AppData__ProjectLoader.js` was fetching the R2 index once per session with no cache-busting. If the app was already open when a sync ran and updated `hasGlb_R2` from `false` to `true`, the old value remained in memory for the lifetime of the tab. Fix: added `?t=${Date.now()}` + `cache: 'no-store'` to the R2 primary URL fetch, consistent with how `loadMasterConfig` and the build manifest are already fetched.
+
+**Bug 2 — `valeVision_ModelUrls` never patched on re-sync:** `valeVision_ModelUrls` was only written into `project.json` once, during the first-sync scaffold (`na_ensure_wcp_project_scaffold`). Every subsequent `na_sync_all` / `na_sync_glb` uploaded the GLBs to R2 and set `hasGlb_R2: true` in the master index, but never updated the model URL array in `project.json` — so ValeVision3D could see the badge but had no URLs to load. Fix: added three new helpers (`na_build_model_urls_from_glb_dir`, `na_merge_model_urls_into_project_json`, `na_merge_model_urls_in_r2_project_json`) that rebuild and patch the URL array after every GLB upload, mirroring the pattern already used for camera data.
+
+### Changes
+- **`Na__AppData__ProjectLoader.js`** — cache-bust master index fetch (v0.2.5).
+- **`AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`** — three new helpers + wired into `na_sync_all` and `na_sync_glb` (v1.2.0).
+
+### Files Changed
+- `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js`
+- `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`
+
+---
+
 ## Whitecardopedia v0.6.6 - 26-Jun-2026 - Fix: Designer & Artist Dropdown Filter (PWA Cache Bust)
 
 ### Overview

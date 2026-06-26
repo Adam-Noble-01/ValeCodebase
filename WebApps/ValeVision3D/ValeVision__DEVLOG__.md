@@ -2,6 +2,28 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.5 - 26-Jun-2026 - Pipeline Fix: valeVision_ModelUrls Now Always Populated
+
+### Overview
+ValeVision3D itself is unchanged. This entry documents the upstream pipeline fix (Whitecardopedia v0.6.7) that resolves the root cause of 3D models failing to load for projects synced before today.
+
+### Root Cause
+`valeVision_ModelUrls` in `project.json` was only written once — during the very first Whitecardopedia project scaffold. Every subsequent sync uploaded GLBs to R2 and set `hasGlb_R2: true` in the master index (making the badge visible) but never refreshed the model URL array. ValeVision3D had no URLs to hand to the GLB loader, so the viewer opened to an empty scene.
+
+A second bug meant the master index was fetched once per browser session with no cache-busting, so `hasGlb_R2` changes made by a mid-session sync were invisible until a hard refresh — masking the problem further.
+
+### What Changed (upstream — Whitecardopedia v0.6.7)
+- **`AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` (v1.2.0)** — after every GLB upload (`na_sync_all`, `na_sync_glb`), the model URL array is now rebuilt from the local GLB sync folder and patched into both the local and R2 `project.json`, exactly mirroring the camera-data merge pattern.
+- **`Na__AppData__ProjectLoader.js` (v0.2.5)** — master index fetch is now cache-busted (`?t=<timestamp>` + `cache: 'no-store'`), so `hasGlb_R2` changes appear in the same session without a hard refresh.
+
+### Action for Existing Projects
+Any project that has GLBs on R2 but was last synced before this fix (i.e. `valeVision_ModelUrls` is absent from `project.json`) will start loading correctly after a single re-sync from the ValeVision Cloud Sync plugin (any action — all, glb, or cameras).
+
+### Cross-reference
+- **Whitecardopedia v0.6.7** — full fix details and file changes.
+- **ValeVision Cloud Sync v0.2.2** — auto-init of `00__ProjectData/` for old projects (prerequisite for camera capture on legacy models).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.4 - 26-Jun-2026 - Purge App Cache Button (Tools & Settings → App Settings)
 
 ### Overview

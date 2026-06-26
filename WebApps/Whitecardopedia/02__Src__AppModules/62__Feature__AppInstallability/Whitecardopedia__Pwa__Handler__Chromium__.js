@@ -52,7 +52,7 @@
             variant              : 'bar',                                                                                           // <-- Compact bar layout
             iconUrl              : iconUrl,
             title                : 'Install ValeVision 3D',
-            body                 : 'Pin the Vale review app to your home screen or start menu for a faster, app-like experience.',
+            body                 : 'For the best performance, visual fidelity, and app experience, please install our app.',
             primaryActionLabel   : 'Install',
             secondaryActionLabel : 'Not now',
             onPrimary            : Whitecardopedia__Pwa__Handler__Chromium__TriggerNativePrompt,

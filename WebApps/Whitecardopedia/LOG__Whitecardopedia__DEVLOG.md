@@ -19,6 +19,24 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.6 - 26-Jun-2026 - Fix: Designer & Artist Dropdown Filter (PWA Cache Bust)
+
+### Overview
+Fixed the designer and concept artist filter dropdowns not working on the live site. The filter UI and logic (`FilterControls.jsx`, updated `Na__Feature__ProjectGallery__Main.jsx`, `Na__AppData__ProjectLoader.js`) had been pushed to GitHub in v0.6.3/v0.6.2, but the PWA service worker was serving all returning users stale cached JavaScript from the `wpwa-shell-2026-06-25-1` bucket. Bumping `PWA_SW_VERSION_TOKEN` to `2026-06-26-1` in both service worker files forces a full shell cache eviction and fresh asset delivery on next visit. The underlying project data (`productionData.designer`) was correct on R2 throughout — this was a client-side caching issue only.
+
+### Root Cause
+`live_sw.js` (the deployed service worker entry point at the WebApps root) was at token `2026-06-25-1`. The canonical logic file `Whitecardopedia__Pwa__ServiceWorker__Logic__.js` had already been bumped to `2026-06-25-2` for a prior R2-first loader change, but `live_sw.js` was never updated to match. Because `live_sw.js` is the file the browser actually registers, the version the browser saw never changed — no new SW was installed and the old shell cache persisted for all returning users.
+
+### Changes
+- **`WebApps/live_sw.js`** — `PWA_SW_VERSION_TOKEN` `2026-06-25-1` → `2026-06-26-1`; dev log added.
+- **`Whitecardopedia__Pwa__ServiceWorker__Logic__.js`** — `PWA_SW_VERSION_TOKEN` `2026-06-25-2` → `2026-06-26-1`; dev log entry added explaining the designer filter cache bust.
+
+### Files Changed
+- `WebApps/live_sw.js`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+
+---
+
 ## Whitecardopedia v0.6.5 - 26-Jun-2026 - Purge App Cache Button
 
 ### Overview

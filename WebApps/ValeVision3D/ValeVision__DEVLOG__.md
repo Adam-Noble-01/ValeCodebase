@@ -2,6 +2,25 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.4 - 26-Jun-2026 - Purge App Cache Button (Tools & Settings → App Settings)
+
+### Overview
+Added a **Purge App Cache** button to the Tools & Settings menu, nested inside a new **App Settings** submenu section at the bottom. Uses the same brutal full-reset logic as Whitecardopedia (shared PWA registrar) — clears all Cache Storage, unregisters the service worker, wipes localStorage/sessionStorage/IndexedDB — while preserving the user's email auth token. No more hunting through DevTools to manually clear stale assets.
+
+### Changes
+- **App Settings submenu** — `index.html`: new `<li>` at the bottom of `#naToolsMenu` using the standard `na-dropdown-menu__button--has-submenu` pattern with `Icon__ToolsMenu__MainMenuIcon__540p__.png`. Expand/collapse follows the existing `is-open` CSS class convention. Contains a dark-red "Purge App Cache" action button (`#naPurgeAppCacheAction`).
+- **Wiring module** — `Na__UiFeature__PurgeAppCache__Button.js` (new, `70__System__DevTools/`): `Na__UiFeature__InitializePurgeAppCacheButton()` wires both the App Settings toggle and the Purge action. Click → `confirm()` guard → `window.Whitecardopedia__Pwa__ServiceWorker__Registrar.purgeAppCache()`. Imported and initialised in `index.html` alongside `Na__Feature__FullScreenMode__Initialize`.
+- **Styles** — `Na__UiFeature__Styles__DropdownAndToast__.css`: `.na-dropdown-menu__action--danger` modifier (muted dark red background).
+
+### Cross-reference
+- **Whitecardopedia v0.6.5** — shared `PurgeAppCacheAndReload()` function lives in the PWA Registrar (SSOT); `PWA_PRESERVE_LOCALSTORAGE_KEYS` preserves both WCP and VV3D auth tokens.
+
+### Files Changed
+- `index.html`
+- `02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js` (new)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.3 - 26-Jun-2026 - R2-First Dev Menu Saves + Fog Dev UI Sync Fix
 
 ### Overview

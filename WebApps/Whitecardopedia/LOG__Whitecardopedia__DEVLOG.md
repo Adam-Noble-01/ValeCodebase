@@ -19,7 +19,31 @@
 
 # -----------------------------------------------------------------------------
 
-## Whitecardopedia v0.7.0 - 26-Jun-2026 - R2-First Localhost Project Data Saves (Editor API Worker)
+## Whitecardopedia v0.6.5 - 26-Jun-2026 - Purge App Cache Button
+
+### Overview
+Added a one-click **Purge App Cache** button to the Whitecardopedia hamburger menu. Performs a brutal full reset of all client-side caches so the app loads as if it has never been opened — while preserving the user's saved login token. Eliminates the need to manually clear caches in DevTools when troubleshooting stale assets.
+
+### Changes
+- **Shared PWA Registrar (v1.2.0)** — `Whitecardopedia__Pwa__ServiceWorker__Registrar__.js`: added `PWA_PRESERVE_LOCALSTORAGE_KEYS` constant (single source of truth for auth keys to survive a purge) and new `PurgeAppCacheAndReload()` function. Clears all Cache Storage buckets, unregisters all service workers, wipes `localStorage`/`sessionStorage`, and best-effort deletes all IndexedDB databases — then restores preserved auth keys and hard-reloads. Exposed on the global API as `window.Whitecardopedia__Pwa__ServiceWorker__Registrar.purgeAppCache()`.
+- **Hamburger menu** — `Na__Feature__ProjectGallery__HamburgerMenu.jsx`: new `onPurgeCacheClick` prop and third menu item "Purge App Cache" with `.hamburger-menu__item--danger` styling (muted red on hover).
+- **Gallery wiring** — `Na__Feature__ProjectGallery__Main.jsx`: `onPurgeCacheClick` threaded through to `<HamburgerMenu>`.
+- **App handler** — `Na__AppCore__WhitecardopediaApp.jsx`: `handlePurgeCache` shows a `confirm()` guard then calls `registrar.purgeAppCache()`. Passed to `<ProjectGallery>`.
+- **Styles** — `Na__UiFeature__Styles__Tools__.css`: `.hamburger-menu__item--danger` modifier (muted red text, soft red hover/active states).
+
+### Cross-reference
+- **ValeVision3D v2.9.4** — same purge function exposed in the Tools & Settings → App Settings submenu.
+
+### Files Changed
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js`
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__HamburgerMenu.jsx`
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx`
+- `02__Src__AppModules/02__AppCore/Na__AppCore__WhitecardopediaApp.jsx`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Tools__.css`
+
+---
+
+## Whitecardopedia v0.6.4 - 26-Jun-2026 - R2-First Localhost Project Data Saves (Editor API Worker)
 
 ### Overview
 Localhost project editing and ValeVision3D Dev menu saves now follow an **R2-first, local-mirror-second** contract: `project.json` changes go live on the CDN without a GitHub Pages push. A new Cloudflare Worker (`whitecardopedia-editor-api`) is the write path to R2; Flask remains the local disk mirror and serves Worker URL + API key to the browser at runtime. Phase 1 (R2) must succeed; Phase 2 (Flask mirror) is best-effort.

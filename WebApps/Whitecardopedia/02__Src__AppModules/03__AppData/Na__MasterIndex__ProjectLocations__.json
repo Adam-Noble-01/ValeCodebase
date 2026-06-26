@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "25-Jun-2026 at 18:29",
+    "generatedAt": "26-Jun-2026 at 09:38",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1737,8 +1737,8 @@
             "hasImages_R2": true,
             "hasThumbnails_R2": true,
             "hasGlb_R2": true,
-            "imageCount": 1,
-            "lastSynced": "25-Jun-2026 at 18:29"
+            "imageCount": 3,
+            "lastSynced": "26-Jun-2026 at 09:38"
         }
     ]
 }

@@ -2,6 +2,39 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.2 - 26-Jun-2026 - Match SketchUp Scene-First Default Camera Position (Scene 1 First Camera Position)
+
+### Overview
+ValeVision3D now sets the boot camera from SketchUp scene data rather than the manually-saved `Camera__DefaultPosition` block. When a project's `project.json` contains `ValeVison3D__SketchUpCameraData.scenes` or explicit `PresentationMode__SavedCameraScenes`, the first scene in the list becomes the authoritative launch camera — position, rotation, FOV, and orbit target are all taken from the SketchUp export, with no manual dev-tool override required.
+
+### Changes
+
+**SketchUp-first boot camera**
+- `Na__SketchUp__AnimationScene__DataBridge__` v1.1.0 — new `Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene(projectData)` export. Returns `{ scene, source }` for the first applicable scene (explicit PresentationMode default → SketchUp `scenes[0]`), or `null` when no scene data exists. Supports single-scene projects: the `ConvertBlock` ≥2 carousel gate is unchanged; `ConvertScene(block.scenes[0])` is called directly for 1-scene projects so the launch camera is always set from SketchUp.
+
+**Deferred carousel camera apply**
+- Both `na-presentation-mode-scenes-loaded` dispatch sites now include `skipCameraApply: true`. The carousel listener's existing guard (`detail.skipCameraApply === true`) means the UI registers scene state (card list, active-scene highlight) without jumping the camera prematurely.
+- Camera apply moved to a single authoritative point in `Na__AppFlow__LoadingSequence` after the orbit cube resolves.
+
+**Loading sequence camera block**
+- `Na__AppFlow__LoadingSequence` — `Na__Saved__ProjectData` hoisted alongside the existing `Na__Saved__ProjectCameraConfig`. Post-orbit-cube camera block replaced with a scene-first branch:
+  - If `ResolveDefaultLaunchScene` returns a scene → `ApplySceneCameraState` snap + `CaptureStartState(…, null)` (Reset View restores snapshot only; no `Camera__DefaultPosition` re-apply).
+  - Else → existing `Camera__DefaultPosition` / `ApplyCameraConfig` path unchanged.
+
+**Contract change — SaveCameraSettings**
+- `Na__UiFeature__SaveCameraSettings` still writes `Camera__DefaultPosition` to Flask for backward-compatible fallback. On projects with SketchUp scene data, that key is superseded on load. To change the launch camera, update the SketchUp scene and re-sync rather than using the Save Camera dev tool.
+
+### Verification
+- **Warwick** (`2026/63770__Warwick`, 4 SketchUp scenes): launch camera matches `IMG01__3dView__ViewOption-01__MainView__`; carousel shows 4 scenes; Reset View returns to IMG01.
+- **Single-scene project**: correct launch camera; no carousel.
+- **No SketchUp scenes project**: `Camera__DefaultPosition` path unchanged.
+- ElevationView, ImageExport, Walk/Fly modes unaffected (confirmed clean audit).
+
+### Files Changed
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.1 - 25-Jun-2026 - Orbit Helper Cube Visibility Regression Fix
 
 ### Overview

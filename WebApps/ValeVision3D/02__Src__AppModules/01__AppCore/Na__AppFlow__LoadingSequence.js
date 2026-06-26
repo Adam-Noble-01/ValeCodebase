@@ -244,6 +244,14 @@
     } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Presentation Mode Camera Scene Transition (instant scene apply)
+    // @delegate: ../21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js
+    // ------------------------------------------------------------
+    import {
+        Na__PresentationMode__Camera__ApplySceneCameraState
+    } from '../21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Camera Project Start State (Reset View canonical state)
     // ------------------------------------------------------------
     import { Na__CameraStartState__CaptureStartState } from '../10__NavigationAndCameras/Na__Camera__ProjectStartState.js';
@@ -271,7 +279,8 @@
     // @delegate: ../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js
     // ------------------------------------------------------------
     import {
-        Na__SketchUp__AnimationScene__TryBuildScenesFromSketchUp
+        Na__SketchUp__AnimationScene__TryBuildScenesFromSketchUp,
+        Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene
     } from '../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js';
     // ------------------------------------------------------------
 
@@ -530,6 +539,7 @@
         let modelUrls = [...Na__ModelDefaults__ModelUrls];                   // <-- Start with config defaults
         let Na__Saved__ProjectCameraConfig = null;                           // <-- Hoisted for post-OrbitCube re-apply
         let Na__Saved__ProjectOrbitTarget  = null;                           // <-- Hoisted for post-OrbitCube re-apply
+        let Na__Saved__ProjectData         = null;                           // <-- Hoisted for post-OrbitCube scene-first camera apply
 
         // RESOLVE PROJECT-SPECIFIC MODEL URLS
         const projectCode = Na__AppUtils__GetProjectCodeFromUrl();
@@ -540,7 +550,8 @@
                 await Na__AppUtils__InitMasterIndex();                        // <-- Ensure index maps are ready for year/asset-home resolution
                 const projectData = await Na__AppUtils__FetchProjectJson(projectCode, Na__Config__Resilience); // <-- Resilient + memoised
 
-                // STORE CAMERA CONFIG FROM PROJECT (supports both key formats)
+                // STORE PROJECT DATA AND CAMERA CONFIG (supports both key formats)
+                Na__Saved__ProjectData         = projectData;                // <-- Hoisted for ResolveDefaultLaunchScene after orbit cube loads
                 Na__Saved__ProjectCameraConfig = projectData.Camera__DefaultPosition
                     || projectData.valeVision_Camera__DefaultPosition
                     || null;
@@ -563,11 +574,15 @@
                 }
 
                 // DETECT PER-PROJECT PRESENTATION MODE SAVED SCENES
+                // skipCameraApply: true — carousel registers UI state without
+                // jumping the camera; boot camera is applied once below after
+                // the orbit cube resolves (see ResolveDefaultLaunchScene path).
                 if (Na__PresentationMode__ProjectJson__HasValidSavedScenes(projectData)) {
                     window.dispatchEvent(new CustomEvent('na-presentation-mode-scenes-loaded', {
                         detail: {
-                            sceneConfig : Na__PresentationMode__ProjectJson__GetSavedCameraScenes(projectData),
-                            projectCode : projectCode
+                            sceneConfig     : Na__PresentationMode__ProjectJson__GetSavedCameraScenes(projectData),
+                            projectCode     : projectCode,
+                            skipCameraApply : true                           // <-- Defer camera apply to post-orbit-cube block below
                         }
                     }));
                 } else {
@@ -751,29 +766,50 @@
             console.warn('[ValeVision3D] No saved orbit target and no OrbitHelperCube center resolved. Keeping current controls.target.');
         }
 
-        // RE-APPLY SAVED CAMERA (without legacy Camera__DefaultTarget override)
-        if (Na__Saved__ProjectCameraConfig) {
-            const Na__CameraConfigWithoutLegacyTarget = { ...Na__Saved__ProjectCameraConfig };
-            if (Na__CameraConfigWithoutLegacyTarget.Camera__DefaultTarget) {
-                delete Na__CameraConfigWithoutLegacyTarget.Camera__DefaultTarget;
+        // SCENE-FIRST CAMERA APPLY — SketchUp or explicit scenes override Camera__DefaultPosition.
+        // ApplySceneCameraState sets position, rotation, FOV, and controls.target from the scene
+        // object; any orbit-cube target set above is overridden by the scene's SketchUp-derived
+        // target, which is correct. Falls back to Camera__DefaultPosition when no scene exists.
+        // @delegate: ../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js
+        const Na__LaunchScene = Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene(Na__Saved__ProjectData);
+
+        if (Na__LaunchScene?.scene) {
+            Na__PresentationMode__Camera__ApplySceneCameraState(
+                Na__Camera__Main,                                            // <-- Snap to SketchUp / explicit first-scene position
+                Na__Controls__Orbit,                                         // <-- Sets controls.target from scene orbit target
+                Na__LaunchScene.scene
+            );
+            // CAPTURE CANONICAL RESET STATE (scene-sourced; null config means ResetView restores snapshot only)
+            // @delegate: ../10__NavigationAndCameras/Na__Camera__ProjectStartState.js
+            Na__CameraStartState__CaptureStartState(
+                Na__Camera__Main,                                            // <-- Camera at first-scene position
+                Na__Controls__Orbit,                                         // <-- Controls with scene orbit target
+                null                                                         // <-- No Camera__DefaultPosition re-apply on Reset View
+            );
+        } else {
+            // LEGACY CAMERA__DEFAULTPOSITION PATH (no scene data in this project)
+            if (Na__Saved__ProjectCameraConfig) {
+                const Na__CameraConfigWithoutLegacyTarget = { ...Na__Saved__ProjectCameraConfig };
+                if (Na__CameraConfigWithoutLegacyTarget.Camera__DefaultTarget) {
+                    delete Na__CameraConfigWithoutLegacyTarget.Camera__DefaultTarget;
+                }
+                Na__UiFeature__ApplyCameraConfig(
+                    Na__Camera__Main,                                        // <-- Re-apply saved camera position + FOV
+                    Na__Controls__Orbit,                                     // <-- Re-apply with correct orbit target
+                    Na__CameraConfigWithoutLegacyTarget
+                );
             }
-            Na__UiFeature__ApplyCameraConfig(
-                Na__Camera__Main,                                            // <-- Re-apply saved camera position + FOV
-                Na__Controls__Orbit,                                         // <-- Re-apply with correct orbit target
-                Na__CameraConfigWithoutLegacyTarget
+            if (Na__FinalOrbitTargetApplied || Na__Saved__ProjectCameraConfig) {
+                Na__Controls__Orbit.update();                                // <-- Finalize controls with restored state
+            }
+            // CAPTURE CANONICAL RESET STATE (camera + orbit target from Camera__DefaultPosition)
+            // @delegate: ../10__NavigationAndCameras/Na__Camera__ProjectStartState.js
+            Na__CameraStartState__CaptureStartState(
+                Na__Camera__Main,                                            // <-- Camera in its project start state
+                Na__Controls__Orbit,                                         // <-- Controls with resolved orbit target
+                Na__Saved__ProjectCameraConfig                               // <-- Raw project.json camera block (null when absent)
             );
         }
-        if (Na__FinalOrbitTargetApplied || Na__Saved__ProjectCameraConfig) {
-            Na__Controls__Orbit.update();                                    // <-- Finalize controls with restored state
-        }
-
-        // CAPTURE CANONICAL RESET STATE (camera + orbit target exactly as loaded from project.json)
-        // @delegate: ../10__NavigationAndCameras/Na__Camera__ProjectStartState.js
-        Na__CameraStartState__CaptureStartState(
-            Na__Camera__Main,                                                // <-- Camera in its project start state
-            Na__Controls__Orbit,                                             // <-- Controls with resolved orbit target
-            Na__Saved__ProjectCameraConfig                                   // <-- Raw project.json camera block (null when absent)
-        );
 
         // LOAD ALL MODELS VIA MULTI-MODEL LOADER
         try {

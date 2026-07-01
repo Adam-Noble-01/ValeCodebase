@@ -2318,6 +2318,14 @@
           "endTime": "09:45",
           "title": "Survey |  MayflowerPlace - Package & Send",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1782895619039",
+          "date": "2026-07-01",
+          "startTime": "10:00",
+          "endTime": "12:00",
+          "title": "Whitecard |  Flynn",
+          "color": "na-shift-color-amber"
         }
       ]
     }

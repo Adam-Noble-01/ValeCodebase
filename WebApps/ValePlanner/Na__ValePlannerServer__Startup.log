@@ -11184,3 +11184,7 @@ ConnectionAbortedError: [WinError 10053] An established connection was aborted b
 [REQUEST] 01-Jul-2026 - 09:32 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
 [REQUEST] 01-Jul-2026 - 09:32 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
 [REQUEST] 01-Jul-2026 - 09:32 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 01-Jul-2026 - 09:46 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 01-Jul-2026 - 09:47 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 01-Jul-2026 - 09:47 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -
+[REQUEST] 01-Jul-2026 - 09:47 | 127.0.0.1 | "PUT /api/data/workers HTTP/1.1" 200 -

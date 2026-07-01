@@ -1571,61 +1571,71 @@
  * ----------------------------------------------------------------------------- */
 
     /*
-     * RESPONSIVE DESIGN | 3-Level Layout System
+     * RESPONSIVE DESIGN | Layout Tiers
      * ------------------------------------------------------------
-     * Whitecardopedia uses a three-tier responsive layout:
+     * Whitecardopedia adapts the gallery toolbar across these tiers:
      *
-     * 1. Desktop (> 1024px)
-     *    Primary target — full toolbar on one row; search grows between tabs and sort.
+     * 1. Wide Desktop (> 1300px)
+     *    Full toolbar on one row; the "Project Filters" drawer opens inline
+     *    (animated to 720px) while the search box stays comfortably usable.
      *
-     * 2. Tablet Portrait (769px–1024px)
-     *    iPad portrait and similar widths — search bar width is capped so sort stays
-     *    inline on the same row (no awkward line break after the search field).
+     * 2. Narrow Desktop / Tablet (769px–1300px)
+     *    Not enough room for the open drawer inline, so the toolbar wraps: the
+     *    search box grows to fill row 1 and the whole filter panel drops onto its
+     *    own full-width row, where the dropdowns wrap and stretch (no overflow).
      *
      * 3. Mobile (≤ 768px)
-     *    Least priority — tabs on row 1; search and sort on row 2 at 85% scale.
-     *    Tablet landscape typically falls in the Desktop tier when width exceeds 1024px.
+     *    Tabs on row 1; search on row 2 at 85% scale; the filter panel on its own
+     *    row with dropdowns stacking full width. Builds on the ≤1300px reflow.
      * ------------------------------------------------------------
      */
 
-    /* RESPONSIVE | Filter Drawer Reflow (≤1200px — narrow desktop, tablet and mobile) */
+    /* RESPONSIVE | Filter Drawer Reflow (≤1300px — narrow desktop, tablet and mobile) */
     /* ------------------------------------------------------------ */
     /*
-     * Above 1200px the drawer keeps its inline animated 720px behaviour.
-     * At and below 1200px the open drawer can no longer fit inline, so the
-     * whole filter panel drops onto its own full-width row and the dropdowns
-     * wrap and stretch — guaranteeing no horizontal overflow at any width.
-     * Drawer-scoped selectors are used so they override the tablet/mobile
+     * Above 1300px the drawer keeps its inline animated 720px behaviour (there is
+     * enough room for the open drawer plus a usable search box on one row).
+     * At and below 1300px the open drawer can no longer fit inline without
+     * crushing the search box, so the whole filter panel drops onto its own
+     * full-width row and the dropdowns wrap and stretch — guaranteeing no
+     * horizontal overflow and a usable search box at every width.
+     * Drawer-scoped selectors are used so they override the mobile
      * .project-gallery__sort-* rules regardless of source order.
      */
-    @media (max-width: 1200px) {
+    @media (max-width: 1300px) {
 
         .project-gallery__controls-left {
-            flex-wrap                      : wrap;                          /* <-- Allow the filter panel to drop onto its own row */
+            flex-wrap                      : wrap;                          /* <-- Allow the drawer to break onto its own row */
         }
 
         .filter-panel {
-            flex                           : 1 1 100%;                      /* <-- Filter panel spans the full toolbar width */
-            flex-wrap                      : wrap;                          /* <-- Let the drawer wrap below the toggle button */
-            order                          : 6;                             /* <-- Sit after hamburger, tabs, search and sort */
+            display                        : contents;                     /* <-- Dissolve the wrapper so the toggle and drawer become direct toolbar flex items */
+        }
+
+        .filter-panel__toggle {
+            order                          : 5;                             /* <-- Keep the funnel toggle inline on row 1, right after the search box */
         }
 
         .filter-panel__drawer {
+            order                          : 6;                             /* <-- Sit immediately after the toggle */
             flex-wrap                      : wrap;                          /* <-- Dropdowns wrap instead of overflowing */
             row-gap                        : var(--Vale_Spacing_Small);     /* <-- Vertical gap between wrapped dropdown rows */
+            max-height                     : 0;                             /* <-- Collapse height when closed so the wrapped dropdowns never stretch the toolbar row */
+            align-self                     : center;                        /* <-- Stay centred; never stretch the row while collapsed */
         }
 
         .filter-panel__drawer--open {
-            flex-basis                     : 100%;                          /* <-- Drawer drops onto its own line below the toggle */
+            flex-basis                     : 100%;                          /* <-- Break the open drawer onto its own full-width row below the toolbar */
             max-width                      : 100%;                          /* <-- Never cap the open drawer at a fixed 720px */
+            width                          : 100%;                          /* <-- Fill the full toolbar width */
+            max-height                     : none;                          /* <-- Release the height clamp so the open drawer shows in full */
             padding-left                   : 0;                             /* <-- No leading indent when stacked full width */
-            margin-top                     : var(--Vale_Spacing_Small);     /* <-- Breathing space below the toggle button */
         }
 
         .filter-panel__drawer .project-gallery__sort-control {
             flex                           : 1 1 220px;                     /* <-- Each dropdown grows/shrinks and wraps as needed */
             min-width                      : 0;                             /* <-- Permit shrink below intrinsic content width */
-            margin-left                    : 0;                             /* <-- Cancel the tablet margin-left:auto push */
+            margin-left                    : 0;                             /* <-- Cancel any inherited margin-left push */
         }
 
         .filter-panel__drawer .project-gallery__sort-select {
@@ -1636,26 +1646,11 @@
     /* ------------------------------------------------------------ */
 
 
-    /* RESPONSIVE | Tablet Portrait Adjustments (769px–1024px) */
-    /* ------------------------------------------------------------ */
-    @media (max-width: 1024px) and (min-width: 769px) {
-
-        .project-gallery__controls-left {
-            flex-wrap                      : nowrap;                       /* <-- Keep toolbar on one row */
-            width                          : 100%;                         /* <-- Full width for inline layout */
-        }
-
-        .project-gallery__search-box {
-            min-width                      : 180px;                        /* <-- Remove desktop 600px minimum */
-            max-width                      : 300px;                        /* <-- Cap search length for portrait tablets */
-            flex                           : 0 1 300px;                    /* <-- Allow shrink but prefer capped width */
-        }
-
-        .project-gallery__sort-control {
-            margin-left                    : auto;                         /* <-- Keep sort inline on the right */
-            flex                           : 0 0 auto;                     /* <-- Prevent sort from wrapping alone */
-        }
-    }
+    /* RESPONSIVE | Tablet Portrait (769px–1300px) is now handled by the        */
+    /* ≤1300px Filter Drawer Reflow block above: the toolbar wraps, the search  */
+    /* box grows to fill row 1, and the filter panel drops to its own row.      */
+    /* The former nowrap/search-cap tablet rules were removed because they      */
+    /* fought the reflow and left the open drawer crammed on one row.           */
     /* ------------------------------------------------------------ */
 
 

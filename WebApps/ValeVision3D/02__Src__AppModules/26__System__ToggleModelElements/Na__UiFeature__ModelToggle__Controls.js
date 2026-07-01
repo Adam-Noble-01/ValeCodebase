@@ -17,6 +17,21 @@
 // - Automatically creates buttons for any new categories added in the future
 //   (furniture, vegetation, scene context, etc.) without code changes.
 // - Integrates into the existing Tools dropdown panel in the ValeVision3D UI.
+// - Exposes Na__ModelToggle__ApplySceneLayerVisibility so Presentation Mode
+//   scene transitions can drive these same category toggles per tour scene.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 10-Feb-2026 - Version 1.0.0
+// - Initial implementation.
+//
+// 01-Jul-2026 - Version 1.1.0
+// - Added Na__ModelToggle__ApplySceneLayerVisibility (exported) so per-scene
+//   SketchUp tag/layer state (captured by the Cloud Sync plugin) can drive
+//   these category toggles automatically on scene transitions.
+// - Toggle buttons now keep a reference to their DOM element in the state map
+//   so programmatic visibility changes stay in sync with the active class.
 //
 // =============================================================================
 
@@ -128,6 +143,35 @@
     }
     // ---------------------------------------------------------------
 
+
+    // FUNCTION | Apply A Per-Scene Model Layer Visibility Map
+    // ------------------------------------------------------------
+    // layerVisibilityMap {object|null} - PresentationMode__Scene__ModelLayerVisibility
+    //   from the active scene, e.g. { "ValeVision__SiteBoundaries": false, ... }.
+    // Only categories present in the map (AND currently loaded) are changed;
+    // categories absent from the map (or not loaded in this project) are left
+    // untouched. Safe to call before any groups have loaded (no-op).
+    // ------------------------------------------------------------
+    function Na__ModelToggle__ApplySceneLayerVisibility(layerVisibilityMap) {
+        if (!layerVisibilityMap || typeof layerVisibilityMap !== 'object') return;  // <-- Guard: nothing to apply
+        if (Na__ModelToggle__StateMap.size === 0) return;                            // <-- Guard: groups not loaded yet
+
+        Object.entries(layerVisibilityMap).forEach(([categoryKey, visible]) => {
+            const state = Na__ModelToggle__StateMap.get(categoryKey);     // <-- Look up state entry
+            if (!state) return;                                          // <-- Category not loaded in this project; skip
+
+            const isVisible = Boolean(visible);
+            Na__ModelToggle__SetCategoryVisibility(categoryKey, isVisible);  // <-- Apply visibility
+
+            if (state.button) {
+                state.button.classList.toggle(Na__ModelToggle__ActiveClass, isVisible);  // <-- Keep button UI in sync
+            }
+        });
+
+        Na__RenderLoop__RequestRender();
+    }
+    // ---------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -156,7 +200,8 @@
             // REGISTER STATE
             Na__ModelToggle__StateMap.set(categoryKey, {
                 group   : group,                                         // <-- THREE.Group reference
-                visible : true                                           // <-- Default: visible
+                visible : true,                                          // <-- Default: visible
+                button  : null                                           // <-- Populated below once the button exists
             });
 
             // CREATE BUTTON ELEMENT
@@ -165,6 +210,7 @@
             button.className  = `${Na__ModelToggle__ButtonClass} ${Na__ModelToggle__ActiveClass}`;  // <-- Set classes (active by default)
             button.textContent = displayName;                            // <-- Set button label
             button.dataset.category = categoryKey;                       // <-- Store category key in data attribute
+            Na__ModelToggle__StateMap.get(categoryKey).button = button;  // <-- Keep button ref for programmatic UI sync
 
             // CLICK HANDLER | Toggle visibility and update button state
             button.addEventListener('click', () => {
@@ -227,7 +273,8 @@
     // MODULE EXPORTS | Model Toggle Controls API
     // ------------------------------------------------------------
     export {
-        Na__UiFeature__InitializeModelToggleControls
+        Na__UiFeature__InitializeModelToggleControls,
+        Na__ModelToggle__ApplySceneLayerVisibility
     };
     // ------------------------------------------------------------
 

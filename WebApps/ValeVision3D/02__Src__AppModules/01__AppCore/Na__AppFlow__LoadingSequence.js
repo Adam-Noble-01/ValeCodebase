@@ -31,6 +31,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Jul-2026 - Version 1.5.1
+// - Boot camera apply now also re-applies the launch scene's
+//   PresentationMode__Scene__ModelLayerVisibility (via
+//   Na__ModelToggle__ApplySceneLayerVisibility) right after
+//   InitializeModelToggleControls, since the toggle state map does not exist
+//   yet at the earlier ApplySceneCameraState call.
+//
 // 25-Jun-2026 - Version 1.5.0
 // - Master index: calls Na__AppUtils__InitMasterIndex early in the sequence and
 //   awaits it before FetchProjectJson so year/folderId resolution is ready.
@@ -186,7 +193,10 @@
 
     // MODULE IMPORTS | Model Toggle Controls
     // ------------------------------------------------------------
-    import { Na__UiFeature__InitializeModelToggleControls } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
+    import {
+        Na__UiFeature__InitializeModelToggleControls,
+        Na__ModelToggle__ApplySceneLayerVisibility
+    } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Door Animation System
@@ -834,6 +844,11 @@
 
             // INITIALIZE MODEL TOGGLE CONTROLS (dynamic per-category buttons)
             Na__UiFeature__InitializeModelToggleControls(Na__LoadedModelGroups);  // <-- Build toggle buttons from loaded groups
+
+            // RE-APPLY LAUNCH SCENE'S TAG-DRIVEN VISIBILITY (state map didn't exist yet when boot camera applied above)
+            if (Na__LaunchScene?.scene?.PresentationMode__Scene__ModelLayerVisibility) {
+                Na__ModelToggle__ApplySceneLayerVisibility(Na__LaunchScene.scene.PresentationMode__Scene__ModelLayerVisibility);
+            }
 
             // INITIALIZE DOOR ANIMATION (if enabled in config)
             // Token-based collection (TrueVision parity): door categories are matched

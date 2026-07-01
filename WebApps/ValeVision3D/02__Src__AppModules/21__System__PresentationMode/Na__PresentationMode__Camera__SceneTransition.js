@@ -39,6 +39,14 @@
 // 11-Jun-2026 - Version 1.0.0
 // - Initial implementation for Presentation Mode system.
 //
+// 01-Jul-2026 - Version 1.1.0
+// - ApplySceneCameraState and AnimateToScene now call
+//   Na__ModelToggle__ApplySceneLayerVisibility with the scene's
+//   PresentationMode__Scene__ModelLayerVisibility, so tag-driven model part
+//   toggles (Existing Building / Design Proposal / Site Boundaries /
+//   Landscape) switch automatically per tour scene. Applied instantly (not
+//   animated) at the start of a transition.
+//
 // =============================================================================
 
 
@@ -63,6 +71,12 @@
         Na__RenderLoop__StopActiveRender,
         Na__RenderLoop__RequestRender
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Model Toggle Controls (Per-Scene Layer Visibility)
+    // @delegate: ../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
+    // ------------------------------------------------------------
+    import { Na__ModelToggle__ApplySceneLayerVisibility } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -274,6 +288,8 @@
             controls.update();
         }
 
+        Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);  // <-- Sync tag-driven model toggles (no-op before groups load)
+
         Na__RenderLoop__RequestRender();                                                 // <-- Single frame redraw
     }
     // ------------------------------------------------------------
@@ -331,6 +347,9 @@
         // CANCEL ANY IN-FLIGHT TRANSITION FIRST
         Na__PresentationMode__Camera__CancelCurrentTransition();
         const myTransitionId = Na__PresentationMode__TransitionId;            // <-- Snapshot id for this transition
+
+        // SYNC TAG-DRIVEN MODEL TOGGLES IMMEDIATELY (not animated — an instant cut reads better than a mid-flight pop-out)
+        Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);
 
         // CAPTURE START STATE FROM LIVE CAMERA
         const startPos     = camera.position.clone();

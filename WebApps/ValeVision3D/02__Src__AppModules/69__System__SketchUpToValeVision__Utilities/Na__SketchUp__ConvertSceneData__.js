@@ -62,6 +62,12 @@
 //   generic "Scene N" label. scene_name is unchanged so image/thumbnail file
 //   matching and IMG## ordering remain intact.
 //
+// 01-Jul-2026 - Version 1.1.0
+// - ConvertScene now passes through sceneEntry.model_layer_visibility (captured
+//   by the ValeVision Cloud Sync plugin's Na__TagVisibilityCapture) as
+//   PresentationMode__Scene__ModelLayerVisibility, so scene transitions can
+//   drive Na__ModelToggle__ApplySceneLayerVisibility.
+//
 // =============================================================================
 
 
@@ -135,7 +141,8 @@
                 OrbitHelperCube__Position__PosX        : na_round(targetThree.x, 0),
                 OrbitHelperCube__Position__PosY        : na_round(targetThree.y, 0),
                 OrbitHelperCube__Position__PosZ        : na_round(targetThree.z, 0)
-            }
+            },
+            PresentationMode__Scene__ModelLayerVisibility: sceneEntry.model_layer_visibility || null  // <-- Per-scene tag on/off state (Na__ModelToggle__StateMap category keys)
         };
     }
     // ------------------------------------------------------------

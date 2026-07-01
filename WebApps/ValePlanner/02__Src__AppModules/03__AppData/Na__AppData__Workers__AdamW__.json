@@ -2323,9 +2323,17 @@
           "id": "new-1782895619039",
           "date": "2026-07-01",
           "startTime": "10:00",
-          "endTime": "12:00",
+          "endTime": "13:45",
           "title": "Whitecard |  Flynn",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1782912659765",
+          "date": "2026-07-01",
+          "startTime": "13:45",
+          "endTime": "14:30",
+          "title": "Dev |  Hotfixes",
+          "color": "na-shift-color-slate"
         }
       ]
     }

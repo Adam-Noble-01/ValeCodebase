@@ -2,6 +2,29 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.6 - 01-Jul-2026 - Per-Scene Tag-Driven Model Toggles
+
+### Overview
+The four "Model Parts List" toggles (Existing Building, Design Proposal, Site Boundaries, Landscape) now switch automatically per tour scene, driven by SketchUp tag on/off state captured by the ValeVision Cloud Sync plugin — e.g. Site Boundaries can be hidden for a shot framed inside a hedge, then restored on the next scene.
+
+### Added
+- **`Na__ModelToggle__ApplySceneLayerVisibility(layerVisibilityMap)`** (new export, `Na__UiFeature__ModelToggle__Controls.js`) — applies a per-category visibility map to the existing toggle state/buttons; unmentioned or unloaded categories are left untouched.
+- **`PresentationMode__Scene__ModelLayerVisibility`** — new field on converted SketchUp scenes (`Na__SketchUp__ConvertSceneData__ConvertScene`), sourced from the plugin's new `model_layer_visibility` per-scene field inside `ValeVison3D__SketchUpCameraData`. Also usable on hand-authored explicit `PresentationMode__SavedCameraScenes` scenes.
+
+### Changed
+- **`Na__PresentationMode__Camera__ApplySceneCameraState`** and **`Na__PresentationMode__Camera__AnimateToScene`** (`Na__PresentationMode__Camera__SceneTransition.js`) both now call `Na__ModelToggle__ApplySceneLayerVisibility` with the active scene's layer map — this is the single choke-point for boot camera, carousel card clicks, and prev/next, so no other UI code needed touching. Applied instantly (not animated) at transition start.
+- **`Na__AppFlow__LoadingSequence.js`** — re-applies the launch scene's layer visibility immediately after `InitializeModelToggleControls`, since the toggle state map does not exist yet at the earlier boot-time `ApplySceneCameraState` call.
+
+### Cross-reference
+- **ValeVision Cloud Sync v0.3.0** — captures `model_layer_visibility` per scene via the new `Na__TagVisibilityCapture` module, keyed off the shared `Na__DataLib__CoreIndex__Tags__.json` SSOT so category keys match `Na__ModelToggle__StateMap` 1:1. No Whitecardopedia/Python pipeline changes were required — it rides inside the existing `ValeVison3D__SketchUpCameraData` merge.
+
+### Files Changed
+- `02__Src__AppModules/26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__ConvertSceneData__.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.5 - 26-Jun-2026 - Pipeline Fix: valeVision_ModelUrls Now Always Populated
 
 ### Overview

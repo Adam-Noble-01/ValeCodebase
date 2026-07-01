@@ -1588,6 +1588,54 @@
      * ------------------------------------------------------------
      */
 
+    /* RESPONSIVE | Filter Drawer Reflow (≤1200px — narrow desktop, tablet and mobile) */
+    /* ------------------------------------------------------------ */
+    /*
+     * Above 1200px the drawer keeps its inline animated 720px behaviour.
+     * At and below 1200px the open drawer can no longer fit inline, so the
+     * whole filter panel drops onto its own full-width row and the dropdowns
+     * wrap and stretch — guaranteeing no horizontal overflow at any width.
+     * Drawer-scoped selectors are used so they override the tablet/mobile
+     * .project-gallery__sort-* rules regardless of source order.
+     */
+    @media (max-width: 1200px) {
+
+        .project-gallery__controls-left {
+            flex-wrap                      : wrap;                          /* <-- Allow the filter panel to drop onto its own row */
+        }
+
+        .filter-panel {
+            flex                           : 1 1 100%;                      /* <-- Filter panel spans the full toolbar width */
+            flex-wrap                      : wrap;                          /* <-- Let the drawer wrap below the toggle button */
+            order                          : 6;                             /* <-- Sit after hamburger, tabs, search and sort */
+        }
+
+        .filter-panel__drawer {
+            flex-wrap                      : wrap;                          /* <-- Dropdowns wrap instead of overflowing */
+            row-gap                        : var(--Vale_Spacing_Small);     /* <-- Vertical gap between wrapped dropdown rows */
+        }
+
+        .filter-panel__drawer--open {
+            flex-basis                     : 100%;                          /* <-- Drawer drops onto its own line below the toggle */
+            max-width                      : 100%;                          /* <-- Never cap the open drawer at a fixed 720px */
+            padding-left                   : 0;                             /* <-- No leading indent when stacked full width */
+            margin-top                     : var(--Vale_Spacing_Small);     /* <-- Breathing space below the toggle button */
+        }
+
+        .filter-panel__drawer .project-gallery__sort-control {
+            flex                           : 1 1 220px;                     /* <-- Each dropdown grows/shrinks and wraps as needed */
+            min-width                      : 0;                             /* <-- Permit shrink below intrinsic content width */
+            margin-left                    : 0;                             /* <-- Cancel the tablet margin-left:auto push */
+        }
+
+        .filter-panel__drawer .project-gallery__sort-select {
+            width                          : 100%;                          /* <-- Fill its control cell */
+            min-width                      : 0;                             /* <-- Override the desktop 200px hard minimum */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* RESPONSIVE | Tablet Portrait Adjustments (769px–1024px) */
     /* ------------------------------------------------------------ */
     @media (max-width: 1024px) and (min-width: 769px) {

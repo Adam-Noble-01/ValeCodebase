@@ -19,6 +19,30 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.8 - 01-Jul-2026 - Fix: Filter Drawer Overflow on Narrow / Older Screens
+
+### Overview
+The gallery "Project Filters" drawer looked broken on slightly narrow PC windows and in the older/narrower SketchUp embedded webview, while rendering correctly on wide Chrome screens. Two compounding causes were addressed.
+
+**Cause 1 — No responsive reflow for the open drawer:** The filter drawer is inline in a single non-wrapping toolbar row and, when open, demands a fixed `max-width: 720px` with three dropdowns each pinned at `min-width: 200px` (so it cannot shrink below ~600px). There was no responsive handling for the filter panel above 1024px (the 1025-1200px problem band) or at mobile, so on narrow widths the row overflowed instead of reflowing.
+
+**Cause 2 — Stale PWA shell cache:** `FilterPanel.jsx` and its CSS most likely shipped after `PWA_SW_VERSION_TOKEN = 2026-06-26-1` without a further bump, so older webviews were still served pre-FilterPanel CSS — which renders as browser-default fallback (visible `Artist:/Designer:/Sort by:` labels + vertically stacked dropdown groups), exactly matching the reported screenshot.
+
+### Investigation
+Two full-codebase trawls confirmed there are no inline `style` props, no runtime style mutation, no embedded/injected CSS, no runtime `--Vale_UIScale`/`:root` overrides, and no duplicate/conflicting CSS for the toolbar — every toolbar/filter selector is defined once in `Na__CoreUi__Styles__App__.css`. The symptom is purely missing/stale CSS at runtime plus the inline drawer's fixed width appetite.
+
+### Changes
+- **`Na__CoreUi__Styles__App__.css`** — new `@media (max-width: 1200px)` block: the filter panel drops onto its own full-width toolbar row (`flex: 1 1 100%; order: 6`), the drawer wraps (`flex-wrap: wrap`) and drops its 720px cap (`max-width: 100%`), and drawer-scoped `.project-gallery__sort-control` / `.project-gallery__sort-select` lose their hard `min-width` so dropdowns stretch and wrap with no horizontal overflow at any width. Wide desktop (>= 1201px) behaviour is unchanged.
+- **`Whitecardopedia__Pwa__ServiceWorker__Logic__.js`** (v1.3.0) — `PWA_SW_VERSION_TOKEN` `2026-06-26-1` → `2026-07-01-1`.
+- **`WebApps/live_sw.js`** (v1.3.0) — matching `PWA_SW_VERSION_TOKEN` bump to `2026-07-01-1` (this is the file the browser actually registers; both must match to force cache eviction).
+
+### Files Changed
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js`
+- `WebApps/live_sw.js`
+
+---
+
 ## Whitecardopedia v0.6.7 - 26-Jun-2026 - Fix: ValeVision3D Badge Stale Index + Missing Model URLs
 
 ### Overview

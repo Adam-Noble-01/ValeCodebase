@@ -29,6 +29,12 @@
 // 2026 - Version 1.0.0
 // - Initial PWA service worker with shell / thumbs / data / models cache buckets.
 //
+// 01-Jul-2026 - Version 1.3.0
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-01-1 (force shell cache eviction after
+//   the gallery filter drawer responsive reflow fix; ensures the corrected
+//   Na__CoreUi__Styles__App__.css and the FilterPanel drawer styling are served
+//   fresh to older/narrow webviews still holding a pre-FilterPanel shell cache).
+//
 // 26-Jun-2026 - Version 1.2.0
 // - PWA_SW_VERSION_TOKEN bumped to 2026-06-26-1 (force shell cache eviction after
 //   designer/artist filter feature; ensures FilterControls.jsx, updated Main.jsx,
@@ -48,7 +54,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-06-26-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-07-01-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -98,9 +104,9 @@
         'ValeVision3D/index.html',
         'ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__Main.json',
         'ValeVision3D/02__Src__AppModules/02__AppData/Na__AppConfig__MaterialsLibrary.json',
-        // VALEVISION3D HDRI ENVIRONMENT (MaxEngine reflections — optimised 1024p, 1.46 MB)
+        // VALEVISION3D HDRI ENVIRONMENT (MaxEngine reflections ? optimised 1024p, 1.46 MB)
         'ValeVision3D/01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__OptimisedVersion__1024p__.hdr',
-        // VALEVISION3D VENDORED THREE.JS (full dependency graph — every relative import must be present)
+        // VALEVISION3D VENDORED THREE.JS (full dependency graph ? every relative import must be present)
         'ValeVision3D/04__Lib__ThirdParty__Three/three.module.js',
         'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/controls/OrbitControls.js',
         'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/lines/Line2.js',

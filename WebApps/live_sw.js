@@ -26,6 +26,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 01-Jul-2026 - Version 1.3.0
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-01-1 (force shell cache eviction after
+//   the gallery filter drawer responsive reflow fix; ensures the corrected
+//   Na__CoreUi__Styles__App__.css reaches older/narrow webviews still holding a
+//   pre-FilterPanel shell cache). Must match the token in the canonical logic file.
+//
 // 26-Jun-2026 - Version 1.2.0
 // - PWA_SW_VERSION_TOKEN bumped to 2026-06-26-1 (force shell cache eviction after
 //   designer/artist filter feature; ensures FilterControls.jsx, updated Main.jsx,
@@ -44,7 +50,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-06-26-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
+    const PWA_SW_VERSION_TOKEN              = '2026-07-01-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

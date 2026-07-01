@@ -386,3 +386,16 @@
 2026-06-24 08:46:33,920 | INFO    | Hiding window to tray
 2026-06-24 13:06:55,562 | INFO    | Launching app: 30__Python__ImageTools/Py_ImgUtils__CadBackgroundRemover/Py_ImgUtils__CadBackgroundRemover__Main__.py
 2026-06-24 18:20:43,075 | INFO    | Hiding window to tray
+2026-06-30 08:07:08,541 | INFO    | === Python App Launcher starting ===
+2026-06-30 08:07:09,670 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
+2026-06-30 08:07:11,028 | INFO    | Discovery: found 19 launchable apps across 5 categories
+2026-06-30 08:07:18,673 | INFO    | Discovery: found 19 launchable apps across 5 categories
+2026-06-30 08:07:21,624 | INFO    | Hiding window to tray
+2026-06-30 08:17:44,485 | INFO    | === Python App Launcher starting ===
+2026-06-30 08:17:44,485 | INFO    | Single-instance lock acquired at C:\Users\adamw\AppData\Local\ValeArch\PythonAppLauncher\PythonAppLauncher.lock
+2026-06-30 08:17:45,050 | INFO    | Discovery: found 19 launchable apps across 5 categories
+2026-06-30 08:17:46,999 | INFO    | Hiding window to tray
+2026-06-30 08:57:12,643 | INFO    | Launching app: 30__Python__ImageTools/Py_ImgUtils__HeicToPngConverter/Py_ImgUtils__HeicToPngConverter__Main__.py
+2026-06-30 08:57:14,751 | INFO    | Hiding window to tray
+2026-07-01 09:33:48,877 | INFO    | Launching app: 10__Python__WinFileSystemTools/Py_WinUtil__BuildValeProjectStructure/Py_WinUtil__BuildValeProjectStructure__Main__.py
+2026-07-01 09:33:49,693 | INFO    | Hiding window to tray

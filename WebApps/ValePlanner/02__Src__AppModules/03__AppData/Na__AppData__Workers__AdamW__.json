@@ -2294,6 +2294,30 @@
           "endTime": "16:15",
           "title": "Warwick",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1782815898483",
+          "date": "2026-06-30",
+          "startTime": "09:00",
+          "endTime": "09:45",
+          "title": "Meeting |  MS",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1782815880782",
+          "date": "2026-06-30",
+          "startTime": "10:00",
+          "endTime": "18:00",
+          "title": "Survey |  MayflowerPlace",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1782894752459",
+          "date": "2026-07-01",
+          "startTime": "08:00",
+          "endTime": "09:45",
+          "title": "Survey |  MayflowerPlace - Package & Send",
+          "color": "na-shift-color-orange"
         }
       ]
     }

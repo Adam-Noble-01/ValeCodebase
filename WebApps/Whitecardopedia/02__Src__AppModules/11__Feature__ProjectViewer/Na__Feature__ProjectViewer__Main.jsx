@@ -13,7 +13,7 @@
 // - Displays full project details with image carousel
 // - Shows project metadata (name, code, description)
 // - Displays time efficiency scale for schedule performance
-// - Provides back navigation to project gallery
+// - Provides breadcrumb navigation back to project gallery
 //
 // -----------------------------------------------------------------------------
 //
@@ -25,6 +25,11 @@
 // - Added Designer field to Production Data panel (productionData.designer).
 // - Time Taken displays sentinel text without "Hours" suffix when non-numeric.
 // - Efficiency Scale hidden until scheduleData has numeric timeAllocated + timeTaken.
+//
+// 01-Jul-2026 - Version 1.2.0
+// - Replaced standalone "Back to Gallery" button with top-left breadcrumb nav
+//   ("‹ Project Gallery / <Project Title>"), matching the page title's position.
+// - Project Actions sidebar panel now holds only Copy Share Link.
 //
 // =============================================================================
 
@@ -162,18 +167,38 @@
                 <Header />
                 
                 <div className="project-viewer">
-                    <div className="project-viewer__header">
-                        <h1 className="project-viewer__title">
-                            {project.projectName} <span className="project-viewer__code-inline">- {project.projectCode}</span>
-                        </h1>
-                        {project.description && isValidTextContent(project.description) && (
+                    {project.description && isValidTextContent(project.description) && (
+                        <div className="project-viewer__header">
                             <p className="project-viewer__description">{project.description}</p>
-                        )}
-                    </div>
-                    
+                        </div>
+                    )}
+
                     <div className="project-viewer__content">
                         <div className="project-viewer__carousel-container">
-                            <ImageCarousel 
+                            <nav className="project-viewer__breadcrumb project-viewer__breadcrumb--overlay" aria-label="Breadcrumb">
+                                <ol className="project-viewer__breadcrumb-list">
+                                    <li className="project-viewer__breadcrumb-item">
+                                        <button
+                                            type="button"
+                                            className="project-viewer__breadcrumb-link"
+                                            onClick={onBack}
+                                        >
+                                            <span className="project-viewer__breadcrumb-chevron" aria-hidden="true">‹</span>
+                                            Project Gallery
+                                        </button>
+                                        <span className="project-viewer__breadcrumb-separator" aria-hidden="true">/</span>
+                                    </li>
+                                    <li
+                                        className="project-viewer__breadcrumb-item project-viewer__breadcrumb-item--current"
+                                        aria-current="page"
+                                    >
+                                        <h1 className="project-viewer__breadcrumb-current">
+                                            {project.projectName} <span className="project-viewer__code-inline">- {project.projectCode}</span>
+                                        </h1>
+                                    </li>
+                                </ol>
+                            </nav>
+                            <ImageCarousel
                                 images={carouselImages}  // <-- IMG01-only when ValeVision model present
                                 projectData={project}
                             />
@@ -302,18 +327,6 @@
                             <h3 className="project-viewer__actions-title project-viewer__actions-title--viewer-actions">Project Actions</h3>
 
                             <div className="project-viewer__viewer-actions">
-                                <button
-                                    className="project-viewer__viewer-action-button"
-                                    onClick={onBack}
-                                >
-                                    <img
-                                        src="../assets__CommonApplicationAssets/AppIcons/Icon__BackSymbol__WhiteVersion.svg"
-                                        alt="Back"
-                                        className="project-viewer__viewer-action-icon"
-                                    />
-                                    Back to Gallery
-                                </button>
-
                                 <button
                                     className="project-viewer__viewer-action-button project-viewer__viewer-action-button--share"
                                     onClick={handleShareLink}

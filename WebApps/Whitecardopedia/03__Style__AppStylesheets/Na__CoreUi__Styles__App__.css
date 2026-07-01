@@ -611,7 +611,103 @@
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
         margin-bottom                      : 0;                            /* <-- No space below title */
     }
-    
+
+    /* BREADCRUMB | Top-Left Navigation Replacing Standalone "Back to Gallery" Button */
+    /* ------------------------------------------------------------ */
+    .project-viewer__breadcrumb {
+        min-width                          : 0;                            /* <-- Allow shrinking below content size for truncation */
+        max-width                          : 100%;                         /* <-- Never exceed header width */
+    }
+
+    .project-viewer__breadcrumb--overlay {
+        position                           : absolute;                     /* <-- Float over the viewer instead of reserving its own row */
+        top                                : var(--Vale_Spacing_Medium);   /* <-- Inset from carousel top edge */
+        left                               : var(--Vale_Spacing_Medium);   /* <-- Inset from carousel left edge */
+        max-width                          : calc(100% - (var(--Vale_Spacing_Medium) * 2));  /* <-- Stay clear of both edges */
+        z-index                            : 20;                           /* <-- Above the image, below carousel nav controls/counter */
+        pointer-events                     : auto;                         /* <-- Keep the link clickable over the image */
+    }
+
+    .project-viewer__breadcrumb-list {
+        display                            : flex;                         /* <-- Single-row breadcrumb trail */
+        align-items                        : baseline;                     /* <-- Align small link text with large title text */
+        list-style                         : none;                         /* <-- Remove default marker */
+        margin                             : 0;                            /* <-- Reset default ol margin */
+        padding                            : 0;                            /* <-- Reset default ol padding */
+        min-width                          : 0;                            /* <-- Allow shrinking below content size */
+        max-width                          : 100%;                         /* <-- Never exceed header width */
+        overflow                           : hidden;                       /* <-- Keep trail on a single line */
+        white-space                        : nowrap;                       /* <-- Prevent wrap to second line */
+    }
+
+    .project-viewer__breadcrumb-item {
+        display                            : flex;                         /* <-- Keep link + separator inline */
+        align-items                        : baseline;                     /* <-- Match trail alignment */
+        flex-shrink                        : 0;                            /* <-- Gallery link keeps its full width */
+    }
+
+    .project-viewer__breadcrumb-item--current {
+        min-width                          : 0;                            /* <-- Allow current-page crumb to shrink */
+        overflow                           : hidden;                       /* <-- Clip overflow for ellipsis */
+        flex-shrink                        : 1;                            /* <-- Current-page crumb yields space first */
+    }
+
+    .project-viewer__breadcrumb-link {
+        display                            : inline-flex;                  /* <-- Icon + label as one unit */
+        align-items                        : center;                       /* <-- Vertically centre chevron and label */
+        gap                                : 4px;                          /* <-- Tight chevron-to-label spacing */
+        padding                            : 4px 2px;                      /* <-- Comfortable hit target beyond visible text */
+        margin                             : -4px -2px;                    /* <-- Offset padding so layout position is unaffected */
+        background                         : none;                         /* <-- No button chrome */
+        border                             : none;                         /* <-- No button chrome */
+        border-radius                      : 4px;                          /* <-- Rounds the focus ring */
+        color                              : var(--Vale_TextSecondary);    /* <-- Muted link tone, matches secondary text elsewhere */
+        font-family                        : var(--Vale_FontFamily);       /* <-- Match app typography */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Larger, more legible breadcrumb size */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight, lower emphasis than title */
+        cursor                             : pointer;                      /* <-- Pointer cursor on hover */
+        white-space                        : nowrap;                       /* <-- Never wrap the link label */
+        transition                         : color var(--Vale_Transition_Fast);  /* <-- Smooth hover colour change */
+    }
+
+    .project-viewer__breadcrumb-link:hover {
+        color                              : var(--Vale_PrimaryBrand);     /* <-- Shift to primary navy on hover */
+        text-decoration                    : underline;                    /* <-- Underline on hover per spec */
+    }
+
+    .project-viewer__breadcrumb-link:focus-visible {
+        outline                            : 2px solid var(--Vale_PrimaryBrand);  /* <-- Visible keyboard focus ring */
+        outline-offset                     : 2px;                          /* <-- Space ring away from text */
+    }
+
+    .project-viewer__breadcrumb-chevron {
+        font-size                          : 1.1em;                        /* <-- Slightly larger chevron glyph */
+        line-height                        : 1;                            /* <-- Prevent extra vertical space */
+    }
+
+    .project-viewer__breadcrumb-separator {
+        margin                             : 0 8px;                        /* <-- Space either side of separator */
+        color                              : var(--Vale_BorderLight);      /* <-- Lighter than either crumb, purely decorative */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Match the rest of the breadcrumb row */
+    }
+
+    .project-viewer__breadcrumb-current {
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Same size as the rest of the trail; hierarchy comes from weight/colour, not scale */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Bolder weight marks this as "you are here" */
+        color                              : var(--Vale_TextPrimary);       /* <-- Darker tone marks this as "you are here" */
+        margin                             : 0;                             /* <-- No default heading margin */
+        overflow                           : hidden;                       /* <-- Clip overflow for ellipsis */
+        text-overflow                      : ellipsis;                     /* <-- Truncate long project titles */
+        white-space                        : nowrap;                       /* <-- Keep current-page crumb on one line */
+    }
+
+    .project-viewer__breadcrumb-current .project-viewer__code-inline {
+        font-size                          : inherit;                      /* <-- Match the rest of the breadcrumb row, no size jump */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight reads as lower emphasis than the bold title */
+        color                              : var(--Vale_TextSecondary);    /* <-- Secondary tone, consistent with rest of app */
+    }
+    /* ------------------------------------------------------------ */
+
     .project-viewer__code-inline {
         font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
         font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular font weight */
@@ -640,6 +736,7 @@
     }
     
     .project-viewer__carousel-container {
+        position                           : relative;                     /* <-- Positioning context for breadcrumb overlay */
         background                         : var(--Vale_BackgroundWhite);  /* <-- White background */
         border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
         border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
@@ -1780,7 +1877,7 @@
         }
 
         /* SECTION ORDER | Mobile portrait: actions first, then stats */
-        .project-viewer__panel-section--viewer-actions { order: 1; }       /* <-- Back / Share */
+        .project-viewer__panel-section--viewer-actions { order: 1; }       /* <-- Share */
         .project-viewer__panel-section--download       { order: 2; }       /* <-- SketchUp / Download (when no VV3D) */
         .project-viewer__panel-section--data           { order: 3; }       /* <-- Production Data */
         .project-viewer__panel-section--efficiency     { order: 4; }       /* <-- Efficiency Scale */

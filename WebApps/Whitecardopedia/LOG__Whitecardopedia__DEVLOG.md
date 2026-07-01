@@ -19,6 +19,23 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.9 - 01-Jul-2026 - Feature: Breadcrumb Navigation Replaces "Back to Gallery" Button
+
+### Overview
+On the project detail page, "Back to Gallery" previously lived as a primary (filled navy) button inside the **Project Actions** sidebar panel, stacked above the secondary "Copy Share Link" button. This mixed a navigation control in with record-level actions, buried it below the fold on smaller screens, and over-weighted its visual importance relative to the page's main purpose (reviewing the model). Replaced it with breadcrumb navigation: `‹ Project Gallery / <Project Title>`.
+
+### Changes
+- **Placement** — the breadcrumb is not a separate header row above the viewer. It floats as an overlay pinned to the top-left corner of the 3D/whitecard image itself (`.project-viewer__carousel-container`, `position: relative` + absolutely-positioned nav, `z-index: 20`, sitting below the carousel's own nav-button/counter `z-index` of 90/100). This reclaimed the blank vertical gap that previously sat above the viewer whenever a project had no description text.
+- **Typography** — all three breadcrumb segments ("Project Gallery", `/`, current project title) share one font-size (`--Vale_FontSize_SubHeading`). Hierarchy is communicated by weight and colour only — muted/regular for the "Project Gallery" link, bold/dark for the current page — rather than the large title-size jump used in the first pass, matching the reference mockup's flatter, thickness-driven hierarchy.
+- **Accessibility** — wrapped in `<nav aria-label="Breadcrumb"><ol>…</ol></nav>` per standard breadcrumb markup; current crumb marked `aria-current="page"`; separator marked `aria-hidden="true"`; the entire "‹ Project Gallery" segment (icon + label) is one keyboard-focusable `<button>` with a visible focus ring, giving a single comfortable click/tap target.
+- **Sidebar** — the Project Actions panel now holds only "Copy Share Link"; the "Back to Gallery" button and its icon reference were removed entirely.
+
+### Files Changed
+- `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx` (v1.2.0)
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css`
+
+---
+
 ## Whitecardopedia v0.6.8 - 01-Jul-2026 - Fix: Filter Drawer Overflow on Narrow / Older Screens
 
 ### Overview

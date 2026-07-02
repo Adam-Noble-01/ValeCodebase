@@ -14,14 +14,13 @@
        project link. It tells the recipient the project is now available inside
        the installed ValeVision 3D app, steering everyone to the PWA rather
        than browser-opened share links (which cannot reliably launch the app).
-     - In-card heading ("Project Added To ValeVision App") identifies the
-       email purpose at a glance — sits above the project meta.
      - Stacked card layout: logo banner across the top (divider line
-       separates it from the text below), then heading, Project Code / Name,
-       and greeting line underneath.
-     - Solid-button "Need Help Installing The ValeVision App?" link sits after
-       a divider at the end of the main content, ahead of the plain-text
-       copyright footer.
+       separates it from the text below), then Project Code / Name and
+       greeting line underneath — the full ValeVision 3D wordmark in the
+       logo banner already identifies the email purpose, so no separate
+       in-card heading is needed.
+     - Outline-style "Need Help Installing The ValeVision App?" link sits at
+       the end of the main content, ahead of the plain-text copyright footer.
 
      TOKENS (replaced by Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js):
      - __RECIPIENT_NAMES_HTML__  — e.g. Hi <strong>…</strong>,
@@ -151,22 +150,15 @@
                                 </tr>
                                 <tr>
                                     <td class="vv3dn-email-content-cell vv3dn-email-inner" bgcolor="#ffffff" style="background-color: #ffffff !important; color: #172b3a; padding: 24px 26px;">
-                                        <p style="margin: 0 0 12px; padding: 0; color: #172b3a; font-size: 16px; font-weight: 700; line-height: 1.3; font-family: Arial, sans-serif;">
-                                            Project Added To ValeVision App
-                                        </p>
                                         __PROJECT_META_HTML__
                                         <p style="margin: 0 0 14px; padding: 0; color: #172b3a; font-size: 16px; line-height: 1.6; font-family: Arial, sans-serif;">
                                             __RECIPIENT_NAMES_HTML__
                                         </p>
                                         <p style="margin: 0 0 12px; padding: 0; color: #172b3a; font-size: 13px; line-height: 1.6; font-family: Arial, sans-serif;">
-                                            This project has been added to the <strong>ValeVision&nbsp;3D&nbsp;App</strong> and is ready to view now.
-                                        </p>
-                                        <p style="margin: 0 0 12px; padding: 0; color: #172b3a; font-size: 13px; line-height: 1.6; font-family: Arial, sans-serif;">
-                                            Open the <strong>ValeVision&nbsp;3D</strong> app on your device and find the project in the gallery using the project code or name above.
+                                            Your project has been added to the <strong>ValeVision&nbsp;3D&nbsp;App</strong> and is ready to view now.
                                         </p>
                                         __SPECIAL_NOTES_BLOCK__
-                                        <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0 18px;">
-                                        <p style="margin: 0; padding: 0; text-align: center;">
+                                        <p style="margin: 20px 0 0; padding: 0; text-align: center;">
                                             <a href="__INSTALL_GUIDE_URL__" style="display: inline-block; padding: 8px 20px; background-color: #ffffff; color: #172b3a; font-size: 12px; font-weight: 600; line-height: 1.4; text-decoration: none; border-radius: 4px; border: 1px solid #172b3a; font-family: Arial, sans-serif;">
                                                 Need Help Installing The ValeVision App?
                                             </a>

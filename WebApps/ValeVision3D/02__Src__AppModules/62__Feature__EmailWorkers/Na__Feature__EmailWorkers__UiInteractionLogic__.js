@@ -146,7 +146,9 @@
         form.backdrop.addEventListener('click', closeOverlay);
         form.btnCancel.addEventListener('click', closeOverlay);
 
-        form.btnGenerate.addEventListener('click', async () => {
+        // SUB FUNCTION | Generate & Download Legacy Link Email HTML
+        // ------------------------------------------------------------
+        const generateAndDownloadLinkEmail = async () => {
             try {
                 const selectedRecipients = autocomplete.getRecipients();
                 const payload = await Na__Feature__EmailWorkers__BuildSendPayload({
@@ -160,12 +162,68 @@
                 }
 
                 Na__Feature__ShareProjectLink__DownloadHtmlFile(payload.downloadFilename, payload.htmlBody);
-                showToast('Email HTML downloaded.');
+                showToast('Link email HTML downloaded.');
             } catch (error) {
-                console.error('[ValeVision3D] Generate email download failed:', error);
-                showToast(error?.message || 'Could not generate email HTML.', true);
+                console.error('[ValeVision3D] Generate link email download failed:', error);
+                showToast(error?.message || 'Could not generate link email HTML.', true);
             }
+        };
+        // ------------------------------------------------------------
+
+
+        // SUB FUNCTION | Generate & Download App Notification Email HTML
+        // ------------------------------------------------------------
+        // Test path for the notification pipeline: produces the exact HTML the
+        // Send app notification button would email, without sending anything.
+        // ------------------------------------------------------------
+        const generateAndDownloadNotificationEmail = async () => {
+            try {
+                const selectedRecipients = autocomplete.getRecipients();
+                const payload = await Na__Feature__AppNotificationEmail__BuildSendPayload({
+                    selectedRecipients,
+                    notesRaw                  : form.getNotesValue(),
+                    recipientNamesRawOverride : form.getGreetingNamesValue()
+                });
+                if (!String(payload.greetingNamesRaw || '').trim()) {
+                    showToast('Please add greeting names for the first line (comma separated).', true);
+                    return;
+                }
+
+                Na__Feature__ShareProjectLink__DownloadHtmlFile(payload.downloadFilename, payload.htmlBody);
+                showToast('App notification email HTML downloaded.');
+            } catch (error) {
+                console.error('[ValeVision3D] Generate app notification download failed:', error);
+                showToast(error?.message || 'Could not generate app notification email HTML.', true);
+            }
+        };
+        // ------------------------------------------------------------
+
+
+        // EVENT HANDLER | Generate Button Toggles the Email Type Chooser
+        // ------------------------------------------------------------
+        form.btnGenerate.addEventListener('click', () => {
+            const isChooserVisible = form.generateChooser.classList.contains('is-visible');
+            if (isChooserVisible) {
+                form.hideGenerateChooser();                                    // <-- Second press dismisses
+                return;
+            }
+            form.showGenerateChooser();                                        // <-- Ask which email type to generate
         });
+
+        form.btnGenerateLink.addEventListener('click', () => {
+            form.hideGenerateChooser();
+            generateAndDownloadLinkEmail();
+        });
+
+        form.btnGenerateNotification.addEventListener('click', () => {
+            form.hideGenerateChooser();
+            generateAndDownloadNotificationEmail();
+        });
+
+        form.btnGenerateChooserCancel.addEventListener('click', () => {
+            form.hideGenerateChooser();
+        });
+        // ------------------------------------------------------------
 
         // EVENT HANDLER | Send App Notification Email (New Pipeline - No Project Link)
         // ------------------------------------------------------------

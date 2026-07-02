@@ -2,6 +2,22 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.8 - 02-Jul-2026 - Generate & Download Email Type Chooser
+
+### Overview
+"Generate & download email" now asks which email type to produce — **Link email (legacy)** or **App notification email** — via a small inline chooser card that appears inside the existing overlay (no new permanent buttons). Purpose: a zero-send test path for the new notification email; the download is the exact HTML the "Send app notification" button would email.
+
+### Changes
+- **`Na__Feature__EmailWorkers__FormOverlay__.js`** — new hidden `generateChooser` block (label + Link email / App notification / Cancel compact buttons) between the notes field and the actions row; `showGenerateChooser()` / `hideGenerateChooser()` exposed on the form API; `hide()` always resets the chooser so it never re-opens stale.
+- **`Na__Feature__EmailWorkers__UiInteractionLogic__.js`** — Generate button now toggles the chooser (second press dismisses). Legacy generation logic extracted unchanged into `generateAndDownloadLinkEmail`; new `generateAndDownloadNotificationEmail` mirrors it using the 63-module payload builder (same greeting-names validation, same `DownloadHtmlFile` helper, filename `ValeVision3D_AppNotification_<id>_<date>.html`). Distinct toasts per type.
+- **`Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css`** — `__generate-chooser` region (navy-left-border card, `is-visible` toggle) + `__btn--compact` modifier.
+
+### Files Changed
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__Stylesheet__.css`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.7 - 02-Jul-2026 - App Notification Email System + Install Guide Page
 
 ### Overview

@@ -243,6 +243,45 @@
     background                         : #f3f5f7;
 }
 
+.na-email-workers-overlay__btn--compact {
+    padding                            : 7px 14px;
+    font-size                          : 0.78rem;
+}
+
+/* endregion -------------------------------------------------------- */
+
+
+/* ================================================================= */
+/* REGION  |  Send Email - Generate & Download Type Chooser          */
+/* ================================================================= */
+
+.na-email-workers-overlay__generate-chooser {
+    display                            : none;
+    margin                             : 0 0 14px;
+    padding                            : 12px 14px;
+    border                             : 1px solid rgba(23, 43, 58, 0.22);
+    border-left                        : 4px solid #172b3a;
+    border-radius                      : 6px;
+    background                         : #f3f6f8;
+}
+
+.na-email-workers-overlay__generate-chooser.is-visible {
+    display                            : block;
+}
+
+.na-email-workers-overlay__generate-chooser-label {
+    margin                             : 0 0 10px;
+    font-size                          : 0.8rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+.na-email-workers-overlay__generate-chooser-actions {
+    display                            : flex;
+    flex-wrap                          : wrap;
+    gap                                : 8px;
+}
+
 /* endregion -------------------------------------------------------- */
 
 

@@ -140,6 +140,37 @@
         notesInput.placeholder = 'Optional message appended to the generated email.';
         applyAntiAutofillAttributes(notesInput, 'notes');
 
+        const generateChooser = document.createElement('div');
+        generateChooser.className = 'na-email-workers-overlay__generate-chooser';
+
+        const generateChooserLabel = document.createElement('p');
+        generateChooserLabel.className = 'na-email-workers-overlay__generate-chooser-label';
+        generateChooserLabel.textContent = 'Which email type do you want to generate & download?';
+
+        const generateChooserActions = document.createElement('div');
+        generateChooserActions.className = 'na-email-workers-overlay__generate-chooser-actions';
+
+        const btnGenerateLink = document.createElement('button');
+        btnGenerateLink.type = 'button';
+        btnGenerateLink.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary na-email-workers-overlay__btn--compact';
+        btnGenerateLink.textContent = 'Link email (legacy)';
+
+        const btnGenerateNotification = document.createElement('button');
+        btnGenerateNotification.type = 'button';
+        btnGenerateNotification.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary na-email-workers-overlay__btn--compact';
+        btnGenerateNotification.textContent = 'App notification email';
+
+        const btnGenerateChooserCancel = document.createElement('button');
+        btnGenerateChooserCancel.type = 'button';
+        btnGenerateChooserCancel.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary na-email-workers-overlay__btn--compact';
+        btnGenerateChooserCancel.textContent = 'Cancel';
+
+        generateChooserActions.appendChild(btnGenerateLink);
+        generateChooserActions.appendChild(btnGenerateNotification);
+        generateChooserActions.appendChild(btnGenerateChooserCancel);
+        generateChooser.appendChild(generateChooserLabel);
+        generateChooser.appendChild(generateChooserActions);
+
         const actions = document.createElement('div');
         actions.className = 'na-email-workers-overlay__actions';
 
@@ -184,6 +215,7 @@
         panel.appendChild(recipientsField);
         panel.appendChild(greetingField);
         panel.appendChild(notesField);
+        panel.appendChild(generateChooser);
         panel.appendChild(actions);
 
         overlay.appendChild(backdrop);
@@ -199,6 +231,15 @@
 
         function hide() {
             overlay.classList.remove('is-visible');
+            hideGenerateChooser();                                              // <-- Reset chooser so it never re-opens stale
+        }
+
+        function showGenerateChooser() {
+            generateChooser.classList.add('is-visible');
+        }
+
+        function hideGenerateChooser() {
+            generateChooser.classList.remove('is-visible');
         }
 
         function getNotesValue() {
@@ -217,6 +258,12 @@
             btnGenerate,
             btnSendNotification,
             btnSend,
+            generateChooser,
+            btnGenerateLink,
+            btnGenerateNotification,
+            btnGenerateChooserCancel,
+            showGenerateChooser,
+            hideGenerateChooser,
             recipientInput,
             chipsContainer,
             suggestionsList,

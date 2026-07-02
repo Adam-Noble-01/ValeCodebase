@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "01-Jul-2026 at 15:33",
+    "generatedAt": "02-Jul-2026 at 09:52",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1753,6 +1753,20 @@
             "hasGlb_R2": true,
             "imageCount": 6,
             "lastSynced": "01-Jul-2026 at 15:33"
+        },
+        {
+            "folderId": "2026/61755__Goodson-Hudson",
+            "year": "2026",
+            "projectCode": "61755",
+            "name": "Goodson-Hudson",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 6,
+            "lastSynced": "02-Jul-2026 at 09:52"
         }
     ]
 }

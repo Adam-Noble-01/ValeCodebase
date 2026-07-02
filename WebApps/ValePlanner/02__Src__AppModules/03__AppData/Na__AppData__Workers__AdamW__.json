@@ -2334,6 +2334,22 @@
           "endTime": "14:30",
           "title": "Dev |  Hotfixes",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1782921630267",
+          "date": "2026-07-01",
+          "startTime": "17:00",
+          "endTime": "18:00",
+          "title": "Whitecard |  Goodson",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1782975716545",
+          "date": "2026-07-02",
+          "startTime": "08:00",
+          "endTime": "09:30",
+          "title": "Whitecard |  Goodson",
+          "color": "na-shift-color-emerald"
         }
       ]
     }

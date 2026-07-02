@@ -26,7 +26,15 @@
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    const NA_APP_NOTIFICATION_INSTALL_GUIDE_FILENAME = 'install-guide.html';    // <-- Guide page sits alongside ValeVision3D/index.html
+    // MODULE CONSTANTS | Production URLs (GitHub Pages - NEVER relative)
+    // ------------------------------------------------------------
+    // Emails are opened in Outlook / mail clients far away from wherever the
+    // send happened (often a localhost dev session), so every URL that leaves
+    // the app inside an email MUST be the hardcoded production URL — exactly
+    // like the GH-Pages logo URL in the template. Do not derive these from
+    // window.location.
+    // ------------------------------------------------------------
+    const NA_APP_NOTIFICATION_INSTALL_GUIDE_URL = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D/install-guide.html';   // <-- Production install guide page
 
 // endregion -------------------------------------------------------------------
 
@@ -183,17 +191,14 @@
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Resolve Absolute Install Guide URL from Current App Location
+    // FUNCTION | Resolve Absolute Install Guide URL (Production - Hardcoded)
     // ------------------------------------------------------------
-    // Guide page lives alongside ValeVision3D/index.html, so resolving the
-    // filename against the current document URL (query/hash stripped) yields
-    // the correct absolute URL on every deployment surface.
+    // Always returns the production GitHub Pages URL regardless of where the
+    // email was sent from (localhost dev sessions included) — recipients must
+    // never receive a localhost link.
     // ------------------------------------------------------------
     function Na__Feature__AppNotificationEmail__BuildInstallGuideUrl() {
-        const base = new URL(window.location.href);
-        base.search = '';
-        base.hash = '';
-        return new URL(`./${NA_APP_NOTIFICATION_INSTALL_GUIDE_FILENAME}`, base).toString();
+        return NA_APP_NOTIFICATION_INSTALL_GUIDE_URL;
     }
     // ------------------------------------------------------------
 

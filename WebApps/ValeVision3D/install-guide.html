@@ -34,10 +34,10 @@
     <!-- REGION  |  BRANDING | Favicon, Brand Icons & PWA Manifest         -->
     <!-- ----------------------------------------------------------------- -->
 
-    <link rel="icon" type="image/svg+xml" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
-    <link rel="apple-touch-icon" sizes="192x192" href="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
-    <link rel="apple-touch-icon" href="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
-    <link rel="manifest" href="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Manifest__.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" sizes="192x192" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
+    <link rel="apple-touch-icon" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
+    <link rel="manifest" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Manifest__.webmanifest">
     <meta name="theme-color" content="#172b3a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -52,10 +52,19 @@
     <!-- REGION  |  PWA Installability Module Stack                        -->
     <!-- ----------------------------------------------------------------- -->
 
-    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Url__Constructor__.js"></script>
-    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__PlatformDetector__.js"></script>
-    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__SessionState__.js"></script>
-    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"></script>
+    <script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Url__Constructor__.js"></script>
+    <script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__PlatformDetector__.js"></script>
+    <script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__SessionState__.js"></script>
+    <script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"></script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Shared App Header Stylesheet (SSOT with ValeVision3D)  -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <link rel="stylesheet" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/ValeVision3D/03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css">
 
     <!-- endregion -------------------------------------------------------- -->
 
@@ -94,21 +103,22 @@
             line-height                    : 1.6;
         }
 
-        .na-install-guide__header {
+        .na-install-guide__hero {
+            margin-top                     : var(--Vale_HeaderHeight);      /* <-- Clear the fixed app header (auto-adapts on narrow screens) */
             background-color               : var(--Vale_PrimaryBrand);
             color                          : var(--Vale_TextLight);
             padding                        : 18px 24px;
             text-align                     : center;
         }
 
-        .na-install-guide__header-title {
+        .na-install-guide__hero-title {
             margin                         : 0;
             font-size                      : 1.35rem;
             font-weight                    : 600;
             letter-spacing                 : 0.02em;
         }
 
-        .na-install-guide__header-subtitle {
+        .na-install-guide__hero-subtitle {
             margin                         : 4px 0 0;
             font-size                      : 0.85rem;
             font-weight                    : 300;
@@ -356,13 +366,34 @@
 
 <body>
     <!-- ----------------------------------------------------------------- -->
-    <!-- REGION  |  Page Header                                            -->
+    <!-- REGION  |  Application Header Bar (Shared ValeVision3D Branding)   -->
     <!-- ----------------------------------------------------------------- -->
 
-    <header class="na-install-guide__header">
-        <h1 class="na-install-guide__header-title">Install the ValeVision 3D App</h1>
-        <p class="na-install-guide__header-subtitle">A step-by-step guide for Vale Garden Houses colleagues</p>
+    <header class="app-header">
+        <div class="app-header__logo-container app-header__logo-container--left">
+            <img
+                src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                alt="Vale Garden Houses"
+                class="app-header__logo-left"
+            />
+        </div>
+
+        <div class="app-header__logo-container app-header__logo-container--right">
+            <h1 class="app-header__title">ValeVision 3D</h1>
+        </div>
     </header>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Page Hero Banner                                        -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <section class="na-install-guide__hero">
+        <h2 class="na-install-guide__hero-title">Install the ValeVision 3D App</h2>
+        <p class="na-install-guide__hero-subtitle">A step-by-step guide for Vale Garden Houses colleagues</p>
+    </section>
 
     <!-- endregion -------------------------------------------------------- -->
 
@@ -429,7 +460,7 @@
                 <div class="na-install-guide__step-body">
                     <h3 class="na-install-guide__step-title">Open ValeVision 3D in Edge or Chrome</h3>
                     <p class="na-install-guide__step-text">You are probably already there if you are reading this page. If not, press the button below to open the app gallery.</p>
-                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="../Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
                 </div>
             </div>
 
@@ -492,7 +523,7 @@
                 <div class="na-install-guide__step-body">
                     <h3 class="na-install-guide__step-title">Open ValeVision 3D in Safari</h3>
                     <p class="na-install-guide__step-text">Press the button below to open the app gallery in this browser tab.</p>
-                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="../Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
                 </div>
             </div>
 
@@ -567,7 +598,7 @@
                 <div class="na-install-guide__step-body">
                     <h3 class="na-install-guide__step-title">Open ValeVision 3D in Chrome</h3>
                     <p class="na-install-guide__step-text">Press the button below to open the app gallery.</p>
-                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="../Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
                 </div>
             </div>
 

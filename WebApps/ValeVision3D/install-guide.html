@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALEVISION3D - APP INSTALL GUIDE PAGE
+     =============================================================================
+
+     FILE       : install-guide.html
+     NAMESPACE  : ValeVision3D
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Beginner-friendly graphical guide for installing the
+                  ValeVision 3D app on Windows 11, iPhone / iPad and Android
+     CREATED    : Jul-2026
+
+     DESCRIPTION:
+     - Linked from the footer of app-notification emails
+       ("Need Help Installing The ValeVision App?").
+     - Asks the visitor which device they need help with first, then shows
+       only the steps for that device.
+     - Loads the shared PWA installability stack so the page itself is
+       installable; on Chromium (Windows / Android) a one-click
+       "Install ValeVision 3D Now" button appears when the browser offers
+       the native install prompt.
+     - Fully standalone: no app modules required, styles inline, Vale Design
+       Suite palette and typography.
+
+     =============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install the ValeVision 3D App — Step-by-Step Guide</title>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  BRANDING | Favicon, Brand Icons & PWA Manifest         -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <link rel="icon" type="image/svg+xml" href="../assets__CommonApplicationAssets/AppIcons/Icon__MainValeIcon__.svg">
+    <link rel="apple-touch-icon" sizes="192x192" href="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
+    <link rel="apple-touch-icon" href="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Icon__192x192.png">
+    <link rel="manifest" href="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Manifest__.webmanifest">
+    <meta name="theme-color" content="#172b3a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ValeVision 3D">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ValeVision 3D">
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  PWA Installability Module Stack                        -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__Url__Constructor__.js"></script>
+    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__PlatformDetector__.js"></script>
+    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__SessionState__.js"></script>
+    <script src="../Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Registrar__.js"></script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Page Styles - Vale Design Suite Standards              -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <style>
+        /* CSS VARIABLES | Vale Design Suite Palette */
+        /* ------------------------------------------------------------ */
+        :root {
+            --Vale_PrimaryBrand            : #172b3a;
+            --Vale_BackgroundLight         : #f5f5f5;
+            --Vale_BackgroundWhite         : #ffffff;
+            --Vale_TextPrimary             : #172b3a;
+            --Vale_TextSecondary           : #656565;
+            --Vale_TextLight               : #ffffff;
+            --Vale_BorderLight             : #cccccc;
+            --Vale_HoverBackground         : #e8e8e8;
+            --Vale_BorderRadius            : 8px;
+            --Vale_FontFamily              : 'Open Sans', sans-serif;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* BASE STYLES | Page Scaffold */
+        /* ------------------------------------------------------------ */
+        * { box-sizing: border-box; }
+
+        body {
+            margin                         : 0;
+            font-family                    : var(--Vale_FontFamily);
+            background-color               : var(--Vale_BackgroundLight);
+            color                          : var(--Vale_TextPrimary);
+            line-height                    : 1.6;
+        }
+
+        .na-install-guide__header {
+            background-color               : var(--Vale_PrimaryBrand);
+            color                          : var(--Vale_TextLight);
+            padding                        : 18px 24px;
+            text-align                     : center;
+        }
+
+        .na-install-guide__header-title {
+            margin                         : 0;
+            font-size                      : 1.35rem;
+            font-weight                    : 600;
+            letter-spacing                 : 0.02em;
+        }
+
+        .na-install-guide__header-subtitle {
+            margin                         : 4px 0 0;
+            font-size                      : 0.85rem;
+            font-weight                    : 300;
+            opacity                        : 0.85;
+        }
+
+        .na-install-guide__main {
+            max-width                      : 760px;
+            margin                         : 0 auto;
+            padding                        : 28px 18px 60px;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* CARD STYLES | Shared Card and Section Chrome */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__card {
+            background                     : var(--Vale_BackgroundWhite);
+            border                         : 2px solid var(--Vale_PrimaryBrand);
+            border-radius                  : var(--Vale_BorderRadius);
+            padding                        : 22px 24px;
+            margin-bottom                  : 24px;
+        }
+
+        .na-install-guide__card-title {
+            margin                         : 0 0 6px;
+            font-size                      : 1.1rem;
+            font-weight                    : 600;
+        }
+
+        .na-install-guide__card-hint {
+            margin                         : 0 0 18px;
+            font-size                      : 0.85rem;
+            color                          : var(--Vale_TextSecondary);
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* DEVICE CHOOSER | Big Beginner-Friendly Device Buttons */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__device-grid {
+            display                        : grid;
+            grid-template-columns          : repeat(3, 1fr);
+            gap                            : 14px;
+        }
+
+        @media (max-width: 620px) {
+            .na-install-guide__device-grid {
+                grid-template-columns      : 1fr;
+            }
+        }
+
+        .na-install-guide__device-btn {
+            display                        : flex;
+            flex-direction                 : column;
+            align-items                    : center;
+            gap                            : 10px;
+            padding                        : 18px 12px 14px;
+            background                     : var(--Vale_BackgroundWhite);
+            border                         : 2px solid rgba(23, 43, 58, 0.25);
+            border-radius                  : var(--Vale_BorderRadius);
+            font-family                    : var(--Vale_FontFamily);
+            font-size                      : 0.95rem;
+            font-weight                    : 600;
+            color                          : var(--Vale_TextPrimary);
+            cursor                         : pointer;
+            transition                     : border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+        }
+
+        .na-install-guide__device-btn:hover {
+            border-color                   : var(--Vale_PrimaryBrand);
+            background                     : #f3f5f7;
+        }
+
+        .na-install-guide__device-btn.is-active {
+            border-color                   : var(--Vale_PrimaryBrand);
+            background                     : var(--Vale_PrimaryBrand);
+            color                          : var(--Vale_TextLight);
+        }
+
+        .na-install-guide__device-btn.is-active svg {
+            stroke                         : var(--Vale_TextLight);
+        }
+
+        .na-install-guide__device-btn svg {
+            stroke                         : var(--Vale_PrimaryBrand);
+            transition                     : stroke 0.15s ease;
+        }
+
+        .na-install-guide__device-btn-sub {
+            font-size                      : 0.72rem;
+            font-weight                    : 400;
+            opacity                        : 0.75;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* STEP LIST | Numbered Graphical Steps */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__section {
+            display                        : none;
+        }
+
+        .na-install-guide__section.is-visible {
+            display                        : block;
+        }
+
+        .na-install-guide__step {
+            display                        : flex;
+            gap                            : 16px;
+            padding                        : 16px 0;
+            border-bottom                  : 1px solid #e6e9ec;
+        }
+
+        .na-install-guide__step:last-child {
+            border-bottom                  : none;
+            padding-bottom                 : 4px;
+        }
+
+        .na-install-guide__step-number {
+            flex                           : 0 0 34px;
+            height                         : 34px;
+            border-radius                  : 50%;
+            background                     : var(--Vale_PrimaryBrand);
+            color                          : var(--Vale_TextLight);
+            font-size                      : 1rem;
+            font-weight                    : 600;
+            display                        : flex;
+            align-items                    : center;
+            justify-content                : center;
+        }
+
+        .na-install-guide__step-body {
+            flex                           : 1 1 auto;
+        }
+
+        .na-install-guide__step-title {
+            margin                         : 4px 0 4px;
+            font-size                      : 0.95rem;
+            font-weight                    : 600;
+        }
+
+        .na-install-guide__step-text {
+            margin                         : 0;
+            font-size                      : 0.85rem;
+            color                          : #33454f;
+        }
+
+        .na-install-guide__step-figure {
+            margin                         : 12px 0 0;
+            padding                        : 12px;
+            background                     : #f8fafb;
+            border                         : 1px solid #e0e5e9;
+            border-radius                  : 6px;
+            display                        : flex;
+            justify-content                : center;
+        }
+
+        .na-install-guide__step-figure svg {
+            max-width                      : 100%;
+            height                         : auto;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* CALLOUT STYLES | Important / Tip Cards */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__callout {
+            border-left                    : 4px solid var(--Vale_PrimaryBrand);
+            background                     : #f8fafb;
+            padding                        : 12px 16px;
+            margin                         : 0 0 18px;
+            font-size                      : 0.85rem;
+        }
+
+        .na-install-guide__callout--warning {
+            border-left-color              : #b7791f;
+            background                     : #fdf9f0;
+        }
+
+        .na-install-guide__callout strong {
+            display                        : block;
+            margin-bottom                  : 2px;
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* ACTION BUTTONS | Primary Links and One-Click Install */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__action-btn {
+            display                        : inline-block;
+            padding                        : 11px 22px;
+            background                     : var(--Vale_PrimaryBrand);
+            color                          : var(--Vale_TextLight);
+            border                         : 1px solid var(--Vale_PrimaryBrand);
+            border-radius                  : 5px;
+            font-family                    : var(--Vale_FontFamily);
+            font-size                      : 0.9rem;
+            font-weight                    : 600;
+            text-decoration                : none;
+            cursor                         : pointer;
+            transition                     : background 0.15s ease;
+        }
+
+        .na-install-guide__action-btn:hover {
+            background                     : #213d52;
+        }
+
+        .na-install-guide__one-click {
+            display                        : none;
+            text-align                     : center;
+            padding                        : 16px;
+            margin                         : 0 0 18px;
+            background                     : #eef4f8;
+            border                         : 2px dashed var(--Vale_PrimaryBrand);
+            border-radius                  : var(--Vale_BorderRadius);
+        }
+
+        .na-install-guide__one-click.is-available {
+            display                        : block;
+        }
+
+        .na-install-guide__one-click-hint {
+            margin                         : 8px 0 0;
+            font-size                      : 0.78rem;
+            color                          : var(--Vale_TextSecondary);
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* FOOTER STYLES | Page Footer */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__footer {
+            text-align                     : center;
+            padding                        : 18px 24px 30px;
+            font-size                      : 0.78rem;
+            color                          : var(--Vale_TextSecondary);
+        }
+        /* ------------------------------------------------------------ */
+    </style>
+
+    <!-- endregion -------------------------------------------------------- -->
+</head>
+
+
+<body>
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Page Header                                            -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <header class="na-install-guide__header">
+        <h1 class="na-install-guide__header-title">Install the ValeVision 3D App</h1>
+        <p class="na-install-guide__header-subtitle">A step-by-step guide for Vale Garden Houses colleagues</p>
+    </header>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <main class="na-install-guide__main">
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- REGION  |  Device Chooser Card                                -->
+        <!-- ------------------------------------------------------------- -->
+
+        <section class="na-install-guide__card">
+            <h2 class="na-install-guide__card-title">Which device do you need help with?</h2>
+            <p class="na-install-guide__card-hint">Choose your device below and we will show you the exact steps — it only takes a minute.</p>
+
+            <div class="na-install-guide__device-grid">
+                <button type="button" class="na-install-guide__device-btn" id="naInstallGuideDeviceBtnWindows" data-device="windows">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="4" width="20" height="13" rx="1.5"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Windows 11
+                    <span class="na-install-guide__device-btn-sub">Desktop or laptop PC</span>
+                </button>
+
+                <button type="button" class="na-install-guide__device-btn" id="naInstallGuideDeviceBtnIos" data-device="ios">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="6" y="2" width="12" height="20" rx="2.5"></rect>
+                        <line x1="10.5" y1="19" x2="13.5" y2="19"></line>
+                    </svg>
+                    iPhone &amp; iPad
+                    <span class="na-install-guide__device-btn-sub">Apple devices (iOS / iPadOS)</span>
+                </button>
+
+                <button type="button" class="na-install-guide__device-btn" id="naInstallGuideDeviceBtnAndroid" data-device="android">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="6" y="2" width="12" height="20" rx="2.5"></rect>
+                        <circle cx="12" cy="18.6" r="0.5"></circle>
+                    </svg>
+                    Android
+                    <span class="na-install-guide__device-btn-sub">Samsung, Pixel &amp; others</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- endregion ----------------------------------------------------- -->
+
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- REGION  |  Windows 11 Install Steps                           -->
+        <!-- ------------------------------------------------------------- -->
+
+        <section class="na-install-guide__card na-install-guide__section" id="naInstallGuideSectionWindows">
+            <h2 class="na-install-guide__card-title">Installing on Windows 11</h2>
+            <p class="na-install-guide__card-hint">Works in Microsoft Edge and Google Chrome. Takes about 30 seconds.</p>
+
+            <div class="na-install-guide__one-click" id="naInstallGuideOneClickWindows">
+                <button type="button" class="na-install-guide__action-btn" data-one-click-install>Install ValeVision 3D Now — One Click</button>
+                <p class="na-install-guide__one-click-hint">Your browser supports one-click install — press the button above and choose <strong>Install</strong>. Done!</p>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">1</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Open ValeVision 3D in Edge or Chrome</h3>
+                    <p class="na-install-guide__step-text">You are probably already there if you are reading this page. If not, press the button below to open the app gallery.</p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="../Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">2</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Click the install icon in the address bar</h3>
+                    <p class="na-install-guide__step-text">Look at the <strong>right-hand end of the address bar</strong> at the top of your browser. You will see a small icon of a screen with a down-arrow. Click it and choose <strong>Install</strong>.</p>
+                    <figure class="na-install-guide__step-figure" style="margin-left: 0; margin-right: 0;">
+                        <svg width="480" height="72" viewBox="0 0 480 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Browser address bar with the install icon highlighted on the right">
+                            <rect x="4" y="14" width="472" height="44" rx="22" fill="#ffffff" stroke="#c3ccd3" stroke-width="2"/>
+                            <circle cx="34" cy="36" r="9" fill="none" stroke="#8a99a5" stroke-width="2"/>
+                            <text x="58" y="42" font-family="Arial, sans-serif" font-size="15" fill="#5a6d7a">adam-noble-01.github.io/…/ValeVision3D</text>
+                            <rect x="398" y="18" width="52" height="36" rx="8" fill="#eef4f8" stroke="#172b3a" stroke-width="2.5"/>
+                            <rect x="410" y="26" width="28" height="15" rx="2" fill="none" stroke="#172b3a" stroke-width="2"/>
+                            <line x1="424" y1="30" x2="424" y2="38" stroke="#172b3a" stroke-width="2"/>
+                            <path d="M420 35 L424 39 L428 35" fill="none" stroke="#172b3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M424 62 L424 56" stroke="#172b3a" stroke-width="2.5"/>
+                            <path d="M419 60 L424 55 L429 60" fill="none" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">3</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Can't see the icon? Use the browser menu instead</h3>
+                    <p class="na-install-guide__step-text">Click the <strong>three dots</strong> in the top-right corner of the browser, then choose <strong>Apps &rarr; Install ValeVision&nbsp;3D</strong> (Edge) or <strong>Cast, save and share &rarr; Install page as app</strong> (Chrome).</p>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">4</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Pin it to your taskbar</h3>
+                    <p class="na-install-guide__step-text">The app now opens in its own window and appears in your Start menu. <strong>Right-click the ValeVision&nbsp;3D icon on the taskbar</strong> while it is open and choose <strong>Pin to taskbar</strong> so it is always one click away.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- endregion ----------------------------------------------------- -->
+
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- REGION  |  iPhone / iPad Install Steps                        -->
+        <!-- ------------------------------------------------------------- -->
+
+        <section class="na-install-guide__card na-install-guide__section" id="naInstallGuideSectionIos">
+            <h2 class="na-install-guide__card-title">Installing on iPhone &amp; iPad</h2>
+            <p class="na-install-guide__card-hint">Apple devices install web apps through Safari's "Add to Home Screen" feature.</p>
+
+            <div class="na-install-guide__callout na-install-guide__callout--warning">
+                <strong>Important — you must use Safari</strong>
+                Other browsers on iPhone and iPad cannot install the app. If this page opened in a different app, copy the link into Safari first.
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">1</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Open ValeVision 3D in Safari</h3>
+                    <p class="na-install-guide__step-text">Press the button below to open the app gallery in this browser tab.</p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="../Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">2</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Tap the Share button</h3>
+                    <p class="na-install-guide__step-text">It is the <strong>square with an arrow pointing up</strong>. On iPad it sits at the <strong>top-right</strong> next to the address bar; on iPhone it is at the <strong>bottom-centre</strong> of the screen.</p>
+                    <figure class="na-install-guide__step-figure" style="margin-left: 0; margin-right: 0;">
+                        <svg width="120" height="90" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Safari share icon - a square with an upward arrow">
+                            <rect x="30" y="30" width="60" height="52" rx="8" fill="#eef4f8" stroke="#172b3a" stroke-width="3"/>
+                            <rect x="52" y="24" width="16" height="12" fill="#eef4f8"/>
+                            <line x1="60" y1="10" x2="60" y2="52" stroke="#172b3a" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M48 22 L60 10 L72 22" fill="none" stroke="#172b3a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">3</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Tap "Add to Home Screen"</h3>
+                    <p class="na-install-guide__step-text">Scroll down the list that appears until you see <strong>Add to Home Screen</strong> (a square with a plus sign) and tap it.</p>
+                    <figure class="na-install-guide__step-figure" style="margin-left: 0; margin-right: 0;">
+                        <svg width="320" height="60" viewBox="0 0 320 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Add to Home Screen row in the Safari share sheet">
+                            <rect x="4" y="6" width="312" height="48" rx="10" fill="#ffffff" stroke="#c3ccd3" stroke-width="2"/>
+                            <text x="22" y="36" font-family="Arial, sans-serif" font-size="16" fill="#172b3a">Add to Home Screen</text>
+                            <rect x="268" y="16" width="28" height="28" rx="6" fill="none" stroke="#172b3a" stroke-width="2.5"/>
+                            <line x1="282" y1="23" x2="282" y2="37" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
+                            <line x1="275" y1="30" x2="289" y2="30" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">4</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Tap "Add" — you're done</h3>
+                    <p class="na-install-guide__step-text">Tap <strong>Add</strong> in the top-right corner. The <strong>ValeVision&nbsp;3D</strong> icon now appears on your home screen like a normal app.</p>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">5</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Always open the app from the home screen icon</h3>
+                    <p class="na-install-guide__step-text">Apple does not allow links in emails to open the app automatically — they will always open a web browser instead. For the full-screen app experience, <strong>start from the ValeVision&nbsp;3D icon on your home screen</strong> every time.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- endregion ----------------------------------------------------- -->
+
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- REGION  |  Android Install Steps                              -->
+        <!-- ------------------------------------------------------------- -->
+
+        <section class="na-install-guide__card na-install-guide__section" id="naInstallGuideSectionAndroid">
+            <h2 class="na-install-guide__card-title">Installing on Android</h2>
+            <p class="na-install-guide__card-hint">Works in Google Chrome and Samsung Internet. Takes about 30 seconds.</p>
+
+            <div class="na-install-guide__one-click" id="naInstallGuideOneClickAndroid">
+                <button type="button" class="na-install-guide__action-btn" data-one-click-install>Install ValeVision 3D Now — One Tap</button>
+                <p class="na-install-guide__one-click-hint">Your browser supports one-tap install — press the button above and choose <strong>Install</strong>. Done!</p>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">1</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Open ValeVision 3D in Chrome</h3>
+                    <p class="na-install-guide__step-text">Press the button below to open the app gallery.</p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="../Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">2</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Tap the three-dot menu</h3>
+                    <p class="na-install-guide__step-text">Tap the <strong>three dots</strong> in the top-right corner of Chrome to open the browser menu.</p>
+                </div>
+            </div>
+
+            <div class="na-install-guide__step">
+                <div class="na-install-guide__step-number">3</div>
+                <div class="na-install-guide__step-body">
+                    <h3 class="na-install-guide__step-title">Tap "Add to Home screen" then "Install"</h3>
+                    <p class="na-install-guide__step-text">Choose <strong>Add to Home screen</strong> (on some phones this says <strong>Install app</strong>), then confirm with <strong>Install</strong>. The ValeVision&nbsp;3D icon appears on your home screen.</p>
+                    <figure class="na-install-guide__step-figure" style="margin-left: 0; margin-right: 0;">
+                        <svg width="320" height="60" viewBox="0 0 320 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Add to Home screen row in the Chrome menu">
+                            <rect x="4" y="6" width="312" height="48" rx="10" fill="#ffffff" stroke="#c3ccd3" stroke-width="2"/>
+                            <rect x="20" y="18" width="24" height="24" rx="5" fill="none" stroke="#172b3a" stroke-width="2.5"/>
+                            <line x1="32" y1="24" x2="32" y2="36" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
+                            <line x1="26" y1="30" x2="38" y2="30" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
+                            <text x="58" y="36" font-family="Arial, sans-serif" font-size="16" fill="#172b3a">Add to Home screen</text>
+                        </svg>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <!-- endregion ----------------------------------------------------- -->
+
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- REGION  |  After Installing Card                              -->
+        <!-- ------------------------------------------------------------- -->
+
+        <section class="na-install-guide__card na-install-guide__section" id="naInstallGuideSectionAfter">
+            <h2 class="na-install-guide__card-title">After installing — finding your project</h2>
+            <div class="na-install-guide__callout">
+                <strong>Your notification email tells you what to look for</strong>
+                Open the ValeVision&nbsp;3D app from your home screen, Start menu or taskbar, then find your project in the gallery using the <strong>project code</strong> (e.g. 63569) or the <strong>project name</strong> from the email. New projects appear automatically — no links needed.
+            </div>
+            <p class="na-install-guide__card-hint" style="margin: 0;">Any problems? Contact the Visualisation Department and we will get you up and running.</p>
+        </section>
+
+        <!-- endregion ----------------------------------------------------- -->
+
+    </main>
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Page Footer                                            -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <footer class="na-install-guide__footer">
+        &copy; 2026 Vale Garden Houses | All Rights Reserved
+    </footer>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Page Logic - Device Chooser and One-Click Install      -->
+    <!-- ----------------------------------------------------------------- -->
+
+    <script>
+        (function () {
+
+            // MODULE VARIABLES | Deferred Native Install Prompt Event
+            // ------------------------------------------------------------
+            let Na__InstallGuide__DeferredInstallPromptEvent = null;                        // <-- Cached BeforeInstallPromptEvent (Chromium only)
+            // ------------------------------------------------------------
+
+
+            // HELPER FUNCTION | Resolve Section Element for a Device Key
+            // ------------------------------------------------------------
+            function Na__InstallGuide__GetSectionForDevice(deviceKey) {
+                const sectionIds = {
+                    windows : 'naInstallGuideSectionWindows',
+                    ios     : 'naInstallGuideSectionIos',
+                    android : 'naInstallGuideSectionAndroid'
+                };
+                return document.getElementById(sectionIds[deviceKey] || '');
+            }
+            // ------------------------------------------------------------
+
+
+            // FUNCTION | Show the Steps for the Chosen Device
+            // ------------------------------------------------------------
+            function Na__InstallGuide__SelectDevice(deviceKey) {
+                const allButtons  = document.querySelectorAll('.na-install-guide__device-btn');
+                const allSections = document.querySelectorAll('.na-install-guide__section');
+
+                allButtons.forEach((buttonEl) => {
+                    buttonEl.classList.toggle('is-active', buttonEl.dataset.device === deviceKey);   // <-- Highlight chosen device
+                });
+                allSections.forEach((sectionEl) => {
+                    sectionEl.classList.remove('is-visible');                                        // <-- Hide all step sections
+                });
+
+                const chosenSection = Na__InstallGuide__GetSectionForDevice(deviceKey);
+                const afterSection  = document.getElementById('naInstallGuideSectionAfter');
+                if (chosenSection) chosenSection.classList.add('is-visible');                        // <-- Reveal device steps
+                if (afterSection) afterSection.classList.add('is-visible');                          // <-- Reveal after-install card
+
+                if (chosenSection && chosenSection.scrollIntoView) {
+                    chosenSection.scrollIntoView({ behavior: 'smooth', block: 'start' });            // <-- Bring steps into view
+                }
+            }
+            // ------------------------------------------------------------
+
+
+            // FUNCTION | Reveal One-Click Install Buttons When Prompt Available
+            // ------------------------------------------------------------
+            function Na__InstallGuide__RevealOneClickInstall() {
+                document.querySelectorAll('.na-install-guide__one-click').forEach((panelEl) => {
+                    panelEl.classList.add('is-available');                                           // <-- Show one-click panels
+                });
+            }
+            // ------------------------------------------------------------
+
+
+            // FUNCTION | Hide One-Click Install Buttons (Installed / Consumed)
+            // ------------------------------------------------------------
+            function Na__InstallGuide__HideOneClickInstall() {
+                document.querySelectorAll('.na-install-guide__one-click').forEach((panelEl) => {
+                    panelEl.classList.remove('is-available');                                        // <-- Hide one-click panels
+                });
+            }
+            // ------------------------------------------------------------
+
+
+            // FUNCTION | Trigger the Native Browser Install Prompt
+            // ------------------------------------------------------------
+            async function Na__InstallGuide__TriggerNativeInstall() {
+                const promptEvent = Na__InstallGuide__DeferredInstallPromptEvent;
+                if (!promptEvent) return;                                                            // <-- No prompt captured; manual steps apply
+
+                try {
+                    promptEvent.prompt();                                                            // <-- Show native install dialog
+                    await promptEvent.userChoice;                                                    // <-- Wait for user decision (either way, event is spent)
+                } catch (error) {
+                    console.warn('[ValeVision3D Install Guide] Native install prompt failed:', error);
+                } finally {
+                    Na__InstallGuide__DeferredInstallPromptEvent = null;                             // <-- Single-use event
+                    Na__InstallGuide__HideOneClickInstall();                                         // <-- Fall back to the manual steps
+                }
+            }
+            // ------------------------------------------------------------
+
+
+            // SUB FUNCTION | Wire Device Chooser and Install Events
+            // ------------------------------------------------------------
+            function Na__InstallGuide__BootstrapPage() {
+                document.querySelectorAll('.na-install-guide__device-btn').forEach((buttonEl) => {
+                    buttonEl.addEventListener('click', () => {
+                        Na__InstallGuide__SelectDevice(buttonEl.dataset.device);                     // <-- Show steps for chosen device
+                    });
+                });
+
+                document.querySelectorAll('[data-one-click-install]').forEach((buttonEl) => {
+                    buttonEl.addEventListener('click', Na__InstallGuide__TriggerNativeInstall);      // <-- One-click native install
+                });
+
+                window.addEventListener('beforeinstallprompt', (event) => {
+                    event.preventDefault();                                                          // <-- Suppress mini-infobar; we present our own button
+                    Na__InstallGuide__DeferredInstallPromptEvent = event;                            // <-- Cache event for the button
+                    Na__InstallGuide__RevealOneClickInstall();                                       // <-- Show one-click panels
+                });
+
+                window.addEventListener('appinstalled', () => {
+                    Na__InstallGuide__DeferredInstallPromptEvent = null;                             // <-- Event no longer valid
+                    Na__InstallGuide__HideOneClickInstall();                                         // <-- App installed; nothing to offer
+                });
+
+                const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+                if (isStandalone) {
+                    Na__InstallGuide__HideOneClickInstall();                                         // <-- Already running as the installed app
+                }
+            }
+            // ------------------------------------------------------------
+
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', Na__InstallGuide__BootstrapPage, { once: true });
+            } else {
+                Na__InstallGuide__BootstrapPage();
+            }
+
+        })();
+    </script>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+</body>
+</html>

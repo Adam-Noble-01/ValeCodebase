@@ -22,6 +22,7 @@
     import { Na__Feature__EmailWorkers__FetchAndDecryptContacts } from './Na__Feature__EmailWorkers__AddressBook__Decryptor__.js';
     import { Na__Feature__EmailWorkers__EnsureAuthorized } from './Na__Feature__EmailWorkers__AuthManager__.js';
     import { Na__Feature__ShareProjectLink__DownloadHtmlFile } from '../61__Feature__ShareProjectLink/Na__Feature__ShareProjectLink__DownloadEmail__Logic__.js';
+    import { Na__Feature__AppNotificationEmail__BuildSendPayload } from '../63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__PayloadBuilder__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -166,6 +167,53 @@
             }
         });
 
+        // EVENT HANDLER | Send App Notification Email (New Pipeline - No Project Link)
+        // ------------------------------------------------------------
+        form.btnSendNotification.addEventListener('click', async () => {
+            const selectedRecipients = autocomplete.getRecipients();
+            if (selectedRecipients.length === 0) {
+                showToast('Please add at least one recipient.', true);
+                return;
+            }
+
+            let authToken;
+            try {
+                authToken = await Na__Feature__EmailWorkers__EnsureAuthorized(apiClient, rootElement, showToast);
+            } catch (authError) {
+                if (authError?.message === 'Authorization cancelled.') return;
+                showToast(authError?.message || 'Authorization failed.', true);
+                return;
+            }
+
+            try {
+                form.btnSendNotification.disabled = true;
+                form.btnSendNotification.textContent = 'Sending...';
+
+                const payload = await Na__Feature__AppNotificationEmail__BuildSendPayload({
+                    selectedRecipients,
+                    notesRaw                  : form.getNotesValue(),
+                    recipientNamesRawOverride : form.getGreetingNamesValue()
+                });
+
+                const sendResult = await apiClient.sendEmail(payload, authToken);
+                const sentCount = Number(sendResult?.sentCount || selectedRecipients.length);
+                showToast(`App notification sent to ${sentCount} recipient${sentCount === 1 ? '' : 's'}.`);
+                autocomplete.clear();
+                form.notesInput.value = '';
+                closeOverlay();
+            } catch (error) {
+                console.error('[ValeVision3D] Send app notification failed:', error);
+                showToast(error?.message || 'App notification send failed. Check API access and credentials.', true);
+            } finally {
+                form.btnSendNotification.disabled = false;
+                form.btnSendNotification.textContent = 'Send app notification';
+            }
+        });
+        // ------------------------------------------------------------
+
+
+        // EVENT HANDLER | Send Legacy Share-Link Email (Kept As-Is By Design)
+        // ------------------------------------------------------------
         form.btnSend.addEventListener('click', async () => {
             const selectedRecipients = autocomplete.getRecipients();
             if (selectedRecipients.length === 0) {

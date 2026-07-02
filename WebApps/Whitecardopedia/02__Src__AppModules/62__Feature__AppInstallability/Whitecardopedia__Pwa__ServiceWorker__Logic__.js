@@ -29,6 +29,11 @@
 // 2026 - Version 1.0.0
 // - Initial PWA service worker with shell / thumbs / data / models cache buckets.
 //
+// 02-Jul-2026 - Version 1.4.0
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-02-1 (force shell cache eviction after
+//   the manifest gained "handle_links": "preferred" and an explicit "id": "/";
+//   ensures browsers re-read the updated manifest rather than a stale cached copy).
+//
 // 01-Jul-2026 - Version 1.3.0
 // - PWA_SW_VERSION_TOKEN bumped to 2026-07-01-1 (force shell cache eviction after
 //   the gallery filter drawer responsive reflow fix; ensures the corrected
@@ -54,7 +59,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-07-01-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-07-02-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

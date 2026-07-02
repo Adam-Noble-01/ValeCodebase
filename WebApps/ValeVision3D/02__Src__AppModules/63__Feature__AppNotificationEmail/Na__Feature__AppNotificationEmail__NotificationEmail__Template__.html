@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALEVISION3D - APP NOTIFICATION EMAIL (RUNTIME TEMPLATE)
+     =============================================================================
+
+     FILE       : Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html
+     NAMESPACE  : ValeVision3D
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Tokenised HTML for "project added to the app" notification emails
+     CREATED    : Jul-2026
+
+     DESCRIPTION:
+     - Second-generation notification email: deliberately contains NO direct
+       project link. It tells the recipient the project is now available inside
+       the installed ValeVision 3D app, steering everyone to the PWA rather
+       than browser-opened share links (which cannot reliably launch the app).
+     - Landscape card layout: logo column on the left, project details on the
+       right (stacks vertically on narrow phone clients).
+     - Footer carries the "Need Help Installing The ValeVision App?" link to
+       the graphical install guide page.
+
+     TOKENS (replaced by Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js):
+     - __RECIPIENT_NAMES_HTML__  — e.g. Hi <strong>…</strong>,
+     - __PROJECT_META_HTML__     — Project Code / Project Name (two lines)
+     - __SPECIAL_NOTES_BLOCK__   — Vale-blue card or empty
+     - __INSTALL_GUIDE_URL__     — Absolute URL of the app install guide page
+
+     =============================================================================
+-->
+<html lang="en">
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta Tags and Template Styles -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>ValeVision3D — Project added to the app</title>
+    <style>
+        /* ----------------------------------------------------------------- */
+        /* REGION | Core Email Card Layout Styles */
+        /* ----------------------------------------------------------------- */
+        :root {
+            color-scheme                   : light;
+        }
+
+        body {
+            font-family                    : Arial, sans-serif;
+            background-color               : #f5f5f5;
+            padding-top                    : 8vh;
+            padding-bottom                 : 8vh;
+            padding-left                   : 10px;
+            padding-right                  : 10px;
+            margin                         : 0;
+            display                        : flex;
+            justify-content                : center;
+            align-items                    : flex-start;
+            min-height                     : 100vh;
+        }
+        /* endregion --------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------- */
+        /* SUB REGION | Adaptive Layout Styles (Phone / Narrow Width) */
+        /* ----------------------------------------------------------------- */
+        @media only screen and (max-width: 540px) {
+            .vv3dn-email-logo-cell,
+            .vv3dn-email-content-cell {
+                display                    : block !important;
+                width                      : 100% !important;
+            }
+
+            .vv3dn-email-logo-cell {
+                padding                    : 24px 24px 0 !important;
+                text-align                 : center !important;
+            }
+
+            .vv3dn-email-logo-cell img {
+                margin                     : 0 auto !important;
+            }
+        }
+        /* endregion --------------------------------------------------------- */
+
+        /* ----------------------------------------------------------------- */
+        /* REGION | Email Client Dark-Mode Safety Overrides */
+        /* ----------------------------------------------------------------- */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color           : #f5f5f5 !important;
+            }
+
+            .vv3dn-email-root .vv3dn-email-white,
+            .vv3dn-email-root .vv3dn-email-white td {
+                background-color           : #ffffff !important;
+            }
+
+            .vv3dn-email-root .vv3dn-email-inner,
+            .vv3dn-email-root .vv3dn-email-inner td {
+                background-color           : #ffffff !important;
+                color                      : #172b3a !important;
+            }
+
+            .vv3dn-email-root .vv3dn-email-inner a {
+                color                      : #336699 !important;
+            }
+
+            .vv3dn-email-root .vv3dn-email-footer {
+                background-color           : #f5f5f5 !important;
+                color                      : #656565 !important;
+                border-top-color           : #e0e0e0 !important;
+            }
+        }
+
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-white,
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-white td,
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-inner,
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-inner td {
+            background-color               : #ffffff !important;
+        }
+
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-inner,
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-inner td {
+            color                          : #172b3a !important;
+        }
+
+        [data-ogsc] .vv3dn-email-root .vv3dn-email-footer {
+            background-color               : #f5f5f5 !important;
+            color                          : #656565 !important;
+        }
+        /* endregion --------------------------------------------------------- */
+    </style>
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Email Card HTML Markup -->
+<!-- ----------------------------------------------------------------- -->
+<body>
+                <!-- ========================================================= -->
+                <!-- VALEVISION3D APP NOTIFICATION EMAIL - START               -->
+                <!-- ========================================================= -->
+                <table class="vv3dn-email-root" cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; max-width: 640px; width: 100%; margin: 10px auto 20px; border: 2px solid #172b3a;">
+                    <tr>
+                        <td class="vv3dn-email-white" bgcolor="#ffffff" style="background-color: #ffffff !important; padding: 0;">
+                            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+                                <tr>
+                                    <td class="vv3dn-email-logo-cell" width="210" valign="middle" bgcolor="#ffffff" style="background-color: #ffffff !important; width: 210px; padding: 26px 10px 26px 26px; vertical-align: middle;">
+                                        <img src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/Logo__ValeVision3d/FeatureLogo__ValeVision3d__EmailLogo__NoCTA__NoBorder__1.1.0__.png"
+                                             alt="ValeVision 3D"
+                                             width="174"
+                                             border="0"
+                                             style="display: block; width: 174px; max-width: 100%; height: auto;">
+                                    </td>
+                                    <td class="vv3dn-email-content-cell vv3dn-email-inner" valign="middle" bgcolor="#ffffff" style="background-color: #ffffff !important; color: #172b3a; padding: 26px 28px 26px 14px; vertical-align: middle;">
+                                        <p style="margin: 0 0 14px; padding: 0; color: #172b3a; font-size: 16px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            __RECIPIENT_NAMES_HTML__
+                                        </p>
+                                        __PROJECT_META_HTML__
+                                        <p style="margin: 0 0 12px; padding: 0; color: #172b3a; font-size: 13px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            This project has been added to the <strong>ValeVision&nbsp;3D&nbsp;App</strong> and is ready to view now.
+                                        </p>
+                                        <p style="margin: 0 0 12px; padding: 0; color: #172b3a; font-size: 13px; line-height: 1.6; font-family: Arial, sans-serif;">
+                                            Open the <strong>ValeVision&nbsp;3D</strong> app on your device and find the project in the gallery using the project code or name above.
+                                        </p>
+                                        __SPECIAL_NOTES_BLOCK__
+                                        <p style="margin: 0; padding: 0; color: #999999; font-size: 11px; line-height: 1.5; font-family: Arial, sans-serif;">
+                                            Please use the installed app rather than opening links in a web browser — the app gives the best performance and always has the latest projects.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="vv3dn-email-footer" align="center" bgcolor="#f5f5f5" style="background-color: #f5f5f5 !important; padding: 14px 30px; border-top: 1px solid #e0e0e0;">
+                            <p align="center" style="margin: 0 0 6px; padding: 0; font-size: 12px; line-height: 1.5; font-family: Arial, sans-serif;">
+                                <a href="__INSTALL_GUIDE_URL__" style="color: #336699; text-decoration: underline;">
+                                    Need Help Installing The ValeVision App?
+                                </a>
+                            </p>
+                            <p align="center" style="margin: 0; padding: 0; color: #656565; font-size: 12px; line-height: 1.5; font-family: Arial, sans-serif;">
+                                &copy; 2026 Vale Garden Houses | All Rights Reserved
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <!-- ========================================================= -->
+                <!-- VALEVISION3D APP NOTIFICATION EMAIL - END                 -->
+                <!-- ========================================================= -->
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+</html>

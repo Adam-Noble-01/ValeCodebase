@@ -153,6 +153,11 @@
         btnGenerate.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--secondary';
         btnGenerate.textContent = 'Generate & download email';
 
+        const btnSendNotification = document.createElement('button');
+        btnSendNotification.type = 'button';
+        btnSendNotification.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--primary';
+        btnSendNotification.textContent = 'Send app notification';
+
         const btnSend = document.createElement('button');
         btnSend.type = 'button';
         btnSend.className = 'na-email-workers-overlay__btn na-email-workers-overlay__btn--primary';
@@ -169,6 +174,7 @@
 
         actions.appendChild(btnCancel);
         actions.appendChild(btnGenerate);
+        actions.appendChild(btnSendNotification);
         actions.appendChild(btnSend);
 
         panel.appendChild(antiAutofillTrapUser);
@@ -209,6 +215,7 @@
             panel,
             btnCancel,
             btnGenerate,
+            btnSendNotification,
             btnSend,
             recipientInput,
             chipsContainer,

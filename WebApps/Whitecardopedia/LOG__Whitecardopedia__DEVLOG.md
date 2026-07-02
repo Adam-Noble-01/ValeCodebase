@@ -19,6 +19,22 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.10 - 02-Jul-2026 - PWA Manifest: Link-Handling Hint + Explicit App Id
+
+### Overview
+Two additive manifest changes supporting the new ValeVision3D app-notification email pipeline (see ValeVision3D v2.9.7). Neither change affects existing installs.
+
+### Changes
+- **`Whitecardopedia__Pwa__Manifest__.webmanifest`**
+  - `"handle_links": "preferred"` added — declarative hint that in-scope links should open in the installed app. Microsoft Edge honours it at install time (sets "Open links in app" automatically); Chrome currently ignores it in favour of its per-app user setting; iOS ignores it entirely. Zero risk: unknown manifest members are skipped by non-supporting browsers.
+  - `"id": "../../../"` → `"id": "/"` — explicit identity pin. Per the manifest spec, `id` is resolved against the start URL's *origin*, so the old relative value already computed to the origin root; `"/"` resolves to the **identical** app id, meaning existing installs on colleagues' machines keep updating (no orphaning). The value is now explicit and immune to future folder reshuffles. **This id is write-once — never change it; changing it orphans every existing install.**
+- **`Whitecardopedia__Pwa__ServiceWorker__Logic__.js` (v1.4.0)** — `PWA_SW_VERSION_TOKEN` bumped to `2026-07-02-1` so the precached manifest is force-evicted and browsers re-read the updated copy.
+
+### Honest Limitations (documented for future reference)
+- No manifest field can make email links open the installed PWA on iOS/iPadOS — that capability is exclusive to native apps (Universal Links). On Windows, link capture remains a per-machine, per-browser setting. This is exactly why the notification-email pipeline (ValeVision3D v2.9.7) drops direct links in favour of "open the app" instructions.
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.6.9 - 01-Jul-2026 - Feature: Breadcrumb Navigation Replaces "Back to Gallery" Button
 
 ### Overview

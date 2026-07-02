@@ -1,5 +1,5 @@
 {
-    "id": "../../../",
+    "id": "/",
     "name": "ValeVision 3D",
     "short_name": "ValeVision 3D",
     "description": "ValeVision 3D project viewer and Whitecardopedia review suite for Vale Garden Houses architectural projects.",
@@ -10,6 +10,7 @@
     "scope": "../../../",
     "display": "standalone",
     "display_override": ["standalone", "minimal-ui", "browser"],
+    "handle_links": "preferred",
     "launch_handler": {
         "client_mode": "navigate-existing"
     },

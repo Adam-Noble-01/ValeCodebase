@@ -2347,9 +2347,25 @@
           "id": "new-1782975716545",
           "date": "2026-07-02",
           "startTime": "08:00",
-          "endTime": "09:30",
+          "endTime": "10:00",
           "title": "Whitecard |  Goodson",
           "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1782986190032",
+          "date": "2026-07-02",
+          "startTime": "10:00",
+          "endTime": "11:15",
+          "title": "Dev |  PWA Update & Emailer",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1782986205182",
+          "date": "2026-07-02",
+          "startTime": "11:45",
+          "endTime": "15:15",
+          "title": "Whitecard |  Kay",
+          "color": "na-shift-color-cyan"
         }
       ]
     }

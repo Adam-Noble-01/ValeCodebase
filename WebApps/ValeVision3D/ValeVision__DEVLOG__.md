@@ -2,6 +2,34 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.7 - 02-Jul-2026 - App Notification Email System + Install Guide Page
+
+### Overview
+Second-generation email pipeline that works *with* the platform limitations on PWA link-capture instead of against them. Direct share links can never reliably open the installed app (impossible on iOS/iPadOS; opt-in per machine on Windows), so the new **"Send app notification"** email deliberately contains **no project link** — it tells recipients the project has been added to the **ValeVision 3D App** (project code + name) and steers them to open the installed app. The legacy link-share email is kept fully intact as a separate option in the same overlay.
+
+### Added
+- **`63__Feature__AppNotificationEmail/` (new module folder)** — self-contained second emailer, no imports from the legacy 61 generator so either system can be retired independently:
+  - `Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html` — landscape card (640px, logo column left / content right, stacks on phones), new `FeatureLogo__ValeVision3d__EmailLogo__NoCTA__NoBorder__1.1.0__.png` GH-Pages logo, footer link "Need Help Installing The ValeVision App?" → install guide page. Same dark-mode safety overrides as the legacy template (`vv3dn-` class prefix).
+  - `Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js` — token replacement (`__RECIPIENT_NAMES_HTML__`, `__PROJECT_META_HTML__`, `__SPECIAL_NOTES_BLOCK__`, `__INSTALL_GUIDE_URL__`), subject `ValeVision3D App | New Project Added | <Name> - <Code>`, install-guide URL resolved relative to the current page so it is correct on every deployment surface.
+  - `Na__Feature__AppNotificationEmail__PayloadBuilder__.js` — mirrors the legacy payload shape (`{ to, subject, htmlBody }`) so the existing Cloudflare Worker `/api/email/send` endpoint handles both systems with **zero server-side changes**. Reuses only `Na__Feature__ShareProjectLink__GetShareContext` for the `?project=` context.
+- **`install-guide.html` (new page, ValeVision3D root)** — beginner-friendly graphical install guide in the Vale Design Suite style. Asks "Which device do you need help with?" first (Windows 11 / iPhone & iPad / Android), then reveals only that device's numbered steps with inline SVG illustrations (address-bar install icon, Safari share sheet, Chrome menu). Loads the shared PWA head stack (manifest + SW registrar) so the page itself is installable; a one-click "Install ValeVision 3D Now" button appears automatically on Chromium via `beforeinstallprompt`. iOS section carries the honest warning that email links can never auto-open the app on Apple devices — always launch from the home-screen icon.
+
+### Changed
+- **`Na__Feature__EmailWorkers__FormOverlay__.js`** — new `btnSendNotification` ("Send app notification", primary style) between Generate & download and Send email; actions row already flex-wraps.
+- **`Na__Feature__EmailWorkers__UiInteractionLogic__.js`** — wires the new button: same auth flow (`EnsureAuthorized`), same API client, new payload builder. Legacy Send email handler untouched by design.
+
+### Cross-reference
+- **Whitecardopedia v0.6.10** — PWA manifest gains `"handle_links": "preferred"` (Edge auto-routes in-scope links into the installed app at install time) and an explicit `"id": "/"` (identity pin, resolves identically to the previous relative id so existing installs are NOT orphaned). SW cache token bumped to `2026-07-02-1`.
+
+### Files Changed
+- `02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__NotificationEmail__Template__.html` (new)
+- `02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__GenerateEmail__Logic__.js` (new)
+- `02__Src__AppModules/63__Feature__AppNotificationEmail/Na__Feature__AppNotificationEmail__PayloadBuilder__.js` (new)
+- `install-guide.html` (new)
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__FormOverlay__.js`
+- `02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.6 - 01-Jul-2026 - Per-Scene Tag-Driven Model Toggles
 
 ### Overview

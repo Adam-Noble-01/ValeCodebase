@@ -85,7 +85,7 @@ import {
         "ValeVision__FirstFloorFurniture",           // <-- Tag 40-48: First floor furniture
         "ValeVision__FirstFloorDecor",               // <-- Tag 49:    First floor high detail
         "ValeVision__Vegetation",                    // <-- Tag 50-59: Vegetation
-        "ValeVision__SceneContextual"                // <-- Tag 60-70: Scene context
+        "ValeVision__SceneContextual"                // <-- Tag 61-70: Scene context
     ];
     // ------------------------------------------------------------
 

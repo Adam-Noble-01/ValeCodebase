@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "02-Jul-2026 at 09:52",
+    "generatedAt": "02-Jul-2026 at 17:49",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1767,6 +1767,20 @@
             "hasGlb_R2": true,
             "imageCount": 6,
             "lastSynced": "02-Jul-2026 at 09:52"
+        },
+        {
+            "folderId": "2026/63752__Kay",
+            "year": "2026",
+            "projectCode": "63752",
+            "name": "Kay",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 6,
+            "lastSynced": "02-Jul-2026 at 17:49"
         }
     ]
 }

@@ -2355,15 +2355,23 @@
           "id": "new-1782986190032",
           "date": "2026-07-02",
           "startTime": "10:00",
-          "endTime": "11:15",
+          "endTime": "12:30",
           "title": "Dev |  PWA Update & Emailer",
           "color": "na-shift-color-slate"
         },
         {
+          "id": "new-1782992257730",
+          "date": "2026-07-02",
+          "startTime": "12:45",
+          "endTime": "13:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
           "id": "new-1782986205182",
           "date": "2026-07-02",
-          "startTime": "11:45",
-          "endTime": "15:15",
+          "startTime": "13:00",
+          "endTime": "18:00",
           "title": "Whitecard |  Kay",
           "color": "na-shift-color-cyan"
         }

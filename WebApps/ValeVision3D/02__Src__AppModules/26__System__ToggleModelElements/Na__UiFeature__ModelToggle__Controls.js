@@ -69,7 +69,8 @@
         "ValeVision__FirstFloorDecor"                  : "First Floor Decor",      // <-- Tag 49
         "ValeVision__Vegetation"                       : "Vegetation",             // <-- Tag 50-59
         "ValeVision__SiteVegetation2D"                 : "Site Vegetation 2D",     // <-- Tag 09 camera-follow billboards
-        "ValeVision__SceneContextual"                  : "Scene Context",          // <-- Tag 60-70
+        "ValeVision__SceneEntourage2D"                 : "Scene Entourage 2D",     // <-- Tag 60 camera-follow billboards
+        "ValeVision__SceneContextual"                  : "Scene Entourage",        // <-- Tag 61-70
         "ValeVision__LegacyModel"                      : "Model"                   // <-- Legacy fallback
     };
     // ------------------------------------------------------------

@@ -46,7 +46,7 @@
         // ---------------------------------------------------------------
         React.useEffect(() => {
             async function fetchProjects() {
-                const loadedProjects = await loadAllProjects();              // <-- Load all projects
+                const loadedProjects = await loadAllProjectsIncludingDisabled();  // <-- Editor sees disabled projects too
                 setProjects(loadedProjects);                                 // <-- Update projects state
                 setLoading(false);                                           // <-- Set loading to false
             }
@@ -77,15 +77,28 @@
         // SUB FUNCTION | Handle Save Success
         // ---------------------------------------------------------------
         const handleSaveSuccess = (updatedProject) => {
+            const wasRenamed = selectedProject && selectedProject.folderId !== updatedProject.folderId;
+
+            setSelectedProject(null);                                        // <-- Clear selected project
+            setEditorView(EDITOR_VIEWS.SELECTION);                           // <-- Return to selection view
+
+            if (wasRenamed) {
+                // RENAMED | folderId changed — a simple in-place map patch would leave
+                // a stale duplicate under the OLD key, so force a full reload instead.
+                setLoading(true);
+                loadAllProjectsIncludingDisabled().then((loadedProjects) => {
+                    setProjects(loadedProjects);
+                    setLoading(false);
+                });
+                return;
+            }
+
             // UPDATE PROJECT IN LOCAL STATE
             setProjects(prevProjects => 
                 prevProjects.map(p => 
                     p.folderId === updatedProject.folderId ? updatedProject : p
                 )
             );                                                               // <-- Update projects array
-            
-            setSelectedProject(null);                                        // <-- Clear selected project
-            setEditorView(EDITOR_VIEWS.SELECTION);                           // <-- Return to selection view
         };
         // ---------------------------------------------------------------
         
@@ -181,7 +194,7 @@
                                 filteredProjects.map((project) => (
                                 <div 
                                     key={project.folderId}
-                                    className="project-card"
+                                    className={`project-card ${project.enabled === false ? 'project-card--disabled' : ''}`}
                                     onClick={() => handleSelectProject(project)}
                                 >
                                     <div className={`project-card__image-container ${getImageEffectClass(project)}`}>
@@ -192,6 +205,9 @@
                                         />
                                         {isHandDrawnProject(project) && (
                                             <div className="project-card__white-overlay"></div>
+                                        )}
+                                        {project.enabled === false && (
+                                            <span className="project-card__disabled-badge">Hidden from Gallery</span>
                                         )}
                                     </div>
                                     

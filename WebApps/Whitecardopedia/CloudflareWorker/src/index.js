@@ -13,6 +13,8 @@
 // - Handles CORS preflight for cross-origin requests from the localhost dev server
 // - Validates the X-Editor-Api-Key header on all non-OPTIONS write requests
 // - Routes POST /api/editor/projects/{folderId} to the ProjectEditor handler
+// - Routes POST /api/editor/projects/{folderId}/visibility to the ProjectVisibility handler
+// - Routes POST /api/editor/projects/{folderId}/rename to the ProjectRename handler
 // - GET /api/editor/health returns a simple health-check response
 //
 // ENVIRONMENT SECRETS (set via wrangler secret put):
@@ -22,6 +24,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 07-Jul-2026 - Version 1.2.0
+// - Added POST /api/editor/projects/{folderId}/visibility (gallery enabled toggle).
+// - Added POST /api/editor/projects/{folderId}/rename (live R2 folder move).
+// - Routes matched before the generic save route so the longer paths win.
+//
 // 26-Jun-2026 - Version 1.1.0
 // - CORS logic extracted to shared CloudflareHelper__Cors__.js (DRY).
 // - Now permits localhost AND 127.0.0.1 on any port (fixes dev CORS rejection).
@@ -32,9 +39,13 @@
 // =============================================================================
 
 // @delegate: ./handlers/CloudflareHandler__ProjectEditor__.js
+// @delegate: ./handlers/CloudflareHandler__ProjectVisibility__.js
+// @delegate: ./handlers/CloudflareHandler__ProjectRename__.js
 // @delegate: ./CloudflareHelper__Cors__.js
 
 import { Na__CloudflareHandler__ProjectEditor__HandleSave } from './handlers/CloudflareHandler__ProjectEditor__.js';
+import { Na__CloudflareHandler__ProjectVisibility__HandleToggle } from './handlers/CloudflareHandler__ProjectVisibility__.js';
+import { Na__CloudflareHandler__ProjectRename__HandleRename } from './handlers/CloudflareHandler__ProjectRename__.js';
 import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
 
 // -----------------------------------------------------------------------------
@@ -115,6 +126,27 @@ import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
                     JSON.stringify({ error: 'Unauthorized — invalid or missing X-Editor-Api-Key' }),
                     401, env, requestOrigin
                 );
+            }
+
+            // ROUTE | POST /api/editor/projects/{folderId}/visibility
+            // Matched BEFORE the generic save route below so the longer,
+            // more specific "/visibility" suffix always wins.
+            const visibilityMatch = url.pathname.match(/^\/api\/editor\/projects\/(.+)\/visibility$/);
+
+            if (method === 'POST' && visibilityMatch) {
+                const folderId = decodeURIComponent(visibilityMatch[1]);     // <-- Decode: '2026%2F63592__Name' → '2026/63592__Name'
+                return Na__CloudflareHandler__ProjectVisibility__HandleToggle(request, env, folderId, requestOrigin);
+            }
+
+            // ROUTE | POST /api/editor/projects/{folderId}/rename
+            // Matched BEFORE the generic save route below so the longer,
+            // more specific "/rename" suffix always wins. {folderId} here is
+            // the OLD (current) folderId; the new one travels in the body.
+            const renameMatch = url.pathname.match(/^\/api\/editor\/projects\/(.+)\/rename$/);
+
+            if (method === 'POST' && renameMatch) {
+                const folderId = decodeURIComponent(renameMatch[1]);         // <-- Decode: '2026%2F63592__Name' → '2026/63592__Name'
+                return Na__CloudflareHandler__ProjectRename__HandleRename(request, env, folderId, requestOrigin);
             }
 
             // ROUTE | POST /api/editor/projects/{folderId}

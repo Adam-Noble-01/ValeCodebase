@@ -69,8 +69,12 @@
         "name"         : "Obsidian Notebook |  General Knowledge Base",
         "Description"  : "This is a general knowledge base for the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project. It is a collection of notes and information that are related to the Vale project.",
         "path"         : "C:/Users/adamw/OneDrive - Vale Garden Houses Limited/Documents/Remote__KnowledgeBase__General"
-	  }
-      
+	  },
+      {
+        "path"         : "D:/11_RefLib__StudioRepository__RemoteSystem/NaWeb/na-apps/70__ProductionTools",
+        "name"         : "Production Tools |  Noble Architecture Production Tools",
+        "description"  : "A collection of full feature applications used for various production tasks, Includes VectorForge & CAD Auditing Tools."
+      }
 	],
 	"settings": {
 	  "editor.tabSize": 4,

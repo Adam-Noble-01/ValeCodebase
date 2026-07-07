@@ -2374,6 +2374,22 @@
           "endTime": "18:00",
           "title": "Whitecard |  Kay",
           "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1783418322938",
+          "date": "2026-07-07",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "Dev |  CAD Solution",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1783418338441",
+          "date": "2026-07-07",
+          "startTime": "11:30",
+          "endTime": "14:30",
+          "title": "Whitecard |  Hanson",
+          "color": "na-shift-color-orange"
         }
       ]
     }

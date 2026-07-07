@@ -19,6 +19,37 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.11 - 07-Jul-2026 - Feature: Live Project Rename + Fuller Project Editor
+
+### Overview
+The Project Editor could already write `project.json` live to R2 via the `whitecardopedia-editor-api` Worker, but it had three real gaps: editing "Project Name"/"Project Code" never moved the actual R2 folder (so the folder path drifted from the displayed name forever), the `productionData.designer` field had no form control at all despite driving the gallery filter, and the Concept Artist/Production Input dropdowns rendered blank whenever the stored value wasn't in the canonical options list (e.g. legacy template defaults) even though the data was intact. This release closes all three gaps and adds a gallery-visibility (`enabled`) toggle, without requiring any changes to ValeVision3D or the ValeVision Cloud Sync SketchUp plugin — both remain fully data-driven off the master index / masterConfig / `project.json`.
+
+### Changes
+- **Live project rename** — Save now detects when the edited Project Code/Name would move the live `folderId` (e.g. `2026/63592__Bressard-Kayode` -> `2026/63592__Bressard-Kayode Scheme-01`, matching the existing "Fenner Scheme-01/02/03" naming convention already in the master config) and shows an inline confirm-and-rename panel with an editable proposed folder path before doing anything. Confirming performs an atomic move on R2 (stream-copies every image/thumbnail/GLB to the new prefix, rewrites the folder segment inside `valeVision_ModelUrls`, writes the corrected `project.json`, and only deletes the old objects once every new write has succeeded), patches the master index and masterConfig mirrors, then mirrors the same move to the local `Projects/` folder + local index/config copies via Flask. A rename never happens silently — un-renamed saves are completely unaffected.
+- **Designer field added** — `productionData.designer` (used by the gallery filter, previously invisible in this form) is now a proper dropdown sourced from `Na__AppData__ValeDesignersList__Main.json`, wired identically to Concept Artist.
+- **Fixed dropdown-vs-stored-value mismatch** — Production Input / Concept Artist / Designer selects now always inject the currently-stored value as a selectable option even when it isn't in the canonical list (e.g. `"Default Concept Artist"`), so the dropdown never silently shows blank for data that actually exists.
+- **Gallery visibility (`enabled`) toggle** — added to the form and applied via new dedicated Worker/Flask endpoints, independent of the content save/rename. The editor's project picker now also lists disabled projects (with a "Hidden from Gallery" badge) via a new `loadAllProjectsIncludingDisabled()` loader — previously a disabled project could not even be found in the editor to re-enable it.
+- **Read-only Project Info panel** — surfaces folder path, asset home, image count, GLB presence and last-synced date from the master index for transparency.
+
+### Architecture Notes
+- No GitHub Pages push is required for any of this — R2 remains the live SSOT and the local `Projects/`/index/masterConfig copies are best-effort mirrors kept in step for the next commit, matching the existing two-phase save pattern.
+- Renaming only affects the live web/R2 copy. The ValeVision Cloud Sync SketchUp plugin derives its target folder purely from the local SketchUp project folder's name on disk and is unaware of this move — continuing to sync the same scheme after a rename requires renaming the local SketchUp folder to match (see the plugin's own DEVLOG).
+
+### Files Changed
+- `CloudflareWorker/src/CloudflareHelper__MasterConfigR2__.js` (new)
+- `CloudflareWorker/src/CloudflareHelper__MasterIndexR2__.js` (new)
+- `CloudflareWorker/src/CloudflareHelper__BuildManifest__.js` (new)
+- `CloudflareWorker/src/handlers/CloudflareHandler__ProjectVisibility__.js` (new)
+- `CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js` (new)
+- `CloudflareWorker/src/index.js` (v1.2.0)
+- `server.py` — added `/api/projects/<folder>/visibility` and `/api/projects/<folder>/rename`
+- `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js` (v0.2.6)
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Main.jsx`
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx` (v3.0.0)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Tools__.css`
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.6.10 - 02-Jul-2026 - PWA Manifest: Link-Handling Hint + Explicit App Id
 
 ### Overview

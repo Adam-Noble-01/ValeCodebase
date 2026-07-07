@@ -25,6 +25,8 @@
 # - GET  /api/projects/discover   : Discover all project folders by scanning filesystem
 # - GET  /api/projects/<folder>   : Get specific project.json data
 # - POST /api/projects/<folder>   : Save updated project.json data (local mirror — called AFTER R2 write)
+# - POST /api/projects/<folder>/visibility : Mirror a gallery-enabled toggle into the local masterConfig/index copies
+# - POST /api/projects/<folder>/rename     : Mirror a live R2 folder rename into the local Projects/ + masterConfig/index copies
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
 # - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
 # - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
@@ -39,6 +41,7 @@
 import os
 import sys
 import json
+import shutil
 import threading
 import time
 from pathlib import Path
@@ -64,6 +67,7 @@ SERVER_PORT             = 8000                                           # <-- D
 SERVER_HOST             = '127.0.0.1'                                    # <-- Localhost binding
 PROJECTS_BASE_FOLDER    = 'Projects'                                     # <-- Projects base folder (contains year subfolders)
 MASTER_CONFIG_PATH      = '02__Src__AppModules/03__AppData/Na__AppData__MasterConfig__Main.json'  # <-- Master config file path
+MASTER_INDEX_PATH       = '02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json'  # <-- Master index GH fallback copy
 CLOUDFLARE_ENV_PATH     = 'Tools__DevUtils/API__Cloudflare/Token__CloudflareAPI.env'              # <-- Cloudflare API credentials env file
 REFRESH_COUNTER         = 0                                              # <-- Refresh counter for clients
 # ------------------------------------------------------------
@@ -448,6 +452,159 @@ def save_project(folder_id):
             'error': 'Invalid JSON data provided'                        # <-- Invalid JSON in request
         }), 400
         
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Mirror Gallery Visibility Toggle Locally
+# ------------------------------------------------------------
+# Best-effort local mirror of the Worker's masterConfig/index visibility
+# patch (R2 is the SSOT — see CloudflareHandler__ProjectVisibility__.js).
+# Keeps the git-tracked local copies consistent for the next GH Pages push.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>/visibility', methods=['POST'])
+def set_project_visibility(folder_id):
+    """Patch the local masterConfig + master index enabled flag (local mirror only)"""
+    try:
+        data = request.get_json()                                        # <-- Get JSON from request body
+
+        if not data or 'enabled' not in data or not isinstance(data['enabled'], bool):
+            return jsonify({
+                'error': 'Missing or invalid required field: enabled (boolean)'  # <-- Validation error
+            }), 400
+
+        enabled     = data['enabled']                                    # <-- New visibility flag
+        base_dir    = os.path.dirname(os.path.abspath(__file__))         # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                       # <-- Load local master config
+
+        found = False
+        for project in config.get('projects', []):
+            if project.get('folderId') == folder_id:
+                project['enabled'] = enabled                             # <-- Patch matching entry only
+                found = True
+                break
+
+        if not found:
+            return jsonify({
+                'error': f'folderId not found in local master config: {folder_id}'  # <-- No matching entry
+            }), 404
+
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)           # <-- Write patched config back
+
+        # BEST-EFFORT | Keep the local master index fallback copy in step too
+        try:
+            index_path = os.path.join(base_dir, MASTER_INDEX_PATH)       # <-- Build index path
+            with open(index_path, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)                                # <-- Load local index copy
+            for entry in index_data.get('projects', []):
+                if entry.get('folderId') == folder_id:
+                    entry['enabled'] = enabled                           # <-- Patch matching entry only
+                    break
+            with open(index_path, 'w', encoding='utf-8') as f:
+                json.dump(index_data, f, indent=4, ensure_ascii=False)   # <-- Write patched index back
+        except Exception:
+            pass                                                         # <-- Non-fatal — masterConfig patch above matters most
+
+        return jsonify({
+            'success': True,                                             # <-- Success flag
+            'message': f'Local visibility mirror updated for {folder_id}'  # <-- Success message
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Mirror Project Folder Rename Locally
+# ------------------------------------------------------------
+# Best-effort local mirror of the Worker's live R2 folder move (R2 is the
+# SSOT — see CloudflareHandler__ProjectRename__.js). Moves whatever local
+# mirror content exists (often just project.json for R2-only projects),
+# writes the corrected project.json, and patches the local masterConfig +
+# master index fallback copies so the next GH Pages push stays consistent.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:old_folder_id>/rename', methods=['POST'])
+def rename_project_mirror(old_folder_id):
+    """Move the local project folder mirror to match a Worker-side R2 rename"""
+    try:
+        data = request.get_json()                                        # <-- Get JSON from request body
+
+        if not data or 'newFolderId' not in data or 'updatedProjectData' not in data:
+            return jsonify({
+                'error': 'Missing required fields: newFolderId, updatedProjectData'  # <-- Validation error
+            }), 400
+
+        new_folder_id         = data['newFolderId']                      # <-- Target folderId
+        updated_project_data  = data['updatedProjectData']                # <-- Corrected project.json content
+
+        if not isinstance(updated_project_data, dict):
+            return jsonify({
+                'error': 'updatedProjectData must be a JSON object'      # <-- Validation error
+            }), 400
+
+        old_path = get_project_path(old_folder_id)                       # <-- Resolve OLD local project directory
+        new_path = get_project_path(new_folder_id)                       # <-- Resolve NEW local project directory
+
+        os.makedirs(os.path.dirname(new_path), exist_ok=True)            # <-- Ensure the target year folder exists
+
+        if os.path.exists(old_path) and os.path.abspath(old_path) != os.path.abspath(new_path):
+            if os.path.exists(new_path):
+                return jsonify({
+                    'error': f'Local target folder already exists: {new_folder_id}'  # <-- Collision guard
+                }), 409
+            shutil.move(old_path, new_path)                               # <-- Move local mirror content (if any)
+        else:
+            os.makedirs(new_path, exist_ok=True)                          # <-- No local folder existed (R2-only project)
+
+        # WRITE THE CORRECTED project.json AT THE NEW LOCATION
+        json_path = os.path.join(new_path, 'project.json')               # <-- Build JSON file path
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(updated_project_data, f, indent=4, ensure_ascii=False)  # <-- Write corrected project data
+
+        # PATCH LOCAL MASTER CONFIG
+        base_dir    = os.path.dirname(os.path.abspath(__file__))         # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)                                       # <-- Load local master config
+        for project in config.get('projects', []):
+            if project.get('folderId') == old_folder_id:
+                project['folderId'] = new_folder_id                      # <-- Repoint to the new folderId
+                break
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)           # <-- Write patched config back
+
+        # BEST-EFFORT | Keep the local master index fallback copy in step too
+        try:
+            index_path = os.path.join(base_dir, MASTER_INDEX_PATH)       # <-- Build index path
+            with open(index_path, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)                                # <-- Load local index copy
+            year = new_folder_id.split('/')[0] if '/' in new_folder_id else ''  # <-- Derive year from new folderId
+            for entry in index_data.get('projects', []):
+                if entry.get('folderId') == old_folder_id:
+                    entry['folderId']    = new_folder_id                 # <-- Repoint to the new folderId
+                    entry['year']        = year                          # <-- Refresh year segment
+                    entry['projectCode'] = updated_project_data.get('projectCode', entry.get('projectCode'))
+                    entry['name']        = updated_project_data.get('projectName', entry.get('name'))
+                    break
+            with open(index_path, 'w', encoding='utf-8') as f:
+                json.dump(index_data, f, indent=4, ensure_ascii=False)   # <-- Write patched index back
+        except Exception:
+            pass                                                         # <-- Non-fatal — masterConfig patch above matters most
+
+        return jsonify({
+            'success': True,                                             # <-- Success flag
+            'message': f'Local mirror moved from {old_folder_id} to {new_folder_id}'  # <-- Success message
+        })
+
     except Exception as e:
         return jsonify({
             'error': f'Server error: {str(e)}'                           # <-- Generic error

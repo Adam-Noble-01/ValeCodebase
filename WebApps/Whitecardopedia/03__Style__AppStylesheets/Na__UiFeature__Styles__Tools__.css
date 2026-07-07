@@ -155,6 +155,28 @@
     }
     /* ------------------------------------------------------------ */
 
+
+    /* PROJECT EDITOR | Disabled (Hidden From Gallery) Project Card State */
+    /* ------------------------------------------------------------ */
+    .project-card--disabled {
+        opacity                            : 0.55;                          /* <-- Visually recede vs. visible projects */
+    }
+
+    .project-card__disabled-badge {
+        position                           : absolute;                      /* <-- Overlay on the thumbnail */
+        top                                : 8px;                           /* <-- Anchored to top edge */
+        left                               : 8px;                           /* <-- Anchored to left edge */
+        z-index                            : 20;                            /* <-- Above the white-overlay (z-index: 10) */
+        padding                            : 4px 10px;                      /* <-- Badge padding */
+        font-size                          : 0.7rem;                        /* <-- Small badge text */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        letter-spacing                     : 0.02em;                        /* <-- Slight tracking for legibility */
+        color                              : #ffffff;                       /* <-- White text */
+        background-color                   : #8b2a2a;                       /* <-- Muted red, matches destructive-action palette */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+    }
+    /* ------------------------------------------------------------ */
+
 /* endregion ------------------------------------------------------------------- */
 
 /* -----------------------------------------------------------------------------
@@ -233,6 +255,107 @@
     /* ------------------------------------------------------------ */
 
 
+    /* EDITOR FORM | Checkbox Field (Gallery Visibility) */
+    /* ------------------------------------------------------------ */
+    .editor-form__field--checkbox {
+        display                            : flex;                          /* <-- Flexbox layout */
+        flex-direction                     : column;                        /* <-- Stack checkbox row + help text */
+    }
+
+    .editor-form__checkbox-label {
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Vertically centre checkbox + text */
+        gap                                : 10px;                          /* <-- Space between checkbox and label text */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+    }
+
+    .editor-form__checkbox {
+        width                              : 18px;                         /* <-- Checkbox size */
+        height                             : 18px;                         /* <-- Checkbox size */
+        accent-color                       : var(--Vale_PrimaryBrand);      /* <-- Vale blue when checked */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR FORM | Read-Only Project Info Panel */
+    /* ------------------------------------------------------------ */
+    .editor-form__info-panel {
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below panel */
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Large);  /* <-- Panel padding */
+        background                         : var(--Vale_HoverBackground);   /* <-- Subtle neutral background */
+        border                             : 1px solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+    }
+
+    .editor-form__info-panel-title {
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0;  /* <-- Space below title only */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary (muted) text color */
+        text-transform                     : uppercase;                     /* <-- Small-caps style label */
+        letter-spacing                     : 0.04em;                        /* <-- Slight tracking for legibility */
+    }
+
+    .editor-form__info-grid {
+        display                            : grid;                          /* <-- CSS grid layout */
+        grid-template-columns              : max-content 1fr;               /* <-- Label column hugs content, value fills rest */
+        column-gap                         : var(--Vale_Spacing_Medium);    /* <-- Space between label and value */
+        row-gap                            : 4px;                           /* <-- Tight vertical rhythm */
+        margin                             : 0;                             /* <-- Reset default <dl> margin */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
+    }
+
+    .editor-form__info-grid dt {
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary (muted) text color */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight */
+    }
+
+    .editor-form__info-grid dd {
+        margin                             : 0;                             /* <-- Reset default <dd> margin */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        word-break                         : break-word;                    /* <-- Wrap long folder paths gracefully */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR FORM | Rename Confirmation Panel (Destructive Action Gate) */
+    /* ------------------------------------------------------------ */
+    .editor-form__rename-panel {
+        margin-top                         : var(--Vale_Spacing_Large);     /* <-- Space above panel */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below panel */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Panel padding */
+        background-color                   : #fdf0f0;                      /* <-- Soft red tint, matches destructive-action palette */
+        border                             : 2px solid #8b2a2a;            /* <-- Muted red border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+    }
+
+    .editor-form__rename-panel-title {
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;  /* <-- Space below title only */
+        font-size                          : var(--Vale_FontSize_SubHeading, 1.05rem);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : #6b1c1c;                       /* <-- Deeper red, matches destructive-action palette */
+    }
+
+    .editor-form__rename-panel-text {
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;  /* <-- Space below text only */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+    }
+
+    .editor-form__rename-panel-note {
+        margin                             : var(--Vale_Spacing_Medium) 0 0 0;  /* <-- Space above note only */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
+        font-style                         : italic;                        /* <-- Italic text */
+        color                              : #6b1c1c;                       /* <-- Deeper red, matches destructive-action palette */
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* EDITOR FORM | Button Group */
     /* ------------------------------------------------------------ */
     .editor-form__buttons {
@@ -273,6 +396,18 @@
     
     .editor-form__button--secondary:hover {
         background                         : var(--Vale_HoverBackground);   /* <-- Light grey on hover */
+        transform                          : translateY(-2px);              /* <-- Slight lift effect */
+    }
+
+    .editor-form__button--danger {
+        color                              : #ffffff;                       /* <-- White text */
+        background                         : #8b2a2a;                       /* <-- Muted red, matches destructive-action palette */
+        border-color                       : #8b2a2a;                       /* <-- Matching border */
+    }
+
+    .editor-form__button--danger:hover {
+        background                         : #6b1c1c;                       /* <-- Deeper red on hover */
+        border-color                       : #6b1c1c;                       /* <-- Matching border */
         transform                          : translateY(-2px);              /* <-- Slight lift effect */
     }
     

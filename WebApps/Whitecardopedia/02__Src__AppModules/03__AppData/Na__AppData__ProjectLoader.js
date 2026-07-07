@@ -64,6 +64,14 @@
 //   Fixes stale-session issue where hasGlb_R2 flag changes made by a sync
 //   mid-session were invisible until the user did a hard refresh.
 //
+// 07-Jul-2026 - Version 0.2.6
+// - Added loadAllProjectsIncludingDisabled() for the Project Editor's picker
+//   so disabled projects can be found and re-enabled (public loadAllProjects
+//   is unchanged — still enabled-only for the gallery).
+// - Added na_get_master_index_entry() read-only accessor and
+//   na_reset_master_index_cache() so the editor's new rename/visibility
+//   actions can force a fresh index fetch after a server-side mutation.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -234,6 +242,35 @@
         })();
 
         return Na__MasterIndex__LoadPromise;
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Get a Master Index Entry by folderId (Read-Only Accessor)
+    // ---------------------------------------------------------------
+    // Exposes the memoised master index map for callers that need read-only
+    // visibility into pipeline-managed fields (asset home, image/GLB
+    // presence, last-synced date) — e.g. the Project Editor's info panel.
+    // Returns null when the index hasn't loaded yet or has no matching entry.
+    // Callers should `await na_load_master_index()` first to guarantee the
+    // map is populated before calling this.
+    // ---------------------------------------------------------------
+    function na_get_master_index_entry(folderId) {
+        return Na__MasterIndex__EntryMap ? (Na__MasterIndex__EntryMap.get(folderId) || null) : null;
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Reset the Memoised Master Index Cache (Force Next Load to Re-Fetch)
+    // ---------------------------------------------------------------
+    // Called after an operation that mutates the master index server-side
+    // (e.g. the Project Editor's rename action) so the very next
+    // na_load_master_index() call re-fetches fresh data instead of serving
+    // the stale in-memory map for the rest of the browser session.
+    // ---------------------------------------------------------------
+    function na_reset_master_index_cache() {
+        Na__MasterIndex__LoadPromise = null;
+        Na__MasterIndex__EntryMap    = null;
     }
     // ---------------------------------------------------------------
 
@@ -495,6 +532,46 @@
         const projectPromises = masterConfig.projects
             .filter(project => project.enabled)                          // <-- Filter enabled projects only
             .map(project => loadProjectData(project.folderId));          // <-- Map to load promises
+
+        const projects = await Promise.all(projectPromises);             // <-- Wait for all projects to load
+
+        return projects.filter(project => project !== null);             // <-- Filter out failed loads
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Load All Projects Including Disabled (Project Editor Only)
+    // ---------------------------------------------------------------
+    // Mirrors loadAllProjects() but skips the `enabled` filter so the editor
+    // can find and re-enable hidden projects. Still excludes blacklisted
+    // template/example folders (projectFoldersBlacklist) so scaffolding
+    // placeholders never clutter the editor's picker. Merges each project's
+    // `enabled` flag from masterConfig onto the loaded project object —
+    // public-facing loadAllProjects() is left completely untouched.
+    // ---------------------------------------------------------------
+    async function loadAllProjectsIncludingDisabled() {
+        const masterConfig = await loadMasterConfig();                   // <-- Load master configuration
+
+        if (!masterConfig || !masterConfig.projects) {
+            return [];                                                   // <-- Return empty array on error
+        }
+
+        const blacklist = Array.isArray(masterConfig.projectFoldersBlacklist)
+            ? masterConfig.projectFoldersBlacklist
+            : [];
+
+        const editableEntries = masterConfig.projects.filter(project => {
+            const folderName = String(project.folderId || '').split('/')[1] || '';
+            return !blacklist.includes(folderName);                      // <-- Drop template/example placeholders
+        });
+
+        const projectPromises = editableEntries.map(async (entry) => {
+            const projectData = await loadProjectData(entry.folderId);   // <-- Load full project.json data
+            if (projectData) {
+                projectData.enabled = entry.enabled !== false;           // <-- Merge masterConfig visibility flag
+            }
+            return projectData;
+        });
 
         const projects = await Promise.all(projectPromises);             // <-- Wait for all projects to load
 

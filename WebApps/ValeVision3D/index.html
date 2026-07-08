@@ -278,6 +278,54 @@
                             <span class="na-dropdown-menu__value" id="naImageExportResolutionValue">2k</span>
                         </div>
                         <hr class="na-dropdown-menu__panel-divider" />
+                        <details class="na-linework-settings-details" id="naLineworkSettingsDetails">
+                            <summary class="na-dropdown-menu__summary">
+                                Advanced Linework Settings
+                                <span class="na-dropdown-menu__arrow">▾</span>
+                            </summary>
+                            <div style="margin-top:6px;">
+                                <div class="na-dropdown-menu__panel-title">Linework Thickness</div>
+                                <div class="na-dropdown-menu__panel-row">
+                                    <input
+                                        type="range"
+                                        id="naLineworkThicknessSlider"
+                                        class="na-dropdown-menu__slider"
+                                        min="0"
+                                        max="6"
+                                        step="1"
+                                        value="2"
+                                    />
+                                    <span class="na-dropdown-menu__value" id="naLineworkThicknessValue">1.00x</span>
+                                </div>
+                                <div class="na-dropdown-menu__panel-title">Profile Line Thickness</div>
+                                <div class="na-dropdown-menu__panel-row">
+                                    <input
+                                        type="range"
+                                        id="naProfileThicknessSlider"
+                                        class="na-dropdown-menu__slider"
+                                        min="0"
+                                        max="6"
+                                        step="1"
+                                        value="2"
+                                    />
+                                    <span class="na-dropdown-menu__value" id="naProfileThicknessValue">1.00x</span>
+                                </div>
+                                <div class="na-dropdown-menu__panel-title">Silly Lines</div>
+                                <div class="na-dropdown-menu__panel-row">
+                                    <input
+                                        type="range"
+                                        id="naSillyLinesSlider"
+                                        class="na-dropdown-menu__slider"
+                                        min="0"
+                                        max="6"
+                                        step="1"
+                                        value="0"
+                                    />
+                                    <span class="na-dropdown-menu__value" id="naSillyLinesValue">Straight</span>
+                                </div>
+                            </div>
+                        </details>
+                        <hr class="na-dropdown-menu__panel-divider" />
                         <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
                             <span class="na-dropdown-menu__panel-title">Enhance Whitecard</span>
                             <input type="checkbox" id="naImageExportEnhanceToggle" class="na-dropdown-menu__checkbox" checked />
@@ -916,6 +964,8 @@
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
     import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
     import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js';
+    import { Na__LineworkSettings__Initialize } from './02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
+    import { Na__UiFeature__InitializeLineworkSettingsControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__LineworkSettings__Controls.js';
     import { Na__UiFeature__InitializeGridLineControls } from './02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js';
     import { Na__Feature__EmailWorkers__Initialize } from './02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
@@ -1323,6 +1373,8 @@
         Na__Config__PostProcessEffects,
         Na__ElevationView__GetExportOverrides                              // <-- Elevation overrides getter (returns null when in 3D mode)
     );
+    Na__LineworkSettings__Initialize(Na__Scene__Main, () => Na__AppFlow__PipelineRef.current); // <-- Runtime linework thickness + silly lines state
+    Na__UiFeature__InitializeLineworkSettingsControls();                   // <-- Advanced Linework Settings sliders (export panel)
     // @delegate: ./02__Src__AppModules/11__CameraUtils/Na__UiFeature__CameraPosition__Controls.js
     // ------------------------------------------------------------
 

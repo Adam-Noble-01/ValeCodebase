@@ -141,6 +141,17 @@
     padding-left                         : 0;
 }
 
+/* Advanced Linework Settings - Same inset removal as Grid Style details */
+/* ----------------------------------------------------------------- */
+.na-linework-settings-details {
+    padding-left                        : 0;
+    margin-left                         : 0;
+}
+
+.na-linework-settings-details .na-dropdown-menu__summary {
+    padding-left                         : 0;
+}
+
 .na-dropdown-menu__arrow {
     font-size                           : 0.85rem;
     color                               : #172b3a;

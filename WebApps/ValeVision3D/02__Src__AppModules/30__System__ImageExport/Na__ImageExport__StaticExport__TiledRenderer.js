@@ -66,6 +66,12 @@
     import { Na__ExportYield__NextPaint } from './Na__ImageExport__AsyncYield__.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Fog Plane System (Per-Tile Camera Uniform Refresh)
+    // ------------------------------------------------------------
+    import { Na__FogPlaneSystem__GetFogPass } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
+    import { Na__FogPlane__UpdateFogPassPerFrame } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js';
+    // ------------------------------------------------------------
+
 
 // -----------------------------------------------------------------------------
 // REGION | Device Capability Detection and Limits
@@ -175,13 +181,13 @@
         const state = (typeof getRenderPipelineState === 'function') ? getRenderPipelineState() : null;
 
         if (!state) {
-            return { composer: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
+            return { composer: null, profileLinesPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
                      setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop };
         }
 
         // BACKWARD COMPAT | Legacy getter may return the composer directly
         if (typeof state.render === 'function' && !state.composer) {
-            return { composer: state, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
+            return { composer: state, profileLinesPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
                      setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop };
         }
 
@@ -189,6 +195,7 @@
 
         return {
             composer            : state.composer || null,
+            profileLinesPass    : state.profileLinesPassRef || null, // <-- For per-tile Silly Lines wave offset (seam-free waves)
             renderProfileNormals: fn(state.renderProfileNormals),
             setProfileLinesSize : fn(state.setProfileLinesSize),
             setFxaaSize         : fn(state.setFxaaSize),
@@ -325,6 +332,21 @@
                         Na__VerticalCorrection__ApplyFrame();        // <-- Shear applies per-tile exactly (operates on the sub-projection)
                     }
 
+                    // FOG SYNC | The planar fog pass reconstructs world positions from
+                    // the camera projection; its uniforms are per-frame synced by the
+                    // live loop but MUST be refreshed for each tile's sub-frustum or
+                    // the fog planes land in a different place on every tile (banding).
+                    Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlaneSystem__GetFogPass(), activeCamera);
+
+                    // SILLY LINES SYNC | Wave phase runs in full-image px space so the
+                    // sine is continuous across tile boundaries.
+                    if (pipeline.profileLinesPass && pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset) {
+                        pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset.value.set(
+                            x - gutter,                              // <-- Tile framebuffer left edge in full-image px
+                            outH - y + gutter - fbH                  // <-- Tile framebuffer bottom edge (GL bottom-left origin)
+                        );
+                    }
+
                     // RENDER | Same per-frame sequence as the realtime loop
                     if (composer) {
                         pipeline.updateAoUniforms(activeCamera);     // <-- MaxEngine: sync SSAO camera matrices for this sub-frustum
@@ -359,6 +381,10 @@
             renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
 
             activeCamera.clearViewOffset();                          // <-- Safe when no offset is set (three guards internally)
+
+            if (pipeline.profileLinesPass && pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset) {
+                pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset.value.set(0, 0); // <-- Viewport waves use local px space
+            }
 
             if (isElevationMode) {
                 elevationOverrides.restoreFrustum();                 // <-- Ortho frustum back to viewport dimensions

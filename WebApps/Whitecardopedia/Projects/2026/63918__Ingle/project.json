@@ -1,4 +1,7 @@
 {
+    "projectName": "Ingle",
+    "projectCode": "63918",
+    "projectNameAlias": "",
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -74,17 +77,16 @@
         "IMG01__3dView__MainShot____WhitecardImage__08-Jul-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "A nice easy job! Rachael's CAD Was Excellent so it was light work.",
         "conceptArtist": "Rachael",
         "designer": "Dan",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "63918",
-    "projectName": "Ingle",
     "scheduleData": {
         "dateFulfilled": "08-Jul-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
+        "dateReceived": "07-Jul-2026",
+        "timeTaken": 2,
+        "timeAllocated": 2.5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -120,5 +122,18 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63918__Ingle/Ingle__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63918__Ingle/Ingle__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
     ],
-    "Navmode__OrbitMaxDistanceMm": 45000
+    "Navmode__OrbitMaxDistanceMm": 45000,
+    "folderId": "2026/63918__Ingle",
+    "isR2Loaded": true,
+    "displayName": "Ingle",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63918__Ingle",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__08-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__08-Jul-2026.png"
+    ],
+    "enabled": true
 }

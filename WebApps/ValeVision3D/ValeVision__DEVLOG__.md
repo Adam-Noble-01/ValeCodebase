@@ -2,6 +2,50 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.9 - 08-Jul-2026 - Tiled Static Export Renderer (4K Fixed, 8K Added) + Advanced Linework Settings
+
+### Overview
+Complete rebuild of the custom-resolution image export path. The old implementation resized the LIVE renderer + composer to the full export resolution — at 4K (30MP) the PureEngine 4x-MSAA HalfFloat ping-pong buffers demanded 3GB+ of GPU framebuffer memory, losing the WebGL context and silently delivering a blank PNG (worse on iPad). Exports now render as a grid of viewport-sized tiles through the SAME live composer (identical quality, realtime engine untouched), so GPU memory stays flat at any output size. 8K added to the resolution slider; default remains 4K. New "Advanced Linework Settings" dropdown (Linework Thickness / Profile Line Thickness / Silly Lines) gives session-scoped runtime control over line weights in both the viewport and exports.
+
+### Added
+- **`Na__ImageExport__StaticExport__TiledRenderer.js` (new)** — dedicated static export renderer. Tiles via `camera.setViewOffset` sub-frusta with a 32px gutter cropped on composite (no FXAA/profile-line/SSAO seams); vertical perspective correction re-applied per tile (shear maths are exact on sub-projections); MaxEngine depth pre-pass + SSAO uniforms refreshed per tile; per-platform 2D canvas limits enforced up front (iOS ~16.7MP area cap) with proportional clamping + a 1px paint probe so oversized canvases fail loudly instead of encoding an empty PNG; WebGL context loss detected between tiles and surfaced as a real error; every mutated renderer/composer/camera state restored in `finally`.
+- **`Na__ImageExport__AsyncYield__.js` (new)** — hidden-tab-safe yield helpers. rAF-based yields deadlock exports if the tab is backgrounded mid-render; these race double-rAF (paint when visible) against a MessageChannel macrotask (not timer-throttled when hidden), so long 8K exports survive the user switching tabs/apps.
+- **`Na__RenderEffect__LineworkSettings__State.js` (new)** — session-scoped runtime state (no persistence by design; every session boots at 1.00x / Straight). Linework factor multiplies `LineMaterial.linewidth` on fat lines inside `userData.Na__ModelType === 'linework'` roots (grid lines excluded; base widths stashed on `material.userData` so factors never compound). Profile factor is read per-frame by the profile lines effect. Silly Lines amplitude pushes sine-wave uniforms to the profile lines pass; re-applied automatically on `na-render-engine-changed`.
+- **`Na__UiFeature__LineworkSettings__Controls.js` (new)** — wires the "Advanced Linework Settings" `<details>` dropdown (closed by default) under the export Resolution slider: Linework Thickness + Profile Line Thickness (0.50x / 0.75x / 1.00x / 1.25x / 1.50x / 2.00x / 3.00x snap stops, default 1.00x) and Silly Lines (Straight → Absurd named stops mapping to 0-9px sine amplitude).
+- **8K resolution stop** — `ImageExport__Config__Resolutions` now `[1024, 2048, 4096, 8192]`; default index unchanged (4K). 8K/16:9 = 12288x8192 verified at ~30s / 24 tiles on desktop.
+
+### Fixed
+- **4K exports crashing / delivering empty PNGs** — root causes: GPU memory cliff (above), plus a composer pixel-ratio bug — `EffectComposer` captures its own `_pixelRatio` at construction and the old export only reset the renderer's ratio, silently inflating every export render target by dpr² (2.25x extra at 150% Windows scaling). The tiled renderer forces `composer.setPixelRatio(1)` during export and restores after.
+- **Fog plane banding in exports** — the planar fog pass reconstructs world positions from `uInverseProjectionMatrix` / `uCameraWorldMatrix`, synced per-frame by the live loop only. The old export changed the camera aspect (and the new one changes the sub-frustum per tile) without refreshing them, so fog planes landed in a different place per frame/tile — the white gradient bands over geometry. The tiled renderer now calls `Na__FogPlane__UpdateFogPassPerFrame` with the active camera for every tile.
+- **Silent failure modes** — export flows are now async try/catch/finally: failures show a red "Export Failed" status (new `--error` overlay class) and always unlock the button; a null `toBlob` result is an error instead of "Download Ready!" with no file; post-clamp sizes are reported in the success message.
+- **Enhance Whitecard memory spikes** — Levels and High Pass Sharpen previously allocated full-frame ImageData (3 canvases + 3 buffers ≈ 1GB+ transient at 8K, killing iPad tabs). Both now process in ~4MP horizontal strips (sharpen uses a padded strip + carry canvas so the Gaussian always reads original pixels — output pixel-identical); Levels collapsed to a 256-entry LUT; `ctx.filter` support is feature-detected. Pipeline mutates the capture canvas in place instead of cloning it (was a 100-480MB copy).
+- **Layout View at high resolutions** — the drawing-layout tab is pre-opened synchronously inside the click gesture (multi-second tiled renders would otherwise trip the popup blocker) and receives the image as a Blob instead of a 40-90MB base64 `toDataURL` string; `Na__PageLayoutSystem__SystemLogic__Main__.js` accepts `blob` (object URL, revoked after decode) with `dataUrl` fallback.
+
+### Changed
+- **`Na__UiFeature__ImageExport__Controls.js`** — custom exports delegate to the tiled renderer; viewport-native capture unchanged. Live overlay progress ("Rendering Your Image... (part 3 of 24)", "Enhancing Image... (Sharpen)", "Encoding Image...").
+- **`Na__RenderEffect__ProfileLines__.js`** — dynamic edge width multiplied by the runtime profile factor (static fallback width added for the no-orbit-target case); shader gains `u_sillyAmplitudePx` / `u_sillyWavelengthPx` / `u_sillyPxOffset` uniforms — edge sampling UV perturbed by a pixel-space sine (scene colour sampled unperturbed, only edges wobble); wave phase runs in full-image px space and the tiled renderer sets the per-tile offset so waves cross tile boundaries seamlessly.
+- **`index.html`** — Advanced Linework Settings markup in the Export Image panel; linework settings state + controls initialisation.
+
+### Cross-reference
+- **Whitecardopedia** — shared PWA SW cache token bumped to `2026-07-08-2` so installed apps evict the stale export modules.
+
+### Files Changed
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js` (new)
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__AsyncYield__.js` (new)
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__LineworkSettings__Controls.js` (new)
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js` (new)
+- `02__Src__AppModules/30__System__ImageExport/Na__UiFeature__ImageExport__Controls.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Pipeline.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__Levels.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__PostProcessEffects__HighPassSharpen.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/35__System__PageLayoutSystem/Na__PageLayoutSystem__SystemLogic__Main__.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+- `index.html`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.8 - 02-Jul-2026 - Generate & Download Email Type Chooser
 
 ### Overview

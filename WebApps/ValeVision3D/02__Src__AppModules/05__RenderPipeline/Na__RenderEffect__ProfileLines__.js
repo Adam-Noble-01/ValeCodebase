@@ -36,6 +36,11 @@
     import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Linework Settings Runtime Factors
+    // ------------------------------------------------------------
+    import { Na__LineworkSettings__GetProfileLineFactor } from './Na__RenderEffect__LineworkSettings__State.js';
+    // ------------------------------------------------------------
+
 
     // MODULE CONSTANTS | Default Config Values
     // ------------------------------------------------------------
@@ -149,7 +154,10 @@
                 resolution:            { value: new THREE.Vector2(1, 1) },
                 u_edgeColor:           { value: edgeColor },
                 u_edgeThresholdNormal: { value: edgeThresholdNormal },
-                u_edgeWidth:           { value: edgeWidth }
+                u_edgeWidth:           { value: edgeWidth },
+                u_sillyAmplitudePx:    { value: 0.0 },                        // <-- Silly Lines wave amplitude in px (0 = straight)
+                u_sillyWavelengthPx:   { value: 120.0 },                      // <-- Silly Lines wavelength in px
+                u_sillyPxOffset:       { value: new THREE.Vector2(0, 0) }     // <-- Full-image px offset (tiled exports keep waves seam-free)
             },
             vertexShader: `
                 varying vec2 vUv;
@@ -166,6 +174,9 @@
                 uniform vec3      u_edgeColor;
                 uniform float     u_edgeThresholdNormal;
                 uniform float     u_edgeWidth;
+                uniform float     u_sillyAmplitudePx;
+                uniform float     u_sillyWavelengthPx;
+                uniform vec2      u_sillyPxOffset;
 
                 varying vec2 vUv;
 
@@ -174,18 +185,29 @@
                     float stepX  = invRes.x * u_edgeWidth;
                     float stepY  = invRes.y * u_edgeWidth;
 
-                    vec3 nC = texture2D(tNormal, vUv).rgb;
-                    vec3 nL = texture2D(tNormal, vUv - vec2(stepX, 0.0)).rgb;
-                    vec3 nR = texture2D(tNormal, vUv + vec2(stepX, 0.0)).rgb;
-                    vec3 nD = texture2D(tNormal, vUv - vec2(0.0, stepY)).rgb;
-                    vec3 nU = texture2D(tNormal, vUv + vec2(0.0, stepY)).rgb;
+                    // SILLY LINES | Sine-wave perturbation of the edge sampling UV.
+                    // Phase runs in full-image pixel space so waves stay continuous
+                    // across export tiles. The scene colour is sampled unperturbed -
+                    // only the detected edges wobble.
+                    vec2 sampleUv = vUv;
+                    if (u_sillyAmplitudePx > 0.0) {
+                        vec2  pxCoord = vUv * resolution + u_sillyPxOffset;
+                        float phase   = 6.2831853 / u_sillyWavelengthPx;
+                        sampleUv += vec2(sin(pxCoord.y * phase), sin(pxCoord.x * phase)) * u_sillyAmplitudePx * invRes;
+                    }
+
+                    vec3 nC = texture2D(tNormal, sampleUv).rgb;
+                    vec3 nL = texture2D(tNormal, sampleUv - vec2(stepX, 0.0)).rgb;
+                    vec3 nR = texture2D(tNormal, sampleUv + vec2(stepX, 0.0)).rgb;
+                    vec3 nD = texture2D(tNormal, sampleUv - vec2(0.0, stepY)).rgb;
+                    vec3 nU = texture2D(tNormal, sampleUv + vec2(0.0, stepY)).rgb;
 
                     float gx   = length(nR - nL);
                     float gy   = length(nU - nD);
                     float edge = sqrt(gx * gx + gy * gy);
 
                     vec4  sceneColor   = texture2D(tDiffuse, vUv);
-                    vec3  profileColor = texture2D(tProfileColor, vUv).rgb;
+                    vec3  profileColor = texture2D(tProfileColor, sampleUv).rgb;
                     float softness     = u_edgeThresholdNormal * 0.5;
                     float blend        = smoothstep(u_edgeThresholdNormal - softness, u_edgeThresholdNormal + softness, edge);
 
@@ -268,6 +290,9 @@
             ? config.RenderEffect__ProfileLines__EdgeWidthDistanceFar
             : PROFILE_LINES__DEFAULT_EDGE_WIDTH_DIST_FAR;
         const edgeWidthDistRange = edgeWidthDistFar - edgeWidthDistNear; // <-- Precompute denominator
+        const edgeWidthStatic    = Number.isFinite(config.RenderEffect__ProfileLines__EdgeWidth)
+            ? config.RenderEffect__ProfileLines__EdgeWidth
+            : PROFILE_LINES__DEFAULT_EDGE_WIDTH;                          // <-- Base width when distance scaling is unavailable
         let cachedLineObjects = [];
         let cachedMeshObjects = [];
         let cachedOriginalMaterials = [];                                    // <-- Pre-allocated per-mesh material backup array
@@ -319,10 +344,13 @@
         // SUB FUNCTION | Render Normal and Profile Colour Pre-Passes
         // ---------------------------------------------------------------
         function renderProfileNormals() {
+            const widthFactor = Na__LineworkSettings__GetProfileLineFactor();           // <-- User thickness factor (Advanced Linework Settings)
             if (orbitTarget && edgeWidthDistRange > 0) {
                 const dist = camera.position.distanceTo(orbitTarget);                   // <-- Camera-to-target distance
                 const t    = 1.0 - Math.max(0, Math.min(1, (dist - edgeWidthDistNear) / edgeWidthDistRange)); // <-- 1 = near (thick), 0 = far (thin)
-                profileLinesPass.material.uniforms.u_edgeWidth.value = edgeWidthMin + t * (edgeWidthMax - edgeWidthMin); // <-- Lerp: far=min, near=max
+                profileLinesPass.material.uniforms.u_edgeWidth.value = (edgeWidthMin + t * (edgeWidthMax - edgeWidthMin)) * widthFactor; // <-- Lerp: far=min, near=max, scaled by user factor
+            } else {
+                profileLinesPass.material.uniforms.u_edgeWidth.value = edgeWidthStatic * widthFactor; // <-- Static config width scaled by user factor
             }
 
             if (sceneCacheDirty) {

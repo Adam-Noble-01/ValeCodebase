@@ -2414,6 +2414,14 @@
           "endTime": "08:30",
           "title": "Meeting |  JW & DF",
           "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1783512672901",
+          "date": "2026-07-08",
+          "startTime": "13:45",
+          "endTime": "18:00",
+          "title": "Whitecard |  Ingle",
+          "color": "na-shift-color-lime"
         }
       ]
     }

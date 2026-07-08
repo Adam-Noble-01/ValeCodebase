@@ -1,0 +1,282 @@
+{
+    "projectName": "Bressard-Kayode__ParapetOptions",
+    "projectCode": "63592",
+    "projectNameAlias": "Bressard-Kayode |  Parapet Options",
+    "productionData": {
+        "input": "Early Stage Sketch",
+        "conceptArtist": "Dan",
+        "designer": "Dan",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "08-Jul-2026",
+        "dateFulfilled": "08-Jul-2026",
+        "timeTaken": 1
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__ParapetDetail__Option-01__WhitecardImage__08-Jul-2026.png",
+        "IMG02__ParapetDetail__Option-02__WhitecardImage__08-Jul-2026.png",
+        "IMG03__ParapetDetail__Option-03__WhitecardImage__08-Jul-2026.png",
+        "IMG04__ParapetDetail__Option-04__WhitecardImage__08-Jul-2026.png",
+        "IMG05__ParapetDetail__Option-05__WhitecardImage__08-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__08-Jul-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63592__Bressard-Kayode__ParapetOptions",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "thumbnailImage": "IMG01__ParapetDetail__Option-01__WhitecardImage__08-Jul-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "08-Jul-2026 at 10:21",
+        "model_name": "Bressard-Kayode__WhiteCardModel__ParapetOptions__3.2.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__ParapetDetail__Option-01",
+                "scene_description": "Option - 01",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 5124.7426,
+                        "y": -7574.2963,
+                        "z": 3502.3521
+                    },
+                    "target": {
+                        "x": 15056.8522,
+                        "y": 7192.6904,
+                        "z": 3476.7949
+                    },
+                    "up": {
+                        "x": 0.000801,
+                        "y": 0.001192,
+                        "z": 0.999999
+                    },
+                    "direction": {
+                        "x": 0.558097,
+                        "y": 0.829774,
+                        "z": -0.001436
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG02__ParapetDetail__Option-02",
+                "scene_description": "Option - 02",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 20867.9777,
+                        "y": -5703.7747,
+                        "z": 3928.0695
+                    },
+                    "target": {
+                        "x": 29401.133,
+                        "y": 6983.2572,
+                        "z": 3906.112
+                    },
+                    "up": {
+                        "x": 0.000801,
+                        "y": 0.001192,
+                        "z": 0.999999
+                    },
+                    "direction": {
+                        "x": 0.558097,
+                        "y": 0.829774,
+                        "z": -0.001436
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG03__ParapetDetail__Option-03",
+                "scene_description": "Option - 03",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 35470.2684,
+                        "y": -6295.0859,
+                        "z": 3929.0929
+                    },
+                    "target": {
+                        "x": 44003.4237,
+                        "y": 6391.946,
+                        "z": 3907.1354
+                    },
+                    "up": {
+                        "x": 0.000801,
+                        "y": 0.001192,
+                        "z": 0.999999
+                    },
+                    "direction": {
+                        "x": 0.558097,
+                        "y": 0.829774,
+                        "z": -0.001436
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG04__ParapetDetail__Option-04",
+                "scene_description": "Option - 04",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 50811.1421,
+                        "y": -5788.2774,
+                        "z": 3928.2158
+                    },
+                    "target": {
+                        "x": 59344.2974,
+                        "y": 6898.7545,
+                        "z": 3906.2583
+                    },
+                    "up": {
+                        "x": 0.000801,
+                        "y": 0.001192,
+                        "z": 0.999999
+                    },
+                    "direction": {
+                        "x": 0.558097,
+                        "y": 0.829774,
+                        "z": -0.001436
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG05__ParapetDetail__Option-05",
+                "scene_description": "Option - 05",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 65359.6944,
+                        "y": -6459.4866,
+                        "z": 3929.3774
+                    },
+                    "target": {
+                        "x": 73892.8497,
+                        "y": 6227.5454,
+                        "z": 3907.4199
+                    },
+                    "up": {
+                        "x": 0.000801,
+                        "y": 0.001192,
+                        "z": 0.999999
+                    },
+                    "direction": {
+                        "x": 0.558097,
+                        "y": 0.829774,
+                        "z": -0.001436
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            }
+        ]
+    },
+    "folderId": "2026/63592__Bressard-Kayode__ParapetOptions",
+    "isR2Loaded": true,
+    "displayName": "Bressard-Kayode",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__ParapetOptions",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__ParapetDetail__Option-01__WhitecardImage__08-Jul-2026.png",
+        "IMG02__ParapetDetail__Option-02__WhitecardImage__08-Jul-2026.png",
+        "IMG03__ParapetDetail__Option-03__WhitecardImage__08-Jul-2026.png",
+        "IMG04__ParapetDetail__Option-04__WhitecardImage__08-Jul-2026.png",
+        "IMG05__ParapetDetail__Option-05__WhitecardImage__08-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__08-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__ParapetDetail__Option-01__WhitecardImage__08-Jul-2026.png",
+        "IMG02__ParapetDetail__Option-02__WhitecardImage__08-Jul-2026.png",
+        "IMG03__ParapetDetail__Option-03__WhitecardImage__08-Jul-2026.png",
+        "IMG04__ParapetDetail__Option-04__WhitecardImage__08-Jul-2026.png",
+        "IMG05__ParapetDetail__Option-05__WhitecardImage__08-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__08-Jul-2026.png"
+    ],
+    "enabled": true
+}

@@ -1,66 +1,8 @@
 {
-    "projectName": "Bressard-Kayode__Scheme-02",
-    "projectCode": "63592",
-    "projectNameAlias": "Bressard-Kayode |  Scheme – 02",
-    "productionData": {
-        "input": "Early Stage Sketch",
-        "conceptArtist": "Dan",
-        "designer": "Dan",
-        "additionalNotes": "Redraw of the Orangery based on Dans Excellent sketch elevations. Re-designed footprint, panel layout, wall abutment detail, and attic balustrades over parapet."
-    },
-    "scheduleData": {
-        "dateReceived": "07-Jul-2026",
-        "dateFulfilled": "07-Jul-2026",
-        "timeTaken": 1.25,
-        "timeAllocated": 1
-    },
-    "sketchUpModel": {
-        "url": "Nil"
-    },
-    "images": [
-        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
-        "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
-        "IMG03__FarSiide__WhitecardImage__07-Jul-2026.png",
-        "IMG04__3dView__RoofView____WhitecardImage__07-Jul-2026.png",
-        "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
-        "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
-    ],
     "ProjectType": "Whitecard",
-    "basePath": "Projects/2026/63592__Bressard-Kayode__Scheme-02",
-    "valeVision_ModelUrls": [
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__LandscapeEnvironment__MeshModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "valeVision_Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
-        "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": -5000,
-            "Camera__DefaultPos__PosY": 2800,
-            "Camera__DefaultPos__PosZ": 3250
-        },
-        "Camera__DefaultTarget": {
-            "Camera__DefaultTarget__TargetX": -1250,
-            "Camera__DefaultTarget__TargetY": 2570,
-            "Camera__DefaultTarget__TargetZ": -350
-        },
-        "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": -0.073,
-            "Camera__DefaultRotation__RotY": -0.8346,
-            "Camera__DefaultRotation__RotZ": -0.0541
-        },
-        "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 29.8628
-        }
-    },
-    "thumbnailImage": "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026__Thumbnail__524p__.webp",
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "07-Jul-2026 at 17:52",
-        "model_name": "Bressard-Kayode__WhiteCardModel__2.5.0__",
+        "captured_at": "08-Jul-2026 at 12:59",
+        "model_name": "Bressard-Kayode__WhiteCardModel__2.7.0__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
@@ -73,28 +15,28 @@
                     "eye": {
                         "x": -10972.5762,
                         "y": -22854.8126,
-                        "z": 3500
+                        "z": 3500.0
                     },
                     "target": {
-                        "x": 11219.483,
-                        "y": 9430.4989,
-                        "z": 3515.7679
+                        "x": 11219.4848,
+                        "y": 9430.5015,
+                        "z": 3500.0
                     },
                     "up": {
                         "x": -0.000228,
                         "y": -0.000332,
-                        "z": 1
+                        "z": 1.0
                     },
                     "direction": {
                         "x": 0.566458,
                         "y": 0.824091,
-                        "z": 0.000402
+                        "z": 0.0
                     },
                     "fov_degrees": 20.9198,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0,
-                    "image_width": 0
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -111,7 +53,7 @@
                     "eye": {
                         "x": -1136.8544,
                         "y": 7125.0997,
-                        "z": 2000
+                        "z": 2000.0
                     },
                     "target": {
                         "x": 12647.5917,
@@ -132,7 +74,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0
+                    "image_width": 0.0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -170,7 +112,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0
+                    "image_width": 0.0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -208,7 +150,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0
+                    "image_width": 0.0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -233,20 +175,20 @@
                         "z": 3374.9179
                     },
                     "up": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 1
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
                     },
                     "direction": {
-                        "x": 0,
-                        "y": 1,
-                        "z": 0
+                        "x": 0.0,
+                        "y": 1.0,
+                        "z": 0.0
                     },
                     "fov_degrees": 43.6028,
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0
+                    "image_width": 0.0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -283,8 +225,8 @@
                     "fov_degrees": 61.9275,
                     "fov_is_height": true,
                     "is_perspective": true,
-                    "aspect_ratio": 0,
-                    "image_width": 0
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -295,20 +237,6 @@
             }
         ]
     },
-    "folderId": "2026/63592__Bressard-Kayode__Scheme-02",
-    "isR2Loaded": true,
-    "displayName": "Bressard-Kayode__Scheme-02",
-    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02",
-    "hasGlb_R2": true,
-    "displayImages": [
-        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
-        "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
-        "IMG03__FarSiide__WhitecardImage__07-Jul-2026.png",
-        "IMG04__3dView__RoofView____WhitecardImage__07-Jul-2026.png",
-        "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
-        "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
-    ],
-    "artPairsMap": {},
     "allImages": [
         "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
         "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
@@ -317,5 +245,94 @@
         "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
         "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
     ],
-    "enabled": true
+    "artPairsMap": {},
+    "basePath": "Projects/2026/63592__Bressard-Kayode__Scheme-02",
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
+        "IMG03__FarSiide__WhitecardImage__07-Jul-2026.png",
+        "IMG04__3dView__RoofView____WhitecardImage__07-Jul-2026.png",
+        "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
+    ],
+    "displayName": "Bressard-Kayode__Scheme-02",
+    "enabled": true,
+    "folderId": "2026/63592__Bressard-Kayode__Scheme-02",
+    "hasGlb_R2": true,
+    "images": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__08-Jul-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__08-Jul-2026.png",
+        "IMG03__FarSiide__WhitecardImage__08-Jul-2026.png",
+        "IMG04__3dView__RoofView____WhitecardImage__08-Jul-2026.png",
+        "IMG05__FrontElevation__WhitecardImage__08-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__08-Jul-2026.png"
+    ],
+    "isR2Loaded": true,
+    "productionData": {
+        "additionalNotes": "Redraw of the Orangery based on Dans Excellent sketch elevations. Re-designed footprint, panel layout, wall abutment detail, and attic balustrades over parapet.",
+        "conceptArtist": "Dan",
+        "designer": "Dan",
+        "input": "Early Stage Sketch"
+    },
+    "projectCode": "63592",
+    "projectName": "Bressard-Kayode__Scheme-02",
+    "projectNameAlias": "Bressard-Kayode |  Scheme \u2013 02",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02",
+    "scheduleData": {
+        "dateFulfilled": "07-Jul-2026",
+        "dateReceived": "07-Jul-2026",
+        "timeAllocated": 1,
+        "timeTaken": 1.25
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__08-Jul-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 10000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -28800,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": 30330,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0
+        }
+    }
 }

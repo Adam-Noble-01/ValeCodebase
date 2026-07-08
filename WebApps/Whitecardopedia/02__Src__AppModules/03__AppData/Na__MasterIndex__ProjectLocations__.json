@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "08-Jul-2026 at 09:00",
+    "generatedAt": "08-Jul-2026 at 12:59",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1808,7 +1808,21 @@
             "hasThumbnails_R2": true,
             "hasGlb_R2": true,
             "imageCount": 6,
-            "lastSynced": "08-Jul-2026 at 09:00"
+            "lastSynced": "08-Jul-2026 at 12:59"
+        },
+        {
+            "folderId": "2026/63592__Bressard-Kayode__ParapetOptions",
+            "year": "2026",
+            "projectCode": "63592",
+            "name": "Bressard-Kayode",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 6,
+            "lastSynced": "08-Jul-2026 at 10:21"
         }
     ]
 }

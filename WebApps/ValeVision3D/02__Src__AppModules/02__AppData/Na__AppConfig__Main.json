@@ -114,7 +114,7 @@
         "ImageExport__Config__CustomEnabled"            : true,
         "ImageExport__Config__AspectRatios"             : ["3:2", "4:3", "16:9"],
         "ImageExport__Config__DefaultAspectIndex"       : 0,
-        "ImageExport__Config__Resolutions"              : [1024, 2048, 4096],
+        "ImageExport__Config__Resolutions"              : [1024, 2048, 4096, 8192],
         "ImageExport__Config__DefaultResolutionIndex"   : 2
     },
     "Navmode__EnabledModes": {

@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "NobleCadAuditTools",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:\\11_RefLib__StudioRepository__RemoteSystem\\NaWeb\\na-apps\\70__ProductionTools\\Noble__CadAuditTools\\Na__LocalServer__Main__.py",
+        "--silent"
+      ],
+      "port": 8007
+    },
+    {
+      "name": "webapps-static",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "http-server", "-p", "4573", "-c-1", "."],
+      "port": 4573
+    }
+  ]
+}

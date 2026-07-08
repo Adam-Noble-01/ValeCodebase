@@ -205,14 +205,14 @@
 
         // Read image data from opener window
         // ------------------------------------------------------------
-        let imageData = null; // <-- Will hold { dataUrl, width, height, aspectRatio }
+        let imageData = null; // <-- Will hold { blob | dataUrl, width, height, aspectRatio }
 
         if (window.opener && window.opener[Na__PageLayout__OPENER_KEY]) {
             imageData = window.opener[Na__PageLayout__OPENER_KEY]; // <-- Read from opener
             window.opener[Na__PageLayout__OPENER_KEY] = null; // <-- Clear to free memory on opener
         }
 
-        if (!imageData || !imageData.dataUrl) {
+        if (!imageData || (!imageData.blob && !imageData.dataUrl)) {
             if (errorOverlay) {
                 errorOverlay.style.display = 'flex'; // <-- Show error overlay
             }
@@ -220,17 +220,25 @@
             return null;
         }
 
-        // Load viewport image from data URL
+        // Load viewport image (Blob preferred - avoids a 40-90MB base64 string
+        // at 4K/8K export sizes; dataUrl retained as a legacy fallback)
         // ------------------------------------------------------------
         let viewportImage = null; // <-- Will hold loaded Image element
+        const viewportImageUrl = imageData.blob
+            ? URL.createObjectURL(imageData.blob)                           // <-- Object URL from transferred blob
+            : imageData.dataUrl;                                            // <-- Legacy data URL path
         try {
-            viewportImage = await Na__PageLayout__LoadImage(imageData.dataUrl); // <-- Load image from dataUrl
+            viewportImage = await Na__PageLayout__LoadImage(viewportImageUrl); // <-- Load image from URL
         } catch (err) {
             console.error('[PageLayout] Failed to load viewport image:', err);
             if (errorOverlay) {
                 errorOverlay.style.display = 'flex'; // <-- Show error overlay
             }
             return null;
+        } finally {
+            if (imageData.blob) {
+                URL.revokeObjectURL(viewportImageUrl);                      // <-- Image is decoded; free the object URL
+            }
         }
 
         // Load title block PNG

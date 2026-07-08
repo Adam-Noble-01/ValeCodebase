@@ -2390,6 +2390,30 @@
           "endTime": "14:30",
           "title": "Whitecard |  Hanson",
           "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1783497395026",
+          "date": "2026-07-07",
+          "startTime": "15:00",
+          "endTime": "16:30",
+          "title": "Whitecard |  Bressard-Kayode  -  Scheme-02",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1783497432521",
+          "date": "2026-07-08",
+          "startTime": "08:30",
+          "endTime": "11:00",
+          "title": "Amend |  Bressard-Kayode  -  Scheme-02",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1783497443920",
+          "date": "2026-07-08",
+          "startTime": "08:00",
+          "endTime": "08:30",
+          "title": "Meeting |  JW & DF",
+          "color": "na-shift-color-blue"
         }
       ]
     }

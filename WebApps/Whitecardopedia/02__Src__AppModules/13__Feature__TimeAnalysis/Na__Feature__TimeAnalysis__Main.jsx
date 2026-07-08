@@ -26,6 +26,11 @@
 // - Skips not-yet-reviewed projects (non-numeric timeAllocated/timeTaken) so
 //   first-sync NOT YET REVIEWED sentinels do not pollute artist statistics.
 //
+// 08-Jul-2026 - Version 1.2.0
+// - Chart labels and tooltips prefer productionData's sibling
+//   projectNameAlias (when set) over the raw projectName, matching the
+//   alias-aware display used across the rest of the app.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -573,7 +578,7 @@
                     .attr('y', (d, i) => y(i) + y.bandwidth() / 2)
                     .attr('dy', '0.35em')
                     .attr('text-anchor', 'end')
-                    .text(d => `${d.projectName} (${d.productionData?.conceptArtist})`)
+                    .text(d => `${(d.projectNameAlias || '').trim() || d.projectName} (${d.productionData?.conceptArtist})`)
                     .style('font-size', '11px')
                     .style('fill', '#333');
                 
@@ -871,7 +876,7 @@
                 const turnaround = calculateTurnaroundDays(d);                      // <-- Calculate turnaround time
                 
                 tooltip.html(`
-                    <div class="tooltip-title">${d.projectName}</div>
+                    <div class="tooltip-title">${(d.projectNameAlias || '').trim() || d.projectName}</div>
                     <div class="tooltip-content">
                         Artist: ${d.productionData?.conceptArtist}<br>
                         Received: ${receivedDate}<br>

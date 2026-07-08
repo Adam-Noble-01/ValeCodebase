@@ -233,7 +233,7 @@
                                         src={thumbPair ? thumbPair.primary : ''} 
                                         data-fallback-src={thumbPair ? thumbPair.fallback : ''}
                                         onError={Na__AssetUrls__HandleImgError}
-                                        alt={project.projectName}
+                                        alt={project.displayName || project.projectName}
                                         className="project-card__image"
                                         loading="lazy"
                                         decoding="async"
@@ -249,7 +249,7 @@
                                 
                                 <div className="project-card__content">
                                     <div className="project-card__text-content">
-                                        <h3 className="project-card__name">{project.projectName}</h3>
+                                        <h3 className="project-card__name">{project.displayName || project.projectName}</h3>
                                         <p className="project-card__code">{project.projectCode}</p>
                                     </div>
                                     <ContentIndicatorIcons project={project} />

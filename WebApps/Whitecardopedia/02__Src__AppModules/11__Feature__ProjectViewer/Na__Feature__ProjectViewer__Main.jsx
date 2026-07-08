@@ -193,7 +193,7 @@
                                         aria-current="page"
                                     >
                                         <h1 className="project-viewer__breadcrumb-current">
-                                            {project.projectName} <span className="project-viewer__code-inline">- {project.projectCode}</span>
+                                            {project.displayName || project.projectName} <span className="project-viewer__code-inline">- {project.projectCode}</span>
                                         </h1>
                                     </li>
                                 </ol>

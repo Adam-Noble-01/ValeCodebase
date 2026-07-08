@@ -1,0 +1,321 @@
+{
+    "projectName": "Bressard-Kayode__Scheme-02",
+    "projectCode": "63592",
+    "projectNameAlias": "Bressard-Kayode |  Scheme – 02",
+    "productionData": {
+        "input": "Early Stage Sketch",
+        "conceptArtist": "Dan",
+        "designer": "Dan",
+        "additionalNotes": "Redraw of the Orangery based on Dans Excellent sketch elevations. Re-designed footprint, panel layout, wall abutment detail, and attic balustrades over parapet."
+    },
+    "scheduleData": {
+        "dateReceived": "07-Jul-2026",
+        "dateFulfilled": "07-Jul-2026",
+        "timeTaken": 1.25,
+        "timeAllocated": 1
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
+        "IMG03__FarSiide__WhitecardImage__07-Jul-2026.png",
+        "IMG04__3dView__RoofView____WhitecardImage__07-Jul-2026.png",
+        "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63592__Bressard-Kayode__Scheme-02",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026__Thumbnail__524p__.webp",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "07-Jul-2026 at 17:52",
+        "model_name": "Bressard-Kayode__WhiteCardModel__2.5.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__ViewOption-01__MainView",
+                "scene_description": "01 |  Full Context",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -10972.5762,
+                        "y": -22854.8126,
+                        "z": 3500
+                    },
+                    "target": {
+                        "x": 11219.483,
+                        "y": 9430.4989,
+                        "z": 3515.7679
+                    },
+                    "up": {
+                        "x": -0.000228,
+                        "y": -0.000332,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0.566458,
+                        "y": 0.824091,
+                        "z": 0.000402
+                    },
+                    "fov_degrees": 20.9198,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG02__3dView__DoorsView__",
+                "scene_description": "02 |  Main Doors",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -1136.8544,
+                        "y": 7125.0997,
+                        "z": 2000
+                    },
+                    "target": {
+                        "x": 12647.5917,
+                        "y": 7075.3071,
+                        "z": 1930.3178
+                    },
+                    "up": {
+                        "x": 0.005055,
+                        "y": -1.8e-05,
+                        "z": 0.999987
+                    },
+                    "direction": {
+                        "x": 0.999981,
+                        "y": -0.003612,
+                        "z": -0.005055
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG03__FarSiide",
+                "scene_description": "03 | Far Side",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 34337.946,
+                        "y": -7929.3503,
+                        "z": 2173.5204
+                    },
+                    "target": {
+                        "x": 24592.8053,
+                        "y": 315.8909,
+                        "z": 2109.8559
+                    },
+                    "up": {
+                        "x": -0.003807,
+                        "y": 0.003221,
+                        "z": 0.999988
+                    },
+                    "direction": {
+                        "x": -0.763402,
+                        "y": 0.645905,
+                        "z": -0.004987
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG04__3dView__RoofView__",
+                "scene_description": "04 |  Roof View",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 7393.5336,
+                        "y": -2919.0567,
+                        "z": 14550.5867
+                    },
+                    "target": {
+                        "x": 15280.468,
+                        "y": 5732.8302,
+                        "z": 4000.1593
+                    },
+                    "up": {
+                        "x": 0.450998,
+                        "y": 0.49474,
+                        "z": 0.742854
+                    },
+                    "direction": {
+                        "x": 0.500447,
+                        "y": 0.548986,
+                        "z": -0.669453
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG05__FrontElevation",
+                "scene_description": "05 |  Fascade",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 14995.9418,
+                        "y": -14328.8564,
+                        "z": 3374.9179
+                    },
+                    "target": {
+                        "x": 14995.9418,
+                        "y": -1563.4414,
+                        "z": 3374.9179
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": 0,
+                        "y": 1,
+                        "z": 0
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            },
+            {
+                "scene_name": "IMG06__Abutment",
+                "scene_description": "06 |  House Abutment",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 13063.4224,
+                        "y": 8368.3361,
+                        "z": 3932.4743
+                    },
+                    "target": {
+                        "x": 42553.1621,
+                        "y": 26706.2269,
+                        "z": -14203.2938
+                    },
+                    "up": {
+                        "x": 0.393113,
+                        "y": 0.244453,
+                        "z": 0.8864
+                    },
+                    "direction": {
+                        "x": 0.752733,
+                        "y": 0.468079,
+                        "z": -0.46292
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false
+                }
+            }
+        ]
+    },
+    "folderId": "2026/63592__Bressard-Kayode__Scheme-02",
+    "isR2Loaded": true,
+    "displayName": "Bressard-Kayode__Scheme-02",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
+        "IMG03__FarSiide__WhitecardImage__07-Jul-2026.png",
+        "IMG04__3dView__RoofView____WhitecardImage__07-Jul-2026.png",
+        "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__07-Jul-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__07-Jul-2026.png",
+        "IMG03__FarSiide__WhitecardImage__07-Jul-2026.png",
+        "IMG04__3dView__RoofView____WhitecardImage__07-Jul-2026.png",
+        "IMG05__FrontElevation__WhitecardImage__07-Jul-2026.png",
+        "IMG06__Abutment__WhitecardImage__07-Jul-2026.png"
+    ],
+    "enabled": true
+}

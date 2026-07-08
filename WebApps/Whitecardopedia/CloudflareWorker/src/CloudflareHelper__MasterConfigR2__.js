@@ -25,6 +25,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Jul-2026 - Version 1.1.0
+// - Added na_remove_master_config_entry() for the new Delete handler — drops
+//   a project's entry entirely rather than patching it.
+//
 // 07-Jul-2026 - Version 1.0.0
 // - Initial implementation — extracted for the Visibility + Rename handlers.
 //
@@ -99,6 +103,26 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Remove a Single Project Entry Entirely by folderId
+    // ------------------------------------------------------------
+    // Used by the Delete handler — unlike a patch, this drops the entry from
+    // the projects array completely so the project stops appearing anywhere
+    // (gallery, editor picker) with no trace left behind. Returns
+    // { config, removed }.
+    // ------------------------------------------------------------
+    function na_remove_master_config_entry(config, folderId) {
+        if (!config || !Array.isArray(config.projects)) {
+            return { config, removed: false };                              // <-- Nothing to remove from
+        }
+
+        const originalLength = config.projects.length;
+        config.projects      = config.projects.filter(p => !(p && p.folderId === folderId));
+
+        return { config, removed: config.projects.length < originalLength };
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -111,7 +135,8 @@
     export {
         na_read_master_config,
         na_write_master_config,
-        na_patch_master_config_entry
+        na_patch_master_config_entry,
+        na_remove_master_config_entry
     };
     // ------------------------------------------------------------
 

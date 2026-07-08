@@ -19,6 +19,72 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.13 - 08-Jul-2026 - Fix: project.json Cache-Busting Gap + Auto Reload After Editor Save
+
+### Overview
+A user reported that after editing a project via the Project Editor (which saves live to R2 successfully), the gallery kept showing stale data until a **full manual browser cache clear** — and the app's own "Purge App Cache" tool did **not** fix it. Mapping every cache layer in the app (Service Worker Cache Storage, browser HTTP cache, Cloudflare edge cache, in-memory JS state) found that `project.json` was the one R2 SSOT JSON that skipped the cache-busting pattern already proven correct for masterConfig/masterIndex/the build manifest, on three separate layers at once. "Purge App Cache" could never have fixed this because it only clears Cache Storage/Service Worker/local-storage — a completely different mechanism from the browser's HTTP disk cache and Cloudflare's edge cache, which is where the staleness actually lived.
+
+### Root cause (three gaps, one JSON)
+1. **Fetch-level**: `na_fetch_project_json_r2_first()` fetched R2's `project.json` with a bare `fetch(url)` — no `?t=` cache-bust, no `cache:'no-store'` — unlike every other R2 SSOT fetch in the same file.
+2. **Upload-level**: every R2 write of `project.json` (editor save, editor rename, and all three Python sync-pipeline upload paths) set a `ContentType` but never a `Cache-Control` header, so Cloudflare's edge was free to cache the object indefinitely by default.
+3. **Service Worker level**: the SW's `wpwa-data-*` bucket (network-first) holds `project.json`, but the existing build-manifest-change eviction only ever cleared `wpwa-thumbs-*`.
+
+### Changes
+- **`Na__AppData__ProjectLoader.js`** — `na_fetch_project_json_r2_first` now cache-busts the R2 fetch exactly like `loadMasterConfig`/`na_load_master_index`/the build-manifest check. `na_clear_thumbnail_cache` renamed to `na_clear_stale_service_worker_caches` and now also evicts `wpwa-data-*`.
+- **`CloudflareHandler__ProjectEditor__.js`** and **`CloudflareHandler__ProjectRename__.js`** — every `project.json` R2 write now sets `cacheControl: 'no-cache, max-age=0'` (matching the build manifest/masterConfig mirror pattern already in use).
+- **`AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`** — all three project.json R2 write paths (`na_upload_project_json_to_r2`, the camera-data merge, and the model-URL merge) now set the same `CacheControl`, keeping the SketchUp Cloud Sync pipeline consistent with the editor's live save path.
+- **`Whitecardopedia__Pwa__ServiceWorker__Logic__.js`** — `NetworkFirst` now fetches with `cache:'no-store'` (defense in depth: a "network-first" strategy should never be quietly satisfiable by the browser's own disk cache), and `PWA_SW_VERSION_TOKEN` bumped to force a clean cache reset for all existing users.
+- **New: automatic clear-cache-and-reload after every successful editor save or delete.** `Na__Feature__ProjectEditor__Main.jsx`'s `handleSaveSuccess`/`handleDeleteSuccess` no longer patch state in place or soft-reload the picker — both now close the form, return to the editor's selection view, and (after a short delay so the "Saved!" toast is visible) trigger the exact same "Purge App Cache" mechanism already wired to the hamburger menu. Since a full reload resets the app's in-memory view routing back to the main gallery, a new `?reopenEditor=1` flag (`Na__AppUtils__UrlQueryHandler.js`, honoured in `Na__AppCore__WhitecardopediaApp.jsx`'s boot effect) makes it land back on the editor instead.
+
+### Files Changed
+- `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js` (v0.2.8)
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js` (v1.5.0)
+- `CloudflareWorker/src/handlers/CloudflareHandler__ProjectEditor__.js` (v1.2.0)
+- `CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js` (v1.2.0)
+- `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`
+- `02__Src__AppModules/05__AppUtils/Na__AppUtils__UrlQueryHandler.js` (v1.1.0)
+- `02__Src__AppModules/02__AppCore/Na__AppCore__WhitecardopediaApp.jsx` (v1.1.0)
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Main.jsx` (v1.3.0)
+
+# -----------------------------------------------------------------------------
+
+## Whitecardopedia v0.6.12 - 08-Jul-2026 - Feature: Display Name Alias, Rename Hardening, and Safe Delete
+
+### Overview
+Three follow-ups to last release's rename tool, driven directly by real usage: renaming "Bressard-Kayode" to something containing a `|` character showed that the rename flow had no character validation — R2 tolerates far more in an object key than Windows NTFS tolerates in a folder name, so a rename like that could move the R2 folder while silently failing to move the local mirror, permanently drifting the two apart and baking a broken character into CDN URLs. Rather than only patching that hole, this release adds a fundamentally lower-risk way to change how a project is displayed at all — a Display Name Alias — plus a fully-verified Delete Project capability with a centred confirmation modal, so the Danger Zone (rename, delete) is reserved for when it's genuinely needed.
+
+### Changes
+- **Display Name Alias (`projectNameAlias`)** — new optional field, collapsed under an "Advanced" disclosure directly beneath Project Name (auto-expanded if already set). When set, Whitecardopedia shows this name everywhere a project is displayed — gallery cards, the project viewer breadcrumb, the editor's own picker, search, and A-Z sort — instead of the raw `projectName`. It never touches `projectName`/`projectCode`/`folderId`, so setting or changing it goes through the ordinary two-phase save and can **never** trigger the rename flow. `buildUpdatedProject()` now explicitly rebuilds the saved object with `projectName`, `projectCode`, `projectNameAlias` first (in that order) so the new field always lands right after the project identity fields in the JSON, regardless of a project's prior key order.
+- **Rename hardening** — the proposed new folder path (client-side in the editor form, and authoritatively again in the Worker's rename handler) is now validated against the Windows-reserved filename characters `< > : " \ | ? *` and control characters, with a clear rejection message, before any R2 move is attempted. This closes the exact failure class the pipe-character edit hit.
+- **Delete Project Permanently** — a new always-visible Danger Zone in the editor form. Clicking it opens a centred modal (new reusable `.editor-modal-overlay`/`.editor-modal` pattern) that requires typing the project code to confirm, then:
+  1. Deletes every object under the project's R2 prefix via a new Worker endpoint, removes the project's entry entirely from the master index and master config (not a disable — full removal), bumps the build manifest, and **re-lists the prefix to verify it's now empty**.
+  2. Deletes the local mirror folder and local index/config entries via a new Flask endpoint, and **verifies the folder no longer exists**.
+  3. Shows both verification results ("Cloudflare R2/CDN Data — Deleted and Verified" / "Local Mirror Data — Deleted and Verified") before returning to the gallery picker, which is force-reloaded since the project's `folderId` key no longer exists anywhere.
+
+### Architecture Notes
+- No Worker changes were needed for the alias — it rides through the existing save endpoint as an ordinary `project.json` field, which is exactly why it's the lower-risk option versus renaming.
+- Delete is deliberately independent of the rename handler (small list/delete helpers are duplicated rather than shared) so each Worker handler stays self-contained.
+- ValeVision3D and the ValeVision Cloud Sync SketchUp plugin are unaffected by either the alias or the delete feature — neither reads `projectNameAlias`, and a deleted project simply stops existing in the index/config the plugin never reads from directly.
+
+### Files Changed
+- `CloudflareWorker/src/handlers/CloudflareHandler__ProjectDelete__.js` (new)
+- `CloudflareWorker/src/CloudflareHelper__MasterIndexR2__.js` (v1.1.0) — added `na_remove_master_index_entry`
+- `CloudflareWorker/src/CloudflareHelper__MasterConfigR2__.js` (v1.1.0) — added `na_remove_master_config_entry`
+- `CloudflareWorker/src/handlers/CloudflareHandler__ProjectRename__.js` (v1.1.0) — tightened folder-path validation
+- `CloudflareWorker/src/index.js` (v1.3.0) — routed `/delete`
+- `server.py` — added `/api/projects/<folder>/delete`
+- `02__Src__AppModules/03__AppData/Na__AppData__ProjectLoader.js` (v0.2.7) — added `displayName`
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__Main.jsx`
+- `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx`
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Main.jsx` (v1.2.0)
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx` (v4.0.0)
+- `02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx` (v1.2.0)
+- `02__Src__AppModules/05__AppUtils/Na__AppUtils__SearchFilter.js` (v1.1.0)
+- `02__Src__AppModules/05__AppUtils/Na__AppUtils__SortProjects.js` (v1.1.0)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Tools__.css` (v1.2.0)
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.6.11 - 07-Jul-2026 - Feature: Live Project Rename + Fuller Project Editor
 
 ### Overview

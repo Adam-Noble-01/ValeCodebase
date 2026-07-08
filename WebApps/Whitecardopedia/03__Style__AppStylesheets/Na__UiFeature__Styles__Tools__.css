@@ -16,6 +16,22 @@
  * - Follows Vale Design Suite standards for consistency
  * - Designed for future expansion with additional tools
  *
+ * -----------------------------------------------------------------------------
+ *
+ * DEVELOPMENT LOG:
+ * 2025 - Version 1.0.0
+ * - Initial implementation.
+ *
+ * 07-Jul-2026 - Version 1.1.0
+ * - Added Project Info panel, checkbox field, rename confirmation panel,
+ *   danger-accented button variant, and disabled-project card badge styles.
+ *
+ * 08-Jul-2026 - Version 1.2.0
+ * - Added title alias hint, collapsible disclosure (Display Name Alias),
+ *   Danger Zone panel, and a reusable centred modal + verification
+ *   checklist pattern (editor-modal-overlay/editor-modal) for the new
+ *   Delete Project confirmation flow.
+ *
  * =============================================================================
  */
 
@@ -203,6 +219,13 @@
         padding-bottom                     : var(--Vale_Spacing_Medium);    /* <-- Bottom padding */
         border-bottom                      : 2px solid var(--Vale_PrimaryBrand);  /* <-- Vale blue underline */
     }
+
+    .editor-form__title-alias {
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard (smaller than heading) */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Regular weight */
+        font-style                         : italic;                        /* <-- Distinguish from the raw name */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary (muted) text color */
+    }
     /* ------------------------------------------------------------ */
 
 
@@ -281,6 +304,44 @@
     /* ------------------------------------------------------------ */
 
 
+    /* EDITOR FORM | Collapsible Disclosure (Display Name Alias) */
+    /* ------------------------------------------------------------ */
+    .editor-form__disclosure-toggle {
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Vertically centre arrow + label */
+        gap                                : 8px;                           /* <-- Space between arrow and label */
+        padding                            : 0;                             /* <-- No extra padding — inline link feel */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_PrimaryBrand);      /* <-- Vale blue text */
+        background                         : transparent;                   /* <-- No button chrome */
+        border                             : none;                          /* <-- No border */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+    }
+
+    .editor-form__disclosure-toggle:hover {
+        text-decoration                    : underline;                     /* <-- Link-style hover feedback */
+    }
+
+    .editor-form__disclosure-arrow {
+        display                            : inline-block;                  /* <-- Allow rotation transform */
+        font-size                          : 0.75em;                        /* <-- Smaller than the label text */
+        transition                         : transform var(--Vale_Transition_Fast);  /* <-- Smooth rotate */
+    }
+
+    .editor-form__disclosure-arrow--open {
+        transform                          : rotate(90deg);                 /* <-- Point down when expanded */
+    }
+
+    .editor-form__disclosure-content {
+        margin-top                         : var(--Vale_Spacing_Medium);    /* <-- Space below the toggle */
+        padding-left                       : var(--Vale_Spacing_Medium);    /* <-- Slight indent under the toggle */
+        border-left                        : 2px solid var(--Vale_BorderLight);  /* <-- Visual nesting cue */
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* EDITOR FORM | Read-Only Project Info Panel */
     /* ------------------------------------------------------------ */
     .editor-form__info-panel {
@@ -352,6 +413,31 @@
         font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
         font-style                         : italic;                        /* <-- Italic text */
         color                              : #6b1c1c;                       /* <-- Deeper red, matches destructive-action palette */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR FORM | Danger Zone (Delete Project) */
+    /* ------------------------------------------------------------ */
+    .editor-form__danger-zone {
+        margin-top                         : var(--Vale_Spacing_XLarge);    /* <-- Clear separation from ordinary fields */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Panel padding */
+        background                         : var(--Vale_BackgroundWhite);   /* <-- White background */
+        border                             : 2px solid #8b2a2a;            /* <-- Muted red border, matches destructive-action palette */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+    }
+
+    .editor-form__danger-zone-title {
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0;  /* <-- Space below title only */
+        font-size                          : var(--Vale_FontSize_SubHeading, 1.05rem);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : #8b2a2a;                       /* <-- Muted red, matches destructive-action palette */
+    }
+
+    .editor-form__danger-zone-text {
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;  /* <-- Space below text only */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small text size */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary (muted) text color */
     }
     /* ------------------------------------------------------------ */
 
@@ -502,6 +588,116 @@
     @keyframes wcp-toast-in {
         from { opacity: 0; transform: translateX(24px); }
         to   { opacity: 1; transform: translateX(0);    }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR MODAL | Centred Overlay (Delete Confirmation, reusable for future confirmations) */
+    /* ------------------------------------------------------------ */
+    .editor-modal-overlay {
+        position                           : fixed;                        /* <-- Fixed positioning */
+        top                                : 0;                            /* <-- Cover from top */
+        left                               : 0;                            /* <-- Cover from left */
+        right                              : 0;                            /* <-- Cover to right */
+        bottom                             : 0;                            /* <-- Cover to bottom */
+        background                         : rgba(0, 0, 0, 0.7);           /* <-- Semi-transparent dark overlay */
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : center;                       /* <-- Center vertically */
+        justify-content                    : center;                       /* <-- Center horizontally */
+        z-index                            : var(--Vale_ZIndex_Modal);     /* <-- Modal layer */
+        padding                            : var(--Vale_Spacing_Large);    /* <-- Breathing room on small screens */
+        animation                          : editor-modal-fade-in 0.2s ease;  /* <-- Fade in animation */
+    }
+
+    @keyframes editor-modal-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .editor-modal {
+        background                         : var(--Vale_BackgroundWhite);  /* <-- White modal background */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_XLarge);   /* <-- Modal padding */
+        width                              : 90%;                          /* <-- Responsive width */
+        max-width                          : 480px;                        /* <-- Maximum modal width */
+        box-shadow                         : 0 8px 32px rgba(0, 0, 0, 0.3);  /* <-- Strong shadow */
+        animation                          : editor-modal-slide-up 0.3s ease;  /* <-- Slide up animation */
+    }
+
+    @keyframes editor-modal-slide-up {
+        from { transform: translateY(20px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .editor-modal--danger {
+        border-top                         : 6px solid #8b2a2a;            /* <-- Muted red accent, matches destructive-action palette */
+    }
+
+    .editor-modal__title {
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;  /* <-- Space below title only */
+        font-size                          : var(--Vale_FontSize_Heading); /* <-- Heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+    }
+
+    .editor-modal__text {
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;  /* <-- Space below text only */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);      /* <-- Primary text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+    }
+
+    .editor-modal__text--error {
+        color                              : #721c24;                      /* <-- Dark red text */
+    }
+
+    .editor-modal__buttons {
+        display                            : flex;                         /* <-- Flexbox layout */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Space between buttons */
+        justify-content                    : flex-end;                     /* <-- Align right */
+        margin-top                         : var(--Vale_Spacing_Large);    /* <-- Space above buttons */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EDITOR MODAL | Delete Verification Checklist */
+    /* ------------------------------------------------------------ */
+    .editor-modal__checklist {
+        display                            : flex;                         /* <-- Flexbox layout */
+        flex-direction                     : column;                       /* <-- Stack checklist rows */
+        gap                                : var(--Vale_Spacing_Medium);   /* <-- Space between rows */
+        margin                             : 0;                            /* <-- Reset default <ul> margin */
+        padding                            : 0;                            /* <-- Reset default <ul> padding */
+        list-style                         : none;                         /* <-- No bullet points — icon serves that role */
+    }
+
+    .editor-modal__check-item {
+        display                            : flex;                         /* <-- Flexbox layout */
+        align-items                        : flex-start;                   /* <-- Top-align icon with wrapped text */
+        gap                                : 10px;                         /* <-- Space between icon and text */
+        padding                            : var(--Vale_Spacing_Medium);   /* <-- Row padding */
+        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard text size */
+    }
+
+    .editor-modal__check-icon {
+        flex-shrink                        : 0;                            /* <-- Never shrink the icon */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+
+    .editor-modal__check-item--success {
+        color                              : #155724;                      /* <-- Dark green text */
+        background-color                   : #d4edda;                     /* <-- Light green background */
+    }
+
+    .editor-modal__check-item--error {
+        color                              : #721c24;                      /* <-- Dark red text */
+        background-color                   : #f8d7da;                     /* <-- Light red background */
+    }
+
+    .editor-modal__check-item--warning {
+        color                              : #6d4c00;                      /* <-- Dark amber text */
+        background-color                   : #fff3cd;                     /* <-- Light amber background */
     }
     /* ------------------------------------------------------------ */
 

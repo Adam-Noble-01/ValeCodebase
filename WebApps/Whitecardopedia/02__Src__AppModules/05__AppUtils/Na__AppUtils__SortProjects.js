@@ -12,9 +12,20 @@
 // DESCRIPTION:
 // - Utility function for sorting projects by various criteria
 // - Supports sorting by date (newest/oldest)
-// - Supports sorting by name (A-Z / Z-A)
+// - Supports sorting by name (A-Z / Z-A) — uses the display name (alias when
+//   set, else raw projectName) so the sort order matches what's shown
 // - Supports sorting by project code (A-Z / Z-A)
 // - Returns sorted array without mutating original
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2025 - Version 1.0.0
+// - Initial implementation.
+//
+// 08-Jul-2026 - Version 1.1.0
+// - name-asc/name-desc now sort by project.displayName (alias-aware) instead
+//   of the raw projectName, so the visible order matches the visible label.
 //
 // =============================================================================
 
@@ -48,15 +59,15 @@
                 
             case 'name-asc':
                 return sorted.sort((a, b) => {
-                    const nameA = (a.projectName || '').toLowerCase();       // <-- Get name A lowercase
-                    const nameB = (b.projectName || '').toLowerCase();       // <-- Get name B lowercase
+                    const nameA = (a.displayName || a.projectName || '').toLowerCase();  // <-- Get display name A lowercase
+                    const nameB = (b.displayName || b.projectName || '').toLowerCase();  // <-- Get display name B lowercase
                     return nameA.localeCompare(nameB);                       // <-- A to Z
                 });
                 
             case 'name-desc':
                 return sorted.sort((a, b) => {
-                    const nameA = (a.projectName || '').toLowerCase();       // <-- Get name A lowercase
-                    const nameB = (b.projectName || '').toLowerCase();       // <-- Get name B lowercase
+                    const nameA = (a.displayName || a.projectName || '').toLowerCase();  // <-- Get display name A lowercase
+                    const nameB = (b.displayName || b.projectName || '').toLowerCase();  // <-- Get display name B lowercase
                     return nameB.localeCompare(nameA);                       // <-- Z to A
                 });
                 

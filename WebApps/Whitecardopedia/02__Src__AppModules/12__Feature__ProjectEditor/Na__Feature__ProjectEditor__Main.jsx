@@ -16,6 +16,33 @@
 // - Displays editor form when project is selected
 // - Back to Gallery navigation in header
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2025 - Version 1.0.0
+// - Initial implementation.
+//
+// 07-Jul-2026 - Version 1.1.0
+// - Picker now uses loadAllProjectsIncludingDisabled() so disabled projects
+//   can be found and re-enabled; shows a "Hidden from Gallery" badge.
+// - handleSaveSuccess forces a full picker reload when a rename changed the
+//   folderId, instead of patching in place under a now-stale key.
+// - Cards prefer project.displayName (alias-aware) over projectName.
+//
+// 08-Jul-2026 - Version 1.2.0
+// - Added handleDeleteSuccess + onDeleteSuccess wiring: after a permanent
+//   delete, resets the master index cache and reloads the full picker list,
+//   since the deleted project's folderId key no longer exists anywhere.
+//
+// 08-Jul-2026 - Version 1.3.0
+// - handleSaveSuccess / handleDeleteSuccess no longer patch state in place or
+//   soft-reload the picker list — both now close the form and trigger the
+//   same "Purge App Cache" mechanism used by the hamburger menu (via the new
+//   na_trigger_cache_purge_and_return_to_editor), landing back on this view
+//   after a full reload (na_set_reopen_editor_flag). This guarantees every
+//   save/delete is reflected immediately, closing the staleness gap that
+//   remained even after the project.json cache-busting fixes.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -74,31 +101,49 @@
         // ---------------------------------------------------------------
         
         
-        // SUB FUNCTION | Handle Save Success
+        // HELPER FUNCTION | Trigger Cache Purge + Reload, Returning to This Editor View
         // ---------------------------------------------------------------
-        const handleSaveSuccess = (updatedProject) => {
-            const wasRenamed = selectedProject && selectedProject.folderId !== updatedProject.folderId;
-
-            setSelectedProject(null);                                        // <-- Clear selected project
-            setEditorView(EDITOR_VIEWS.SELECTION);                           // <-- Return to selection view
-
-            if (wasRenamed) {
-                // RENAMED | folderId changed — a simple in-place map patch would leave
-                // a stale duplicate under the OLD key, so force a full reload instead.
-                setLoading(true);
-                loadAllProjectsIncludingDisabled().then((loadedProjects) => {
-                    setProjects(loadedProjects);
-                    setLoading(false);
-                });
-                return;
+        // Reuses the exact same mechanism as the "Purge App Cache" hamburger menu
+        // item (Cache Storage + Service Worker + storage wipe, auth preserved) so
+        // a save's R2 write is guaranteed visible on the very next paint, rather
+        // than risking the browser's HTTP cache or a stale Service Worker bucket
+        // shadowing the fresh data — see the cache-busting fixes in
+        // Na__AppData__ProjectLoader.js and the Cloudflare Worker for the root
+        // cause this complements. Sets the reopen-editor flag first so a full
+        // page reload lands back on the editor's selection view instead of the
+        // main gallery, since reload otherwise resets all in-memory view state.
+        // ---------------------------------------------------------------
+        const na_trigger_cache_purge_and_return_to_editor = () => {
+            na_set_reopen_editor_flag();                                     // <-- Survive the reload, land back on the editor
+            const registrar = window.Whitecardopedia__Pwa__ServiceWorker__Registrar;
+            if (registrar && typeof registrar.purgeAppCache === 'function') {
+                registrar.purgeAppCache();                                   // <-- Brutal full purge via shared registrar (preserves auth)
+            } else {
+                window.location.reload();                                    // <-- Fallback: plain reload if registrar unavailable
             }
+        };
+        // ---------------------------------------------------------------
 
-            // UPDATE PROJECT IN LOCAL STATE
-            setProjects(prevProjects => 
-                prevProjects.map(p => 
-                    p.folderId === updatedProject.folderId ? updatedProject : p
-                )
-            );                                                               // <-- Update projects array
+
+        // SUB FUNCTION | Handle Save Success — Close Form, Then Purge Cache and Reload
+        // ---------------------------------------------------------------
+        const handleSaveSuccess = () => {
+            setSelectedProject(null);                                        // <-- Close the form
+            setEditorView(EDITOR_VIEWS.SELECTION);                           // <-- Return to the editor's selection view
+
+            // Give the form's "Project saved!" toast a moment to be seen before the
+            // guaranteed-fresh reload takes over.
+            setTimeout(na_trigger_cache_purge_and_return_to_editor, 1200);
+        };
+        // ---------------------------------------------------------------
+        
+        
+        // SUB FUNCTION | Handle Delete Success — Close Form, Then Purge Cache and Reload
+        // ---------------------------------------------------------------
+        const handleDeleteSuccess = () => {
+            setSelectedProject(null);                                        // <-- Close the form
+            setEditorView(EDITOR_VIEWS.SELECTION);                           // <-- Return to the editor's selection view
+            setTimeout(na_trigger_cache_purge_and_return_to_editor, 1200);
         };
         // ---------------------------------------------------------------
         
@@ -150,6 +195,7 @@
                                 project={selectedProject}
                                 onCancel={handleCancelEdit}
                                 onSaveSuccess={handleSaveSuccess}
+                                onDeleteSuccess={handleDeleteSuccess}
                             />
                         </div>
                     </div>
@@ -200,7 +246,7 @@
                                     <div className={`project-card__image-container ${getImageEffectClass(project)}`}>
                                         <img 
                                             src={getThumbnailImage(project)} 
-                                            alt={project.projectName}
+                                            alt={project.displayName || project.projectName}
                                             className="project-card__image"
                                         />
                                         {isHandDrawnProject(project) && (
@@ -212,7 +258,7 @@
                                     </div>
                                     
                                     <div className="project-card__content">
-                                        <h3 className="project-card__name">{project.projectName}</h3>
+                                        <h3 className="project-card__name">{project.displayName || project.projectName}</h3>
                                         <p className="project-card__code">{project.projectCode}</p>
                                         {project.scheduleData?.dateFulfilled && (
                                             <p className="project-card__date">{formatProjectDate(project.scheduleData.dateFulfilled)}</p>

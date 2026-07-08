@@ -26,6 +26,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Jul-2026 - Version 1.2.0
+// - na_write_project_json now sets cacheControl: 'no-cache, max-age=0' on the
+//   R2 object (matching the build manifest/masterConfig mirror pattern) so
+//   an edit is revalidated on every subsequent fetch instead of potentially
+//   being served stale from the browser's HTTP cache or Cloudflare's edge.
+//
 // 26-Jun-2026 - Version 1.1.0
 // - CORS response now uses shared CloudflareHelper__Cors__.js (DRY).
 // - Fixes 127.0.0.1 dev-origin rejection on save responses.
@@ -82,7 +88,10 @@ import { na_build_cors_headers } from '../CloudflareHelper__Cors__.js';
     async function na_write_project_json(r2Bucket, folderId, projectJson) {
         const r2Key = `VaApps/Projects/${folderId}/project.json`;
         await r2Bucket.put(r2Key, projectJson, {
-            httpMetadata : { contentType: 'application/json' }               // <-- Ensure correct MIME on CDN reads
+            httpMetadata : {
+                contentType  : 'application/json',                           // <-- Ensure correct MIME on CDN reads
+                cacheControl : 'no-cache, max-age=0'                         // <-- Force edge/browser revalidation so an edit is visible immediately
+            }
         });
     }
     // ------------------------------------------------------------

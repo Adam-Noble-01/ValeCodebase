@@ -72,6 +72,22 @@
 //   na_reset_master_index_cache() so the editor's new rename/visibility
 //   actions can force a fresh index fetch after a server-side mutation.
 //
+// 08-Jul-2026 - Version 0.2.7
+// - Added projectData.displayName: prefers the optional projectNameAlias
+//   field (set via the Project Editor) over the raw projectName everywhere
+//   a project is shown to users, without touching projectName/projectCode/
+//   folderId — a low-risk alternative to renaming the live R2 folder.
+//
+// 08-Jul-2026 - Version 0.2.8
+// - Fixed stale project.json after an editor save: na_fetch_project_json_r2_first
+//   now cache-busts the R2 fetch (?t= + cache:'no-store'), matching the
+//   pattern already used by loadMasterConfig/na_load_master_index/the build
+//   manifest check — project.json was the one R2 SSOT fetch missing this.
+// - na_clear_thumbnail_cache renamed to na_clear_stale_service_worker_caches
+//   and now also evicts wpwa-data-* (project.json/config JSON), not just
+//   wpwa-thumbs-* — an editor save bumping the build manifest previously
+//   left a stale project.json sitting in the Service Worker's data cache.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -298,10 +314,19 @@
 
     // HELPER FUNCTION | Fetch project.json from the Indexed Source (R2 or GH)
     // ---------------------------------------------------------------
+    // R2 fetch is cache-busted (?t= + cache:'no-store') so an editor save is
+    // visible immediately — matches the pattern already used by
+    // loadMasterConfig() / na_load_master_index() / the build manifest check.
+    // Without this, the browser's HTTP disk cache (and Cloudflare's edge
+    // cache, if the R2 object lacks a Cache-Control header) can silently
+    // serve a stale project.json that no client-side "clear cache" action
+    // can reach, since neither is part of the Cache Storage API.
+    // ---------------------------------------------------------------
     async function na_fetch_project_json_r2_first(folderId) {
-        const r2Url  = `${Na__AssetUrls__R2Base}/${folderId}/project.json`;
-        const ghUrl  = `${Na__AssetUrls__GhBase}/${folderId}/project.json`;
-        const ghPath = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}/project.json`; // <-- Local/GH Pages relative
+        const r2Url       = `${Na__AssetUrls__R2Base}/${folderId}/project.json`;
+        const r2UrlBusted = `${r2Url}?t=${Date.now()}`;                   // <-- Cache-bust the R2 CDN request
+        const ghUrl       = `${Na__AssetUrls__GhBase}/${folderId}/project.json`;
+        const ghPath      = `${PROJECT_LOADER_CONFIG.projectBasePath}/${folderId}/project.json`; // <-- Local/GH Pages relative
 
         await na_load_master_index();                                     // <-- Ensure index is available (memoised)
         const resolved = na_resolve_project_base(folderId);               // <-- Index-driven source decision
@@ -318,7 +343,7 @@
 
         // INDEX SAYS R2 (or unknown) | Try R2 first, then GH Pages
         try {
-            const r2Response = await fetch(r2Url);
+            const r2Response = await fetch(r2UrlBusted, { cache: 'no-store' }); // <-- Bypass browser HTTP cache on every load
             if (r2Response.ok) return { response: r2Response, isR2: true };
         } catch (_) {}
 
@@ -345,30 +370,35 @@
 // REGION | Service Worker Cache Management
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Clear Only the Thumbnail Service Worker Cache Bucket
+    // HELPER FUNCTION | Clear Thumbnail + Project Data Service Worker Cache Buckets
     // ---------------------------------------------------------------
-    // Evicts the wpwa-thumbs-* Cache Storage bucket(s) without touching the app
-    // shell, data or model caches. The Service Worker re-fetches fresh thumbnails
-    // from R2 on the next gallery render.
+    // Evicts the wpwa-thumbs-* AND wpwa-data-* Cache Storage buckets without
+    // touching the app shell or model caches. wpwa-data-* holds project.json
+    // (network-first per the SW's classification), so an editor save that
+    // bumps the build manifest must also evict this bucket — otherwise a
+    // stale project.json can sit in Cache Storage even though the thumbnail
+    // bucket was correctly refreshed. The Service Worker re-fetches fresh
+    // data/thumbnails from R2 on the next gallery render.
     // ---------------------------------------------------------------
-    async function na_clear_thumbnail_cache() {
+    async function na_clear_stale_service_worker_caches() {
         if (!('caches' in window)) return;                               // <-- No Cache Storage API (older browsers)
         try {
-            const all    = await caches.keys();                          // <-- All cache bucket names
-            const thumbs = all.filter(n => n.startsWith('wpwa-thumbs-')); // <-- Only the thumbnail buckets
-            await Promise.all(thumbs.map(n => caches.delete(n)));        // <-- Drop them so SW refetches from R2
+            const all   = await caches.keys();                           // <-- All cache bucket names
+            const stale = all.filter(n => n.startsWith('wpwa-thumbs-') || n.startsWith('wpwa-data-')); // <-- Thumbnails + project/config JSON
+            await Promise.all(stale.map(n => caches.delete(n)));         // <-- Drop them so SW refetches from R2
         } catch (_) {}                                                   // <-- Best-effort; never break the load
     }
     // ---------------------------------------------------------------
 
 
-    // FUNCTION | Fetch the R2 Build Manifest and Evict Thumbs If Newer
+    // FUNCTION | Fetch the R2 Build Manifest and Evict Stale Caches If Newer
     // ---------------------------------------------------------------
     // Reads the shared build-version manifest (written by the sync pipeline) with
     // a cache-bust query param so the Cloudflare edge cannot serve a stale copy.
     // When the buildVersion is newer than the last-seen value, the thumbnail
-    // cache is cleared so re-synced images appear immediately. Non-blocking:
-    // any failure leaves the app on its current behaviour.
+    // AND project-data caches are cleared so re-synced images and edited
+    // project.json fields appear immediately. Non-blocking: any failure leaves
+    // the app on its current behaviour.
     // ---------------------------------------------------------------
     async function na_check_and_clear_on_build_change() {
         try {
@@ -383,7 +413,7 @@
             const stored = parseInt(localStorage.getItem(PROJECT_LOADER_CONFIG.buildVersionKey) || '0', 10);
             if (buildVersion > stored) {
                 localStorage.setItem(PROJECT_LOADER_CONFIG.buildVersionKey, String(buildVersion)); // <-- Remember new build
-                await na_clear_thumbnail_cache();                        // <-- Evict stale thumbs; SW refetches fresh from R2
+                await na_clear_stale_service_worker_caches();            // <-- Evict stale thumbs + data; SW refetches fresh from R2
             }
         } catch (_) {}                                                   // <-- Non-blocking: never break the app on manifest failure
     }
@@ -489,6 +519,10 @@
             projectData.folderId   = folderId;                           // <-- Add folder ID to data
             projectData.basePath   = localProjectPath;                   // <-- GH relative path (fallback image resolution)
             projectData.isR2Loaded = isR2;                               // <-- Provenance flag for callers
+
+            // DISPLAY NAME | Prefer the optional alias everywhere the project is shown to users —
+            // projectName/projectCode/folderId are never touched by setting an alias.
+            projectData.displayName = (projectData.projectNameAlias || '').trim() || projectData.projectName;
 
             // RESOLVE IMAGE BASE | Use R2 only when the index confirms images live there
             const indexEntry = Na__MasterIndex__EntryMap ? Na__MasterIndex__EntryMap.get(folderId) : null;

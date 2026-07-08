@@ -549,7 +549,14 @@ def na_upload_glbs_to_r2(s3_client, bucket: str, glb_dir: Path, r2_prefix: str, 
 
 
 def na_upload_project_json_to_r2(s3_client, bucket: str, project_json_path: Path, r2_prefix: str, report: SyncReport):
-    """Upload project.json to R2 under the given prefix."""
+    """Upload project.json to R2 under the given prefix.
+
+    CacheControl is set to 'no-cache, max-age=0' (matching the build manifest /
+    masterConfig mirror) so a re-synced project.json is revalidated on every
+    fetch instead of potentially being served stale from the browser's HTTP
+    cache or Cloudflare's edge cache — the editor Worker save path sets the
+    same header; this keeps the SketchUp Cloud Sync path consistent with it.
+    """
     label = 'Upload project.json to R2'
     if not project_json_path.exists():
         report.add_step(label, False, f'project.json not found: {project_json_path}')
@@ -557,7 +564,10 @@ def na_upload_project_json_to_r2(s3_client, bucket: str, project_json_path: Path
 
     key = f"{r2_prefix}/{PROJECT_JSON_FILENAME}"
     try:
-        s3_client.upload_file(str(project_json_path), bucket, key)
+        s3_client.upload_file(
+            str(project_json_path), bucket, key,
+            ExtraArgs={'ContentType': 'application/json', 'CacheControl': 'no-cache, max-age=0'}
+        )
         report.add_step(label, True, f'Uploaded project.json to R2 key: {key}')
         report.uploaded += 1
     except Exception as exc:
@@ -565,7 +575,7 @@ def na_upload_project_json_to_r2(s3_client, bucket: str, project_json_path: Path
 
 
 def na_merge_camera_in_r2_project_json(s3_client, bucket: str, r2_key: str, camera_data: Dict, report: SyncReport):
-    """Download project.json from R2, merge camera key, re-upload."""
+    """Download project.json from R2, merge camera key, re-upload (no-cache — see na_upload_project_json_to_r2)."""
     label = 'Merge Camera Data into R2 project.json'
     import io
     try:
@@ -574,10 +584,11 @@ def na_merge_camera_in_r2_project_json(s3_client, bucket: str, r2_key: str, came
         existing[CAMERA_DATA_KEY] = camera_data
         merged_bytes = json.dumps(existing, indent=4).encode('utf-8')
         s3_client.put_object(
-            Bucket      = bucket,
-            Key         = r2_key,
-            Body        = merged_bytes,
-            ContentType = 'application/json'
+            Bucket       = bucket,
+            Key          = r2_key,
+            Body         = merged_bytes,
+            ContentType  = 'application/json',
+            CacheControl = 'no-cache, max-age=0'                          # <-- Force edge/browser revalidation on every merge too
         )
         report.add_step(label, True, f'Merged {CAMERA_DATA_KEY} into R2 project.json.')
     except Exception as exc:
@@ -619,7 +630,7 @@ def na_merge_model_urls_into_project_json(project_json_path: Path, model_urls: L
 
 
 def na_merge_model_urls_in_r2_project_json(s3_client, bucket: str, r2_key: str, model_urls: List[str], report: SyncReport):
-    """Download project.json from R2, patch valeVision_ModelUrls, re-upload."""
+    """Download project.json from R2, patch valeVision_ModelUrls, re-upload (no-cache — see na_upload_project_json_to_r2)."""
     label = 'Merge Model URLs into R2 project.json'
     if not model_urls:
         report.add_step(label, False, 'No model URLs to write — skipped.')
@@ -630,10 +641,11 @@ def na_merge_model_urls_in_r2_project_json(s3_client, bucket: str, r2_key: str, 
         existing['valeVision_ModelUrls'] = model_urls                     # <-- Patch / overwrite the URL array
         merged_bytes = json.dumps(existing, indent=4).encode('utf-8')
         s3_client.put_object(
-            Bucket      = bucket,
-            Key         = r2_key,
-            Body        = merged_bytes,
-            ContentType = 'application/json'
+            Bucket       = bucket,
+            Key          = r2_key,
+            Body         = merged_bytes,
+            ContentType  = 'application/json',
+            CacheControl = 'no-cache, max-age=0'                          # <-- Force edge/browser revalidation on every merge too
         )
         report.add_step(label, True, f'Set {len(model_urls)} model URL(s) in R2 project.json.')
     except Exception as exc:

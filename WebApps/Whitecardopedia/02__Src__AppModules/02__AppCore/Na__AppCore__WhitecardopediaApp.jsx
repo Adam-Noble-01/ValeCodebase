@@ -15,6 +15,18 @@
 // - Coordinates HomePage, ProjectGallery, and ProjectViewer components
 // - Implements simple client-side routing without external libraries
 //
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 2025 - Version 1.0.0
+// - Initial implementation.
+//
+// 08-Jul-2026 - Version 1.1.0
+// - Auth-check boot effect now honours na_get_and_clear_reopen_editor_flag():
+//   if set, navigates straight to APP_VIEWS.EDITOR instead of GALLERY, so the
+//   Project Editor's auto clear-cache-and-reload (after a successful save)
+//   lands the user back where they were rather than the main gallery.
+//
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -89,8 +101,15 @@
                         setIsLoadingUrlProject(false);                   // <-- Clear loading state
                     });
                 } else if (!urlProjectHandled) {
-                    // User has valid token, no URL project - go to gallery (only if not already handled)
-                    setCurrentView(APP_VIEWS.GALLERY);                   // <-- Navigate to gallery directly
+                    // User has valid token, no URL project — check for a pending Editor
+                    // reopen flag (set before an auto cache-purge reload) before defaulting
+                    // to the gallery, since a full reload can't otherwise recall that the
+                    // user was in the Project Editor when the reload was triggered.
+                    if (na_get_and_clear_reopen_editor_flag()) {
+                        setCurrentView(APP_VIEWS.EDITOR);                // <-- Land back in the editor after a post-save cache purge
+                    } else {
+                        setCurrentView(APP_VIEWS.GALLERY);               // <-- Navigate to gallery directly
+                    }
                 }
             }
         }, [pendingUrlProjectId, urlProjectHandled]);                    // <-- Re-run if pendingUrlProjectId or urlProjectHandled changes

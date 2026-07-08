@@ -15,6 +15,7 @@
 // - Routes POST /api/editor/projects/{folderId} to the ProjectEditor handler
 // - Routes POST /api/editor/projects/{folderId}/visibility to the ProjectVisibility handler
 // - Routes POST /api/editor/projects/{folderId}/rename to the ProjectRename handler
+// - Routes POST /api/editor/projects/{folderId}/delete to the ProjectDelete handler
 // - GET /api/editor/health returns a simple health-check response
 //
 // ENVIRONMENT SECRETS (set via wrangler secret put):
@@ -24,6 +25,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Jul-2026 - Version 1.3.0
+// - Added POST /api/editor/projects/{folderId}/delete (permanent R2 + index +
+//   config removal, with a re-list verification step in the response).
+//
 // 07-Jul-2026 - Version 1.2.0
 // - Added POST /api/editor/projects/{folderId}/visibility (gallery enabled toggle).
 // - Added POST /api/editor/projects/{folderId}/rename (live R2 folder move).
@@ -41,11 +46,13 @@
 // @delegate: ./handlers/CloudflareHandler__ProjectEditor__.js
 // @delegate: ./handlers/CloudflareHandler__ProjectVisibility__.js
 // @delegate: ./handlers/CloudflareHandler__ProjectRename__.js
+// @delegate: ./handlers/CloudflareHandler__ProjectDelete__.js
 // @delegate: ./CloudflareHelper__Cors__.js
 
 import { Na__CloudflareHandler__ProjectEditor__HandleSave } from './handlers/CloudflareHandler__ProjectEditor__.js';
 import { Na__CloudflareHandler__ProjectVisibility__HandleToggle } from './handlers/CloudflareHandler__ProjectVisibility__.js';
 import { Na__CloudflareHandler__ProjectRename__HandleRename } from './handlers/CloudflareHandler__ProjectRename__.js';
+import { Na__CloudflareHandler__ProjectDelete__HandleDelete } from './handlers/CloudflareHandler__ProjectDelete__.js';
 import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
 
 // -----------------------------------------------------------------------------
@@ -147,6 +154,16 @@ import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
             if (method === 'POST' && renameMatch) {
                 const folderId = decodeURIComponent(renameMatch[1]);         // <-- Decode: '2026%2F63592__Name' → '2026/63592__Name'
                 return Na__CloudflareHandler__ProjectRename__HandleRename(request, env, folderId, requestOrigin);
+            }
+
+            // ROUTE | POST /api/editor/projects/{folderId}/delete
+            // Matched BEFORE the generic save route below so the longer,
+            // more specific "/delete" suffix always wins.
+            const deleteMatch = url.pathname.match(/^\/api\/editor\/projects\/(.+)\/delete$/);
+
+            if (method === 'POST' && deleteMatch) {
+                const folderId = decodeURIComponent(deleteMatch[1]);         // <-- Decode: '2026%2F63592__Name' → '2026/63592__Name'
+                return Na__CloudflareHandler__ProjectDelete__HandleDelete(request, env, folderId, requestOrigin);
             }
 
             // ROUTE | POST /api/editor/projects/{folderId}

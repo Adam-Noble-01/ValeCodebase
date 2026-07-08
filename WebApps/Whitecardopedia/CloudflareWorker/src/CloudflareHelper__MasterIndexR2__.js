@@ -28,6 +28,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Jul-2026 - Version 1.1.0
+// - Added na_remove_master_index_entry() for the new Delete handler — drops
+//   a project's entry entirely rather than patching it.
+//
 // 07-Jul-2026 - Version 1.0.0
 // - Initial implementation — extracted for the Visibility + Rename handlers.
 //
@@ -104,6 +108,25 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Remove a Single Project Entry Entirely by folderId
+    // ------------------------------------------------------------
+    // Used by the Delete handler — unlike a patch, this drops the entry from
+    // the projects array completely so no trace of the project remains in
+    // the index. Returns { indexData, removed }.
+    // ------------------------------------------------------------
+    function na_remove_master_index_entry(indexData, folderId) {
+        if (!indexData || !Array.isArray(indexData.projects)) {
+            return { indexData, removed: false };                           // <-- Nothing to remove from
+        }
+
+        const originalLength = indexData.projects.length;
+        indexData.projects   = indexData.projects.filter(e => !(e && e.folderId === folderId));
+
+        return { indexData, removed: indexData.projects.length < originalLength };
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -116,7 +139,8 @@
     export {
         na_read_master_index,
         na_write_master_index,
-        na_patch_master_index_entry
+        na_patch_master_index_entry,
+        na_remove_master_index_entry
     };
     // ------------------------------------------------------------
 

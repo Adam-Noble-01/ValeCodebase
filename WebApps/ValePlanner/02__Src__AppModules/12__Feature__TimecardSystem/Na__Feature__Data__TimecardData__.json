@@ -427,8 +427,14 @@
     {
       "Timecard__Date": "2026-07-07",
       "Timcard__Clock-In__": "08:05",
+      "Timcard__Clock-Out__": "18:00",
+      "Timecard__AuthHash": "sha256__184d20b21c5715ea3d432ea91f87c2b47e66894afb97eb58a7f2fc958bf3952a"
+    },
+    {
+      "Timecard__Date": "2026-07-08",
+      "Timcard__Clock-In__": "08:05",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__e2fca55973be69c7428fe77b648c0dedf6fd6e686f481361ad2ae3fb97f31a87"
+      "Timecard__AuthHash": "sha256__dd304065f673942de5774c6377beabe8251a1b88cd26265f7aa95750a9b2a6e4"
     }
   ]
 }

@@ -27,6 +27,7 @@
 # - POST /api/projects/<folder>   : Save updated project.json data (local mirror — called AFTER R2 write)
 # - POST /api/projects/<folder>/visibility : Mirror a gallery-enabled toggle into the local masterConfig/index copies
 # - POST /api/projects/<folder>/rename     : Mirror a live R2 folder rename into the local Projects/ + masterConfig/index copies
+# - POST /api/projects/<folder>/delete     : Permanently delete the local project folder + masterConfig/index entries
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
 # - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
 # - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
@@ -603,6 +604,68 @@ def rename_project_mirror(old_folder_id):
         return jsonify({
             'success': True,                                             # <-- Success flag
             'message': f'Local mirror moved from {old_folder_id} to {new_folder_id}'  # <-- Success message
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Server error: {str(e)}'                           # <-- Generic error
+        }), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Permanently Delete a Project's Local Mirror
+# ------------------------------------------------------------
+# Best-effort local mirror of the Worker's permanent R2 delete (R2 is the
+# SSOT — see CloudflareHandler__ProjectDelete__.js). Removes the local
+# project folder entirely, drops the entry from the local masterConfig and
+# master index copies, and verifies the folder no longer exists before
+# reporting success — the "local is checked" half of the two-sided
+# confirmation the editor form shows after a delete.
+# ------------------------------------------------------------
+@app.route('/api/projects/<path:folder_id>/delete', methods=['POST'])
+def delete_project_mirror(folder_id):
+    """Permanently delete the local project folder and masterConfig/index entries"""
+    try:
+        project_path = get_project_path(folder_id)                       # <-- Resolve local project directory
+
+        # STEP 1 | Delete the local project folder entirely (tolerant if already absent)
+        if os.path.exists(project_path):
+            shutil.rmtree(project_path)                                  # <-- Remove folder + all contents
+
+        # STEP 2 | Remove the entry from the local master config
+        base_dir    = os.path.dirname(os.path.abspath(__file__))         # <-- Get server directory
+        config_path = os.path.join(base_dir, MASTER_CONFIG_PATH)         # <-- Build config path
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)                                    # <-- Load local master config
+            original_count       = len(config.get('projects', []))
+            config['projects']   = [p for p in config.get('projects', []) if p.get('folderId') != folder_id]
+            config_entry_removed = len(config['projects']) < original_count
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4, ensure_ascii=False)       # <-- Write patched config back
+        except Exception:
+            config_entry_removed = False                                 # <-- Non-fatal — folder deletion above matters most
+
+        # STEP 3 | Remove the entry from the local master index fallback copy
+        try:
+            index_path = os.path.join(base_dir, MASTER_INDEX_PATH)       # <-- Build index path
+            with open(index_path, 'r', encoding='utf-8') as f:
+                index_data = json.load(f)                                # <-- Load local index copy
+            index_data['projects'] = [e for e in index_data.get('projects', []) if e.get('folderId') != folder_id]
+            with open(index_path, 'w', encoding='utf-8') as f:
+                json.dump(index_data, f, indent=4, ensure_ascii=False)   # <-- Write patched index back
+        except Exception:
+            pass                                                         # <-- Non-fatal — masterConfig removal above matters most
+
+        # STEP 4 | VERIFY — the local folder must no longer exist
+        local_verified = not os.path.exists(project_path)
+
+        return jsonify({
+            'success'           : True,                                 # <-- Success flag
+            'folderId'          : folder_id,
+            'localVerified'     : local_verified,
+            'configEntryRemoved': config_entry_removed,
+            'message'           : f'Local mirror deleted for {folder_id}'
         })
 
     except Exception as e:

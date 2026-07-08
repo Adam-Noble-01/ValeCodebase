@@ -28,6 +28,13 @@
 // - Does NOT touch the local SketchUp project folder or the ValeVision Cloud
 //   Sync plugin — that plugin re-derives its target folder purely from the
 //   local disk folder name on every sync and is unaware of this move.
+// - Rejects Windows-reserved filename characters (< > : " \ | ? *) and
+//   control characters in the new folder segment. R2 object keys tolerate
+//   most of these, but a Windows local mirror does not — without this check
+//   a folder name containing e.g. "|" could succeed on R2 while silently
+//   failing to create/move on the Flask local mirror, permanently drifting
+//   the two out of step (this is an authoritative server-side re-check; the
+//   editor form validates the same pattern before ever calling this route).
 //
 // R2 KEY PATHS:
 //   project assets : VaApps/Projects/{folderId}/*
@@ -38,6 +45,18 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 08-Jul-2026 - Version 1.2.0
+// - The corrected project.json written to the new prefix now also sets
+//   cacheControl: 'no-cache, max-age=0' (matching the editor save handler),
+//   so a renamed project's data is never served stale from the browser's
+//   HTTP cache or Cloudflare's edge cache at its new location.
+//
+// 08-Jul-2026 - Version 1.1.0
+// - Tightened Na__FolderId__ValidPattern to reject Windows-reserved filename
+//   characters and control characters in the folder segment, not just check
+//   for a "YYYY/..." shape — closes the exact bug class where a rename with
+//   e.g. a "|" character could move R2 while breaking the local mirror move.
+//
 // 07-Jul-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -60,7 +79,9 @@ import { na_format_build_date, na_write_build_manifest } from '../CloudflareHelp
     // MODULE CONSTANTS | R2 Prefix and Validation Pattern
     // ------------------------------------------------------------
     const Na__R2Prefix__Projects      = 'VaApps/Projects';                   // <-- R2 root prefix for per-project assets
-    const Na__FolderId__ValidPattern  = /^\d{4}\/.+$/;                       // <-- "YYYY/Code__Name" shape
+    // "YYYY/" then one-or-more characters excluding the Windows-reserved set
+    // (< > : " / \ | ? *) and control characters — see DEVELOPMENT LOG.
+    const Na__FolderId__ValidPattern  = /^\d{4}\/[^<>:"/\\|?*\x00-\x1F]+$/;
     const Na__R2Delete__BatchSize     = 1000;                                // <-- R2 delete() accepts up to 1000 keys/call
     // ------------------------------------------------------------
 
@@ -203,7 +224,8 @@ import { na_format_build_date, na_write_build_manifest } from '../CloudflareHelp
         // VALIDATE REQUEST
         if (!Na__FolderId__ValidPattern.test(newFolderId)) {
             return na_json_cors_response(
-                { error: 'newFolderId must be in the form "YYYY/Code__Name"' }, 400, requestOrigin, env
+                { error: 'newFolderId must be in the form "YYYY/Code__Name" and must not contain any of the characters < > : " \\ | ? * or control characters' },
+                400, requestOrigin, env
             );
         }
         if (newFolderId === oldFolderId) {
@@ -258,7 +280,10 @@ import { na_format_build_date, na_write_build_manifest } from '../CloudflareHelp
             const correctedProjectData = na_rewrite_project_folder_urls(updatedProjectData, oldFolderId, newFolderId);
             const projectJson          = JSON.stringify(correctedProjectData, null, 4);
             await env.R2_BUCKET.put(`${newPrefix}project.json`, projectJson, {
-                httpMetadata: { contentType: 'application/json' }
+                httpMetadata: {
+                    contentType  : 'application/json',
+                    cacheControl : 'no-cache, max-age=0'                     // <-- Force edge/browser revalidation at the new location too
+                }
             });
 
             // STEP 5 | Everything at the new location is confirmed written — delete the old folder

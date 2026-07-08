@@ -29,6 +29,14 @@
 // 2026 - Version 1.0.0
 // - Initial PWA service worker with shell / thumbs / data / models cache buckets.
 //
+// 08-Jul-2026 - Version 1.5.0
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-08-1 (force full cache eviction —
+//   NetworkFirst now fetches with cache:'no-store' so "network-first" for
+//   project.json/masterConfig/HTML can never be quietly satisfied by the
+//   browser's own HTTP disk cache; without this, an editor save's fresh R2
+//   write could still be shadowed by a stale disk-cached response that no
+//   Cache-Storage-level "clear cache" action could ever reach).
+//
 // 02-Jul-2026 - Version 1.4.1
 // - PWA_SW_VERSION_TOKEN bumped to 2026-07-02-2 (force shell cache eviction after
 //   the Scene Entourage 2D billboard naming/toggle changes; ValeVision3D shell JS
@@ -66,7 +74,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-07-02-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-07-08-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -306,7 +314,13 @@
         const cacheInstance     = await caches.open(cacheName);                                                                     // <-- Open named cache
 
         try {
-            const networkResponse = await fetch(request);                                                                           // <-- Try network first
+            // cache:'no-store' overrides the captured Request's own cache mode so a
+            // "network-first" strategy can never be quietly satisfied by the browser's
+            // HTTP disk cache — it must genuinely hit the network (or origin edge cache
+            // honouring its own Cache-Control) every time. Without this, a stale
+            // project.json/masterConfig response could sit in the browser's HTTP cache
+            // and keep getting written straight back into wpwa-data-* as if it were fresh.
+            const networkResponse = await fetch(request, { cache: 'no-store' });                                                    // <-- Try network first, bypassing the browser HTTP cache
             if (networkResponse && networkResponse.ok) {
                 cacheInstance.put(request, networkResponse.clone()).catch(() => {});                                                // <-- Refresh cache
             }

@@ -1,4 +1,7 @@
 {
+    "projectName": "Bressard-Kayode",
+    "projectCode": "63592",
+    "projectNameAlias": "Bressard-Kayode |  Scheme – 01",
     "Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -30,18 +33,16 @@
         "IMG04__FrontElevation__WhitecardImage__25-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
+        "additionalNotes": "Had to Model the main elevation from photo matching which added time. building was more detailed than standard so took additional time.",
+        "conceptArtist": "Amy",
         "input": "Default Input Type",
         "designer": "Dan"
     },
-    "projectCode": "63592",
-    "projectName": "Bressard-Kayode",
     "scheduleData": {
         "dateFulfilled": "24-Jun-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
+        "dateReceived": "23-Jun-2026",
+        "timeAllocated": 4,
+        "timeTaken": 5
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -88,28 +89,28 @@
                     "eye": {
                         "x": -10972.5791,
                         "y": -22854.8168,
-                        "z": 3500.0
+                        "z": 3500
                     },
                     "target": {
                         "x": 11227.8405,
                         "y": 9442.6582,
-                        "z": 3500.0
+                        "z": 3500
                     },
                     "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
                     },
                     "direction": {
                         "x": 0.566458,
                         "y": 0.824091,
-                        "z": 0.0
+                        "z": 0
                     },
                     "fov_degrees": 30.9573,
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 }
             },
             {
@@ -120,7 +121,7 @@
                     "eye": {
                         "x": -1136.8544,
                         "y": 7125.0997,
-                        "z": 2000.0
+                        "z": 2000
                     },
                     "target": {
                         "x": 12647.5917,
@@ -141,7 +142,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 }
             },
             {
@@ -173,7 +174,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 }
             },
             {
@@ -192,22 +193,41 @@
                         "z": 4724.7702
                     },
                     "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
                     },
                     "direction": {
-                        "x": 0.0,
-                        "y": 1.0,
-                        "z": 0.0
+                        "x": 0,
+                        "y": 1,
+                        "z": 0
                     },
                     "fov_degrees": 43.6028,
                     "fov_is_height": false,
                     "is_perspective": false,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 }
             }
         ]
-    }
+    },
+    "folderId": "2026/63592__Bressard-Kayode",
+    "isR2Loaded": true,
+    "displayName": "Bressard-Kayode",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__25-Jun-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__25-Jun-2026.png",
+        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png",
+        "IMG04__FrontElevation__WhitecardImage__25-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__25-Jun-2026.png",
+        "IMG02__3dView__DoorsView____WhitecardImage__25-Jun-2026.png",
+        "IMG03__3dView__RoofView____WhitecardImage__25-Jun-2026.png",
+        "IMG04__FrontElevation__WhitecardImage__25-Jun-2026.png"
+    ],
+    "enabled": true
 }

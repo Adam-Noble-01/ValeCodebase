@@ -11,8 +11,9 @@
 //
 // DESCRIPTION:
 // - Form component for editing project metadata
-// - Editable fields: projectName, projectCode, productionData (incl. designer),
-//   scheduleData, sketchUp URL, and gallery visibility (enabled)
+// - Editable fields: projectName, projectCode, projectNameAlias (display-only
+//   override), productionData (incl. designer), scheduleData, sketchUp URL,
+//   and gallery visibility (enabled)
 // - Production data: input type (dropdown), concept artist (dropdown),
 //   designer (dropdown), additional notes
 // - Schedule data: timeAllocated, timeTaken, dateReceived, dateFulfilled
@@ -26,18 +27,45 @@
 // - Two-phase save: R2 SSOT first (via Cloudflare Worker), then local mirror (via Flask)
 // - Phase 1 (R2) must succeed before Phase 2 (local mirror) runs
 // - Worker config (URL + API key) fetched from Flask GET /api/editor-config on mount
+// - projectNameAlias (collapsed "Advanced" section, under Project Name) lets
+//   Whitecardopedia display a preferred name everywhere without ever moving
+//   the live R2 folder/CDN path — always the lower-risk choice vs renaming
 // - If the edited Project Code/Name would move the live R2 folder, Save shows
 //   an inline confirm-and-rename panel (old -> new path) before proceeding —
 //   confirming performs an atomic R2 folder move via the Worker's rename
-//   endpoint, then mirrors the move locally via Flask
+//   endpoint, then mirrors the move locally via Flask. The proposed folder
+//   path is validated against Windows-reserved filename characters before
+//   the move is allowed to proceed.
 // - Visibility (enabled) changes are applied as an independent phase via the
 //   Worker's visibility endpoint, then mirrored locally via Flask
+// - Danger Zone: "Delete Project Permanently" opens a centred modal requiring
+//   the project code to be typed as confirmation, then deletes all R2/CDN
+//   data and the local mirror, verifying both before reporting success
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
 // 2025 - Version 1.0.0
 // - Initial implementation.
+//
+// 08-Jul-2026 - Version 4.0.0
+// - Added projectNameAlias: an optional display-name override, collapsed
+//   under an "Advanced" disclosure beneath Project Name. Whitecardopedia
+//   shows this name everywhere instead of the raw projectName once set, but
+//   it never touches projectName/projectCode/folderId, so it can never
+//   trigger the rename flow — the preferred, low-risk way to change how a
+//   project is displayed. Placed right after projectName/projectCode in the
+//   saved JSON via an explicit key-ordered rebuild in buildUpdatedProject().
+// - Hardened the rename flow: the proposed new folder path is now validated
+//   against Windows-reserved filename characters (< > : " \ | ? *) before a
+//   rename is allowed to proceed — closes the exact failure mode where a
+//   character like "|" can succeed on R2 but fail to create/move on a
+//   Windows local mirror, permanently drifting R2 and local out of step.
+// - Added a Danger Zone with "Delete Project Permanently": a centred modal
+//   requires typing the project code to confirm, then deletes every R2/CDN
+//   object and the local mirror via new Worker/Flask endpoints, verifying
+//   both sides (re-listing R2, re-checking the local path) before reporting
+//   a final Deleted-and-Verified result.
 //
 // 07-Jul-2026 - Version 3.0.0
 // - Added Designer dropdown (productionData.designer) — was previously
@@ -242,6 +270,59 @@
     }
     // ---------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Delete Project Permanently from R2 via Cloudflare Worker (Phase 1 — SSOT)
+    // ------------------------------------------------------------
+    async function na_delete_project_via_r2(workerApiBaseUrl, apiKey, folderId, timeoutMs) {
+        const encodedFolderId = encodeURIComponent(folderId);                // <-- Encode slashes in folderId
+        const workerUrl       = `${workerApiBaseUrl}/projects/${encodedFolderId}/delete`; // <-- Full Worker endpoint URL
+
+        const controller = new AbortController();
+        const timeoutId  = setTimeout(() => controller.abort(), timeoutMs || 60000); // <-- Deletes can touch many objects — longer timeout
+
+        try {
+            const response = await fetch(workerUrl, {
+                method  : 'POST',
+                headers : {
+                    'Content-Type'     : 'application/json',
+                    'X-Editor-Api-Key' : apiKey                              // <-- Worker auth header
+                },
+                signal  : controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const errorBody = await response.json().catch(() => ({}));
+                throw new Error(errorBody.error || `Worker responded with status ${response.status}`);
+            }
+
+            return await response.json();                                    // <-- Return { r2Verified, remainingObjectCount, ... }
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+        }
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Delete Local Mirror via Flask (Phase 2 — Mirror)
+    // ------------------------------------------------------------
+    async function na_delete_project_mirror_locally(folderId) {
+        const response = await fetch(`/api/projects/${folderId}/delete`, {
+            method  : 'POST',
+            headers : { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({}));
+            throw new Error(errorBody.error || `Flask responded with status ${response.status}`);
+        }
+
+        return await response.json();                                        // <-- Return { localVerified }
+    }
+    // ---------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -263,6 +344,27 @@
         const name = String(projectName || '').trim();
         if (!year || !code || !name) return currentFolderId;                 // <-- Insufficient data — never propose a change
         return `${year}/${code}__${name}`;
+    }
+    // ---------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Validate a Proposed folderId Is Safe for R2 + Windows Paths
+    // ------------------------------------------------------------
+    // Rejects the Windows-reserved filename characters (< > : " \ | ? *) and
+    // control characters. R2 object keys tolerate most of these, but a
+    // Windows local mirror does not — a folder name containing e.g. "|" can
+    // succeed on R2 while silently failing to create/move locally, drifting
+    // R2 and local permanently out of step and baking a broken character
+    // into every CDN URL for that project.
+    // ------------------------------------------------------------
+    function na_validate_folder_id(folderId) {
+        if (!/^\d{4}\/.+$/.test(folderId)) {
+            return { valid: false, error: 'New folder path must look like "YYYY/Code__Name"' };
+        }
+        if (!/^\d{4}\/[^<>:"/\\|?*\x00-\x1F]+$/.test(folderId)) {
+            return { valid: false, error: 'New folder path contains characters not allowed in file paths: < > : " \\ | ? *' };
+        }
+        return { valid: true, error: null };
     }
     // ---------------------------------------------------------------
 
@@ -292,10 +394,11 @@
 
     // COMPONENT | Project Data Editor Form
     // ------------------------------------------------------------
-    function ProjectEditorForm({ project, onCancel, onSaveSuccess }) {
+    function ProjectEditorForm({ project, onCancel, onSaveSuccess, onDeleteSuccess }) {
         const [formData, setFormData] = React.useState({
             projectName         : project.projectName || '',                 // <-- Project name field
             projectCode         : project.projectCode || '',                 // <-- Project code field
+            projectNameAlias    : project.projectNameAlias || '',            // <-- Display-only name override (never renames the folder)
             productionInput     : project.productionData?.input || '',       // <-- Production input field
             conceptArtist       : project.productionData?.conceptArtist || '', // <-- Concept artist field
             designer            : project.productionData?.designer || '',    // <-- Designer field
@@ -316,6 +419,7 @@
         const [masterIndexEntry, setMasterIndexEntry] = React.useState(null);     // <-- Read-only Project Info panel source
         const [showRenameConfirm, setShowRenameConfirm] = React.useState(false);  // <-- Gate on the rename confirm panel
         const [pendingNewFolderId, setPendingNewFolderId] = React.useState('');   // <-- Editable proposed new folder path
+        const [showAliasSection, setShowAliasSection] = React.useState(!!project.projectNameAlias); // <-- Collapsed unless an alias already exists
         const [dropdownOptions, setDropdownOptions] = React.useState({
             inputTypes          : [],                                              // <-- Input type options from config
             artists             : [],                                              // <-- Artist options from config
@@ -323,6 +427,14 @@
         });
 
         const initialEnabledRef = React.useRef(project.enabled !== false);        // <-- Detect visibility changes on save
+
+        // DELETE MODAL STATE | Danger Zone — Delete Project Permanently
+        const [showDeleteModal, setShowDeleteModal]     = React.useState(false);  // <-- Modal visibility
+        const [deleteConfirmText, setDeleteConfirmText] = React.useState('');     // <-- Type-to-confirm input value
+        const [isDeleting, setIsDeleting]               = React.useState(false);  // <-- Delete in-flight state
+        const [deletePhase, setDeletePhase]             = React.useState(null);   // <-- Current delete phase label
+        const [deleteError, setDeleteError]             = React.useState(null);   // <-- Delete hard-failure message
+        const [deleteResult, setDeleteResult]           = React.useState(null);   // <-- { r2Verified, remainingObjectCount, localVerified }
 
 
         // HELPER FUNCTION | Add a Floating Toast Notification
@@ -446,11 +558,21 @@
 
         // SUB FUNCTION | Build Updated Project JSON Object
         // ---------------------------------------------------------------
+        // Rebuilds the object with projectName / projectCode / projectNameAlias
+        // explicitly first (in that order) so a brand-new projectNameAlias key
+        // always lands right after the project identity fields in the saved
+        // JSON, rather than being appended wherever a spread happens to place
+        // it. Every other field keeps its existing relative order via the
+        // restOfProject spread.
+        // ---------------------------------------------------------------
         const buildUpdatedProject = () => {
+            const { projectName: _pn, projectCode: _pc, projectNameAlias: _pna, ...restOfProject } = project;
+
             const updatedProject = {
-                ...project,                                                  // <-- Spread existing project data
                 projectName         : formData.projectName.trim(),
                 projectCode         : formData.projectCode.trim(),
+                projectNameAlias    : formData.projectNameAlias.trim(),
+                ...restOfProject,                                            // <-- Every other original field, original order
                 productionData      : {
                     ...project.productionData,
                     input           : formData.productionInput.trim(),
@@ -623,8 +745,9 @@
         // ---------------------------------------------------------------
         const handleConfirmRename = async () => {
             const targetFolderId = pendingNewFolderId.trim();
-            if (!targetFolderId || !/^\d{4}\/.+$/.test(targetFolderId)) {
-                setMessage({ type: 'error', text: 'New folder path must look like "YYYY/Code__Name"' });
+            const validation     = na_validate_folder_id(targetFolderId);
+            if (!validation.valid) {
+                setMessage({ type: 'error', text: validation.error });
                 return;
             }
             await performSave(targetFolderId, true);
@@ -637,6 +760,93 @@
         const handleCancelRename = () => {
             setShowRenameConfirm(false);
             setPendingNewFolderId('');
+        };
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Open the Delete Confirmation Modal
+        // ---------------------------------------------------------------
+        const handleOpenDeleteModal = () => {
+            setDeleteConfirmText('');
+            setDeleteError(null);
+            setDeleteResult(null);
+            setShowDeleteModal(true);
+        };
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Cancel/Close the Delete Modal (No Changes Made)
+        // ---------------------------------------------------------------
+        const handleCancelDelete = () => {
+            if (isDeleting) return;                                          // <-- Never allow closing mid-delete
+            setShowDeleteModal(false);
+            setDeleteConfirmText('');
+            setDeleteError(null);
+            setDeleteResult(null);
+        };
+        // ---------------------------------------------------------------
+
+
+        // FUNCTION | Confirm Permanent Delete — R2 First, Then Local Mirror, Both Verified
+        // ------------------------------------------------------------
+        const handleConfirmDelete = async () => {
+            if (deleteConfirmText.trim() !== project.projectCode) return;    // <-- Safety net; button is already disabled until this matches
+
+            if (!workerConfig || !workerConfig.workerApiBaseUrl || !workerConfig.apiKey) {
+                setDeleteError('Worker config unavailable — cannot delete from R2. Check Flask is running and Token__CloudflareAPI.env has EDITOR_WORKER_URL and EDITOR_API_KEY set.');
+                return;
+            }
+
+            setIsDeleting(true);
+            setDeleteError(null);
+            setDeleteResult(null);
+
+            try {
+                // PHASE 1 | R2 SSOT DELETE (must succeed before Phase 2)
+                setDeletePhase('Deleting from Cloudflare R2...');
+                const r2Result = await na_delete_project_via_r2(
+                    workerConfig.workerApiBaseUrl, workerConfig.apiKey, project.folderId, 60000
+                );
+                na_reset_master_index_cache();                               // <-- Force a fresh index fetch next load (entry removed)
+
+                // PHASE 2 | LOCAL MIRROR DELETE (best-effort — R2 is already the source of truth)
+                setDeletePhase('Cleaning up local files...');
+                let localResult = { localVerified: false };
+                try {
+                    localResult = await na_delete_project_mirror_locally(project.folderId);
+                } catch (localError) {
+                    console.warn('[ProjectEditor] Local delete mirror failed:', localError.message);
+                    localResult = { localVerified: false, error: localError.message };
+                }
+
+                setDeletePhase(null);
+                setDeleteResult({
+                    r2Verified           : r2Result.r2Verified === true,
+                    remainingObjectCount : r2Result.remainingObjectCount ?? 0,
+                    localVerified        : localResult.localVerified === true,
+                    localError           : localResult.error || null
+                });
+                na_add_toast(r2Result.r2Verified ? 'Project deleted permanently' : 'Project deletion could not be fully verified', r2Result.r2Verified ? 'success' : 'warning');
+
+            } catch (error) {
+                console.error('[ProjectEditor] Delete error:', error);
+                setDeletePhase(null);
+                setDeleteError(error.message);
+                na_add_toast(`Delete failed — ${error.message}`, 'error');
+            } finally {
+                setIsDeleting(false);
+            }
+        };
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Finish the Delete Flow — Close Modal and Leave the Editor
+        // ---------------------------------------------------------------
+        const handleFinishDelete = () => {
+            setShowDeleteModal(false);
+            if (onDeleteSuccess) {
+                onDeleteSuccess(project.folderId);
+            }
         };
         // ---------------------------------------------------------------
 
@@ -663,9 +873,120 @@
                     </div>
                 )}
 
+                {/* DELETE CONFIRMATION MODAL — centred overlay, gated by typing the project code */}
+                {showDeleteModal && (
+                    <div className="editor-modal-overlay">
+                        <div className="editor-modal editor-modal--danger">
+
+                            {!deleteResult && !deleteError && (
+                                <React.Fragment>
+                                    <h2 className="editor-modal__title">Delete Project Permanently?</h2>
+                                    <p className="editor-modal__text">
+                                        This will permanently delete <strong>all</strong> Cloudflare R2/CDN data (images,
+                                        thumbnails, 3D models, and the project record) and the local mirror copy for{' '}
+                                        <strong>{project.displayName || project.projectName}</strong> ({project.projectCode}).
+                                        This cannot be recovered.
+                                    </p>
+                                    <div className="editor-form__field">
+                                        <label className="editor-form__label" htmlFor="deleteConfirmText">
+                                            Type <strong>{project.projectCode}</strong> to confirm
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="deleteConfirmText"
+                                            className="editor-form__input"
+                                            value={deleteConfirmText}
+                                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                                            disabled={isDeleting}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="editor-modal__buttons">
+                                        <button
+                                            type="button"
+                                            className="editor-form__button editor-form__button--secondary"
+                                            onClick={handleCancelDelete}
+                                            disabled={isDeleting}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="editor-form__button editor-form__button--danger"
+                                            onClick={handleConfirmDelete}
+                                            disabled={isDeleting || deleteConfirmText.trim() !== project.projectCode}
+                                        >
+                                            {isDeleting ? (deletePhase || 'Deleting...') : 'Delete Permanently'}
+                                        </button>
+                                    </div>
+                                </React.Fragment>
+                            )}
+
+                            {deleteError && !deleteResult && (
+                                <React.Fragment>
+                                    <h2 className="editor-modal__title">Delete Failed</h2>
+                                    <p className="editor-modal__text editor-modal__text--error">{deleteError}</p>
+                                    <p className="editor-modal__text">
+                                        Nothing was deleted — the project is unaffected. You can try again or cancel.
+                                    </p>
+                                    <div className="editor-modal__buttons">
+                                        <button
+                                            type="button"
+                                            className="editor-form__button editor-form__button--secondary"
+                                            onClick={handleCancelDelete}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="editor-form__button editor-form__button--danger"
+                                            onClick={handleConfirmDelete}
+                                        >
+                                            Try Again
+                                        </button>
+                                    </div>
+                                </React.Fragment>
+                            )}
+
+                            {deleteResult && (
+                                <React.Fragment>
+                                    <h2 className="editor-modal__title">Deletion Complete</h2>
+                                    <ul className="editor-modal__checklist">
+                                        <li className={`editor-modal__check-item ${deleteResult.r2Verified ? 'editor-modal__check-item--success' : 'editor-modal__check-item--error'}`}>
+                                            <span className="editor-modal__check-icon">{deleteResult.r2Verified ? '\u2713' : '\u2717'}</span>
+                                            Cloudflare R2 / CDN Data — {deleteResult.r2Verified
+                                                ? 'Deleted and Verified'
+                                                : `Verification failed (${deleteResult.remainingObjectCount} object(s) remain)`}
+                                        </li>
+                                        <li className={`editor-modal__check-item ${deleteResult.localVerified ? 'editor-modal__check-item--success' : 'editor-modal__check-item--warning'}`}>
+                                            <span className="editor-modal__check-icon">{deleteResult.localVerified ? '\u2713' : '\u26A0'}</span>
+                                            Local Mirror Data — {deleteResult.localVerified
+                                                ? 'Deleted and Verified'
+                                                : 'Not fully verified — restart Flask to resync'}
+                                        </li>
+                                    </ul>
+                                    <div className="editor-modal__buttons">
+                                        <button
+                                            type="button"
+                                            className="editor-form__button editor-form__button--primary"
+                                            onClick={handleFinishDelete}
+                                        >
+                                            Return to Gallery
+                                        </button>
+                                    </div>
+                                </React.Fragment>
+                            )}
+
+                        </div>
+                    </div>
+                )}
+
             <form className="editor-form" onSubmit={handleSubmit}>
                 <h2 className="editor-form__title">
                     Edit Project: {project.projectName}
+                    {project.projectNameAlias && (
+                        <span className="editor-form__title-alias"> (displayed as "{project.projectNameAlias}")</span>
+                    )}
                 </h2>
 
                 {/* PROJECT INFO PANEL — READ-ONLY, SOURCED FROM THE MASTER INDEX */}
@@ -706,8 +1027,46 @@
                         required
                     />
                     <span className="editor-form__help-text">
-                        Changing this (or Project Code) moves the live folder — Save will ask you to confirm the rename first
+                        Changing this (or Project Code) moves the live folder — Save will ask you to confirm the rename first.
+                        Prefer the Display Name Alias below for a simple display-name change instead.
                     </span>
+                </div>
+
+                {/* DISPLAY NAME ALIAS — COLLAPSED BY DEFAULT UNLESS ALREADY SET */}
+                <div className="editor-form__field">
+                    <button
+                        type="button"
+                        className="editor-form__disclosure-toggle"
+                        onClick={() => setShowAliasSection(!showAliasSection)}
+                        disabled={isSaving || showRenameConfirm}
+                    >
+                        <span className={`editor-form__disclosure-arrow ${showAliasSection ? 'editor-form__disclosure-arrow--open' : ''}`}>
+                            &#9656;
+                        </span>
+                        Advanced: Display Name Alias
+                    </button>
+                    {showAliasSection && (
+                        <div className="editor-form__disclosure-content">
+                            <label className="editor-form__label" htmlFor="projectNameAlias">
+                                Display Name Alias
+                            </label>
+                            <input
+                                type="text"
+                                id="projectNameAlias"
+                                className="editor-form__input"
+                                value={formData.projectNameAlias}
+                                onChange={(e) => handleInputChange('projectNameAlias', e.target.value)}
+                                placeholder="e.g., Bressard-Kayode Scheme-01"
+                                disabled={isSaving || showRenameConfirm}
+                            />
+                            <span className="editor-form__help-text">
+                                Optional. When set, Whitecardopedia shows this name everywhere instead of the Project Name
+                                above — in the gallery, search, and this editor. This does NOT rename the live folder or
+                                CDN path, so it is the safe way to change how a project is displayed. Leave blank to just
+                                use the Project Name.
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* PROJECT CODE FIELD */}
@@ -917,6 +1276,26 @@
                     </span>
                 </div>
 
+                {/* DANGER ZONE — ALWAYS VISIBLE UNLESS A RENAME IS PENDING */}
+                {!showRenameConfirm && (
+                    <div className="editor-form__danger-zone">
+                        <h3 className="editor-form__danger-zone-title">Danger Zone</h3>
+                        <p className="editor-form__danger-zone-text">
+                            Need a different display name? Use the Display Name Alias above instead of renaming — it is
+                            much lower risk. Deleting a project permanently removes all Cloudflare R2/CDN data and the
+                            local mirror copy. This cannot be undone.
+                        </p>
+                        <button
+                            type="button"
+                            className="editor-form__button editor-form__button--danger"
+                            onClick={handleOpenDeleteModal}
+                            disabled={isSaving}
+                        >
+                            Delete Project Permanently
+                        </button>
+                    </div>
+                )}
+
                 {/* RENAME CONFIRMATION PANEL — ONLY SHOWN WHEN CODE/NAME WOULD MOVE THE LIVE FOLDER */}
                 {showRenameConfirm && (
                     <div className="editor-form__rename-panel">
@@ -947,7 +1326,9 @@
                         <p className="editor-form__rename-panel-note">
                             Note: this only moves the live web/R2 copy. If you plan to sync this project again from
                             SketchUp via ValeVision Cloud Sync, also rename the local SketchUp project folder on disk to
-                            match — otherwise the next sync will recreate a folder using the old name.
+                            match — otherwise the next sync will recreate a folder using the old name. If you only want
+                            to change how the project is displayed, cancel this and use the Display Name Alias above
+                            instead — it never moves the folder.
                         </p>
 
                         <div className="editor-form__buttons">

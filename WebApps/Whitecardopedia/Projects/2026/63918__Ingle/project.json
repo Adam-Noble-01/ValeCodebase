@@ -25,28 +25,22 @@
     },
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "08-Jul-2026 at 15:33",
+        "captured_at": "09-Jul-2026 at 08:27",
+        "model_name": "Ingle__WhiteCardModel__1.0.0__",
         "coordinate_system": "SketchUp_Z_up",
-        "model_name": "Ingle__WhiteCardModel__0.4.0__",
+        "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Full Context",
+                "include_in_animation": true,
                 "camera": {
-                    "aspect_ratio": 0,
-                    "direction": {
-                        "x": 0.539278,
-                        "y": 0.842039,
-                        "z": -0.012207
-                    },
                     "eye": {
                         "x": -641.8475,
                         "y": -7647.9072,
-                        "z": 2895
+                        "z": 2895.0
                     },
-                    "fov_degrees": 30.9573,
-                    "fov_is_height": true,
-                    "image_width": 0,
-                    "is_perspective": true,
                     "target": {
                         "x": 21014.3755,
                         "y": 26166.5193,
@@ -56,25 +50,31 @@
                         "x": 0.006583,
                         "y": 0.010279,
                         "z": 0.999925
-                    }
+                    },
+                    "direction": {
+                        "x": 0.539278,
+                        "y": 0.842039,
+                        "z": -0.012207
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
                 },
-                "include_in_animation": true,
                 "model_layer_visibility": {
-                    "ValeVision__01__OrbitHelperCube": false,
-                    "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true
-                },
-                "scene_description": "Full Context",
-                "scene_name": "IMG01__3dView__MainShot__"
+                }
             }
-        ],
-        "units": "mm"
+        ]
     },
     "basePath": "Projects/2026/63918__Ingle",
     "images": [
-        "IMG01__3dView__MainShot____WhitecardImage__08-Jul-2026.png"
+        "IMG01__3dView__MainShot____WhitecardImage__09-Jul-2026.png"
     ],
     "productionData": {
         "additionalNotes": "A nice easy job! Rachael's CAD Was Excellent so it was light work.",
@@ -91,7 +91,7 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__08-Jul-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__09-Jul-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628

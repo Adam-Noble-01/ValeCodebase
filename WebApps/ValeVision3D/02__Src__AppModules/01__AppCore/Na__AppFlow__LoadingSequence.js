@@ -14,6 +14,11 @@
 // - Resolves model URLs from the URL query parameter or config defaults.
 // - Loads the OrbitHelperCube GLB and sets the orbit target from its centre.
 // - Re-applies any saved camera / orbit target values from project.json.
+// - Boot camera pose (position/rotation/FOV) always comes from the launch
+//   scene when one exists; the launch scene's orbit TARGET only overrides the
+//   cube/saved target when Presentation Mode is carousel-eligible (see
+//   Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget), so single (or
+//   zero) -scene SketchUp projects keep the OrbitHelperCube as their pivot.
 // - Loads all scene models via the multi-model loader.
 // - Runs the PBR materials second-pass if the materials system is enabled.
 // - Initialises door animations and walk-mode collision meshes.
@@ -31,6 +36,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Jul-2026 - Version 1.5.2
+// - Single/zero-scene orbit pivot fix: boot camera apply now passes
+//   applyOrbitTarget: Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(...)
+//   into ApplySceneCameraState. Projects with fewer than 2 SketchUp scenes (and
+//   no explicit PresentationMode scenes) no longer have their OrbitHelperCube /
+//   saved OrbitHelperCube__Position target silently overridden by the single
+//   scene's camera.target — camera position/rotation/FOV still apply as before.
+//   Carousel-eligible projects (>=2 scenes, or explicit scenes) are unaffected.
+//
 // 01-Jul-2026 - Version 1.5.1
 // - Boot camera apply now also re-applies the launch scene's
 //   PresentationMode__Scene__ModelLayerVisibility (via
@@ -290,7 +304,8 @@
     // ------------------------------------------------------------
     import {
         Na__SketchUp__AnimationScene__TryBuildScenesFromSketchUp,
-        Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene
+        Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene,
+        Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget
     } from '../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js';
     // ------------------------------------------------------------
 
@@ -777,23 +792,29 @@
         }
 
         // SCENE-FIRST CAMERA APPLY — SketchUp or explicit scenes override Camera__DefaultPosition.
-        // ApplySceneCameraState sets position, rotation, FOV, and controls.target from the scene
-        // object; any orbit-cube target set above is overridden by the scene's SketchUp-derived
-        // target, which is correct. Falls back to Camera__DefaultPosition when no scene exists.
+        // ApplySceneCameraState always sets position, rotation and FOV from the scene object. The
+        // orbit TARGET from the scene's camera.target is only trusted as the orbit pivot when
+        // Presentation Mode is actually carousel-eligible (>=2 SketchUp scenes, or explicit
+        // PresentationMode scenes) — see Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget.
+        // Single (or zero) -scene SketchUp projects keep the orbit-cube / saved target resolved
+        // above instead, since one camera.target is just that shot's look-at point, not necessarily
+        // the model's orbit pivot (e.g. a distant feature framed off to one side of the cube).
         // @delegate: ../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js
         const Na__LaunchScene = Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene(Na__Saved__ProjectData);
+        const Na__LaunchScene__UseSceneOrbitTarget = Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(Na__Saved__ProjectData);
 
         if (Na__LaunchScene?.scene) {
             Na__PresentationMode__Camera__ApplySceneCameraState(
                 Na__Camera__Main,                                            // <-- Snap to SketchUp / explicit first-scene position
-                Na__Controls__Orbit,                                         // <-- Sets controls.target from scene orbit target
-                Na__LaunchScene.scene
+                Na__Controls__Orbit,                                         // <-- Target overwritten only when carousel-eligible (flag below)
+                Na__LaunchScene.scene,
+                { applyOrbitTarget: Na__LaunchScene__UseSceneOrbitTarget }    // <-- Prelim handler: single/zero-scene keeps orbit-cube/saved target
             );
             // CAPTURE CANONICAL RESET STATE (scene-sourced; null config means ResetView restores snapshot only)
             // @delegate: ../10__NavigationAndCameras/Na__Camera__ProjectStartState.js
             Na__CameraStartState__CaptureStartState(
                 Na__Camera__Main,                                            // <-- Camera at first-scene position
-                Na__Controls__Orbit,                                         // <-- Controls with scene orbit target
+                Na__Controls__Orbit,                                         // <-- Controls with resolved orbit target (scene or cube/saved)
                 null                                                         // <-- No Camera__DefaultPosition re-apply on Reset View
             );
         } else {

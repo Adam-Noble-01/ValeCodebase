@@ -2422,6 +2422,14 @@
           "endTime": "16:00",
           "title": "Whitecard |  Ingle",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1783526973565",
+          "date": "2026-07-08",
+          "startTime": "11:30",
+          "endTime": "13:30",
+          "title": "Dev |  Select Similar",
+          "color": "na-shift-color-slate"
         }
       ]
     }

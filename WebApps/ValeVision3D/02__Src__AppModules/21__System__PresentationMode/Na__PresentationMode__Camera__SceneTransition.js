@@ -17,7 +17,9 @@
 // - CaptureCurrentSceneState reads the live camera/controls into a scene-
 //   compatible JSON structure (integer mm positions, 4dp rotation/FOV).
 // - ApplySceneCameraState performs an instant snap to the saved values —
-//   identical approach to Reset View.
+//   identical approach to Reset View. Its orbit-target snap is optional
+//   (options.applyOrbitTarget) so single-scene SketchUp boot framing can keep
+//   an externally-resolved orbit target instead of the scene's camera.target.
 // - AnimateToScene interpolates position (lerp), orbit target (lerp), FOV
 //   (lerp) and orientation (quaternion slerp) per-frame using requestAnima-
 //   tionFrame, driven by Na__RenderLoop__RequestActiveRender so the render
@@ -46,6 +48,14 @@
 //   toggles (Existing Building / Design Proposal / Site Boundaries /
 //   Landscape) switch automatically per tour scene. Applied instantly (not
 //   animated) at the start of a transition.
+//
+// 09-Jul-2026 - Version 1.2.0
+// - ApplySceneCameraState gains an optional options.applyOrbitTarget flag
+//   (default true, all existing callers unaffected). When false, camera
+//   position/rotation/FOV still snap but controls.target is left as-is;
+//   controls.update() still runs to resync internal state against the new
+//   camera position. Enables Na__AppFlow__LoadingSequence to keep the
+//   OrbitHelperCube-resolved orbit target for single/zero-scene projects.
 //
 // =============================================================================
 
@@ -269,8 +279,16 @@
 
     // FUNCTION | Instantly Apply Scene Camera State (no animation)
     // ------------------------------------------------------------
-    function Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, scene) {
+    // options.applyOrbitTarget {boolean} - default true. Pass false to snap
+    // camera position/rotation/FOV only and leave controls.target untouched —
+    // used for single (or zero) -scene SketchUp boot framing, where the one
+    // camera.target is just that shot's look-at point, not a trustworthy orbit
+    // pivot (see Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget).
+    // ------------------------------------------------------------
+    function Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, scene, options = {}) {
         if (!camera || !scene) return;
+
+        const applyOrbitTarget = options.applyOrbitTarget !== false;         // <-- Default true; all existing call sites unaffected
 
         const values = Na__PresentationMode__Camera__ParseSceneToRuntimeValues(scene);
         if (!values) return;
@@ -283,9 +301,11 @@
             camera.updateProjectionMatrix();                                             // <-- Rebuild projection after FOV change
         }
 
-        if (controls && values.target) {
-            controls.target.set(values.target.x, values.target.y, values.target.z);    // <-- Snap orbit target
-            controls.update();
+        if (controls) {
+            if (applyOrbitTarget && values.target) {
+                controls.target.set(values.target.x, values.target.y, values.target.z);  // <-- Snap orbit target
+            }
+            controls.update();                                                           // <-- Resync controls against new camera position either way
         }
 
         Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);  // <-- Sync tag-driven model toggles (no-op before groups load)

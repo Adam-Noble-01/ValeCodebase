@@ -2,6 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.10 - 09-Jul-2026 - Single/Zero-Scene Orbit Pivot Fix
+
+### Overview
+Projects synced with only one `IMG##` SketchUp scene (no Presentation Mode carousel) were orbiting around that scene's `camera.target` look-at point instead of the `OrbitHelperCube` — the cube GLB loaded and its bounding-box centre resolved correctly, but the boot-camera apply then silently overwrote `controls.target` with the single scene's SketchUp target. Confirmed on the Ingle project (`2026/63918__Ingle`): the cube is present in `valeVision_ModelUrls` and the Scene Inspector, but its resolved centre was discarded the moment the single-scene boot camera applied.
+
+### Fixed
+- **`Na__AppFlow__LoadingSequence.js`** — boot camera apply now only lets the launch scene's `camera.target` own `controls.target` when Presentation Mode is actually carousel-eligible (two or more SketchUp scenes, or explicit `PresentationMode__SavedCameraScenes`). Single (or zero) -scene SketchUp projects keep whichever orbit target was already resolved (saved `OrbitHelperCube__Position`, else the `OrbitHelperCube` GLB centre, else the existing fallback) — camera position/rotation/FOV still snap to the scene exactly as before.
+
+### Added
+- **`Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(projectData)`** (new export, `Na__SketchUp__AnimationScene__DataBridge__.js`) — mirrors the `ConvertBlock` carousel gate (`>=2` scenes) plus the explicit-scenes check, so the "is this scene target trustworthy as an orbit pivot" rule lives in one place.
+- **`Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, scene, options)`** — new optional `options.applyOrbitTarget` flag (default `true`, every existing caller unaffected). When `false`, camera position/rotation/FOV still snap but `controls.target` is left untouched; `controls.update()` still runs to resync internal state against the new camera position.
+
+### Cross-reference
+- No ValeVision Cloud Sync or Whitecardopedia Python pipeline changes — Cloud Sync still only ever exports `camera.target` inside per-scene data, never a root `OrbitHelperCube__Position`. This fix keeps orbit authority entirely inside ValeVision3D's load sequence, where the cube's GLB centre is already resolved.
+
+### Files Changed
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.9 - 08-Jul-2026 - Tiled Static Export Renderer (4K Fixed, 8K Added) + Advanced Linework Settings
 
 ### Overview

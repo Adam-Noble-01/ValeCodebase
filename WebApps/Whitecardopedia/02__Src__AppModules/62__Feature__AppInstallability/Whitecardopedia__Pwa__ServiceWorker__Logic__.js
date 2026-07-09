@@ -29,6 +29,11 @@
 // 2026 - Version 1.0.0
 // - Initial PWA service worker with shell / thumbs / data / models cache buckets.
 //
+// 09-Jul-2026 - Version 1.5.2
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-09-1 (force shell cache eviction after
+//   ValeVision3D v2.9.11 WYSIWYG export line width compensation — updated
+//   LineworkSettings state, ProfileLines effect, and tiled export renderer).
+//
 // 08-Jul-2026 - Version 1.5.1
 // - PWA_SW_VERSION_TOKEN bumped to 2026-07-08-2 (force shell cache eviction after
 //   ValeVision3D v2.9.9 tiled static export renderer rebuild — new ImageExport
@@ -80,7 +85,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-07-08-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-07-09-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

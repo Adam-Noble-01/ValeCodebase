@@ -2,6 +2,26 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.11 - 09-Jul-2026 - WYSIWYG Line Widths in Exports (Resolution Compensation)
+
+### Overview
+Exports now render line weights that match the live viewport exactly. The distance-based dynamic profile width was already applied per export tile (same camera distance = same computed width), but all line widths are expressed in PIXELS — and an export pixel is 2.5-4x smaller relative to the image than a viewport pixel, so 4K/8K exports came out relatively thinner. Worse, profile lines and fat linework thinned by DIFFERENT ratios (profile widths resolve against the true tile resolution; LineMaterial widths resolve against each material's load-time resolution uniform), shifting the weight balance between the two line systems and making exports feel inconsistent with the realtime view.
+
+### Changed
+- **`Na__RenderEffect__LineworkSettings__State.js`** — new export compensation scales (`Na__LineworkSettings__SetExportScales(profileScale, lineworkScale)` + `GetProfileExportScale`), both defaulting to 1.0 outside exports. Linework width application refactored into a single shared applier so the user slider factor and the export scale always compose off the stashed base width and never compound.
+- **`Na__RenderEffect__ProfileLines__.js`** — per-frame `u_edgeWidth` now multiplies the profile export scale on top of the user factor; live viewport is untouched (scale is 1.0 there). The dynamic near/far distance lerp behaves identically at any export size.
+- **`Na__ImageExport__StaticExport__TiledRenderer.js`** — computes both scales at export start (profile: `outputH / physical viewport height`; linework: `outputH / tile framebuffer height` — the LineMaterial load-time resolution uniform is identical in live and tile renders, so it cancels exactly, even after window resizes). Applies them for the duration of the export and resets in the existing `finally`. Elevation (2D ortho) exports snapshot-scale `u_edgeWidth` directly since the 2D profile renderer never recomputes it. Silly Lines amplitude + wavelength px are scaled by the same factor so waves keep their relative size at 8K.
+- The Advanced Linework Settings sliders act on top of the compensation as deliberate overrides: 1.00x now means "exactly what the viewport shows" at every export resolution.
+
+### Files Changed
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js`
+
+### Cross-reference
+- **Whitecardopedia** — shared PWA SW cache token bumped to `2026-07-09-1`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.10 - 09-Jul-2026 - Single/Zero-Scene Orbit Pivot Fix
 
 ### Overview

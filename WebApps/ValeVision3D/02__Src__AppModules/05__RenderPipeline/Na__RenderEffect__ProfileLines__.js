@@ -38,7 +38,10 @@
 
     // MODULE IMPORTS | Linework Settings Runtime Factors
     // ------------------------------------------------------------
-    import { Na__LineworkSettings__GetProfileLineFactor } from './Na__RenderEffect__LineworkSettings__State.js';
+    import {
+        Na__LineworkSettings__GetProfileLineFactor,
+        Na__LineworkSettings__GetProfileExportScale
+    } from './Na__RenderEffect__LineworkSettings__State.js';
     // ------------------------------------------------------------
 
 
@@ -344,7 +347,8 @@
         // SUB FUNCTION | Render Normal and Profile Colour Pre-Passes
         // ---------------------------------------------------------------
         function renderProfileNormals() {
-            const widthFactor = Na__LineworkSettings__GetProfileLineFactor();           // <-- User thickness factor (Advanced Linework Settings)
+            const widthFactor = Na__LineworkSettings__GetProfileLineFactor()            // <-- User thickness factor (Advanced Linework Settings)
+                              * Na__LineworkSettings__GetProfileExportScale();          // <-- Export resolution compensation (1.0 in live viewport)
             if (orbitTarget && edgeWidthDistRange > 0) {
                 const dist = camera.position.distanceTo(orbitTarget);                   // <-- Camera-to-target distance
                 const t    = 1.0 - Math.max(0, Math.min(1, (dist - edgeWidthDistNear) / edgeWidthDistRange)); // <-- 1 = near (thick), 0 = far (thin)

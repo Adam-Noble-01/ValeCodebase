@@ -43,6 +43,16 @@
 // 08-Jul-2026 - Version 1.0.0
 // - Initial release. Replaces full-resolution renderer resize for custom exports.
 //
+// 09-Jul-2026 - Version 1.1.0
+// - WYSIWYG line width compensation: pixel-based line widths (profile lines,
+//   fat linework, silly waves) are scaled to the export resolution so exported
+//   line weights match the live viewport exactly at 1.00x slider settings.
+//   Profile scale = outputH / physical viewport height; linework scale =
+//   outputH / tile framebuffer height (LineMaterial resolves widths against
+//   its load-time resolution uniform, which cancels between live and tile
+//   renders). Elevation-mode u_edgeWidth and silly wave px are snapshot-scaled
+//   directly (nothing recomputes them during ortho exports) and restored.
+//
 // =============================================================================
 
 
@@ -70,6 +80,11 @@
     // ------------------------------------------------------------
     import { Na__FogPlaneSystem__GetFogPass } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
     import { Na__FogPlane__UpdateFogPassPerFrame } from '../29__System__FogPlaneSystem/Na__FogPlaneSystem__FogShaderEffect.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Linework Settings (Export Line Width Compensation)
+    // ------------------------------------------------------------
+    import { Na__LineworkSettings__SetExportScales } from '../05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
     // ------------------------------------------------------------
 
 
@@ -279,6 +294,30 @@
         const savedPixelRatio = renderer.getPixelRatio();
         const savedAspect     = camera.aspect;
 
+        // LINE WIDTH COMPENSATION | Pixel-based line widths at export resolution
+        // ------------------------------------------------------------
+        // WYSIWYG scaling so exported line weights match what the viewport
+        // shows (the distance-based dynamic width still applies on top).
+        // Two scales because the systems resolve pixels differently:
+        // - Profile lines: viewport widths are physical-viewport px, tiles map
+        //   1:1 to output px  ->  scale = outputH / physical viewport height.
+        // - Fat linework: LineMaterial widths resolve against each material's
+        //   load-time resolution uniform (identical live and in-tile, so it
+        //   cancels)  ->  scale = outputH / tile framebuffer height.
+        // ------------------------------------------------------------
+        const savedPhysicalHeight = savedSize.y * savedPixelRatio;                                    // <-- Viewport drawing buffer height
+        const profileExportScale  = (savedPhysicalHeight > 0) ? (outH / savedPhysicalHeight) : 1.0;   // <-- Profile line px compensation
+        const lineworkExportScale = outH / fbH;                                                        // <-- Fat linework px compensation
+
+        // PROFILE PASS UNIFORM SNAPSHOTS | Values nothing recomputes during export
+        // ------------------------------------------------------------
+        const profileUniforms = (pipeline.profileLinesPass && pipeline.profileLinesPass.material)
+            ? pipeline.profileLinesPass.material.uniforms
+            : null;
+        let savedElevEdgeWidth   = null;   // <-- 2D elevation exports: u_edgeWidth is never recomputed by the 2D renderer
+        let savedSillyAmplitude  = null;   // <-- Silly Lines amplitude px (scaled so waves keep their relative size)
+        let savedSillyWavelength = null;   // <-- Silly Lines wavelength px (scaled with amplitude)
+
         // CONTEXT LOSS GUARD | Surface GPU death as a real error
         // ------------------------------------------------------------
         let contextLost = false;
@@ -308,6 +347,23 @@
             } else {
                 camera.aspect = outW / outH;                         // <-- Full export aspect; setViewOffset handles per-tile sub-frusta
                 camera.updateProjectionMatrix();
+            }
+
+            // LINE WIDTH COMPENSATION | Apply export scales (reset in finally)
+            // ------------------------------------------------------------
+            Na__LineworkSettings__SetExportScales(profileExportScale, lineworkExportScale); // <-- Linework widths now; profile widths read per tile
+
+            if (profileUniforms) {
+                if (isElevationMode && profileUniforms.u_edgeWidth) {
+                    savedElevEdgeWidth = profileUniforms.u_edgeWidth.value;                 // <-- 2D renderer never recomputes this uniform
+                    profileUniforms.u_edgeWidth.value = savedElevEdgeWidth * profileExportScale;
+                }
+                if (profileUniforms.u_sillyAmplitudePx && profileUniforms.u_sillyAmplitudePx.value > 0) {
+                    savedSillyAmplitude  = profileUniforms.u_sillyAmplitudePx.value;        // <-- Scale wave px so silly lines keep their relative size
+                    savedSillyWavelength = profileUniforms.u_sillyWavelengthPx.value;
+                    profileUniforms.u_sillyAmplitudePx.value  = savedSillyAmplitude  * profileExportScale;
+                    profileUniforms.u_sillyWavelengthPx.value = savedSillyWavelength * profileExportScale;
+                }
             }
 
             // TILE LOOP | Render each sub-frustum and composite into output
@@ -382,8 +438,21 @@
 
             activeCamera.clearViewOffset();                          // <-- Safe when no offset is set (three guards internally)
 
-            if (pipeline.profileLinesPass && pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset) {
-                pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset.value.set(0, 0); // <-- Viewport waves use local px space
+            // LINE WIDTH COMPENSATION | Restore live-viewport line scales
+            // ------------------------------------------------------------
+            Na__LineworkSettings__SetExportScales(1.0, 1.0);         // <-- Linework widths back to user factor only; profile scale back to 1
+
+            if (profileUniforms) {
+                if (savedElevEdgeWidth !== null && profileUniforms.u_edgeWidth) {
+                    profileUniforms.u_edgeWidth.value = savedElevEdgeWidth;                 // <-- Restore elevation edge width (3D mode self-heals per frame)
+                }
+                if (savedSillyAmplitude !== null) {
+                    profileUniforms.u_sillyAmplitudePx.value  = savedSillyAmplitude;        // <-- Restore viewport wave amplitude
+                    profileUniforms.u_sillyWavelengthPx.value = savedSillyWavelength;       // <-- Restore viewport wave wavelength
+                }
+                if (profileUniforms.u_sillyPxOffset) {
+                    profileUniforms.u_sillyPxOffset.value.set(0, 0);                        // <-- Viewport waves use local px space
+                }
             }
 
             if (isElevationMode) {

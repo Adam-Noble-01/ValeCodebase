@@ -62,6 +62,21 @@
     let Na__LineworkSettings__SillyAmplitudePx = 0.0;   // <-- Sine amplitude in px (0 = straight lines)
     // ------------------------------------------------------------
 
+    // MODULE VARIABLES | Export Line Scales (Static Export Renderer Only)
+    // ------------------------------------------------------------
+    // Pixel-based line widths mean different RELATIVE sizes at export
+    // resolutions than in the viewport. The tiled export renderer sets
+    // these resolution-compensation scales for the duration of an export
+    // (and resets them to 1.0 in its finally) so 1.00x on the user sliders
+    // always means "exactly what the viewport shows". Profile lines and
+    // fat linework need DIFFERENT scales because profile widths are
+    // physical-viewport-px based while LineMaterial widths are resolved
+    // against each material's load-time resolution uniform.
+    // ------------------------------------------------------------
+    let Na__LineworkSettings__ProfileExportScale  = 1.0; // <-- Multiplies u_edgeWidth during exports (1.0 = live viewport)
+    let Na__LineworkSettings__LineworkExportScale = 1.0; // <-- Multiplies LineMaterial.linewidth during exports (1.0 = live viewport)
+    // ------------------------------------------------------------
+
     // MODULE VARIABLES | Wired References
     // ------------------------------------------------------------
     let Na__LineworkSettings__Scene            = null;  // <-- Scene root for linework traversal
@@ -147,13 +162,16 @@
 // REGION | Public Setters and Getters
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Set Linework Thickness Factor (Model Fat Lines)
+    // HELPER FUNCTION | Apply Combined Width to All Linework Materials
     // ------------------------------------------------------------
-    function Na__LineworkSettings__SetLineworkFactor(factor) {
-        if (!Number.isFinite(factor) || factor <= 0) return;
-        Na__LineworkSettings__LineworkFactor = factor;
-
+    // Single applier shared by the user factor setter and the export
+    // scale setter so the two multipliers always compose off the stashed
+    // base width and never compound.
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__ApplyLineworkWidths() {
         if (!Na__LineworkSettings__Scene) return;
+
+        const combined = Na__LineworkSettings__LineworkFactor * Na__LineworkSettings__LineworkExportScale; // <-- User factor x export compensation
 
         Na__LineworkSettings__Scene.traverse((object) => {
             if (!object.isLine2 && !object.isLineSegments2)          return;  // <-- Fat lines only
@@ -165,10 +183,41 @@
             if (!Number.isFinite(material.userData.Na__LineworkSettings__BaseWidth)) {
                 material.userData.Na__LineworkSettings__BaseWidth = material.linewidth; // <-- Stash base once so factors never compound
             }
-            material.linewidth = material.userData.Na__LineworkSettings__BaseWidth * factor; // <-- Apply crude percentage factor
+            material.linewidth = material.userData.Na__LineworkSettings__BaseWidth * combined; // <-- Apply combined width
         });
+    }
+    // ------------------------------------------------------------
 
+
+    // FUNCTION | Set Linework Thickness Factor (Model Fat Lines)
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__SetLineworkFactor(factor) {
+        if (!Number.isFinite(factor) || factor <= 0) return;
+        Na__LineworkSettings__LineworkFactor = factor;
+        Na__LineworkSettings__ApplyLineworkWidths();                          // <-- Re-apply combined widths
         Na__RenderLoop__RequestRender();                                      // <-- Redraw viewport with new widths
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set Export Line Scales (Called by the Static Export Renderer)
+    // ------------------------------------------------------------
+    // Set both compensation scales at export start; reset with (1, 1) in
+    // the export renderer's finally. No render request - the export tile
+    // loop owns the frame while these are active.
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__SetExportScales(profileScale, lineworkScale) {
+        Na__LineworkSettings__ProfileExportScale  = (Number.isFinite(profileScale)  && profileScale  > 0) ? profileScale  : 1.0;
+        Na__LineworkSettings__LineworkExportScale = (Number.isFinite(lineworkScale) && lineworkScale > 0) ? lineworkScale : 1.0;
+        Na__LineworkSettings__ApplyLineworkWidths();                          // <-- Push combined widths to linework materials
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get Profile Export Scale (Read Per Frame by Profile Lines)
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__GetProfileExportScale() {
+        return Na__LineworkSettings__ProfileExportScale;
     }
     // ------------------------------------------------------------
 
@@ -219,7 +268,9 @@
         Na__LineworkSettings__SetLineworkFactor,
         Na__LineworkSettings__SetProfileLineFactor,
         Na__LineworkSettings__GetProfileLineFactor,
-        Na__LineworkSettings__SetSillyAmplitude
+        Na__LineworkSettings__SetSillyAmplitude,
+        Na__LineworkSettings__SetExportScales,
+        Na__LineworkSettings__GetProfileExportScale
     };
     // ------------------------------------------------------------
 

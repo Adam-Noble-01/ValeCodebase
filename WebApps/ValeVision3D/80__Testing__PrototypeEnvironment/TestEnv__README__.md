@@ -85,18 +85,24 @@ Place matching mesh and linework GLBs in `TestEnv__GlbFiles`.
    Clicking MOD001 or MOD002 must animate only that leaf.
 7. **Independent reversal:** reverse each exterior-double leaf independently
    during opening and closing; no progress jump is allowed.
-8. **Nearest-leaf proximity:** enter Walk mode near each hinge, cross the
-   centreline, and confirm the previous leaf closes while the nearest opens.
-   ValeVision production thresholds remain unchanged; the sandbox uses its
-   own configured threshold.
-9. **Lockstep compatibility:** confirm Interior Double Doors, bifolds,
+8. **Coupled-pair proximity:** enter Walk or Fly mode near either hinge and
+   confirm both unfixed leaves open together, then close together beyond the
+   threshold. ValeVision production thresholds remain unchanged; the sandbox
+   uses its own configured threshold.
+9. **Mixed initial state:** orbit-open only one leaf, then enter proximity;
+   the closed leaf should join it without reversing the open leaf.
+10. **Proximity reversal:** retreat before both leaves finish opening and
+    confirm both reverse smoothly without a progress jump.
+11. **FIXED fallback:** test one FIXED plus one moving panel; only the nearest
+    eligible moving panel should respond to Walk/Fly proximity.
+12. **Lockstep compatibility:** confirm Interior Double Doors, bifolds,
    sliding doors, and unknown ADRs never infer independence from panel count.
-10. **Kill switches:** set `IndependentPanelsEnabled` false for exterior-double
+13. **Kill switches:** set `IndependentPanelsEnabled` false for exterior-double
     lockstep fallback, then set `MultiPanelEnabled` false for legacy ROT-only
     rollback.
-11. **Refresh/rebind:** use Refresh Models and confirm the registry points to
+14. **Refresh/rebind:** use Refresh Models and confirm the registry points to
     the new roots, clicks work once, and no duplicate pointer handlers appear.
-12. **Load guards:** remove door groups or use an ADR with no recognized MOD;
+15. **Load guards:** remove door groups or use an ADR with no recognized MOD;
     confirm the scan skips it with diagnostics and the viewer continues.
 
 # ---------------------------------------------------------

@@ -44,8 +44,9 @@
 // 10-Jul-2026 - Version 1.7.0
 // - Backported the complete multi-panel engine from the current TrueVision
 //   reference while retaining ValeVision imports, bootstrap, and thresholds.
-// - Added config-gated independent ExteriorDoubleDoor leaves for click and
-//   nearest-leaf Walk/Fly proximity, including per-panel reversal state.
+// - Added config-gated independent ExteriorDoubleDoor leaves for orbit clicks,
+//   coupled-pair Walk/Fly proximity, and per-panel reversal state. Assemblies
+//   containing FIXED leaves retain nearest-eligible-leaf sensor behavior.
 // - Added model-group rebinding for the prototype sandbox refresh flow.
 //
 // =============================================================================

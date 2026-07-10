@@ -30,7 +30,7 @@ explicit `ExteriorDoubleDoor` ADRs support independent leaves.
 - Signed rotation and translation values encoded in MOD names
 - Multi-panel bifold/sliding lockstep with bifold duration scaling
 - Mirrored-instance and config-gated interior rotation sign handling
-- Independent exterior-double leaf clicks and nearest-leaf Walk/Fly proximity
+- Independent exterior-double orbit clicks with coupled-pair Walk/Fly proximity
 - Dual model synchronization (mesh and linework animate together)
 - No model modification required (works via scene graph node transforms)
 

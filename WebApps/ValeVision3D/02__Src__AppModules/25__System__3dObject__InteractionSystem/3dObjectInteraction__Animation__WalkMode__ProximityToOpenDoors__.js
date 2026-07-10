@@ -15,7 +15,8 @@
 // - Checks distance between the Walk/Fly position and each door assembly.
 // - Opens doors within ValeVision's configured proximity threshold.
 // - Closes doors when the player moves beyond the proximity threshold.
-// - ExteriorDoubleDoor ADRs open only their nearest ROT-linked leaf.
+// - ExteriorDoubleDoor pairs with no FIXED leaf open/close both leaves together.
+// - Orbit-mode clicks remain independently coupled in ClickToOpenDoors.
 // - Designed for fluid architectural walkthroughs with naturally opening doors.
 //
 // INTEGRATION:
@@ -28,9 +29,9 @@
 //
 // DEVELOPMENT LOG:
 // 10-Jul-2026 - Version 1.2.0
-// - Added independent ExteriorDoubleDoor proximity handling. Distance is
-//   measured to each panel's paired ROT marker and only the nearest eligible
-//   leaf is opened; proximity state is retained separately per panel.
+// - Added ExteriorDoubleDoor proximity handling. Distance is measured to each
+//   panel's paired ROT marker. Unfixed two-leaf pairs open together; assemblies
+//   containing a FIXED leaf retain nearest-eligible-leaf behaviour.
 //
 // 23-Feb-2026 - Version 1.0.0
 // - Initial implementation of proximity-based door animation trigger.
@@ -245,6 +246,30 @@
     }
     // ------------------------------------------------------------
 
+    // HELPER FUNCTION | Check for an Unfixed Two-Leaf Door Pair
+    // ------------------------------------------------------------
+    function Na__DoorProximity__IsUnfixedPair(doorRecord) {
+        return Array.isArray(doorRecord.panels)
+            && doorRecord.panels.length === 2
+            && doorRecord.panels.every((panel) => panel.type !== Na__DoorProximity__MOD_TYPE_FIXED);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Update Coupled Sensor State for an Unfixed Pair
+    // ------------------------------------------------------------
+    // Click/orbit interaction stays independent. Only Walk/Fly proximity sends
+    // the same desired near-state to both leaves.
+    function Na__DoorProximity__UpdateUnfixedPair(doorRecord, capsulePositionUnits, threshold) {
+        const nearest = Na__DoorProximity__FindNearestPanel(doorRecord, capsulePositionUnits);
+        const pairShouldBeNear = Boolean(nearest.panel && nearest.distance < threshold);
+
+        doorRecord.panels.forEach((panel) => {
+            Na__DoorProximity__ApplyPanelNearState(doorRecord, panel, pairShouldBeNear);
+        });
+    }
+    // ------------------------------------------------------------
+
 
     // FUNCTION | Update Proximity Check for All Doors (Called Every Frame)
     // ------------------------------------------------------------
@@ -258,11 +283,19 @@
 
         Na__DoorAnim__DoorRegistry.forEach((doorRecord) => {
             if (doorRecord.isIndependentPanels === true) {
-                Na__DoorProximity__UpdateIndependentDoor(
-                    doorRecord,
-                    capsulePositionUnits,
-                    threshold
-                );
+                if (Na__DoorProximity__IsUnfixedPair(doorRecord)) {
+                    Na__DoorProximity__UpdateUnfixedPair(
+                        doorRecord,
+                        capsulePositionUnits,
+                        threshold
+                    );
+                } else {
+                    Na__DoorProximity__UpdateIndependentDoor(
+                        doorRecord,
+                        capsulePositionUnits,
+                        threshold
+                    );
+                }
                 return;
             }
 

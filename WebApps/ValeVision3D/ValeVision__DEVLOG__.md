@@ -17,7 +17,8 @@ ExteriorDoubleDoor behavior after restoring full legacy product parity.
   mirrored-instance sign correction, config-gated interior sign inversion, and
   bifold-specific duration scaling.
 - Explicit `ExteriorDoubleDoor` independent coupling, MOD-level hit resolution,
-  per-leaf state/timing/easing/reversal, and nearest-ROT Walk/Fly proximity.
+  per-leaf state/timing/easing/reversal, and coupled-pair Walk/Fly proximity
+  when neither leaf is FIXED. Orbit clicks remain independent.
 - `Na__DoorAnimation__RebindModelGroups` for the prototype Refresh Models flow.
 - Production and sandbox config keys for multi-panel, bifold, interior sign,
   independent-panel enablement, and ADR token allow-list.

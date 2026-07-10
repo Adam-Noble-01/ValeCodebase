@@ -16,7 +16,9 @@
 - Mirrored ADR transforms and the config-gated interior sign convention are
   resolved at scan time.
 - Explicit `ExteriorDoubleDoor` ADRs animate each ROT leaf independently.
-- Walk/Fly proximity opens only the nearest exterior-double leaf.
+- Walk/Fly proximity opens both leaves of an unfixed exterior-double pair
+  together; orbit-mode clicks remain independent. FIXED assemblies retain
+  nearest-eligible-leaf sensor behavior.
 - Interior double doors, bifolds, sliding doors, and unknown ADRs stay lockstep.
 
 ---
@@ -354,7 +356,8 @@ Starts or reverses one panel only for explicitly independent ADRs.
 - Added signed degrees/MVE, MOD/ROT pairing, mirrored/interior signs, and
   bifold duration scaling.
 - Added config-gated independent Exterior Double Door click/reversal.
-- Added nearest-leaf Walk/Fly proximity and model-group rebinding.
+- Added coupled-pair Walk/Fly proximity, independent orbit clicks, and
+  model-group rebinding.
 
 **Version 1.0.0** (14-Feb-2026)
 - Initial implementation with single model group support

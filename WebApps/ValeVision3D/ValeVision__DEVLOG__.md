@@ -2,6 +2,48 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.13 - 10-Jul-2026 - Glass Darkening Compounding Fix + Unified Dark Mirror Glass
+
+### Overview
+Max Mode door glass and window glass were rendering with visibly different
+tones despite sharing the byte-identical `MAT101__Glass__ClearDefault`
+material out of the GLB exporter (confirmed by direct comparison of the
+exported Doors/Windows GLBs — geometry and material JSON were exonerated).
+Root cause: `Na__MaterialsSystem__ApplyGlassEnvironmentOverrides` darkened
+glass with `material.color.multiplyScalar(brightnessMultiplier)` once per
+**mesh node** rather than once per **material instance**. The Windows GLB
+merges all glazing into a single mesh (darkened once, as intended), but the
+Doors GLB exports one mesh per door leaf, all sharing one cached material
+instance from `Na__MaterialsSystem__ApplyMaterials` — so the same instance
+was darkened 6 times in a row (0.25^6 ≈ ×0.00024), collapsing door glass to
+near-black and making it read as almost fully clear/undimmed next to the
+correctly-darkened (×0.25) window glass.
+
+### Fixed
+- **`Na__MaterialsSystem__MaterialSwap.js`** — `Na__MaterialsSystem__ApplyGlassEnvironmentOverrides`
+  and the sibling `Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides` now
+  track already-processed materials in a `Set` and skip repeat hits, so a
+  shared material instance is only darkened once no matter how many mesh
+  nodes reference it. The mirror function had the identical latent bug,
+  previously inert only because `MirrorBrightnessBoost` is `1.0`.
+
+### Changed
+- **`Na__AppConfig__Main.json`** — with the compounding bug fixed, the old
+  single-multiply `GlassBrightnessMultiplier: 0.25` read as too flat/matte
+  compared to the near-black, reflection-dominated look the (buggy) 6x
+  compounding had been producing on doors — which was the preferred look.
+  Rather than keep that as an accidental side-effect, `GlassBrightnessMultiplier`
+  is now explicitly set to `0.000244140625` (`0.25^6`) so every glass mesh
+  gets that same near-black diffuse tone uniformly: with almost no diffuse
+  colour left, the glossy env-map reflection (`RoughnessOverride: 0.03`,
+  `GlassEnvMapIntensity: 1.0`) dominates, giving the "dark mirror glass"
+  appearance across doors and windows alike.
+
+### Files Changed
+- `02__Src__AppModules/20__System__MaterialsSystem/Na__MaterialsSystem__MaterialSwap.js`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.12 - 10-Jul-2026 - Multi-Panel Doors and Independent Exterior Double Leaves
 
 ### Overview

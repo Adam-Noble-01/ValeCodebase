@@ -15,6 +15,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["-y", "http-server", "-p", "4573", "-c-1", "."],
       "port": 4573
+    },
+    {
+      "name": "whitecardopedia-flask",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["Whitecardopedia/server.py"],
+      "port": 8000
     }
   ]
 }

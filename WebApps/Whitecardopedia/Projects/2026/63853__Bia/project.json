@@ -4,8 +4,8 @@
         "RenderEngine__Active": "MaxEngine"
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "10-Jul-2026 at 14:59",
-        "model_name": "Bia__MaxModel__0.5.1__",
+        "captured_at": "10-Jul-2026 at 16:09",
+        "model_name": "Bia__MaxModel__0.6.0__",
         "coordinate_system": "SketchUp_Z_up",
         "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
@@ -16,26 +16,26 @@
                 "include_in_animation": true,
                 "camera": {
                     "eye": {
-                        "x": 22934.8246,
-                        "y": -5021.177,
-                        "z": 2472.5366
+                        "x": 19900.8261,
+                        "y": -1444.8923,
+                        "z": 1903.8043
                     },
                     "target": {
-                        "x": 9740.7912,
-                        "y": 21496.746,
-                        "z": 2567.6665
+                        "x": 8564.7694,
+                        "y": 25918.8881,
+                        "z": 1808.1519
                     },
                     "up": {
-                        "x": 0.001431,
-                        "y": -0.002876,
+                        "x": -0.001236,
+                        "y": 0.002984,
                         "z": 0.999995
                     },
                     "direction": {
-                        "x": -0.445457,
-                        "y": 0.895298,
-                        "z": 0.003212
+                        "x": -0.382728,
+                        "y": 0.923856,
+                        "z": -0.003229
                     },
-                    "fov_degrees": 39.5978,
+                    "fov_degrees": 54.4322,
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
@@ -49,30 +49,7 @@
                     "ValeVision__SiteBoundaries": true,
                     "ValeVision__MainBuildingModel__ProposedDoors": true,
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
-                    "ValeVision__SiteVegetation2D": true,
-                    "ValeVision__MainBuildingModel__ExistingWalls": true,
-                    "ValeVision__MainBuildingModel__ExistingFloors": true,
-                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
-                    "ValeVision__MainBuildingModel__ExistingWindows": true,
-                    "ValeVision__MainBuildingModel__ExistingDoors": true,
-                    "ValeVision__MainBuildingModel__ExistingStairs": true,
-                    "ValeVision__MainBuildingModel__ExistingFixtures": true,
-                    "ValeVision__MainBuildingModel__ExistingFurniture": true,
-                    "ValeVision__MainBuildingModel__ExistingInteriorDecor": true,
-                    "ValeVision__MainBuildingModel__ProposedWalls": true,
-                    "ValeVision__MainBuildingModel__ProposedFloors": true,
-                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
-                    "ValeVision__MainBuildingModel__ProposedStairs": true,
-                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
-                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
-                    "ValeVision__GroundFloorFurniture": true,
-                    "ValeVision__GroundFloorDecor": true,
-                    "ValeVision__FirstFloorFurniture": true,
-                    "ValeVision__FirstFloorDecor": true,
-                    "ValeVision__Vegetation": true,
-                    "ValeVision__SceneEntourage2D": true,
-                    "ValeVision__SceneContextual": true
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true
                 }
             },
             {
@@ -114,30 +91,7 @@
                     "ValeVision__SiteBoundaries": true,
                     "ValeVision__MainBuildingModel__ProposedDoors": true,
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
-                    "ValeVision__SiteVegetation2D": true,
-                    "ValeVision__MainBuildingModel__ExistingWalls": true,
-                    "ValeVision__MainBuildingModel__ExistingFloors": true,
-                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
-                    "ValeVision__MainBuildingModel__ExistingWindows": true,
-                    "ValeVision__MainBuildingModel__ExistingDoors": true,
-                    "ValeVision__MainBuildingModel__ExistingStairs": true,
-                    "ValeVision__MainBuildingModel__ExistingFixtures": true,
-                    "ValeVision__MainBuildingModel__ExistingFurniture": true,
-                    "ValeVision__MainBuildingModel__ExistingInteriorDecor": true,
-                    "ValeVision__MainBuildingModel__ProposedWalls": true,
-                    "ValeVision__MainBuildingModel__ProposedFloors": true,
-                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
-                    "ValeVision__MainBuildingModel__ProposedStairs": true,
-                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
-                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
-                    "ValeVision__GroundFloorFurniture": true,
-                    "ValeVision__GroundFloorDecor": true,
-                    "ValeVision__FirstFloorFurniture": true,
-                    "ValeVision__FirstFloorDecor": true,
-                    "ValeVision__Vegetation": true,
-                    "ValeVision__SceneEntourage2D": true,
-                    "ValeVision__SceneContextual": true
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true
                 }
             },
             {
@@ -179,30 +133,7 @@
                     "ValeVision__SiteBoundaries": true,
                     "ValeVision__MainBuildingModel__ProposedDoors": true,
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
-                    "ValeVision__SiteVegetation2D": true,
-                    "ValeVision__MainBuildingModel__ExistingWalls": true,
-                    "ValeVision__MainBuildingModel__ExistingFloors": true,
-                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
-                    "ValeVision__MainBuildingModel__ExistingWindows": true,
-                    "ValeVision__MainBuildingModel__ExistingDoors": true,
-                    "ValeVision__MainBuildingModel__ExistingStairs": true,
-                    "ValeVision__MainBuildingModel__ExistingFixtures": true,
-                    "ValeVision__MainBuildingModel__ExistingFurniture": true,
-                    "ValeVision__MainBuildingModel__ExistingInteriorDecor": true,
-                    "ValeVision__MainBuildingModel__ProposedWalls": true,
-                    "ValeVision__MainBuildingModel__ProposedFloors": true,
-                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
-                    "ValeVision__MainBuildingModel__ProposedStairs": true,
-                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
-                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
-                    "ValeVision__GroundFloorFurniture": true,
-                    "ValeVision__GroundFloorDecor": true,
-                    "ValeVision__FirstFloorFurniture": true,
-                    "ValeVision__FirstFloorDecor": true,
-                    "ValeVision__Vegetation": true,
-                    "ValeVision__SceneEntourage2D": true,
-                    "ValeVision__SceneContextual": true
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true
                 }
             },
             {
@@ -244,30 +175,7 @@
                     "ValeVision__SiteBoundaries": true,
                     "ValeVision__MainBuildingModel__ProposedDoors": true,
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
-                    "ValeVision__SiteVegetation2D": true,
-                    "ValeVision__MainBuildingModel__ExistingWalls": true,
-                    "ValeVision__MainBuildingModel__ExistingFloors": true,
-                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
-                    "ValeVision__MainBuildingModel__ExistingWindows": true,
-                    "ValeVision__MainBuildingModel__ExistingDoors": true,
-                    "ValeVision__MainBuildingModel__ExistingStairs": true,
-                    "ValeVision__MainBuildingModel__ExistingFixtures": true,
-                    "ValeVision__MainBuildingModel__ExistingFurniture": true,
-                    "ValeVision__MainBuildingModel__ExistingInteriorDecor": true,
-                    "ValeVision__MainBuildingModel__ProposedWalls": true,
-                    "ValeVision__MainBuildingModel__ProposedFloors": true,
-                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
-                    "ValeVision__MainBuildingModel__ProposedStairs": true,
-                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
-                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
-                    "ValeVision__GroundFloorFurniture": true,
-                    "ValeVision__GroundFloorDecor": true,
-                    "ValeVision__FirstFloorFurniture": true,
-                    "ValeVision__FirstFloorDecor": true,
-                    "ValeVision__Vegetation": true,
-                    "ValeVision__SceneEntourage2D": true,
-                    "ValeVision__SceneContextual": true
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true
                 }
             },
             {
@@ -309,30 +217,7 @@
                     "ValeVision__SiteBoundaries": true,
                     "ValeVision__MainBuildingModel__ProposedDoors": true,
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
-                    "ValeVision__SiteVegetation2D": true,
-                    "ValeVision__MainBuildingModel__ExistingWalls": true,
-                    "ValeVision__MainBuildingModel__ExistingFloors": true,
-                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
-                    "ValeVision__MainBuildingModel__ExistingWindows": true,
-                    "ValeVision__MainBuildingModel__ExistingDoors": true,
-                    "ValeVision__MainBuildingModel__ExistingStairs": true,
-                    "ValeVision__MainBuildingModel__ExistingFixtures": true,
-                    "ValeVision__MainBuildingModel__ExistingFurniture": true,
-                    "ValeVision__MainBuildingModel__ExistingInteriorDecor": true,
-                    "ValeVision__MainBuildingModel__ProposedWalls": true,
-                    "ValeVision__MainBuildingModel__ProposedFloors": true,
-                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
-                    "ValeVision__MainBuildingModel__ProposedStairs": true,
-                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
-                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
-                    "ValeVision__GroundFloorFurniture": true,
-                    "ValeVision__GroundFloorDecor": true,
-                    "ValeVision__FirstFloorFurniture": true,
-                    "ValeVision__FirstFloorDecor": true,
-                    "ValeVision__Vegetation": true,
-                    "ValeVision__SceneEntourage2D": true,
-                    "ValeVision__SceneContextual": true
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true
                 }
             },
             {
@@ -374,30 +259,7 @@
                     "ValeVision__SiteBoundaries": true,
                     "ValeVision__MainBuildingModel__ProposedDoors": true,
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
-                    "ValeVision__SiteVegetation2D": true,
-                    "ValeVision__MainBuildingModel__ExistingWalls": true,
-                    "ValeVision__MainBuildingModel__ExistingFloors": true,
-                    "ValeVision__MainBuildingModel__ExistingRoofs": true,
-                    "ValeVision__MainBuildingModel__ExistingWindows": true,
-                    "ValeVision__MainBuildingModel__ExistingDoors": true,
-                    "ValeVision__MainBuildingModel__ExistingStairs": true,
-                    "ValeVision__MainBuildingModel__ExistingFixtures": true,
-                    "ValeVision__MainBuildingModel__ExistingFurniture": true,
-                    "ValeVision__MainBuildingModel__ExistingInteriorDecor": true,
-                    "ValeVision__MainBuildingModel__ProposedWalls": true,
-                    "ValeVision__MainBuildingModel__ProposedFloors": true,
-                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
-                    "ValeVision__MainBuildingModel__ProposedStairs": true,
-                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
-                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
-                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
-                    "ValeVision__GroundFloorFurniture": true,
-                    "ValeVision__GroundFloorDecor": true,
-                    "ValeVision__FirstFloorFurniture": true,
-                    "ValeVision__FirstFloorDecor": true,
-                    "ValeVision__Vegetation": true,
-                    "ValeVision__SceneEntourage2D": true,
-                    "ValeVision__SceneContextual": true
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true
                 }
             }
         ]
@@ -461,7 +323,9 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__MainBuildingModel__ProposedWindows__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__MainBuildingModel__ProposedWindows__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
-        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__SiteBoundaries__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia/Bia__TrueVision__SiteBoundaries__MeshModel__.glb"
     ],
     "Navmode__EnabledModes": {
         "Navmode__EnabledModes__Walk": true,

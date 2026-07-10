@@ -57,6 +57,16 @@
 //   camera position. Enables Na__AppFlow__LoadingSequence to keep the
 //   OrbitHelperCube-resolved orbit target for single/zero-scene projects.
 //
+// 10-Jul-2026 - Version 1.3.0
+// - Reverted a short-lived AnimateToScene options.applyOrbitTarget flag. That
+//   approach (leave controls.target on the cube during scene switches) framed
+//   the CUBE instead of the shot, because OrbitControls.update() runs
+//   camera.lookAt(target) every frame — so the camera aimed at the cube and
+//   the SketchUp look direction was discarded. Scene switches now ALWAYS
+//   animate to the scene's own camera.target (exact SketchUp framing); the
+//   cube only becomes the orbit pivot on the first rotation afterwards, via
+//   Na__Navmode__OrbitPivot__InteractionSwap.
+//
 // =============================================================================
 
 
@@ -279,11 +289,16 @@
 
     // FUNCTION | Instantly Apply Scene Camera State (no animation)
     // ------------------------------------------------------------
-    // options.applyOrbitTarget {boolean} - default true. Pass false to snap
-    // camera position/rotation/FOV only and leave controls.target untouched —
-    // used for single (or zero) -scene SketchUp boot framing, where the one
-    // camera.target is just that shot's look-at point, not a trustworthy orbit
-    // pivot (see Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget).
+    // Snaps position, rotation, FOV AND the scene's own camera.target, so the
+    // view frames the exact SketchUp shot (OrbitControls runs lookAt(target)
+    // every update, so the target must be the shot's look-at point for the
+    // framing to be correct). Re-pivoting the orbit onto the OrbitHelperCube is
+    // handled on the first rotation afterwards by Na__Navmode__OrbitPivot__
+    // InteractionSwap — the caller arms it after this returns.
+    //
+    // options.applyOrbitTarget {boolean} - default true; leaving it true is
+    // correct for all current callers. (Retained for the rare caller that wants
+    // to snap pose only and keep the live controls.target as-is.)
     // ------------------------------------------------------------
     function Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, scene, options = {}) {
         if (!camera || !scene) return;
@@ -344,6 +359,13 @@
     //   durationMs {number}  - override transition duration
     //   easing     {string}  - override easing function name
     //   onComplete {function}- callback invoked when transition finishes
+    // ------------------------------------------------------------
+    // The scene's own orbit target is always animated to (exact SketchUp
+    // framing at rest). Re-pivoting the orbit onto the OrbitHelperCube is
+    // handled separately, on the first rotation after the transition, by
+    // Na__Navmode__OrbitPivot__InteractionSwap — NOT by suppressing the target
+    // here (suppressing it would leave OrbitControls' per-frame lookAt aimed at
+    // the previous target and mis-frame the shot).
     // ------------------------------------------------------------
     function Na__PresentationMode__Camera__AnimateToScene(camera, controls, scene, options) {
         if (!camera || !scene) return;

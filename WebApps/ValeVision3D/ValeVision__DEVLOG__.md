@@ -2,6 +2,72 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.14 - 10-Jul-2026 - SketchUp Scene Framing vs OrbitHelperCube Pivot Split
+
+### Overview
+The v2.9.10 single/zero-scene orbit fix (and its follow-ups) resolved the orbit
+PIVOT for lone-scene projects, but multi-scene SketchUp carousels then framed the
+wrong thing on initialisation and on scene clicks: instead of showing each shot
+exactly as it was set up in SketchUp, the camera pointed AT the OrbitHelperCube.
+Confirmed on the Bia project (`2026/63853__Bia`), a 6-shot animation carousel — the
+first card in particular loaded aimed at the cube, and cycling through a couple of
+scenes was needed before the view "settled". Other cards only looked correct by
+coincidence, where that shot's look-at point happened to sit near the cube.
+
+Root cause: `OrbitControls.update()` runs `camera.lookAt(controls.target)` on EVERY
+frame — `controls.target` is not merely the orbit pivot, it is also the point the
+camera is forced to look at. The earlier fixes left `controls.target` on the cube at
+rest, so `update()` re-aimed the camera at the cube each frame and discarded the
+SketchUp look direction. A single OrbitControls target cannot be both the resting
+look-at point and a different orbit pivot, so the two concepts had to be split in
+time rather than collapsed onto one value.
+
+### Fixed
+- The resting view now ALWAYS frames the scene's own `camera.target` (the exact
+  SketchUp shot). The OrbitHelperCube is applied as the orbit PIVOT only, and only
+  on the first rotation after a scene is framed — "the cube kicks in" exactly as
+  intended: SketchUp framing at rest, cube-centred orbit once you start to rotate.
+- Applies uniformly at boot, on carousel card clicks, and on prev/next navigation.
+  Previously only the boot path had been (partially, incorrectly) handled, so
+  clicking the first card reproduced the bug.
+
+### Added
+- **`Na__Navmode__OrbitPivot__InteractionSwap.js` (new, `10__NavigationAndCameras`)**
+  — holds the resolved cube / saved orbit pivot and, on the first genuine rotation
+  after a scene is framed, swaps `controls.target` from the scene's look-at point to
+  the cube. Gated on a real `'change'` during an active `'start'`→`'end'` gesture, so
+  a bare click never re-frames the view. Public API: `Init`, `SetPivot`, `Arm`,
+  `Disarm`, `HasPivot`.
+- **`Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget(config)`** (new
+  export, `Na__PresentationMode__ProjectJson__SceneData.js`) — true only for
+  deliberately human-authored scene configs (Source ≠ `SketchUpCameraData`); those
+  keep their placed orbit target as the pivot and do NOT arm the cube swap.
+
+### Changed
+- **`Na__AppFlow__LoadingSequence.js`** — boot now registers the pivot swap
+  (`Init` + `SetPivot` with the resolved cube/saved target), frames the launch scene
+  to its own `camera.target` unconditionally, then `Arm`s the swap for
+  SketchUp-derived scenes (`Disarm`s for explicit authored scenes).
+- **`Na__PresentationMode__UI__SceneCarousel.js`** — card click / prev / next /
+  default-scene apply now frame the scene to its own target and re-arm the swap on
+  transition completion.
+- **`Na__PresentationMode__Camera__SceneTransition.js`** — `AnimateToScene` always
+  animates to the scene's own orbit target again (a short-lived `applyOrbitTarget`
+  flag that suppressed it — and thus mis-framed the shot — was reverted).
+- **`Na__SketchUp__AnimationScene__DataBridge__.js`** — `ShouldUseSceneOrbitTarget`
+  now returns true only for explicit authored scenes (dropped the ">=2 SketchUp
+  scenes" heuristic); it gates whether the launch scene's own target stays the pivot
+  or the cube swap arms.
+
+### Files Changed
+- `02__Src__AppModules/10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js` (new)
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js`
+- `02__Src__AppModules/69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.13 - 10-Jul-2026 - Glass Darkening Compounding Fix + Unified Dark Mirror Glass
 
 ### Overview

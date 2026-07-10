@@ -31,6 +31,13 @@
 // 11-Jun-2026 - Version 1.0.0
 // - Initial implementation for Presentation Mode system.
 //
+// 10-Jul-2026 - Version 1.1.0
+// - Added Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget: lets
+//   callers tell whether the active config's per-scene orbit target was
+//   deliberately human-authored or is just raw SketchUp camera.target data
+//   (Source === 'SketchUpCameraData'), so scene navigation can decide whether
+//   to trust it as an orbit pivot. See Na__PresentationMode__Camera__SceneTransition.js.
+//
 // =============================================================================
 
 
@@ -61,6 +68,8 @@
     const Na__PresentationMode__ENABLED_KEY       = 'PresentationMode__SavedCameraScenes__Enabled'; // <-- Enabled flag key
     const Na__PresentationMode__SCENES_KEY        = 'PresentationMode__SavedCameraScenes__Scenes';  // <-- Scenes array key
     const Na__PresentationMode__DEFAULT_SCENE_KEY = 'PresentationMode__SavedCameraScenes__DefaultSceneId'; // <-- Default scene id key
+    const Na__PresentationMode__SOURCE_KEY        = 'PresentationMode__SavedCameraScenes__Source';  // <-- Provenance marker key ('SketchUpCameraData' or explicit/authored)
+    const Na__PresentationMode__SKETCHUP_SOURCE   = 'SketchUpCameraData';                           // <-- Source value stamped by the SketchUp auto-conversion path
     const Na__PresentationMode__GH_PAGES_BASE     = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects'; // <-- Production base
     const Na__PresentationMode__DEFAULT_YEAR      = '2026';                                         // <-- Year fallback for URL building
     // ------------------------------------------------------------
@@ -145,6 +154,22 @@
 
         const scenes = Na__PresentationMode__ProjectJson__FilterValidScenes(config[Na__PresentationMode__SCENES_KEY]);
         return scenes.length > 0;                                            // <-- At least one valid scene required
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Check Whether a Scene Config's Per-Scene Orbit Target Is Trustworthy
+    // ------------------------------------------------------------
+    // SketchUp Cloud Sync scenes stash each shot's raw camera.target under the
+    // PresentationMode__Scene__OrbitHelperCubePosition field label, but it is
+    // NOT the resolved OrbitHelperCube GLB centre — just that one shot's
+    // look-at point, which can land far from the model's true orbit pivot on
+    // wide/establishing shots (see Na__SketchUp__ConvertSceneData__.js). Only
+    // explicitly human-authored scenes (dev menu "Update From Camera") place
+    // that value on purpose, so only those are trusted as an orbit pivot.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget(config) {
+        return !!config && config[Na__PresentationMode__SOURCE_KEY] !== Na__PresentationMode__SKETCHUP_SOURCE;
     }
     // ------------------------------------------------------------
 
@@ -304,6 +329,7 @@
     export {
         Na__PresentationMode__ProjectJson__GetSavedCameraScenes,
         Na__PresentationMode__ProjectJson__HasValidSavedScenes,
+        Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget,
         Na__PresentationMode__ProjectJson__SortScenesByOrder,
         Na__PresentationMode__ProjectJson__GetDefaultScene,
         Na__PresentationMode__ProjectJson__GetSceneById,

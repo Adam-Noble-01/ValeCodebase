@@ -27,9 +27,10 @@
 //   direct camera apply by the loading sequence. Works for all cases:
 //   explicit PresentationMode scenes, SketchUp scenes (1 or more), or null.
 // - ShouldUseSceneOrbitTarget tells the loading sequence whether the launch
-//   scene's camera.target is trustworthy as the orbit pivot (carousel-eligible
-//   explicit/multi-scene projects) or whether it is just a single shot's
-//   look-at point that should NOT override the OrbitHelperCube / saved target.
+//   scene's camera.target is trustworthy as the orbit pivot (explicit,
+//   human-authored PresentationMode scenes only) or whether it is just a raw
+//   SketchUp shot's look-at point that should NOT override the
+//   OrbitHelperCube / saved target, regardless of how many scenes exist.
 //
 // CONTRACT: Camera__DefaultPosition is superseded by SketchUp scene data when
 // present. To change the launch camera, update the SketchUp scene and re-sync
@@ -62,6 +63,20 @@
 //   Carousel-eligible projects (>=2 SketchUp scenes, or explicit
 //   PresentationMode scenes) are unaffected — their scene target still owns
 //   controls.target exactly as before.
+//
+// 10-Jul-2026 - Version 1.2.1
+// - ShouldUseSceneOrbitTarget no longer treats ">=2 SketchUp scenes" as
+//   carousel-eligible-therefore-trustworthy. A wide/establishing shot's
+//   camera.target can diverge from the model's true pivot just as easily in
+//   a 6-scene carousel as in a single-scene project (confirmed on the Bia
+//   project, 2026/63853__Bia). It now returns true ONLY for explicit,
+//   human-authored PresentationMode__SavedCameraScenes, regardless of scene
+//   count. Its meaning is: "does the launch scene's own camera.target serve
+//   as the orbit pivot?" true  -> keep the scene target as the pivot;
+//   false -> the OrbitHelperCube takes over as the pivot on the first
+//   rotation (via Na__Navmode__OrbitPivot__InteractionSwap). Either way the
+//   RESTING view is always framed to the scene's own camera.target so the
+//   shot matches SketchUp exactly — the cube is a pivot, never the look-at.
 //
 // =============================================================================
 
@@ -184,13 +199,14 @@
 
     // FUNCTION | Determine Whether the Launch Scene Should Drive the Orbit Target
     // ------------------------------------------------------------
-    // A single SketchUp camera.target is a look-at point for that one shot, not
-    // necessarily the model's orbit pivot. Only let the scene camera own
-    // controls.target when Presentation Mode is actually carousel-eligible:
-    //   - Explicit PresentationMode__SavedCameraScenes (one scene is enough —
-    //     the author placed that target on purpose), or
-    //   - Two or more SketchUp scenes (mirrors the ConvertBlock carousel gate).
-    // Single (or zero) -scene SketchUp projects return false so the loading
+    // A SketchUp scene's camera.target is just that one shot's look-at point,
+    // not necessarily the model's orbit pivot — a wide/establishing shot can
+    // easily look-at a point far from the building (e.g. across the site),
+    // while a close-up shot's target happens to land near it. That divergence
+    // is per-shot, not per-scene-count, so ONLY explicit
+    // PresentationMode__SavedCameraScenes (author placed that target on
+    // purpose via the dev menu "Update From Camera") are trusted here.
+    // SketchUp-derived scenes (1 or many) always return false so the loading
     // sequence keeps the OrbitHelperCube / saved project orbit target instead.
     //
     // projectData  {object} - parsed project.json
@@ -199,12 +215,7 @@
     function Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(projectData) {
         if (!projectData) return false;
 
-        if (Na__PresentationMode__ProjectJson__HasValidSavedScenes(projectData)) {
-            return true;                                                          // <-- Explicit scenes: author-placed target is authoritative
-        }
-
-        const block = Na__SketchUp__LoadSceneData__ReadBlock(projectData);
-        return !!(block && Array.isArray(block.scenes) && block.scenes.length >= 2); // <-- Matches ConvertBlock carousel gate
+        return Na__PresentationMode__ProjectJson__HasValidSavedScenes(projectData); // <-- Explicit scenes only; SketchUp-derived scenes never own controls.target
     }
     // ------------------------------------------------------------
 

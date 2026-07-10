@@ -14,11 +14,13 @@
 // - Resolves model URLs from the URL query parameter or config defaults.
 // - Loads the OrbitHelperCube GLB and sets the orbit target from its centre.
 // - Re-applies any saved camera / orbit target values from project.json.
-// - Boot camera pose (position/rotation/FOV) always comes from the launch
-//   scene when one exists; the launch scene's orbit TARGET only overrides the
-//   cube/saved target when Presentation Mode is carousel-eligible (see
-//   Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget), so single (or
-//   zero) -scene SketchUp projects keep the OrbitHelperCube as their pivot.
+// - Boot camera pose (position/rotation/FOV) AND the resting orbit target
+//   always come from the launch scene when one exists, so the initial view
+//   frames the exact SketchUp shot. The OrbitHelperCube becomes the orbit
+//   PIVOT only on the first rotation afterwards, via the interaction swap
+//   (Na__Navmode__OrbitPivot__InteractionSwap) — for SketchUp Cloud Sync
+//   scenes. Explicit, human-authored PresentationMode scenes keep their own
+//   deliberately placed orbit target (see ShouldUseSceneOrbitTarget).
 // - Loads all scene models via the multi-model loader.
 // - Runs the PBR materials second-pass if the materials system is enabled.
 // - Initialises door animations and walk-mode collision meshes.
@@ -44,6 +46,19 @@
 //   saved OrbitHelperCube__Position target silently overridden by the single
 //   scene's camera.target — camera position/rotation/FOV still apply as before.
 //   Carousel-eligible projects (>=2 scenes, or explicit scenes) are unaffected.
+//
+// 10-Jul-2026 - Version 1.5.3
+// - Corrected orbit-pivot handling. The resting view must frame the exact
+//   SketchUp shot, which means controls.target MUST hold the scene's own
+//   camera.target at rest (OrbitControls runs camera.lookAt(target) every
+//   frame, so leaving the cube as the target aimed the camera AT the cube and
+//   discarded the SketchUp look direction — the mis-framing seen on
+//   2026/63853__Bia). The OrbitHelperCube is now applied as the orbit PIVOT
+//   only on the first rotation after a scene is framed, via the new
+//   Na__Navmode__OrbitPivot__InteractionSwap module (Init + SetPivot + Arm
+//   here at boot; carousel card/prev/next arm it too). SketchUp-derived scenes
+//   arm the swap; explicit authored scenes keep their own target as the pivot.
+//   Supersedes the short-lived applyOrbitTarget-gating approach.
 //
 // 01-Jul-2026 - Version 1.5.1
 // - Boot camera apply now also re-applies the launch scene's
@@ -279,6 +294,17 @@
     // MODULE IMPORTS | Camera Project Start State (Reset View canonical state)
     // ------------------------------------------------------------
     import { Na__CameraStartState__CaptureStartState } from '../10__NavigationAndCameras/Na__Camera__ProjectStartState.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Orbit Pivot Interaction Swap (cube pivot kicks in on first rotation)
+    // @delegate: ../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js
+    // ------------------------------------------------------------
+    import {
+        Na__OrbitPivot__Init,
+        Na__OrbitPivot__SetPivot,
+        Na__OrbitPivot__Arm,
+        Na__OrbitPivot__Disarm
+    } from '../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Vertical Perspective Correction
@@ -791,14 +817,25 @@
             console.warn('[ValeVision3D] No saved orbit target and no OrbitHelperCube center resolved. Keeping current controls.target.');
         }
 
+        // REGISTER THE ORBIT PIVOT (cube / saved target) FOR THE INTERACTION SWAP.
+        // controls.target currently holds the resolved cube / saved orbit pivot (above).
+        // The launch scene apply below then overwrites controls.target with the SCENE's
+        // own look-at point so the resting view frames the exact SketchUp shot. This
+        // pivot is handed back to OrbitControls only on the first rotation afterwards
+        // (see Na__Navmode__OrbitPivot__InteractionSwap) so dragging orbits around the
+        // cube, not around that shot's look-at point.
+        Na__OrbitPivot__Init(Na__Controls__Orbit);                           // <-- Attach the one-time interaction listeners
+        Na__OrbitPivot__SetPivot(Na__FinalOrbitTargetApplied ? Na__Controls__Orbit.target.clone() : null); // <-- Cube / saved pivot (null => no swap)
+
         // SCENE-FIRST CAMERA APPLY — SketchUp or explicit scenes override Camera__DefaultPosition.
-        // ApplySceneCameraState always sets position, rotation and FOV from the scene object. The
-        // orbit TARGET from the scene's camera.target is only trusted as the orbit pivot when
-        // Presentation Mode is actually carousel-eligible (>=2 SketchUp scenes, or explicit
-        // PresentationMode scenes) — see Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget.
-        // Single (or zero) -scene SketchUp projects keep the orbit-cube / saved target resolved
-        // above instead, since one camera.target is just that shot's look-at point, not necessarily
-        // the model's orbit pivot (e.g. a distant feature framed off to one side of the cube).
+        // ApplySceneCameraState always sets position, rotation, FOV AND the scene's own
+        // camera.target, so the resting view is framed exactly as the SketchUp shot
+        // (OrbitControls' per-frame lookAt(target) would otherwise aim the camera at
+        // whatever target was left in place — which is why leaving the cube as the target
+        // here mis-framed the shot). The cube becomes the orbit PIVOT on the first
+        // rotation instead, via the interaction swap armed below — but only for
+        // SketchUp-derived scenes. Explicit, human-authored PresentationMode scenes keep
+        // their deliberately placed orbit target as the pivot (ShouldUseSceneOrbitTarget).
         // @delegate: ../69__System__SketchUpToValeVision__Utilities/Na__SketchUp__AnimationScene__DataBridge__.js
         const Na__LaunchScene = Na__SketchUp__AnimationScene__ResolveDefaultLaunchScene(Na__Saved__ProjectData);
         const Na__LaunchScene__UseSceneOrbitTarget = Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(Na__Saved__ProjectData);
@@ -806,15 +843,23 @@
         if (Na__LaunchScene?.scene) {
             Na__PresentationMode__Camera__ApplySceneCameraState(
                 Na__Camera__Main,                                            // <-- Snap to SketchUp / explicit first-scene position
-                Na__Controls__Orbit,                                         // <-- Target overwritten only when carousel-eligible (flag below)
-                Na__LaunchScene.scene,
-                { applyOrbitTarget: Na__LaunchScene__UseSceneOrbitTarget }    // <-- Prelim handler: single/zero-scene keeps orbit-cube/saved target
+                Na__Controls__Orbit,                                         // <-- Frames the scene's own camera.target (exact SketchUp view)
+                Na__LaunchScene.scene
             );
+
+            // ARM THE CUBE PIVOT SWAP — SketchUp-derived launch scenes re-pivot to the
+            // cube on the first rotation; explicit authored scenes keep their own target.
+            if (Na__LaunchScene__UseSceneOrbitTarget) {
+                Na__OrbitPivot__Disarm();                                    // <-- Author placed this target on purpose; keep it as the pivot
+            } else {
+                Na__OrbitPivot__Arm();                                       // <-- Cube kicks in as the pivot on first rotation
+            }
+
             // CAPTURE CANONICAL RESET STATE (scene-sourced; null config means ResetView restores snapshot only)
             // @delegate: ../10__NavigationAndCameras/Na__Camera__ProjectStartState.js
             Na__CameraStartState__CaptureStartState(
                 Na__Camera__Main,                                            // <-- Camera at first-scene position
-                Na__Controls__Orbit,                                         // <-- Controls with resolved orbit target (scene or cube/saved)
+                Na__Controls__Orbit,                                         // <-- Controls framed to the scene's own look-at point
                 null                                                         // <-- No Camera__DefaultPosition re-apply on Reset View
             );
         } else {

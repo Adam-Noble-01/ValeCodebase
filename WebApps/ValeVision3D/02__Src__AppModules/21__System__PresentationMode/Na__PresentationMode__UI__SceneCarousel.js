@@ -41,6 +41,18 @@
 // 11-Jun-2026 - Version 1.0.0
 // - Initial implementation for Presentation Mode system.
 //
+// 10-Jul-2026 - Version 1.1.0
+// - Card click / Prev / Next / default-scene navigation each frame the scene
+//   to its OWN camera.target (exact SketchUp view) and then re-arm the orbit
+//   pivot swap once the transition completes (Na__Navmode__OrbitPivot__
+//   InteractionSwap). On the next rotation the OrbitHelperCube becomes the
+//   orbit pivot for SketchUp-derived scenes; deliberately human-authored
+//   scenes keep their placed target (ShouldTrustSceneOrbitTarget disarms the
+//   swap). This replaces a short-lived approach that left the cube as the
+//   controls.target during scene switches, which framed the CUBE instead of
+//   the shot because OrbitControls.update() runs camera.lookAt(target) every
+//   frame.
+//
 // =============================================================================
 
 
@@ -59,7 +71,8 @@
         Na__PresentationMode__ProjectJson__GetSceneById,
         Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair,
         Na__PresentationMode__ProjectJson__SetActiveSceneId,
-        Na__PresentationMode__ProjectJson__GetActiveSceneId
+        Na__PresentationMode__ProjectJson__GetActiveSceneId,
+        Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget
     } from './Na__PresentationMode__ProjectJson__SceneData.js';
 
     // MODULE IMPORTS | Asset Fallback Toast Emitter
@@ -75,6 +88,15 @@
         Na__PresentationMode__Camera__AnimateToScene,
         Na__PresentationMode__Camera__ApplySceneCameraState
     } from './Na__PresentationMode__Camera__SceneTransition.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Orbit Pivot Interaction Swap (cube pivot kicks in on first rotation)
+    // @delegate: ../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js
+    // ------------------------------------------------------------
+    import {
+        Na__OrbitPivot__Arm,
+        Na__OrbitPivot__Disarm
+    } from '../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -279,6 +301,24 @@
 // REGION | User Interaction Handlers
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Re-Arm the Cube Pivot Swap After a Scene Is Framed
+    // ------------------------------------------------------------
+    // Every scene is framed to its OWN camera.target (exact SketchUp view).
+    // For SketchUp-derived scenes the cube then becomes the orbit pivot on the
+    // first rotation; deliberately human-authored scenes keep their placed
+    // orbit target, so the swap is disarmed for them.
+    // @delegate: ../10__NavigationAndCameras/Na__Navmode__OrbitPivot__InteractionSwap.js
+    // ------------------------------------------------------------
+    function Na__PresentationMode__UI__ArmOrbitPivotForConfig(config) {
+        if (Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget(config)) {
+            Na__OrbitPivot__Disarm();                                       // <-- Author's per-scene target stays the pivot
+        } else {
+            Na__OrbitPivot__Arm();                                          // <-- Cube kicks in on first rotation
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Handle Thumbnail Card Click
     // ------------------------------------------------------------
     function Na__PresentationMode__UI__HandleCardClick(sceneId) {
@@ -291,7 +331,10 @@
             Na__PresentationMode__UI__Controls,
             scene,
             {
-                onComplete : () => Na__PresentationMode__UI__SetActiveScene(sceneId)
+                onComplete : () => {
+                    Na__PresentationMode__UI__SetActiveScene(sceneId);
+                    Na__PresentationMode__UI__ArmOrbitPivotForConfig(config); // <-- Re-arm once the scene is framed (not mid-transition)
+                }
             }
         );
 
@@ -307,11 +350,17 @@
         if (!prevScene) return;
 
         const sceneId = prevScene.PresentationMode__Scene__Id;
+        const config  = Na__PresentationMode__ProjectJson__GetActiveConfig();
         Na__PresentationMode__Camera__AnimateToScene(
             Na__PresentationMode__UI__Camera,
             Na__PresentationMode__UI__Controls,
             prevScene,
-            { onComplete : () => Na__PresentationMode__UI__SetActiveScene(sceneId) }
+            {
+                onComplete : () => {
+                    Na__PresentationMode__UI__SetActiveScene(sceneId);
+                    Na__PresentationMode__UI__ArmOrbitPivotForConfig(config); // <-- Re-arm once the scene is framed (not mid-transition)
+                }
+            }
         );
 
         Na__PresentationMode__UI__SetActiveScene(sceneId);
@@ -326,11 +375,17 @@
         if (!nextScene) return;
 
         const sceneId = nextScene.PresentationMode__Scene__Id;
+        const config  = Na__PresentationMode__ProjectJson__GetActiveConfig();
         Na__PresentationMode__Camera__AnimateToScene(
             Na__PresentationMode__UI__Camera,
             Na__PresentationMode__UI__Controls,
             nextScene,
-            { onComplete : () => Na__PresentationMode__UI__SetActiveScene(sceneId) }
+            {
+                onComplete : () => {
+                    Na__PresentationMode__UI__SetActiveScene(sceneId);
+                    Na__PresentationMode__UI__ArmOrbitPivotForConfig(config); // <-- Re-arm once the scene is framed (not mid-transition)
+                }
+            }
         );
 
         Na__PresentationMode__UI__SetActiveScene(sceneId);
@@ -407,7 +462,8 @@
             if (defaultScene) {
                 Na__PresentationMode__ProjectJson__SetActiveSceneId(defaultScene.PresentationMode__Scene__Id);
                 if (!skipCameraApply) {
-                    Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, defaultScene); // <-- Jump to default scene
+                    Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, defaultScene); // <-- Frame the default scene's own view
+                    Na__PresentationMode__UI__ArmOrbitPivotForConfig(sceneConfig);                        // <-- Cube kicks in on first rotation (SketchUp scenes)
                 }
             }
 

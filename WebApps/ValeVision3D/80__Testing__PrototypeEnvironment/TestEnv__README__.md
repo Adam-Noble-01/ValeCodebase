@@ -66,6 +66,41 @@ ValeVision3D/  # Main project folder (1 LEVEL UP FROM THIS FOLDER)
 
 # ---------------------------------------------------------
 
+## Door Animation Regression Matrix
+
+Place matching mesh and linework GLBs in `TestEnv__GlbFiles`.
+
+1. **Legacy ROT_ONLY:** click a single hinged door, reverse it mid-motion, and
+   confirm mesh/linework remain synchronized.
+2. **Signed and mirrored rotation:** test positive/negative degree names and a
+   negative-determinant mirrored ADR instance.
+3. **Interior sign:** verify an `InteriorDoor` with
+   `InteriorRotationInverted` both false and true.
+4. **Bifold:** use `ROT_ONLY + ROT_MVE` panels; confirm all panels rotate/move
+   in lockstep and duration equals base duration × `BifoldDurationMultiplier`.
+5. **Sliding:** use `MVE_ONLY + FIXED`; confirm moving leaves translate and
+   fixed leaves remain static while the ADR state stays lockstep.
+6. **Exterior double click:** use an ADR name containing
+   `ExteriorDoubleDoor` with two `ROT_ONLY` MODs and paired ROT siblings.
+   Clicking MOD001 or MOD002 must animate only that leaf.
+7. **Independent reversal:** reverse each exterior-double leaf independently
+   during opening and closing; no progress jump is allowed.
+8. **Nearest-leaf proximity:** enter Walk mode near each hinge, cross the
+   centreline, and confirm the previous leaf closes while the nearest opens.
+   ValeVision production thresholds remain unchanged; the sandbox uses its
+   own configured threshold.
+9. **Lockstep compatibility:** confirm Interior Double Doors, bifolds,
+   sliding doors, and unknown ADRs never infer independence from panel count.
+10. **Kill switches:** set `IndependentPanelsEnabled` false for exterior-double
+    lockstep fallback, then set `MultiPanelEnabled` false for legacy ROT-only
+    rollback.
+11. **Refresh/rebind:** use Refresh Models and confirm the registry points to
+    the new roots, clicks work once, and no duplicate pointer handlers appear.
+12. **Load guards:** remove door groups or use an ADR with no recognized MOD;
+    confirm the scan skips it with diagnostics and the viewer continues.
+
+# ---------------------------------------------------------
+
 ## Development Workflow
 - Rapidly prototype and test new features in isolation without affecting the main ValeVision3D application.
 - Once satisfied, migrate stable functions and features back into the main ValeVision3D codebase (one directory up).

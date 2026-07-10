@@ -49,6 +49,7 @@
     // ------------------------------------------------------------
     import {
         Na__DoorAnimation__Initialize,
+        Na__DoorAnimation__RebindModelGroups,
         Na__DoorAnimation__Update
     } from './02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
     
@@ -1241,17 +1242,21 @@
                     // Find all door models (supports both flat and storey-based structures)
                     const { doorMeshGroups, doorLineworkGroups } = TestEnv__FindAllDoorModels();
 
-                    if (doorMeshGroups.length > 0 || doorLineworkGroups.length > 0) {
+                    const didRebindDoorGroups = Na__DoorAnimation__RebindModelGroups(
+                        doorMeshGroups,
+                        doorLineworkGroups
+                    );
+                    if (!didRebindDoorGroups) {
                         Na__DoorAnimation__Initialize(
                             TestEnv__Scene,
                             TestEnv__Camera,
                             TestEnv__Renderer.domElement,
-                            doorMeshGroups,                                      // <-- Array of mesh model groups
-                            doorLineworkGroups,                                  // <-- Array of linework model groups
+                            doorMeshGroups,
+                            doorLineworkGroups,
                             TestEnv__Config__DoorAnimation
                         );
-                        console.log('[TestEnv] Door animation reinitialized after refresh');
                     }
+                    console.log(`[TestEnv] Door animation ${didRebindDoorGroups ? 'rebound' : 'initialized'} after refresh`);
                 }
             }
 

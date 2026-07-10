@@ -19,13 +19,18 @@ ValeVision3D supports **interactive 3D objects** that respond to user input. The
 ### Click-to-Open Door Animation
 
 **Overview:**  
-Doors modeled in SketchUp with the ADR/MOD/ROT naming convention automatically become interactive. Click any door to smoothly animate it open or closed around its hinge pivot point.
+Doors modeled with the ADR/MOD/ROT/MVE/FIXED naming contract automatically
+become interactive. Hinged, bifold, and sliding products share one panel engine;
+explicit `ExteriorDoubleDoor` ADRs support independent leaves.
 
 **Key Features:**
 - Click detection with orbit drag filtering (distinguishes clicks from camera movement)
 - Smooth eased animation (easeInOutCubic interpolation)
 - Mid-animation reversal support (click again to reverse direction)
-- Configurable rotation angles per door (encoded in entity naming)
+- Signed rotation and translation values encoded in MOD names
+- Multi-panel bifold/sliding lockstep with bifold duration scaling
+- Mirrored-instance and config-gated interior rotation sign handling
+- Independent exterior-double leaf clicks and nearest-leaf Walk/Fly proximity
 - Dual model synchronization (mesh and linework animate together)
 - No model modification required (works via scene graph node transforms)
 
@@ -47,18 +52,25 @@ Doors modeled in SketchUp with the ADR/MOD/ROT naming convention automatically b
         "3dObject__Interaction__DoorAnimation": {
             "3dObject__Interaction__DoorAnimation__Enabled": true,
             "3dObject__Interaction__DoorAnimation__AnimationDurationMs": 600,
+            "3dObject__Interaction__DoorAnimation__BifoldDurationMultiplier": 3.0,
             "3dObject__Interaction__DoorAnimation__DefaultRotationDeg": 90,
-            "3dObject__Interaction__DoorAnimation__ClickThresholdPx": 4
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx": 4,
+            "3dObject__Interaction__DoorAnimation__MultiPanelEnabled": true,
+            "3dObject__Interaction__DoorAnimation__InteriorRotationInverted": false,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelsEnabled": true,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelAdrNameTokens": [
+                "ExteriorDoubleDoor"
+            ]
         }
     }
 }
 ```
 
 **Module Location:**  
-`src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+`02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
 
 **Full Documentation:**  
-See `src__3dObject__InteractionsSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md` for technical details, coordinate system transformations, and integration guide.
+See `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`.
 
 ---
 

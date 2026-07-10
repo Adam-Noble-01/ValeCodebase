@@ -51,6 +51,12 @@
 # - Removed 02__CadConversionModel subfolder and duplicate .skp copy
 # - Now creates a single .skp file in 02__SketchUp/01__MainModel only
 #
+# 09-Jul-2026 - Version 1.5.0
+# - Added MaxModel project type to dropdown with __MaxModel folder suffix
+# - MaxModel .skp named {ProjectName}__MaxModel__0.0.1__.skp
+# - __MaxModel suffix drives ValeVision Cloud Sync (SSOT indexed material GLB
+#   export), Whitecardopedia Max Models tab, and ValeVision3D MaxEngine boot
+#
 # =============================================================================
 
 import os
@@ -113,6 +119,7 @@ PROJECT_NUMBER_PATTERN   =   r'^(.+?)(\d{5,6})'                              # <
 PROJECT_TYPE_SUFFIXES    =   {                                               # <-- Suffix appended to folder name by type
     "Whitecard"      : "__Whitecard",
     "Blockout"       : "__Blockout",
+    "MaxModel"       : "__MaxModel",
     "DigitalConcept" : "__DigitalConcept"
 }
     # ---------------------------------------------------------------
@@ -131,6 +138,7 @@ LOGO_ASSETS_FOLDER       =   "ImageAssets"                                    # 
 PROJECT_TYPES            =   [                                               # <-- Available project types for dropdown
     "Whitecard",
     "Blockout",
+    "MaxModel",
     "DigitalConcept",
     "DesignDevelopment",
     "Marketing",
@@ -452,6 +460,7 @@ def build_primary_model_label(project_type):
     model_label_overrides = {
         "Whitecard"      : "WhiteCardModel",                                  # <-- Preserve existing Whitecard naming
         "Blockout"       : "BlockoutModel",                                   # <-- Use Blockout label for Blockout projects
+        "MaxModel"       : "MaxModel",                                        # <-- Type name already ends in Model (avoids MaxModelModel)
         "DigitalConcept" : "DigitalConceptModel"                              # <-- Use DigitalConcept label for DigitalConcept projects
     }
 

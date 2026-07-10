@@ -2,6 +2,46 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.9.12 - 10-Jul-2026 - Multi-Panel Doors and Independent Exterior Double Leaves
+
+### Overview
+Backported the current TrueVision multi-panel door runtime into ValeVision
+without replacing ValeVision's loader, namespaces, bootstrap, category discovery,
+or Walk/Fly proximity thresholds. Added the config-gated independent
+ExteriorDoubleDoor behavior after restoring full legacy product parity.
+
+### Added
+- `ROT_ONLY`, `ROT_MVE`, `MVE_ONLY`, and `FIXED` MOD classification and
+  all-panel descriptors.
+- Deterministic rotating-MOD to ROT-sibling pairing, signed degree/MVE parsing,
+  mirrored-instance sign correction, config-gated interior sign inversion, and
+  bifold-specific duration scaling.
+- Explicit `ExteriorDoubleDoor` independent coupling, MOD-level hit resolution,
+  per-leaf state/timing/easing/reversal, and nearest-ROT Walk/Fly proximity.
+- `Na__DoorAnimation__RebindModelGroups` for the prototype Refresh Models flow.
+- Production and sandbox config keys for multi-panel, bifold, interior sign,
+  independent-panel enablement, and ADR token allow-list.
+- ValeVision-specific documentation and a legacy/bifold/sliding/exterior-double
+  test matrix.
+
+### Compatibility
+- Interior Double Doors, bifolds, sliding doors, and unknown ADRs remain
+  whole-door lockstep. Two `ROT_ONLY` panels never imply independence.
+- ValeVision production Walk/Fly door thresholds remain 6500 mm.
+- Existing token-based model-category discovery and app loading sequence are
+  unchanged.
+
+### Files Changed
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js`
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__README__.md`
+- `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json`
+- `80__Testing__PrototypeEnvironment/TestEnv__SubAppData__Config.json`
+- `80__Testing__PrototypeEnvironment/TestEnv__PrototypeTestingSandbox__Main__.js`
+- `80__Testing__PrototypeEnvironment/TestEnv__README__.md`
+- `ValeVision__README__.md`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.11 - 09-Jul-2026 - WYSIWYG Line Widths in Exports (Resolution Compensation)
 
 ### Overview

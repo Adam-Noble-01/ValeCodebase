@@ -426,21 +426,51 @@
     },
     {
       "Timecard__Date": "2026-07-07",
-      "Timcard__Clock-In__": "08:05",
+      "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "18:00",
-      "Timecard__AuthHash": "sha256__184d20b21c5715ea3d432ea91f87c2b47e66894afb97eb58a7f2fc958bf3952a"
+      "Timecard__AuthHash": "sha256__a94c141153f9c49aa2737e7cb16327231d917eb5d8b10b6e626dde0de57df9b1",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-07-10T07:02:36.845193Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:05",
+        "Timecard__OriginalClockOut": "18:00"
+      }
     },
     {
       "Timecard__Date": "2026-07-08",
-      "Timcard__Clock-In__": "08:05",
+      "Timcard__Clock-In__": "07:55",
       "Timcard__Clock-Out__": "18:05",
-      "Timecard__AuthHash": "sha256__254e80d79b5cdf60b436681d3b65531e370416fbd88ac1edeec046af67121785"
+      "Timecard__AuthHash": "sha256__cd8ea836b3081dbf9fdbb6fd6d0c5b5f91903c0f7543ead1d4a0d58fd5e81673",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-07-10T07:02:29.930342Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:05",
+        "Timecard__OriginalClockOut": "18:05"
+      }
     },
     {
       "Timecard__Date": "2026-07-09",
-      "Timcard__Clock-In__": "08:10",
+      "Timcard__Clock-In__": "08:00",
+      "Timcard__Clock-Out__": "17:10",
+      "Timecard__AuthHash": "sha256__e2d95d0dfeb3f78bc4b792548d40109b65257d1cfc35a3c210214c6a6ab13da7",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-07-10T07:01:44.170456Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:10",
+        "Timecard__OriginalClockOut": "17:05"
+      }
+    },
+    {
+      "Timecard__Date": "2026-07-10",
+      "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__eccd8d5c231c932692443504c90f1ca15d8ae15c89b489919f630f74dcda41f7"
+      "Timecard__AuthHash": "sha256__b462c7fba6e58185978c7f10e11f9663619915d8d10308333f46929bd49b3cc0"
     }
   ]
 }

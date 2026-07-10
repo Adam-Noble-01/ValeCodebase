@@ -4,6 +4,20 @@
 **Feature:** Click-to-Open Door Animation for ValeVision3D  
 **Created:** 14-Feb-2026  
 **Author:** Adam Noble - Noble Architecture  
+**Module Version:** 1.7.0 (10-Jul-2026)
+
+---
+
+## Current Capabilities
+
+- One panel engine supports `ROT_ONLY`, `ROT_MVE`, `MVE_ONLY`, and `FIXED`.
+- Bifold and sliding products animate every MOD in lockstep.
+- Signed rotation degrees and signed MVE distances are parsed from MOD names.
+- Mirrored ADR transforms and the config-gated interior sign convention are
+  resolved at scan time.
+- Explicit `ExteriorDoubleDoor` ADRs animate each ROT leaf independently.
+- Walk/Fly proximity opens only the nearest exterior-double leaf.
+- Interior double doors, bifolds, sliding doors, and unknown ADRs stay lockstep.
 
 ---
 
@@ -11,7 +25,12 @@
 
 **1. Model Setup in SketchUp:**
 - Name door assemblies with `ADR` prefix (e.g., `ADR002__InternalDoor__GroundFloor__PorchToLounge`)
-- Inside each ADR: create `MOD001__ROT__90-Deg__DoorPanel` (rotating panel) and `ROT001__RotationPoint__DoorHingeCentre` (hinge pivot)
+- Inside each ADR, use one or more supported MOD patterns:
+  - `MOD001__ROT__-90-Deg__DoorPanel` (`ROT_ONLY`)
+  - `MOD002__ROT__95-Deg__MVE__X+600-mm__BifoldPanel` (`ROT_MVE`)
+  - `MOD001__MVE__X+1200-mm__SlidingPanel` (`MVE_ONLY`)
+  - `MOD002__FIXED__SlidingPanel` (`FIXED`)
+- Add one `ROT###` sibling per rotating MOD; pairing follows rotating sibling index.
 - Place all doors on tag `25__ProposedBuilding__Doors`
 
 **2. Export from SketchUp:**
@@ -37,71 +56,36 @@
 {
     "3dObject__InteractionsSystem": {
         "3dObject__Interaction__DoorAnimation": {
-            "3dObject__Interaction__DoorAnimation__Description"         : "Interactive door animation settings for click-to-open doors. Doors must be exported from SketchUp with ADR/MOD/ROT naming convention via GLB Builder v1.5.0+",
-            "3dObject__Interaction__DoorAnimation__Enabled"             : true,
-            "3dObject__Interaction__DoorAnimation__AnimationDurationMs" : 600,
-            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"  : 90,
-            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4
+            "3dObject__Interaction__DoorAnimation__Enabled": true,
+            "3dObject__Interaction__DoorAnimation__AnimationDurationMs": 600,
+            "3dObject__Interaction__DoorAnimation__BifoldDurationMultiplier": 3.0,
+            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg": 90,
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx": 4,
+            "3dObject__Interaction__DoorAnimation__MultiPanelEnabled": true,
+            "3dObject__Interaction__DoorAnimation__InteriorRotationInverted": false,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelsEnabled": true,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelAdrNameTokens": [
+                "ExteriorDoubleDoor"
+            ]
         }
     }
 }
 ```
 
+`MultiPanelEnabled` is an emergency rollback to the first legacy `ROT_ONLY`
+panel. `IndependentPanelsEnabled` returns every ADR to whole-door lockstep.
+The token list is an explicit allow-list: two `ROT_ONLY` panels alone do not
+imply independence because interior double doors use the same structure.
+
 ### Main App Integration
-**File:** [`index.html`](../index.html)
+**File:** `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
 
-```javascript
-// Import
-import {
-    Na__DoorAnimation__Initialize,
-    Na__DoorAnimation__Update
-} from './02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
-
-// After models load (find door groups)
-let doorMeshGroup = null;
-let doorLineworkGroup = null;
-
-Na__LoadedModelGroups.forEach((group, categoryKey) => {
-    if (categoryKey.includes('ProposedDoors') && categoryKey.includes('MeshModel')) {
-        doorMeshGroup = group;
-    }
-    if (categoryKey.includes('ProposedDoors') && categoryKey.includes('LineworkModel')) {
-        doorLineworkGroup = group;
-    }
-});
-
-// Initialize (if enabled and models exist)
-if (Na__Config__DoorAnimation.DoorAnimation__Enabled !== false) {
-    if (doorMeshGroup || doorLineworkGroup) {
-        Na__DoorAnimation__Initialize(
-            Na__Scene__Main,
-            Na__Camera__Main,
-            Na__Renderer__Main.domElement,
-            doorMeshGroup,
-            doorLineworkGroup,
-            Na__Config__DoorAnimation
-        );
-    }
-}
-
-// Render loop (with delta time)
-let Na__RenderLoop__PrevTimestamp = performance.now();
-function Na__RenderLoop__Animate() {
-    requestAnimationFrame(Na__RenderLoop__Animate);
-    
-    const now = performance.now();
-    const deltaMs = now - Na__RenderLoop__PrevTimestamp;
-    Na__RenderLoop__PrevTimestamp = now;
-    
-    Na__Navmode__UpdateNavigation();
-    Na__DoorAnimation__Update(deltaMs);  // Update door animations
-    
-    if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
-        Na__RenderPipeline__State.renderProfileNormals();
-        Na__RenderComposer__Main.render();
-    }
-}
-```
+ValeVision keeps its existing token-based category collection and passes arrays
+of mesh/linework roots into `Na__DoorAnimation__Initialize`. The render loop
+continues to call `Na__DoorAnimation__Update` and routes ValeVision's existing
+Walk/Fly positions through `Na__DoorProximity__Update`. Production Walk/Fly
+thresholds remain `6500` mm. The prototype Refresh Models action uses
+`Na__DoorAnimation__RebindModelGroups`, avoiding duplicate pointer listeners.
 
 ---
 
@@ -114,23 +98,37 @@ function Na__RenderLoop__Animate() {
 - **3-Digit Code:** Unique identifier (001, 002, 003...)
 
 ### MOD (Modifier Object - Door Panel)
-- **Format:** `MOD###__ROT__[N]-Deg__[Description]`
-- **Example:** `MOD001__ROT__90-Deg__DoorPanel`
-- **Purpose:** Contains all rotating geometry (panel, handles, etc.)
-- **Required:** `__ROT__` tag and `[N]-Deg` pattern
-- **Parsed:** Rotation angle extracted by `/(\d+)-Deg/i` regex
+- `MOD###__ROT__<signed-deg>-Deg__<tag>` → `ROT_ONLY`
+- `MOD###__ROT__<signed-deg>-Deg__MVE__<axis><signed-mm>-mm__<tag>` → `ROT_MVE`
+- `MOD###__MVE__<axis><signed-mm>-mm__<tag>` → `MVE_ONLY`
+- `MOD###__FIXED__<tag>` → `FIXED`
+- Degrees use `/(-?\d+)-Deg/i`; MVE uses
+  `/__MVE__([XYZ])([+\-]\d+)-mm/i`.
 
 ### ROT (Rotation/Hinge Point)
 - **Format:** `ROT###__[Description]`
 - **Example:** `ROT001__RotationPoint__DoorHingeCentre`
 - **Purpose:** Defines 3D pivot point for rotation (hinge location)
 - **Note:** Can be empty (no geometry) — position vector used as pivot
+- **Pairing:** Nth rotating MOD pairs with the Nth ROT sibling.
 
 ---
 
 ## SketchUp Model Setup
 
 ```
+
+Exterior double-door independent hierarchy:
+
+```
+ADR010__ExteriorDoubleDoor__
+├─ MOD001__ROT__-90-Deg__ExteriorDoubleDoorPanel
+├─ ROT001__RotationPoint__ExteriorDoubleDoorHingeCentre
+├─ MOD002__ROT__90-Deg__ExteriorDoubleDoorPanel
+└─ ROT002__RotationPoint__ExteriorDoubleDoorHingeCentre
+```
+
+The ADR token opts into independence. Do not add MVE tokens to these leaves.
 SketchUp Model
 ├─ 25__ProposedBuilding__Doors (tag: 25__)
 │  └─ ADR002__InternalDoor__GroundFloor__PorchToLounge ← Door assembly
@@ -180,14 +178,18 @@ M_gltf = Z_UP_TO_Y_UP * M_sketchup * inv(Z_UP_TO_Y_UP)
 ### Click Detection
 - Tracks pointer movement to distinguish clicks from orbit drags
 - Threshold: 4px movement (configurable)
-- Raycasts against door meshes (both mesh and linework)
-- Walks up scene graph to find ADR ancestor
+- Raycasts every MOD mesh/linework branch.
+- Resolves ADR and nearest MOD ancestors.
+- Lockstep products toggle the ADR; exterior double doors toggle only the hit MOD.
 
 ### Animation
-- Smooth ease-in-out cubic interpolation
-- Mid-animation reversal support
-- Rotates around ROT pivot point on Y-axis (vertical)
-- Animates both mesh and linework MOD objects simultaneously
+- Unified progress `[0..1]` drives every panel.
+- `ROT_*` panels rotate around their paired ROT pivot on local Y.
+- `MVE_*` panels translate along their parsed local axis.
+- Mirror and interior signs compose into each rotating descriptor.
+- Bifolds use `AnimationDurationMs * BifoldDurationMultiplier`.
+- Independent leaves keep separate progress/timing and support mid-motion reversal.
+- Mesh and linework MODs remain synchronized.
 
 ### States
 - `CLOSED` → `OPENING` → `OPEN` → `CLOSING` → `CLOSED`
@@ -237,9 +239,14 @@ Initializes the door animation system.
 - `config` (Object) - Animation configuration
 
 **Config Properties:**
-- `3dObject__Interaction__DoorAnimation__AnimationDurationMs` (number) - Animation duration
+- `3dObject__Interaction__DoorAnimation__AnimationDurationMs` (number) - Base duration
+- `3dObject__Interaction__DoorAnimation__BifoldDurationMultiplier` (number)
 - `3dObject__Interaction__DoorAnimation__DefaultRotationDeg` (number) - Fallback rotation angle
 - `3dObject__Interaction__DoorAnimation__ClickThresholdPx` (number) - Click detection threshold
+- `3dObject__Interaction__DoorAnimation__MultiPanelEnabled` (boolean)
+- `3dObject__Interaction__DoorAnimation__InteriorRotationInverted` (boolean)
+- `3dObject__Interaction__DoorAnimation__IndependentPanelsEnabled` (boolean)
+- `3dObject__Interaction__DoorAnimation__IndependentPanelAdrNameTokens` (string[])
 
 ---
 
@@ -255,6 +262,15 @@ Updates all door animations. Call every frame in render loop.
 ### `Na__DoorAnimation__ScanForDoors()`
 
 Re-scans scene graph for door assemblies. Useful for dynamically loaded models.
+
+### `Na__DoorAnimation__RebindModelGroups(meshGroups, lineworkGroups)`
+
+Replaces model roots and rebuilds the registry without registering pointer
+listeners again. Used by the ValeVision prototype model refresh.
+
+### `Na__DoorAnim__TogglePanel(doorRecord, panel)`
+
+Starts or reverses one panel only for explicitly independent ADRs.
 
 ---
 
@@ -305,8 +321,9 @@ Re-scans scene graph for door assemblies. Useful for dynamically loaded models.
 
 **ValeVision3D Application (JavaScript):**
 - `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js` - Door animation module
+- `02__Src__AppModules/25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js` - Walk/Fly proximity
 - `02__Src__AppModules/02__AppData/Na__AppConfig__Main.json` - Configuration
-- `index.html` - Main application bootstrap
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js` - Main bootstrap
 
 **Test Environment:**
 - `80__Testing__PrototypeEnvironment/` - Imports from main app for testing new features
@@ -323,15 +340,21 @@ Re-scans scene graph for door assemblies. Useful for dynamically loaded models.
 
 ## Future Enhancements
 
-- Proximity-based auto-open when camera approaches
 - Audio cues (hinge creak, latch click)
 - Collision detection (prevent camera passing through closed doors)
-- Door state persistence
-- Double doors and sliding doors support
+- Door state persistence across sessions
+- Per-panel hover highlighting
 
 ---
 
 ## Version History
+
+**Version 1.7.0** (10-Jul-2026)
+- Backported ROT_ONLY/ROT_MVE/MVE_ONLY/FIXED multi-panel discovery.
+- Added signed degrees/MVE, MOD/ROT pairing, mirrored/interior signs, and
+  bifold duration scaling.
+- Added config-gated independent Exterior Double Door click/reversal.
+- Added nearest-leaf Walk/Fly proximity and model-group rebinding.
 
 **Version 1.0.0** (14-Feb-2026)
 - Initial implementation with single model group support

@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "09-Jul-2026 at 10:00",
+    "generatedAt": "10-Jul-2026 at 12:12",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1837,6 +1837,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "09-Jul-2026 at 10:00"
+        },
+        {
+            "folderId": "2026/63853__Bia",
+            "year": "2026",
+            "projectCode": "63853",
+            "name": "Bia",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 6,
+            "lastSynced": "10-Jul-2026 at 12:12"
         }
     ]
 }

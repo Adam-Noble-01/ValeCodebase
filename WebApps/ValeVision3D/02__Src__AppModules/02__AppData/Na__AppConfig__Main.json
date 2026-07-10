@@ -255,12 +255,19 @@
     },
     "3dObject__InteractionsSystem": {
         "3dObject__Interaction__DoorAnimation": {
-            "3dObject__Interaction__DoorAnimation__Description"         : "Interactive door animation settings for click-to-open doors. Doors must be exported from SketchUp with ADR/MOD/ROT naming convention via GLB Builder v1.5.0+. CategoryNameTokens match loaded model category keys (flat AND storey-based) to locate door groups.",
-            "3dObject__Interaction__DoorAnimation__Enabled"             : true,
-            "3dObject__Interaction__DoorAnimation__AnimationDurationMs" : 600,
-            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"  : 90,
-            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"    : 4,
-            "3dObject__Interaction__DoorAnimation__CategoryNameTokens"  : [
+            "3dObject__Interaction__DoorAnimation__Description"               : "Interactive door animation settings for click and Walk/Fly proximity. ROT_ONLY, ROT_MVE, MVE_ONLY, and FIXED panels share one multi-panel engine. Explicitly token-matched ExteriorDoubleDoor ADRs animate per leaf; interior, bifold, sliding, and unknown ADRs remain lockstep.",
+            "3dObject__Interaction__DoorAnimation__Enabled"                   : true,
+            "3dObject__Interaction__DoorAnimation__AnimationDurationMs"       : 600,
+            "3dObject__Interaction__DoorAnimation__BifoldDurationMultiplier"  : 3.0,
+            "3dObject__Interaction__DoorAnimation__DefaultRotationDeg"        : 90,
+            "3dObject__Interaction__DoorAnimation__ClickThresholdPx"          : 4,
+            "3dObject__Interaction__DoorAnimation__MultiPanelEnabled"         : true,
+            "3dObject__Interaction__DoorAnimation__InteriorRotationInverted"  : false,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelsEnabled"  : true,
+            "3dObject__Interaction__DoorAnimation__IndependentPanelAdrNameTokens": [
+                "ExteriorDoubleDoor"
+            ],
+            "3dObject__Interaction__DoorAnimation__CategoryNameTokens"        : [
                 "ProposedDoors",
                 "ExistingDoors"
             ]

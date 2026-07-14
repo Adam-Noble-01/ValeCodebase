@@ -513,6 +513,75 @@
                         <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naElevationReselect" style="display:none;">Reselect Elevation Plane</button>
                     </div>
                 </li>
+
+                <!-- ---------------------------------------------------------------- -->
+                <!-- UI MENU | Cross Sections (Per-project feature - hidden by default) -->
+                <!-- @delegate: ./02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js -->
+                <!-- ---------------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item" id="naCrossSectionMenuItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCrossSectionToggle">
+                        <img class="na-dropdown-menu__btn-icon" src="01__AppAssets__ValeVision/UiIcons__MenuIcons__ToolsMenu/Icon__ToolsMenu__ElevationView__540p__.png" alt="" />
+                        <span class="na-dropdown-menu__btn-label">Cross Sections</span>
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naCrossSectionPanel">
+                        <div class="na-dropdown-menu__panel-title">Section Placement</div>
+                        <button class="na-dropdown-menu__action" id="naCrossSectionModeToggle" title="Toggle between upright and plan section">Mode: Upright Section</button>
+                        <button class="na-dropdown-menu__action" id="naCrossSectionSelectFace">Select Section Face</button>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-dropdown-menu__panel-title" style="font-weight:400;font-size:0.75rem;">Slice Depth (m) — blank = none</div>
+                        <div class="na-dropdown-menu__panel-row">
+                            <input
+                                type="number"
+                                id="naCrossSectionSliceDepth"
+                                min="0"
+                                step="0.1"
+                                placeholder="None (infinite)"
+                                style="flex:1;height:26px;padding:2px 6px;border:1px solid rgba(0,0,0,0.12);border-radius:4px;background:#fff;font-family:'Open Sans',sans-serif;font-size:0.78rem;"
+                            />
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Show Section Planes</span>
+                            <input type="checkbox" id="naCrossSectionGizmoToggle" class="na-dropdown-menu__checkbox" checked />
+                        </div>
+                        <div id="naCrossSectionListWrap" style="display:none;">
+                            <hr class="na-dropdown-menu__panel-divider" />
+                            <div class="na-dropdown-menu__panel-title">Active Sections</div>
+                            <div id="naCrossSectionList"></div>
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <details class="na-dropdown-menu__details-nested">
+                            <summary class="na-dropdown-menu__panel-title" style="cursor:pointer;">Advanced Section Style ▾</summary>
+                            <div style="margin-top:6px;">
+                                <div class="na-dropdown-menu__panel-title" style="font-weight:400;font-size:0.75rem;">Section Fill Colour</div>
+                                <div class="na-dropdown-menu__panel-row">
+                                    <input type="color" id="naCrossSectionFillColor" value="#f0f0f0" style="flex:1;height:26px;padding:0;border:1px solid rgba(0,0,0,0.12);border-radius:4px;background:#fff;cursor:pointer;" />
+                                </div>
+                                <div class="na-dropdown-menu__panel-title" style="font-weight:400;font-size:0.75rem;">Profile Line Colour</div>
+                                <div class="na-dropdown-menu__panel-row">
+                                    <input type="color" id="naCrossSectionLineColor" value="#323232" style="flex:1;height:26px;padding:0;border:1px solid rgba(0,0,0,0.12);border-radius:4px;background:#fff;cursor:pointer;" />
+                                </div>
+                                <div class="na-dropdown-menu__panel-title" style="font-weight:400;font-size:0.75rem;">Profile Line Thickness</div>
+                                <div class="na-dropdown-menu__panel-row">
+                                    <input
+                                        type="range"
+                                        id="naCrossSectionLineWidth"
+                                        class="na-dropdown-menu__slider"
+                                        min="0.5"
+                                        max="6"
+                                        step="0.5"
+                                        value="2"
+                                    />
+                                    <span class="na-dropdown-menu__value" id="naCrossSectionLineWidthValue">2.0 px</span>
+                                </div>
+                                <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naCrossSectionResetStyle">Reset Section Style</button>
+                            </div>
+                        </details>
+                    </div>
+                </li>
+                <!-- endregion ----------------------------------------------------------------- -->
+
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--send-email" id="naSendEmailMenuItem">
                     <button
                         class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
@@ -720,6 +789,25 @@
                         <button class="na-dropdown-menu__action" id="naRenderEngineDevSave">Save Render Engine</button>
                     </div>
                 </li>
+                <!-- -------------------------------------------------------- -->
+                <!-- CROSS SECTION TOOL (per-project feature gate)            -->
+                <!-- @delegate: ./02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js -->
+                <!-- -------------------------------------------------------- -->
+                <li class="na-dropdown-menu__item" id="naCrossSectionDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naCrossSectionDevToggle" aria-expanded="false">
+                        Cross Section Tool
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel" id="naCrossSectionDevPanel">
+                        <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
+                            <span class="na-dropdown-menu__panel-title">Enable For This Project</span>
+                            <input type="checkbox" id="naCrossSectionDevEnableCheck" class="na-dropdown-menu__checkbox" />
+                        </div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <button class="na-dropdown-menu__action" id="naCrossSectionDevSave">Save Cross Section Config</button>
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
                 <!-- -------------------------------------------------------- -->
                 <!-- PRESENTATION MODE SCENES (localhost dev only)           -->
                 <!-- -------------------------------------------------------- -->
@@ -964,6 +1052,8 @@
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
     import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
     import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js';
+    import { Na__UiFeature__InitializeCrossSectionControls } from './02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js';
+    import { Na__UiFeature__InitializeCrossSectionDevControls, Na__UiFeature__SyncCrossSectionDevCheckbox } from './02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js';
     import { Na__LineworkSettings__Initialize } from './02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
     import { Na__UiFeature__InitializeLineworkSettingsControls } from './02__Src__AppModules/30__System__ImageExport/Na__UiFeature__LineworkSettings__Controls.js';
     import { Na__UiFeature__InitializeGridLineControls } from './02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js';
@@ -1629,6 +1719,24 @@
     Na__UiFeature__InitializeSceneInspector(Na__Scene__Main);
     Na__UiFeature__InitializeGridLineControls(Na__Scene__Main, Na__UiFeature__ShowToast, Na__AppFlow__PipelineRef);
     Na__UiFeature__InitializeElevationViewControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root, Na__Device__UseTouchControls);
+
+    // INITIALIZE CROSS SECTION CONTROLS (Tools Menu + Dev Menu)
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/41__System__CrossSectionView/
+    // Tools section hidden until CrossSection__Config enables it (project.json
+    // via 'na-crosssection-config-loaded', or live from the dev checkbox).
+    Na__UiFeature__InitializeCrossSectionControls(Na__Scene__Main, Na__Camera__Main, Na__Renderer__Main, Na__Controls__Orbit, Na__AppFlow__PipelineRef, Na__ModelGroup__Root);
+    Na__UiFeature__InitializeCrossSectionDevControls({
+        showToast : Na__UiFeature__ShowToast                    // <-- Toast feedback callback
+    });
+
+    // UPDATE DEV CHECKBOX once project.json loads (async timing)
+    window.addEventListener('na-crosssection-config-loaded', (event) => {
+        const config = event.detail && event.detail.crossSectionConfig;
+        if (!config) return;
+        Na__UiFeature__SyncCrossSectionDevCheckbox(config.CrossSection__Enabled === true);  // <-- Reflect saved state in dev checkbox
+    }, { once: true });
+    // ------------------------------------------------------------
     Na__Feature__EmailWorkers__Initialize({
         showToast   : Na__UiFeature__ShowToast,
         rootElement : document.getElementById('root')

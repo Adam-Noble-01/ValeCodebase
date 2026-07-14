@@ -1295,10 +1295,16 @@ body.na-elevation-selecting canvas {
     cursor                             : crosshair !important;
 }
 
+body.na-crosssection-selecting,
+body.na-crosssection-selecting canvas {
+    cursor                             : crosshair !important;
+}
+
 
 /* Elevation Select Face Button - Pulsing State */
 /* ----------------------------------------------------------------- */
-.na-dropdown-menu__action#naElevationSelectFace:disabled {
+.na-dropdown-menu__action#naElevationSelectFace:disabled,
+.na-dropdown-menu__action#naCrossSectionSelectFace:disabled {
     opacity                            : 0.7;
     cursor                             : default;
     animation                          : na-elevation-pulse 1.5s ease-in-out infinite;

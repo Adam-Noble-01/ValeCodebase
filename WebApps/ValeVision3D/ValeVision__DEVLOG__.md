@@ -2,6 +2,97 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.10.2 - 14-Jul-2026 - Cross Section Overlay Composite Fix
+
+### Overview
+Fixed two Cross Section regressions: the keep-side was being derived from the
+camera position (cut direction changed while orbiting) and the post-composer
+overlay pass was re-rendering the whole main scene, which wiped the clipped
+model out of the colour buffer so only the cap fill/gizmo were visible.
+
+### Fixed
+- `Na__CrossSectionView__SystemLogic.js` — `Na__Sect__ProcessFaceSelection`
+  reverted to derive the keep side from the clicked face's own normal only
+  (Upright: XZ-projected face normal, negated so exterior clicks cut inward;
+  Plan: fixed `(0,-1,0)`). Orbiting the camera no longer changes the cut.
+- Caps / outlines / gizmos now live in a dedicated `Na__Sect__OverlayScene`
+  (a separate `THREE.Scene`, never added to the main model scene) instead of
+  being tagged onto camera render layer 2. `Na__Sect__RenderOverlay` renders
+  that scene directly onto the already-composited colour buffer (`autoClear`
+  off, `clearDepth()` only) with no `camera.layers` mutation — the clipped
+  model from the composer pass now stays visible underneath the section fill.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.10.1 - 14-Jul-2026 - Cross Section Face-Click + Slice Depth
+
+### Overview
+Cross Section UX update: placement now matches Elevation View (click a face),
+with an Upright/Plan mode toggle replacing the Plan/X/Z spawn buttons. Optional
+slice depth (metres) adds a second parallel clip plane for SketchUp-style
+section depth; blank/0 keeps the default infinite half-space cut.
+
+### Changed
+- `Na__CrossSectionView__SystemLogic.js` — face-pick placement, slice back-plane,
+  Upright/Plan modes; drag/flip keep depth locked.
+- `Na__UiFeature__CrossSectionView__Controls.js` + `index.html` — new panel UI.
+- `Na__UiFeature__Styles__DropdownAndToast__.css` — crosshair while selecting.
+- `Na__CrossSectionView__Config.json` — `CrossSectionView__Slice__Config`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.10.0 - 14-Jul-2026 - SketchUp-Style Live Cross Section Tool
+
+### Overview
+New per-project Cross Section system (`41__System__CrossSectionView`) delivering
+SketchUp-style live section cuts with two key visual upgrades over SketchUp:
+cut-through areas are filled with REAL triangulated cap geometry (boolean-style
+solid "islands", default RGB 240,240,240) and the profile is drawn ONLY around
+the outer loops of each island with fat lines (default RGB 50,50,50) — all
+interior clutter lines are removed. Multiple simultaneous draggable section
+planes are supported and compose like SketchUp (each cap is clipped by every
+other active plane). The feature is gated per project: a Dev Tools section
+enables/disables it live and saves `CrossSection__Config` to project.json via
+the R2-first two-phase save; when enabled a "Cross Sections" dropdown appears
+in the Tools menu directly after Elevation View.
+
+### Technique
+- Cutting: per-material THREE clipping planes (`renderer.localClippingEnabled`)
+  on every model material (meshes + linework fat lines), with `clipShadows` so
+  shadows follow the cut. Zero per-frame cost; drag updates mutate the shared
+  plane array in place.
+- Cap fills + profiles: CPU mesh/plane contour extraction (signed distances
+  evaluated in each mesh's local space; only crossing triangles transformed),
+  ORIENTED segments so coincident contact faces between touching solids cancel
+  (this is what removes interior lines), endpoint weld + loop chaining, even-odd
+  nesting classification (holes preserved), earcut triangulation via
+  THREE.ShapeUtils, LineSegments2 fat-line outlines. Live drag recomputes on a
+  90 ms throttle plus a final exact pass on release. Measured ~7 ms per full
+  recompute on the default model.
+- Engine safety: profile-lines normal/colour override passes read the plane
+  list from a new shared state module (`Na__RenderEffect__SectionClipping__State`)
+  in BOTH PureEngine and MaxEngine plus the 2D elevation pass; materials are
+  re-applied after `na-render-engine-changed` material swaps.
+
+### Added
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__Config.json`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__CapGeometry.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__PlaneGizmo.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__DevControls.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js`
+- Tools menu "Cross Sections" section (insert Plan/X/Z planes, per-section
+  Flip / Hide / Delete rows, Show Section Planes toggle, Advanced style panel:
+  fill colour, profile line colour + thickness, reset).
+- Dev Tools "Cross Section Tool" section (enable live + save to project.json).
+
+### Changed
+- `Na__RenderEffect__ProfileLines__.js` + `Na__RenderEffect__2dProfileLines__.js`
+  — override materials now carry the active section clipping planes.
+- `Na__AppFlow__LoadingSequence.js` — dispatches `na-crosssection-config-loaded`
+  when project.json contains `CrossSection__Config`.
+- `index.html` — menu markup, module imports, init wiring.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.9.14 - 10-Jul-2026 - SketchUp Scene Framing vs OrbitHelperCube Pivot Split
 
 ### Overview

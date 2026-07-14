@@ -30,6 +30,12 @@
     // ------------------------------------------------------------
 
 
+    // MODULE IMPORTS | Cross Section Clipping Planes (Shared State)
+    // ------------------------------------------------------------
+    import { Na__SectionClipping__GetClipList } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Default Config Values
     // ------------------------------------------------------------
     const PROFILE_2D__DEFAULT_EDGE_WIDTH = 1.0;                                  // <-- Fixed line thickness in pixels (no distance scaling)
@@ -135,6 +141,12 @@
         // ---------------------------------------------------------------
         function renderProfileNormals(camera) {
             if (!camera) return;
+
+            // SECTION CUTS | Override materials bypass per-mesh clipping planes,
+            // so the active cross-section plane list is re-applied here each pass.
+            const sectionClipList = Na__SectionClipping__GetClipList();
+            normalMaterial.clippingPlanes               = sectionClipList;
+            profileColorFallbackMaterial.clippingPlanes = sectionClipList;
 
             if (sceneCacheDirty) {
                 rebuildSceneCache();

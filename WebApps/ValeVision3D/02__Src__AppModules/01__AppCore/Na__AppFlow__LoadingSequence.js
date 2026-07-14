@@ -365,6 +365,11 @@
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Cross Section Overlay Renderer (After-Composer Pass)
+    // ------------------------------------------------------------
+    import { Na__SectionClipping__GetOverlayRenderer } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Fog Plane System
     // @delegate: ../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js
     // ------------------------------------------------------------
@@ -621,6 +626,13 @@
                     Na__RenderEngine__SetConfiguredEngine(projectData.RenderEngine__Config.RenderEngine__Active);
                     window.dispatchEvent(new CustomEvent('na-render-engine-loaded', {
                         detail: { renderEngineConfig: projectData.RenderEngine__Config }
+                    }));
+                }
+
+                // APPLY PER-PROJECT CROSS SECTION TOOL CONFIG (feature hidden when key absent)
+                if (projectData.CrossSection__Config) {
+                    window.dispatchEvent(new CustomEvent('na-crosssection-config-loaded', {
+                        detail: { crossSectionConfig: projectData.CrossSection__Config }
                     }));
                 }
 
@@ -1144,6 +1156,13 @@
                     Na__RenderPipeline__State.renderProfileNormals();         // <-- 3D profile lines with persp camera
                 }
                 Na__RenderComposer__Main.render();                           // <-- Render with post-processing
+
+                // SECTION OVERLAY | Draw cross-section caps / outlines / gizmos
+                // AFTER post-processing so fog, SSAO and Sobel never touch them
+                const Na__Section__DrawOverlay = Na__SectionClipping__GetOverlayRenderer();
+                if (Na__Section__DrawOverlay) {
+                    Na__Section__DrawOverlay(Na__RenderLoop__ActiveCamera);
+                }
             }
 
             if (Na__RenderLoop__OrbitTrailingFrames > 0) {

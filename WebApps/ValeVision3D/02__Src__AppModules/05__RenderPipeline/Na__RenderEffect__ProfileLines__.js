@@ -44,6 +44,11 @@
     } from './Na__RenderEffect__LineworkSettings__State.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Cross Section Clipping Planes (Shared State)
+    // ------------------------------------------------------------
+    import { Na__SectionClipping__GetClipList } from './Na__RenderEffect__SectionClipping__State.js';
+    // ------------------------------------------------------------
+
 
     // MODULE CONSTANTS | Default Config Values
     // ------------------------------------------------------------
@@ -347,6 +352,12 @@
         // SUB FUNCTION | Render Normal and Profile Colour Pre-Passes
         // ---------------------------------------------------------------
         function renderProfileNormals() {
+            // SECTION CUTS | Override materials bypass per-mesh clipping planes,
+            // so the active cross-section plane list is re-applied here each pass.
+            const sectionClipList = Na__SectionClipping__GetClipList();
+            normalMaterial.clippingPlanes               = sectionClipList;
+            profileColorFallbackMaterial.clippingPlanes = sectionClipList;
+
             const widthFactor = Na__LineworkSettings__GetProfileLineFactor()            // <-- User thickness factor (Advanced Linework Settings)
                               * Na__LineworkSettings__GetProfileExportScale();          // <-- Export resolution compensation (1.0 in live viewport)
             if (orbitTarget && edgeWidthDistRange > 0) {

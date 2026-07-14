@@ -470,21 +470,19 @@
       "Timecard__Date": "2026-07-10",
       "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "18:40",
-      "Timecard__AuthHash": "sha256__f47d61203771884eb3592f137b482a43d420c03605a7b0e01a8efd23821e4d15",
-      "Timecard__AdminOverride__": {
-        "Timecard__IsRetrospectiveEdit": true,
-        "Timecard__EditedAtUtcIso": "2026-07-14T07:10:45.934460Z",
-        "Timecard__Reason": "Long Day + 1 Hour Added For Sunday Model Updates To Bia",
-        "Timecard__EditedBy": "Admin",
-        "Timecard__OriginalClockIn": "08:00",
-        "Timecard__OriginalClockOut": "18:40"
-      }
+      "Timecard__AuthHash": "sha256__f47d61203771884eb3592f137b482a43d420c03605a7b0e01a8efd23821e4d15"
+    },
+    {
+      "Timecard__Date": "2026-07-12",
+      "Timcard__Clock-In__": "12:55",
+      "Timcard__Clock-Out__": "14:15",
+      "Timecard__AuthHash": "sha256__a9bb03b9738065e16443c5c7775c3654f43646b214850d7e4f89f29be87dce41"
     },
     {
       "Timecard__Date": "2026-07-14",
       "Timcard__Clock-In__": "08:05",
       "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__360b77544c845ded5a0ebbf6462c6005e85e44bbec5fcafb28d03e8754722c96"
+      "Timecard__AuthHash": "sha256__2e2335d14c315c3b65063d47eb7f519eb1ce37c90dc33a15e9979b05782b4bbd"
     }
   ]
 }

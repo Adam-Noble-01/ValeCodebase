@@ -333,20 +333,20 @@
 
     // SUB FUNCTION | Rebuild Per-Section "Other Planes" Clip Arrays
     // ------------------------------------------------------------
-    // Cap fills and outlines of section A are clipped by every plane EXCEPT
-    // their own primary (and own back) so multiple simultaneous cuts compose
-    // like SketchUp. Other sections' back planes are included when set.
+    // Cap fills and outlines of section A are clipped by every OTHER
+    // *enabled* plane (never their own) so multiple simultaneous cuts compose
+    // like SketchUp. Sections turned OFF via the eye toggle contribute no
+    // planes at all — they neither cut the model nor clip anyone else's cap.
     // ------------------------------------------------------------
     function Na__Sect__RebuildSectionClipArrays() {
         for (let i = 0; i < Na__Sect__Sections.length; i++) {
             const section = Na__Sect__Sections[i];
             section.otherPlanes.length = 0;
             for (let j = 0; j < Na__Sect__Sections.length; j++) {
-                if (Na__Sect__Sections[j] === section) continue;
-                section.otherPlanes.push(Na__Sect__Sections[j].plane);
-                if (Na__Sect__Sections[j].backPlane) {
-                    section.otherPlanes.push(Na__Sect__Sections[j].backPlane);
-                }
+                const other = Na__Sect__Sections[j];
+                if (other === section || !other.enabled) continue;
+                section.otherPlanes.push(other.plane);
+                if (other.backPlane) section.otherPlanes.push(other.backPlane);
             }
             const clipList = section.otherPlanes.length > 0 ? section.otherPlanes : null;
             section.capMesh.material.clippingPlanes     = clipList;
@@ -377,11 +377,16 @@
 
     // SUB FUNCTION | Sync Shared Plane Array + Downstream Consumers
     // ------------------------------------------------------------
+    // Sections toggled OFF (section.enabled === false) are skipped entirely —
+    // their plane(s) never reach the model, so they stop cutting until
+    // switched back on, independent of gizmo visibility.
+    // ------------------------------------------------------------
     function Na__Sect__SyncActivePlanes() {
         Na__Sect__ActivePlanes.length = 0;
         for (let i = 0; i < Na__Sect__Sections.length; i++) {
             const section = Na__Sect__Sections[i];
             Na__Sect__UpdateBackPlane(section);
+            if (!section.enabled) continue;
             Na__Sect__ActivePlanes.push(section.plane);
             if (section.backPlane) Na__Sect__ActivePlanes.push(section.backPlane);
         }
@@ -482,6 +487,7 @@
     // ------------------------------------------------------------
     function Na__Sect__RecomputeSectionCaps(section) {
         if (!Na__Sect__ModelRoot) return;
+        if (!section.enabled) return;                                           // <-- OFF sections cut nothing; stay hidden (no wasted work)
 
         const result = Na__SectCap__ComputeSectionGeometry(Na__Sect__ModelRoot, section.plane, {
             weldToleranceUnits : Na__Sect__WeldTolUnits(),
@@ -597,7 +603,8 @@
             capMesh         : capMesh,
             outlineMesh     : outlineMesh,
             otherPlanes     : [],
-            gizmoVisible    : true
+            gizmoVisible    : true,
+            enabled         : true                                                // <-- Eye toggle: independent of gizmo visibility
         };
         Na__Sect__ComputeDragClampRange(section, box);
 
@@ -609,6 +616,7 @@
         Na__Sect__SyncActivePlanes();
         Na__Sect__UpdateSectionTransforms(section);
         Na__Sect__ApplyGizmoVisibility(section);
+        Na__Sect__ApplyEnabledVisibility(section);
         Na__Sect__RecomputeSectionCaps(section);
         Na__Sect__AttachInteractionListeners();
         Na__Sect__InvalidateProfileCache();
@@ -759,6 +767,48 @@
         if (!section) return;
         section.gizmoVisible = Boolean(visible);
         Na__Sect__ApplyGizmoVisibility(section);
+        Na__Sect__DispatchStateChanged();
+        Na__RenderLoop__RequestRender();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Per-Section Enabled (Eye) Toggle — Independent ON/OFF Cutting
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Apply Enabled State to Cap Fill + Outline Visibility
+    // ------------------------------------------------------------
+    // OFF sections cut nothing (see Na__Sect__SyncActivePlanes), so their cap
+    // fill / profile outline have nothing to show and are hidden. The gizmo
+    // widget is untouched here — it follows Na__Sect__ApplyGizmoVisibility
+    // instead, so a section can stay visible-but-inactive for repositioning.
+    // ------------------------------------------------------------
+    function Na__Sect__ApplyEnabledVisibility(section) {
+        section.capMesh.visible     = section.enabled;
+        section.outlineMesh.visible = section.enabled;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Toggle Whether a Section Actually Cuts the Model (Eye Icon)
+    // ------------------------------------------------------------
+    // Independent of gizmo visibility: turning a section OFF removes its
+    // plane(s) from the shared clipping array (model + other sections' caps)
+    // and hides its own cap/outline, without deleting the section or its
+    // saved position — Flip / Drag / re-enable all keep working afterwards.
+    // ------------------------------------------------------------
+    function Na__CrossSection__SetSectionEnabled(sectionId, enabled) {
+        const section = Na__Sect__Sections.find((s) => s.id === sectionId);
+        if (!section) return;
+        section.enabled = Boolean(enabled);
+
+        Na__Sect__ApplyEnabledVisibility(section);
+        Na__Sect__SyncActivePlanes();
+        if (section.enabled) Na__Sect__RecomputeSectionCaps(section);            // <-- Refresh geometry in case the model changed while OFF
+        Na__Sect__InvalidateProfileCache();
         Na__Sect__DispatchStateChanged();
         Na__RenderLoop__RequestRender();
     }
@@ -1341,7 +1391,8 @@
             name         : s.name,
             axis         : s.axis,
             mode         : s.mode || s.axis,
-            gizmoVisible : s.gizmoVisible
+            gizmoVisible : s.gizmoVisible,
+            enabled      : s.enabled !== false
         }));
     }
     // ------------------------------------------------------------
@@ -1478,6 +1529,7 @@
         Na__CrossSection__SetGizmosVisible,
         Na__CrossSection__GetGizmosVisible,
         Na__CrossSection__SetSectionGizmoVisible,
+        Na__CrossSection__SetSectionEnabled,
         Na__CrossSection__SetFillColor,
         Na__CrossSection__SetLineColor,
         Na__CrossSection__SetLineWidth,

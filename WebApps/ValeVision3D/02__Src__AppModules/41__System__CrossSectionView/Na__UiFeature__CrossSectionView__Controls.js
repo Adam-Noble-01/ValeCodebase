@@ -52,6 +52,7 @@
         Na__CrossSection__FlipSection,
         Na__CrossSection__SetGizmosVisible,
         Na__CrossSection__SetSectionGizmoVisible,
+        Na__CrossSection__SetSectionEnabled,
         Na__CrossSection__SetFillColor,
         Na__CrossSection__SetLineColor,
         Na__CrossSection__SetLineWidth,
@@ -91,6 +92,13 @@
         UPRIGHT : 'Mode: Upright Section',
         PLAN    : 'Mode: Plan Section'
     };
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Eye Toggle Icons (Section Cutting On/Off)
+    // ------------------------------------------------------------
+    const Na__SectUi__EYE_ON_ICON  = '\u{1F441}';                              // <-- 👁  Section is actively cutting
+    const Na__SectUi__EYE_OFF_ICON = '\u{1F6AB}';                              // <-- 🚫  Section cutting turned off
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -164,14 +172,22 @@
 
         for (let i = 0; i < sections.length; i++) {
             const section = sections[i];
+            const isEnabled = section.enabled !== false;
 
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:3px 0;';
+            row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:3px 0;'
+                + (isEnabled ? '' : 'opacity:0.5;');                            // <-- Dim the whole row while cutting is off
 
             const name = document.createElement('span');
             name.textContent   = section.name;
             name.style.cssText = 'flex:1;font-family:"Open Sans",sans-serif;font-size:0.78rem;color:#172b3a;';
             row.appendChild(name);
+
+            row.appendChild(Na__SectUi__BuildRowButton(
+                isEnabled ? Na__SectUi__EYE_ON_ICON : Na__SectUi__EYE_OFF_ICON,
+                isEnabled ? 'Turn this section cut off' : 'Turn this section cut on',
+                () => { Na__CrossSection__SetSectionEnabled(section.id, !isEnabled); }
+            ));
 
             row.appendChild(Na__SectUi__BuildRowButton('⇄', 'Flip cut direction', () => {
                 Na__CrossSection__FlipSection(section.id);

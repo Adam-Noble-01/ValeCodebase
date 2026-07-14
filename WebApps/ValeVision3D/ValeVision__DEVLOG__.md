@@ -2,6 +2,24 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.10.3 - 14-Jul-2026 - Cross Section Per-Section On/Off Toggle
+
+### Overview
+Added an eye-icon toggle to each row in the Active Sections list, letting a
+section's cutting effect be switched off independently of its gizmo
+visibility (Show/Hide) — the plane stays in place, just stops clipping the
+model, and can be switched back on at any time.
+
+### Added
+- `Na__CrossSectionView__SystemLogic.js` — `section.enabled` state;
+  `Na__CrossSection__SetSectionEnabled()`; `Na__Sect__SyncActivePlanes()` and
+  `Na__Sect__RebuildSectionClipArrays()` now skip disabled sections' planes
+  entirely (model + other sections' caps); `Na__Sect__RecomputeSectionCaps()`
+  no-ops while a section is off so drag/flip cannot silently re-reveal its cap.
+- `Na__UiFeature__CrossSectionView__Controls.js` — 👁 / 🚫 row button, dims
+  the whole row while a section is off.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.10.2 - 14-Jul-2026 - Cross Section Overlay Composite Fix
 
 ### Overview

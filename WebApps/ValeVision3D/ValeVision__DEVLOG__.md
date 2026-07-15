@@ -2,6 +2,24 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.1 - 15-Jul-2026 - Fix: Unbound Scenes Now Clear Cross Sections
+
+### Overview
+Fixed a bug in the per-scene cross section restore added in v2.11.0/v2.12.0:
+cycling the Presentation Mode carousel to a scene with no SketchUp or
+ValeVision section binding left the PREVIOUS scene's cut active instead of
+clearing it. Restore priority is unchanged (SketchUp-native section wins,
+then the ValeVision per-scene binding); only the "neither" case changed —
+it now clears every live section instead of leaving them untouched.
+
+### Fixed
+- **`Na__CrossSectionView__SceneData.js`** — `Na__SectSceneData__RestoreForScene`
+  now calls a new `Na__SectSceneData__ClearSections()` helper (applies an
+  empty snapshot) whenever a scene has neither a SketchUp map entry nor a
+  `CrossSection__SceneData` binding, instead of returning early and leaving
+  the live sections untouched.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.0 - 15-Jul-2026 - SketchUp-Native Section Planes Auto-Port Per Scene
 
 ### Overview

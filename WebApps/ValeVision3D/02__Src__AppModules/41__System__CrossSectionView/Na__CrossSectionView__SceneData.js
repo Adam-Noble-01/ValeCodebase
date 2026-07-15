@@ -23,8 +23,9 @@
 //   block; the editor's existing R2-first save then persists it.
 // - Restore: listens for 'na-pm-scene-activated' (dispatched by the scene
 //   transition module). Scenes WITH a saved entry apply it exactly — an
-//   entry saved with zero sections clears every cut. Scenes WITHOUT an
-//   entry leave the current sections untouched. Restore only runs while the
+//   entry saved with zero sections clears every cut. Scenes WITHOUT any
+//   entry (ValeVision or SketchUp) CLEAR every live section, so a cut never
+//   leaks into a scene that never had one. Restore only runs while the
 //   cross-section feature is enabled for the project.
 //
 // INTEGRATION:
@@ -38,6 +39,10 @@
 // DEVELOPMENT LOG:
 // 15-Jul-2026 - Version 1.0.0
 // - Initial implementation (per-scene cross section persistence).
+//
+// 15-Jul-2026 - Version 1.0.1
+// - Fixed: scenes with no ValeVision/SketchUp binding now CLEAR every live
+//   section on activation, instead of leaving the previous scene's cuts on.
 //
 // =============================================================================
 
@@ -268,12 +273,27 @@
 // REGION | Restore On Scene Activation
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Clear Every Live Section (Empty Snapshot)
+    // ------------------------------------------------------------
+    // Used whenever a newly-activated scene has no SketchUp or ValeVision
+    // binding, so a cut from a previously-visited scene cannot leak forward.
+    // ------------------------------------------------------------
+    function Na__SectSceneData__ClearSections() {
+        return Na__CrossSection__ApplySerializedSections({
+            gizmosVisible : true,
+            sliceDepthM   : null,
+            sections      : []
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Restore the Saved Section State for a Scene (Exact Swap)
     // ------------------------------------------------------------
     // Priority per scene:
     //   1. SketchUp-native section (cloud sync plugin) — WINS when present.
     //   2. ValeVision per-scene binding (CrossSection__SceneData).
-    //   3. Neither: current sections stay untouched.
+    //   3. Neither: CLEAR every live section.
     // A ValeVision entry saved with zero sections still clears all cuts.
     // ------------------------------------------------------------
     function Na__SectSceneData__RestoreForScene(sceneName, sceneId) {
@@ -285,14 +305,14 @@
             return Na__CrossSection__ApplySerializedSections(sketchUpSnapshot);
         }
 
-        if (!Na__SectSceneData__Block) return false;
-
-        const scenes = Na__SectSceneData__Block.CrossSection__SceneData__Scenes || {};
+        const scenes = Na__SectSceneData__Block
+            ? (Na__SectSceneData__Block.CrossSection__SceneData__Scenes || {})
+            : {};
         const key    = Na__SectSceneData__ResolveKey(sceneName, sceneId);
         const entry  = (key && scenes[key])
             || (sceneId && scenes[sceneId])                                    // <-- Fallback: entry keyed by id from an older capture
             || null;
-        if (!entry) return false;                                              // <-- No binding: current sections stay untouched
+        if (!entry) return Na__SectSceneData__ClearSections();                 // <-- No binding: clear so cuts don't leak between scenes
 
         const snapshot = {
             gizmosVisible : entry.CrossSection__SceneBinding__GizmosVisible !== false,

@@ -2,6 +2,41 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.3 - 15-Jul-2026 - Capture Styles On Save Scene / Save All
+
+### Overview
+Per-scene cross section style capture was wired correctly, but Save Scene /
+Save All did not call capture — only Update Camera / Add Scene did. Saving
+after changing Advanced Section Style therefore re-wrote the stale
+`CrossSection__SceneData` block to R2 with no FillColor/LineColor fields,
+so web loads kept the project default light-grey fill.
+
+### Fixed
+- **`Na__PresentationMode__DevMenu__SceneEditor.js`** — when the Capture
+  Cross Sections toggle is ON, Save Scene captures that row's scene and
+  Save All captures the active carousel scene (geometry + style) before
+  the R2-first save.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.2 - 15-Jul-2026 - Per-Scene Cross Section Style Capture
+
+### Overview
+Localhost Presentation Mode scene setup can now capture section fill colour,
+line colour, and line width alongside geometry. Styles persist into
+`CrossSection__SceneData` via the existing R2-first save, and restore on
+web (and localhost) when that animation scene activates — so a red cut set
+on localhost plays back red for anyone opening the project online.
+
+### Changed
+- **`Na__CrossSectionView__SystemLogic.js`** — `SerializeSections` includes
+  `fillColor` / `lineColor` / `lineWidthPx`; `ApplySerializedSections`
+  applies them when present (omitted = leave current appearance).
+- **`Na__CrossSectionView__SceneData.js`** — capture writes
+  `CrossSection__SceneBinding__FillColor` / `LineColor` / `LineWidthPx`;
+  restore maps them into the applied snapshot. Older bindings without
+  these fields remain backward-compatible.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.1 - 15-Jul-2026 - Fix: Unbound Scenes Now Clear Cross Sections
 
 ### Overview

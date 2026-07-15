@@ -12,15 +12,17 @@
 // DESCRIPTION:
 // - Holds the project's CrossSection__SceneData block: a map of scene NAME →
 //   serialized section snapshot (positions, normals, slice depth, enabled
-//   flags). Keyed by scene name because SketchUp scene names are stable
-//   across cloud re-syncs, so re-uploading a project never orphans the data.
+//   flags, and fill/line appearance). Keyed by scene name because SketchUp
+//   scene names are stable across cloud re-syncs, so re-uploading a project
+//   never orphans the data.
 // - The block is a SEPARATE top-level project.json object — the SketchUp
 //   cloud-sync plugin only writes its own keys, so a full re-sync of scenes
 //   leaves saved cross sections intact.
 // - Capture: the Presentation Mode scene editor (localhost dev menu) exposes
 //   a "Capture Cross Sections On Scene Update" toggle (default OFF). While
-//   ON, every scene Update / Add captures the live section state into this
-//   block; the editor's existing R2-first save then persists it.
+//   ON, every scene Update / Add captures the live section state (geometry
+//   + colours/linework) into this block; the editor's existing R2-first
+//   save then persists it for web playback.
 // - Restore: listens for 'na-pm-scene-activated' (dispatched by the scene
 //   transition module). Scenes WITH a saved entry apply it exactly — an
 //   entry saved with zero sections clears every cut. Scenes WITHOUT any
@@ -43,6 +45,10 @@
 // 15-Jul-2026 - Version 1.0.1
 // - Fixed: scenes with no ValeVision/SketchUp binding now CLEAR every live
 //   section on activation, instead of leaving the previous scene's cuts on.
+//
+// 15-Jul-2026 - Version 1.1.0
+// - Capture/restore now include fill colour, line colour, and line width so
+//   localhost scene setup persists style to R2 for web playback.
 //
 // =============================================================================
 
@@ -166,9 +172,10 @@
     // FUNCTION | Capture the Live Section State Against a Scene
     // ------------------------------------------------------------
     // Serializes the CURRENT sections (including "no sections" — an empty
-    // entry legitimately means "this scene shows no cuts") and stores the
-    // snapshot under the scene's binding key. Persistence happens via the
-    // scene editor's existing R2-first project save.
+    // entry legitimately means "this scene shows no cuts") plus the live
+    // fill/line appearance, and stores the snapshot under the scene's
+    // binding key. Persistence happens via the scene editor's existing
+    // R2-first project save — web loads then restore the same style.
     // ------------------------------------------------------------
     function Na__SectSceneData__CaptureForScene(sceneName, sceneId) {
         const key = Na__SectSceneData__ResolveKey(sceneName, sceneId);
@@ -182,6 +189,9 @@
             CrossSection__SceneBinding__UpdatedIso    : new Date().toISOString(),
             CrossSection__SceneBinding__GizmosVisible : snapshot.gizmosVisible,
             CrossSection__SceneBinding__SliceDepthM   : snapshot.sliceDepthM,
+            CrossSection__SceneBinding__FillColor     : snapshot.fillColor,
+            CrossSection__SceneBinding__LineColor     : snapshot.lineColor,
+            CrossSection__SceneBinding__LineWidthPx   : snapshot.lineWidthPx,
             CrossSection__SceneBinding__Sections      : snapshot.sections.map((s) => ({
                 CrossSection__Section__Name         : s.name,
                 CrossSection__Section__Mode         : s.mode,
@@ -328,6 +338,18 @@
                 gizmoVisible : s.CrossSection__Section__GizmoVisible !== false
             }))
         };
+
+        // APPEARANCE | Include only when the binding carries style (older
+        // captures without these fields leave the live colours unchanged)
+        if (typeof entry.CrossSection__SceneBinding__FillColor === 'string') {
+            snapshot.fillColor = entry.CrossSection__SceneBinding__FillColor;
+        }
+        if (typeof entry.CrossSection__SceneBinding__LineColor === 'string') {
+            snapshot.lineColor = entry.CrossSection__SceneBinding__LineColor;
+        }
+        if (Number.isFinite(entry.CrossSection__SceneBinding__LineWidthPx)) {
+            snapshot.lineWidthPx = entry.CrossSection__SceneBinding__LineWidthPx;
+        }
 
         return Na__CrossSection__ApplySerializedSections(snapshot);
     }

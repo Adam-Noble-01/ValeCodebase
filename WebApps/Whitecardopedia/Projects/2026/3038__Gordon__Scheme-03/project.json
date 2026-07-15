@@ -7,30 +7,52 @@
     },
     "CrossSection__SceneData": {
         "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision — the SketchUp cloud sync plugin must never write this object.",
-        "CrossSection__SceneData__Version": 1,
         "CrossSection__SceneData__Scenes": {
             "Cross Section - Full": {
-                "CrossSection__SceneBinding__SceneId": "su_scene_5",
-                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T13:02:53.967Z",
                 "CrossSection__SceneBinding__GizmosVisible": false,
-                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__SceneId": "su_scene_5",
                 "CrossSection__SceneBinding__Sections": [
                     {
-                        "CrossSection__Section__Name": "Upright Section 1",
+                        "CrossSection__Section__Enabled": true,
+                        "CrossSection__Section__GizmoVisible": true,
                         "CrossSection__Section__Mode": "UPRIGHT",
+                        "CrossSection__Section__Name": "Upright Section 1",
                         "CrossSection__Section__NormalXyz": [
                             0,
                             0,
                             -1
                         ],
-                        "CrossSection__Section__PositionMm": 16952.27,
-                        "CrossSection__Section__Enabled": true,
-                        "CrossSection__Section__GizmoVisible": true
+                        "CrossSection__Section__PositionMm": 16952.27
                     }
-                ]
+                ],
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T13:02:53.967Z"
             }
+        },
+        "CrossSection__SceneData__Version": 1
+    },
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 5000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 1,
+            "FogPlane__Config__PlaneA__NormalZ": 0,
+            "FogPlane__Config__PlaneA__PositionMm": -12358
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 0,
+            "FogPlane__Config__PlaneB__NormalZ": 1,
+            "FogPlane__Config__PlaneB__PositionMm": -39398
         }
     },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
+    "Navmode__OrbitMaxDistanceMm": 50000,
     "PresentationMode__SavedCameraScenes": {
         "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
         "PresentationMode__SavedCameraScenes__DefaultSceneId": "su_scene_1",
@@ -190,6 +212,9 @@
             },
             {
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 9840,
                         "Camera__DefaultPos__PosY": 1870,
@@ -199,9 +224,6 @@
                         "Camera__DefaultRotation__RotX": 0.0099,
                         "Camera__DefaultRotation__RotY": -0.023,
                         "Camera__DefaultRotation__RotZ": 0.0002
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 29.8628
                     }
                 },
                 "PresentationMode__Scene__Id": "su_scene_5",

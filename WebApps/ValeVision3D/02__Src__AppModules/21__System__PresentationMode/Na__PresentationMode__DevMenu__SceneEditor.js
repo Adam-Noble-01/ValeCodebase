@@ -45,6 +45,10 @@
 // - Replaced GET-merge-POST-to-Flask with R2-first two-phase save via
 //   Na__AppUtils__R2SaveProjectJson (R2 SSOT write, then Flask mirror).
 //
+// 15-Jul-2026 - Version 1.2.0
+// - Save Scene / Save All now capture cross-section geometry + style when
+//   the Capture Cross Sections toggle is ON (was Update Camera / Add only).
+//
 // =============================================================================
 
 
@@ -59,7 +63,8 @@
         Na__PresentationMode__ProjectJson__GetSavedCameraScenes,
         Na__PresentationMode__ProjectJson__GetActiveConfig,
         Na__PresentationMode__ProjectJson__SetActiveConfig,
-        Na__PresentationMode__ProjectJson__GetSortedScenes
+        Na__PresentationMode__ProjectJson__GetSortedScenes,
+        Na__PresentationMode__ProjectJson__GetActiveSceneId
     } from './Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
@@ -559,6 +564,23 @@
 // REGION | R2-First Save
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Capture Live Cross Section Against a Scene (Toggle-Gated)
+    // ------------------------------------------------------------
+    // When the Capture Cross Sections toggle is ON, bind the live section
+    // geometry + fill/line style to the given scene before R2 save. Without
+    // this, Save Scene / Save All would re-write the stale block and drop
+    // any style changes made after the last Update Camera.
+    // ------------------------------------------------------------
+    function Na__PmDev__CaptureCrossSectionIfEnabled(scene) {
+        if (!scene || !Na__SectSceneData__IsCaptureEnabled()) return;
+        Na__SectSceneData__CaptureForScene(
+            scene.PresentationMode__Scene__Name,
+            scene.PresentationMode__Scene__Id
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Save PresentationMode Block to project.json — R2-First
     // ------------------------------------------------------------
     async function Na__PmDev__SaveToFlask(updatedScenes, projectCode) {
@@ -665,6 +687,7 @@
                         Na__PmDev__RenderEditorPanel(projectCode);          // <-- Rebuild panel after delete
                     } else if (action === 'save-one') {
                         // targetScene is an object inside the shared array — its edits are already in place
+                        Na__PmDev__CaptureCrossSectionIfEnabled(targetScene); // <-- Persist live section geometry + style
                         Na__PmDev__CommitWorkingScenes(Na__PmDev__WorkingScenes, projectCode);
                         await Na__PmDev__SaveToFlask(Na__PmDev__WorkingScenes, projectCode);
                     }
@@ -674,8 +697,8 @@
         }
 
         // CROSS SECTION CAPTURE TOGGLE | Default OFF every session; while ON,
-        // scene Update / Add binds the live cross-section state to that scene
-        // (stored in the separate CrossSection__SceneData project block).
+        // Update / Add / Save Scene / Save All bind the live cross-section
+        // state (geometry + style) to that scene for R2 / web playback.
         const sectionCaptureRow = document.createElement('label');
         sectionCaptureRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin:8px 0 4px 0;'
             + 'font-family:"Open Sans",sans-serif;font-size:0.75rem;color:#172b3a;cursor:pointer;';
@@ -687,7 +710,7 @@
         });
         const sectionCaptureText = document.createElement('span');
         sectionCaptureText.textContent = 'Capture Cross Sections On Scene Update';
-        sectionCaptureText.title = 'While ticked, Update Camera / Add Scene also saves the current cross-section planes against that scene.';
+        sectionCaptureText.title = 'While ticked, Update Camera / Add Scene / Save Scene / Save All also save the current cross-section planes and style against that scene.';
         sectionCaptureRow.appendChild(sectionCaptureCheck);
         sectionCaptureRow.appendChild(sectionCaptureText);
         panel.appendChild(sectionCaptureRow);
@@ -710,6 +733,13 @@
         saveAllBtn.className   = 'na-pm-dev__btn';
         saveAllBtn.textContent = 'Save All To Project';
         saveAllBtn.addEventListener('click', async () => {
+            // CAPTURE ACTIVE SCENE | Style + geometry for the carousel selection
+            const activeId = Na__PresentationMode__ProjectJson__GetActiveSceneId();
+            const activeScene = activeId
+                ? Na__PmDev__WorkingScenes.find(s => s.PresentationMode__Scene__Id === activeId)
+                : null;
+            Na__PmDev__CaptureCrossSectionIfEnabled(activeScene);
+
             Na__PmDev__CommitWorkingScenes(Na__PmDev__WorkingScenes, projectCode); // <-- Include all in-row edits + refresh UI
             await Na__PmDev__SaveToFlask(Na__PmDev__WorkingScenes, projectCode);
         });

@@ -1415,12 +1415,17 @@
     // Used by the per-scene bindings (Na__CrossSectionView__SceneData).
     // Positions follow the project convention: millimetres along the plane
     // normal. An empty sections array is a VALID snapshot ("no cuts").
+    // Also includes the live fill/line appearance so localhost scene setup
+    // can persist style per scene for web playback.
     // ------------------------------------------------------------
     function Na__CrossSection__SerializeSections() {
         const round6 = (v) => Math.round(v * 1e6) / 1e6;
         return {
             gizmosVisible : Na__Sect__GizmosVisible,
             sliceDepthM   : Na__Sect__SliceDepthM,
+            fillColor     : Na__Sect__FillColor,
+            lineColor     : Na__Sect__LineColor,
+            lineWidthPx   : Na__Sect__LineWidthPx,
             sections      : Na__Sect__Sections.map((s) => ({
                 name         : s.name,
                 mode         : s.mode,
@@ -1437,8 +1442,11 @@
     // FUNCTION | Apply a Serialized Snapshot (Exact Swap of All Sections)
     // ------------------------------------------------------------
     // Replaces every live section with the snapshot's set — a snapshot with
-    // zero sections legitimately clears all cuts. No-ops when the feature is
-    // disabled for the project or the system is not yet initialized.
+    // zero sections legitimately clears all cuts. Appearance fields
+    // (fillColor / lineColor / lineWidthPx) are applied only when present,
+    // so Clear + SketchUp snapshots and older bindings without style leave
+    // the current colours unchanged. No-ops when the feature is disabled
+    // for the project or the system is not yet initialized.
     // ------------------------------------------------------------
     function Na__CrossSection__ApplySerializedSections(snapshot) {
         if (!Na__Sect__Initialized || !Na__Sect__FeatureEnabled || !snapshot) return false;
@@ -1446,6 +1454,11 @@
         Na__CrossSection__CancelFaceSelection();
         Na__CrossSection__RemoveAllSections();
         Na__CrossSection__SetSliceDepthM(Number.isFinite(snapshot.sliceDepthM) ? snapshot.sliceDepthM : null);
+
+        // APPEARANCE | Optional — only apply when the snapshot carries style
+        if (typeof snapshot.fillColor === 'string')   Na__CrossSection__SetFillColor(snapshot.fillColor);
+        if (typeof snapshot.lineColor === 'string')   Na__CrossSection__SetLineColor(snapshot.lineColor);
+        if (Number.isFinite(snapshot.lineWidthPx))    Na__CrossSection__SetLineWidth(snapshot.lineWidthPx);
 
         const items = Array.isArray(snapshot.sections) ? snapshot.sections : [];
         for (let i = 0; i < items.length; i++) {

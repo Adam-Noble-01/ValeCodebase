@@ -9,7 +9,10 @@
         "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision — the SketchUp cloud sync plugin must never write this object.",
         "CrossSection__SceneData__Scenes": {
             "Cross Section - Full": {
+                "CrossSection__SceneBinding__FillColor": "#3c3c3c",
                 "CrossSection__SceneBinding__GizmosVisible": false,
+                "CrossSection__SceneBinding__LineColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
                 "CrossSection__SceneBinding__SceneId": "su_scene_5",
                 "CrossSection__SceneBinding__Sections": [
                     {
@@ -26,7 +29,99 @@
                     }
                 ],
                 "CrossSection__SceneBinding__SliceDepthM": null,
-                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T13:02:53.967Z"
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T14:41:54.828Z"
+            },
+            "Cross Section 02 - Through Main Orangery": {
+                "CrossSection__SceneBinding__SceneId": "Scene_008",
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T14:50:48.538Z",
+                "CrossSection__SceneBinding__GizmosVisible": false,
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__FillColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
+                "CrossSection__SceneBinding__Sections": [
+                    {
+                        "CrossSection__Section__Name": "Upright Section 2",
+                        "CrossSection__Section__Mode": "UPRIGHT",
+                        "CrossSection__Section__NormalXyz": [
+                            0,
+                            0,
+                            -1
+                        ],
+                        "CrossSection__Section__PositionMm": 29343.07,
+                        "CrossSection__Section__Enabled": true,
+                        "CrossSection__Section__GizmoVisible": true
+                    }
+                ]
+            },
+            "Full Context": {
+                "CrossSection__SceneBinding__SceneId": "su_scene_1",
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T14:50:35.885Z",
+                "CrossSection__SceneBinding__GizmosVisible": false,
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__FillColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
+                "CrossSection__SceneBinding__Sections": [
+                    {
+                        "CrossSection__Section__Name": "Upright Section 2",
+                        "CrossSection__Section__Mode": "UPRIGHT",
+                        "CrossSection__Section__NormalXyz": [
+                            0,
+                            0,
+                            -1
+                        ],
+                        "CrossSection__Section__PositionMm": 29343.07,
+                        "CrossSection__Section__Enabled": false,
+                        "CrossSection__Section__GizmoVisible": true
+                    }
+                ]
+            },
+            "Scene 8": {
+                "CrossSection__SceneBinding__FillColor": "#3c3c3c",
+                "CrossSection__SceneBinding__GizmosVisible": false,
+                "CrossSection__SceneBinding__LineColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
+                "CrossSection__SceneBinding__SceneId": "Scene_008",
+                "CrossSection__SceneBinding__Sections": [
+                    {
+                        "CrossSection__Section__Enabled": true,
+                        "CrossSection__Section__GizmoVisible": true,
+                        "CrossSection__Section__Mode": "UPRIGHT",
+                        "CrossSection__Section__Name": "Upright Section 2",
+                        "CrossSection__Section__NormalXyz": [
+                            0,
+                            0,
+                            -1
+                        ],
+                        "CrossSection__Section__PositionMm": 29624.95
+                    }
+                ],
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T14:43:40.797Z"
+            },
+            "Cross Section 01 - Full": {
+                "CrossSection__SceneBinding__SceneId": "su_scene_5",
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T14:49:48.701Z",
+                "CrossSection__SceneBinding__GizmosVisible": false,
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__FillColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineColor": "#3c3c3c",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
+                "CrossSection__SceneBinding__Sections": [
+                    {
+                        "CrossSection__Section__Name": "Upright Section 4",
+                        "CrossSection__Section__Mode": "UPRIGHT",
+                        "CrossSection__Section__NormalXyz": [
+                            0,
+                            0,
+                            -1
+                        ],
+                        "CrossSection__Section__PositionMm": 17062.7,
+                        "CrossSection__Section__Enabled": true,
+                        "CrossSection__Section__GizmoVisible": true
+                    }
+                ]
             }
         },
         "CrossSection__SceneData__Version": 1
@@ -238,7 +333,7 @@
                     "ValeVision__MainBuildingModel__ProposedWindows": true,
                     "ValeVision__SiteVegetation2D": true
                 },
-                "PresentationMode__Scene__Name": "Cross Section - Full",
+                "PresentationMode__Scene__Name": "Cross Section 01 - Full",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 10500,
@@ -323,6 +418,36 @@
                 },
                 "PresentationMode__Scene__Order": 8,
                 "PresentationMode__Scene__ThumbnailUrl": "IMG08__3dView__SecondaryOrangery__Abutment__WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 14435,
+                        "Camera__DefaultPos__PosY": 2552,
+                        "Camera__DefaultPos__PosZ": -761
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0022,
+                        "Camera__DefaultRotation__RotY": 0.0255,
+                        "Camera__DefaultRotation__RotZ": 0.0001
+                    }
+                },
+                "PresentationMode__Scene__Id": "Scene_008",
+                "PresentationMode__Scene__LensMm": 45,
+                "PresentationMode__Scene__Name": "Cross Section 02 - Through Main Orangery",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 13751,
+                    "OrbitHelperCube__Position__PosY": 2493,
+                    "OrbitHelperCube__Position__PosZ": -27585
+                },
+                "PresentationMode__Scene__Order": 9,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_008.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             }
         ],
         "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
@@ -330,9 +455,9 @@
     },
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "15-Jul-2026 at 13:54",
+        "captured_at": "15-Jul-2026 at 15:39",
         "coordinate_system": "SketchUp_Z_up",
-        "model_name": "Gordon__WhiteCardModel__3.7.0__",
+        "model_name": "Gordon__WhiteCardModel__4.1.0__",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
@@ -365,6 +490,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -409,6 +535,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -453,6 +580,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -497,6 +625,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -541,6 +670,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -597,6 +727,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -653,6 +784,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -697,6 +829,7 @@
                 },
                 "include_in_animation": true,
                 "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
@@ -764,6 +897,7 @@
         }
     },
     "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__LandscapeEnvironment__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",

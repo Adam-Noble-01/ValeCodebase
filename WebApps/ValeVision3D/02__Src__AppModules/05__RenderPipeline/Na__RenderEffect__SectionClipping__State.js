@@ -107,6 +107,33 @@
     }
     // ------------------------------------------------------------
 
+
+    // MODULE VARIABLES | Image Export Mode Handler
+    // ------------------------------------------------------------
+    // fn(active, lineWidthScale): the cross-section system hides its gizmo
+    // widgets and scales outline fat-line widths for tiled image exports.
+    // Registered alongside the overlay renderer so the image exporter only
+    // ever imports from 05__RenderPipeline.
+    // ------------------------------------------------------------
+    let Na__SectionClipping__ExportModeHandler = null;
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Register the Export Mode Handler
+    // ------------------------------------------------------------
+    function Na__SectionClipping__SetExportModeHandler(fn) {
+        Na__SectionClipping__ExportModeHandler = (typeof fn === 'function') ? fn : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Export Mode Handler (Null When Unregistered)
+    // ------------------------------------------------------------
+    function Na__SectionClipping__GetExportModeHandler() {
+        return Na__SectionClipping__ExportModeHandler;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -121,7 +148,9 @@
         Na__SectionClipping__GetPlanes,
         Na__SectionClipping__GetClipList,
         Na__SectionClipping__SetOverlayRenderer,
-        Na__SectionClipping__GetOverlayRenderer
+        Na__SectionClipping__GetOverlayRenderer,
+        Na__SectionClipping__SetExportModeHandler,
+        Na__SectionClipping__GetExportModeHandler
     };
     // ------------------------------------------------------------
 

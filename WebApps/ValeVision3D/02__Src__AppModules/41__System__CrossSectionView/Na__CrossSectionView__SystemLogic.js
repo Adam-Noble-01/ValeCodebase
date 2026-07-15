@@ -67,13 +67,17 @@
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     import {
         Na__SectionClipping__SetPlanes,
-        Na__SectionClipping__SetOverlayRenderer
+        Na__SectionClipping__SetOverlayRenderer,
+        Na__SectionClipping__SetExportModeHandler
     } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Math Utilities
     // ------------------------------------------------------------
-    import { Na__Math__ConvertMmToUnits } from '../04__MathUtils/Na__Math__Units.js';
+    import {
+        Na__Math__ConvertMmToUnits,
+        Na__Math__ConvertUnitsToMm
+    } from '../04__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Cross Section Sub-Modules
@@ -1406,6 +1410,118 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Serialize the Live Section State (JSON-Safe Snapshot)
+    // ------------------------------------------------------------
+    // Used by the per-scene bindings (Na__CrossSectionView__SceneData).
+    // Positions follow the project convention: millimetres along the plane
+    // normal. An empty sections array is a VALID snapshot ("no cuts").
+    // ------------------------------------------------------------
+    function Na__CrossSection__SerializeSections() {
+        const round6 = (v) => Math.round(v * 1e6) / 1e6;
+        return {
+            gizmosVisible : Na__Sect__GizmosVisible,
+            sliceDepthM   : Na__Sect__SliceDepthM,
+            sections      : Na__Sect__Sections.map((s) => ({
+                name         : s.name,
+                mode         : s.mode,
+                normalXyz    : [round6(s.plane.normal.x), round6(s.plane.normal.y), round6(s.plane.normal.z)],
+                positionMm   : Math.round(Na__Math__ConvertUnitsToMm(-s.plane.constant) * 100) / 100,   // <-- Plane position along its normal (mm)
+                enabled      : s.enabled,
+                gizmoVisible : s.gizmoVisible
+            }))
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Apply a Serialized Snapshot (Exact Swap of All Sections)
+    // ------------------------------------------------------------
+    // Replaces every live section with the snapshot's set — a snapshot with
+    // zero sections legitimately clears all cuts. No-ops when the feature is
+    // disabled for the project or the system is not yet initialized.
+    // ------------------------------------------------------------
+    function Na__CrossSection__ApplySerializedSections(snapshot) {
+        if (!Na__Sect__Initialized || !Na__Sect__FeatureEnabled || !snapshot) return false;
+
+        Na__CrossSection__CancelFaceSelection();
+        Na__CrossSection__RemoveAllSections();
+        Na__CrossSection__SetSliceDepthM(Number.isFinite(snapshot.sliceDepthM) ? snapshot.sliceDepthM : null);
+
+        const items = Array.isArray(snapshot.sections) ? snapshot.sections : [];
+        for (let i = 0; i < items.length; i++) {
+            const item   = items[i];
+            const rawXyz = Array.isArray(item.normalXyz) ? item.normalXyz : [0, -1, 0];
+            const normal = new THREE.Vector3(Number(rawXyz[0]) || 0, Number(rawXyz[1]) || 0, Number(rawXyz[2]) || 0);
+            if (normal.lengthSq() < 1e-9) continue;                            // <-- Degenerate entry: skip defensively
+            normal.normalize();
+
+            const positionUnits = Na__Math__ConvertMmToUnits(Number(item.positionMm) || 0);
+            const planePoint    = normal.clone().multiplyScalar(positionUnits);  // <-- Plane passes through position·normal
+
+            const sectionId = Na__CrossSection__AddSectionFromHit(planePoint, normal, item.mode);
+            if (sectionId === null) continue;
+
+            const record = Na__Sect__Sections.find((s) => s.id === sectionId);
+            if (!record) continue;
+            if (typeof item.name === 'string' && item.name !== '') record.name = item.name;  // <-- Keep the saved display name
+            if (item.gizmoVisible === false) {
+                record.gizmoVisible = false;
+                Na__Sect__ApplyGizmoVisibility(record);
+            }
+            if (item.enabled === false) Na__CrossSection__SetSectionEnabled(sectionId, false);
+        }
+
+        Na__CrossSection__SetGizmosVisible(snapshot.gizmosVisible !== false);
+        Na__Sect__DispatchStateChanged();
+        Na__RenderLoop__RequestRender();
+        console.log(`[CrossSection] Applied scene snapshot: ${items.length} section(s)`);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Image Export Mode State
+    // ------------------------------------------------------------
+    let Na__Sect__ExportModeActive       = false;
+    let Na__Sect__ExportSavedRootVisible = true;
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Enter / Leave Image Export Mode
+    // ------------------------------------------------------------
+    // Called by the tiled exporter around the tile loop:
+    // - Gizmo plane widgets are ALWAYS hidden in exports (caps + profile
+    //   lines only), regardless of the viewport toggle.
+    // - Outline fat-line widths get the standard linework export scale
+    //   (outputH / tile framebuffer height) so exported line weights match
+    //   the viewport look; restored to the live width on exit.
+    // ------------------------------------------------------------
+    function Na__CrossSection__SetExportMode(active, lineWidthScale) {
+        if (active) {
+            if (Na__Sect__ExportModeActive) return;
+            Na__Sect__ExportModeActive = true;
+
+            if (Na__Sect__HelperRoot) {
+                Na__Sect__ExportSavedRootVisible = Na__Sect__HelperRoot.visible;
+                Na__Sect__HelperRoot.visible = false;                          // <-- Plane widgets never appear in exports
+            }
+            const scale = (Number.isFinite(lineWidthScale) && lineWidthScale > 0) ? lineWidthScale : 1.0;
+            for (let i = 0; i < Na__Sect__Sections.length; i++) {
+                Na__Sect__Sections[i].outlineMesh.material.linewidth = Na__Sect__LineWidthPx * scale;
+            }
+        } else {
+            if (!Na__Sect__ExportModeActive) return;
+            Na__Sect__ExportModeActive = false;
+
+            if (Na__Sect__HelperRoot) Na__Sect__HelperRoot.visible = Na__Sect__ExportSavedRootVisible;
+            for (let i = 0; i < Na__Sect__Sections.length; i++) {
+                Na__Sect__Sections[i].outlineMesh.material.linewidth = Na__Sect__LineWidthPx;
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Get Diagnostic Info for Every Active Section (Dev / Debug)
     // ------------------------------------------------------------
     // Exposes cap/outline sizes, plane constants, and the gizmo grip position
@@ -1458,6 +1574,10 @@
         // OVERLAY RENDERER | Register the after-composer draw callback so the
         // render loop paints section visuals free of fog / SSAO / Sobel
         Na__SectionClipping__SetOverlayRenderer(Na__Sect__RenderOverlay);
+
+        // EXPORT MODE HANDLER | Lets the tiled image exporter hide gizmos and
+        // scale outline widths without importing this module directly
+        Na__SectionClipping__SetExportModeHandler(Na__CrossSection__SetExportMode);
 
         // CONFIG | Async fetch; fallbacks cover the gap
         Na__Sect__FetchConfig().then((config) => {
@@ -1536,6 +1656,9 @@
         Na__CrossSection__GetAppearance,
         Na__CrossSection__ResetAppearance,
         Na__CrossSection__GetSections,
+        Na__CrossSection__SerializeSections,
+        Na__CrossSection__ApplySerializedSections,
+        Na__CrossSection__SetExportMode,
         Na__CrossSection__GetDebugInfo,
         Na__CrossSection__DebugPickAt,
         Na__CrossSection__GetClippingDiagnostics

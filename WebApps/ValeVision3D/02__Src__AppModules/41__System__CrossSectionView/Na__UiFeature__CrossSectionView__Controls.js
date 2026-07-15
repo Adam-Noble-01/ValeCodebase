@@ -60,6 +60,11 @@
     } from './Na__CrossSectionView__SystemLogic.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Per-Scene Section Bindings
+    // ------------------------------------------------------------
+    import { Na__SectSceneData__Initialize } from './Na__CrossSectionView__SceneData.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -280,6 +285,7 @@
         }
 
         Na__CrossSection__Initialize(scene, camera, renderer, controls, pipelineRef, modelRoot);
+        Na__SectSceneData__Initialize();                                       // <-- Per-scene section bindings (load + restore listeners)
 
         toggleBtn.addEventListener('click', () => {
             const isOpen = Na__SectUi__Panel.classList.contains('is-open');

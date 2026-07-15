@@ -325,7 +325,28 @@
 
         Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);  // <-- Sync tag-driven model toggles (no-op before groups load)
 
+        Na__PresentationMode__Camera__DispatchSceneActivated(scene);                     // <-- Per-scene bindings (e.g. cross sections) follow the scene
+
         Na__RenderLoop__RequestRender();                                                 // <-- Single frame redraw
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Announce That a Saved Scene Is Being Applied
+    // ------------------------------------------------------------
+    // Fired by BOTH the instant snap and the animated transition (the
+    // animated path never routes through the snap except on parse failure,
+    // so each activation dispatches exactly once). Listeners restore
+    // per-scene state — e.g. the cross-section system's scene bindings —
+    // without this module importing them.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__Camera__DispatchSceneActivated(scene) {
+        window.dispatchEvent(new CustomEvent('na-pm-scene-activated', {
+            detail: {
+                sceneName : scene.PresentationMode__Scene__Name || null,
+                sceneId   : scene.PresentationMode__Scene__Id   || null
+            }
+        }));
     }
     // ------------------------------------------------------------
 
@@ -392,6 +413,9 @@
 
         // SYNC TAG-DRIVEN MODEL TOGGLES IMMEDIATELY (not animated — an instant cut reads better than a mid-flight pop-out)
         Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);
+
+        // PER-SCENE BINDINGS | Cross sections etc. swap instantly, like model toggles
+        Na__PresentationMode__Camera__DispatchSceneActivated(scene);
 
         // CAPTURE START STATE FROM LIVE CAMERA
         const startPos     = camera.position.clone();

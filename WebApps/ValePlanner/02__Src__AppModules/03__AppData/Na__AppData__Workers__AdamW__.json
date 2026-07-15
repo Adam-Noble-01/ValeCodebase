@@ -2502,6 +2502,30 @@
           "endTime": "13:30",
           "title": "Whitecard |  Bereton",
           "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1784036263305",
+          "date": "2026-07-14",
+          "startTime": "14:15",
+          "endTime": "17:00",
+          "title": "Amend |  Gordon",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1784119980369",
+          "date": "2026-07-15",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "Amend |  Gordon",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1784119995610",
+          "date": "2026-07-15",
+          "startTime": "11:00",
+          "endTime": "13:45",
+          "title": "Design Development |  Gordon",
+          "color": "na-shift-color-rose"
         }
       ]
     }

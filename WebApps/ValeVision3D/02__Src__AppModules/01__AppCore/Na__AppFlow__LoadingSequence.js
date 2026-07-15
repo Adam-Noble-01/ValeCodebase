@@ -636,6 +636,21 @@
                     }));
                 }
 
+                // LOAD PER-SCENE CROSS SECTION BINDINGS (separate block; survives cloud re-syncs)
+                if (projectData.CrossSection__SceneData) {
+                    window.dispatchEvent(new CustomEvent('na-crosssection-scenedata-loaded', {
+                        detail: { sceneData: projectData.CrossSection__SceneData }
+                    }));
+                }
+
+                // LOAD SKETCHUP-NATIVE SECTION PLANES (per-scene, captured by the cloud sync plugin)
+                // Key spelling "ValeVison3D" (one 'i') is the established plugin/web convention.
+                if (projectData['ValeVison3D__SketchUpCameraData']) {
+                    window.dispatchEvent(new CustomEvent('na-crosssection-sketchup-sections-loaded', {
+                        detail: { sketchUpCameraData: projectData['ValeVison3D__SketchUpCameraData'] }
+                    }));
+                }
+
                 // DETECT PER-PROJECT PRESENTATION MODE SAVED SCENES
                 // skipCameraApply: true — carousel registers UI state without
                 // jumping the camera; boot camera is applied once below after

@@ -87,6 +87,14 @@
     import { Na__LineworkSettings__SetExportScales } from '../05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Cross Section Overlay (Per-Tile After-Composer Pass)
+    // ------------------------------------------------------------
+    import {
+        Na__SectionClipping__GetOverlayRenderer,
+        Na__SectionClipping__GetExportModeHandler
+    } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
+    // ------------------------------------------------------------
+
 
 // -----------------------------------------------------------------------------
 // REGION | Device Capability Detection and Limits
@@ -325,6 +333,13 @@
         renderer.domElement.addEventListener('webglcontextlost', onContextLost);
         const gl = renderer.getContext();
 
+        // CROSS SECTION OVERLAY | Section caps + profile lines render into
+        // every tile after the composer (fog/SSAO/Sobel never touch them);
+        // the plane gizmo widgets are always hidden in exports.
+        // ------------------------------------------------------------
+        const sectionOverlayRenderer  = Na__SectionClipping__GetOverlayRenderer();       // <-- Null until a section exists
+        const sectionExportModeHandler = Na__SectionClipping__GetExportModeHandler();    // <-- Null until the system initializes
+
         try {
             // EXPORT SETUP | Renderer, composer, and camera to tile dimensions
             // ------------------------------------------------------------
@@ -352,6 +367,11 @@
             // LINE WIDTH COMPENSATION | Apply export scales (reset in finally)
             // ------------------------------------------------------------
             Na__LineworkSettings__SetExportScales(profileExportScale, lineworkExportScale); // <-- Linework widths now; profile widths read per tile
+
+            // CROSS SECTION EXPORT MODE | Hide gizmo widgets + scale outline widths
+            if (sectionExportModeHandler) {
+                sectionExportModeHandler(true, lineworkExportScale);         // <-- Same fat-line compensation as model linework
+            }
 
             if (profileUniforms) {
                 if (isElevationMode && profileUniforms.u_edgeWidth) {
@@ -417,6 +437,12 @@
                         renderer.render(scene, activeCamera);        // <-- Direct render fallback (no pipeline)
                     }
 
+                    // CROSS SECTION OVERLAY | Caps + profile lines on this tile's
+                    // sub-frustum, drawn onto the composited buffer before readback
+                    if (sectionOverlayRenderer) {
+                        sectionOverlayRenderer(activeCamera);
+                    }
+
                     // GUARD | Abort with a real error instead of a blank PNG
                     if (contextLost || (gl && gl.isContextLost && gl.isContextLost())) {
                         throw new Error('Graphics memory was exhausted during export. Try a lower export resolution.');
@@ -441,6 +467,11 @@
             // LINE WIDTH COMPENSATION | Restore live-viewport line scales
             // ------------------------------------------------------------
             Na__LineworkSettings__SetExportScales(1.0, 1.0);         // <-- Linework widths back to user factor only; profile scale back to 1
+
+            // CROSS SECTION EXPORT MODE | Restore gizmo visibility + live outline widths
+            if (sectionExportModeHandler) {
+                sectionExportModeHandler(false, 1.0);
+            }
 
             if (profileUniforms) {
                 if (savedElevEdgeWidth !== null && profileUniforms.u_edgeWidth) {

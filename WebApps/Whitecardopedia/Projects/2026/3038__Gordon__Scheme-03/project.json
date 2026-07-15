@@ -1,0 +1,764 @@
+{
+    "CrossSection__Config": {
+        "CrossSection__Enabled": true,
+        "CrossSection__FillColor": "#f0f0f0",
+        "CrossSection__LineColor": "#323232",
+        "CrossSection__LineWidthPx": 2
+    },
+    "CrossSection__SceneData": {
+        "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision — the SketchUp cloud sync plugin must never write this object.",
+        "CrossSection__SceneData__Version": 1,
+        "CrossSection__SceneData__Scenes": {
+            "Cross Section - Full": {
+                "CrossSection__SceneBinding__SceneId": "su_scene_5",
+                "CrossSection__SceneBinding__UpdatedIso": "2026-07-15T13:02:53.967Z",
+                "CrossSection__SceneBinding__GizmosVisible": false,
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__Sections": [
+                    {
+                        "CrossSection__Section__Name": "Upright Section 1",
+                        "CrossSection__Section__Mode": "UPRIGHT",
+                        "CrossSection__Section__NormalXyz": [
+                            0,
+                            0,
+                            -1
+                        ],
+                        "CrossSection__Section__PositionMm": 16952.27,
+                        "CrossSection__Section__Enabled": true,
+                        "CrossSection__Section__GizmoVisible": true
+                    }
+                ]
+            }
+        }
+    },
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "su_scene_1",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 41818,
+                        "Camera__DefaultPos__PosY": 2740,
+                        "Camera__DefaultPos__PosZ": 15655
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.006,
+                        "Camera__DefaultRotation__RotY": 0.7108,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_1",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Full Context",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 18659,
+                    "OrbitHelperCube__Position__PosY": 2528,
+                    "OrbitHelperCube__Position__PosZ": -11243
+                },
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG01__3dView__MainImage____WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 21479,
+                        "Camera__DefaultPos__PosY": 1340,
+                        "Camera__DefaultPos__PosZ": -14338
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0.0036,
+                        "Camera__DefaultRotation__RotY": 0.6493,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_2",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Main Orangery",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 18,
+                    "OrbitHelperCube__Position__PosY": 1467,
+                    "OrbitHelperCube__Position__PosZ": -42610
+                },
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG02__3dView__MainOrangery____WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 1666,
+                        "Camera__DefaultPos__PosY": 11112,
+                        "Camera__DefaultPos__PosZ": -21526
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.8034,
+                        "Camera__DefaultRotation__RotY": -0.8155,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_3",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Abutment - 01",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 19607,
+                    "OrbitHelperCube__Position__PosY": -14435,
+                    "OrbitHelperCube__Position__PosZ": -38419
+                },
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG03__3dView__Abutment-01____WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 13274,
+                        "Camera__DefaultPos__PosY": 13241,
+                        "Camera__DefaultPos__PosZ": -18222
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.7738,
+                        "Camera__DefaultRotation__RotY": 0.6486,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_4",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Abutment - 02",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": -2062,
+                    "OrbitHelperCube__Position__PosY": -11565,
+                    "OrbitHelperCube__Position__PosZ": -38455
+                },
+                "PresentationMode__Scene__Order": 4,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG04__3dView__Abutment-02____WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 9840,
+                        "Camera__DefaultPos__PosY": 1870,
+                        "Camera__DefaultPos__PosZ": 7462
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0.0099,
+                        "Camera__DefaultRotation__RotY": -0.023,
+                        "Camera__DefaultRotation__RotZ": 0.0002
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_5",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Cross Section - Full",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 10500,
+                    "OrbitHelperCube__Position__PosY": 2152,
+                    "OrbitHelperCube__Position__PosZ": -21197
+                },
+                "PresentationMode__Scene__Order": 5,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/su_scene_5.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 19395,
+                        "Camera__DefaultPos__PosY": 1383,
+                        "Camera__DefaultPos__PosZ": 9500
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0132,
+                        "Camera__DefaultRotation__RotY": 0.7302,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_7",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Secondary Orangery",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": -4277,
+                    "OrbitHelperCube__Position__PosY": 915,
+                    "OrbitHelperCube__Position__PosZ": -16944
+                },
+                "PresentationMode__Scene__Order": 7,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG07__3dView__SecondaryOrangery____WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 29.8628
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 13772,
+                        "Camera__DefaultPos__PosY": 1772,
+                        "Camera__DefaultPos__PosZ": -19248
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0224,
+                        "Camera__DefaultRotation__RotY": 2.45,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_8",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__Name": "Second Orangery - Abutment",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": -8859,
+                    "OrbitHelperCube__Position__PosY": 977,
+                    "OrbitHelperCube__Position__PosZ": 8085
+                },
+                "PresentationMode__Scene__Order": 8,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG08__3dView__SecondaryOrangery__Abutment__WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp"
+            }
+        ],
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
+        "PresentationMode__SavedCameraScenes__Source": "SketchUpCameraData"
+    },
+    "ProjectType": "Whitecard",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "15-Jul-2026 at 13:54",
+        "coordinate_system": "SketchUp_Z_up",
+        "model_name": "Gordon__WhiteCardModel__3.7.0__",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.652461,
+                        "y": 0.757799,
+                        "z": -0.005974
+                    },
+                    "eye": {
+                        "x": 41817.6822,
+                        "y": -15655.3388,
+                        "z": 2740
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 18658.7199,
+                        "y": 11242.5708,
+                        "z": 2527.9471
+                    },
+                    "up": {
+                        "x": -0.003898,
+                        "y": 0.004527,
+                        "z": 0.999982
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Full Context",
+                "scene_name": "IMG01__3dView__MainImage__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.604608,
+                        "y": 0.796515,
+                        "z": 0.003584
+                    },
+                    "eye": {
+                        "x": 21478.5826,
+                        "y": 14337.6035,
+                        "z": 1340
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 18.1379,
+                        "y": 42609.7306,
+                        "z": 1467.2062
+                    },
+                    "up": {
+                        "x": 0.002167,
+                        "y": -0.002855,
+                        "z": 0.999994
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Main Orangery",
+                "scene_name": "IMG02__3dView__MainOrangery__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0.505458,
+                        "y": 0.475907,
+                        "z": -0.719739
+                    },
+                    "eye": {
+                        "x": 1665.6638,
+                        "y": 21526.4772,
+                        "z": 11111.8413
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 19606.7734,
+                        "y": 38418.7069,
+                        "z": -14435.1586
+                    },
+                    "up": {
+                        "x": 0.52402,
+                        "y": 0.493384,
+                        "z": 0.694244
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Abutment - 01",
+                "scene_name": "IMG03__3dView__Abutment-01__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.432043,
+                        "y": 0.570013,
+                        "z": -0.698873
+                    },
+                    "eye": {
+                        "x": 13273.6152,
+                        "y": 18222.461,
+                        "z": 13241.3628
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": -2061.654,
+                        "y": 38454.9666,
+                        "z": -11564.9928
+                    },
+                    "up": {
+                        "x": -0.422153,
+                        "y": 0.556965,
+                        "z": 0.715246
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Abutment - 02",
+                "scene_name": "IMG04__3dView__Abutment-02__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0,
+                        "y": 1,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 10286.4003,
+                        "y": -59203.3628,
+                        "z": 5934.3763
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": false,
+                    "target": {
+                        "x": 10286.4003,
+                        "y": 21058.7398,
+                        "z": 5934.3763
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Cross Section - Full",
+                "scene_name": "IMG05__Section__FullSection__",
+                "section_planes": [
+                    {
+                        "coordinate_system": "SketchUp_Z_up",
+                        "keep_side": "front",
+                        "name": "Section 1",
+                        "normal": {
+                            "x": 0,
+                            "y": 1,
+                            "z": 0
+                        },
+                        "position_mm": 16961.11
+                    }
+                ]
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0,
+                        "y": 1,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 4064.0284,
+                        "y": -59203.3628,
+                        "z": 1839.8466
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": false,
+                    "target": {
+                        "x": 4064.0284,
+                        "y": 21058.7398,
+                        "z": 1839.8466
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Cross Section - Mono Pitch",
+                "scene_name": "IMG06__Section__PitchedRoofSection__",
+                "section_planes": [
+                    {
+                        "coordinate_system": "SketchUp_Z_up",
+                        "keep_side": "front",
+                        "name": "Section 1",
+                        "normal": {
+                            "x": 0,
+                            "y": 1,
+                            "z": 0
+                        },
+                        "position_mm": 16961.11
+                    }
+                ]
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.666933,
+                        "y": 0.745001,
+                        "z": -0.013178
+                    },
+                    "eye": {
+                        "x": 19395.4384,
+                        "y": -9500.1277,
+                        "z": 1382.877
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": -4277.2111,
+                        "y": 16943.528,
+                        "z": 915.1404
+                    },
+                    "up": {
+                        "x": -0.008789,
+                        "y": 0.009818,
+                        "z": 0.999913
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Secondary Orangery",
+                "scene_name": "IMG07__3dView__SecondaryOrangery__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.637575,
+                        "y": -0.770063,
+                        "z": -0.022374
+                    },
+                    "eye": {
+                        "x": 13771.6776,
+                        "y": 19248.1871,
+                        "z": 1771.5329
+                    },
+                    "fov_degrees": 43.6028,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": -8858.9105,
+                        "y": -8085.0498,
+                        "z": 977.3741
+                    },
+                    "up": {
+                        "x": -0.014269,
+                        "y": -0.017234,
+                        "z": 0.99975
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Second Orangery - Abutment",
+                "scene_name": "IMG08__3dView__SecondaryOrangery__Abutment",
+                "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "basePath": "Projects/2026/3038__Gordon__Scheme-03",
+    "images": [
+        "IMG01__3dView__MainImage____WhitecardImage__15-Jul-2026.png",
+        "IMG02__3dView__MainOrangery____WhitecardImage__15-Jul-2026.png",
+        "IMG03__3dView__Abutment-01____WhitecardImage__15-Jul-2026.png",
+        "IMG04__3dView__Abutment-02____WhitecardImage__15-Jul-2026.png",
+        "IMG05__Section__FullSection____WhitecardImage__15-Jul-2026.png",
+        "IMG06__Section__PitchedRoofSection____WhitecardImage__15-Jul-2026.png",
+        "IMG07__3dView__SecondaryOrangery____WhitecardImage__15-Jul-2026.png",
+        "IMG08__3dView__SecondaryOrangery__Abutment__WhitecardImage__15-Jul-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Dan",
+        "designer": "Dan",
+        "input": "NOT YET REVIEWED"
+    },
+    "projectCode": "3038",
+    "projectName": "Gordon__Scheme-03",
+    "scheduleData": {
+        "dateFulfilled": "15-Jul-2026",
+        "dateReceived": "NOT YET REVIEWED",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__MainImage____WhitecardImage__15-Jul-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedDoors__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedDoors__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedFurniture__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedFurniture__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedRoofs__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedRoofs__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedWalls__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedWalls__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedWindows__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__ProposedWindows__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__SiteVegetation2D__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__SiteVegetation2D__MeshModel__.glb"
+    ]
+}

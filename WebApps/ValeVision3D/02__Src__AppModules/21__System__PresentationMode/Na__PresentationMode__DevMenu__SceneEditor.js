@@ -76,6 +76,17 @@
     //        event re-dispatched by Na__PmDev__CommitWorkingScenes — no direct import.
     // @delegate: ./Na__PresentationMode__UI__SceneCarousel.js
 
+    // MODULE IMPORTS | Cross Section Per-Scene Bindings (Capture Toggle)
+    // @delegate: ../41__System__CrossSectionView/Na__CrossSectionView__SceneData.js
+    // ------------------------------------------------------------
+    import {
+        Na__SectSceneData__SetCaptureEnabled,
+        Na__SectSceneData__IsCaptureEnabled,
+        Na__SectSceneData__CaptureForScene,
+        Na__SectSceneData__GetProjectBlock
+    } from '../41__System__CrossSectionView/Na__CrossSectionView__SceneData.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Thumbnail Renderer
     // @delegate: ./Na__PresentationMode__Thumbnail__Renderer.js
     // ------------------------------------------------------------
@@ -452,6 +463,12 @@
             if (!built) return;
             scene.PresentationMode__Scene__CameraPosition = { ...built.cameraPosition };
             scene.PresentationMode__Scene__OrbitHelperCubePosition = { ...built.orbitHelperCubePosition };
+
+            // CROSS SECTION CAPTURE | Bind the live section state to this scene (toggle-gated, default OFF)
+            if (Na__SectSceneData__IsCaptureEnabled()) {
+                Na__SectSceneData__CaptureForScene(scene.PresentationMode__Scene__Name, scene.PresentationMode__Scene__Id);
+            }
+
             onMutate('save-one', scene);                                    // <-- Commit + persist immediately
         });
         actionsRow.appendChild(updateBtn);
@@ -577,6 +594,15 @@
                 PresentationMode__SavedCameraScenes__Scenes                   : updatedScenes
             };
 
+            // CROSS SECTION SCENE BINDINGS | Separate top-level object; only
+            // written once loaded/captured so untouched projects stay clean.
+            // The block was seeded from project.json at load, so bindings for
+            // scenes not edited this session are preserved verbatim.
+            const crossSectionBlock = Na__SectSceneData__GetProjectBlock();
+            if (crossSectionBlock) {
+                projectData.CrossSection__SceneData = crossSectionBlock;
+            }
+
             // TWO-PHASE R2-FIRST SAVE
             await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, Na__PmDev__ShowToast);
 
@@ -646,6 +672,25 @@
                 panel.appendChild(row);
             });
         }
+
+        // CROSS SECTION CAPTURE TOGGLE | Default OFF every session; while ON,
+        // scene Update / Add binds the live cross-section state to that scene
+        // (stored in the separate CrossSection__SceneData project block).
+        const sectionCaptureRow = document.createElement('label');
+        sectionCaptureRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin:8px 0 4px 0;'
+            + 'font-family:"Open Sans",sans-serif;font-size:0.75rem;color:#172b3a;cursor:pointer;';
+        const sectionCaptureCheck = document.createElement('input');
+        sectionCaptureCheck.type    = 'checkbox';
+        sectionCaptureCheck.checked = Na__SectSceneData__IsCaptureEnabled();
+        sectionCaptureCheck.addEventListener('change', () => {
+            Na__SectSceneData__SetCaptureEnabled(sectionCaptureCheck.checked);
+        });
+        const sectionCaptureText = document.createElement('span');
+        sectionCaptureText.textContent = 'Capture Cross Sections On Scene Update';
+        sectionCaptureText.title = 'While ticked, Update Camera / Add Scene also saves the current cross-section planes against that scene.';
+        sectionCaptureRow.appendChild(sectionCaptureCheck);
+        sectionCaptureRow.appendChild(sectionCaptureText);
+        panel.appendChild(sectionCaptureRow);
 
         // GLOBAL ACTION BUTTONS
         const globalActions = document.createElement('div');
@@ -743,6 +788,11 @@
             PresentationMode__Scene__CameraPosition        : built.cameraPosition,
             PresentationMode__Scene__OrbitHelperCubePosition: built.orbitHelperCubePosition
         };
+
+        // CROSS SECTION CAPTURE | Bind the live section state to the new scene (toggle-gated, default OFF)
+        if (Na__SectSceneData__IsCaptureEnabled()) {
+            Na__SectSceneData__CaptureForScene(newScene.PresentationMode__Scene__Name, newScene.PresentationMode__Scene__Id);
+        }
 
         // RENDER + UPLOAD THUMBNAIL FIRST so the carousel card has an image
         await Na__PmDev__RegenerateThumbnail(newScene, projectCode);        // <-- Sets ThumbnailUrl on success

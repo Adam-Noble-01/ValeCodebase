@@ -2,6 +2,102 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.0 - 15-Jul-2026 - SketchUp-Native Section Planes Auto-Port Per Scene
+
+### Overview
+SketchUp section planes now port automatically into ValeVision. The cloud
+sync plugin (v0.4.0) captures each IMG## scene's active section plane(s)
+into the existing `ValeVison3D__SketchUpCameraData` block (`section_planes`
+per scene, Z-up mm). On load, ValeVision converts them (standard
+`Three = (x, z, -y)` axis swap; position-along-normal is rotation-invariant;
+SketchUp keeps the normal side — same as three.js clipping, so no sign
+flip), builds a read-only scene-name → snapshot map, and AUTO-ENABLES the
+cross section feature when any exist. When a scene activates, priority is:
+SketchUp-native section (wins) → ValeVision per-scene binding → untouched.
+Ported cuts get the full treatment: boolean cap fills, clean outer profile
+lines, live dragging, and image-export rendering. The map is never
+persisted by ValeVision — the plugin re-captures on every sync, and the
+ValeVision-owned `CrossSection__SceneData` block stays untouched.
+
+### Changed
+- **`Na__CrossSectionView__SceneData.js`** — SketchUp map builder (axis swap,
+  PLAN/UPRIGHT mode derivation, plugin plane → snapshot), priority restore,
+  feature auto-enable on import.
+- **`Na__AppFlow__LoadingSequence.js`** — dispatches
+  `na-crosssection-sketchup-sections-loaded` when project.json carries
+  `ValeVison3D__SketchUpCameraData`.
+
+### Notes
+- SketchUp sections have no slice depth → ported cuts are infinite
+  (SketchUp-style) half-space cuts.
+- Nested (group/component) section planes are skipped by the plugin in v1.
+- Scenes whose "Active Section Planes" property is unticked in SketchUp emit
+  nothing — ValeVision bindings still apply for those scenes.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.11.0 - 15-Jul-2026 - Per-Scene Cross Section Bindings + Image Export Support
+
+### Overview
+Two additions to the cross section tool. (1) Section states can now be saved
+against individual Presentation Mode animation scenes and are restored live
+when a scene is applied (carousel click, prev/next, boot default). The data
+lives in a NEW separate top-level project.json object (`CrossSection__SceneData`)
+keyed by scene NAME — SketchUp scene names are stable across cloud re-syncs,
+and the SketchUp cloud sync plugin never writes this key, so a full re-sync
+of scenes leaves saved sections intact. (2) Cross sections (cap fills +
+profile outlines) now render in tiled image exports; gizmo plane widgets are
+always excluded from exports.
+
+### Per-Scene Bindings (Task 1)
+- **`Na__CrossSectionView__SceneData.js` (new, `41__System__CrossSectionView`)**
+  — owns the `CrossSection__SceneData` block; capture toggle state; restore
+  listener. Restore rule: scenes WITH a saved entry apply it exactly (an
+  entry captured with zero sections clears every cut); scenes WITHOUT an
+  entry leave the live sections untouched. Restore is gated on the feature
+  being enabled for the project. Falls back to scene-id lookup for entries
+  captured before a scene was renamed.
+- **Scene editor toggle** — "Capture Cross Sections On Scene Update" in the
+  Presentation Mode Scenes dev panel (localhost), default OFF every session.
+  While ON, "Update Camera" and "+ Add Scene From Camera" capture the live
+  section state (positions mm, normals, slice depth, enabled/gizmo flags,
+  global gizmo visibility) against that scene; the editor's existing R2-first
+  save persists the block. Save never writes the key when nothing was
+  loaded/captured, and preserves other scenes' entries verbatim.
+- **`na-pm-scene-activated` event** — dispatched by
+  `Na__PresentationMode__Camera__SceneTransition.js` from both the instant
+  snap and the animated transition (at the same point model-layer visibility
+  applies; instant cut). SceneData listens; no cross-module import needed.
+- **SystemLogic** — new `Na__CrossSection__SerializeSections()` /
+  `Na__CrossSection__ApplySerializedSections()` (exact-swap rebuild via the
+  face-hit creation path; restores names, per-section enabled + gizmo flags,
+  global slice depth and gizmo visibility).
+- **Loading sequence** — dispatches `na-crosssection-scenedata-loaded` when
+  project.json contains the block.
+- SketchUp plugin capture of native section planes deliberately postponed;
+  nothing in the plugin was touched.
+
+### Image Export Support (Task 2)
+- **TiledRenderer** — after each tile's `composer.render()`, the section
+  overlay (registered via `Na__RenderEffect__SectionClipping__State`) draws
+  caps + outlines onto the tile with the tile's sub-frustum camera, so
+  exports match the viewport in both engines and in 2D elevation exports.
+- **Export mode** — `Na__CrossSection__SetExportMode(active, lineScale)`
+  (registered as a handler in the same 05 state module, so ImageExport only
+  imports from 05__RenderPipeline): gizmo widgets ALWAYS hidden in exports;
+  outline fat-line widths get the standard linework compensation
+  (outputH / tile framebuffer height) and restore on completion.
+
+### Files Changed
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SceneData.js` (new)
+- `02__Src__AppModules/41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js`
+- `02__Src__AppModules/41__System__CrossSectionView/Na__UiFeature__CrossSectionView__Controls.js`
+- `02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js`
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js`
+- `02__Src__AppModules/30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js`
+- `02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js`
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.10.3 - 14-Jul-2026 - Cross Section Per-Section On/Off Toggle
 
 ### Overview

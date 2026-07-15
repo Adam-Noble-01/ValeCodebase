@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "14-Jul-2026 at 13:08",
+    "generatedAt": "15-Jul-2026 at 13:55",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1865,6 +1865,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "14-Jul-2026 at 13:08"
+        },
+        {
+            "folderId": "2026/3038__Gordon__Scheme-03",
+            "year": "2026",
+            "projectCode": "3038",
+            "name": "Gordon__Scheme-03",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 8,
+            "lastSynced": "15-Jul-2026 at 13:55"
         }
     ]
 }

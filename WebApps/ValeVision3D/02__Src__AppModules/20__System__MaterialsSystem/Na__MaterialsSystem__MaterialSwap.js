@@ -25,10 +25,16 @@
 //   receives depth data for these meshes (foliage, plants, etc.).
 // - Captures each node's original material on first swap so the engine
 //   switcher can restore the whitecard appearance when returning to PureEngine.
+// - PureEngine: ApplyExemptTextureBrightness lifts MAT000E__ embedded textures
+//   toward whitecard luminance via config-driven emissive intensity.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Jul-2026 - Version 1.2.0
+// - Added Na__MaterialsSystem__ApplyExemptTextureBrightness for PureEngine
+//   MAT000E__ one-off textures (clone + white base + emissiveMap lift).
+//
 // 10-Jun-2026 - Version 1.1.0
 // - Upgraded to TrueVision3D parity: multi-material arrays, AO layer
 //   exclusion (material AoExclude flag + DataLib name tokens), and the
@@ -41,7 +47,10 @@
 // =============================================================================
 
 import * as THREE from 'three';
-import { Na__MaterialsSystem__IsIndexedName } from './Na__MaterialsSystem__LibraryLoader.js';
+import {
+        Na__MaterialsSystem__IsIndexedName,
+        Na__MaterialsSystem__IsExemptName
+    } from './Na__MaterialsSystem__LibraryLoader.js';
 import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__DataLib__Loader.js';
 
 
@@ -504,6 +513,73 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Brightness-Match MAT000E__ Exempt Textures (PureEngine)
+    // ------------------------------------------------------------
+    // Exempt materials keep their embedded GLB texture (fake detail) but
+    // under PureEngine's high ambient whitecard lighting they read dark
+    // grey unless lifted. This pass clones each MAT000E__ slot (so the
+    // MaxEngine restore original stays unboosted), forces a white base
+    // colour, wires the diffuse map as emissiveMap, and applies a config
+    // emissive intensity so textured detail sits near whitecard luminance.
+    //
+    // Parameters:
+    //   modelGroup             - THREE.Group containing loaded model meshes
+    //   baseMeshMaterialConfig - models.baseMesh.material block from AppConfig
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__ApplyExemptTextureBrightness(modelGroup, baseMeshMaterialConfig) {
+        if (!modelGroup) return;
+
+        const cfg = baseMeshMaterialConfig || {};
+        const emissiveIntensity = (typeof cfg.exemptTextureEmissiveIntensity === 'number')
+            ? cfg.exemptTextureEmissiveIntensity
+            : 0.4;                                                            // <-- Default lift toward whitecard key (keep detail readable)
+        const emissiveColor = (cfg.exemptTextureEmissiveColor !== undefined)
+            ? cfg.exemptTextureEmissiveColor
+            : ((cfg.whiteColor !== undefined) ? cfg.whiteColor : 0xffffff);  // <-- Match whitecard white when unset
+
+        if (emissiveIntensity <= 0) return;                                   // <-- Config can disable the boost
+
+        let boostedCount = 0;
+
+        const boostMaterial = (material) => {
+            if (!material || !Na__MaterialsSystem__IsExemptName(material.name)) {
+                return material;                                              // <-- Only MAT000E__ exempt slots
+            }
+            if (!material.map && !material.emissiveMap) {
+                return material;                                              // <-- Nothing to lift without a texture
+            }
+
+            const boosted               = material.clone();                   // <-- Keep na_originalMaterial undimmed for MaxEngine
+            boosted.color               = new THREE.Color(0xffffff);          // <-- Avoid dark baseColourFactor multiplying the map
+            boosted.emissive            = new THREE.Color(emissiveColor);
+            boosted.emissiveIntensity   = emissiveIntensity;
+            if (boosted.map && !boosted.emissiveMap) {
+                boosted.emissiveMap = boosted.map;                            // <-- Detail drives both diffuse + emissive
+            }
+            if ('roughness' in boosted) boosted.roughness = 1.0;
+            if ('metalness' in boosted) boosted.metalness = 0.0;
+            boosted.needsUpdate = true;
+            boostedCount++;
+            return boosted;
+        };
+
+        modelGroup.traverse((node) => {
+            if (!node.isMesh) return;
+
+            if (Array.isArray(node.material)) {
+                node.material = node.material.map(boostMaterial);
+            } else {
+                node.material = boostMaterial(node.material);
+            }
+        });
+
+        if (boostedCount > 0) {
+            console.log(`[MaterialsSystem] PureEngine MAT000E__ brightness matched on ${boostedCount} material slot(s) (emissiveIntensity=${emissiveIntensity})`);
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Restore Original (Pre-Swap) Materials on a Model Group
     // ------------------------------------------------------------
     // Used when the render engine switches back to PureEngine at runtime.
@@ -669,6 +745,7 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
     export {
         Na__MaterialsSystem__ApplyMaterials,
         Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials,
+        Na__MaterialsSystem__ApplyExemptTextureBrightness,
         Na__MaterialsSystem__RestoreOriginalMaterials,
         Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides,
         Na__MaterialsSystem__ApplyGlassEnvironmentOverrides

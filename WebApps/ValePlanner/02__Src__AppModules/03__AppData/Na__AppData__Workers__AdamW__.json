@@ -2496,22 +2496,6 @@
           "color": "na-shift-color-blue"
         },
         {
-          "id": "new-1784020531594",
-          "date": "2026-07-14",
-          "startTime": "11:30",
-          "endTime": "13:30",
-          "title": "Whitecard |  Bereton",
-          "color": "na-shift-color-cyan"
-        },
-        {
-          "id": "new-1784036263305",
-          "date": "2026-07-14",
-          "startTime": "14:15",
-          "endTime": "17:00",
-          "title": "Amend |  Gordon",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1784119980369",
           "date": "2026-07-15",
           "startTime": "08:00",
@@ -2526,6 +2510,94 @@
           "endTime": "13:45",
           "title": "Design Development |  Gordon",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1784185524254",
+          "date": "2026-07-15",
+          "startTime": "13:45",
+          "endTime": "14:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1784185485417",
+          "date": "2026-07-15",
+          "startTime": "16:00",
+          "endTime": "18:30",
+          "title": "Bronze |  Rutland Window Mockup",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1784185550745",
+          "date": "2026-07-15",
+          "startTime": "14:00",
+          "endTime": "16:00",
+          "title": "Dev |  Cross Section System",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1784185587454",
+          "date": "2026-07-14",
+          "startTime": "10:00",
+          "endTime": "10:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1784020531594",
+          "date": "2026-07-14",
+          "startTime": "10:15",
+          "endTime": "12:00",
+          "title": "Whitecard |  Bereton",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1784185607697",
+          "date": "2026-07-14",
+          "startTime": "12:00",
+          "endTime": "13:45",
+          "title": "Standards",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1784185624610",
+          "date": "2026-07-16",
+          "startTime": "14:15",
+          "endTime": "15:15",
+          "title": "New Shift",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1784185624438",
+          "date": "2026-07-14",
+          "startTime": "13:45",
+          "endTime": "14:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1784036263305",
+          "date": "2026-07-14",
+          "startTime": "14:00",
+          "endTime": "18:30",
+          "title": "Amend |  Gordon",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1784189148381",
+          "date": "2026-07-16",
+          "startTime": "08:00",
+          "endTime": "09:15",
+          "title": "Dev |  Parametric Update",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1784196146941",
+          "date": "2026-07-16",
+          "startTime": "11:45",
+          "endTime": "13:45",
+          "title": "Whitecard |  Miah",
+          "color": "na-shift-color-lime"
         }
       ]
     }

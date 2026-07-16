@@ -36,7 +36,9 @@
                 "polygonOffsetFactor": 2,
                 "polygonOffsetUnits": 2,
                 "emissiveBoost": 3355443,
-                "textureEmissive": 4473924
+                "textureEmissive": 4473924,
+                "exemptTextureEmissiveIntensity": 0.01,
+                "exemptTextureEmissiveColor": 16777215
             }
         },
         "RenderConfig__Linework": {

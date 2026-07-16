@@ -214,6 +214,7 @@
     import {
         Na__MaterialsSystem__ApplyMaterials,
         Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials,
+        Na__MaterialsSystem__ApplyExemptTextureBrightness,
         Na__MaterialsSystem__RestoreOriginalMaterials,
         Na__MaterialsSystem__ApplyMirrorEnvironmentOverrides,
         Na__MaterialsSystem__ApplyGlassEnvironmentOverrides
@@ -724,6 +725,8 @@
         // PureEngine: restores loaded originals then whitecards ALL indexed
         //             MAT###__ materials — PureEngine must show NO face
         //             colours or opacity (classic whitecard appearance).
+        //             MAT000E__ exempt textures then get an emissive lift so
+        //             fake-detail maps sit near whitecard luminance.
         // Door animations are unaffected in both directions: the door registry
         // holds Object3D references and transforms, never material references.
         // ---------------------------------------------------------------
@@ -785,6 +788,7 @@
                 for (const [, group] of Na__LoadedModelGroups) {
                     Na__MaterialsSystem__RestoreOriginalMaterials(group);    // <-- Back to loaded originals (also clears AO layer-1 tags)
                     Na__MaterialsSystem__ApplyWhitecardToIndexedMaterials(group, Na__BaseMeshMaterialConfig);  // <-- PureEngine: no face colours / opacity
+                    Na__MaterialsSystem__ApplyExemptTextureBrightness(group, Na__BaseMeshMaterialConfig);     // <-- PureEngine: MAT000E__ near whitecard key
                 }
 
                 Na__DistanceCulling__SetEnabled(false);                      // <-- MaxEngine-only feature; restores any culled items

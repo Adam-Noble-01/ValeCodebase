@@ -36,9 +36,10 @@
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Indexed Material Name Pattern
+    // MODULE CONSTANTS | Indexed / Exempt Material Name Patterns
     // ------------------------------------------------------------
     const Na__MaterialsSystem__IndexedNameRegex = /^MAT\d{3}__/;              // <-- Matches MAT + 3 digits + __
+    const Na__MaterialsSystem__ExemptNameRegex  = /^MAT000E__/;               // <-- Material Exempt (one-off textures, not SSOT)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -176,6 +177,18 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Check If Material Name Is Exempt (MAT000E__)
+    // ------------------------------------------------------------
+    // Returns true for one-off exception materials that embed in the GLB
+    // without DataLib / SSOT enrichment (e.g. MAT000E__CorbelLeafFake).
+    // ------------------------------------------------------------
+    function Na__MaterialsSystem__IsExemptName(materialName) {
+        if (!materialName || typeof materialName !== 'string') return false;
+        return Na__MaterialsSystem__ExemptNameRegex.test(materialName);       // <-- Test against exempt prefix
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -188,7 +201,8 @@
     export {
         Na__MaterialsSystem__LoadLibrary,
         Na__MaterialsSystem__BuildLookup,
-        Na__MaterialsSystem__IsIndexedName
+        Na__MaterialsSystem__IsIndexedName,
+        Na__MaterialsSystem__IsExemptName
     };
     // ------------------------------------------------------------
 

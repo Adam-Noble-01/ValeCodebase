@@ -2,6 +2,26 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.4 - 16-Jul-2026 - PureEngine MAT000E__ Texture Brightness Match
+
+### Overview
+`MAT000E__` exempt textures (e.g. `MAT000E__CorbelLeafFake`) embedded in
+Whitecard GLBs were loading correctly but read dark grey under PureEngine —
+same scene lights as whitecard, but grey albedo + `emissiveIntensity: 0`.
+PureEngine now lifts those slots toward whitecard luminance via a config-
+driven emissive pass (MaxEngine unchanged).
+
+### Added
+- **`Na__MaterialsSystem__ApplyExemptTextureBrightness`** — clones `MAT000E__`
+  materials, white base colour, map→emissiveMap, intensity from AppConfig.
+- **`Na__MaterialsSystem__IsExemptName`** — `/^MAT000E__/` helper.
+- AppConfig `models.baseMesh.material.exemptTextureEmissiveIntensity` (0.4)
+  and `exemptTextureEmissiveColor` (white). Set intensity to `0` to disable.
+
+### Changed
+- PureEngine materials path runs brightness match after whitecard-indexed pass.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.3 - 15-Jul-2026 - Capture Styles On Save Scene / Save All
 
 ### Overview

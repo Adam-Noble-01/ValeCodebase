@@ -2560,14 +2560,6 @@
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1784185624610",
-          "date": "2026-07-16",
-          "startTime": "14:15",
-          "endTime": "15:15",
-          "title": "New Shift",
-          "color": "na-shift-color-lime"
-        },
-        {
           "id": "new-1784185624438",
           "date": "2026-07-14",
           "startTime": "13:45",
@@ -2584,20 +2576,36 @@
           "color": "na-shift-color-purple"
         },
         {
-          "id": "new-1784189148381",
-          "date": "2026-07-16",
-          "startTime": "08:00",
-          "endTime": "09:15",
-          "title": "Dev |  Parametric Update",
-          "color": "na-shift-color-slate"
-        },
-        {
           "id": "new-1784196146941",
           "date": "2026-07-16",
           "startTime": "11:45",
-          "endTime": "13:45",
+          "endTime": "14:15",
           "title": "Whitecard |  Miah",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1784210439110",
+          "date": "2026-07-16",
+          "startTime": "14:15",
+          "endTime": "15:00",
+          "title": "Standards",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1784185624610",
+          "date": "2026-07-16",
+          "startTime": "15:00",
+          "endTime": "18:30",
+          "title": "Whitecard |  Harris",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1784189148381",
+          "date": "2026-07-16",
+          "startTime": "08:00",
+          "endTime": "11:45",
+          "title": "Dev |  Parametric Update",
+          "color": "na-shift-color-slate"
         }
       ]
     }

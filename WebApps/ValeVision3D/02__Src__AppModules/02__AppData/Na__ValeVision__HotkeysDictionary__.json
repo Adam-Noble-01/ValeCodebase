@@ -69,6 +69,16 @@
             "Na__Hotkey__CtrlKey"     : false,
             "Na__Hotkey__Action"      : "ValeVision__PresentationMode__PrevScene",
             "Na__Hotkey__Description" : "Return to previous presentation scene"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "app_navigate_back",
+            "Na__Hotkey__Key"         : "Backspace",
+            "Na__Hotkey__AltKey"      : true,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__App__NavigateBack",
+            "Na__Hotkey__Description" : "Go back to the previous page (Whitecardopedia)"
         }
 
     ]

@@ -2,6 +2,45 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.7 - 28-Jul-2026 - Menu Style and Small-Screen Usability Pass
+
+### Overview
+Single consolidated styling pass over the floating menus: breadcrumb trail
+spacing opened up (14px around separators) with a horizontal scroll clamp on
+narrow screens; Tools & Settings dropdown and controls help panel now clamp
+to the viewport and scroll instead of cutting off on small screens; closed
+menus (Tools & Settings, breadcrumb) idle at 50% opacity to reduce visual
+distraction, restoring to fully opaque on hover, focus, or while open. The
+localhost dev Tools menu moved below the breadcrumb row so the two no
+longer overlap top-left.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.12.6 - 28-Jul-2026 - Whitecardopedia Breadcrumb Menu + Alt+Backspace Back
+
+### Overview
+New top-left breadcrumb menu linking back to Whitecardopedia, plus an
+Alt+Backspace shortcut for browser-style back navigation (the orbit arrow
+key capture in v2.12.5 swallowed Alt+Left, which was the old route back;
+Ctrl cannot be used as a movement modifier because browsers reserve
+Ctrl+W and it would close the app while nudging forward with W).
+
+### Added
+- **Breadcrumb navigation menu** (`64__Feature__BreadcrumbNav`): collapsed
+  chevron card fixed top-left, below the header. Clicking unfolds
+  "Project Gallery / <Name> - <Code> / Model View"; the trail stays open
+  until toggled again. Gallery crumb links to the Whitecardopedia gallery,
+  the project crumb deep-links to that project's page (app.html?id=<code>).
+  Localhost routes via the Flask root, production via the sibling
+  ../Whitecardopedia/ path. Shown only when the app booted with ?project=;
+  labels seed from the URL param instantly and refine from the memoised
+  project.json fetch. Markup in index.html, styles @imported into
+  Na__CoreUi__Styles__Index__.css.
+- **Alt+Backspace back navigation** (hotkey dictionary +
+  `ValeVision__App__NavigateBack` callback): window.history.back(),
+  replacing the lost Alt+Left route back to Whitecardopedia. Auto-listed
+  in the help panel's Keyboard Shortcuts section via the dictionary.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.5 - 28-Jul-2026 - Orbit Keyboard Nudges + Device-Aware Help Panel
 
 ### Overview

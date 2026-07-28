@@ -2640,9 +2640,25 @@
           "color": "na-shift-color-purple"
         },
         {
+          "id": "new-1785252784295",
+          "date": "2026-07-27",
+          "startTime": "13:00",
+          "endTime": "13:30",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1785252763796",
+          "date": "2026-07-27",
+          "startTime": "13:30",
+          "endTime": "15:30",
+          "title": "Dev |  ValeVision - Orbit Nav Update",
+          "color": "na-shift-color-rose"
+        },
+        {
           "id": "new-1785230911226",
           "date": "2026-07-27",
-          "startTime": "11:00",
+          "startTime": "10:45",
           "endTime": "13:00",
           "title": "Whitecard |  Thrower",
           "color": "na-shift-color-purple"

@@ -43,8 +43,10 @@
     font-family                        : 'Open Sans', sans-serif;
     transform                          : scale(1.2);
     transform-origin                   : top right;
-    /* Inactive fade: collapsed menu is slightly translucent when idle */
-    opacity                            : 0.78;
+    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2); /* <-- Divide by scale(1.2) so visual height fits viewport */
+    overflow-y                         : auto;                                  /* <-- Scroll when open content exceeds small screens */
+    /* Inactive fade: collapsed menu is 50% translucent when idle */
+    opacity                            : 0.5;
     transition                         : opacity 0.3s ease;
 }
 
@@ -61,12 +63,12 @@
 }
 
 .na-dropdown-menu--dev-localhost {
-    top                                : calc(var(--Vale_HeaderHeight) + 10px); /* <-- Align vertically with the Tools menu */
+    top                                : calc(var(--Vale_HeaderHeight) + 64px); /* <-- Below the breadcrumb row (14px + 40px card + 10px gap) */
     right                              : unset;                                 /* <-- Override base right positioning */
     left                               : 20px;                                 /* <-- Pin to the left side of the viewport */
     transform-origin                   : top left;                              /* <-- Scale from top-left corner */
     position                           : fixed;                                /* <-- Explicit fixed for absolute child positioning */
-    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2); /* <-- Divide by scale(1.2) so visual height fills viewport exactly */
+    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 64px) / 1.2); /* <-- Divide by scale(1.2) so visual height fills viewport exactly */
     overflow-y                         : auto;                                  /* <-- Allow panel to scroll when content exceeds scaled height */
 }
 

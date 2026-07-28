@@ -1,0 +1,162 @@
+/* =============================================================================
+ * VALEVISION3D - BREADCRUMB NAVIGATION MENU STYLES
+ * =============================================================================
+ *
+ * FILE       : Na__Feature__BreadcrumbNav__Stylesheet__.css
+ * NAMESPACE  : ValeVision3D
+ * MODULE     : Breadcrumb Navigation Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Top-left collapsed breadcrumb card back to Whitecardopedia
+ * CREATED    : 28-Jul-2026
+ *
+ * DESCRIPTION:
+ * - White rounded card fixed top-left, below the app header, matching the
+ *   floating navigation toolbar's card styling.
+ * - Collapsed state shows only the chevron toggle button; the open state
+ *   reveals the "Project Gallery / <Name> - <Code> / Model View" trail.
+ *
+ * =============================================================================
+ */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Breadcrumb Card Container
+ * ----------------------------------------------------------------------------- */
+
+    /* CARD CONTAINER | Fixed top-left, mirrors nav toolbar card styling */
+    /* ------------------------------------------------------------ */
+    .na-breadcrumb {
+        position                           : fixed;
+        top                                : calc(var(--Vale_HeaderHeight, 54px) + 14px);  /* <-- Same row as top toolbar */
+        left                               : 20px;
+        display                            : flex;
+        align-items                        : center;
+        background-color                   : #ffffff;
+        border                             : 1px solid rgba(23, 43, 58, 0.08);
+        border-radius                      : 12px;
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.14);
+        z-index                            : 1002;                  /* <-- Above canvas, below toast/modals */
+        font-family                        : 'Open Sans', sans-serif;
+        opacity                            : 0.5;                   /* <-- 50% translucent when closed and idle */
+        transition                         : opacity 0.3s ease;
+    }
+
+    .na-breadcrumb:hover,
+    .na-breadcrumb:focus-within,
+    .na-breadcrumb--open {
+        opacity                            : 1;                     /* <-- Fully opaque while in use */
+    }
+
+    .na-breadcrumb[hidden] {
+        display                            : none;                  /* <-- Hidden until a project is loaded */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Chevron Toggle Button
+ * ----------------------------------------------------------------------------- */
+
+    /* TOGGLE BUTTON | Square chevron button, sole visible element when folded */
+    /* ------------------------------------------------------------ */
+    .na-breadcrumb__toggle {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 40px;
+        height                             : 40px;
+        border                             : none;
+        background                         : none;
+        border-radius                      : 12px;
+        cursor                             : pointer;
+        color                              : rgba(23, 43, 58, 0.65);
+        transition                         : background-color 0.15s ease;
+        -webkit-tap-highlight-color        : transparent;
+    }
+
+    .na-breadcrumb__toggle:hover {
+        background-color                   : rgba(23, 43, 58, 0.06);
+    }
+
+    .na-breadcrumb__chevron {
+        display                            : inline-block;
+        font-size                          : 1.35rem;
+        line-height                        : 1;
+        transition                         : transform 0.22s ease;
+        user-select                        : none;
+    }
+
+    .na-breadcrumb--open .na-breadcrumb__chevron {
+        transform                          : rotate(180deg);        /* <-- Points back left when open */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Breadcrumb Trail
+ * ----------------------------------------------------------------------------- */
+
+    /* TRAIL ROW | Hidden until the card is open */
+    /* ------------------------------------------------------------ */
+    .na-breadcrumb__trail {
+        display                            : none;
+        align-items                        : center;
+        gap                                : 14px;                  /* <-- Breathing room either side of separators */
+        padding                            : 0 18px 0 4px;
+        white-space                        : nowrap;
+        font-size                          : 0.94rem;
+        max-width                          : calc(100vw - 110px);   /* <-- Never run off narrow screens */
+        overflow-x                         : auto;                  /* <-- Scroll the trail when clamped */
+    }
+
+    .na-breadcrumb--open .na-breadcrumb__trail {
+        display                            : flex;                  /* <-- Reveal trail when open */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TRAIL LINKS | Gallery and project page anchors */
+    /* ------------------------------------------------------------ */
+    .na-breadcrumb__link {
+        color                              : rgba(23, 43, 58, 0.66);
+        text-decoration                    : none;
+        font-weight                        : 600;
+        padding                            : 4px 2px;
+        border-radius                      : 6px;
+    }
+
+    .na-breadcrumb__link:hover {
+        color                              : #172b3a;
+        text-decoration                    : underline;
+    }
+
+    .na-breadcrumb__project-name {
+        color                              : #172b3a;               /* <-- Project name reads strongest */
+    }
+
+    .na-breadcrumb__code {
+        font-weight                        : 400;
+        color                              : rgba(23, 43, 58, 0.55);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TRAIL SEPARATORS AND CURRENT PAGE | Non-interactive text */
+    /* ------------------------------------------------------------ */
+    .na-breadcrumb__separator {
+        color                              : rgba(23, 43, 58, 0.35);
+        font-weight                        : 400;
+        user-select                        : none;
+    }
+
+    .na-breadcrumb__current {
+        color                              : rgba(23, 43, 58, 0.55);
+        font-weight                        : 400;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

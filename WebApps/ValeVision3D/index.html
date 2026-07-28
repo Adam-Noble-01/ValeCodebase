@@ -864,6 +864,27 @@
     </div>
     
     <!-- ----------------------------------------------------------------- -->
+    <!-- REGION  |  Breadcrumb Navigation Menu (Top Left, Collapsed)       -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- @delegate: ./02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js -->
+
+    <nav class="na-breadcrumb" id="naBreadcrumbNav" aria-label="Project navigation" hidden>
+        <button class="na-breadcrumb__toggle" id="naBreadcrumbToggleBtn" type="button" aria-expanded="false" aria-controls="naBreadcrumbTrail" title="Project navigation">
+            <span class="na-breadcrumb__chevron" aria-hidden="true">&rsaquo;</span>
+        </button>
+        <div class="na-breadcrumb__trail" id="naBreadcrumbTrail">
+            <a class="na-breadcrumb__link" id="naBreadcrumbGalleryLink" href="#">Project Gallery</a>
+            <span class="na-breadcrumb__separator" aria-hidden="true">/</span>
+            <a class="na-breadcrumb__link" id="naBreadcrumbProjectLink" href="#"><span class="na-breadcrumb__project-name" id="naBreadcrumbProjectName">Project</span> <span class="na-breadcrumb__code" id="naBreadcrumbProjectCode"></span></a>
+            <span class="na-breadcrumb__separator" aria-hidden="true">/</span>
+            <span class="na-breadcrumb__current">Model View</span>
+        </div>
+    </nav>
+
+    <!-- endregion -------------------------------------------------------- -->
+
+
+    <!-- ----------------------------------------------------------------- -->
     <!-- REGION  |  Floating Navigation Toolbar (Bottom Centre)            -->
     <!-- ----------------------------------------------------------------- -->
     <!-- @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js -->
@@ -1139,6 +1160,7 @@
     import { Na__UiFeature__InitializeGridLineControls } from './02__Src__AppModules/28__System__GridLineSystem/Na__GridLineSystem__UiElement.js';
     import { Na__Feature__EmailWorkers__Initialize } from './02__Src__AppModules/62__Feature__EmailWorkers/Na__Feature__EmailWorkers__UiInteractionLogic__.js';
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
+    import { Na__Feature__BreadcrumbNav__Initialize } from './02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
     import { Na__GpuLifecycle__AttachContextLossHandlers, Na__GpuLifecycle__DisposeAll } from './02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js';
     import { Na__UiFeature__InitializePurgeAppCacheButton } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js';
@@ -1475,7 +1497,8 @@
         'ValeVision__NavMode__SetFlyMode'                : () => { if (!Na__NavigationModes__IsFlyEnabled())  return; Na__NavToolbar__SetFlyMode();  }, // <-- Guard: fly not enabled for model
         'ValeVision__PresentationMode__ToggleViewsPanel' : () => Na__PresentationMode__UI__ToggleSceneCarousel(),
         'ValeVision__PresentationMode__NextScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToNextScene();      }, // <-- Guard: carousel visible + not flying
-        'ValeVision__PresentationMode__PrevScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToPreviousScene(); }  // <-- Guard: carousel visible + not flying
+        'ValeVision__PresentationMode__PrevScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToPreviousScene(); }, // <-- Guard: carousel visible + not flying
+        'ValeVision__App__NavigateBack'                  : () => window.history.back()                                                                                                                     // <-- Alt+Backspace: back to Whitecardopedia
     });
     // ------------------------------------------------------------
 
@@ -1723,6 +1746,7 @@
     // ------------------------------------------------------------
     // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js
     Na__UiFeature__InitializeNavigationHelpPanel({ isTouchDevice: Na__Device__UseTouchControls });  // <-- Unfolds the matching PC/touch instruction sub-dropdowns
+    Na__Feature__BreadcrumbNav__Initialize();                                                       // <-- Top-left breadcrumb back to Whitecardopedia (hidden without ?project=)
     // ------------------------------------------------------------
 
     // INITIALIZE FLOATING NAVIGATION TOOLBAR (Bottom Centre)

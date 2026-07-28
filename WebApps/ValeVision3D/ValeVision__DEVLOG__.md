@@ -2,6 +2,39 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.5 - 28-Jul-2026 - Orbit Keyboard Nudges + Device-Aware Help Panel
+
+### Overview
+Orbit mode WASD / arrow key movement now works without holding the left
+mouse button. The invalidation-based render loop only ticked during pointer
+interaction, so held keys did nothing until a drag was in progress (the
+accidental "hold left click to enable the keys" behaviour). Held movement
+keys now register an 'orbit-keys' active-render reason so the loop keeps
+ticking on its own. New Shift / Alt modifiers refine the movement, and the
+navigation help panel instructions are now split per input device.
+
+### Added
+- **Movement modifiers** (`Na__DefaultNavmode__MouseControls.js`): Alt
+  scales steps to 20% for extra-fine nudges; Shift dollies the rig (camera
+  and orbit target translate together so the framing direction holds
+  instead of re-aiming at the orbit pivot).
+- **Help panel device sub-dropdowns** (index.html,
+  `Na__UiFeature__NavigationHelpPanel__Controls.js`, navigation toolbar
+  CSS): Orbit / Walk / Fly sections split into "PC Controls (Mouse &
+  Keyboard)" and "Touchscreen Controls (iPad & Tablet)" collapsibles; the
+  one matching `Na__Device__UseTouchControls` unfolds on load. Touch users
+  now get real walk / fly gesture rows (1-finger move, 2-finger look,
+  pinch) instead of keyboard-only text.
+
+### Fixed
+- **`Na__DefaultNavmode__MouseControls.js`** - WASD / arrows / Q-E request
+  the 'orbit-keys' active-render reason on keydown and release it when the
+  last key lifts, so keyboard movement no longer depends on a mouse drag
+  keeping the render loop awake. Keys are ignored while typing in inputs;
+  arrows preventDefault (also blocks Alt+arrow browser history); window
+  blur releases all held keys so the loop can never stay pinned.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.4 - 16-Jul-2026 - PureEngine MAT000E__ Texture Brightness Match
 
 ### Overview

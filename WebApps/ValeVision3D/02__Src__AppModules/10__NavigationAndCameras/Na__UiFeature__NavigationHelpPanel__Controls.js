@@ -21,15 +21,23 @@
 // - Keyboard Shortcuts section is populated dynamically from
 //   Na__ValeVision__HotkeysDictionary__.json so the panel stays in sync
 //   with the dictionary without any manual HTML edits.
+// - Each mode section contains PC / Touchscreen sub-dropdowns
+//   (data-nav-help-device="pc"|"touch"); the one matching the active device
+//   unfolds by default and the other folds shut, both stay clickable.
 //
 // INTEGRATION:
-// - Call Na__UiFeature__InitializeNavigationHelpPanel() from index.html.
+// - Call Na__UiFeature__InitializeNavigationHelpPanel({ isTouchDevice })
+//   from index.html, passing the Na__Device__UseTouchControls flag.
 // - Pass Na__UiFeature__OpenNavigationHelpPanel as the toolbar's openHelp
 //   callback.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Jul-2026 - Version 1.3.0
+// - PC / Touchscreen device sub-dropdowns: instructions per mode are now
+//   split per input device, auto-unfolded to match the detected device.
+//
 // 25-Jun-2026 - Version 1.2.0
 // - Keyboard Shortcuts section added; rows populated from the hotkey
 //   dictionary JSON so the panel stays in sync automatically.
@@ -66,8 +74,9 @@
 
     // MODULE CONSTANTS | CSS Classes
     // ------------------------------------------------------------
-    const Na__NavHelp__OpenClass      = 'na-nav-help--open';        // <-- Visible state class
-    const Na__NavHelp__CollapsedClass = 'na-nav-help__section--collapsed';  // <-- Folded section state
+    const Na__NavHelp__OpenClass         = 'na-nav-help--open';        // <-- Visible state class
+    const Na__NavHelp__CollapsedClass    = 'na-nav-help__section--collapsed';     // <-- Folded section state
+    const Na__NavHelp__SubCollapsedClass = 'na-nav-help__subsection--collapsed';  // <-- Folded device sub-dropdown state
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -126,6 +135,18 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Toggle One Device Sub-Dropdown Between Open and Collapsed
+    // ------------------------------------------------------------
+    function Na__NavHelp__ToggleSubsection(subsectionEl) {
+        const isCollapsed = subsectionEl.classList.contains(Na__NavHelp__SubCollapsedClass);
+        const headerBtn   = subsectionEl.querySelector('[data-nav-help-subsection]');
+
+        subsectionEl.classList.toggle(Na__NavHelp__SubCollapsedClass, !isCollapsed);   // <-- Flip collapsed state
+        if (headerBtn) headerBtn.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Wire Click Handlers onto All Collapsible Section Headers
     // ------------------------------------------------------------
     function Na__NavHelp__InitializeSectionToggles() {
@@ -138,6 +159,38 @@
                 const section = header.closest('.na-nav-help__section');    // <-- Get parent section element
                 if (section) Na__NavHelp__ToggleSection(section);
             });
+        });
+
+        const subHeaders = content.querySelectorAll('[data-nav-help-subsection]');
+        subHeaders.forEach((header) => {
+            header.addEventListener('click', (event) => {
+                event.stopPropagation();                                    // <-- Keep parent section header untouched
+                const subsection = header.closest('.na-nav-help__subsection'); // <-- Get parent sub-dropdown element
+                if (subsection) Na__NavHelp__ToggleSubsection(subsection);
+            });
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fold Device Sub-Dropdowns to Match the Active Device
+    // ------------------------------------------------------------
+    // PC users see the mouse/keyboard instructions unfolded and the touch
+    // instructions folded away; touch users get the reverse. Both remain
+    // clickable so either set can still be read on any device.
+    function Na__NavHelp__ApplyDeviceDefaults(isTouchDevice) {
+        const content = document.getElementById(Na__NavHelp__PanelId);
+        if (!content) return;
+
+        const activeDevice = isTouchDevice ? 'touch' : 'pc';
+        const subsections  = content.querySelectorAll('[data-nav-help-device]');
+
+        subsections.forEach((subsection) => {
+            const matchesDevice = subsection.getAttribute('data-nav-help-device') === activeDevice;
+            const headerBtn     = subsection.querySelector('[data-nav-help-subsection]');
+
+            subsection.classList.toggle(Na__NavHelp__SubCollapsedClass, !matchesDevice);   // <-- Fold the other device's list
+            if (headerBtn) headerBtn.setAttribute('aria-expanded', matchesDevice ? 'true' : 'false');
         });
     }
     // ------------------------------------------------------------
@@ -242,14 +295,16 @@
 
     // FUNCTION | Initialize Navigation Help Panel
     // ------------------------------------------------------------
-    function Na__UiFeature__InitializeNavigationHelpPanel() {
-        const closeBtn = document.getElementById(Na__NavHelp__CloseBtnId);
-        const backdrop = document.getElementById(Na__NavHelp__BackdropId);
+    function Na__UiFeature__InitializeNavigationHelpPanel(options) {
+        const closeBtn      = document.getElementById(Na__NavHelp__CloseBtnId);
+        const backdrop      = document.getElementById(Na__NavHelp__BackdropId);
+        const isTouchDevice = Boolean(options && options.isTouchDevice);             // <-- Device flag from index.html detection
 
         if (closeBtn) closeBtn.addEventListener('click', Na__UiFeature__CloseNavigationHelpPanel);   // <-- Close (X) button
         if (backdrop) backdrop.addEventListener('click', Na__UiFeature__CloseNavigationHelpPanel);   // <-- Click outside to close
 
-        Na__NavHelp__InitializeSectionToggles();                                     // <-- Wire fold/unfold on all section headers
+        Na__NavHelp__InitializeSectionToggles();                                     // <-- Wire fold/unfold on all section + subsection headers
+        Na__NavHelp__ApplyDeviceDefaults(isTouchDevice);                             // <-- Unfold the sub-dropdowns matching this device
         Na__NavHelp__PopulateHotkeySection();                                        // <-- Inject keyboard shortcut rows from dictionary JSON
 
         // CLOSE ON ESCAPE KEY (only while open — leaves other Escape handlers untouched)

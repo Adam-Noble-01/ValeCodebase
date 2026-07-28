@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "16-Jul-2026 at 15:10",
+    "generatedAt": "28-Jul-2026 at 13:51",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1907,6 +1907,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "16-Jul-2026 at 15:10"
+        },
+        {
+            "folderId": "2026/63403__Thrower",
+            "year": "2026",
+            "projectCode": "63403",
+            "name": "Thrower",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "28-Jul-2026 at 13:51"
         }
     ]
 }

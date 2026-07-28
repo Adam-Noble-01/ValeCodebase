@@ -346,7 +346,7 @@
     /* ------------------------------------------------------------ */
     .na-nav-help__section-body {
         overflow                           : hidden;
-        max-height                         : 600px;                              /* <-- Large enough for any section */
+        max-height                         : 900px;                              /* <-- Large enough for both device sub-dropdowns open */
         transition                         : max-height 0.25s ease, opacity 0.22s ease;
         opacity                            : 1;
     }
@@ -386,6 +386,77 @@
         flex                               : 1;
         color                              : #1e1e1e;
         font-weight                        : 400;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+ * REGION | Navigation Help Panel - Device Sub-Dropdowns (PC / Touchscreen)
+ * ----------------------------------------------------------------------------- */
+
+    /* SUBSECTION | Per-device instruction group inside a mode section */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__subsection {
+        margin-bottom                      : 10px;
+        padding-left                       : 8px;
+        border-left                        : 2px solid rgba(23, 43, 58, 0.10);   /* <-- Indent rail marks the sub-level */
+    }
+
+    .na-nav-help__subsection:last-child {
+        margin-bottom                      : 4px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SUBSECTION HEADER BUTTON | Device label + fold arrow */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__subsection-header {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        width                              : 100%;
+        border                             : none;
+        background                         : none;
+        padding                            : 4px 2px;
+        margin-bottom                      : 8px;
+        cursor                             : pointer;
+        text-align                         : left;
+        -webkit-tap-highlight-color        : transparent;
+        transition                         : opacity 0.15s ease;
+    }
+
+    .na-nav-help__subsection-header:hover {
+        opacity                            : 0.75;
+    }
+
+    .na-nav-help__subsection-title {
+        flex                               : 1;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 0.95rem;
+        font-weight                        : 600;
+        color                              : rgba(23, 43, 58, 0.80);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SUBSECTION BODY | Collapsible instruction rows */
+    /* ------------------------------------------------------------ */
+    .na-nav-help__subsection-body {
+        overflow                           : hidden;
+        max-height                         : 420px;                              /* <-- Large enough for the longest device list */
+        transition                         : max-height 0.25s ease, opacity 0.22s ease;
+        opacity                            : 1;
+    }
+
+    .na-nav-help__subsection--collapsed .na-nav-help__subsection-body {
+        max-height                         : 0;                                  /* <-- Animate shut */
+        opacity                            : 0;
+    }
+
+    .na-nav-help__subsection--collapsed .na-nav-help__section-arrow {
+        transform                          : rotate(-90deg);                     /* <-- Arrow points right when collapsed */
     }
     /* ------------------------------------------------------------ */
 

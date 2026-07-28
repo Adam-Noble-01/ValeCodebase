@@ -580,6 +580,10 @@
         {
             "folderId": "2026/63984__Miah",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63403__Thrower",
+            "enabled": true
         }
     ]
 }

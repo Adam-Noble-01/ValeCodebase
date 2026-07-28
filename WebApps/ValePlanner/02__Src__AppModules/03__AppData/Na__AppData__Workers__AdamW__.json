@@ -2606,6 +2606,46 @@
           "endTime": "11:45",
           "title": "Dev |  Parametric Update",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1785225165711",
+          "date": "2026-07-27",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Admin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1785227365831",
+          "date": "2026-07-27",
+          "startTime": "09:00",
+          "endTime": "09:30",
+          "title": "Research",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1785230899961",
+          "date": "2026-07-27",
+          "startTime": "10:30",
+          "endTime": "10:45",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1785225267890",
+          "date": "2026-07-27",
+          "startTime": "09:30",
+          "endTime": "10:30",
+          "title": "Whitecard |  Thrower",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1785230911226",
+          "date": "2026-07-27",
+          "startTime": "11:00",
+          "endTime": "13:00",
+          "title": "Whitecard |  Thrower",
+          "color": "na-shift-color-purple"
         }
       ]
     }

@@ -16,6 +16,8 @@
 // - Accelerates consecutive wheel ticks for faster zoom after sustained scrolling.
 // - Converts AppConfig millimeter values to Three.js units on initialisation.
 // - Supports optional WASD, arrow keys, and Q/E elevation movement.
+// - Movement modifiers: Alt scales steps to 20% for extra-fine nudges; Shift
+//   dollies the rig (camera + orbit target together) so framing holds.
 // - Enforces a configurable camera floor guard and runtime max-distance mutation.
 // - Returns a controls bundle: controls, updateNavigation, dispose, setMaxDistanceMm.
 //
@@ -30,6 +32,19 @@
 // 10-Jun-2026 - Version 1.0.0
 // - Aligned module structure with ValeVision3D navigation conventions.
 //
+// 28-Jul-2026 - Version 1.1.0
+// - WASD / arrow keys now request active rendering while held, so keyboard
+//   movement works without holding the left mouse button (previously the
+//   invalidation-based render loop only ticked during pointer interaction).
+// - Keydown ignored while typing in inputs; arrows preventDefault page scroll.
+// - Window blur releases all held keys to avoid a stuck active-render reason.
+//
+// 28-Jul-2026 - Version 1.2.0
+// - Movement modifiers added: Alt scales steps to 20% for extra-fine nudges;
+//   Shift dollies the whole rig (camera + orbit target translate together so
+//   the view direction holds instead of re-aiming at the orbit pivot).
+// - Arrow preventDefault also blocks Alt+arrow browser history navigation.
+//
 // =============================================================================
 
 
@@ -43,6 +58,10 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { Na__Math__ConvertMmToUnits } from '../04__MathUtils/Na__Math__Units.js';
     import { Na__Navmode__ApplyOrbitControlsDamping } from './Na__Navmode__OrbitControls__Damping.js';
+    import {
+        Na__RenderLoop__RequestActiveRender,
+        Na__RenderLoop__StopActiveRender
+    } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -51,6 +70,19 @@
 // -----------------------------------------------------------------------------
 // REGION | Module State Variables
 // -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Keyboard Movement Modifier Tuning
+    // ------------------------------------------------------------
+    const Na__DefaultNavmode__AltFineScale = 0.2;                      // <-- Alt slows keyboard movement to 20% speed
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Movement Modifier State
+    // ------------------------------------------------------------
+    const Na__DefaultNavmode__ModifierState = {
+        alt   : false,                                                 // <-- Extra-fine speed scale
+        shift : false                                                  // <-- Dolly rig (camera + target together)
+    };
+    // ------------------------------------------------------------
 
     // MODULE VARIABLES | WASD and Arrow Keyboard State
     // ------------------------------------------------------------
@@ -144,29 +176,72 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Check if Focus is on an Interactive Input Element
+    // ------------------------------------------------------------
+    function Na__DefaultNavmode__IsInputFocused() {
+        const tag = document.activeElement && document.activeElement.tagName.toLowerCase(); // <-- Get focused element tag
+        return tag === 'input' || tag === 'textarea' || tag === 'select';                   // <-- True if typing context is active
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Check if Any Movement Key is Currently Held
+    // ------------------------------------------------------------
+    function Na__DefaultNavmode__AnyMovementKeyHeld() {
+        return Object.values(Na__DefaultNavmode__KeyState).some(Boolean);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Bind WASD and Arrow Keyboard Listeners
     // ------------------------------------------------------------
     function Na__DefaultNavmode__BindWASDListeners() {
         const Na__DefaultNavmode__OnKeyDown = (event) => {
+            Na__DefaultNavmode__ModifierState.alt   = event.altKey;    // <-- Sync modifiers on every key event
+            Na__DefaultNavmode__ModifierState.shift = event.shiftKey;
+            if (Na__DefaultNavmode__IsInputFocused()) return;          // <-- Ignore keys while typing in UI inputs
+            if (event.key === 'Alt' && Na__DefaultNavmode__AnyMovementKeyHeld()) {
+                event.preventDefault();                                // <-- Stop Alt focusing the browser menu mid-move
+            }
             const key = event.key.toLowerCase();                       // <-- Normalise key name
             if (Na__DefaultNavmode__KeyState.hasOwnProperty(key)) {
+                if (key.startsWith('arrow')) event.preventDefault();   // <-- Stop arrow scroll + Alt+arrow history nav
                 Na__DefaultNavmode__KeyState[key] = true;
+                Na__RenderLoop__RequestActiveRender('orbit-keys');     // <-- Keep frames ticking while keys held
             }
         };
 
         const Na__DefaultNavmode__OnKeyUp = (event) => {
+            Na__DefaultNavmode__ModifierState.alt   = event.altKey;    // <-- Sync modifiers on every key event
+            Na__DefaultNavmode__ModifierState.shift = event.shiftKey;
             const key = event.key.toLowerCase();                       // <-- Normalise key name
             if (Na__DefaultNavmode__KeyState.hasOwnProperty(key)) {
                 Na__DefaultNavmode__KeyState[key] = false;
+                if (!Na__DefaultNavmode__AnyMovementKeyHeld()) {
+                    Na__RenderLoop__StopActiveRender('orbit-keys');    // <-- Idle the loop once all keys released
+                }
             }
+        };
+
+        const Na__DefaultNavmode__OnWindowBlur = () => {
+            Na__DefaultNavmode__ModifierState.alt   = false;           // <-- Modifiers release on focus loss too
+            Na__DefaultNavmode__ModifierState.shift = false;
+            if (!Na__DefaultNavmode__AnyMovementKeyHeld()) return;
+            Object.keys(Na__DefaultNavmode__KeyState).forEach((key) => {
+                Na__DefaultNavmode__KeyState[key] = false;             // <-- Release keys on focus loss (no keyup fires)
+            });
+            Na__RenderLoop__StopActiveRender('orbit-keys');
         };
 
         window.addEventListener('keydown', Na__DefaultNavmode__OnKeyDown);
         window.addEventListener('keyup', Na__DefaultNavmode__OnKeyUp);
+        window.addEventListener('blur', Na__DefaultNavmode__OnWindowBlur);
 
         return () => {
             window.removeEventListener('keydown', Na__DefaultNavmode__OnKeyDown);
             window.removeEventListener('keyup', Na__DefaultNavmode__OnKeyUp);
+            window.removeEventListener('blur', Na__DefaultNavmode__OnWindowBlur);
+            Na__RenderLoop__StopActiveRender('orbit-keys');            // <-- Never leave the loop pinned after dispose
         };
     }
     // ------------------------------------------------------------
@@ -195,7 +270,7 @@
 
     // SUB HELPER FUNCTION | Apply WASD and Arrow Key Camera Movement
     // ---------------------------------------------------------------
-    function Na__DefaultNavmode__ApplyWASDMovement(camera, movementSpeedUnits, elevationSpeedUnits) {
+    function Na__DefaultNavmode__ApplyWASDMovement(camera, controls, movementSpeedUnits, elevationSpeedUnits) {
         if (!Na__DefaultNavmode__KeyState.w && !Na__DefaultNavmode__KeyState.a && !Na__DefaultNavmode__KeyState.s &&
             !Na__DefaultNavmode__KeyState.d && !Na__DefaultNavmode__KeyState.q && !Na__DefaultNavmode__KeyState.e &&
             !Na__DefaultNavmode__KeyState.arrowup && !Na__DefaultNavmode__KeyState.arrowleft &&
@@ -203,30 +278,43 @@
             return false;                                              // <-- No movement keys held
         }
 
+        const speedScale = Na__DefaultNavmode__ModifierState.alt
+            ? Na__DefaultNavmode__AltFineScale
+            : 1;                                                       // <-- Alt = extra-fine steps
+        const moveStep = movementSpeedUnits * speedScale;
+        const elevStep = elevationSpeedUnits * speedScale;
+
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
         forward.y = 0;                                                 // <-- Keep movement horizontal
         forward.normalize();
 
         const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
+        const displacement = new THREE.Vector3();
 
         if (Na__DefaultNavmode__KeyState.w || Na__DefaultNavmode__KeyState.arrowup) {
-            camera.position.add(forward.clone().multiplyScalar(movementSpeedUnits));
+            displacement.add(forward.clone().multiplyScalar(moveStep));
         }
         if (Na__DefaultNavmode__KeyState.s || Na__DefaultNavmode__KeyState.arrowdown) {
-            camera.position.sub(forward.clone().multiplyScalar(movementSpeedUnits));
+            displacement.sub(forward.clone().multiplyScalar(moveStep));
         }
         if (Na__DefaultNavmode__KeyState.d || Na__DefaultNavmode__KeyState.arrowright) {
-            camera.position.add(right.clone().multiplyScalar(movementSpeedUnits));
+            displacement.add(right.clone().multiplyScalar(moveStep));
         }
         if (Na__DefaultNavmode__KeyState.a || Na__DefaultNavmode__KeyState.arrowleft) {
-            camera.position.sub(right.clone().multiplyScalar(movementSpeedUnits));
+            displacement.sub(right.clone().multiplyScalar(moveStep));
         }
         if (Na__DefaultNavmode__KeyState.e) {
-            camera.position.y += elevationSpeedUnits;
+            displacement.y += elevStep;
         }
         if (Na__DefaultNavmode__KeyState.q) {
-            camera.position.y -= elevationSpeedUnits;
+            displacement.y -= elevStep;
+        }
+
+        camera.position.add(displacement);
+
+        if (Na__DefaultNavmode__ModifierState.shift) {
+            controls.target.add(displacement);                         // <-- Dolly: rig translates, view direction holds
         }
 
         return true;
@@ -310,6 +398,7 @@
             updateMovement = () => {
                 return Na__DefaultNavmode__ApplyWASDMovement(
                     camera,
+                    controls,
                     units.movementSpeedUnits,
                     units.elevationSpeedUnits
                 );

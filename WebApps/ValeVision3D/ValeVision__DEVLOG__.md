@@ -2,6 +2,20 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.8 - 28-Jul-2026 - Nav Toolbar Idle Fade
+
+### Overview
+The bottom navigation toolbar (Orbit / Walk / Fly / Reset View / Help) now
+idles at 50% opacity and wakes with the exact same pure-CSS hover/focus
+response as the Tools & Settings menu — instant reaction both in and out,
+0.3s fade, no JS timer lag. Idle menus also shed their drop shadows:
+box-shadow fades in and out with the opacity as one 0.3s animation across
+the toolbar, Tools & Settings, and breadcrumb. The only scripted piece is
+a 1s wake flash in Na__UiFeature__NavigationToolbar__Controls.js for
+hotkey-driven mode changes (which CSS hover cannot see) so the moved
+highlight still registers; boot stays faded with no opaque flash.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.7 - 28-Jul-2026 - Menu Style and Small-Screen Usability Pass
 
 ### Overview
@@ -12,7 +26,10 @@ to the viewport and scroll instead of cutting off on small screens; closed
 menus (Tools & Settings, breadcrumb) idle at 50% opacity to reduce visual
 distraction, restoring to fully opaque on hover, focus, or while open. The
 localhost dev Tools menu moved below the breadcrumb row so the two no
-longer overlap top-left.
+longer overlap top-left. Dropdown cards restyled to match the breadcrumb
+card (12px radius, soft border, 0 4px 16px shadow); the scroll clamp moved
+from the menu container onto the card itself so the drop shadow is never
+clipped by the scrolling container.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.12.6 - 28-Jul-2026 - Whitecardopedia Breadcrumb Menu + Alt+Backspace Back

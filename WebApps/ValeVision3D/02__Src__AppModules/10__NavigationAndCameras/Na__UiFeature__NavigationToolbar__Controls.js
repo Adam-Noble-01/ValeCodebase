@@ -42,6 +42,14 @@
 // - Initial implementation. Supersedes the Tools-menu "Navigation Mode"
 //   section from Na__UiFeature__NavigationModes__Controls.js (retired).
 //
+// 28-Jul-2026 - Version 1.1.0
+// - Idle fade: toolbar idles at 50% opacity with no shadow, exactly like
+//   the Tools & Settings menu — pure CSS hover/focus response (0.3s), no
+//   JS timer lag in either direction. The only JS is FlashWake(): a 1s
+//   opaque flash on mode changes so hotkey switches (which CSS hover
+//   cannot see) still show the moved highlight. Boot never flashes
+//   (WakeEnabled latch set after the initial SetActiveMode call).
+//
 // =============================================================================
 
 
@@ -72,8 +80,15 @@
 
     // MODULE CONSTANTS | CSS Classes and Events
     // ------------------------------------------------------------
-    const Na__NavToolbar__ActiveClass  = 'na-nav-toolbar__btn--active';      // <-- Pale blue active highlight
-    const NA__NAV_MODE_CHANGED_EVENT   = 'na-navigation-mode-changed';       // <-- Dispatched on every mode change
+    const Na__NavToolbar__ContainerId   = 'naNavToolbar';                     // <-- Toolbar pill container
+    const Na__NavToolbar__ActiveClass   = 'na-nav-toolbar__btn--active';      // <-- Pale blue active highlight
+    const Na__NavToolbar__WakeClass     = 'na-nav-toolbar--wake';             // <-- Short-lived opaque flash (hotkey mode changes)
+    const NA__NAV_MODE_CHANGED_EVENT    = 'na-navigation-mode-changed';       // <-- Dispatched on every mode change
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Wake Flash Tuning
+    // ------------------------------------------------------------
+    const Na__NavToolbar__WakeFlashMs = 1000;                                 // <-- How long a hotkey wake stays opaque before fading back
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -85,10 +100,45 @@
 
     // MODULE VARIABLES | Runtime References
     // ------------------------------------------------------------
-    let Na__NavToolbar__ToggleWalkFn   = null;     // <-- Walk mode toggle wrapper (mutual exclusivity hints)
-    let Na__NavToolbar__ToggleFlyFn    = null;     // <-- Fly mode toggle wrapper (mutual exclusivity hints)
-    let Na__NavToolbar__OpenHelpFn     = null;     // <-- Help panel open callback
-    let Na__NavToolbar__ActiveMode     = 'orbit';  // <-- Currently active mode ('orbit' | 'walk' | 'fly')
+    let Na__NavToolbar__ToggleWalkFn    = null;     // <-- Walk mode toggle wrapper (mutual exclusivity hints)
+    let Na__NavToolbar__ToggleFlyFn     = null;     // <-- Fly mode toggle wrapper (mutual exclusivity hints)
+    let Na__NavToolbar__OpenHelpFn      = null;     // <-- Help panel open callback
+    let Na__NavToolbar__ActiveMode      = 'orbit';  // <-- Currently active mode ('orbit' | 'walk' | 'fly')
+    let Na__NavToolbar__WakeTimerHandle = null;     // <-- Pending wake-flash timeout (or null)
+    let Na__NavToolbar__WakeEnabled     = false;    // <-- False during boot so init does not flash the toolbar
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Hotkey Wake Flash
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Briefly Wake the Toolbar so a Mode Change is Visible
+    // ------------------------------------------------------------
+    // Pointer hover and keyboard focus are handled purely by CSS (instant,
+    // matching the other menus). This flash exists only for hotkey-driven
+    // mode changes, which CSS cannot see: it holds the toolbar opaque for
+    // a moment so the moved highlight registers, then lets it fade back.
+    // ------------------------------------------------------------
+    function Na__NavToolbar__FlashWake() {
+        if (!Na__NavToolbar__WakeEnabled) return;                            // <-- Stay faded during boot
+
+        const toolbar = document.getElementById(Na__NavToolbar__ContainerId);
+        if (!toolbar) return;
+
+        toolbar.classList.add(Na__NavToolbar__WakeClass);                    // <-- Opaque + shadow via CSS
+
+        if (Na__NavToolbar__WakeTimerHandle !== null) {
+            clearTimeout(Na__NavToolbar__WakeTimerHandle);                   // <-- Restart any pending flash
+        }
+
+        Na__NavToolbar__WakeTimerHandle = setTimeout(() => {
+            Na__NavToolbar__WakeTimerHandle = null;
+            toolbar.classList.remove(Na__NavToolbar__WakeClass);             // <-- Fade back to idle (0.3s CSS)
+        }, Na__NavToolbar__WakeFlashMs);
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -117,6 +167,8 @@
         setActive(Na__NavToolbar__OrbitBtnId, activeMode === 'orbit');
         setActive(Na__NavToolbar__WalkBtnId,  activeMode === 'walk');
         setActive(Na__NavToolbar__FlyBtnId,   activeMode === 'fly');
+
+        Na__NavToolbar__FlashWake();                                         // <-- Brief wake so hotkey mode changes are visible
 
         window.dispatchEvent(new CustomEvent(NA__NAV_MODE_CHANGED_EVENT, {
             detail: { mode: activeMode }                                     // <-- Notify other modules of the mode change
@@ -233,7 +285,10 @@
         wireButton(Na__NavToolbar__HelpBtnId,  Na__NavToolbar__HandleHelpClick);
 
         // SET INITIAL ACTIVE STATE (Orbit is the default mode on load)
+        // Pointer hover / keyboard focus wake is pure CSS — no listeners needed.
+        // WakeEnabled stays false until after this call so boot never flashes.
         Na__NavToolbar__SetActiveMode('orbit');
+        Na__NavToolbar__WakeEnabled = true;                                  // <-- Hotkey wake flashes allowed from here on
 
         // LISTEN FOR PROJECT DATA LOAD EVENT (async — reveals Walk/Fly once modes are known)
         window.addEventListener('na-navigation-modes-loaded', (event) => {

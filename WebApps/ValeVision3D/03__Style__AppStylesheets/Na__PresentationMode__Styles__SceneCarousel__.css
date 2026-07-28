@@ -187,18 +187,21 @@
  * REGION | Inactive Toolbar Opacity Fade
  * ----- */
 
+    /* Idle by default, exactly like the Tools & Settings menu: pure CSS
+       hover/focus response with no JS timer lag. The --wake class is a
+       short-lived flash applied by NavigationToolbar Controls only for
+       hotkey-driven mode changes, which CSS hover cannot see.            */
     .na-nav-toolbar {
-        opacity                            : 1;
-        transition                         : opacity 0.3s ease;
-    }
-
-    .na-nav-toolbar.na-nav-toolbar--inactive {
-        opacity                            : 0.78;           /* slight fade when idle      */
+        opacity                            : 0.5;            /* 50% idle default */
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0);      /* shadow hidden while idle */
+        transition                         : opacity 0.3s ease, box-shadow 0.3s ease;  /* same fade as the other menus */
     }
 
     .na-nav-toolbar:hover,
-    .na-nav-toolbar:focus-within {
+    .na-nav-toolbar:focus-within,
+    .na-nav-toolbar.na-nav-toolbar--wake {
         opacity                            : 1;              /* fully opaque on interaction */
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.14);   /* shadow animates in with the opacity */
     }
 
 /* endregion ---- */

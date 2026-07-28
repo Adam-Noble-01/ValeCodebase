@@ -43,8 +43,8 @@
     font-family                        : 'Open Sans', sans-serif;
     transform                          : scale(1.2);
     transform-origin                   : top right;
-    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2); /* <-- Divide by scale(1.2) so visual height fits viewport */
-    overflow-y                         : auto;                                  /* <-- Scroll when open content exceeds small screens */
+    /* NOTE: no overflow here — it would clip the details card's drop shadow.
+       The viewport scroll clamp lives on .na-dropdown-menu__details instead. */
     /* Inactive fade: collapsed menu is 50% translucent when idle */
     opacity                            : 0.5;
     transition                         : opacity 0.3s ease;
@@ -68,8 +68,11 @@
     left                               : 20px;                                 /* <-- Pin to the left side of the viewport */
     transform-origin                   : top left;                              /* <-- Scale from top-left corner */
     position                           : fixed;                                /* <-- Explicit fixed for absolute child positioning */
-    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 64px) / 1.2); /* <-- Divide by scale(1.2) so visual height fills viewport exactly */
-    overflow-y                         : auto;                                  /* <-- Allow panel to scroll when content exceeds scaled height */
+    /* NOTE: scroll clamp lives on the details card below so its shadow is never clipped */
+}
+
+.na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
+    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 64px) / 1.2); /* <-- Deeper offset: menu sits below the breadcrumb row */
 }
 
 .na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
@@ -103,10 +106,20 @@
 
 .na-dropdown-menu__details {
     background                          : rgba(255, 255, 255, 0.95);
-    border                              : 1px solid rgba(0, 0, 0, 0.12);
-    border-radius                       : 6px;
-    box-shadow                          : 0 6px 18px rgba(0, 0, 0, 0.15);
+    border                              : 1px solid rgba(23, 43, 58, 0.08);    /* <-- Match breadcrumb card border */
+    border-radius                       : 12px;                                 /* <-- Match breadcrumb card radius */
+    box-shadow                          : 0 4px 16px rgba(0, 0, 0, 0);          /* <-- Shadow hidden while idle */
+    transition                          : box-shadow 0.3s ease;                 /* <-- Shadow fades with the menu opacity */
     min-width                           : 220px;
+    max-height                          : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2); /* <-- Scale-aware viewport clamp (scroll lives here so the shadow is never clipped) */
+    overflow-y                          : auto;                                 /* <-- Scroll open content on small screens */
+}
+
+/* Shadow animates in on the same wake states that restore full opacity */
+.na-dropdown-menu:hover .na-dropdown-menu__details,
+.na-dropdown-menu:focus-within .na-dropdown-menu__details,
+.na-dropdown-menu .na-dropdown-menu__details[open] {
+    box-shadow                          : 0 4px 16px rgba(0, 0, 0, 0.14);       /* <-- Match breadcrumb card shadow */
 }
 
 .na-dropdown-menu__details--camera-open {
@@ -972,7 +985,7 @@
 /* Tree Container - Scrollable */
 /* ----------------------------------------------------------------- */
 .na-scene-inspector__tree {
-    max-height                          : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2 - 280px); /* <-- Fill remaining panel height after header controls, scaled */
+    max-height                          : calc((100vh - var(--Vale_HeaderHeight) - 64px) / 1.2 - 280px); /* <-- Fill remaining panel height after header controls, scaled (64px = dev menu top offset) */
     overflow-y                          : auto;
     overflow-x                          : hidden;
     border-top                          : 1px solid rgba(23, 43, 58, 0.08);

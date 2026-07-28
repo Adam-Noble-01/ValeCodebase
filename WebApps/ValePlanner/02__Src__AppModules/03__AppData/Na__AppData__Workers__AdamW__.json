@@ -2662,6 +2662,22 @@
           "endTime": "13:00",
           "title": "Whitecard |  Thrower",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1785256065851",
+          "date": "2026-07-27",
+          "startTime": "17:30",
+          "endTime": "18:30",
+          "title": "Whitecard |  Ball",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1785256130579",
+          "date": "2026-07-27",
+          "startTime": "15:30",
+          "endTime": "17:30",
+          "title": "Dev |  ValeVision - Breadcrumbs",
+          "color": "na-shift-color-slate"
         }
       ]
     }

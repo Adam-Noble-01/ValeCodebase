@@ -99,7 +99,8 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
             'Access-Control-Allow-Methods' : 'POST,OPTIONS',
             'Access-Control-Allow-Headers' : 'Content-Type, Authorization, Cf-Access-Jwt-Assertion',
             'Access-Control-Max-Age'       : '86400',
-            'Vary'                         : 'Origin'
+            'Vary'                         : 'Origin',
+            'X-Robots-Tag'                 : 'noindex, nofollow'             // <-- Cloudflare Transform Rules cannot reach *.workers.dev
         };
     }
     // ------------------------------------------------------------

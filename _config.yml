@@ -1,2 +1,103 @@
+# =============================================================================
+# VALECODEBASE - GITHUB PAGES BUILD CONFIGURATION
+# =============================================================================
+#
+# FILE       : _config.yml
+# AUTHOR     : Adam Noble - Noble Architecture
+# PURPOSE    : Control which files GitHub Pages publishes to
+#              https://adam-noble-01.github.io/ValeCodebase/
+#
+# DESCRIPTION:
+# - This repo is served as a GitHub Pages PROJECT site. Every tracked file is
+#   published at its repo path unless excluded here.
+# - Search-engine delisting uses <meta name="robots"> in HTML, but that tag is
+#   impossible in .md, .json, .pdf and binary assets, and GitHub Pages cannot
+#   emit an X-Robots-Tag header. For those formats, NOT PUBLISHING is the only
+#   available control. That is what this file is for.
+#
+# IMPORTANT - JEKYLL EXCLUDE SEMANTICS:
+# - Supplying an `exclude:` key REPLACES Jekyll's built-in default list rather
+#   than adding to it. The defaults (Gemfile, Gemfile.lock, node_modules,
+#   vendor/*) are therefore restored explicitly below.
+# - Jekyll's default `node_modules` entry only matches a ROOT-LEVEL directory.
+#   The two vendored trees in this repo are nested, so they need full paths.
+#
+# -----------------------------------------------------------------------------
+#
+# DEVELOPMENT LOG:
+# 28-Jul-2026 - Version 2.0.0
+# - Expanded from a single WhitecardVision entry to a full publish allowlist.
+# - Restored Jekyll's default excludes, which the previous 2-line file silently
+#   discarded (this is why both CloudflareWorker node_modules trees, 3360 files,
+#   were being published).
+# - Excluded all markdown so internal DEVLOGs stop serving as indexable plain
+#   text at adam-noble-01.github.io/ValeCodebase/.../ValeVision__DEVLOG__.md.
+# - Excluded dev tools, prototypes, test harnesses and archived versions.
+#
+# 23-Apr-2026 - Version 1.0.0
+# - Initial file. Excluded WebApps/WhitecardVision/ only.
+#
+# =============================================================================
+
 exclude:
-  - WebApps/WhitecardVision/
+
+    # -------------------------------------------------------------------------
+    # JEKYLL DEFAULTS | Restored explicitly (a custom exclude key discards them)
+    # -------------------------------------------------------------------------
+    - Gemfile
+    - Gemfile.lock
+    - node_modules
+    - vendor/bundle/
+    - vendor/cache/
+    - vendor/gems/
+    - vendor/ruby/
+
+    # -------------------------------------------------------------------------
+    # VENDORED DEPENDENCIES | Nested node_modules (defaults only match root)
+    # -------------------------------------------------------------------------
+    - WebApps/ValeVision3D/02__Src__AppModules/62__Feature__EmailWorkers/CloudflareWorker/node_modules/
+    - WebApps/Whitecardopedia/CloudflareWorker/node_modules/
+
+    # -------------------------------------------------------------------------
+    # INTERNAL DOCUMENTATION | Markdown never needs publishing
+    # -------------------------------------------------------------------------
+    # DEVLOGs and design notes name every app, hostname, Worker and client, and
+    # serve as indexable plain text. No meta robots tag is possible in markdown.
+    # Both patterns are listed because glob semantics vary across Jekyll builds.
+    # -------------------------------------------------------------------------
+    - "*.md"
+    - "**/*.md"
+
+    # -------------------------------------------------------------------------
+    # DEVELOPER TOOLING | Not part of any published app
+    # -------------------------------------------------------------------------
+    - Root_GeneralDeveloperTools/
+    - Dev__EarlyStageDev__TestingFiles/
+    - VsCode__Settings/
+    - VSCode_MarkdownRenderStyle_CoreStandard.css
+    - VSCode_MarkdownRenderStyle_CoreStandard.less
+    - _tmp_email_hardening.patch
+
+    # -------------------------------------------------------------------------
+    # PROTOTYPES AND TEST HARNESSES | Never intended to be publicly reachable
+    # -------------------------------------------------------------------------
+    - WebApps/Prototypes__ToolTesting__EarlyStage/
+    - WebApps/00__WebApp__Archive/
+    - WebApps/ValeVision3D/79__Testing__GenerateObjects/
+    - WebApps/ValeVision3D/80__Testing__PrototypeEnvironment/
+    - WebApps/ValeVision3D/00__Archive/
+    - WebApps/ValeSpec/65__Dev__CadObjectBuilder/
+
+    # -------------------------------------------------------------------------
+    # SUPERSEDED APP | Retained from the previous configuration
+    # -------------------------------------------------------------------------
+    - WebApps/WhitecardVision/
+
+    # -------------------------------------------------------------------------
+    # DISTRIBUTION EMAIL TEMPLATES | Render client and project data
+    # -------------------------------------------------------------------------
+    # These are email bodies, not pages. They are sent by the Workers and never
+    # need to be fetchable over HTTP.
+    # -------------------------------------------------------------------------
+    - WebApps/ValeVision3D/60__DistributionEmails/
+    - WebApps/Whitecardopedia/Distro__DistributionEmails/

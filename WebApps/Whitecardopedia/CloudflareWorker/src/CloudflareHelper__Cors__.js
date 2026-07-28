@@ -20,6 +20,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Jul-2026 - Version 1.1.0
+// - Added X-Robots-Tag: noindex, nofollow to every response. Cloudflare
+//   Transform Rules are zone-scoped and cannot reach *.workers.dev, so this
+//   header has to be set in code rather than in the dashboard.
+//
 // 26-Jun-2026 - Version 1.0.0
 // - Initial implementation.
 // - Extracted from index.js + handler to fix 127.0.0.1 dev-origin rejection.
@@ -67,7 +72,8 @@
             'Access-Control-Allow-Methods' : 'GET, POST, OPTIONS',
             'Access-Control-Allow-Headers' : 'Content-Type, X-Editor-Api-Key',
             'Access-Control-Max-Age'       : '86400',
-            'Vary'                         : 'Origin'                        // <-- Correct caching across origins
+            'Vary'                         : 'Origin',                       // <-- Correct caching across origins
+            'X-Robots-Tag'                 : 'noindex, nofollow'             // <-- Cloudflare Transform Rules cannot reach *.workers.dev
         };
     }
     // ------------------------------------------------------------

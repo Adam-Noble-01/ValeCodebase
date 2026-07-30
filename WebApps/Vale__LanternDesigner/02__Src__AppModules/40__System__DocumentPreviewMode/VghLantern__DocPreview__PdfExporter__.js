@@ -10,8 +10,9 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Exports the same document the preview shows: a landscape drawing sheet followed
-     by the specification pages, filtered by the same view toggles.
+   - Exports the same document the preview shows: page order comes from DocPreview
+     config (specification first, drawing sheet last by default), filtered by the
+     same view toggles.
    - Drawing views are rasterised, because jsPDF cannot place vector SVG. Everything
      else - titleblock, notes, schedules - is drawn natively so the text stays
      selectable and the file stays small.
@@ -250,38 +251,44 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 
     // SUB FUNCTION | Draw the Titleblock Field Strip
     // ------------------------------------------------------------
-    // Drawn as a single strip along the foot of the sheet rather than reproducing the
-    // on-screen grid, because a landscape sheet has width to spare and height to save.
+    // Compact strip along the foot of the sheet. Height comes from Drawing Editor
+    // TitleBlockHeightMm so the preview host and the PDF strip stay aligned.
     function VghLantern__PdfExporter__DrawTitleBlock(doc, sheet, bodyRect, bodyFontPt) {
         var TitleBlock  =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
         if (!TitleBlock) return 0;
 
-        var fields  =  TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(sheet.Project, sheet.Lantern);
-        var keys    =  Object.keys(fields);
-        if (!keys.length) return 0;
+        var drawCfg   =  VghLantern__PdfExporter__DrawingConfig();
+        var titleCfg  =  drawCfg['VghLantern__DrawingEditor__Config__TitleBlock'] || {};
+        var sheetCfg  =  drawCfg['VghLantern__DrawingEditor__Config__Sheet'] || {};
+        var rows      =  Array.isArray(titleCfg.Rows) ? titleCfg.Rows : [];
+        if (!rows.length) return 0;
 
+        var fields  =  TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(sheet.Project, sheet.Lantern);
         var lineHeight  =  VghLantern__PdfExporter__LineHeightMm(bodyFontPt);
-        var stripHeight =  lineHeight * 2.4;
+        var stripHeight =  (typeof sheetCfg.TitleBlockHeightMm === 'number')
+            ? sheetCfg.TitleBlockHeightMm
+            : (lineHeight * 2.4);
         var stripY      =  bodyRect.Y + bodyRect.HeightMm - stripHeight;
-        var columnWidth =  bodyRect.WidthMm / keys.length;
+        var columnWidth =  bodyRect.WidthMm / rows.length;
 
         doc.setLineWidth(FRAME_STROKE_MM);
         doc.setDrawColor(23, 43, 58);
         doc.rect(bodyRect.X, stripY, bodyRect.WidthMm, stripHeight);
 
-        var i, cellX;
-        for (i = 0; i < keys.length; i++) {
+        var i, cellX, row;
+        for (i = 0; i < rows.length; i++) {
+            row    =  rows[i];
             cellX  =  bodyRect.X + (i * columnWidth);
 
             if (i > 0) doc.line(cellX, stripY, cellX, stripY + stripHeight);
 
-            doc.setFontSize(bodyFontPt * 0.8);
+            doc.setFontSize(bodyFontPt * 0.75);
             doc.setTextColor(110, 110, 110);
-            doc.text(String(keys[i]), cellX + TABLE_CELL_PADDING_MM, stripY + lineHeight * 0.9);
+            doc.text(String(row.Label || row.Key), cellX + TABLE_CELL_PADDING_MM, stripY + lineHeight * 0.85);
 
             doc.setFontSize(bodyFontPt);
             doc.setTextColor(23, 43, 58);
-            doc.text(String(fields[keys[i]] || ''), cellX + TABLE_CELL_PADDING_MM, stripY + lineHeight * 1.9);
+            doc.text(String(fields[row.Key] || ''), cellX + TABLE_CELL_PADDING_MM, stripY + stripHeight - 1.4);
         }
 
         return stripHeight + SECTION_GAP_MM;
@@ -611,15 +618,19 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         VghLantern__PdfExporter__IsExporting  =  true;
 
         try {
-            var viewState     =  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState();
-            var wantsDrawing  =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesDrawingPage();
-            var wantsSpec     =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesSpecificationPage();
+            var viewState   =  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState();
+            var pageKinds   =  DocumentState.VghLantern__DocPreview__DocumentState__ListPageKinds();
+            if (!pageKinds.length) {
+                VghLantern__PdfExporter__ReportFailure('Every content section is switched off - nothing to export.');
+                return false;
+            }
 
             var drawingPage  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(
                                     DocumentState.VghLantern__DocPreview__DocumentState__DrawingOrientation()
                                 );
             var specPage     =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(null);
-            var firstPage    =  wantsDrawing ? drawingPage : specPage;
+            var firstKind    =  pageKinds[0];
+            var firstPage    =  (firstKind === 'drawing') ? drawingPage : specPage;
 
             var doc  =  new JsPdf({
                 unit        : 'mm',
@@ -628,22 +639,28 @@ const VghLantern__DocPreview__PdfExporter = (function() {
                 compress    : true
             });
 
-            if (wantsDrawing) {
-                var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
-                var sheet         =  SheetManager
-                    ? SheetManager.VghLantern__DrawingEditor__SheetManager__DescribeSheet()
-                    : { ViewSvgMarkup: {}, ViewSnapshots: {}, ScaleLabel: '' };
+            var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
+            var SpecModel     =  window.VghLantern__Specification__DocumentModel;
+            var sheet         =  null;
+            var model         =  null;
+            var i, kind, pageGeometry;
 
-                await VghLantern__PdfExporter__RenderDrawingPage(doc, drawingPage, sheet);
-            }
+            for (i = 0; i < pageKinds.length; i++) {
+                kind  =  pageKinds[i];
 
-            if (wantsSpec) {
-                var SpecModel  =  window.VghLantern__Specification__DocumentModel;
-                var model      =  SpecModel ? SpecModel.VghLantern__Specification__DocumentModel__BuildFromState() : null;
+                if (i > 0) {
+                    pageGeometry  =  (kind === 'drawing') ? drawingPage : specPage;
+                    doc.addPage([pageGeometry.WidthMm, pageGeometry.HeightMm], pageGeometry.Orientation);
+                }
 
-                if (model) {
-                    if (wantsDrawing) doc.addPage([specPage.WidthMm, specPage.HeightMm], specPage.Orientation);
-                    VghLantern__PdfExporter__RenderSpecificationPages(doc, specPage, model, viewState);
+                if (kind === 'drawing') {
+                    sheet  =  SheetManager
+                        ? SheetManager.VghLantern__DrawingEditor__SheetManager__DescribeSheet()
+                        : { ViewSvgMarkup: {}, ViewSnapshots: {}, ScaleLabel: '' };
+                    await VghLantern__PdfExporter__RenderDrawingPage(doc, drawingPage, sheet);
+                } else if (kind === 'specification') {
+                    model  =  SpecModel ? SpecModel.VghLantern__Specification__DocumentModel__BuildFromState() : null;
+                    if (model) VghLantern__PdfExporter__RenderSpecificationPages(doc, specPage, model, viewState);
                 }
             }
 

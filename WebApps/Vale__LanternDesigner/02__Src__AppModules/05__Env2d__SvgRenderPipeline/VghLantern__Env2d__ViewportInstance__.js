@@ -67,9 +67,62 @@ const VghLantern__Env2d__ViewportInstance = (function() {
     const CSS_ROOT           =  'VghLantern__Env2d__Svg';                    // <-- Root svg element class
     const CSS_LAYER_PREFIX   =  'VghLantern__Env2d__Layer--';                // <-- Layer group class prefix
     const CSS_VIEW_LABEL     =  'VghLantern__Env2d__ViewLabel';              // <-- Corner view label class
+    const CSS_VIEW_LABEL_RULE =  'VghLantern__Env2d__ViewLabelUnderline';     // <-- CAD underline under the title
 
-    const DEFAULT_PADDING_FACTOR  =  0.14;                                   // <-- Used when config is unavailable
-    const FALLBACK_EXTENT_MM      =  2000;                                   // <-- Empty-scene viewBox size
+    const DEFAULT_PADDING_FACTOR       =  0.14;                              // <-- Used when config is unavailable
+    const FALLBACK_EXTENT_MM           =  2000;                              // <-- Empty-scene viewBox size
+    const FALLBACK_LABEL_SIZE_FACTOR   =  0.00875;                           // <-- 0.25x of the previous 0.035 factor
+    const FALLBACK_LABEL_STROKE_FACTOR =  0.0009;                            // <-- Underline stroke vs viewBox span
+    const FALLBACK_LABEL_GAP_FACTOR    =  0.025;                             // <-- Gap under drawn content before the title
+
+    // Layers whose painted bounds pull the title next to the lantern (not the frame)
+    const VIEW_LABEL_BOUNDS_LAYERS  =  [
+        'fills', 'hidden', 'geometry', 'bars', 'components', 'dimensions'
+    ];
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Content Bounds for View Labels
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Union of Painted Layer Bounds (Excludes Grid and Overlay)
+    // ------------------------------------------------------------
+    // The draftsman title must sit under the lantern and its dimensions, not at the
+    // empty viewBox corner left by true-scale framing on the sheet.
+    function VghLantern__Env2d__ViewportInstance__ContentBounds(layers) {
+        var minX  =  Infinity;
+        var minY  =  Infinity;
+        var maxX  =  -Infinity;
+        var maxY  =  -Infinity;
+        var i, layer, bbox;
+
+        for (i = 0; i < VIEW_LABEL_BOUNDS_LAYERS.length; i++) {
+            layer  =  layers[VIEW_LABEL_BOUNDS_LAYERS[i]];
+            if (!layer || !layer.childNodes || layer.childNodes.length === 0) continue;
+
+            try { bbox = layer.getBBox(); } catch (err) { bbox = null; }
+            if (!bbox || !(bbox.width > 0) || !(bbox.height > 0)) continue;
+
+            if (bbox.x < minX) minX = bbox.x;
+            if (bbox.y < minY) minY = bbox.y;
+            if ((bbox.x + bbox.width)  > maxX) maxX = bbox.x + bbox.width;
+            if ((bbox.y + bbox.height) > maxY) maxY = bbox.y + bbox.height;
+        }
+
+        if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) return null;
+
+        return {
+            MinX   : minX,
+            MinY   : minY,
+            MaxX   : maxX,
+            MaxY   : maxY,
+            Width  : maxX - minX,
+            Height : maxY - minY
+        };
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -223,20 +276,63 @@ const VghLantern__Env2d__ViewportInstance = (function() {
         };
 
         // FUNCTION | Place or Update the Corner View Label
+        // Anchored just below the drawn lantern (and its dimensions), not the
+        // viewBox edge - at true sheet scale the frame edge sits far from the model.
         instance.SetViewLabel  =  function(labelText) {
             var overlay  =  layers.overlay;
-            if (!overlay) return;
+            if (!overlay || !SvgHelpers) return;
 
-            var box  =  instance.GetViewBox();
-            var pad  =  Math.max(box.Width, box.Height) * 0.02;
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+            var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
+            var viewportCfg   =  (env2d && env2d['VghLantern__Env2d__Config__Viewport']) || {};
+            var sizeFactor    =  (typeof viewportCfg.ViewLabelSizeFactor === 'number')
+                ? viewportCfg.ViewLabelSizeFactor
+                : FALLBACK_LABEL_SIZE_FACTOR;
+            var strokeFactor  =  (typeof viewportCfg.ViewLabelUnderlineStrokeFactor === 'number')
+                ? viewportCfg.ViewLabelUnderlineStrokeFactor
+                : FALLBACK_LABEL_STROKE_FACTOR;
+            var gapFactor     =  (typeof viewportCfg.ViewLabelGapFactor === 'number')
+                ? viewportCfg.ViewLabelGapFactor
+                : FALLBACK_LABEL_GAP_FACTOR;
+
+            var box       =  instance.GetViewBox();
+            var span      =  Math.max(box.Width, box.Height);
+            var fontSize  =  span * sizeFactor;
+            var content   =  VghLantern__Env2d__ViewportInstance__ContentBounds(layers);
+            var anchorX;
+            var anchorY;
+
+            if (content) {
+                var contentSpan  =  Math.max(content.Width, content.Height);
+                var gap          =  contentSpan * gapFactor;
+                anchorX  =  content.MinX;
+                anchorY  =  content.MaxY + gap + fontSize;                   // <-- Baseline sits just under the drawing
+            } else {
+                var pad  =  span * 0.02;
+                anchorX  =  box.MinX + pad;
+                anchorY  =  box.MaxY - pad;
+            }
 
             var textEl  =  SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateText(
-                { x: box.MinX + pad, y: box.MaxY - pad },
+                { x: anchorX, y: anchorY },
                 labelText,
                 CSS_VIEW_LABEL,
-                { 'font-size': Math.max(box.Width, box.Height) * 0.035 }
+                { 'font-size': fontSize }
             );
             overlay.appendChild(textEl);
+
+            var bbox  =  null;
+            try { bbox = textEl.getBBox(); } catch (err) { bbox = null; }
+            if (!bbox || !(bbox.width > 0)) return;
+
+            var underlineY  =  bbox.y + bbox.height + (fontSize * 0.18);
+            var rule        =  SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
+                { x: bbox.x, y: underlineY },
+                { x: bbox.x + bbox.width, y: underlineY },
+                CSS_VIEW_LABEL_RULE,
+                { 'stroke-width': span * strokeFactor }
+            );
+            overlay.appendChild(rule);
         };
 
         // FUNCTION | Detach the Instance from the DOM

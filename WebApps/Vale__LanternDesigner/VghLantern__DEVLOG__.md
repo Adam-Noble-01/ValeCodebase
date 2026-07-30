@@ -3,6 +3,84 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.2 - 30-Jul-2026
+### Preview & Send and Drawing Editor: drawings last, compact title block, PDF-faithful preview, true scale sheet views, sheet navigation, live 3D camera, and true-size PDF export
+
+#### Document Preview (`40__System__DocumentPreviewMode`)
+- **Page order** is now config-driven (`Config__Page.PageOrder`: specification then drawing). Both on-screen preview and PDF export read the same `DocumentState.ListPageKinds()` path so they cannot diverge.
+- **Drawing title block** is height-capped from `TitleBlockHeightMm` (reduced to **14 mm**, logo **28 mm**) so the four view frames reclaim page space. Preview wraps the title strip in `DocPreview__TitleHost`; PDF strip height uses the same config value and row Labels.
+- **WYSIWYG specification pages** — new **`PrintDocumentRenderer`** builds print-faithful HTML from `DocumentModel` (same sequence as `PdfExporter`). Specification Mode keeps its interactive card UI; Preview & Send no longer dumps that abstraction into the paper preview.
+- **Drawing Editor viewport gutters** — drag the space between the 2×2 frames to rebalance column/row shares. Hover shows a grab cursor and blue handle; scale stays fixed (larger frame shows more model at the same 1:N). Shares persist for the session and feed PDF layout via `GetGridShares`.
+- **Env2d corner view titles** — in-viewport draftsman labels (not sheet frame captions) at **0.25×** size (`ViewLabelSizeFactor` 0.00875), with a text-width underline rule, and plan renamed **Plan View**. Labels anchor just under the drawn content (not the empty viewBox edge). Gutter resize handles idle as light dotted lines; hover/drag keeps the solid blue accent.
+- **Sheet ↔ PDF WYSIWYG parity** — Drawing Editor and PDF export now share one millimetre SSOT (`Sheet.BlockGapMm`, titleblock paddings/logo caps, notes typography/columns, frame label font). Screen chrome is driven by CSS variables injected from config; PDF titleblock/notes/logo use the same numbers; `CellSizeMm` reserves the notes band like `SheetPdfLayout.Solve`.
+
+#### Scale correctness (the headline fix)
+- **Sheet views were never drawn at the quoted scale.** Every frame caption and the titleblock quoted the `ScaleManager` denominator, but nothing applied it: each view was independently fitted to its frame by `Env2d__RenderPipeline__FitIfNeeded`, so a 4000 mm side elevation drew larger than a 6000 mm front elevation on the same sheet at the same stated scale.
+- **`ViewPlacement__ApplyTrueScale()`** now gives each orthographic frame a viewBox spanning exactly **(frame body millimetres x scale denominator)** of model space, centred on that view's projected extents. The quoted scale and the drawn scale are the same number.
+- The body rectangle is **measured from the laid-out frame** rather than taken from the requested grid cell. The notes block takes its height off the grid, so the two differ, and a viewBox whose aspect does not match its box is letterboxed by `preserveAspectRatio` and quietly draws under scale.
+- **A manually chosen scale now sticks.** Auto fit re-ran on every rebuild and silently overwrote the toolbar selection, which is why changing the Scale dropdown appeared to do nothing. Auto fit still picks the opening scale, then stands down for the session once the user chooses.
+- Frame caption strips are pinned to their configured paper height, because the body maths subtracts `FrameLabelHeightMm` and a font-driven strip height put the drawn scale slightly off its quoted value.
+
+#### PDF export (`SheetPdfLayout__.js`, `SheetPdfExporter__.js` - both new)
+- **`SheetPdfLayout__.js`** solves the paper millimetre rectangle of every element on a sheet: view grid, each frame and its drawable body, notes block, titleblock strip. Pure arithmetic, no DOM and no jsPDF. Honours `ColumnSharesPct` / `RowSharesPct`, preferring the live session shares from `SheetManager__GetGridShares()` so an exported sheet matches frames the user has dragged.
+- **`SheetPdfExporter__.js`** writes the sheet as a single-page PDF and is the owner of scale correctness in print. Three things have to agree and all three are forced: the page is created at the sheet's real millimetre size; each view's viewBox is **rewritten** to span exactly one scale window before rasterising; the raster is placed into that same rectangle so nothing is refitted between the maths and the paper.
+- Verified end to end on an A3 landscape export: PDF MediaBox came out as **1190.55 x 841.89 pt**, which is exactly 420 x 297 mm, and a 10,000 mm lantern drew 100 mm wide at 1:100.
+- Views are rasterised at **12 px/mm (about 305 dpi) as PNG**, because a drawing is thin dark lines on white that JPEG turns into grey haloes. Frame chrome, notes and the titleblock are drawn **natively**, so issued text stays selectable and searchable.
+- **Draw order matters and is deliberate.** Views are laid down in one pass and every rule and caption drawn over them in a second. A view is an opaque raster filling its body rectangle to the millimetre, so chrome drawn first is painted over along every shared edge.
+- Page size and drawn scale are written into the **document properties** as well as the page geometry, so a short print can be diagnosed from the file itself.
+- New **`VghLantern__DrawingEditor__Config__PdfExport`** block: filename pattern and tokens, raster density, block gaps, stroke weights, print colours and metadata author strings.
+
+#### Env2d export fidelity
+- **`Env2d__RenderPipeline__ToSvgMarkup()` now bakes computed styles inline** before serialising. The live SVG is styled entirely through CSS classes and custom properties, none of which travel with a detached markup string, so serialised raw the views rasterised as black shapes with no strokes. This was a **latent bug affecting the existing Document Preview PDF export** as well, which is fixed by the same change. Only the eighteen properties that decide how a shape is painted are copied, so an exported sheet is not inflated by hundreds of irrelevant declarations.
+
+#### Sheet navigation and direct editing
+- **Wheel zooms about the cursor; right drag or middle drag pans.** Pan was originally on left click, whose pointer capture swallowed every click before it reached a dimension or the 3D frame. Left click is now completely free for editing. The browser context menu is suppressed inside the sheet stage and middle-button autoscroll is blocked.
+- Zoom is a CSS transform on the sheet plus an explicit size on the scaler, so the sheet keeps its true paper-pixel dimensions for export while the host's own scrollbars provide the pan surface. Zoom survives sheet rebuilds within a session.
+- **Dimensions are editable directly on the sheet**, through the same `ConstraintResolver` path as the Lantern Editor. The floating input is positioned through the sheet's zoom transform, so it lands centred on the text at any zoom rather than only at 100 percent.
+- **Fit Views and Refresh are removed** along with their config flags. The sheet live-updates on every geometry solve and every toolbar change, so both were dead weight. Double-click zoom reset is removed too; the gesture belongs to the 3D frame.
+
+#### Live 3D camera editing on the sheet
+- **Double-click the 3D frame** to swap the snapshot for a live orbitable surface. The frame takes a blue border to show which viewport owns the keyboard, and **Escape** ends the session.
+- On exit the snapshot is **re-captured from wherever the camera was left**, and that camera is remembered: later geometry edits and sheet rebuilds re-shoot the 3D view from the chosen angle instead of snapping back to the isometric preset.
+- **`RenderPipeline__GetCameraState()` / `SetCameraState()`** expose camera position and orbit target as plain data, so classic scripts can hold and replay a camera without touching Three.js types.
+- Sheet pan and wheel stand down over a live camera canvas so the two navigation systems never fight, and a sheet rebuild or mode exit mid-session tears the session down safely.
+
+#### Drawing output no longer carries modelling aids
+- The **Env2d construction grid** is cleared from each sheet frame after it renders. Cleared after the fact rather than suppressed inside the renderer, so the Lantern Editor viewport keeps its grid untouched. Config: `ViewGrid.ShowConstructionGrid`.
+- The **Env3d ground grid is never built** into a sheet viewport. `SceneManager__Create()` and `RenderPipeline__Mount()` now take options, and the Drawing Editor mounts both of its 3D surfaces with `{ ShowGroundPlane : false }`.
+- **Suppressed at build time, not hidden at capture time, and this matters:** the lighting rig attaches into the same `helpers` group as the grid, so hiding that group removes every light and renders the lantern as an unlit black silhouette.
+- Sheet snapshots frame tighter than the live view via `Snapshot.FramePaddingFactor`, because the bounding-sphere fit plus the interactive padding left a wide flat lantern tiny in its frame.
+
+#### Performance and resource fixes
+- **The 3D snapshot is cached against a fingerprint** of the lantern config and camera preset. Every entry to the mode previously mounted a fresh WebGL context, rebuilt the scene, rendered a supersampled frame and PNG-encoded it on the main thread (about 1 s of a measured 1.3 s entry), then threw it all away on exit. Re-entry with unchanged geometry now does no WebGL work at all.
+- **WebGL contexts are actually released.** `renderer.dispose()` does not free a context; that waits for garbage collection, so repeated tab switching stacked live contexts toward the browser's hard cap, at which point the browser starts killing the oldest context. `SceneManager__Destroy()` now calls `forceContextLoss()`.
+- **Sheet redraws are no longer dropped.** A request arriving while a build was in flight was silently discarded, leaving the sheet showing stale geometry. Requests are latched and replayed when the build lands.
+- **`THREE.Color: Unknown color role-fixed`** warning fixed: the material builder parsed a sentinel string as a colour on every glazing and line material build. The colour is now constructed only in the branch that uses it.
+- Toolbar render order fixed so the Scale dropdown shows the settled denominator on first entry rather than a stale one.
+
+#### Document Preview - visit requirement removed
+- **The Drawing Editor visit requirement is gone** (open item from v0.0.1). Preview and Send previously showed empty drawing frames unless the Drawing Editor had been opened that session. Entering Preview now composes the sheet headlessly when nothing is cached, then releases the hidden surfaces immediately. This became safe because the true-scale viewBox maths never reads on-screen layout.
+
+#### Files touched (Drawing Editor, PDF export and supporting environments)
+
+| Area | Path |
+|------|------|
+| Drawing Editor (new) | `02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfLayout__.js` |
+| Drawing Editor (new) | `02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfExporter__.js` |
+| Drawing Editor | `VghLantern__DrawingEditor__SheetManager__.js`, `ViewPlacement__.js`, `ViewportFrame__.js`, `Na__DrawingEditor__Config.json`, `Styles__Main__.css` |
+| 2D environment | `05__Env2d__SvgRenderPipeline/VghLantern__Env2d__RenderPipeline__.js`, `DimensionEditor__.js` |
+| 3D environment | `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__SceneManager__.mjs`, `RenderPipeline__.mjs`, `SnapshotExporter__.mjs`, `CameraRig__.mjs`, `MaterialLibrary__.mjs`, `Na__Env3d__Config.json` |
+| App core | `01__AppCore/VghLantern__AppCore__Init__.js` |
+| App shell | `VghLantern__App__.html` (two new Drawing Editor scripts) |
+
+#### Open items
+
+- **`ProfileTraceRenderer` full silhouette**, **provisional library dimensions**, **Gable and Mono Pitch roof forms** and **empty dev tooling folders** all stand as recorded in v0.0.1.
+- **Vector PDF output** - jsPDF cannot place vector SVG, so orthographic views are rasterised at 12 px/mm. True vector linework in the PDF needs either a different writer or an SVG-to-PDF path drawer. Worth revisiting before drawings are issued to the workshop at A1.
+- **A manually chosen scale can overflow its frame.** Picking too fine a scale for a large lantern clips the view at the frame edge, which is honest CAD behaviour but currently silent. A toolbar warning when the chosen scale does not fit would be kinder.
+- **Notes are truncated to one line each** in the PDF, because the notes block height is measured on one line per note. A long project note is cut rather than wrapped.
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.0.1 - 30-Jul-2026
 ### Initial wireframe release — app shell, geometry solver, 2D/3D environments, drawing sheet, specification, PDF
 
@@ -141,6 +219,8 @@ The single source of geometric truth; both render environments and the takeoff c
 - **Drawing Editor visit requirement** — Document Preview composes drawing views from `ViewPlacement`'s cache, so the Drawing Editor must be opened once per session for sheet views to appear in the preview and PDF. Worth removing by having `DescribeSheet()` compose headlessly.
 - **Gable and Mono Pitch roof forms** are listed but disabled; `SkeletonSolver` does not branch for them yet.
 - **Dev tooling folders** (`60__Dev__WebBuildUtils` index builders, `65__Dev__CadObjectBuilder`) are scaffolded but empty. Until the builders exist, both library indexes are maintained by hand despite being marked as generated output.
+
+
 
 
 # ---------------------------------------------------------

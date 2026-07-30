@@ -103,7 +103,6 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     // ------------------------------------------------------------
     function VghLantern__Env3d__MaterialLibrary__Build(roleKey, hexColour) {
         const config  =  VghLantern__Env3d__ConfigAccess__Section('Materials');
-        const colour  =  new THREE.Color(hexColour);
 
         let material;
 
@@ -124,8 +123,10 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
             });
 
         } else {
+            // Only this branch consumes the finish colour; the fixed-colour roles
+            // pass a sentinel string that must never reach the colour parser.
             material  =  new THREE.MeshStandardMaterial({
-                color     : colour,
+                color     : new THREE.Color(hexColour),
                 roughness : Number(config.FrameRoughness) || 0.58,
                 metalness : Number(config.FrameMetalness) || 0.05
             });

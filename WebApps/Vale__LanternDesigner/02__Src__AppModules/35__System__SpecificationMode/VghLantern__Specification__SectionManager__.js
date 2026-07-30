@@ -15,7 +15,8 @@
    - Section order, labels and renderer bindings all come from
      Na__Specification__Config.json. Adding a section is a config edit plus a
      renderer key - never a change in here.
-   - Publishes DescribeDocument so DocumentPreview can paginate the same markup
+   - Publishes DescribeDocument for issue checks and legacy consumers; Preview and
+     Send renders print-faithful pages via DocPreview PrintDocumentRenderer instead.
      rather than rebuilding the specification a second way.
 
    -----------------------------------------------------------------------------

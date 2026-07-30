@@ -87,9 +87,13 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
 
     // HELPER FUNCTION | Camera Distance Needed to Fit a Radius
     // ------------------------------------------------------------
-    function VghLantern__Env3d__CameraRig__DistanceForRadius(radiusWorld, camera) {
+    // paddingOverride lets the snapshot exporter frame tighter than the live view
+    // without disturbing the interactive camera config.
+    function VghLantern__Env3d__CameraRig__DistanceForRadius(radiusWorld, camera, paddingOverride) {
         const fovDegrees  =  camera ? camera.fov : Number(VghLantern__Env3d__ConfigAccess__Value('Camera', 'FieldOfViewDegrees', 38));
-        const padding     =  Number(VghLantern__Env3d__ConfigAccess__Value('Camera', 'FitPaddingFactor', 1.35)) || 1.35;
+        const padding     =  (typeof paddingOverride === 'number' && paddingOverride > 0)
+            ? paddingOverride
+            : (Number(VghLantern__Env3d__ConfigAccess__Value('Camera', 'FitPaddingFactor', 1.35)) || 1.35);
         const halfFovRad  =  (fovDegrees * DEG_TO_RAD) / 2;
 
         // Correct for narrow viewports, where horizontal field is the binding constraint.
@@ -218,13 +222,15 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
 
     // FUNCTION | Apply a Named Preset View, Optionally Reframing on Bounds
     // ------------------------------------------------------------
-    export function VghLantern__Env3d__CameraRig__ApplyPreset(surface, presetKey, bounds) {
+    // fitPaddingOverride is optional; the snapshot exporter passes its own tighter
+    // framing factor while interactive callers omit it.
+    export function VghLantern__Env3d__CameraRig__ApplyPreset(surface, presetKey, bounds, fitPaddingOverride) {
         if (!surface || !surface.Camera) return;
 
         const framing      =  VghLantern__Env3d__CameraRig__FramingFromBounds(bounds);
         const targetWorld  =  VghLantern__Env3d__ConfigAccess__PointToWorld(framing.CentreMm);
         const radiusWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(framing.RadiusMm);
-        const distance     =  VghLantern__Env3d__CameraRig__DistanceForRadius(radiusWorld, surface.Camera);
+        const distance     =  VghLantern__Env3d__CameraRig__DistanceForRadius(radiusWorld, surface.Camera, fitPaddingOverride);
         const direction    =  VghLantern__Env3d__CameraRig__PresetDirection(presetKey);
 
         surface.Controls.target.set(targetWorld.x, targetWorld.y, targetWorld.z);

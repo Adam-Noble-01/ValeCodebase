@@ -35,7 +35,10 @@
                     its own bar record - physically a separate mitred member -
                     carrying the hip end face's SlopeKey. Both legs share the hip
                     point exactly, so convergence is by construction rather than
-                    by tolerance.
+                    by tolerance. Each end also carries a centre bar on the
+                    lantern centreline, in line with the ridge - it cannot fall
+                    out of the set-out because no long slope bar terminates at
+                    the ridge end point itself.
    - Pyramid      : the ridge collapses to a point, so every bar is outboard and
                     wraps. The same code path handles it with no special casing,
                     including a non-square plan where the hips are not at 45
@@ -79,6 +82,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
     const MAX_BARS_PER_SLOPE     =  40;                                      // <-- Hard ceiling matching the schema clamp
     const MIN_PANE_WIDTH_MM      =  120;                                     // <-- Below this a pane is unbuildable
     const TRANSOM_HEIGHT_FACTOR  =  0.5;                                     // <-- Transom sits at half the slope rise
+    const HIP_CENTRE_MERGE_FACTOR  =  0.5;                                   // <-- A leg within half a pane of the centreline merges into it
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -166,15 +170,29 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Count Set-Out Offsets Outboard of the Ridge Ends, Per End
+    // HELPER FUNCTION | Smallest Short Offset a Wrap Leg May Sit At
     // ------------------------------------------------------------
-    // These are the bars that cannot reach the ridge and so wrap the hip. Each one
-    // yields a leg on both hips of its own end.
-    function VghLantern__GlazeBarLayout__CountOutboardOffsets(frame, offsets) {
+    // The ridge end never coincides with the set-out, so the innermost wrap leg can
+    // land arbitrarily close to the centre bar and leave a sliver pane. Any leg
+    // nearer than half a pane is merged into the centre bar instead. Measured along
+    // v, which is the set-out pitch projected onto the hip.
+    function VghLantern__GlazeBarLayout__CentreMergeLimit(frame, spacingMm) {
+        if (frame.EndSlopeRunMm <= 0) return MIN_PANE_WIDTH_MM;
+        var hipStep  =  frame.HalfShortMm * (spacingMm / frame.EndSlopeRunMm); // <-- Gap between adjacent legs
+        return Math.max(MIN_PANE_WIDTH_MM, hipStep * HIP_CENTRE_MERGE_FACTOR);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Count Wrap Legs on One Hip, After the Centre Merge
+    // ------------------------------------------------------------
+    // Counts only the offsets that actually yield a leg, so the reported hip end
+    // count matches the bars emitted.
+    function VghLantern__GlazeBarLayout__CountOutboardOffsets(frame, offsets, mergeLimitMm) {
         var count  =  0;
         var i;
         for (i = 0; i < offsets.length; i++) {
-            if (VghLantern__GlazeBarLayout__HipShortOffset(frame, offsets[i]) > 0) count++;
+            if (VghLantern__GlazeBarLayout__HipShortOffset(frame, offsets[i]) >= mergeLimitMm) count++;
         }
         return count / 2;                                                     // <-- Offsets are symmetric, so halve for one end
     }
@@ -208,14 +226,20 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
     // ------------------------------------------------------------
     // Returns bar positions for an edge running from -halfLength to +halfLength.
     // A count of n yields n bars splitting the edge into n+1 equal panes.
+    // Measured outwards from the centre rather than in from the near end, so a
+    // mirrored pair is exactly equal and opposite. Accumulating from one end
+    // instead leaves the pair differing in the last bits, which is enough to make
+    // a bar sitting on a threshold survive at one hip end and be culled at the
+    // other - a visible asymmetry.
     function VghLantern__GlazeBarLayout__DivisionOffsets(halfLengthMm, barCount) {
         var offsets  =  [];
         if (barCount < 1 || halfLengthMm <= 0) return offsets;
 
         var paneWidth  =  (halfLengthMm * 2) / (barCount + 1);
+        var centreIdx  =  (barCount + 1) / 2;                                 // <-- Index of the centreline, whole or half
         var i;
         for (i = 1; i <= barCount; i++) {
-            offsets.push(-halfLengthMm + (paneWidth * i));
+            offsets.push((i - centreIdx) * paneWidth);
         }
         return offsets;
     }
@@ -280,7 +304,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
     // the same long-slope offset list, so the leg springs from exactly the point
     // the long slope bar terminated on and the hip junction is exact by
     // construction. shortSign selects which hip of the end, longSign which end.
-    function VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame, longSign, shortSign, offsets, slopeKey) {
+    function VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame, longSign, shortSign, offsets, slopeKey, mergeLimitMm) {
         var hipKey  =  shortSign < 0 ? 'n' : 'p';                            // <-- Keeps ids unique across the two hips of one end
         var i, absLongOffset, shortOffset, hipLongOffset, level, startPt, endPt;
 
@@ -290,7 +314,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 
             absLongOffset  =  Math.abs(hipLongOffset);
             shortOffset    =  VghLantern__GlazeBarLayout__HipShortOffset(frame, absLongOffset);
-            if (shortOffset <= 0) continue;                                  // <-- Inboard bar - it reached the ridge instead
+            if (shortOffset < mergeLimitMm) continue;                          // <-- Reached the ridge, or merges into the centre bar
 
             level  =  VghLantern__GlazeBarLayout__LevelAtLongOffset(frame, absLongOffset);
 
@@ -299,6 +323,21 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 
             VghLantern__GlazeBarLayout__PushBar(bars, 'bar_hip_' + slopeKey + '_' + hipKey + '_' + i, 'glazingBar', slopeKey, startPt, endPt);
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Lay the Centre Bar of One Hip End
+    // ------------------------------------------------------------
+    // A Vale hip end always carries a bar on the lantern centreline, in line with
+    // the ridge and square to the short eaves. It cannot fall out of the wrap set
+    // because no long slope bar terminates at the ridge end point itself, so it is
+    // laid explicitly. On a pyramid it springs from the apex.
+    function VghLantern__GlazeBarLayout__BuildHipEndCentreBar(bars, frame, longSign, slopeKey) {
+        var startPt  =  frame.MapTo(longSign * frame.RidgeHalfLengthMm, 0, frame.EavesLevelMm + frame.RiseMm);
+        var endPt    =  frame.MapTo(longSign * frame.HalfLongMm,        0, frame.EavesLevelMm);
+
+        VghLantern__GlazeBarLayout__PushBar(bars, 'bar_hipcentre_' + slopeKey, 'glazingBar', slopeKey, startPt, endPt);
     }
     // ------------------------------------------------------------
 
@@ -358,24 +397,40 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 
         // One set-out for the whole lantern. The hip ends are wrapped from this
         // same offset list, so the hip end count is derived rather than entered.
+        var resolvedSpacing  =  (frame.HalfLongMm * 2) / (longCount + 1);      // <-- Single set-out pitch, long slopes and hip ends alike
+
         var offsets     =  VghLantern__GlazeBarLayout__DivisionOffsets(frame.HalfLongMm, longCount);
-        var shortCount  =  VghLantern__GlazeBarLayout__CountOutboardOffsets(frame, offsets) * 2;  // <-- Legs on one hip end face, both hips
+        var mergeLimit  =  VghLantern__GlazeBarLayout__CentreMergeLimit(frame, resolvedSpacing);
+        var wrapCount   =  VghLantern__GlazeBarLayout__CountOutboardOffsets(frame, offsets, mergeLimit);
+        var shortCount  =  longCount > 0 ? (wrapCount * 2) + 1 : 0;           // <-- Both hips of one end, plus that end's centre bar
 
         VghLantern__GlazeBarLayout__BuildLongSlopeBars(bars, frame, -1, offsets, 'short-');
         VghLantern__GlazeBarLayout__BuildLongSlopeBars(bars, frame,  1, offsets, 'short+');
 
-        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame, -1, -1, offsets, 'long-');
-        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame, -1,  1, offsets, 'long-');
-        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame,  1, -1, offsets, 'long+');
-        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame,  1,  1, offsets, 'long+');
+        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame, -1, -1, offsets, 'long-', mergeLimit);
+        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame, -1,  1, offsets, 'long-', mergeLimit);
+        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame,  1, -1, offsets, 'long+', mergeLimit);
+        VghLantern__GlazeBarLayout__BuildHipEndBars(bars, frame,  1,  1, offsets, 'long+', mergeLimit);
+
+        if (longCount > 0) {
+            VghLantern__GlazeBarLayout__BuildHipEndCentreBar(bars, frame, -1, 'long-');
+            VghLantern__GlazeBarLayout__BuildHipEndCentreBar(bars, frame,  1, 'long+');
+        }
 
         var transomEnabled  =  barsCfg['Lantern__GlazingBars__Config__HorizontalTransomEnabled'] === true;
         if (transomEnabled) VghLantern__GlazeBarLayout__BuildTransoms(bars, frame);
 
-        var resolvedSpacing  =  (frame.HalfLongMm * 2) / (longCount + 1);     // <-- Single set-out pitch, long slopes and hip ends alike
-
         if (resolvedSpacing < MIN_PANE_WIDTH_MM) {
             warnings.push('Resolved pane width is below ' + MIN_PANE_WIDTH_MM + ' mm - reduce the bar count.');
+        }
+
+        // A shallow hip end compresses the set-out, so the hip end panes can be
+        // unbuildable even when the long slope panes are comfortable.
+        var hipStep  =  frame.EndSlopeRunMm > 0
+            ? frame.HalfShortMm * (resolvedSpacing / frame.EndSlopeRunMm)
+            : resolvedSpacing;
+        if (wrapCount >= 1 && hipStep < MIN_PANE_WIDTH_MM) {
+            warnings.push('Hip end panes are only ' + Math.round(hipStep) + ' mm wide - the plan is too shallow for this bar count.');
         }
 
         var totalBarLength      =  0;

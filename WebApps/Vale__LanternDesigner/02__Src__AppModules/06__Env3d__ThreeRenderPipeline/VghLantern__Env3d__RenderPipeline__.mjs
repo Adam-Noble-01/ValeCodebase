@@ -115,10 +115,12 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
 
     // FUNCTION | Mount a 3D Surface Inside a Host Element
     // ------------------------------------------------------------
-    export function VghLantern__Env3d__RenderPipeline__Mount(hostElement) {
+    // options are passed straight to the scene builder. Drawing sheet viewports pass
+    // { ShowGroundPlane : false } so the sheet's 3D view is built without the grid.
+    export function VghLantern__Env3d__RenderPipeline__Mount(hostElement, options) {
         if (!hostElement) return null;
 
-        const surface  =  VghLantern__Env3d__SceneManager__Create(hostElement);
+        const surface  =  VghLantern__Env3d__SceneManager__Create(hostElement, options);
         if (!surface) return null;
 
         VghLantern__Env3d__CameraRig__Attach(surface);
@@ -235,6 +237,40 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
     // ------------------------------------------------------------
     export function VghLantern__Env3d__RenderPipeline__ListPresets() {
         return VghLantern__Env3d__CameraRig__ListPresets();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Camera Position and Orbit Target as Plain Data
+    // ------------------------------------------------------------
+    // Returned as plain objects so classic scripts can hold and replay a camera
+    // without touching Three.js types. Used by the drawing sheet's camera edit.
+    export function VghLantern__Env3d__RenderPipeline__GetCameraState(surface) {
+        if (!surface || !surface.Camera) return null;
+
+        return {
+            Position : { x: surface.Camera.position.x, y: surface.Camera.position.y, z: surface.Camera.position.z },
+            Target   : surface.Controls
+                ? { x: surface.Controls.target.x, y: surface.Controls.target.y, z: surface.Controls.target.z }
+                : null
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restore a Previously Captured Camera State
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__SetCameraState(surface, state) {
+        if (!surface || !surface.Camera || !state || !state.Position) return;
+
+        surface.Camera.position.set(state.Position.x, state.Position.y, state.Position.z);
+        if (surface.Controls && state.Target) {
+            surface.Controls.target.set(state.Target.x, state.Target.y, state.Target.z);
+        }
+        if (surface.Controls) surface.Controls.update();
+        surface.Camera.updateProjectionMatrix();
+
+        VghLantern__Env3d__SceneManager__Invalidate(surface);
     }
     // ------------------------------------------------------------
 

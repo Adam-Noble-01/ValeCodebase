@@ -305,7 +305,7 @@
         if (modeId === 'Viewport3d')      await VghLantern__AppCore__RenderViewport3d();
         if (modeId === 'DrawingEditor')   await VghLantern__AppCore__RenderDrawingEditor();
         if (modeId === 'Specification')   VghLantern__AppCore__RenderSpecification();
-        if (modeId === 'DocumentPreview') VghLantern__AppCore__RenderDocumentPreview();
+        if (modeId === 'DocumentPreview') await VghLantern__AppCore__RenderDocumentPreview();
         if (modeId === 'ComponentIndex')  VghLantern__AppCore__RenderComponentIndex();
     }
     // ------------------------------------------------------------
@@ -380,8 +380,21 @@
 
     // SUB FUNCTION | Render Document Preview Mode
     // ------------------------------------------------------------
-    function VghLantern__AppCore__RenderDocumentPreview() {
-        var PageRenderer  =  window.VghLantern__DocPreview__PageRenderer;
+    // The preview composes drawing views from the Drawing Editor's cache. When the
+    // Drawing Editor has not been visited this session, the sheet is composed
+    // headlessly first - the sheet's scale maths never read on-screen layout, so
+    // building it inside the hidden panel produces identical output.
+    async function VghLantern__AppCore__RenderDocumentPreview() {
+        var PageRenderer   =  window.VghLantern__DocPreview__PageRenderer;
+        var SheetManager   =  window.VghLantern__DrawingEditor__SheetManager;
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+
+        if (SheetManager && ViewPlacement &&
+            !ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput()) {
+            await SheetManager.VghLantern__DrawingEditor__SheetManager__Render();
+            SheetManager.VghLantern__DrawingEditor__SheetManager__OnModeExit();   // <-- Caches are captured; release the hidden surfaces straight away
+        }
+
         if (PageRenderer && PageRenderer.VghLantern__DocPreview__PageRenderer__Render) {
             PageRenderer.VghLantern__DocPreview__PageRenderer__Render();
         }

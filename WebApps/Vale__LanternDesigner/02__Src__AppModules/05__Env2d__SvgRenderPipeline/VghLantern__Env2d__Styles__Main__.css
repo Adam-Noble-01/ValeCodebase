@@ -28,7 +28,7 @@
         width                             : 100%;
         height                            : 100%;
         overflow                          : hidden;
-        background-color                  : var(--Vale_BackgroundWhite);
+        background-color                  : var(--VghLantern_SvgViewportBackdrop);
     }
 
     .VghLantern__Env2d__Svg {
@@ -300,6 +300,13 @@
         fill                              : var(--Vale_TextSubtle);
         font-family                       : var(--Vale_FontFamily);
         font-weight                       : 600;
+        pointer-events                    : none;
+    }
+
+    .VghLantern__Env2d__ViewLabelUnderline {
+        stroke                            : var(--Vale_TextSubtle);
+        fill                              : none;
+        stroke-linecap                    : butt;
         pointer-events                    : none;
     }
 

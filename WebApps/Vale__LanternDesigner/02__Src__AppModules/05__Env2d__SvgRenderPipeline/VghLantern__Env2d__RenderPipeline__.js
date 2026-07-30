@@ -51,6 +51,34 @@ const VghLantern__Env2d__RenderPipeline = (function() {
     const EMPTY_MESSAGE_INVALID     =  'The current configuration cannot be drawn - check the warnings.';
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Painted Properties Baked Into Exported Markup
+    // ------------------------------------------------------------
+    // Deliberately only the properties that decide how a shape is painted. Copying
+    // the whole computed style would inflate an exported sheet many times over for
+    // hundreds of properties that never affect the drawing.
+    const SERIALISED_STYLE_PROPERTIES  =  [
+        'fill',
+        'fill-opacity',
+        'stroke',
+        'stroke-width',
+        'stroke-opacity',
+        'stroke-dasharray',
+        'stroke-linecap',
+        'stroke-linejoin',
+        'opacity',
+        'font-family',
+        'font-size',
+        'font-style',
+        'font-weight',
+        'letter-spacing',
+        'text-anchor',
+        'dominant-baseline',
+        'visibility',
+        'display'
+    ];
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -247,7 +275,9 @@ const VghLantern__Env2d__RenderPipeline = (function() {
         // The view label sits in the overlay layer, which the renderers clear.
         VghLantern__Env2d__RenderPipeline__ApplyViewLabel(surface);
 
-        // Binding last, once the dimension nodes exist in the live DOM.
+        // Binding last, once the dimension nodes exist in the live DOM. Every
+        // surface binds, including sheet frames - typing a value on the sheet is
+        // the same interaction as typing it in the editor.
         if (DimensionEditor) DimensionEditor.VghLantern__Env2d__DimensionEditor__Bind(surface.Instance);
 
         return true;
@@ -284,13 +314,54 @@ const VghLantern__Env2d__RenderPipeline = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Copy the Painted Style of One Node Onto Itself
+    // ------------------------------------------------------------
+    function VghLantern__Env2d__RenderPipeline__InlineOneStyle(liveNode, cloneNode) {
+        var computed  =  window.getComputedStyle(liveNode);
+        var declaration  =  '';
+        var i, property, value;
+
+        for (i = 0; i < SERIALISED_STYLE_PROPERTIES.length; i++) {
+            property  =  SERIALISED_STYLE_PROPERTIES[i];
+            value     =  computed.getPropertyValue(property);
+            if (value === '' || value === 'auto') continue;
+            declaration  +=  property + ':' + value + ';';
+        }
+
+        if (declaration) cloneNode.setAttribute('style', declaration);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Serialise a Surface to Standalone SVG Markup
     // ------------------------------------------------------------
     // The drawing editor and PDF export consume this rather than screenshotting,
     // so sheet output stays true vector at any scale.
+    //
+    // Painted styles are baked onto every node before serialising. The live SVG is
+    // styled entirely by the application stylesheet through CSS classes and custom
+    // properties, none of which travel with a detached markup string - serialising
+    // raw would export black shapes with no strokes the moment the markup is drawn
+    // outside the document.
     function VghLantern__Env2d__RenderPipeline__ToSvgMarkup(surface) {
         if (!surface || !surface.Instance || !surface.Instance.Root) return '';
-        return new XMLSerializer().serializeToString(surface.Instance.Root);
+
+        var liveRoot   =  surface.Instance.Root;
+        var cloneRoot  =  liveRoot.cloneNode(true);
+
+        var liveNodes   =  liveRoot.querySelectorAll('*');
+        var cloneNodes  =  cloneRoot.querySelectorAll('*');
+        var i;
+
+        VghLantern__Env2d__RenderPipeline__InlineOneStyle(liveRoot, cloneRoot);
+
+        // The two trees are clones of one another, so index i is the same element in
+        // both and no matching logic is needed.
+        for (i = 0; i < liveNodes.length && i < cloneNodes.length; i++) {
+            VghLantern__Env2d__RenderPipeline__InlineOneStyle(liveNodes[i], cloneNodes[i]);
+        }
+
+        return new XMLSerializer().serializeToString(cloneRoot);
     }
     // ------------------------------------------------------------
 

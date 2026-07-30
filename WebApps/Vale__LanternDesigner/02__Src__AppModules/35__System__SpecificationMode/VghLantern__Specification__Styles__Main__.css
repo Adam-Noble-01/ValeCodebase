@@ -10,8 +10,9 @@
  * CREATED    : 30-Jul-2026
  *
  * DESCRIPTION:
- * - Styles the specification as a document rather than a control panel - the same
- *   markup is paginated by DocumentPreview, so it has to read as printed output.
+ * - Styles the interactive Specification Mode as a readable on-screen document with
+ *   collapsible section cards. Preview and Send uses its own print-faithful renderer
+ *   and does not reuse this card chrome.
  * - Tables are the primary content, so they get the tightest typographic control.
  *
  * ============================================================================= */

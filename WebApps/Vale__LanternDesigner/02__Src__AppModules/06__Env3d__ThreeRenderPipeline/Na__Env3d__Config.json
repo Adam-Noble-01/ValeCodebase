@@ -12,7 +12,7 @@
             "Antialias"                       : true,
             "MaxPixelRatio"                   : 2,
             "ClearColorCssVar"                : "--VghLantern_ThreeViewportBackdrop",
-            "ClearColorFallback"              : "#dfe3e6",
+            "ClearColorFallback"              : "#f6f7f8",
             "ShadowsEnabled"                  : false,
             "PreserveDrawingBuffer"           : true,
             "PreserveDrawingBufferNote"       : "Required so SnapshotExporter can read the canvas for drawing sheet placement.",
@@ -106,7 +106,10 @@
             "TransparentBackground"           : true,
             "OutputMimeType"                  : "image/png",
             "SupersampleFactor"               : 2,
-            "SupersampleFactorNote"           : "Rendered at this multiple then downscaled, so the 3D view on a printed sheet holds up next to true vector linework."
+            "SupersampleFactorNote"           : "Rendered at this multiple then downscaled, so the 3D view on a printed sheet holds up next to true vector linework.",
+            "FramePaddingFactor"              : 0.85,
+            "FramePaddingFactorNote"          : "Camera fit padding used only for sheet snapshots. Deliberately below the live-view Camera.FitPaddingFactor because the bounding-sphere fit already over-provides margin for wide flat lanterns; raise it if a tall finial ever clips the frame.",
+            "GroundPlaneNote"                 : "Sheet 3D viewports are mounted with ShowGroundPlane false by the Drawing Editor, so the grid is never built into them. The live 3D View and the editor panel keep the grid from the GroundPlane block below."
         },
 
         "VghLantern__Env3d__Config__GroundPlane": {
@@ -114,7 +117,7 @@
             "ShowGrid"                        : true,
             "GridSpacingMm"                   : 500,
             "GridExtentMm"                    : 12000,
-            "GridColour"                      : "#c4cace",
+            "GridColour"                      : "#dde1e4",
             "ShowShadowCatcher"               : false
         },
 

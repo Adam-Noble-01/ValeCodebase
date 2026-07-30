@@ -94,13 +94,27 @@
         --VghLantern_StatusApproved         : #2a7d4f;                      /* <-- Approved status green */
         --VghLantern_StatusCompleted        : #2a7d4f;                      /* <-- Completed status green */
 
+        /* Viewport Environments — shared backdrop / overlay (2D SVG + 3D Three stay matched) */
+        --VghLantern_ViewportBackdrop       : #f6f7f8;                      /* <-- Light neutral clear — high contrast for dark linework */
+        --VghLantern_ViewportOverlayPanel   : rgba(255, 255, 255, 0.92);    /* <-- Floating viewport control overlay background */
+        --VghLantern_ViewportOverlayZIndex  : 500;                          /* <-- Above canvas, below header and modals */
+        --VghLantern_ViewportOverlayShadow  : 0 1px 4px rgba(0, 0, 0, 0.18); /* <-- Soft lift for floating viewport controls */
+
+        /* 2D Environment - Viewport Host (mirrors 3D Three tokens) */
+        --VghLantern_SvgViewportBackdrop    : var(--VghLantern_ViewportBackdrop);      /* <-- SVG viewport host background */
+        --VghLantern_SvgOverlayPanel        : var(--VghLantern_ViewportOverlayPanel);  /* <-- Floating 2D control overlay background */
+
+        /* 3D Environment - Viewport Host */
+        --VghLantern_ThreeViewportBackdrop  : var(--VghLantern_ViewportBackdrop);      /* <-- Three.js canvas clear colour */
+        --VghLantern_ThreeOverlayPanel      : var(--VghLantern_ViewportOverlayPanel);  /* <-- Floating 3D control overlay background */
+
         /* 2D Environment - Skeleton Construction Linework */
         --VghLantern_SvgSkeletonRidge       : #172b3a;                      /* <-- Ridge line stroke colour */
         --VghLantern_SvgSkeletonHip         : #2f4a5e;                      /* <-- Hip line stroke colour */
         --VghLantern_SvgSkeletonRafter      : #5a6d7a;                      /* <-- Common rafter line stroke colour */
         --VghLantern_SvgSkeletonEaves       : #172b3a;                      /* <-- Eaves / wall plate stroke colour */
         --VghLantern_SvgSkeletonKerb        : #8a949c;                      /* <-- Kerb / upstand stroke colour */
-        --VghLantern_SvgConstructionLine    : #b8c0c6;                      /* <-- Non-printing construction guide colour */
+        --VghLantern_SvgConstructionLine    : #e2e5e8;                      /* <-- Soft grid guide — stays behind geometry */
 
         /* 2D Environment - Glazing And Profiles */
         --VghLantern_SvgGlazeBarStroke      : #2f4a5e;                      /* <-- Glazing bar stroke colour */
@@ -114,13 +128,7 @@
         --VghLantern_SvgDimensionText       : #cc3333;                      /* <-- Red dimension text colour */
         --VghLantern_SvgDimensionHover      : #ff6b3d;                      /* <-- Editable dimension hover highlight */
 
-        /* 3D Environment */
-        --VghLantern_ThreeViewportBackdrop  : #dfe3e6;                      /* <-- Three.js canvas clear colour */
-        --VghLantern_ThreeOverlayPanel      : rgba(255, 255, 255, 0.92);    /* <-- Floating 3D control overlay background */
-
-        /* Viewport Overlays (shared by the 2D and 3D environments) */
-        --VghLantern_ViewportOverlayZIndex  : 500;                          /* <-- Above canvas, below header and modals */
-        --VghLantern_ViewportOverlayShadow  : 0 1px 4px rgba(0, 0, 0, 0.18); /* <-- Soft lift for floating viewport controls */
+        /* Status Banner Fills */
         --VghLantern_WarningBackground      : #fdf3e3;                      /* <-- Warning banner fill, pairs with WarningOrange */
         --VghLantern_ErrorBackground        : #fbeaea;                      /* <-- Error banner fill, pairs with ErrorRed */
 

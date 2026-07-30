@@ -58,6 +58,8 @@ import {
     const CSS_CANVAS       =  'VghLantern__Env3d__Canvas';                   // <-- Styled by Env3d Styles__Main__.css
     const CSS_HOST_ACTIVE  =  'VghLantern__Env3d__Host--active';             // <-- Marks a host that owns a live surface
     const MIN_CANVAS_PX    =  2;                                             // <-- Below this the host is not laid out yet
+
+    const GROUND_GRID_NAME =  'VghLantern__Env3d__GroundGrid';               // <-- The helpers group also holds the light rig, so the grid is addressed by name
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -120,7 +122,7 @@ import {
         const colour     =  new THREE.Color(config.GridColour || '#c4cace');
 
         const grid  =  new THREE.GridHelper(sizeWorld, divisions, colour, colour);
-        grid.name                =  'VghLantern__Env3d__GroundGrid';
+        grid.name                =  GROUND_GRID_NAME;
         grid.material.opacity    =  0.5;
         grid.material.transparent =  true;
         grid.material.depthWrite =  false;                                    // <-- Keeps the grid from biting into the model
@@ -137,9 +139,16 @@ import {
 
     // FUNCTION | Create an Independent 3D Surface Inside a Host Element
     // ------------------------------------------------------------
-    export function VghLantern__Env3d__SceneManager__Create(hostElement) {
+    // options.ShowGroundPlane set to false builds the surface without the ground
+    // grid at all. Drawing sheet viewports use it: the grid is a modelling aid, and
+    // on an issued drawing it reads as construction linework that is not part of the
+    // lantern. Suppressed at build time rather than hidden at capture time, because
+    // the light rig shares the helpers group and hiding that group would render the
+    // lantern as an unlit black silhouette.
+    export function VghLantern__Env3d__SceneManager__Create(hostElement, options) {
         if (!hostElement) return null;
 
+        const surfaceOptions  =  options || {};
         const rendererConfig  =  VghLantern__Env3d__ConfigAccess__Section('Renderer');
 
         // RENDERER
@@ -178,7 +187,9 @@ import {
             OnBeforeDraw : null                                               // <-- Optional hook, used by CameraRig damping
         };
 
-        VghLantern__Env3d__SceneManager__AttachGroundPlane(surface);
+        if (surfaceOptions.ShowGroundPlane !== false) {
+            VghLantern__Env3d__SceneManager__AttachGroundPlane(surface);
+        }
         VghLantern__Env3d__SceneManager__AttachResizeObserver(surface);
         VghLantern__Env3d__SceneManager__Resize(surface);
         VghLantern__Env3d__SceneManager__StartLoop(surface);
@@ -289,6 +300,8 @@ import {
     // ------------------------------------------------------------
 
 
+
+
     // FUNCTION | Clear a Named Group and Free Its Owned Resources
     // ------------------------------------------------------------
     export function VghLantern__Env3d__SceneManager__ClearGroup(surface, groupName) {
@@ -324,6 +337,9 @@ import {
         }
 
         surface.Renderer.dispose();
+        if (typeof surface.Renderer.forceContextLoss === 'function') {
+            surface.Renderer.forceContextLoss();                              // <-- Free the GL context now, not at GC - repeated mode entries would otherwise stack contexts toward the browser's hard cap
+        }
         if (surface.Renderer.domElement.parentNode) {
             surface.Renderer.domElement.parentNode.removeChild(surface.Renderer.domElement);
         }

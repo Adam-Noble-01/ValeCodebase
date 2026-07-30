@@ -380,6 +380,7 @@
         flex-direction                     : column;
         height                             : 100%;
         min-height                         : 0;
+        background-color                   : var(--VghLantern_SvgViewportBackdrop);
     }
     /* ------------------------------------------------------------ */
 
@@ -563,7 +564,7 @@
         display                            : flex;
         gap                                : calc(var(--Vale_Spacing_Small) / 2);
         padding                            : calc(var(--Vale_Spacing_Small) / 2);
-        background-color                   : var(--VghLantern_ThreeOverlayPanel);
+        background-color                   : var(--VghLantern_ViewportOverlayPanel);
         border                             : 1px solid var(--Vale_BorderLight);
         border-radius                      : var(--Vale_BorderRadius);
         box-shadow                         : var(--VghLantern_ViewportOverlayShadow);

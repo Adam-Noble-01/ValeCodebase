@@ -364,6 +364,33 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | List Enabled Page Kinds in Config Order
+    // ------------------------------------------------------------
+    // Returns 'specification' and/or 'drawing' only when that page has content.
+    // Order comes from Config__Page.PageOrder so preview and PDF cannot diverge.
+    function VghLantern__DocPreview__DocumentState__ListPageKinds() {
+        var pageCfg  =  VghLantern__DocumentState__PageConfig();
+        var order    =  Array.isArray(pageCfg.PageOrder) && pageCfg.PageOrder.length
+            ? pageCfg.PageOrder.slice()
+            : ['specification', 'drawing'];
+
+        var kinds  =  [];
+        var i, kind;
+
+        for (i = 0; i < order.length; i++) {
+            kind  =  order[i];
+            if (kind === 'specification' && VghLantern__DocPreview__DocumentState__IncludesSpecificationPage()) {
+                kinds.push('specification');
+            } else if (kind === 'drawing' && VghLantern__DocPreview__DocumentState__IncludesDrawingPage()) {
+                kinds.push('drawing');
+            }
+        }
+
+        return kinds;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Reset Everything to Config Defaults
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocumentState__ResetToDefaults() {
@@ -397,6 +424,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
         VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys    : VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys,
         VghLantern__DocPreview__DocumentState__IncludesDrawingPage    : VghLantern__DocPreview__DocumentState__IncludesDrawingPage,
         VghLantern__DocPreview__DocumentState__IncludesSpecificationPage : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,
+        VghLantern__DocPreview__DocumentState__ListPageKinds          : VghLantern__DocPreview__DocumentState__ListPageKinds,
         VghLantern__DocPreview__DocumentState__SetPaperSize           : VghLantern__DocPreview__DocumentState__SetPaperSize,
         VghLantern__DocPreview__DocumentState__DescribePage           : VghLantern__DocPreview__DocumentState__DescribePage,
         VghLantern__DocPreview__DocumentState__DrawingOrientation     : VghLantern__DocPreview__DocumentState__DrawingOrientation,

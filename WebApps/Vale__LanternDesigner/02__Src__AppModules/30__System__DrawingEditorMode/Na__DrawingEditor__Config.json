@@ -6,7 +6,9 @@
             "DefaultSheetSize"          : "A3",
             "DefaultOrientation"        : "landscape",
             "MarginMm"                  : 10,
-            "TitleBlockHeightMm"        : 22,
+            "TitleBlockHeightMm"        : 10,
+            "BlockGapMm"                : 3,
+            "BlockGapMmNote"            : "Vertical gap between the view grid, the notes block and the titleblock. Screen sheet and PDF both honour this value.",
             "BorderStrokeMm"            : 0.5,
             "ScreenPixelsPerMm"         : 3.2,
             "ScreenPixelsPerMmNote"     : "Screen zoom only. Printed output is driven by the PDF exporter's target DPI, never by this value.",
@@ -44,7 +46,7 @@
             },
             {
                 "Key"          : "plan",
-                "Label"        : "Plan",
+                "Label"        : "Plan View",
                 "Source"       : "env2d",
                 "ViewKey"      : "plan",
                 "ColumnStart"  : 1,
@@ -74,7 +76,15 @@
             "FrameStrokeMm"             : 0.25,
             "FrameLabelHeightMm"        : 7,
             "FrameLabelFontSizeMm"      : 3.2,
-            "GridNote"                  : "Slot ColumnStart / RowStart indices are one-based and must fit within Columns x Rows."
+            "ColumnSharesPct"           : [50, 50],
+            "RowSharesPct"              : [50, 50],
+            "ShareMinPct"               : 20,
+            "ShareMaxPct"               : 80,
+            "ResizeHandlesEnabled"      : true,
+            "ResizeHandlesEnabledNote"  : "Drag the gutters between frames to rebalance space. Scale is unchanged - a larger frame shows more of the model at the same 1:N.",
+            "ShowConstructionGrid"      : false,
+            "ShowConstructionGridNote"  : "The Env2d construction grid is a modelling aid for the editor viewport. A sheet frame is issued output, so the grid layer is cleared after each frame renders. The Lantern Editor viewport is unaffected.",
+            "GridNote"                  : "Slot ColumnStart / RowStart indices are one-based and must fit within Columns x Rows. ColumnSharesPct / RowSharesPct are session-overridable from gutter drags."
         },
 
         "VghLantern__DrawingEditor__Config__Scales": {
@@ -90,29 +100,45 @@
         "VghLantern__DrawingEditor__Config__TitleBlock": {
             "ShowValeLogo"              : true,
             "LogoAssetPath"             : "../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png",
-            "LogoWidthMm"               : 48,
+            "LogoWidthMm"               : 33,
+            "LogoCellWidthMm"           : 34,
+            "LogoCellWidthMmNote"       : "Cell width is ~1.5x the previous logo column so the brand mark has breathing room without crowding the field strip.",
+            "LogoMaxHeightMm"           : 5.5,
+            "LogoPaddingVMm"            : 1.8,
+            "LogoPaddingHMm"            : 2.5,
             "ShowCompanyName"           : false,
             "CompanyName"               : "",
             "CompanyNameNote"           : "Left blank - the Vale logo already carries the company identity, so a text line under it only wastes titleblock height.",
             "DrawnByLabel"              : "Drawn By",
-            "FontSizeLabelMm"           : 2.0,
-            "FontSizeValueMm"           : 2.6,
+            "FontSizeLabelMm"           : 1.6,
+            "FontSizeValueMm"           : 2.2,
+            "FieldPaddingTopMm"         : 2.4,
+            "FieldPaddingHMm"           : 1.4,
+            "FieldPaddingBottomMm"      : 0.8,
+            "FieldLabelOffsetTopMm"     : 0.5,
+            "FieldPaddingNote"          : "Screen CSS and PDF titleblock both read these millimetre paddings so the strip matches on paper.",
+            "SingleRowLayout"           : true,
+            "SingleRowLayoutNote"       : "All fields sit on one horizontal strip. WidthMm values are relative flex shares, not absolute widths that would force wrapping.",
             "Rows": [
-                { "Key": "projectName",   "Label": "Project",       "WidthMm": 96 },
-                { "Key": "projectCode",   "Label": "Project Code",  "WidthMm": 40 },
-                { "Key": "clientName",    "Label": "Client",        "WidthMm": 72 },
-                { "Key": "lanternTitle",  "Label": "Element",       "WidthMm": 72 },
-                { "Key": "drawingNumber", "Label": "Drawing No.",   "WidthMm": 44 },
-                { "Key": "revision",      "Label": "Rev",           "WidthMm": 18 },
-                { "Key": "scale",         "Label": "Scale",         "WidthMm": 30 },
-                { "Key": "issueDate",     "Label": "Date",          "WidthMm": 34 }
+                { "Key": "projectName",   "Label": "Project",  "WidthMm": 28 },
+                { "Key": "projectCode",   "Label": "Code",     "WidthMm": 12 },
+                { "Key": "clientName",    "Label": "Client",   "WidthMm": 22 },
+                { "Key": "drawingNumber", "Label": "Drg No.",  "WidthMm": 16 },
+                { "Key": "revision",      "Label": "Rev",      "WidthMm": 6  },
+                { "Key": "scale",         "Label": "Scale",    "WidthMm": 14 },
+                { "Key": "issueDate",     "Label": "Date",     "WidthMm": 14 }
             ],
-            "RowsNote"                  : "Row Key maps to a field the TitleBlockRenderer resolves from the project and lantern. An unresolved key renders an empty value box rather than being dropped, so the block layout stays stable."
+            "RowsNote"                  : "Row Key maps to a field the TitleBlockRenderer resolves from the project and lantern. WidthMm is a relative share of the strip. Element is omitted from the strip - it lives on the lantern schedule instead. An unresolved key still renders so the strip layout stays stable."
         },
 
         "VghLantern__DrawingEditor__Config__Annotations": {
             "Enabled"                   : true,
-            "DefaultFontSizeMm"         : 2.8,
+            "DefaultFontSizeMm"         : 1.4,
+            "HeadingScale"              : 1.05,
+            "LineSpacing"               : 1.35,
+            "ColumnCount"               : 2,
+            "ColumnGapMm"               : 6,
+            "PaddingTopMm"              : 1.25,
             "DefaultLeaderStrokeMm"     : 0.25,
             "MaxNotes"                  : 12,
             "NotesBlockTitle"           : "Notes",
@@ -128,8 +154,25 @@
             "ShowSheetSizeSelect"       : true,
             "ShowOrientationToggle"     : true,
             "ShowScaleSelect"           : true,
-            "ShowFitButton"             : true,
-            "ShowRefreshButton"         : true
+            "ShowDownloadPdfButton"     : true,
+            "ToolbarNote"               : "The sheet live-updates on every geometry solve and every toolbar change, so there are no manual refresh or fit controls."
+        },
+
+        "VghLantern__DrawingEditor__Config__PdfExport": {
+            "FilenamePattern"           : "VghLantern__{projectCode}__{drawingNumber}__{sheetSize}",
+            "FilenamePatternNote"        : "Tokens: projectCode, projectName, drawingNumber, lanternTitle, revision, sheetSize, scale. Unresolved tokens collapse to nothing rather than printing literally.",
+            "RasterPixelsPerMm"         : 12,
+            "RasterPixelsPerMmNote"     : "Roughly 305 dpi. jsPDF cannot place vector SVG, so orthographic views are rasterised at this density; raise for finer linework at the cost of file size.",
+            "BlockGapMm"                : 3,
+            "BlockGapMmNote"            : "Legacy fallback. Prefer Sheet.BlockGapMm - both screen and PDF read Sheet first.",
+            "FrameStrokeMm"             : 0.25,
+            "TitleStrokeMm"             : 0.25,
+            "InkColour"                 : "#172b3a",
+            "FrameLineColour"           : "#b8c0c6",
+            "MutedTextColour"           : "#6c757d",
+            "Author"                    : "Vale Garden Houses Limited",
+            "Creator"                   : "Vale Lantern Designer",
+            "ScaleNote"                 : "The PDF page is created at the sheet's true millimetre size and each view's viewBox is rewritten to span exactly (frame size x scale denominator) model millimetres, so the file prints to scale at 100 percent with page scaling switched off."
         }
     }
 }

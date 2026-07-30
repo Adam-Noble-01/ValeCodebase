@@ -13,7 +13,9 @@
             "ScreenPixelsPerMm"         : 3.2,
             "ScreenPixelsPerMmNote"     : "Screen zoom only. Page geometry is authored in paper millimetres so the on-screen page and the exported PDF are the same document at two magnifications.",
             "DrawingSheetOrientation"   : "landscape",
-            "DrawingSheetOrientationNote": "The drawing sheet is always landscape regardless of the document orientation - four views do not fit sensibly on a portrait page."
+            "DrawingSheetOrientationNote": "The drawing sheet is always landscape regardless of the document orientation - four views do not fit sensibly on a portrait page.",
+            "PageOrder"                 : ["specification", "drawing"],
+            "PageOrderNote"             : "Enabled pages are emitted in this order. Specification tables lead; the drawing sheet is last so takeoff and notes are read before the views."
         },
 
         "VghLantern__DocPreview__Config__ViewState": {

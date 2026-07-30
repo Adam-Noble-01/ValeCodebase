@@ -177,8 +177,13 @@ import { VghLantern__Env3d__SceneManager__Resize, VghLantern__Env3d__SceneManage
         const savedPosition  =  surface.Camera.position.clone();
         const savedTarget    =  surface.Controls ? surface.Controls.target.clone() : null;
 
+        // Sheet snapshots frame tighter than the live view: the bounding-sphere fit
+        // plus the interactive padding leaves a wide flat lantern tiny in its frame.
+        const snapshotConfig  =  VghLantern__Env3d__ConfigAccess__Section('Snapshot');
+        const framePadding    =  Number(snapshotConfig.FramePaddingFactor);
+
         try {
-            applyPresetFn(surface, presetKey, bounds);
+            applyPresetFn(surface, presetKey, bounds, framePadding > 0 ? framePadding : null);
             return VghLantern__Env3d__SnapshotExporter__Capture(surface, options);
 
         } finally {

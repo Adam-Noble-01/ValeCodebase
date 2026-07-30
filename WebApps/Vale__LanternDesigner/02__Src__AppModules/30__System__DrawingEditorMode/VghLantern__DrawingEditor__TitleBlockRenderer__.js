@@ -165,7 +165,11 @@ const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
     // Company name text is opt-in only - the logo already carries the brand, so
     // printing "Vale Garden Houses Limited" under it just burns titleblock height.
     function VghLantern__TitleBlockRenderer__BuildLogoCell(config) {
-        var html  =  '<div class="' + CSS_LOGO_CELL + '">';
+        var cellWidthMm  =  (typeof config.LogoCellWidthMm === 'number')
+            ? config.LogoCellWidthMm
+            : ((typeof config.LogoWidthMm === 'number') ? config.LogoWidthMm * 1.5 : 0);
+        var cellStyle    =  cellWidthMm ? ' style="width:' + cellWidthMm + 'mm;min-width:' + cellWidthMm + 'mm"' : '';
+        var html         =  '<div class="' + CSS_LOGO_CELL + '"' + cellStyle + '>';
 
         if (config.ShowValeLogo !== false && config.LogoAssetPath) {
             var widthStyle  =  config.LogoWidthMm ? ' style="width:' + config.LogoWidthMm + 'mm"' : '';
@@ -185,10 +189,13 @@ const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
 
     // SUB FUNCTION | Build One Field Cell
     // ------------------------------------------------------------
+    // WidthMm is a relative flex share, not an absolute millimetre width. Absolute
+    // widths summed past the sheet width and wrapped the strip onto a second row.
     function VghLantern__TitleBlockRenderer__BuildFieldCell(row, value) {
-        var widthStyle  =  row.WidthMm ? ' style="width:' + row.WidthMm + 'mm"' : '';
+        var flexShare  =  (typeof row.WidthMm === 'number' && row.WidthMm > 0) ? row.WidthMm : 1;
+        var style      =  ' style="flex:' + flexShare + ' ' + flexShare + ' 0;min-width:0"';
 
-        return '<div class="' + CSS_FIELD + '"' + widthStyle + '>' +
+        return '<div class="' + CSS_FIELD + '"' + style + '>' +
                '<span class="' + CSS_FIELD_LABEL + '">' + VghLantern__TitleBlockRenderer__Escape(row.Label || row.Key) + '</span>' +
                '<span class="' + CSS_FIELD_VALUE + '">' + VghLantern__TitleBlockRenderer__Escape(value) + '</span>' +
                '</div>';

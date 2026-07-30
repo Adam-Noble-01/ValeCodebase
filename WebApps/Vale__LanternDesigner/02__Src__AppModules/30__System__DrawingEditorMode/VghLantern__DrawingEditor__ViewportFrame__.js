@@ -54,8 +54,10 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
     const FALLBACK_ROWS         =  2;
     const FALLBACK_GUTTER_MM    =  6;
     const FALLBACK_MARGIN_MM    =  10;
-    const FALLBACK_TITLE_MM     =  22;
+    const FALLBACK_TITLE_MM     =  10;
     const FALLBACK_LABEL_MM     =  7;
+    const FALLBACK_LABEL_FONT_MM =  3.2;
+    const FALLBACK_SHARE_MIN    =  20;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -100,6 +102,58 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Normalise a Share Array to Track Count and 100%
+    // ------------------------------------------------------------
+    function VghLantern__ViewportFrame__NormaliseShares(rawShares, trackCount) {
+        var count   =  Math.max(1, trackCount);
+        var shares  =  [];
+        var i, total, value;
+
+        for (i = 0; i < count; i++) {
+            value  =  (Array.isArray(rawShares) && typeof rawShares[i] === 'number') ? rawShares[i] : (100 / count);
+            shares.push(Math.max(0.01, value));
+        }
+
+        total  =  0;
+        for (i = 0; i < shares.length; i++) total  +=  shares[i];
+        if (total <= 0) {
+            for (i = 0; i < shares.length; i++) shares[i]  =  100 / count;
+            return shares;
+        }
+
+        for (i = 0; i < shares.length; i++) shares[i]  =  (shares[i] / total) * 100;
+        return shares;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Active Column and Row Share Percentages
+    // ------------------------------------------------------------
+    // Session shares from SheetManager win when present so gutter drags survive a
+    // sheet rebuild without writing back into the config file.
+    function VghLantern__ViewportFrame__ResolveShares(shareOverride) {
+        var gridCfg   =  VghLantern__ViewportFrame__GridConfig();
+        var columns   =  (typeof gridCfg.Columns === 'number' && gridCfg.Columns > 0) ? gridCfg.Columns : FALLBACK_COLUMNS;
+        var rows      =  (typeof gridCfg.Rows === 'number' && gridCfg.Rows > 0)       ? gridCfg.Rows    : FALLBACK_ROWS;
+
+        var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
+        var session       =  (shareOverride) ? shareOverride
+            : (SheetManager && SheetManager.VghLantern__DrawingEditor__SheetManager__GetGridShares
+                ? SheetManager.VghLantern__DrawingEditor__SheetManager__GetGridShares()
+                : null);
+
+        return {
+            ColumnSharesPct  : VghLantern__ViewportFrame__NormaliseShares(
+                (session && session.ColumnSharesPct) || gridCfg.ColumnSharesPct, columns
+            ),
+            RowSharesPct     : VghLantern__ViewportFrame__NormaliseShares(
+                (session && session.RowSharesPct) || gridCfg.RowSharesPct, rows
+            )
+        };
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -133,37 +187,70 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Compute the Paper Size of a Single Grid Cell
+    // FUNCTION | Compute the Paper Size of Every Grid Track
     // ------------------------------------------------------------
-    // The drawable area is the sheet less its margins and the titleblock strip; the
-    // grid then divides that, less gutters between cells.
-    function VghLantern__DrawingEditor__ViewportFrame__CellSizeMm(sheetSize) {
+    // Returns per-column and per-row millimetre sizes from the active share split.
+    // Equal shares keep the historic equal-cell behaviour; gutter drags change the
+    // arrays without touching the quoted drawing scale.
+    function VghLantern__DrawingEditor__ViewportFrame__CellSizeMm(sheetSize, shareOverride) {
         if (!sheetSize) return null;
 
         var sheetCfg  =  VghLantern__ViewportFrame__SheetConfig();
         var gridCfg   =  VghLantern__ViewportFrame__GridConfig();
+        var pdfCfg    =  VghLantern__ViewportFrame__DrawingConfig()['VghLantern__DrawingEditor__Config__PdfExport'] || {};
+        var shares    =  VghLantern__ViewportFrame__ResolveShares(shareOverride);
 
         var marginMm  =  (typeof sheetCfg.MarginMm === 'number')           ? sheetCfg.MarginMm           : FALLBACK_MARGIN_MM;
         var titleMm   =  (typeof sheetCfg.TitleBlockHeightMm === 'number') ? sheetCfg.TitleBlockHeightMm : FALLBACK_TITLE_MM;
         var gutterMm  =  (typeof gridCfg.GutterMm === 'number')            ? gridCfg.GutterMm            : FALLBACK_GUTTER_MM;
-        var columns   =  (typeof gridCfg.Columns === 'number' && gridCfg.Columns > 0) ? gridCfg.Columns  : FALLBACK_COLUMNS;
-        var rows      =  (typeof gridCfg.Rows === 'number' && gridCfg.Rows > 0)       ? gridCfg.Rows     : FALLBACK_ROWS;
+        var columns   =  shares.ColumnSharesPct.length;
+        var rows      =  shares.RowSharesPct.length;
         var labelMm   =  (typeof gridCfg.FrameLabelHeightMm === 'number')  ? gridCfg.FrameLabelHeightMm  : FALLBACK_LABEL_MM;
+        var blockGapMm =  (typeof sheetCfg.BlockGapMm === 'number')
+            ? sheetCfg.BlockGapMm
+            : ((typeof pdfCfg.BlockGapMm === 'number') ? pdfCfg.BlockGapMm : 3);
+
+        // Reserve the notes band the same way PDF Solve does, so auto-fit and
+        // true-scale bodies match the printed frame sizes.
+        var notesReserveMm  =  0;
+        var SheetPdfLayout  =  window.VghLantern__DrawingEditor__SheetPdfLayout;
+        var AnnotationLayer =  window.VghLantern__DrawingEditor__AnnotationLayer;
+        var StateManager    =  window.VghLantern__AppCore__StateManager;
+        if (SheetPdfLayout && AnnotationLayer && StateManager) {
+            var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+            var noteList  =  AnnotationLayer.VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project);
+            var notesBand =  SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__MeasureNotesBand(noteList.length);
+            if (notesBand) notesReserveMm  =  notesBand.HeightMm + (blockGapMm * 2);
+            else notesReserveMm  =  blockGapMm;
+        } else {
+            notesReserveMm  =  blockGapMm;
+        }
 
         var drawableWidthMm   =  sheetSize.WidthMm  - (marginMm * 2);
-        var drawableHeightMm  =  sheetSize.HeightMm - (marginMm * 2) - titleMm;
+        var drawableHeightMm  =  sheetSize.HeightMm - (marginMm * 2) - titleMm - notesReserveMm;
+        var usableWidthMm     =  drawableWidthMm  - (gutterMm * (columns - 1));
+        var usableHeightMm    =  drawableHeightMm - (gutterMm * (rows - 1));
 
-        var cellWidthMm   =  (drawableWidthMm  - (gutterMm * (columns - 1))) / columns;
-        var cellHeightMm  =  (drawableHeightMm - (gutterMm * (rows - 1)))    / rows;
+        var columnWidthsMm  =  [];
+        var rowHeightsMm    =  [];
+        var i;
+
+        for (i = 0; i < columns; i++) columnWidthsMm.push(usableWidthMm  * (shares.ColumnSharesPct[i] / 100));
+        for (i = 0; i < rows; i++)    rowHeightsMm.push(usableHeightMm * (shares.RowSharesPct[i] / 100));
 
         return {
             Columns          : columns,
             Rows             : rows,
             GutterMm         : gutterMm,
-            CellWidthMm      : cellWidthMm,
-            CellHeightMm     : cellHeightMm,
-            BodyWidthMm      : cellWidthMm,
-            BodyHeightMm     : cellHeightMm - labelMm,                     // <-- Caption strip is not drawable area
+            LabelMm          : labelMm,
+            ColumnSharesPct  : shares.ColumnSharesPct.slice(),
+            RowSharesPct     : shares.RowSharesPct.slice(),
+            ColumnWidthsMm   : columnWidthsMm,
+            RowHeightsMm     : rowHeightsMm,
+            CellWidthMm      : columnWidthsMm[0] || 0,
+            CellHeightMm     : rowHeightsMm[0] || 0,
+            BodyWidthMm      : columnWidthsMm[0] || 0,
+            BodyHeightMm     : Math.max(0, (rowHeightsMm[0] || 0) - labelMm),
             DrawableWidthMm  : drawableWidthMm,
             DrawableHeightMm : drawableHeightMm
         };
@@ -178,12 +265,35 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
     function VghLantern__DrawingEditor__ViewportFrame__SlotBodySizeMm(slot, cellMetrics) {
         if (!slot || !cellMetrics) return null;
 
-        var columnSpan  =  (typeof slot.ColumnSpan === 'number' && slot.ColumnSpan > 0) ? slot.ColumnSpan : 1;
-        var rowSpan     =  (typeof slot.RowSpan === 'number' && slot.RowSpan > 0)       ? slot.RowSpan    : 1;
+        var columnSpan   =  (typeof slot.ColumnSpan === 'number' && slot.ColumnSpan > 0) ? slot.ColumnSpan : 1;
+        var rowSpan      =  (typeof slot.RowSpan === 'number' && slot.RowSpan > 0)       ? slot.RowSpan    : 1;
+        var columnStart  =  Math.max(1, Number(slot.ColumnStart) || 1);
+        var rowStart     =  Math.max(1, Number(slot.RowStart)    || 1);
+        var labelMm      =  (typeof cellMetrics.LabelMm === 'number') ? cellMetrics.LabelMm : FALLBACK_LABEL_MM;
+
+        var widthMm   =  0;
+        var heightMm  =  0;
+        var i, colIndex, rowIndex;
+
+        for (i = 0; i < columnSpan; i++) {
+            colIndex  =  columnStart - 1 + i;
+            widthMm  +=  (cellMetrics.ColumnWidthsMm && cellMetrics.ColumnWidthsMm[colIndex] != null)
+                ? cellMetrics.ColumnWidthsMm[colIndex]
+                : (cellMetrics.CellWidthMm || 0);
+        }
+        widthMm  +=  cellMetrics.GutterMm * (columnSpan - 1);
+
+        for (i = 0; i < rowSpan; i++) {
+            rowIndex   =  rowStart - 1 + i;
+            heightMm  +=  (cellMetrics.RowHeightsMm && cellMetrics.RowHeightsMm[rowIndex] != null)
+                ? cellMetrics.RowHeightsMm[rowIndex]
+                : (cellMetrics.CellHeightMm || 0);
+        }
+        heightMm  +=  cellMetrics.GutterMm * (rowSpan - 1);
 
         return {
-            WidthMm  : (cellMetrics.BodyWidthMm  * columnSpan) + (cellMetrics.GutterMm * (columnSpan - 1)),
-            HeightMm : (cellMetrics.BodyHeightMm * rowSpan)    + (cellMetrics.GutterMm * (rowSpan - 1))
+            WidthMm  : widthMm,
+            HeightMm : Math.max(0, heightMm - labelMm)
         };
     }
     // ------------------------------------------------------------
@@ -201,8 +311,19 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
     // beside a 3D view would misrepresent it.
     function VghLantern__ViewportFrame__BuildCaption(slot) {
         var ScaleManager  =  window.VghLantern__DrawingEditor__ScaleManager;
-        var html          =  '<div class="' + CSS_FRAME_LABEL + '">' +
-                             VghLantern__ViewportFrame__Escape(slot.Label || slot.Key);
+
+        // The caption height is pinned to its configured paper height, because the
+        // body size maths subtracts FrameLabelHeightMm - a font-driven height here
+        // would put the drawn scale slightly off its quoted value.
+        var sheetCfg  =  VghLantern__ViewportFrame__SheetConfig();
+        var gridCfg   =  VghLantern__ViewportFrame__GridConfig();
+        var labelMm   =  (typeof gridCfg.FrameLabelHeightMm === 'number') ? gridCfg.FrameLabelHeightMm : FALLBACK_LABEL_MM;
+        var fontMm    =  (typeof gridCfg.FrameLabelFontSizeMm === 'number') ? gridCfg.FrameLabelFontSizeMm : FALLBACK_LABEL_FONT_MM;
+        var pxPerMm   =  (typeof sheetCfg.ScreenPixelsPerMm === 'number') ? sheetCfg.ScreenPixelsPerMm : 3.2;
+
+        var html  =  '<div class="' + CSS_FRAME_LABEL + '" style="height:' + (labelMm * pxPerMm) + 'px;' +
+                     'font-size:' + (fontMm * pxPerMm) + 'px;box-sizing:border-box">' +
+                     VghLantern__ViewportFrame__Escape(slot.Label || slot.Key);
 
         if (slot.ShowScale !== false && ScaleManager) {
             html  +=  '<span class="' + CSS_FRAME_SCALE + '">' +

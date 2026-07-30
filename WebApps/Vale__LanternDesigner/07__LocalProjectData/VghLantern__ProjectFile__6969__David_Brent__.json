@@ -35,21 +35,21 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 2400,
-                "Lantern__Dimensions__Config__DepthMm": 1400,
+                "Lantern__Dimensions__Config__WidthMm": 9000,
+                "Lantern__Dimensions__Config__DepthMm": 4350,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 50
             },
             "Lantern__RoofPitch__Config": {
                 "Lantern__RoofPitch__Config__DriveMode": "angle",
-                "Lantern__RoofPitch__Config__PitchDegrees": 25,
-                "Lantern__RoofPitch__Config__RidgeRiseMm": 0
+                "Lantern__RoofPitch__Config__PitchDegrees": 22.5,
+                "Lantern__RoofPitch__Config__RidgeRiseMm": 1050
             },
             "Lantern__GlazingBars__Config": {
-                "Lantern__GlazingBars__Config__DivisionMode": "count",
+                "Lantern__GlazingBars__Config__DivisionMode": "spacing",
                 "Lantern__GlazingBars__Config__BarCountLongSlope": 3,
                 "Lantern__GlazingBars__Config__BarCountShortSlope": 1,
-                "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
-                "Lantern__GlazingBars__Config__BarProfileId": "",
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 450,
+                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
             },
             "Lantern__RidgeAndHips__Config": {

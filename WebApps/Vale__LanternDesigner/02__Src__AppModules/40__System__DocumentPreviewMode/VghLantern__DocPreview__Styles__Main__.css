@@ -12,6 +12,8 @@
  * DESCRIPTION:
  * - Pages are authored in paper millimetres and scaled to the screen with a single
  *   transform, so the on-screen page and the exported PDF share one geometry.
+ * - Specification pages use print-faithful typography (not Specification Mode cards)
+ *   so Preview and Send is a WYSIWYG surface for the PDF.
  * - The print rules strip the app chrome and the screen scaling, so browser print
  *   produces the same pages as the PDF export.
  *
@@ -247,6 +249,115 @@
     .VghLantern__DocPreview__Empty {
         margin                      : 0;
         font-size                   : 3mm;
+        font-style                  : italic;
+        color                       : var(--Vale_TextSubtle);
+    }
+
+    /* Title strip is height-capped from TitleBlockHeightMm so views keep the page */
+    .VghLantern__DocPreview__TitleHost {
+        flex                        : 0 0 auto;
+        overflow                    : hidden;
+    }
+
+    .VghLantern__DocPreview__TitleHost .VghLantern__Sheet__TitleBlock {
+        height                      : 100%;
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Print-Faithful Specification Document
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__DocPreview__PrintDoc {
+        display                     : flex;
+        flex-direction              : column;
+        gap                         : 3mm;
+        font-family                 : var(--Vale_FontFamily);
+        color                       : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__DocPreview__PrintDocTitle {
+        margin                      : 0;
+        font-size                   : 5.5mm;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        line-height                 : 1.2;
+        color                       : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__DocPreview__PrintDocMeta {
+        margin                      : 0 0 1mm 0;
+        font-size                   : 3mm;
+        color                       : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__DocPreview__PrintDocHeading {
+        margin                      : 2mm 0 1mm 0;
+        font-size                   : 3.8mm;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        line-height                 : 1.25;
+        color                       : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__DocPreview__PrintDocParagraph {
+        margin                      : 0 0 2mm 0;
+        font-size                   : 3mm;
+        line-height                 : 1.35;
+        white-space                 : pre-wrap;
+    }
+
+    .VghLantern__DocPreview__PrintDocWarnings {
+        margin                      : 0 0 2mm 0;
+        padding-left                : 4mm;
+        font-size                   : 3mm;
+        color                       : var(--Vale_TextPrimary);
+    }
+
+    /* Tables inside the print doc mirror PdfExporter header / alt-row colours */
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__Table {
+        width                       : 100%;
+        border-collapse             : collapse;
+        margin                      : 0 0 3mm 0;
+        font-size                   : 2.8mm;
+        table-layout                : fixed;
+    }
+
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__TableHeadCell {
+        padding                     : 1.2mm 1.4mm;
+        background-color            : var(--Vale_PrimaryBrand);
+        color                       : var(--Vale_TextLight);
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        text-align                  : left;
+        border                      : none;
+    }
+
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__TableCell {
+        padding                     : 1.1mm 1.4mm;
+        border                      : none;
+        border-bottom               : 0.15mm solid var(--Vale_BorderLight);
+        color                       : var(--Vale_TextPrimary);
+        vertical-align              : top;
+        word-break                  : break-word;
+    }
+
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__Table tbody tr:nth-child(even) .VghLantern__Spec__TableCell {
+        background-color            : var(--Vale_BackgroundLight);
+    }
+
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__TableCell--right {
+        text-align                  : right;
+    }
+
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__TableTotalsRow .VghLantern__Spec__TableCell {
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        background-color            : transparent;
+        border-top                  : 0.35mm solid var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__DocPreview__PrintDoc .VghLantern__Spec__TableEmpty {
+        margin                      : 0 0 3mm 0;
+        font-size                   : 2.8mm;
         font-style                  : italic;
         color                       : var(--Vale_TextSubtle);
     }

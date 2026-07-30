@@ -11,10 +11,9 @@
 
    DESCRIPTION:
    - Owns the Preview and Send mode: toolbar, issue banner and the paginated pages.
-   - Page one is the drawing sheet, rebuilt from the Drawing Editor's composed SVG
-     and 3D snapshots and filtered by the enabled view toggles.
-   - Following pages carry the specification, taken from the Specification mode's
-     DescribeDocument so the two never diverge.
+   - Page order comes from DocPreview config (specification first, drawing sheet last
+     by default). Drawing views rebuild from the Drawing Editor sheet description;
+     specification pages use PrintDocumentRenderer so the preview matches the PDF.
    - Pages are sized in paper millimetres and scaled to screen by a single CSS
      transform, which is what makes the preview and the PDF the same document.
 
@@ -59,6 +58,7 @@ const VghLantern__DocPreview__PageRenderer = (function() {
     const CSS_VIEW_FRAME     =  'VghLantern__DocPreview__ViewFrame';
     const CSS_VIEW_LABEL     =  'VghLantern__DocPreview__ViewLabel';
     const CSS_VIEW_BODY      =  'VghLantern__DocPreview__ViewBody';
+    const CSS_TITLE_HOST     =  'VghLantern__DocPreview__TitleHost';
     const CSS_EMPTY          =  'VghLantern__DocPreview__Empty';
 
     const ATTR_TOGGLE_KEY    =  'data-vghlantern-preview-toggle';
@@ -323,7 +323,12 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         }
 
         if (TitleBlock) {
-            html  +=  TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup(sheet.Project, sheet.Lantern);
+            var sheetCfg  =  VghLantern__PageRenderer__DrawingConfig()['VghLantern__DrawingEditor__Config__Sheet'] || {};
+            var titleMm   =  (typeof sheetCfg.TitleBlockHeightMm === 'number') ? sheetCfg.TitleBlockHeightMm : 10;
+
+            html  +=  '<div class="' + CSS_TITLE_HOST + '" style="height:' + titleMm + 'mm">' +
+                      TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup(sheet.Project, sheet.Lantern) +
+                      '</div>';
         }
 
         return html;
@@ -339,36 +344,18 @@ const VghLantern__DocPreview__PageRenderer = (function() {
 
     // SUB FUNCTION | Build the Specification Page Body
     // ------------------------------------------------------------
-    // Section filtering is by toggle: an unticked Job Notes box drops that section
-    // from the output without the Specification mode needing to know about it.
+    // Uses the print-faithful renderer (same model path as PdfExporter), not the
+    // Specification Mode card UI. Toggles filter which takeoff sections print.
     function VghLantern__PageRenderer__BuildSpecificationBody() {
-        var SectionManager  =  window.VghLantern__Specification__SectionManager;
-        var DocumentState   =  window.VghLantern__DocPreview__DocumentState;
-        if (!SectionManager || !DocumentState) return '';
-
-        var described  =  SectionManager.VghLantern__Specification__SectionManager__DescribeDocument();
-        if (!described || !described.HasContent) {
+        var PrintDocument  =  window.VghLantern__DocPreview__PrintDocumentRenderer;
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        if (!PrintDocument || !DocumentState) {
             return '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
         }
 
-        var state    =  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState();
-        var wrapper  =  document.createElement('div');
-        wrapper.innerHTML  =  described.SectionsHtml;
-
-        // Drop the sections the user switched off. Working on a detached element keeps
-        // the on-screen Specification mode untouched.
-        var dropKeys  =  [];
-        if (!state.ShowTakeoffSchedule)   dropKeys.push('linearSections', 'glazingAreas');
-        if (!state.ShowComponentSchedule) dropKeys.push('componentCounts');
-        if (!state.ShowJobNotes)          dropKeys.push('jobNotes');
-
-        var i, node;
-        for (i = 0; i < dropKeys.length; i++) {
-            node  =  wrapper.querySelector('[data-vghlantern-spec-section="' + dropKeys[i] + '"]');
-            if (node && node.parentNode) node.parentNode.removeChild(node);
-        }
-
-        return described.HeaderHtml + wrapper.innerHTML;
+        return PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml(
+            DocumentState.VghLantern__DocPreview__DocumentState__GetViewState()
+        );
     }
     // ------------------------------------------------------------
 
@@ -378,6 +365,39 @@ const VghLantern__DocPreview__PageRenderer = (function() {
 // -----------------------------------------------------------------------------
 // REGION | Rendering
 // -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Build One Page Kind Into Scaled Paper Markup
+    // ------------------------------------------------------------
+    function VghLantern__PageRenderer__BuildPageKind(kind, pageNumber) {
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        if (!DocumentState) return '';
+
+        if (kind === 'drawing') {
+            var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
+            var sheet         =  SheetManager
+                ? SheetManager.VghLantern__DrawingEditor__SheetManager__DescribeSheet()
+                : { ViewSvgMarkup: {}, ViewSnapshots: {}, ScaleLabel: '' };
+
+            var drawingPage  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(
+                DocumentState.VghLantern__DocPreview__DocumentState__DrawingOrientation()
+            );
+
+            return VghLantern__PageRenderer__WrapPage(
+                drawingPage, VghLantern__PageRenderer__BuildDrawingBody(sheet), pageNumber
+            );
+        }
+
+        if (kind === 'specification') {
+            var specPage  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(null);
+            return VghLantern__PageRenderer__WrapPage(
+                specPage, VghLantern__PageRenderer__BuildSpecificationBody(), pageNumber
+            );
+        }
+
+        return '';
+    }
+    // ------------------------------------------------------------
+
 
     // FUNCTION | Render the Whole Preview Mode
     // ------------------------------------------------------------
@@ -392,30 +412,14 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         var issues     =  IssueHandler ? IssueHandler.VghLantern__DocPreview__DocIssueHandler__Collect() : [];
         var bannerHtml =  IssueHandler ? IssueHandler.VghLantern__DocPreview__DocIssueHandler__BuildBanner(issues) : '';
 
+        var pageKinds   =  DocumentState.VghLantern__DocPreview__DocumentState__ListPageKinds();
         var pagesHtml   =  '';
         var pageNumber  =  1;
+        var i;
 
-        if (DocumentState.VghLantern__DocPreview__DocumentState__IncludesDrawingPage()) {
-            var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
-            var sheet         =  SheetManager
-                ? SheetManager.VghLantern__DrawingEditor__SheetManager__DescribeSheet()
-                : { ViewSvgMarkup: {}, ViewSnapshots: {}, ScaleLabel: '' };
-
-            var drawingPage  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(
-                DocumentState.VghLantern__DocPreview__DocumentState__DrawingOrientation()
-            );
-
-            pagesHtml  +=  VghLantern__PageRenderer__WrapPage(
-                drawingPage, VghLantern__PageRenderer__BuildDrawingBody(sheet), pageNumber
-            );
+        for (i = 0; i < pageKinds.length; i++) {
+            pagesHtml  +=  VghLantern__PageRenderer__BuildPageKind(pageKinds[i], pageNumber);
             pageNumber++;
-        }
-
-        if (DocumentState.VghLantern__DocPreview__DocumentState__IncludesSpecificationPage()) {
-            var specPage  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(null);
-            pagesHtml  +=  VghLantern__PageRenderer__WrapPage(
-                specPage, VghLantern__PageRenderer__BuildSpecificationBody(), pageNumber
-            );
         }
 
         container.innerHTML  =  VghLantern__PageRenderer__BuildToolbar() +

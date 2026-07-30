@@ -181,14 +181,24 @@ const VghLantern__Env2d__DimensionEditor = (function() {
     // ------------------------------------------------------------
     // The input is an HTML element layered over the SVG rather than a foreignObject,
     // so it inherits app styling and behaves normally for keyboard and autofill.
+    // Client rects are visual space but style.left/top are layout space, so when an
+    // ancestor carries a CSS scale (the drawing sheet zoom) the screen offsets must
+    // be divided back through that scale or the input lands wide of the text.
     function VghLantern__Env2d__DimensionEditor__PositionInput(inputEl, textEl, hostEl, widthPx) {
         var textRect  =  textEl.getBoundingClientRect();
         var hostRect  =  hostEl.getBoundingClientRect();
 
+        var layoutWidth  =  hostEl.offsetWidth || hostRect.width;
+        var scaleFactor  =  layoutWidth > 0 ? (hostRect.width / layoutWidth) : 1;
+        if (!scaleFactor || !isFinite(scaleFactor)) scaleFactor  =  1;
+
+        var centreLeft  =  (textRect.left - hostRect.left + (textRect.width  / 2)) / scaleFactor;
+        var centreTop   =  (textRect.top  - hostRect.top  + (textRect.height / 2)) / scaleFactor;
+
         inputEl.style.position  =  'absolute';
         inputEl.style.width     =  widthPx + 'px';
-        inputEl.style.left      =  (textRect.left - hostRect.left + (textRect.width  / 2) - (widthPx / 2)) + 'px';
-        inputEl.style.top       =  (textRect.top  - hostRect.top  + (textRect.height / 2) - (INPUT_HEIGHT_PX / 2)) + 'px';
+        inputEl.style.left      =  (centreLeft - (widthPx / 2)) + 'px';
+        inputEl.style.top       =  (centreTop  - (INPUT_HEIGHT_PX / 2)) + 'px';
     }
     // ------------------------------------------------------------
 

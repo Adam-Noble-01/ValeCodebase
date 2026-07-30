@@ -89,6 +89,16 @@
         background-color                   : var(--Vale_PrimaryBrand_Dark);
     }
 
+    .VghLantern__DrawingEditor__ToolButton:disabled {
+        opacity                            : 0.55;
+        cursor                             : default;
+    }
+
+    /* Pushes everything after it to the right-hand end of the toolbar row */
+    .VghLantern__DrawingEditor__ToolSpacer {
+        flex                               : 1 1 auto;
+    }
+
     /* Empty state shown when no lantern is available to draw */
     .VghLantern__DrawingEditor__EmptyState {
         margin                             : var(--Vale_Spacing_XLarge) auto;
@@ -105,12 +115,18 @@
  * REGION | Sheet Stage And Paper
  * ----------------------------------------------------------------------------- */
 
-    /* Scrollable stage that the paper sheet floats in */
+    /* Scrollable stage that the paper sheet floats in. Left click stays free for
+       dimension editing and the 3D camera entry; pan lives on right / middle drag,
+       so the idle cursor stays default and only the active pan shows a grab. */
     #VghLantern__DrawingEditor__SheetHost {
         flex                               : 1 1 auto;
         min-height                         : 0;
         overflow                           : auto;
         padding                            : var(--Vale_Spacing_Large);
+    }
+
+    #VghLantern__DrawingEditor__SheetHost.VghLantern__DrawingEditor__SheetHost--panning {
+        cursor                             : grabbing;
     }
 
     .VghLantern__Sheet__Scaler {
@@ -122,18 +138,120 @@
     .VghLantern__Sheet {
         display                            : flex;
         flex-direction                     : column;
-        gap                                : var(--Vale_Spacing_Small);
+        gap                                : var(--VghSheet_BlockGap, 3mm);
         box-sizing                         : border-box;
         background-color                   : #ffffff;
         border                             : 1px solid var(--Vale_BorderPrimary);
         box-shadow                         : 0 2px 12px var(--VghLantern_PreviewPaperShadow);
     }
 
-    /* View grid. Columns, rows and gap are set inline from config. */
+    /* View grid wrap owns the absolute gutter handles so they never become grid tracks. */
+    .VghLantern__Sheet__ViewGridWrap {
+        position                           : relative;
+        display                            : flex;
+        flex-direction                     : column;
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+        min-width                          : 0;
+    }
+
+    /* View grid. Columns, rows and gap are set inline from config / gutter shares. */
     .VghLantern__Sheet__ViewGrid {
         display                            : grid;
         flex                               : 1 1 auto;
         min-height                         : 0;
+        width                              : 100%;
+        height                             : 100%;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Viewport Gutter Resize Handles
+ * ----------------------------------------------------------------------------- */
+
+    body.VghLantern__Sheet__IsResizing {
+        cursor                             : grabbing;
+        user-select                        : none;
+    }
+
+    body.VghLantern__Sheet__IsResizing--row {
+        cursor                             : grabbing;
+    }
+
+    .VghLantern__Sheet__ResizeHandle {
+        position                           : absolute;
+        z-index                            : 20;
+        box-sizing                         : border-box;
+        background-color                   : transparent;
+        transition                         : background-color var(--Vale_Transition_Fast);
+        touch-action                       : none;
+    }
+
+    .VghLantern__Sheet__ResizeHandle:hover,
+    .VghLantern__Sheet__ResizeHandle--dragging {
+        background-color                   : rgba(51, 102, 153, 0.35);         /* <-- Accent blue wash over the gutter */
+    }
+
+    .VghLantern__Sheet__ResizeHandle--col {
+        cursor                             : grab;
+        transform                          : translateX(-50%);
+    }
+
+    .VghLantern__Sheet__ResizeHandle--col::after {
+        content                            : '';
+        position                           : absolute;
+        top                                : 12%;
+        bottom                             : 12%;
+        left                               : 50%;
+        width                              : 0;
+        transform                          : translateX(-50%);
+        border-left                        : 1px dotted #d5d9dd;               /* <-- Idle: light dotted gutter */
+        background-color                   : transparent;
+        pointer-events                     : none;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             width var(--Vale_Transition_Fast),
+                                             border-left-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Sheet__ResizeHandle--col:hover::after,
+    .VghLantern__Sheet__ResizeHandle--col.VghLantern__Sheet__ResizeHandle--dragging::after {
+        width                              : 3px;
+        border-left                        : none;
+        background-color                   : var(--VghLantern_AccentBlue);     /* <-- Hover / drag: solid accent */
+    }
+
+    .VghLantern__Sheet__ResizeHandle--row {
+        cursor                             : grab;
+        transform                          : translateY(-50%);
+    }
+
+    .VghLantern__Sheet__ResizeHandle--row::after {
+        content                            : '';
+        position                           : absolute;
+        left                               : 12%;
+        right                              : 12%;
+        top                                : 50%;
+        height                             : 0;
+        transform                          : translateY(-50%);
+        border-top                         : 1px dotted #d5d9dd;               /* <-- Idle: light dotted gutter */
+        background-color                   : transparent;
+        pointer-events                     : none;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             height var(--Vale_Transition_Fast),
+                                             border-top-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Sheet__ResizeHandle--row:hover::after,
+    .VghLantern__Sheet__ResizeHandle--row.VghLantern__Sheet__ResizeHandle--dragging::after {
+        height                             : 3px;
+        border-top                         : none;
+        background-color                   : var(--VghLantern_AccentBlue);     /* <-- Hover / drag: solid accent */
+    }
+
+    .VghLantern__Sheet__ResizeHandle--dragging {
+        cursor                             : grabbing;
     }
 
 /* #endregion ------------------------------------------------------------------- */
@@ -148,7 +266,14 @@
         flex-direction                     : column;
         min-width                          : 0;
         min-height                         : 0;
-        border                             : 1px solid var(--VghLantern_SvgConstructionLine);
+        border                             : var(--VghSheet_FrameStroke, 0.25mm) solid var(--VghLantern_SvgConstructionLine);
+    }
+
+    /* Live camera edit on the 3D frame: the border says which viewport owns the
+       keyboard until Escape ends the session */
+    .VghLantern__Sheet__Frame--cameraEdit {
+        outline                            : 2px solid var(--VghLantern_AccentBlue);
+        outline-offset                     : -1px;
     }
 
     .VghLantern__Sheet__FrameLabel {
@@ -157,11 +282,10 @@
         justify-content                    : space-between;
         gap                                : var(--Vale_Spacing_Small);
         flex                               : 0 0 auto;
-        padding                            : 2px 6px;
-        font-size                          : var(--Vale_FontSize_Small);
+        padding                            : 0.6mm 1.9mm;
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextPrimary);
-        border-bottom                      : 1px solid var(--VghLantern_SvgConstructionLine);
+        border-bottom                      : var(--VghSheet_FrameStroke, 0.25mm) solid var(--VghLantern_SvgConstructionLine);
         text-transform                     : uppercase;
         letter-spacing                     : 0.05em;
     }
@@ -213,13 +337,13 @@
     }
 
     .VghLantern__Sheet__Notes {
-        border-top                         : 1px solid var(--VghLantern_SvgConstructionLine);
-        padding-top                        : 4px;
+        border-top                         : var(--VghSheet_FrameStroke, 0.25mm) solid var(--VghLantern_SvgConstructionLine);
+        padding-top                        : var(--VghSheet_NotePadTop, 1.25mm);
     }
 
     .VghLantern__Sheet__NotesTitle {
-        margin                             : 0 0 2px 0;
-        font-size                          : var(--Vale_FontSize_Small);
+        margin                             : 0 0 1px 0;
+        font-size                          : var(--VghSheet_NoteHeadingFont, 1.47mm);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextPrimary);
         text-transform                     : uppercase;
@@ -230,11 +354,11 @@
         margin                             : 0;
         padding-left                       : 1.4em;
         columns                            : 2;
-        column-gap                         : var(--Vale_Spacing_Large);
+        column-gap                         : var(--VghSheet_NoteColGap, 6mm);
     }
 
     .VghLantern__Sheet__NotesItem {
-        font-size                          : var(--Vale_FontSize_Small);
+        font-size                          : var(--VghSheet_NoteFont, 1.4mm);
         line-height                        : 1.35;
         color                              : var(--Vale_TextPrimary);
     }
@@ -261,72 +385,89 @@
         align-items                        : stretch;
         height                             : 100%;
         border                             : 1px solid var(--Vale_BorderPrimary);
+        overflow                           : hidden;
     }
 
     .VghLantern__Sheet__TitleBlockLogo {
         display                            : flex;
-        flex-direction                     : column;
+        flex-direction                     : row;
         justify-content                    : center;
         align-items                        : center;
         gap                                : 0;
         flex                               : 0 0 auto;
-        padding                            : 2px 6px;
+        box-sizing                         : border-box;
+        padding                            : var(--VghSheet_LogoPadV, 1.8mm) var(--VghSheet_LogoPadH, 2.5mm);
         border-right                       : 1px solid var(--Vale_BorderPrimary);
     }
 
     .VghLantern__Sheet__TitleBlockLogo img {
         display                            : block;
-        max-height                         : 100%;
+        max-height                         : var(--VghSheet_LogoMaxHeight, 5.5mm);
         width                              : auto;
         height                             : auto;
         object-fit                         : contain;
     }
 
     .VghLantern__Sheet__TitleBlockCompany {
-        font-size                          : calc(var(--Vale_FontSize_Small) * 0.9);
+        font-size                          : 1.8mm;
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_PrimaryBrand);
         white-space                        : nowrap;
     }
 
+    /* Single horizontal strip — never wrap onto a second row */
     .VghLantern__Sheet__TitleBlockFields {
         display                            : flex;
-        flex-wrap                          : wrap;
-        align-content                      : stretch;
+        flex-wrap                          : nowrap;
+        align-items                        : stretch;
         flex                               : 1 1 auto;
         min-width                          : 0;
     }
 
+    /* Label pinned top-left; value centred vertically in the remaining cell */
     .VghLantern__Sheet__TitleBlockField {
+        position                           : relative;
         display                            : flex;
         flex-direction                     : column;
+        align-items                        : stretch;
         justify-content                    : center;
-        gap                                : 0;
         box-sizing                         : border-box;
-        padding                            : 1px 5px;
+        padding                            : var(--VghSheet_FieldPadT, 2.4mm) var(--VghSheet_FieldPadH, 1.4mm) var(--VghSheet_FieldPadB, 0.8mm) var(--VghSheet_FieldPadH, 1.4mm);
         border-right                       : 1px solid var(--VghLantern_SvgConstructionLine);
-        border-bottom                      : 1px solid var(--VghLantern_SvgConstructionLine);
+        border-bottom                      : none;
         overflow                           : hidden;
+        min-width                          : 0;
+    }
+
+    .VghLantern__Sheet__TitleBlockField:last-child {
+        border-right                       : none;
     }
 
     .VghLantern__Sheet__TitleBlockFieldLabel {
-        font-size                          : calc(var(--Vale_FontSize_Small) * 0.72);
-        line-height                        : 1.15;
+        position                           : absolute;
+        top                                : var(--VghSheet_FieldLabelTop, 0.5mm);
+        left                               : var(--VghSheet_FieldPadH, 1.4mm);
+        right                              : var(--VghSheet_FieldPadH, 1.4mm);
+        font-size                          : var(--VghSheet_TitleLabelFont, 1.6mm);
+        line-height                        : 1;
         color                              : var(--Vale_TextSubtle);
         text-transform                     : uppercase;
-        letter-spacing                     : 0.04em;
+        letter-spacing                     : 0.03em;
         white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        pointer-events                     : none;
     }
 
     .VghLantern__Sheet__TitleBlockFieldValue {
-        font-size                          : calc(var(--Vale_FontSize_Small) * 0.92);
-        line-height                        : 1.2;
+        font-size                          : var(--VghSheet_TitleValueFont, 2.2mm);
+        line-height                        : 1;
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextPrimary);
         white-space                        : nowrap;
         overflow                           : hidden;
         text-overflow                      : ellipsis;
-        min-height                         : 1em;                              /* <-- Keeps an unresolved field the same height as a filled one */
+        min-height                         : 1em;
     }
 
 /* #endregion ------------------------------------------------------------------- */

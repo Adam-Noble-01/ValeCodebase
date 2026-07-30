@@ -9,7 +9,7 @@
 
         "VghLantern__Env2d__Config__Views": {
             "plan": {
-                "Label"                       : "Plan",
+                "Label"                       : "Plan View",
                 "ShortLabel"                  : "Plan",
                 "ProjectionKey"               : "plan",
                 "HorizontalAxisLabel"         : "Width",
@@ -43,7 +43,11 @@
             "PanButton"                       : 0,
             "DoubleClickZoomExtents"          : true,
             "ShowViewLabel"                   : true,
-            "ViewLabelFontSizePx"             : 13
+            "ViewLabelSizeFactor"             : 0.00875,
+            "ViewLabelSizeFactorNote"         : "Fraction of max(viewBox width, height). 0.00875 is 0.25x of the previous 0.035 draftsman corner title.",
+            "ViewLabelUnderlineStrokeFactor"  : 0.0009,
+            "ViewLabelGapFactor"              : 0.025,
+            "ViewLabelGapFactorNote"          : "Gap below the drawn content (as a fraction of content span) before the draftsman title. Anchors the label to the lantern, not the frame edge."
         },
 
         "VghLantern__Env2d__Config__Grid": {

@@ -7,6 +7,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__NavMode__ResetView",
             "Na__Hotkey__Description" : "Reset camera to project start position"
         },
@@ -17,6 +18,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__NavMode__SetOrbitMode",
             "Na__Hotkey__Description" : "Switch to orbit navigation mode"
         },
@@ -27,6 +29,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__NavMode__SetWalkMode",
             "Na__Hotkey__Description" : "Switch to walk navigation mode"
         },
@@ -37,6 +40,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__NavMode__SetFlyMode",
             "Na__Hotkey__Description" : "Switch to fly navigation mode"
         },
@@ -47,6 +51,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__PresentationMode__ToggleViewsPanel",
             "Na__Hotkey__Description" : "Toggle the presentation scene views panel"
         },
@@ -57,6 +62,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__PresentationMode__NextScene",
             "Na__Hotkey__Description" : "Advance to next presentation scene"
         },
@@ -67,6 +73,7 @@
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__PresentationMode__PrevScene",
             "Na__Hotkey__Description" : "Return to previous presentation scene"
         },
@@ -77,6 +84,7 @@
             "Na__Hotkey__AltKey"      : true,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__App__NavigateBack",
             "Na__Hotkey__Description" : "Go back to the previous page (Whitecardopedia)"
         },
@@ -87,6 +95,7 @@
             "Na__Hotkey__AltKey"      : true,
             "Na__Hotkey__ShiftKey"    : true,
             "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
             "Na__Hotkey__Action"      : "ValeVision__FogPlane__ToggleFogAndBarrier",
             "Na__Hotkey__Description" : "Toggle fog effect and camera forcefield barrier planes"
         }

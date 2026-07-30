@@ -21,6 +21,8 @@
 // - Keyboard Shortcuts section is populated dynamically from
 //   Na__ValeVision__HotkeysDictionary__.json so the panel stays in sync
 //   with the dictionary without any manual HTML edits.
+// - Entries with Na__Hotkey__Advanced: true go into a collapsed
+//   "Advanced Hotkeys" sub-dropdown under Keyboard Shortcuts.
 // - Each mode section contains PC / Touchscreen sub-dropdowns
 //   (data-nav-help-device="pc"|"touch"); the one matching the active device
 //   unfolds by default and the other folds shut, both stay clickable.
@@ -34,6 +36,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Jul-2026 - Version 1.4.0
+// - Advanced Hotkeys collapsible sub-section under Keyboard Shortcuts;
+//   dictionary entries flagged Na__Hotkey__Advanced: true render there.
+//
 // 28-Jul-2026 - Version 1.3.0
 // - PC / Touchscreen device sub-dropdowns: instructions per mode are now
 //   split per input device, auto-unfolded to match the detected device.
@@ -59,12 +65,14 @@
 
     // MODULE CONSTANTS | DOM Element IDs
     // ------------------------------------------------------------
-    const Na__NavHelp__PanelId        = 'naNavHelpPanel';           // <-- Modal overlay container
-    const Na__NavHelp__BackdropId     = 'naNavHelpBackdrop';        // <-- Click-outside-to-close backdrop
-    const Na__NavHelp__CloseBtnId     = 'naNavHelpCloseBtn';        // <-- Close (X) button
-    const Na__NavHelp__WalkSectionId  = 'naNavHelpWalkSection';     // <-- Walk instructions section
-    const Na__NavHelp__FlySectionId   = 'naNavHelpFlySection';      // <-- Fly instructions section
-    const Na__NavHelp__HotkeyListId   = 'naNavHelpHotkeysList';     // <-- Keyboard shortcuts row container
+    const Na__NavHelp__PanelId               = 'naNavHelpPanel';                  // <-- Modal overlay container
+    const Na__NavHelp__BackdropId            = 'naNavHelpBackdrop';               // <-- Click-outside-to-close backdrop
+    const Na__NavHelp__CloseBtnId            = 'naNavHelpCloseBtn';               // <-- Close (X) button
+    const Na__NavHelp__WalkSectionId         = 'naNavHelpWalkSection';            // <-- Walk instructions section
+    const Na__NavHelp__FlySectionId          = 'naNavHelpFlySection';             // <-- Fly instructions section
+    const Na__NavHelp__HotkeyListId          = 'naNavHelpHotkeysList';            // <-- Standard keyboard shortcut rows
+    const Na__NavHelp__AdvancedSectionId     = 'naNavHelpAdvancedHotkeysSection'; // <-- Advanced hotkeys fold-out
+    const Na__NavHelp__AdvancedHotkeyListId  = 'naNavHelpAdvancedHotkeysList';    // <-- Advanced keyboard shortcut rows
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | Hotkey Dictionary Path
@@ -266,8 +274,10 @@
     // FUNCTION | Fetch Dictionary and Inject Keyboard Shortcut Rows
     // ------------------------------------------------------------
     function Na__NavHelp__PopulateHotkeySection() {
-        const container = document.getElementById(Na__NavHelp__HotkeyListId);
-        if (!container) return;                                           // <-- Guard: section not in DOM
+        const standardContainer = document.getElementById(Na__NavHelp__HotkeyListId);
+        const advancedContainer = document.getElementById(Na__NavHelp__AdvancedHotkeyListId);
+        const advancedSection   = document.getElementById(Na__NavHelp__AdvancedSectionId);
+        if (!standardContainer) return;                                          // <-- Guard: section not in DOM
 
         fetch(Na__NavHelp__HotkeyDictPath)
             .then(response => {
@@ -275,10 +285,20 @@
                 return response.json();
             })
             .then(data => {
-                const bindings = data.Na__ValeVision__HotkeysDictionary || [];
-                bindings.forEach(binding => {
-                    container.appendChild(Na__NavHelp__BuildHotkeyRow(binding)); // <-- Append one row per binding
+                const bindings         = data.Na__ValeVision__HotkeysDictionary || [];
+                const standardBindings = bindings.filter(binding => binding.Na__Hotkey__Advanced !== true); // <-- Everyday shortcuts
+                const advancedBindings = bindings.filter(binding => binding.Na__Hotkey__Advanced === true);  // <-- Advanced fold-out
+
+                standardBindings.forEach(binding => {
+                    standardContainer.appendChild(Na__NavHelp__BuildHotkeyRow(binding)); // <-- Standard list
                 });
+
+                if (advancedContainer && advancedSection && advancedBindings.length > 0) {
+                    advancedBindings.forEach(binding => {
+                        advancedContainer.appendChild(Na__NavHelp__BuildHotkeyRow(binding)); // <-- Advanced list
+                    });
+                    advancedSection.style.display = '';                          // <-- Reveal fold-out when entries exist
+                }
             })
             .catch(err => {
                 console.warn('[ValeVision3D] NavHelpPanel: Could not load hotkey dictionary -', err); // <-- Graceful failure

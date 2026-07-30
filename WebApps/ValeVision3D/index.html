@@ -1084,8 +1084,21 @@
                         <span class="na-nav-help__section-title">Keyboard Shortcuts</span>
                         <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
                     </button>
-                    <div class="na-nav-help__section-body" id="naNavHelpHotkeysList">
-                        <!-- Rows injected by Na__UiFeature__NavigationHelpPanel__Controls.js -->
+                    <div class="na-nav-help__section-body">
+                        <div id="naNavHelpHotkeysList">
+                            <!-- Standard rows injected by Na__UiFeature__NavigationHelpPanel__Controls.js -->
+                        </div>
+
+                        <!-- SUB DROPDOWN | Advanced Hotkeys (folded by default) -->
+                        <div class="na-nav-help__subsection na-nav-help__subsection--collapsed" id="naNavHelpAdvancedHotkeysSection" style="display:none;">
+                            <button class="na-nav-help__subsection-header" type="button" aria-expanded="false" data-nav-help-subsection>
+                                <span class="na-nav-help__subsection-title">Advanced Hotkeys</span>
+                                <span class="na-nav-help__section-arrow" aria-hidden="true">▾</span>
+                            </button>
+                            <div class="na-nav-help__subsection-body" id="naNavHelpAdvancedHotkeysList">
+                                <!-- Advanced rows injected by Na__UiFeature__NavigationHelpPanel__Controls.js -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 

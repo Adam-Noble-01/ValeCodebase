@@ -127,6 +127,22 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Constraint Sync Helper
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Sync Camera Forcefield to Fog Enable + Active Planes
+    // ------------------------------------------------------------
+    function Na__FogPlane__SyncConstraintEnabled() {
+        Na__FogPlane__SetConstraintEnabled(
+            Na__FogPlane__SysFogEnabled && Na__FogPlane__HasActivePlanes()
+        );
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Plane Drag Callback
 // -----------------------------------------------------------------------------
 
@@ -150,7 +166,7 @@
             slotState.normal
         );
 
-        Na__FogPlane__SetConstraintEnabled(Na__FogPlane__HasActivePlanes());
+        Na__FogPlane__SyncConstraintEnabled();                                   // <-- Barrier only when fog on + planes active
     }
     // ------------------------------------------------------------
 
@@ -165,7 +181,9 @@
     // ------------------------------------------------------------
     function Na__FogPlaneSystem__UpdatePerFrame(camera, controls) {
         Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlane__SysFogPass, camera);
-        Na__FogPlane__ApplyCameraConstraint(camera, controls);
+        if (Na__FogPlane__SysFogEnabled) {                                       // <-- Forcefield only while fog master is on
+            Na__FogPlane__ApplyCameraConstraint(camera, controls);
+        }
     }
     // ------------------------------------------------------------
 
@@ -195,11 +213,16 @@
 // REGION | Public Setters (called from UI Controls)
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Toggle Fog Effect On/Off
+    // FUNCTION | Toggle Fog Effect On/Off (Also Gates Camera Forcefield)
     // ------------------------------------------------------------
     function Na__FogPlaneSystem__SetFogEnabled(enabled) {
-        Na__FogPlane__SysFogEnabled = enabled;
-        Na__FogPlane__SetEnabled(Na__FogPlane__SysFogPass, enabled);
+        Na__FogPlane__SysFogEnabled = !!enabled;                                 // <-- Master fog + barrier flag
+        Na__FogPlane__SetEnabled(Na__FogPlane__SysFogPass, Na__FogPlane__SysFogEnabled); // <-- Shader uFogEnabled
+        if (Na__FogPlane__SysFogEnabled) {
+            Na__FogPlane__SyncConstraintEnabled();                               // <-- Re-enable barrier only if planes active
+        } else {
+            Na__FogPlane__SetConstraintEnabled(false);                           // <-- Hard-disable forcefield when fog off
+        }
     }
     // ------------------------------------------------------------
 
@@ -227,7 +250,7 @@
         Na__FogPlane__RemovePlane(slotId);
         Na__FogPlane__SetPlaneUniforms(Na__FogPlane__SysFogPass, slotId, null, null, false);
         Na__FogPlane__UpdateConstraintPlane(slotId, false, null, null);
-        Na__FogPlane__SetConstraintEnabled(Na__FogPlane__HasActivePlanes());
+        Na__FogPlane__SyncConstraintEnabled();                                   // <-- Barrier only when fog on + planes active
     }
     // ------------------------------------------------------------
 
@@ -372,7 +395,7 @@
                 });
             }
 
-            Na__FogPlane__SetConstraintEnabled(Na__FogPlane__HasActivePlanes());
+            Na__FogPlane__SyncConstraintEnabled();                               // <-- Barrier only when fog on + planes active
             Na__FogPlane__SetPlanesVisible(false);
         }
 

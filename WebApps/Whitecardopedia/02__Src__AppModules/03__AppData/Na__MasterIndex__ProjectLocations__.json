@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "28-Jul-2026 at 13:51",
+    "generatedAt": "29-Jul-2026 at 13:21",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1921,6 +1921,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "28-Jul-2026 at 13:51"
+        },
+        {
+            "folderId": "2026/63945__Ball",
+            "year": "2026",
+            "projectCode": "63945",
+            "name": "Ball",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "29-Jul-2026 at 13:21"
         }
     ]
 }

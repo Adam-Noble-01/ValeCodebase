@@ -584,6 +584,10 @@
         {
             "folderId": "2026/63403__Thrower",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63945__Ball",
+            "enabled": true
         }
     ]
 }

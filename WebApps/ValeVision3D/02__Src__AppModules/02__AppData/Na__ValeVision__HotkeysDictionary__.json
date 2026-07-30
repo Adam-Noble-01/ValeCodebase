@@ -79,6 +79,16 @@
             "Na__Hotkey__CtrlKey"     : false,
             "Na__Hotkey__Action"      : "ValeVision__App__NavigateBack",
             "Na__Hotkey__Description" : "Go back to the previous page (Whitecardopedia)"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "fogplane_toggle_fog_and_barrier",
+            "Na__Hotkey__Key"         : "F",
+            "Na__Hotkey__AltKey"      : true,
+            "Na__Hotkey__ShiftKey"    : true,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Action"      : "ValeVision__FogPlane__ToggleFogAndBarrier",
+            "Na__Hotkey__Description" : "Toggle fog effect and camera forcefield barrier planes"
         }
 
     ]

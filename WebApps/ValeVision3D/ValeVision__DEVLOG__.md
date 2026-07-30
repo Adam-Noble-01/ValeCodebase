@@ -2,6 +2,19 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.12.9 - 30-Jul-2026 - Alt+Shift+F Fog + Forcefield Toggle
+
+### Overview
+Alt+Shift+F now toggles the Fog Plane visual fog and the camera forcefield
+barrier together as one master switch. Turning fog off also disables the
+camera constraint; turning it on re-enables the barrier only when plane(s)
+are active. The Dev Tools “Enable Fog” checkbox shares the same coupled
+behaviour. Hotkey registered in Na__ValeVision__HotkeysDictionary__.json
+and wired through the global HotkeyHandler (help panel lists it automatically).
+Whitecardopedia PWA_SW_VERSION_TOKEN bumped to 2026-07-30-1 so shell cache
+picks up the SystemLogic coupling change.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.8 - 28-Jul-2026 - Nav Toolbar Idle Fade
 
 ### Overview

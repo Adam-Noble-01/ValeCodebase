@@ -26,6 +26,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 30-Jul-2026 - Version 1.0.2
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-30-2 (fog forcefield per-frame gate +
+//   case-insensitive letter hotkeys).
+//
+// 30-Jul-2026 - Version 1.0.1
+// - PWA_SW_VERSION_TOKEN bumped to 2026-07-30-1 (force shell cache eviction after
+//   ValeVision3D Alt+Shift+F fog/forcefield hotkey + FogPlane SystemLogic coupling).
+//
 // 2026 - Version 1.0.0
 // - Initial PWA service worker with shell / thumbs / data / models cache buckets.
 //
@@ -85,7 +93,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-07-09-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-07-30-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

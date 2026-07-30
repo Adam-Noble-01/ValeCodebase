@@ -1,4 +1,7 @@
 {
+    "projectName": "Gordon__Scheme-03",
+    "projectCode": "3038",
+    "projectNameAlias": "Gordon | Scheme – 03",
     "CrossSection__Config": {
         "CrossSection__Enabled": true,
         "CrossSection__FillColor": "#f0f0f0",
@@ -859,17 +862,16 @@
         "IMG08__3dView__SecondaryOrangery__Abutment__WhitecardImage__15-Jul-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "An Amended version of the scheme, took old model and heavily audited as there has been a site survey since the previous scheme was modelled. Spent some time with James developing the abutment details.",
         "conceptArtist": "Dan",
         "designer": "Dan",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "3038",
-    "projectName": "Gordon__Scheme-03",
     "scheduleData": {
         "dateFulfilled": "15-Jul-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
+        "dateReceived": "15-Jul-2026",
+        "timeTaken": 4,
+        "timeAllocated": 4
     },
     "sketchUpModel": {
         "url": "Nil"
@@ -916,5 +918,32 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__SiteVegetation2D__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03/Gordon__TrueVision__SiteVegetation2D__MeshModel__.glb"
-    ]
+    ],
+    "folderId": "2026/3038__Gordon__Scheme-03",
+    "isR2Loaded": true,
+    "displayName": "Gordon__Scheme-03",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/3038__Gordon__Scheme-03",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainImage____WhitecardImage__15-Jul-2026.png",
+        "IMG02__3dView__MainOrangery____WhitecardImage__15-Jul-2026.png",
+        "IMG03__3dView__Abutment-01____WhitecardImage__15-Jul-2026.png",
+        "IMG04__3dView__Abutment-02____WhitecardImage__15-Jul-2026.png",
+        "IMG05__Section__FullSection____WhitecardImage__15-Jul-2026.png",
+        "IMG06__Section__PitchedRoofSection____WhitecardImage__15-Jul-2026.png",
+        "IMG07__3dView__SecondaryOrangery____WhitecardImage__15-Jul-2026.png",
+        "IMG08__3dView__SecondaryOrangery__Abutment__WhitecardImage__15-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainImage____WhitecardImage__15-Jul-2026.png",
+        "IMG02__3dView__MainOrangery____WhitecardImage__15-Jul-2026.png",
+        "IMG03__3dView__Abutment-01____WhitecardImage__15-Jul-2026.png",
+        "IMG04__3dView__Abutment-02____WhitecardImage__15-Jul-2026.png",
+        "IMG05__Section__FullSection____WhitecardImage__15-Jul-2026.png",
+        "IMG06__Section__PitchedRoofSection____WhitecardImage__15-Jul-2026.png",
+        "IMG07__3dView__SecondaryOrangery____WhitecardImage__15-Jul-2026.png",
+        "IMG08__3dView__SecondaryOrangery__Abutment__WhitecardImage__15-Jul-2026.png"
+    ],
+    "enabled": true
 }

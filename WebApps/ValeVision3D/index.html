@@ -1162,6 +1162,8 @@
     import { Na__Feature__FullScreenMode__Initialize } from './02__Src__AppModules/60__Feature__FullScreenMode/Na__Feature__FullScreenMode__UiInteractionLogic__.js';
     import { Na__Feature__BreadcrumbNav__Initialize } from './02__Src__AppModules/64__Feature__BreadcrumbNav/Na__Feature__BreadcrumbNav__Controls.js';
     import { Na__UiFeature__InitializeFogPlaneControls } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__UiControls.js';
+    import { Na__FogPlaneSystem__SetFogEnabled, Na__FogPlaneSystem__IsFogEnabled } from './02__Src__AppModules/29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js';
+    import { Na__RenderLoop__RequestRender } from './02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     import { Na__GpuLifecycle__AttachContextLossHandlers, Na__GpuLifecycle__DisposeAll } from './02__Src__AppModules/01__AppCore/Na__AppCore__GpuLifecycle__.js';
     import { Na__UiFeature__InitializePurgeAppCacheButton } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__PurgeAppCache__Button.js';
 
@@ -1498,7 +1500,14 @@
         'ValeVision__PresentationMode__ToggleViewsPanel' : () => Na__PresentationMode__UI__ToggleSceneCarousel(),
         'ValeVision__PresentationMode__NextScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToNextScene();      }, // <-- Guard: carousel visible + not flying
         'ValeVision__PresentationMode__PrevScene'        : () => { if (!Na__PresentationMode__UI__IsCarouselVisible() || Na__FlyMode__IsActive()) return; Na__PresentationMode__UI__GoToPreviousScene(); }, // <-- Guard: carousel visible + not flying
-        'ValeVision__App__NavigateBack'                  : () => window.history.back()                                                                                                                     // <-- Alt+Backspace: back to Whitecardopedia
+        'ValeVision__App__NavigateBack'                  : () => window.history.back(),                                                                                                                    // <-- Alt+Backspace: back to Whitecardopedia
+        'ValeVision__FogPlane__ToggleFogAndBarrier'      : () => {                                                                                                                                         // <-- Alt+Shift+F: fog + camera forcefield
+            const nextEnabled = !Na__FogPlaneSystem__IsFogEnabled();
+            Na__FogPlaneSystem__SetFogEnabled(nextEnabled);
+            Na__RenderLoop__RequestRender();
+            const fogEnableToggle = document.getElementById('naFogPlaneEnableToggle');
+            if (fogEnableToggle) fogEnableToggle.checked = nextEnabled;
+        }
     });
     // ------------------------------------------------------------
 

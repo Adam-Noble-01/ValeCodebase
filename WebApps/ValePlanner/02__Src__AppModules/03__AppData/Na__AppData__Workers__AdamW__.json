@@ -2678,6 +2678,70 @@
           "endTime": "17:30",
           "title": "Dev |  ValeVision - Breadcrumbs",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1785313088225",
+          "date": "2026-07-28",
+          "startTime": "09:00",
+          "endTime": "11:00",
+          "title": "Whitecard |  Ball",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1785331884781",
+          "date": "2026-07-28",
+          "startTime": "11:00",
+          "endTime": "11:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1785313598840",
+          "date": "2026-07-28",
+          "startTime": "11:15",
+          "endTime": "12:15",
+          "title": "Standards |  Model Fancy Cresting",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1785331897014",
+          "date": "2026-07-28",
+          "startTime": "12:15",
+          "endTime": "12:30",
+          "title": "Meeting NF",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1785331873067",
+          "date": "2026-07-28",
+          "startTime": "12:30",
+          "endTime": "13:30",
+          "title": "Email |  IT Meeting",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1785333959458",
+          "date": "2026-07-28",
+          "startTime": "15:00",
+          "endTime": "18:15",
+          "title": "Whitecard |  Harris",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1785395650268",
+          "date": "2026-07-29",
+          "startTime": "08:00",
+          "endTime": "08:45",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1785395663926",
+          "date": "2026-07-29",
+          "startTime": "08:45",
+          "endTime": "10:30",
+          "title": "Whitecard |  Harris",
+          "color": "na-shift-color-cyan"
         }
       ]
     }

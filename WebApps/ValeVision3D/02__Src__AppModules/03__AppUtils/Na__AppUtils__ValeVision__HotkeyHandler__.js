@@ -60,7 +60,11 @@
     // HELPER FUNCTION | Match Keyboard Event Against a Single Binding
     // ------------------------------------------------------------
     function Na__HotkeyHandler__MatchesBinding(event, binding) {
-        const keyMatch   = event.key         === binding.Na__Hotkey__Key;    // <-- Exact key name match
+        const bindingKey = binding.Na__Hotkey__Key || '';
+        const eventKey   = event.key || '';
+        const keyMatch   = (bindingKey.length === 1 && eventKey.length === 1)
+            ? eventKey.toLowerCase() === bindingKey.toLowerCase()            // <-- Letter keys: match F/f regardless of Shift/Caps
+            : eventKey === bindingKey;                                       // <-- Named keys: exact match (Backspace, PageUp, …)
         const altMatch   = !!event.altKey    === !!binding.Na__Hotkey__AltKey;   // <-- Alt modifier match
         const ctrlMatch  = !!event.ctrlKey   === !!binding.Na__Hotkey__CtrlKey;  // <-- Ctrl modifier match
         const shiftMatch = !!event.shiftKey  === !!binding.Na__Hotkey__ShiftKey; // <-- Shift modifier match

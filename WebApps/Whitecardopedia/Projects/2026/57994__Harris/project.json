@@ -1,0 +1,146 @@
+{
+    "projectName": "Harris",
+    "projectCode": "57994",
+    "projectNameAlias": "",
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 5000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -23970
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": -8605
+        }
+    },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
+    "Navmode__OrbitMaxDistanceMm": 40000,
+    "ProjectType": "Whitecard",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "30-Jul-2026 at 10:36",
+        "model_name": "Harris__WhiteCardModel__0.7.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Full Context",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": 40441.6973,
+                        "y": -21373.9382,
+                        "z": 3000
+                    },
+                    "target": {
+                        "x": 17276.4586,
+                        "y": 12994.1957,
+                        "z": 3000
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    },
+                    "direction": {
+                        "x": -0.558922,
+                        "y": 0.829221,
+                        "z": 0
+                    },
+                    "fov_degrees": 38.1933,
+                    "fov_is_height": false,
+                    "is_perspective": true,
+                    "aspect_ratio": 1.5,
+                    "image_width": 0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true
+                },
+                "section_planes": null
+            }
+        ]
+    },
+    "basePath": "Projects/2026/57994__Harris",
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__30-Jul-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Moderate complexity orangery with no issues, host building was fairly elaborate and took some more time than usual. added additional bonnet hip tiles in line with James instructions to gauge the suitable margin and consequent framework / entablature position.",
+        "conceptArtist": "Amy",
+        "designer": "James",
+        "input": "Early Stage Sketch"
+    },
+    "scheduleData": {
+        "dateFulfilled": "30-Jul-2026",
+        "dateReceived": "29-Jul-2026",
+        "timeTaken": 3,
+        "timeAllocated": 3
+    },
+    "sketchUpModel": {
+        "url": "Nil"
+    },
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__30-Jul-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris/Harris__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris/Harris__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris/Harris__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris/Harris__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris/Harris__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris/Harris__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "CrossSection__Config": {
+        "CrossSection__Enabled": true,
+        "CrossSection__FillColor": "#f0f0f0",
+        "CrossSection__LineColor": "#323232",
+        "CrossSection__LineWidthPx": 2
+    },
+    "folderId": "2026/57994__Harris",
+    "isR2Loaded": true,
+    "displayName": "Harris",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/57994__Harris",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__30-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__30-Jul-2026.png"
+    ],
+    "enabled": true
+}

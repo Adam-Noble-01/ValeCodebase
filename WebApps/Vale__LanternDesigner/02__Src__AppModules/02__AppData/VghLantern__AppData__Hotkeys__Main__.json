@@ -1,0 +1,85 @@
+{
+    "VghLantern__AppData__Hotkeys__Main": [
+        {
+            "id"          : "nav_back",
+            "key"         : "Backspace",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "NAVIGATE_BACK",
+            "description" : "Navigate back to previous mode"
+        },
+        {
+            "id"          : "nav_back_arrow",
+            "key"         : "ArrowLeft",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "NAVIGATE_BACK",
+            "description" : "Navigate back to previous mode (arrow key variant)"
+        },
+        {
+            "id"          : "nav_forward",
+            "key"         : "ArrowRight",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "NAVIGATE_FORWARD",
+            "description" : "Navigate forward to next mode"
+        },
+        {
+            "id"          : "view_plan",
+            "key"         : "1",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "VIEW_2D_PLAN",
+            "description" : "Switch the 2D viewport to plan view"
+        },
+        {
+            "id"          : "view_front_elevation",
+            "key"         : "2",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "VIEW_2D_FRONT_ELEVATION",
+            "description" : "Switch the 2D viewport to front elevation"
+        },
+        {
+            "id"          : "view_side_elevation",
+            "key"         : "3",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "VIEW_2D_SIDE_ELEVATION",
+            "description" : "Switch the 2D viewport to side elevation"
+        },
+        {
+            "id"          : "toggle_3d_viewport",
+            "key"         : "4",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "TOGGLE_3D_VIEWPORT",
+            "description" : "Toggle the in-editor 3D viewport panel"
+        },
+        {
+            "id"          : "zoom_extents",
+            "key"         : "e",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : false,
+            "action"      : "VIEWPORT_ZOOM_EXTENTS",
+            "description" : "Zoom the active viewport to fit the lantern"
+        },
+        {
+            "id"          : "save_project",
+            "key"         : "s",
+            "altKey"      : false,
+            "ctrlKey"     : true,
+            "shiftKey"    : false,
+            "action"      : "SAVE_PROJECT",
+            "description" : "Save the current project immediately"
+        }
+    ]
+}

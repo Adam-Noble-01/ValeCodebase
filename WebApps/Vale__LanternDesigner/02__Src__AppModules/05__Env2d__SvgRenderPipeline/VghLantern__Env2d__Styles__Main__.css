@@ -1,0 +1,306 @@
+/* =============================================================================
+ * VGHLANTERN - 2D ENVIRONMENT STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__Env2d__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Env2d - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : All presentation for the 2D SVG render pipeline
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Every colour used by the 2D environment lives here as a token reference, so
+ *   the render modules only ever set geometry and CSS classes. That split keeps
+ *   the whole drawing restyleable without touching JavaScript.
+ * - Stroke WIDTHS are set as attributes by the renderers in true millimetres,
+ *   because they are drawing-scale properties, not styling. Vector-effect is
+ *   deliberately NOT used, so zooming scales linework like a real drawing.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Viewport Host and Root SVG
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__ViewportHost {
+        position                          : relative;
+        width                             : 100%;
+        height                            : 100%;
+        overflow                          : hidden;
+        background-color                  : var(--Vale_BackgroundWhite);
+    }
+
+    .VghLantern__Env2d__Svg {
+        display                           : block;
+        width                             : 100%;
+        height                            : 100%;
+        touch-action                      : none;                             /* <-- Pointer panning owns the gesture */
+        user-select                       : none;
+        cursor                            : grab;
+    }
+
+    .VghLantern__Env2d__Svg--panning {
+        cursor                            : grabbing;
+    }
+
+    /* Only the dimension layer takes pointer events; everything else is passive
+       so a click always lands on the dimension the user aimed at. */
+    .VghLantern__Env2d__Layer--grid,
+    .VghLantern__Env2d__Layer--fills,
+    .VghLantern__Env2d__Layer--hidden,
+    .VghLantern__Env2d__Layer--geometry,
+    .VghLantern__Env2d__Layer--bars,
+    .VghLantern__Env2d__Layer--components,
+    .VghLantern__Env2d__Layer--overlay {
+        pointer-events                    : none;
+    }
+
+    .VghLantern__Env2d__EmptyState {
+        position                          : absolute;
+        top                               : 50%;
+        left                              : 50%;
+        transform                         : translate(-50%, -50%);
+        margin                            : 0;
+        padding                           : var(--Vale_Spacing_Medium);
+        color                             : var(--Vale_TextSubtle);
+        font-size                         : var(--Vale_FontSize_Standard);
+        text-align                        : center;
+        pointer-events                    : none;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Grid Layer
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__Grid--minor {
+        stroke                            : var(--VghLantern_SvgConstructionLine);
+        stroke-opacity                    : 0.22;
+        fill                              : none;
+    }
+
+    .VghLantern__Env2d__Grid--major {
+        stroke                            : var(--VghLantern_SvgConstructionLine);
+        stroke-opacity                    : 0.32;
+        fill                              : none;
+    }
+
+    .VghLantern__Env2d__Grid--axis {
+        stroke                            : var(--VghLantern_AccentBlue);
+        stroke-opacity                    : 0.28;
+        fill                              : none;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Skeleton Members
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__Member {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgSkeletonRafter);
+        stroke-linecap                    : round;
+    }
+
+    .VghLantern__Env2d__Member--ridge    { stroke : var(--VghLantern_SvgSkeletonRidge); }
+    .VghLantern__Env2d__Member--hip      { stroke : var(--VghLantern_SvgSkeletonHip);   }
+    .VghLantern__Env2d__Member--rafter   { stroke : var(--VghLantern_SvgSkeletonRafter);}
+    .VghLantern__Env2d__Member--eaves    { stroke : var(--VghLantern_SvgSkeletonEaves); }
+    .VghLantern__Env2d__Member--kerb     { stroke : var(--VghLantern_SvgSkeletonKerb);  }
+    .VghLantern__Env2d__Member--kerbPost { stroke : var(--VghLantern_SvgSkeletonKerb);  }
+
+    /* Members behind the cutting plane read as faded dashes, drawing convention. */
+    .VghLantern__Env2d__Member--hidden {
+        stroke-opacity                    : 0.38;
+    }
+
+    .VghLantern__Env2d__NodeMarker {
+        fill                              : var(--Vale_BackgroundWhite);
+        stroke                            : var(--VghLantern_SvgSkeletonRidge);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Glazing Bars and Pane Fills
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__GlazeBar {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgGlazeBarStroke);
+        stroke-linecap                    : round;
+    }
+
+    .VghLantern__Env2d__GlazeBar--transom {
+        stroke                            : var(--VghLantern_SvgGlazeBarStroke);
+    }
+
+    .VghLantern__Env2d__GlazeBar--hidden {
+        stroke-opacity                    : 0.32;
+    }
+
+    .VghLantern__Env2d__PaneFill {
+        fill                              : var(--VghLantern_SvgGlazingFill);
+        stroke                            : none;
+        pointer-events                    : none;                             /* <-- Never intercept a dimension click */
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Profile Traces
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__ProfileTrace {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgProfileStroke);
+        stroke-opacity                    : 0.75;
+    }
+
+    .VghLantern__Env2d__ProfileTrace--cap {
+        fill                              : var(--VghLantern_SvgProfileFill);
+        stroke                            : var(--VghLantern_SvgProfileStroke);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Components - Finials, Bases, Cresting
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__Finial {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgComponentStroke);
+        stroke-linejoin                   : round;
+    }
+
+    /* A component with no 2D profile yet draws as a dashed placeholder. */
+    .VghLantern__Env2d__Finial--placeholder {
+        stroke-dasharray                  : 30 20;
+        stroke-opacity                    : 0.55;
+    }
+
+    .VghLantern__Env2d__FinialAnchor {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgComponentStroke);
+        stroke-opacity                    : 0.75;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Dimensions
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__Dimension__Witness,
+    .VghLantern__Env2d__Dimension__Line,
+    .VghLantern__Env2d__Dimension__Terminator {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgDimensionLine);
+        stroke-width                      : 3;
+        pointer-events                    : none;
+    }
+
+    .VghLantern__Env2d__Dimension__Terminator {
+        fill                              : var(--VghLantern_SvgDimensionLine);
+    }
+
+    .VghLantern__Env2d__Dimension__Witness {
+        stroke-opacity                    : 0.7;
+    }
+
+    .VghLantern__Env2d__Dimension__Arc {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgDimensionLine);
+        stroke-width                      : 3;
+        pointer-events                    : none;
+    }
+
+    .VghLantern__Env2d__Dimension__Text {
+        fill                              : var(--VghLantern_SvgDimensionText);
+        font-family                       : var(--Vale_FontFamily);
+        font-weight                       : 600;
+        pointer-events                    : none;
+    }
+
+    /* Only resolver-backed dimensions are clickable, so only they invite a click. */
+    .VghLantern__Env2d__Dimension__Text--editable {
+        pointer-events                    : all;
+        cursor                            : text;
+    }
+
+    .VghLantern__Env2d__Dimension__Text--editable:hover {
+        fill                              : var(--VghLantern_SvgDimensionHover);
+        text-decoration                   : underline;
+    }
+
+    .VghLantern__Env2d__Dimension__Text--active {
+        fill-opacity                      : 0.25;                             /* <-- Faded while the input sits over it */
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Floating Dimension Input
+ * ----------------------------------------------------------------------------- */
+
+    /* An HTML input layered over the SVG rather than a foreignObject, so it picks
+       up normal app styling and native keyboard behaviour. */
+    .VghLantern__Env2d__DimensionInput {
+        position                          : absolute;
+        z-index                           : 40;
+        height                            : 28px;
+        padding                           : 0 var(--Vale_Spacing_Small);
+        border                            : 2px solid var(--VghLantern_SvgDimensionLine);
+        border-radius                     : var(--Vale_BorderRadius);
+        background-color                  : var(--Vale_BackgroundWhite);
+        color                             : var(--Vale_TextPrimary);
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_Standard);
+        font-weight                       : 600;
+        text-align                        : center;
+        box-shadow                        : 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .VghLantern__Env2d__DimensionInput:focus {
+        outline                           : none;
+        border-color                      : var(--VghLantern_SvgDimensionHover);
+    }
+
+    /* Spinners crowd a narrow numeric field at drawing scale. */
+    .VghLantern__Env2d__DimensionInput::-webkit-outer-spin-button,
+    .VghLantern__Env2d__DimensionInput::-webkit-inner-spin-button {
+        -webkit-appearance                : none;
+        margin                            : 0;
+    }
+
+    .VghLantern__Env2d__DimensionInput[type='number'] {
+        -moz-appearance                   : textfield;
+        appearance                        : textfield;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Overlay Layer
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env2d__ViewLabel {
+        fill                              : var(--Vale_TextSubtle);
+        font-family                       : var(--Vale_FontFamily);
+        font-weight                       : 600;
+        pointer-events                    : none;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

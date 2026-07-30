@@ -1,0 +1,132 @@
+/* =============================================================================
+ * VGHLANTERN - BASE LAYOUT STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__CoreUi__Styles__BaseLayout__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Base Layout
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Reset, body styles, mode panel show/hide, content area grid
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Global CSS reset and base element styles
+ * - Layout grid for header + nav + content area
+ * - Mode panel visibility toggling
+ * - Full-bleed variant for viewport-driven modes (Lantern Editor, 3D View)
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * UTILITIES | Global Reset and Base Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* RESET | Box Sizing and Margin Reset */
+    /* ------------------------------------------------------------ */
+    *, *::before, *::after {
+        box-sizing                         : border-box;
+        margin                             : 0;
+        padding                            : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BASE | HTML and Body */
+    /* ------------------------------------------------------------ */
+    html, body {
+        width                              : 100%;
+        height                             : 100%;
+        overflow                           : hidden;
+        background                         : var(--Vale_BackgroundLight);
+        color                              : var(--Vale_TextPrimary);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_Regular);
+        -webkit-font-smoothing             : antialiased;
+        -moz-osx-font-smoothing            : grayscale;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Application Layout Grid
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT | Content Area Below Header and Nav */
+    /* ------------------------------------------------------------ */
+    #VghLantern__App__ContentArea {
+        position                           : absolute;
+        top                                : calc(var(--Vale_HeaderHeight) + var(--VghLantern_NavHeight));
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        overflow-y                         : auto;
+        overflow-x                         : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Mode Panels - Hidden by Default */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__ModePanel {
+        display                            : none;
+        width                              : 100%;
+        min-height                         : 100%;
+        padding                            : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Active Mode Panel */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__ModePanel--active {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Full-Bleed Mode Panel For Viewport Driven Modes */
+    /* ------------------------------------------------------------ */
+    /* Applied by ModeManager to modes whose config marks them full bleed.  */
+    /* Removes panel padding so a canvas or SVG viewport fills the area.    */
+    .VghLantern__App__ModePanel--fullBleed {
+        padding                            : 0;
+        height                             : 100%;
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Placeholder Block For Not Yet Implemented Modes */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__ModePlaceholder {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        justify-content                    : center;
+        gap                                : var(--Vale_Spacing_Small);
+        min-height                         : 320px;
+        padding                            : var(--Vale_Spacing_XXLarge);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px dashed var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        text-align                         : center;
+    }
+
+    .VghLantern__App__ModePlaceholder__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__App__ModePlaceholder__Body {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        max-width                          : 560px;
+        line-height                        : 1.6;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

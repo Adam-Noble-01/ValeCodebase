@@ -1,0 +1,118 @@
+{
+    "VghLantern__Env2d__Config": {
+        "VghLantern__Env2d__Config__Meta": {
+            "ConfigLabel"                     : "2D SVG Render Pipeline",
+            "ConfigVersion"                   : "0.1.0",
+            "ConfigNote"                      : "Structural values only. All stroke colours live in the CSS token layer so the design system stays in one place.",
+            "SvgUnitsPerMillimetre"           : 1
+        },
+
+        "VghLantern__Env2d__Config__Views": {
+            "plan": {
+                "Label"                       : "Plan",
+                "ShortLabel"                  : "Plan",
+                "ProjectionKey"               : "plan",
+                "HorizontalAxisLabel"         : "Width",
+                "VerticalAxisLabel"           : "Depth",
+                "DimensionKeys"               : ["width", "depth", "eavesProjection", "ridgeLength"]
+            },
+            "frontElevation": {
+                "Label"                       : "Front Elevation",
+                "ShortLabel"                  : "Front",
+                "ProjectionKey"               : "frontElevation",
+                "HorizontalAxisLabel"         : "Width",
+                "VerticalAxisLabel"           : "Height",
+                "DimensionKeys"               : ["width", "overallHeight", "kerbHeight", "pitch"]
+            },
+            "sideElevation": {
+                "Label"                       : "Side Elevation",
+                "ShortLabel"                  : "Side",
+                "ProjectionKey"               : "sideElevation",
+                "HorizontalAxisLabel"         : "Depth",
+                "VerticalAxisLabel"           : "Height",
+                "DimensionKeys"               : ["depth", "overallHeight", "kerbHeight", "pitch"]
+            }
+        },
+
+        "VghLantern__Env2d__Config__Viewport": {
+            "FitPaddingFactor"                : 0.14,
+            "MinZoomScale"                    : 0.08,
+            "MaxZoomScale"                    : 14.0,
+            "WheelZoomStep"                   : 0.0016,
+            "ButtonZoomStep"                  : 1.25,
+            "PanButton"                       : 0,
+            "DoubleClickZoomExtents"          : true,
+            "ShowViewLabel"                   : true,
+            "ViewLabelFontSizePx"             : 13
+        },
+
+        "VghLantern__Env2d__Config__Grid": {
+            "Enabled"                         : true,
+            "MinorSpacingMm"                  : 100,
+            "MajorSpacingMm"                  : 500,
+            "MinorStrokeWidthMm"              : 0.7,
+            "MajorStrokeWidthMm"              : 1.2,
+            "HideMinorBelowZoomScale"         : 0.35,
+            "ShowOriginAxes"                  : true,
+            "GridStrokeNote"                  : "Kept deliberately light so major gridlines never compete with glaze bars or skeleton members."
+        },
+
+        "VghLantern__Env2d__Config__Skeleton": {
+            "MemberStrokeWidthMm"             : 6,
+            "EavesStrokeWidthMm"              : 8,
+            "RidgeStrokeWidthMm"              : 9,
+            "HipStrokeWidthMm"                : 8,
+            "KerbStrokeWidthMm"               : 8,
+            "HiddenDashPatternMm"             : "24 16",
+            "NodeMarkerRadiusMm"              : 9,
+            "ShowNodeMarkers"                 : false
+        },
+
+        "VghLantern__Env2d__Config__GlazeBars": {
+            "BarStrokeWidthMm"                : 4,
+            "TransomStrokeWidthMm"            : 5,
+            "ShowPaneFills"                   : true,
+            "PaneFillOpacity"                 : 0.10
+        },
+
+        "VghLantern__Env2d__Config__ProfileTrace": {
+            "Enabled"                         : false,
+            "TraceStrokeWidthMm"              : 1.5,
+            "MaxTracedMembers"                : 400,
+            "ProfileTraceNote"                : "When enabled, the swept section outline is drawn at each member end rather than a single centreline."
+        },
+
+        "VghLantern__Env2d__Config__Finials": {
+            "ShowInPlan"                      : true,
+            "ShowInElevation"                 : true,
+            "FallbackHeightMm"                : 300,
+            "FallbackWidthMm"                 : 90,
+            "OutlineStrokeWidthMm"            : 3
+        },
+
+        "VghLantern__Env2d__Config__Dimensions": {
+            "Enabled"                         : true,
+            "OffsetFromGeometryMm"            : 220,
+            "ChainOffsetStepMm"               : 160,
+            "ExtensionLineOverrunMm"          : 40,
+            "ExtensionLineGapMm"              : 30,
+            "TerminatorLengthMm"              : 60,
+            "TerminatorStyle"                 : "tick",
+            "TextFontSizeMm"                  : 90,
+            "TextOffsetFromLineMm"            : 34,
+            "AngleArcRadiusMm"                : 400,
+            "EditableCursor"                  : "text",
+            "EditHintTooltip"                 : "Click to type a new value"
+        },
+
+        "VghLantern__Env2d__Config__DimensionEditor": {
+            "Enabled"                         : true,
+            "CommitOnEnter"                   : true,
+            "CommitOnBlur"                    : true,
+            "CancelOnEscape"                  : true,
+            "SelectAllOnOpen"                 : true,
+            "InputWidthPx"                    : 96,
+            "ShowWarningToasts"                : true
+        }
+    }
+}

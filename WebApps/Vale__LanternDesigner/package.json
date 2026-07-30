@@ -1,0 +1,16 @@
+{
+  "name": "vgh-lantern-designer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vale Garden Houses - Roof Lantern Configurator",
+  "author": "Adam Noble - Noble Architecture",
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "clipper2-js": "0.9.0",
+    "jspdf": "4.1.0",
+    "three": "0.184.0",
+    "three-edge-projection": "github:gkjohnson/three-edge-projection#f794481125e935303575171daf454b528ac396e3",
+    "three-mesh-bvh": "0.9.9"
+  }
+}

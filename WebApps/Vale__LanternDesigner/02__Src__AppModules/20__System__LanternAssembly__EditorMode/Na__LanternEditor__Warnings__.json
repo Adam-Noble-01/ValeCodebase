@@ -1,0 +1,141 @@
+{
+    "VghLantern__LanternEditor__Warnings__Config": {
+        "VghLantern__LanternEditor__Warnings__Config__Description": "Declarative rule table for the editor WarningSystem. Each rule names a metric the WarningSystem knows how to measure, a comparison operator, and a limit that is either literal or read from VghLantern__Validation__Config. Adding a manufacturing rule is a JSON edit; the module never hardcodes a threshold.",
+
+        "VghLantern__LanternEditor__Warnings__Config__Severities": {
+            "error": {
+                "Label"    : "Not Manufacturable",
+                "Rank"     : 3,
+                "BlocksIssue" : true,
+                "Note"     : "BlocksIssue means the drawing and specification modes refuse to issue while the warning stands."
+            },
+            "warning": {
+                "Label"       : "Check Required",
+                "Rank"        : 2,
+                "BlocksIssue" : false
+            },
+            "info": {
+                "Label"       : "For Information",
+                "Rank"        : 1,
+                "BlocksIssue" : false
+            }
+        },
+
+        "VghLantern__LanternEditor__Warnings__Config__MessageTokens": "{value} is the measured metric, {limit} the resolved limit, both already rounded for display.",
+
+        "VghLantern__LanternEditor__Warnings__Config__Rules": [
+            {
+                "Key"        : "widthBelowMinimum",
+                "Severity"   : "error",
+                "Metric"     : "widthMm",
+                "Operator"   : "lt",
+                "LimitField" : "VghLantern__Validation__Config__MinWidthMm",
+                "Message"    : "Width of {value} mm is below the manufacturable minimum of {limit} mm."
+            },
+            {
+                "Key"        : "widthAboveMaximum",
+                "Severity"   : "error",
+                "Metric"     : "widthMm",
+                "Operator"   : "gt",
+                "LimitField" : "VghLantern__Validation__Config__MaxWidthMm",
+                "Message"    : "Width of {value} mm exceeds the maximum single-lantern span of {limit} mm."
+            },
+            {
+                "Key"        : "depthBelowMinimum",
+                "Severity"   : "error",
+                "Metric"     : "depthMm",
+                "Operator"   : "lt",
+                "LimitField" : "VghLantern__Validation__Config__MinDepthMm",
+                "Message"    : "Depth of {value} mm is below the manufacturable minimum of {limit} mm."
+            },
+            {
+                "Key"        : "depthAboveMaximum",
+                "Severity"   : "error",
+                "Metric"     : "depthMm",
+                "Operator"   : "gt",
+                "LimitField" : "VghLantern__Validation__Config__MaxDepthMm",
+                "Message"    : "Depth of {value} mm exceeds the maximum single-lantern span of {limit} mm."
+            },
+            {
+                "Key"        : "pitchBelowMinimum",
+                "Severity"   : "error",
+                "Metric"     : "pitchDegrees",
+                "Operator"   : "lt",
+                "LimitField" : "VghLantern__Validation__Config__MinPitchDegrees",
+                "Message"    : "Roof pitch of {value} degrees is below the minimum of {limit} degrees."
+            },
+            {
+                "Key"        : "pitchAboveMaximum",
+                "Severity"   : "error",
+                "Metric"     : "pitchDegrees",
+                "Operator"   : "gt",
+                "LimitField" : "VghLantern__Validation__Config__MaxPitchDegrees",
+                "Message"    : "Roof pitch of {value} degrees exceeds the maximum of {limit} degrees."
+            },
+            {
+                "Key"        : "pitchBelowRecommended",
+                "Severity"   : "warning",
+                "Metric"     : "pitchDegrees",
+                "Operator"   : "lt",
+                "LimitField" : "VghLantern__Validation__Config__RecommendedMinPitchDegrees",
+                "Message"    : "Pitch of {value} degrees is shallow; below {limit} degrees rainwater run-off and glass self-cleaning both suffer."
+            },
+            {
+                "Key"        : "kerbAboveMaximum",
+                "Severity"   : "warning",
+                "Metric"     : "kerbHeightMm",
+                "Operator"   : "gt",
+                "LimitField" : "VghLantern__Validation__Config__MaxKerbHeightMm",
+                "Message"    : "Kerb height of {value} mm exceeds the usual maximum of {limit} mm; confirm the upstand detail with the joinery shop."
+            },
+            {
+                "Key"        : "barSpacingTooWide",
+                "Severity"   : "warning",
+                "Metric"     : "maxBarSpacingMm",
+                "Operator"   : "gt",
+                "LimitField" : "VghLantern__Validation__Config__MaxBarSpacingMm",
+                "Message"    : "Widest pane measures {value} mm across, over the {limit} mm guidance; add a glazing bar or reduce the target spacing."
+            },
+            {
+                "Key"        : "barSpacingTooNarrow",
+                "Severity"   : "warning",
+                "Metric"     : "minBarSpacingMm",
+                "Operator"   : "lt",
+                "LimitField" : "VghLantern__Validation__Config__MinBarSpacingMm",
+                "Message"    : "Narrowest pane measures {value} mm across, under the {limit} mm minimum; remove a glazing bar."
+            },
+            {
+                "Key"        : "paneAreaTooLarge",
+                "Severity"   : "warning",
+                "Metric"     : "maxPaneAreaSqM",
+                "Operator"   : "gt",
+                "LimitField" : "VghLantern__Validation__Config__MaxGlazingPaneAreaSqM",
+                "Message"    : "Largest glazing pane is {value} m2, above the {limit} m2 handling limit; subdivide the slope."
+            },
+            {
+                "Key"        : "ventsExceedPanes",
+                "Severity"   : "error",
+                "Metric"     : "ventCountOverPaneCount",
+                "Operator"   : "gt",
+                "LimitValue" : 0,
+                "Message"    : "More opening vents are specified than there are glazing panes to fit them into."
+            },
+            {
+                "Key"        : "finialsEnabledWithoutComponent",
+                "Severity"   : "warning",
+                "Metric"     : "finialsEnabledWithoutComponent",
+                "Operator"   : "gt",
+                "LimitValue" : 0,
+                "Message"    : "Finials are switched on but no finial has been chosen from the component library."
+            },
+            {
+                "Key"        : "glazingBarsWithoutProfile",
+                "Severity"   : "warning",
+                "Metric"     : "glazingBarsWithoutProfile",
+                "Operator"   : "gt",
+                "LimitValue" : 0,
+                "Message"    : "Glazing bars are laid out but no bar section has been chosen; the drawing will show a placeholder rectangle."
+            }
+        ]
+    }
+}

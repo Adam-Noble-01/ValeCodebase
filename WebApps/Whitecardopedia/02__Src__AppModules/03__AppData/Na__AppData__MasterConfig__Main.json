@@ -588,6 +588,10 @@
         {
             "folderId": "2026/63945__Ball",
             "enabled": true
+        },
+        {
+            "folderId": "2026/57994__Harris",
+            "enabled": true
         }
     ]
 }

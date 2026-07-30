@@ -1,0 +1,69 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a CadObjectBuilder export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "VGH_FIN0101",
+        "Na__Asset__Metadata__Name"         : "Finial Base - Moulded 130mm",
+        "Na__Asset__Metadata__CategoryId"   : "VGH_FIN0100__FinialBases",
+        "Na__Asset__Metadata__CategoryName" : "Finial Bases",
+        "Na__Asset__Metadata__Description"  : "Moulded finial base block seating a turned finial onto the ridge cap. 130mm square plan with a stepped mould and a 92mm seating spigot.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a measured Vale component",
+        "Na__Asset__Metadata__Material"     : "Cast aluminium, powder coated",
+        "Na__Asset__Metadata__Tags"         : ["finial base", "moulded", "ridge end"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin is the seating point where the base meets the ridge cap. X is centred on the vertical axis; Y rises to the face that carries the finial.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -65.0, "y":   0.0 },
+            { "x":  65.0, "y":   0.0 },
+            { "x":  65.0, "y":  22.0 },
+            { "x":  54.0, "y":  38.0 },
+            { "x":  54.0, "y":  70.0 },
+            { "x":  46.0, "y":  86.0 },
+            { "x":  46.0, "y": 104.0 },
+            { "x": -46.0, "y": 104.0 },
+            { "x": -46.0, "y":  86.0 },
+            { "x": -54.0, "y":  70.0 },
+            { "x": -54.0, "y":  38.0 },
+            { "x": -65.0, "y":  22.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 130.0,
+            "HeightMm"                      : 104.0,
+            "MinX"                          : -65.0,
+            "MaxX"                          : 65.0,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 104.0
+        },
+        "Na__Asset__Profile2D__IsRevolveOutline"  : false,
+        "Na__Asset__Profile2D__RevolveAxis"       : null
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__PlacementBehaviour": {
+        "Na__Asset__PlacementBehaviour__ApplicableRoles"  : ["finialBase"],
+        "Na__Asset__PlacementBehaviour__AnchorPoint"      : "seatingCentre",
+        "Na__Asset__PlacementBehaviour__AlignToVertical"  : true,
+        "Na__Asset__PlacementBehaviour__RequiresBase"     : false,
+        "Na__Asset__PlacementBehaviour__OverallHeightMm"  : 104.0,
+        "Na__Asset__PlacementBehaviour__SeatingWidthMm"   : 130.0,
+        "Na__Asset__PlacementBehaviour__CarriesFinialAtMm": 104.0
+    }
+}

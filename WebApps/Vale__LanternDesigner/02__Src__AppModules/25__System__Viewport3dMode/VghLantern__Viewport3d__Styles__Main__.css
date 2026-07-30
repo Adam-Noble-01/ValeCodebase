@@ -1,0 +1,185 @@
+/* =============================================================================
+ * VGHLANTERN - DEDICATED 3D VIEWPORT MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__Viewport3d__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Dedicated 3D Viewport Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Full-bleed canvas host and floating control overlay
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Canvas host fills the full-bleed mode panel edge to edge
+ * - Control overlay floats over the canvas, grouped into labelled clusters
+ * - Pending and empty states centre in the host while no surface exists
+ * - Consumes --Vale_* and --VghLantern_* tokens from the global Variables sheet
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Mode Container and Canvas Host
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTAINER | Full Height Mode Shell */
+    /* ------------------------------------------------------------ */
+    #VghLantern__Viewport3d__Container {
+        position                           : relative;
+        display                            : flex;
+        height                             : 100%;
+        min-height                         : 0;
+        overflow                           : hidden;
+        background-color                   : var(--VghLantern_ThreeViewportBackdrop);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HOST | WebGL Canvas Host */
+    /* ------------------------------------------------------------ */
+    #VghLantern__Viewport3d__CanvasHost {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        min-height                         : 0;
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* STATE | Pending Message */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__Pending,
+    .VghLantern__Viewport3d__EmptyState {
+        margin                             : 0;
+        padding                            : var(--Vale_Spacing_Large);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Floating Control Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* OVERLAY | Control Panel Floating Over the Canvas */
+    /* ------------------------------------------------------------ */
+    #VghLantern__Viewport3d__ControlsOverlay {
+        position                           : absolute;
+        top                                : var(--Vale_Spacing_Medium);
+        left                               : var(--Vale_Spacing_Medium);
+        z-index                            : var(--VghLantern_ViewportOverlayZIndex);
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : var(--Vale_Spacing_Small);
+        background-color                   : var(--VghLantern_ThreeOverlayPanel);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : var(--VghLantern_ViewportOverlayShadow);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* OVERLAY | Hide the Overlay Shell While It Has No Content */
+    /* ------------------------------------------------------------ */
+    /* Prevents an empty floating box appearing before the pipeline resolves. */
+    #VghLantern__Viewport3d__ControlsOverlay:empty {
+        display                            : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUP | Labelled Control Cluster */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlayGroup {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUP | Cluster Caption */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlayGroupLabel {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | Overlay Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlayBtn {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_PrimaryBrand);
+        text-align                         : left;
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        white-space                        : nowrap;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             color var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | Overlay Button Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlayBtn:hover {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+        border-color                       : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | Active Preset Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlayBtn--active {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--VghLantern_AccentBlue);
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SELECT | Lantern Selector */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlaySelect {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* READOUT | Skeleton Mode Label */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__OverlayReadout {
+        padding-top                        : calc(var(--Vale_Spacing_Small) / 2);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

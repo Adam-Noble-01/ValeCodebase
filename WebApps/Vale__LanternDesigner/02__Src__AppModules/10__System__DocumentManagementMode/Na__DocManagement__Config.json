@@ -1,0 +1,41 @@
+{
+    "VghLantern__DocManagement__Config__Description": "System configuration overlay for the Document Management Mode project table. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly.",
+
+    "VghLantern__DocManagement__Config__Table": {
+
+        "StatusOptions": [
+            "Draft",
+            "In Progress",
+            "Pending Approval",
+            "Approved",
+            "Completed"
+        ],
+
+        "StatusColours": {
+            "Draft"              : "#d32f2f",
+            "In Progress"        : "#e6a817",
+            "Pending Approval"   : "#d67e28",
+            "Approved"           : "#2a7d4f",
+            "Completed"          : "#2a7d4f"
+        },
+
+        "DefaultSortField"     : "dateCreated",
+        "DefaultSortDirection" : "desc",
+
+        "SearchPlaceholder"    : "Search lantern projects...",
+        "SearchFields"         : ["projectCode", "projectName", "documentName", "status"]
+    },
+
+    "VghLantern__DocManagement__Config__EmptyState": {
+        "Title"  : "No Lantern Projects Yet",
+        "Text"   : "Create a new project to start configuring a roof lantern.",
+        "Glyph"  : "&#128736;"
+    },
+
+    "VghLantern__DocManagement__Config__NewProject": {
+        "PlaceholderProjectCode"  : "e.g. 2601",
+        "PlaceholderProjectName"  : "e.g. Jones-Smith",
+        "PlaceholderDocumentName" : "e.g. Orangery Roof Lantern",
+        "LandingModeKey"          : "LanternEditor"
+    }
+}

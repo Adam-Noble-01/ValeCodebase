@@ -1,0 +1,260 @@
+OBJECTIVE : Further Develop Vale Lantern Designer
+
+PRIOR CONTEXT: 
+- We previously built out the structure and app wireframe to match our other app ValeSpec but all of the detailed code and features have not been added.
+- We previously built the 2D SVG Preview layer as an abrstraction but I now feel keeping two in synce will be a pain so im opting for a 3js + Edge projection solution instead because as the project increased with complexity 
+
+PROJECT CONTEXT:
+1. Vale Garden Houses are a manufacturer of traditional roof lanterns in the UK.
+2. The tool is for staff to quickly generate parametric roof lanterns.
+3. The tool allows for each lantern to be saved to a project.
+4. The tools allows for configuration with a intuitive UI so simple admin staff can create technical drawings by interacting with the parameters.
+5. The tool is intended to create drawing layouts and final PDFs with dimensions and technical projections such as a 2D Plan View from above, a 2D Front Elevational view and a 2D Side Elevational View and a 3D View, drawings should be formulaic and follow the layout as attached, but allow for manipulation of viewport and notes etc where required but should reliably generate 90% of everything using rules and a layout template.
+6. 3D Mode allows for toggling between fully detailed model and a skeleton model, the skeleton mode shows the centre lines of glazebars, roof triangles, datum points such as the kerb outline and inline and the redge datum line and the hip construction triangles. this is CRITICAL as these simplified edges and trangles will be used for the generation of more complex onjects such as tracing 2d profiles along glaze bar centre lines etc as all lines are relative and this is how the roof lanterns are currently drawn by draftsman, a skeletal linework forms the core of all of the more complex elements which follows these as paths etc such as items like the ridge extrusion, hip extrusions, glaze bars, internal cornicing around the kerb, the frame on top of the kerb etc and things like finial insertion points will be at the convergence of Ridge / Hip  points as shown in the image.
+
+
+SKELETON LINEWORK & LANTERN ANATOMY 
+See the images provided to understand the importance of these lines.
+Use 3.js Fatlines so styles can be applied.
+Roof Construction Triangle = Yellow Dotted Line
+Ridge Datum Line = Red  Dash-Dot Line
+Hip Construction Triangle = Green Dotted Line
+Glaze Bar Centre Lines = Purple Lines
+
+
+
+Quick Notes 
+
+- Three.js can act as the single geometric source for both the three-dimensional configurator and every two-dimensional drawing view.
+
+- Three.js should not be expected to produce finished technical drawings using its standard rendering tools alone.
+
+- The parameters should generate and manipulate ONE CANONICAL PARAMETRIC ROOF-LANTERN MODEL, create the Three.js assembly from that model, derive two-dimensional drawing geometry from the assembly, and then render that drawing geometry as SVG which can then be baked to final PDF Documents / DXF Files. the exporter to pdf / dxf exports the whole page layout, the SVG Version is for the editor data and is saved into a structured project data json file in a object named in my style of json naming.
+
+- We will not maintain an independently calculated SVG version of the lantern alongside the Three.js version. That would duplicate the geometric logic for the ridge, hips, glazing bars, kerb, pitch, joints and profile intersections. Over time, the two implementations would diverge, particularly when new lantern types, profile systems and exceptional conditions are added.
+
+- We will need a dimensions tool and a way to tag vertextes in the data file as key constraint named  vertexes for key points such as the kerb length and kerb width or glaze bar centre lines etc so auto dimensions can be generated and used when clicked on for the user to set the constraints for the lantern.
+
+- We will derive a two-dimensional drawing model. This would contain projected lines, arcs, cut profiles, dimensions, hatches, labels and annotations. It would not be a second design model. It would be a temporary drawing representation generated from the canonical parametric lantern assembly.
+
+- The strongest initial architecture would use Three.js for the interactive three-dimensional viewport, orthographic Three.js cameras for defining plans and elevations, a mesh-based projection engine for calculating visible and hidden lines, a Vale-bespoke scemantic line-processing layer, and SVG for displaying the finished two-dimensional drawings.
+
+- The projection system will use three edge projection.
+- Use this as a resrouce, but take relevant sections and rewrite in my OWN STYLE AND OWN MODULES AND NAMESPACING ETC, do not call from these, if needed, copy and past and rewrite to suit the required function/method/class etc.
+- These are to be used as a shortcut rather than having to reinvent the wheel from scratch.
+Vale__LanternDesigner\04__Src__Dependencies__VersionLocked
+    /01__Vendor__ThreeJs__v0.184.0
+    /02__Vendor__ThreeMeshBvh__v0.9.9
+    /03__Vendor__Clipper2Js__v0.9.0
+    /04__Vendor__ThreeEdgeProjection__v0.0.10
+
+This is an exceptional example of mesh to edge using Three Edge Projection.
+https://gkjohnson.github.io/three-edge-projection/edgeProjectionWebGPU.html
+
+- There is an important distinction between using one model and using one renderer. The same model can produce perspective views, orthographic elevations, roof plans, kerb plans, transverse sections, longitudinal sections, exploded assembly views, glazing-bar setting-out diagrams and manufacturing information.
+
+- The same renderer should not necessarily be used for all of these outputs. The three-dimensional view should normally use WebGL or WebGPU. The final technical drawing should normally use SVG or another retained vector format.
+
+- This does not mean that geometric calculations are duplicated. The SVG is regenerated from the same lantern assembly whenever the configuration changes.
+
+- A bad implementation would calculate the ridge, hips, bars and kerb once in Three.js and then calculate them all again using separate SVG-specific code. A good implementation would calculate the lantern once, project its geometry into a neutral drawing model, and render that model as SVG.
+
+- Three.js includes an official SVG renderer, but it is not a technical drawing engine. It creates resolution-independent SVG output and can be useful for diagrams, icons, maps and simple vector graphics. It does not perform the geometric analysis required for reliable hidden-line technical drawings.
+
+- The standard Three.js SVG renderer uses a painter’s algorithm. It sorts projected elements according to depth and draws them from back to front. It generally emits complete projected lines and complete projected triangles.
+
+This means that it does not accurately split a line at the point where part of that line passes behind another surface. A hidden section of line may merely be covered by a subsequently drawn face. If the face fill is removed, the supposedly hidden line can become visible again.
+
+This approach is unsuitable for transparent glazing, intersecting components, overlapping aluminium profiles and clean vector export. It can produce a visually acceptable diagram in simple cases, but it does not create reliable technical linework.
+
+The standard Three.js edge extraction system has similar limitations. The Edges Geometry class identifies boundary edges and edges where the angle between adjacent mesh faces exceeds a specified threshold. It can identify sharp edges in a triangulated mesh, but it does not know whether those edges are visible from a particular drawing direction.
+
+Edges Geometry cannot calculate which portions of a bar should disappear behind a ridge. It cannot distinguish automatically between a true aluminium profile edge and an unwanted triangulation edge. It cannot create section profiles, technical line hierarchies or reliable hidden lines.
+
+It is useful for an outlined three-dimensional preview. It is not sufficient as the drawing-generation system.
+
+A normal orthographic Three.js viewport can still play an important role. An orthographic camera removes perspective distortion, so objects retain the same apparent size regardless of their distance from the camera. This makes it suitable for plans, elevations and section previews.
+
+The WebGL depth buffer can correctly hide surfaces during interactive rendering. Clipping planes can also provide live visual sections. This gives staff an immediate drawing-style preview while changing the lantern dimensions.
+
+The weakness is that the result is still rasterised by the graphics pipeline. The depth buffer does not provide a clean collection of editable visible and hidden vector segments. Screenshots cannot preserve proper drawing layers, true dimensions, paper-space line weights or editable DXF entities.
+
+The WebGL orthographic view should therefore be used as the fast interactive preview, not as the final technical output.
+
+The most relevant current Three.js-native hidden-line system is a project called Three Edge Projection. It uses Three Mesh BVH to project mesh edges, test those edges against potentially obscuring triangles, trim the edges where necessary, and return separate visible and hidden line geometry.
+
+This is fundamentally different from the standard SVG renderer. If part of a line passes behind a ridge or glazing bar, the projection engine can divide it into visible and hidden segments rather than relying on another shape to cover it.
+
+The system supports Three.js objects and buffer geometry. It can process projection asynchronously, report progress, support cancellation, return separate visible and hidden edges, preserve information about source meshes, calculate triangle-intersection edges and generate planar mesh intersections for section work.
+
+This is currently the most suitable starting point for the Vale roof-lantern configurator. However, it should not be treated as a fully mature industrial CAD kernel.
+
+The project is actively maintained and has recent development work, but it remains on a pre-version-one release. It also has known edge cases involving projection artefacts, smooth surfaces, self-intersections, degenerate lines and silhouette generation.
+
+For a controlled roof-lantern product family, these limitations are manageable. The geometry is predictable, predominantly planar, relatively low in complexity and generated internally rather than imported from arbitrary external models.
+
+Vale should still take ownership of the dependency. The project should be forked into the company repository, pinned to specific versions of Three.js and Three Mesh BVH, and surrounded by Vale-specific tests.
+
+The application should not depend directly on the public library throughout the codebase. It should communicate with a Vale projection interface. This would allow the projection engine to be repaired, extended or replaced without changing the rest of the drawing system.
+
+Mesh projection alone should not generate every drawing feature. A roof lantern is a parametric manufactured product, so the configurator knows substantially more about its geometry than a generic renderer does.
+
+The system knows the exact axis of each glazing bar, the exact ridge centre line, the kerb dimensions, the profile cross-sections, the mitre planes, the glazing boundaries, the bar spacing, the end conditions and the intended connection points.
+
+These facts should be preserved as semantic data when each part is generated.
+
+A ridge centre line should come from the ridge definition rather than being recovered from triangle edges. A bar centre line should come from the extrusion axis. A curved profile should retain its original arc or curve instead of being reduced permanently to faceted mesh segments.
+
+Dimensions should reference meaningful design datums such as the outside of the kerb, the structural opening, the ridge axis and the bar centre line. They should not be extracted by searching a projected mesh for nearby vertices.
+
+The most reliable architecture is therefore a hybrid. The parametric model should provide semantic candidate geometry, while the mesh projection system should determine visibility and trim lines where they pass behind other objects.
+
+Some drawing features will come directly from the projection engine. Others will be added deliberately from the semantic model after projection.
+
+The heavier alternative is OpenCascade. OpenCascade is a mature computer-aided design geometry kernel with dedicated hidden-line removal systems. It can work with exact boundary-representation geometry rather than only triangulated meshes.
+
+OpenCascade can preserve true lines, arcs, curves and surfaces. It can perform accurate section calculations, solid modelling operations, booleans, geometry validation and industry-standard CAD translation.
+
+OpenCascade can run in the browser through WebAssembly using OpenCascade.js. Browser-based CAD applications already combine OpenCascade for geometry with Three.js for display.
+
+This would offer a more exact route toward STEP output, fabrication geometry, machining data, true profile curves and engineering-grade sections.
+
+The disadvantage is substantially greater complexity. OpenCascade introduces WebAssembly loading, worker management, boundary-representation modelling, synchronisation between exact solids and Three.js display meshes, more demanding debugging and a significantly steeper development requirement.
+
+It also introduces licensing considerations that should be reviewed properly before it becomes a core dependency.
+
+OpenCascade should be considered from the beginning if the project roadmap includes STEP export, CNC data, machining operations, drainage holes, fixing details, complex booleans, exact aluminium profile geometry or production drawings that must be validated as engineering solids.
+
+If the initial goal is to produce accurate sales drawings, approval drawings, quotations, overall dimensions, sections and elevations for a controlled family of mostly straight aluminium assemblies, OpenCascade is probably excessive for the first version.
+
+The recommended Vale system should begin with a canonical lantern specification. This specification should store product parameters rather than renderer objects or raw vertex arrays.
+
+It should contain values such as kerb width, kerb length, roof pitch, ridge type, end type, glazing system, profile system, bar arrangement and overhang dimensions.
+
+The lantern specification should generate a semantic assembly. Every part in that assembly should have a stable identity, a type, a transformation, a Three.js object, semantic drawing features, dimension anchors and an explicit drawing classification.
+
+A part may be classified as a kerb member, ridge, hip bar, intermediate glazing bar, gable member, glazing pane, cap, bracket or finial.
+
+Each part should also specify how it behaves in drawings. It should state whether it acts as a solid occluder, whether it represents glass, whether it should be ignored during visibility calculations, and which technical line class its features belong to.
+
+It is also worth generating separate visual and projection geometry from the same semantic part definition.
+
+The visual mesh would be used in the three-dimensional viewport. It could contain realistic profile detail, caps, seals, materials, glass transparency, bevels and cosmetic geometry.
+
+The projection mesh would be used for technical drawings. It could be simplified, consistently triangulated and designed to provide stable hidden-line results. It could omit decorative detail that would create unnecessary lines at normal drawing scales.
+
+This is not a duplicate product model because both meshes are generated from the same part definition. It is simply comparable to using different levels of detail for different outputs.
+
+Each plan, elevation or section should be described as a drawing view rather than by manually positioning a camera and storing the result.
+
+A drawing view should define its direction, upward axis, target point, scale, section plane and hidden-line policy.
+
+A front elevation, rear elevation, end elevation, roof plan and section would then be different view definitions applied to the same assembly.
+
+The drawing-generation process would begin by constructing or retrieving the lantern assembly from the current configuration.
+
+The system would then construct a drawing scene containing only the geometry relevant to that view and drawing scale.
+
+At this stage, the application would decide whether glazing acts as an occluder, whether glass perimeter lines should be included, whether small seals should be omitted, and whether caps or fixings are relevant.
+
+This is important because transparent WebGL materials do not define how glass should behave in a technical drawing.
+
+The lantern would then be transformed into a consistent drawing coordinate system. For an elevation, one axis would represent horizontal distance, another would represent vertical distance, and the remaining axis would represent projection depth.
+
+The hidden-line engine would then calculate visible and hidden segments and retain references to the source parts.
+
+For sections, the process would also intersect the lantern geometry with the section plane. The cut profiles would be classified as heavy section lines. Geometry beyond the cutting plane would be projected as normal elevation linework.
+
+A proper section is not merely an elevation with a clipping plane applied. It requires explicit cut geometry, line classification and potentially material hatching or solid poche.
+
+After hidden-line projection, the system would add semantic features that cannot be recovered safely from triangles. These may include centre lines, glazing indication marks, datum lines, ridge axes, opening boundaries, part labels, drainage directions and deliberate joint lines.
+
+The resulting line geometry would then pass through a Vale-owned topology-cleaning stage.
+
+This stage would remove zero-length segments, snap nearby endpoints using a controlled tolerance, split lines at intersections, remove duplicates, merge adjacent collinear segments, resolve coincident line classes and remove triangulation artefacts.
+
+It would also preserve source-part identities and restore exact arcs or curves where the original semantic profile data is available.
+
+This processing stage is essential. The raw output from any projection library should not be exposed directly as the finished drawing.
+
+The cleaned result should be stored in a neutral drawing model. This drawing model should use real model-space units, preferably millimetres, rather than screen pixels.
+
+It should contain lines, polylines, arcs, circles, polygons, dimensions, text, hatches and metadata. Each entity should retain a line class, visibility state and source-part reference where appropriate.
+
+The final SVG renderer would then translate the neutral drawing entities into SVG lines, paths, circles, polygons, groups and text.
+
+Technical line weights should be assigned in paper space rather than inherited from the Three.js scene. Section cuts, primary outlines, secondary edges, glazing lines, hidden lines and centre lines should each have defined printed weights and dash patterns.
+
+Dimensions require a separate semantic system. They should not be calculated from whichever projected vertices happen to be nearest.
+
+An overall kerb-width dimension should reference the left and right kerb datums. Ridge height should reference the kerb datum and ridge datum. Bar spacing should reference the actual calculated bar axes.
+
+This distinction is particularly important where aluminium profiles include caps, gaskets, bevels or overhangs. A mesh-derived dimension can silently attach to the wrong physical feature while still appearing visually plausible.
+
+The drawing system should also distinguish nominal dimensions, calculated dimensions, manufacturing dimensions and displayed rounded dimensions. These values may not always be identical.
+
+Glazing requires an explicit drawing policy. Transparent rendering behaviour is not a technical drawing standard.
+
+For each drawing type, Vale should determine whether glass obscures aluminium behind it, whether glazing perimeter lines are displayed, whether glass thickness is shown, whether diagonal glass symbols are added, and how glazing appears when cut in section.
+
+A sensible architectural-elevation policy may be to let aluminium and solid caps act as full occluders while allowing aluminium behind glass to remain visible. Glass perimeters could then be shown using a light line, with glazing symbols added semantically.
+
+The projection scene should therefore be built according to the drawing policy rather than copied directly from the visual Three.js scene.
+
+Mesh projection also needs careful handling of curved profile geometry. A triangulated mesh can only return faceted polylines.
+
+For straight roof bars, this is normally acceptable. For curved ridge caps, rounded cappings, radius corners, decorative profiles, finials and detailed profile sections, the original analytic lines, arcs and curves should be retained.
+
+Those original curves should be used to generate the Three.js mesh, exact section drawings and DXF output. The system should not attempt to recover accurate arcs from triangles unless no source curve is available.
+
+SVG should be treated as the main interactive two-dimensional output format. It supports vector zooming, CSS line classes, element selection, clickable source-part identities, text, dimensions and drawing layers.
+
+PDF should be generated from the neutral drawing model or from the finished SVG using a controlled SVG-to-PDF process.
+
+DXF should also be generated directly from the neutral drawing model. The system should not create an SVG document and then attempt to reverse-engineer that document into DXF.
+
+Direct export from the drawing model will preserve dimensions, layer names, arcs, circles and exact coordinates more reliably.
+
+Performance should be manageable because a roof lantern is a favourable case for mesh-based hidden-line projection. The number of parts is controlled, the geometry is predictable, and most components are straight extrusions or planar glazing units.
+
+The application should not regenerate the final vector drawing during every animation frame.
+
+While a member of staff is dragging a dimension or rapidly changing a parameter, the system should display the orthographic WebGL preview. Once the input settles, the application should run the vector projection process in a worker and replace the preview with the cleaned SVG result.
+
+Projection jobs should be cancellable. If a user changes another parameter before the previous drawing is complete, the obsolete calculation should be stopped.
+
+Repeated profile geometry and unchanged component geometry should be cached. Many configurator changes alter only transforms, lengths or assembly relationships rather than the underlying profile definition.
+
+The project will require a formal validation set. A single visually convincing roof lantern is not sufficient evidence that the system is reliable.
+
+The test set should include square and rectangular hipped lanterns, gable-ended lanterns, equal and unequal pitches, minimum and maximum pitches, short ridges, long ridges, odd and even bar arrangements, narrow glazing panes, near-coincident components and different glazing policies.
+
+It should include sections through the ridge, sections through a glazing bar, sections between bars and elevations where multiple components align in projection.
+
+It should also test coplanar faces, mitred components, small profile details, intersection conditions and configurations close to geometric limits.
+
+Each test configuration should retain a reference SVG, expected drawing bounds, expected overall dimensions, expected source-part identities, expected visible and hidden line classes, and numerical coordinates for important points.
+
+Visual screenshot comparison should be used, but it should not be the only test. A drawing can appear correct while containing an incorrect dimension or a line attached to the wrong datum.
+
+The recommended project structure is therefore one lantern specification, one semantic parametric assembly, a visual Three.js representation, a simplified projection representation, semantic drawing features, an isolated projection backend, a Vale-owned line post-processor, and a neutral drawing model.
+
+The neutral drawing model would then support SVG, PDF and DXF output.
+
+The project should not contain separate Three.js calculations and separate SVG calculations for the same roof geometry.
+
+The final assessment is that Three.js-to-technical-drawing technology is mature enough for the Vale roof-lantern configurator, provided it is approached as an engineered projection and drawing system rather than as a renderer option.
+
+Three.js itself is mature for three-dimensional rendering, orthographic interaction and live section previews. SVG is mature for final browser-based vector display. Generic mesh edge extraction is mature but insufficient for hidden-line drawings.
+
+Three Edge Projection is suitable as an initial hidden-line backend for a controlled roof-lantern product, but it is still a relatively young dependency and should be forked, isolated and tested.
+
+Product-specific semantic drawing generation is highly viable and is particularly appropriate because Vale controls the geometry and knows what every component represents.
+
+OpenCascade remains the stronger future route if the configurator develops into a fabrication or manufacturing system requiring exact solids, STEP output, true curve geometry, machining information or engineering-grade sectioning.
+
+The recommended decision is to use one parametric assembly as the source of truth. The Three.js scene and all semantic drawing information should be generated from that assembly.
+
+A controlled version of Three Edge Projection should calculate hidden-line visibility and trimming. A Vale-owned processing layer should clean, classify and supplement the result. The finished geometry should be stored in a neutral drawing model and rendered as SVG, PDF or DXF.
+
+This avoids maintaining an independent two-dimensional model while also avoiding the incorrect assumption that Three.js’s standard SVG renderer can operate as a complete computer-aided design drawing engine.

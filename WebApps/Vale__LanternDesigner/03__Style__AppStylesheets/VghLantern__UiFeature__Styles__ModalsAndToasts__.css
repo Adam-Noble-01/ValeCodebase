@@ -1,0 +1,293 @@
+/* =============================================================================
+ * VGHLANTERN - MODALS AND TOASTS STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UiFeature__Styles__ModalsAndToasts__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Modal and Toast Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Modal dialogs, confirmation prompts, toast notifications
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Modal overlay and dialog box styles
+ * - Confirmation and warning dialog variants
+ * - Toast notification slide-in animations
+ * - Warning badge styles for geometry constraint and buildability flags
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Modal Overlay and Dialog
+ * ----------------------------------------------------------------------------- */
+
+    /* MODAL | Overlay Backdrop */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Overlay {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        background                         : rgba(23, 43, 58, 0.5);
+        display                            : none;
+        align-items                        : center;
+        justify-content                    : center;
+        z-index                            : var(--Vale_ZIndex_Modal);
+    }
+
+    .VghLantern__Modal__Overlay--visible {
+        display                            : flex;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Dialog Box */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Dialog {
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 8px 32px rgba(0,0,0,0.18);
+        padding                            : var(--Vale_Spacing_XLarge);
+        min-width                          : 400px;
+        max-width                          : 560px;
+        width                              : 90%;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Dialog Title */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Dialog Body Text */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Body {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+        line-height                        : 1.6;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Field Label */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Label {
+        display                            : block;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : 4px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Input Field */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Input {
+        width                              : 100%;
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Modal__Input:focus {
+        outline                            : none;
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Inline Validation Message */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__ValidationMsg {
+        min-height                         : 1.2em;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_ErrorRed);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Destructive Action Warning Note */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__DangerNote {
+        margin-top                         : var(--Vale_Spacing_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_ErrorRed);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Button Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__Actions {
+        display                            : flex;
+        justify-content                    : flex-end;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Primary Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__BtnPrimary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Modal__BtnPrimary:hover {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Secondary Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__BtnSecondary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--Vale_TextSecondary);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Modal__BtnSecondary:hover {
+        background                         : var(--Vale_HoverBackground);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODAL | Destructive Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Modal__BtnDanger {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--VghLantern_ErrorRed);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : filter var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Modal__BtnDanger:hover {
+        filter                             : brightness(0.88);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Toast Notifications
+ * ----------------------------------------------------------------------------- */
+
+    /* TOAST | Container */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Toast__Container {
+        position                           : fixed;
+        bottom                             : var(--Vale_Spacing_Large);
+        right                              : var(--Vale_Spacing_Large);
+        z-index                            : var(--Vale_ZIndex_Tooltip);
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOAST | Notification Item */
+    /* ------------------------------------------------------------ */
+    /* Entry and exit are both driven by the --visible class that the Toast     */
+    /* module adds on the next frame and removes before removal, so a single    */
+    /* transition covers both directions. Do not swap this for a keyframe       */
+    /* animation - the exit fade would be lost.                                */
+    .VghLantern__Toast__Item {
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Large);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.15);
+        max-width                          : 400px;
+        cursor                             : pointer;
+        opacity                            : 0;
+        transform                          : translateX(24px);
+        transition                         : opacity   180ms ease,
+                                             transform 180ms ease;
+    }
+
+    .VghLantern__Toast__Item--visible {
+        opacity                            : 1;
+        transform                          : translateX(0);
+    }
+
+    .VghLantern__Toast__Item--success  { background : var(--VghLantern_SuccessGreen); }
+    .VghLantern__Toast__Item--warning  { background : var(--VghLantern_WarningOrange); }
+    .VghLantern__Toast__Item--error    { background : var(--VghLantern_ErrorRed); }
+    .VghLantern__Toast__Item--info     { background : var(--VghLantern_AccentBlue); }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Warning Badges
+ * ----------------------------------------------------------------------------- */
+
+    /* WARNING | Inline Warning Badge */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warning__Badge {
+        display                            : inline-flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : 4px var(--Vale_Spacing_Small);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__Warning__Badge--orange {
+        background                         : rgba(214, 126, 40, 0.12);
+        color                              : var(--VghLantern_WarningOrange);
+        border                             : 1px solid rgba(214, 126, 40, 0.3);
+    }
+
+    .VghLantern__Warning__Badge--red {
+        background                         : rgba(211, 47, 47, 0.10);
+        color                              : var(--VghLantern_ErrorRed);
+        border                             : 1px solid rgba(211, 47, 47, 0.3);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

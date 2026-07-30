@@ -1,0 +1,472 @@
+/* =============================================================================
+ * VGHLANTERN - COMPONENT INDEX MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__ComponentIndex__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Component Index Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Gallery toolbar, category chips, asset cards, and detail panel
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Library tab strip and category filter chips
+ * - Responsive auto-fill card grid for component and profile assets
+ * - Square SVG preview wells with a loading shim and missing-profile state
+ * - Capability badges for the Has2dProfile / Has3d gating flags
+ * - Two-column detail panel layout used inside the shared app modal
+ * - Consumes --Vale_* and --VghLantern_* tokens from the global Variables sheet
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Gallery Root and Toolbar
+ * ----------------------------------------------------------------------------- */
+
+    /* ROOT | Gallery Container */
+    /* ------------------------------------------------------------ */
+    #VghLantern__ComponentIndex__RootContainer {
+        max-width                          : var(--Vale_MaxContentWidth);
+        margin                             : 0 auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Tabs and Search Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Toolbar {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : var(--Vale_Spacing_Medium);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        flex-wrap                          : wrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Right-Hand Group */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__ToolbarRight {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Visible / Total Count Readout */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Count {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Search Input */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__SearchInput {
+        padding                            : 8px 12px;
+        width                              : 300px;
+        max-width                          : 100%;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ComponentIndex__SearchInput:focus {
+        outline                            : none;
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Library Tabs and Category Chips
+ * ----------------------------------------------------------------------------- */
+
+    /* TABS | Library Tab Strip */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__LibraryTabs {
+        display                            : flex;
+        gap                                : 2px;
+        background                         : var(--Vale_BackgroundLight);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Individual Library Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__LibraryTab {
+        padding                            : 6px var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--Vale_TextSecondary);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             color      var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ComponentIndex__LibraryTab:hover {
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__ComponentIndex__LibraryTab--active {
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHIPS | Category Filter Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__CategoryChips {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : var(--Vale_Spacing_Small);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHIPS | Individual Category Chip */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__CategoryChip {
+        padding                            : 4px var(--Vale_Spacing_Medium);
+        background                         : var(--Vale_BackgroundWhite);
+        color                              : var(--Vale_TextSecondary);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : 999px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        cursor                             : pointer;
+        transition                         : background   var(--Vale_Transition_Fast),
+                                             color        var(--Vale_Transition_Fast),
+                                             border-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ComponentIndex__CategoryChip:hover {
+        border-color                       : var(--VghLantern_AccentBlue);
+        color                              : var(--VghLantern_AccentBlue);
+    }
+
+    .VghLantern__ComponentIndex__CategoryChip--active {
+        background                         : var(--VghLantern_AccentBlue);
+        border-color                       : var(--VghLantern_AccentBlue);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Asset Card Grid
+ * ----------------------------------------------------------------------------- */
+
+    /* GRID | Auto-Fill Card Layout */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Grid {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(180px, 1fr));
+        gap                                : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Clickable Asset Card */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Card {
+        display                            : flex;
+        flex-direction                     : column;
+        padding                            : 0;
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        overflow                           : hidden;
+        text-align                         : left;
+        font-family                        : var(--Vale_FontFamily);
+        cursor                             : pointer;
+        transition                         : border-color var(--Vale_Transition_Fast),
+                                             box-shadow   var(--Vale_Transition_Fast),
+                                             transform    var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ComponentIndex__Card:hover {
+        border-color                       : var(--VghLantern_AccentBlue);
+        box-shadow                         : 0 4px 12px rgba(0, 0, 0, 0.10);
+        transform                          : translateY(-2px);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Square Preview Well */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Preview {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        aspect-ratio                       : 1 / 1;
+        padding                            : var(--Vale_Spacing_Medium);
+        background                         : var(--Vale_BackgroundLight);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Preview Loading Shim */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Preview--loading {
+        background                         : linear-gradient(
+                                                 100deg,
+                                                 var(--Vale_BackgroundLight) 30%,
+                                                 var(--Vale_HoverBackground) 50%,
+                                                 var(--Vale_BackgroundLight) 70%
+                                             );
+        background-size                    : 300% 100%;
+        animation                          : VghLantern__ComponentIndex__Shimmer 1.4s linear infinite;
+    }
+
+    @keyframes VghLantern__ComponentIndex__Shimmer {
+        from { background-position : 150% 0; }
+        to   { background-position : -50% 0; }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Traced Outline SVG */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__PreviewSvg {
+        width                              : 100%;
+        height                             : 100%;
+        overflow                           : visible;
+    }
+
+    .VghLantern__ComponentIndex__PreviewPath {
+        fill                               : var(--VghLantern_SvgProfileFill);
+        stroke                             : var(--VghLantern_SvgProfileStroke);
+        stroke-linejoin                    : round;
+        vector-effect                      : non-scaling-stroke;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Missing Profile Notice */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__PreviewMissing {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Text Body */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__CardBody {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 2px;
+        padding                            : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Asset Id Line */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__CardId {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_AccentBlue);
+        letter-spacing                     : 0.02em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Asset Name Line */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__CardName {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        line-height                        : 1.35;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Category Line */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__CardCategory {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Capability Badges
+ * ----------------------------------------------------------------------------- */
+
+    /* BADGES | Row Container */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Badges {
+        display                            : flex;
+        gap                                : 4px;
+        margin-top                         : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGES | Individual Capability Badge */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Badge {
+        padding                            : 1px 7px;
+        border-radius                      : 3px;
+        font-size                          : 0.68rem;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.04em;
+        color                              : var(--Vale_TextLight);
+    }
+
+    .VghLantern__ComponentIndex__Badge--2d { background : var(--VghLantern_AccentBlue);   }
+    .VghLantern__ComponentIndex__Badge--3d { background : var(--VghLantern_SuccessGreen); }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Detail Panel (rendered inside the shared modal)
+ * ----------------------------------------------------------------------------- */
+
+    /* DETAIL | Two-Column Layout */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__DetailLayout {
+        display                            : grid;
+        grid-template-columns              : 220px 1fr;
+        gap                                : var(--Vale_Spacing_Large);
+        align-items                        : start;
+    }
+
+    @media (max-width: 640px) {
+        .VghLantern__ComponentIndex__DetailLayout {
+            grid-template-columns          : 1fr;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DETAIL | Large Preview Well */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__DetailPreview {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        aspect-ratio                       : 1 / 1;
+        padding                            : var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundLight);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DETAIL | Metadata Definition List */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__DetailMeta {
+        display                            : flex;
+        flex-direction                     : column;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DETAIL | Single Metadata Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__DetailRow {
+        display                            : grid;
+        grid-template-columns              : 140px 1fr;
+        gap                                : var(--Vale_Spacing_Medium);
+        padding                            : 6px 0;
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        font-size                          : var(--Vale_FontSize_Small);
+    }
+
+    .VghLantern__ComponentIndex__DetailRow:last-child {
+        border-bottom                      : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DETAIL | Metadata Label and Value */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__DetailLabel {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__ComponentIndex__DetailValue {
+        color                              : var(--Vale_TextPrimary);
+        word-break                         : break-word;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * STATE | Empty State Placeholder
+ * ----------------------------------------------------------------------------- */
+
+    /* EMPTY | Container */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__EmptyState {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : var(--Vale_Spacing_XXLarge) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Title and Body Text */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__EmptyState__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__ComponentIndex__EmptyState__Text {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        text-align                         : center;
+        max-width                          : 440px;
+        line-height                        : 1.6;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

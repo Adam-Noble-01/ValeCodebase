@@ -1,0 +1,74 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a CadObjectBuilder export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "VGH_CRS0001",
+        "Na__Asset__Metadata__Name"         : "Cresting - Fleur 150mm Pitch",
+        "Na__Asset__Metadata__CategoryId"   : "VGH_CRS0000__Cresting",
+        "Na__Asset__Metadata__CategoryName" : "Cresting",
+        "Na__Asset__Metadata__Description"  : "Decorative fleur cresting repeating at 150mm pitch along the ridge. Supplied in lengths and cut to the ridge run, so it is scheduled by linear metre as well as by unit count.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a measured Vale component",
+        "Na__Asset__Metadata__Material"     : "Cast aluminium, powder coated",
+        "Na__Asset__Metadata__Tags"         : ["cresting", "fleur", "ridge", "decorative", "repeating"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin is the seating point on the ridge cap at the centre of one repeat. X spans one 150mm repeat; Y rises to the fleur tip. The elevation renderer tiles this outline along the ridge run.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -75.0, "y":   0.0 },
+            { "x":  75.0, "y":   0.0 },
+            { "x":  75.0, "y":  14.0 },
+            { "x":  30.0, "y":  14.0 },
+            { "x":  26.0, "y":  46.0 },
+            { "x":  44.0, "y":  62.0 },
+            { "x":  30.0, "y":  86.0 },
+            { "x":  12.0, "y":  74.0 },
+            { "x":  10.0, "y": 118.0 },
+            { "x":   0.0, "y": 140.0 },
+            { "x": -10.0, "y": 118.0 },
+            { "x": -12.0, "y":  74.0 },
+            { "x": -30.0, "y":  86.0 },
+            { "x": -44.0, "y":  62.0 },
+            { "x": -26.0, "y":  46.0 },
+            { "x": -30.0, "y":  14.0 },
+            { "x": -75.0, "y":  14.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 150.0,
+            "HeightMm"                      : 140.0,
+            "MinX"                          : -75.0,
+            "MaxX"                          : 75.0,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 140.0
+        },
+        "Na__Asset__Profile2D__IsRevolveOutline"  : false,
+        "Na__Asset__Profile2D__RevolveAxis"       : null
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__PlacementBehaviour": {
+        "Na__Asset__PlacementBehaviour__ApplicableRoles"  : ["cresting"],
+        "Na__Asset__PlacementBehaviour__AnchorPoint"      : "seatingCentre",
+        "Na__Asset__PlacementBehaviour__AlignToVertical"  : true,
+        "Na__Asset__PlacementBehaviour__IsRepeating"      : true,
+        "Na__Asset__PlacementBehaviour__RepeatPitchMm"    : 150.0,
+        "Na__Asset__PlacementBehaviour__OverallHeightMm"  : 140.0,
+        "Na__Asset__PlacementBehaviour__ScheduleAsLinear" : true
+    }
+}

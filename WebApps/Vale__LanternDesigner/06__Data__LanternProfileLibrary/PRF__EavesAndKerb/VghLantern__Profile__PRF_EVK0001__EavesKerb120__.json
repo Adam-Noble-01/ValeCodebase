@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a ProfilePathTracer export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "PRF_EVK0001",
+        "Na__Asset__Metadata__Name"         : "Eaves and Kerb Section - 120mm",
+        "Na__Asset__Metadata__CategoryId"   : "PRF__EavesAndKerb",
+        "Na__Asset__Metadata__CategoryName" : "Eaves and Kerb",
+        "Na__Asset__Metadata__Description"  : "Combined eaves beam and upstand kerb section carrying the rafter feet and forming the weather seal down onto the structural opening.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a traced Vale section",
+        "Na__Asset__Metadata__Material"     : "Engineered timber",
+        "Na__Asset__Metadata__Tags"         : ["eaves", "kerb", "upstand", "base"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin sits on the eaves skeleton line at the underside of the section. X is centred across the member with the outer face at +60; Y rises through the kerb upstand.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -60.0, "y":   0.0 },
+            { "x":  60.0, "y":   0.0 },
+            { "x":  60.0, "y": 140.0 },
+            { "x":  20.0, "y": 140.0 },
+            { "x":  20.0, "y":  40.0 },
+            { "x": -60.0, "y":  40.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 120.0,
+            "DepthMm"                       : 140.0,
+            "MinX"                          : -60.0,
+            "MaxX"                          : 60.0,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 140.0
+        },
+        "Na__Asset__Profile2D__SectionAreaSqMm" : 8800.0
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__SweepBehaviour": {
+        "Na__Asset__SweepBehaviour__ApplicableRoles"  : ["eaves", "kerb", "kerbPost"],
+        "Na__Asset__SweepBehaviour__MitreEnds"        : true,
+        "Na__Asset__SweepBehaviour__RotateToSlope"    : false,
+        "Na__Asset__SweepBehaviour__FaceWidthMm"      : 120.0
+    }
+}

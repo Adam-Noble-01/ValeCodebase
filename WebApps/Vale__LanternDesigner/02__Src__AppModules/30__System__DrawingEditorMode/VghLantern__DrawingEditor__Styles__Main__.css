@@ -1,0 +1,332 @@
+/* =============================================================================
+ * VGHLANTERN - DRAWING EDITOR MODE STYLESHEET
+ * =============================================================================
+ *
+ * FILE       : VghLantern__DrawingEditor__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : System - DrawingEditor - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Toolbar, paper sheet, view frames, titleblock and notes styling
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Styles the Drawing Editor mode: the toolbar strip, the scrollable sheet stage,
+ *   the paper sheet itself and everything printed on it.
+ * - The sheet is sized in pixels derived from real paper millimetres by SheetManager,
+ *   so this sheet never sets its own width or height.
+ * - Print colours are deliberately flat and dark on white; the sheet is a drawing,
+ *   not a piece of application chrome.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Mode Shell And Toolbar
+ * ----------------------------------------------------------------------------- */
+
+    /* Mode container fills the content area and owns its own scrolling */
+    #VghLantern__DrawingEditor__Container {
+        display                            : flex;
+        flex-direction                     : column;
+        height                             : 100%;
+        min-height                         : 0;
+        background-color                   : var(--VghLantern_PreviewBackground);
+    }
+
+    /* Toolbar strip pinned above the sheet stage */
+    #VghLantern__DrawingEditor__Toolbar {
+        flex                               : 0 0 auto;
+        background-color                   : var(--Vale_BackgroundWhite);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__DrawingEditor__ToolbarRow {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Medium);
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        flex-wrap                          : wrap;
+    }
+
+    .VghLantern__DrawingEditor__ToolGroup {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__DrawingEditor__ToolLabel {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+
+    .VghLantern__DrawingEditor__ToolSelect {
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : calc(var(--Vale_BorderRadius) / 2);
+        padding                            : 3px 6px;
+        cursor                             : pointer;
+    }
+
+    .VghLantern__DrawingEditor__ToolButton {
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+        border                             : none;
+        border-radius                      : calc(var(--Vale_BorderRadius) / 2);
+        padding                            : 5px 12px;
+        cursor                             : pointer;
+        transition                         : background-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__DrawingEditor__ToolButton:hover {
+        background-color                   : var(--Vale_PrimaryBrand_Dark);
+    }
+
+    /* Empty state shown when no lantern is available to draw */
+    .VghLantern__DrawingEditor__EmptyState {
+        margin                             : var(--Vale_Spacing_XLarge) auto;
+        max-width                          : 460px;
+        text-align                         : center;
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Sheet Stage And Paper
+ * ----------------------------------------------------------------------------- */
+
+    /* Scrollable stage that the paper sheet floats in */
+    #VghLantern__DrawingEditor__SheetHost {
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+        overflow                           : auto;
+        padding                            : var(--Vale_Spacing_Large);
+    }
+
+    .VghLantern__Sheet__Scaler {
+        display                            : flex;
+        justify-content                    : center;
+    }
+
+    /* The paper. Dimensions are set inline from the resolved paper size. */
+    .VghLantern__Sheet {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : var(--Vale_Spacing_Small);
+        box-sizing                         : border-box;
+        background-color                   : #ffffff;
+        border                             : 1px solid var(--Vale_BorderPrimary);
+        box-shadow                         : 0 2px 12px var(--VghLantern_PreviewPaperShadow);
+    }
+
+    /* View grid. Columns, rows and gap are set inline from config. */
+    .VghLantern__Sheet__ViewGrid {
+        display                            : grid;
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | View Frames
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Sheet__Frame {
+        display                            : flex;
+        flex-direction                     : column;
+        min-width                          : 0;
+        min-height                         : 0;
+        border                             : 1px solid var(--VghLantern_SvgConstructionLine);
+    }
+
+    .VghLantern__Sheet__FrameLabel {
+        display                            : flex;
+        align-items                        : baseline;
+        justify-content                    : space-between;
+        gap                                : var(--Vale_Spacing_Small);
+        flex                               : 0 0 auto;
+        padding                            : 2px 6px;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        border-bottom                      : 1px solid var(--VghLantern_SvgConstructionLine);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.05em;
+    }
+
+    .VghLantern__Sheet__FrameScale {
+        font-weight                        : var(--Vale_FontWeight_Regular);
+        text-transform                     : none;
+        letter-spacing                     : 0;
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    /* Frame body hosts either an Env2d SVG root or a 3D snapshot image */
+    .VghLantern__Sheet__FrameBody {
+        position                           : relative;
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        min-height                         : 0;
+        overflow                           : hidden;
+    }
+
+    .VghLantern__Sheet__FrameSnapshot {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        object-fit                         : contain;
+    }
+
+    .VghLantern__Sheet__FramePlaceholder {
+        margin                             : 0;
+        position                           : absolute;
+        inset                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-style                         : italic;
+        color                              : var(--Vale_TextSubtle);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Notes Block
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Sheet__NotesHost {
+        flex                               : 0 0 auto;
+    }
+
+    .VghLantern__Sheet__Notes {
+        border-top                         : 1px solid var(--VghLantern_SvgConstructionLine);
+        padding-top                        : 4px;
+    }
+
+    .VghLantern__Sheet__NotesTitle {
+        margin                             : 0 0 2px 0;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.05em;
+    }
+
+    .VghLantern__Sheet__NotesList {
+        margin                             : 0;
+        padding-left                       : 1.4em;
+        columns                            : 2;
+        column-gap                         : var(--Vale_Spacing_Large);
+    }
+
+    .VghLantern__Sheet__NotesItem {
+        font-size                          : var(--Vale_FontSize_Small);
+        line-height                        : 1.35;
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    /* Project-specific notes read slightly stronger than the standing notes */
+    .VghLantern__Sheet__NotesItem--project {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Title Block
+ * ----------------------------------------------------------------------------- */
+
+    /* Host height is set inline from the configured titleblock height */
+    .VghLantern__Sheet__TitleHost {
+        flex                               : 0 0 auto;
+    }
+
+    .VghLantern__Sheet__TitleBlock {
+        display                            : flex;
+        align-items                        : stretch;
+        height                             : 100%;
+        border                             : 1px solid var(--Vale_BorderPrimary);
+    }
+
+    .VghLantern__Sheet__TitleBlockLogo {
+        display                            : flex;
+        flex-direction                     : column;
+        justify-content                    : center;
+        align-items                        : center;
+        gap                                : 0;
+        flex                               : 0 0 auto;
+        padding                            : 2px 6px;
+        border-right                       : 1px solid var(--Vale_BorderPrimary);
+    }
+
+    .VghLantern__Sheet__TitleBlockLogo img {
+        display                            : block;
+        max-height                         : 100%;
+        width                              : auto;
+        height                             : auto;
+        object-fit                         : contain;
+    }
+
+    .VghLantern__Sheet__TitleBlockCompany {
+        font-size                          : calc(var(--Vale_FontSize_Small) * 0.9);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__Sheet__TitleBlockFields {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        align-content                      : stretch;
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+    }
+
+    .VghLantern__Sheet__TitleBlockField {
+        display                            : flex;
+        flex-direction                     : column;
+        justify-content                    : center;
+        gap                                : 0;
+        box-sizing                         : border-box;
+        padding                            : 1px 5px;
+        border-right                       : 1px solid var(--VghLantern_SvgConstructionLine);
+        border-bottom                      : 1px solid var(--VghLantern_SvgConstructionLine);
+        overflow                           : hidden;
+    }
+
+    .VghLantern__Sheet__TitleBlockFieldLabel {
+        font-size                          : calc(var(--Vale_FontSize_Small) * 0.72);
+        line-height                        : 1.15;
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__Sheet__TitleBlockFieldValue {
+        font-size                          : calc(var(--Vale_FontSize_Small) * 0.92);
+        line-height                        : 1.2;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        min-height                         : 1em;                              /* <-- Keeps an unresolved field the same height as a filled one */
+    }
+
+/* #endregion ------------------------------------------------------------------- */

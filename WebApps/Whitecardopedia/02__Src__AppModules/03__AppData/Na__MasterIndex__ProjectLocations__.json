@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "29-Jul-2026 at 13:21",
+    "generatedAt": "30-Jul-2026 at 10:43",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1935,6 +1935,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "29-Jul-2026 at 13:21"
+        },
+        {
+            "folderId": "2026/57994__Harris",
+            "year": "2026",
+            "projectCode": "57994",
+            "name": "Harris",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "30-Jul-2026 at 10:43"
         }
     ]
 }

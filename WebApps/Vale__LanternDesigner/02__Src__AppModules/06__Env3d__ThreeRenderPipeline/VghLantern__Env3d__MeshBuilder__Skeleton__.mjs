@@ -1,0 +1,228 @@
+/* =============================================================================
+   VGHLANTERN - 3D ENVIRONMENT | MESH BUILDER - SKELETON
+   =============================================================================
+
+   FILE       : VghLantern__Env3d__MeshBuilder__Skeleton__.mjs
+   NAMESPACE  : VghLantern
+   MODULE     : Env3d - MeshBuilder Skeleton
+   AUTHOR     : Adam Noble - Noble Architecture
+   PURPOSE    : Turn solved skeleton members and glazing bars into 3D meshes
+   CREATED    : 30-Jul-2026
+
+   DESCRIPTION:
+   - Consumes the SolvedSkeleton and GlazeBarSet from the geometry brain, groups
+     members by role, resolves the profile assigned to each role, and sweeps it.
+   - Two modes, chosen by config and by data availability:
+       profileSweep  the real authored section, extruded along each centreline
+       lines         centrelines only, used as the fallback when a role has no
+                     profile assigned yet or the member budget is exceeded
+   - Never computes geometry. Every coordinate originates in the SkeletonSolver.
+
+   ---------------------------------------------------------------------------
+
+   ROLE TO PROFILE MAPPING:
+   Which lantern config field names the profile for each role is defined once, in
+   ProfileIndexLoader. Both this module and Env2d's ProfileTraceRenderer resolve
+   through that shared table, so swapping a profile updates the SVG views and the
+   3D model from a single edit.
+
+   ============================================================================= */
+
+import * as THREE from 'three';
+
+import { VghLantern__Env3d__ConfigAccess__Section, VghLantern__Env3d__ConfigAccess__PointToWorld } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import { VghLantern__Env3d__MaterialLibrary__Frame, VghLantern__Env3d__MaterialLibrary__Kerb, VghLantern__Env3d__MaterialLibrary__SkeletonLine } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__ProfileSweep__FallbackOutline } from './VghLantern__Env3d__MeshBuilder__ProfileSweep__.mjs';
+
+// =============================================================================
+// REGION | Skeleton Mesh Builder Module
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Sweep Modes and Role Grouping
+    // ------------------------------------------------------------
+    const MODE_LINES            =  'lines';                                  // <-- Centreline only
+    const MODE_PROFILE_SWEEP    =  'profileSweep';                           // <-- Real authored section
+
+    const ROLE_KERB_SET         =  ['kerb', 'kerbPost'];                     // <-- Roles that take the kerb material
+
+    const FINISH_BLOCK          =  'Lantern__FinishAndGlazing__Config';      // <-- Frame finish lives here
+    const FINISH_FIELD          =  'Lantern__FinishAndGlazing__Config__FrameFinish';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Member Grouping and Profile Resolution
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Group Members by Their Role
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__SkeletonBuilder__GroupByRole(memberList) {
+        const grouped  =  {};
+        if (!Array.isArray(memberList)) return grouped;
+
+        for (let i = 0; i < memberList.length; i++) {
+            const member  =  memberList[i];
+            if (!member || !member.Role) continue;
+            if (!grouped[member.Role]) grouped[member.Role]  =  [];
+            grouped[member.Role].push(member);
+        }
+        return grouped;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fetch the Outline Points a Role's Profile Provides
+    // ------------------------------------------------------------
+    async function VghLantern__Env3d__SkeletonBuilder__OutlineForRole(lantern, roleKey) {
+        const ProfileLoader  =  window.VghLantern__AppData__ProfileIndexLoader;
+        if (!ProfileLoader) return null;
+
+        try {
+            return await ProfileLoader.VghLantern__ProfileIndexLoader__GetOutlineForRole(lantern, roleKey);
+        } catch (err) {
+            console.warn('[VghLantern Env3d] Profile outline unavailable for role:', roleKey, err);
+            return null;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Select the Material for a Role
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__SkeletonBuilder__MaterialForRole(roleKey, finishName) {
+        if (ROLE_KERB_SET.indexOf(roleKey) !== -1) {
+            return VghLantern__Env3d__MaterialLibrary__Kerb();
+        }
+        return VghLantern__Env3d__MaterialLibrary__Frame(finishName);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read the Lantern's Chosen Frame Finish
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__SkeletonBuilder__FinishName(lantern) {
+        if (!lantern) return '';
+
+        const block  =  lantern[FINISH_BLOCK];
+        return block ? (block[FINISH_FIELD] || '') : '';
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Line Mode Fallback
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Build a Line Segments Object for a Set of Members
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__SkeletonBuilder__BuildLines(memberList, objectName) {
+        if (!Array.isArray(memberList) || memberList.length === 0) return null;
+
+        const positions  =  new Float32Array(memberList.length * 6);
+        let cursor       =  0;
+
+        for (let i = 0; i < memberList.length; i++) {
+            const startWorld  =  VghLantern__Env3d__ConfigAccess__PointToWorld(memberList[i].Start);
+            const endWorld    =  VghLantern__Env3d__ConfigAccess__PointToWorld(memberList[i].End);
+
+            positions[cursor++]  =  startWorld.x;
+            positions[cursor++]  =  startWorld.y;
+            positions[cursor++]  =  startWorld.z;
+            positions[cursor++]  =  endWorld.x;
+            positions[cursor++]  =  endWorld.y;
+            positions[cursor++]  =  endWorld.z;
+        }
+
+        const geometry  =  new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const lines  =  new THREE.LineSegments(geometry, VghLantern__Env3d__MaterialLibrary__SkeletonLine());
+        lines.name   =  objectName || 'VghLantern__Env3d__SkeletonLines';
+        return lines;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Skeleton Assembly
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Build the Objects for One Role Group
+    // ------------------------------------------------------------
+    async function VghLantern__Env3d__SkeletonBuilder__BuildRole(roleKey, memberList, lantern, config) {
+        const wantsSweep  =  config.SkeletonMode !== MODE_LINES;
+        const budget      =  Number(config.MaxSweptMembers) || 900;
+        const withinBudget =  memberList.length <= budget;
+
+        if (wantsSweep && withinBudget) {
+            let outline  =  await VghLantern__Env3d__SkeletonBuilder__OutlineForRole(lantern, roleKey);
+
+            // No authored profile yet: sweep a plain rectangular section so the
+            // member still reads as solid rather than vanishing from the model.
+            if (!outline && config.PlaceholderSectionOnMissingProfile !== false) {
+                outline  =  VghLantern__Env3d__ProfileSweep__FallbackOutline(null, null);
+            }
+
+            if (outline) {
+                const material  =  VghLantern__Env3d__SkeletonBuilder__MaterialForRole(roleKey, VghLantern__Env3d__SkeletonBuilder__FinishName(lantern));
+                const mesh      =  VghLantern__Env3d__ProfileSweep__BuildMergedMesh(
+                    outline, memberList, material,
+                    'VghLantern__Env3d__Members__' + roleKey
+                );
+                if (mesh) return mesh;
+            }
+        }
+
+        return VghLantern__Env3d__SkeletonBuilder__BuildLines(memberList, 'VghLantern__Env3d__MemberLines__' + roleKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build Every Structural Member Into the Skeleton Group
+    // ------------------------------------------------------------
+    export async function VghLantern__Env3d__MeshBuilder__Skeleton__Build(targetGroup, skeleton, barSet, lantern) {
+        if (!targetGroup || !skeleton) return;
+
+        const config   =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
+        const members  =  (skeleton.Members || []).slice();
+
+        // Glazing bars and transoms are members for meshing purposes, even though
+        // the geometry brain solves them in a separate pass.
+        if (barSet && Array.isArray(barSet.Bars)) {
+            for (let i = 0; i < barSet.Bars.length; i++) members.push(barSet.Bars[i]);
+        }
+
+        const grouped  =  VghLantern__Env3d__SkeletonBuilder__GroupByRole(members);
+        const roles    =  Object.keys(grouped);
+
+        for (let i = 0; i < roles.length; i++) {
+            const object3d  =  await VghLantern__Env3d__SkeletonBuilder__BuildRole(roles[i], grouped[roles[i]], lantern, config);
+            if (object3d) targetGroup.add(object3d);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Report the Sweep Mode That Would Be Used
+    // ------------------------------------------------------------
+    // Surfaced by the 3D controls so the user can see whether they are looking at
+    // real sections or the line fallback.
+    export function VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode() {
+        const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
+        return config.SkeletonMode === MODE_LINES ? MODE_LINES : MODE_PROFILE_SWEEP;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

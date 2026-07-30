@@ -1,0 +1,135 @@
+{
+    "VghLantern__Application__Config": {
+        "VghLantern__Application__Config__Description": "Core application identity, version, and global paths for the VghLantern Roof Lantern Designer. This file is the single source of truth for app-wide settings; system specific settings live in each system folder and are merged over this file by AppCore ConfigLoader.",
+        "VghLantern__Application__Config__AppName": "VghLantern Roof Lantern Designer",
+        "VghLantern__Application__Config__AppVersion": "0.1.0",
+        "VghLantern__Application__Config__ServerPort": 8006,
+        "VghLantern__Application__Config__ProjectDataFolder": "07__LocalProjectData",
+        "VghLantern__Application__Config__UserDataFolder": "08__LocalUserData",
+        "VghLantern__Application__Config__SharedAssetsBase": "../assets__CommonApplicationAssets/",
+        "VghLantern__Application__Config__AutosaveDebounceMs": 1200,
+        "VghLantern__Application__Config__DefaultMode": "DocManagement"
+    },
+    "VghLantern__DataLibraries__Config": {
+        "VghLantern__DataLibraries__Config__Description": "Locations of the two generated data library indexes. Both indexes are build output produced by 60__Dev__WebBuildUtils and must never be hand edited.",
+        "VghLantern__DataLibraries__Config__ComponentLibraryRoot": "05__Data__LanternComponentLibrary/",
+        "VghLantern__DataLibraries__Config__ComponentIndexPath": "05__Data__LanternComponentLibrary/VghLantern__ComponentDataIndex__.json",
+        "VghLantern__DataLibraries__Config__ComponentIndexApiRoute": "/api/component-index",
+        "VghLantern__DataLibraries__Config__ProfileLibraryRoot": "06__Data__LanternProfileLibrary/",
+        "VghLantern__DataLibraries__Config__ProfileIndexPath": "06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json",
+        "VghLantern__DataLibraries__Config__ProfileIndexApiRoute": "/api/profile-index",
+        "VghLantern__DataLibraries__Config__Glb3dAssetFolder": "05__Data__LanternComponentLibrary/3dAssets__Glb/"
+    },
+    "VghLantern__Lantern__GlobalDefaults__Config": {
+        "VghLantern__Lantern__GlobalDefaults__Config__Description": "Default lantern configuration applied to every newly added lantern. All linear values are millimetres.",
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultRoofForm": "Hipped Ridge",
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultWidthMm": 2400,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultDepthMm": 1400,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultKerbHeightMm": 150,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultEavesProjectionMm": 50,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultPitchDegrees": 25,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultPitchDriveMode": "angle",
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultBarDivisionMode": "count",
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultBarCountLongSlope": 3,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultTargetBarSpacingMm": 500
+    },
+    "VghLantern__RoofForm__Options__Config": {
+        "VghLantern__RoofForm__Options__Config__Description": "Selectable roof forms. The SkeletonSolver branches on these labels, so they must match the canonical set in AppUtils ProjectSchemaValidator exactly.",
+        "VghLantern__RoofForm__Options__Config__RoofForms": [
+            "Hipped Ridge",
+            "Pyramid",
+            "Gable",
+            "Mono Pitch"
+        ],
+        "VghLantern__RoofForm__Options__Config__DisabledRoofForms": [
+            "Gable",
+            "Mono Pitch"
+        ],
+        "VghLantern__RoofForm__Options__Config__PitchDriveModes": [
+            "angle",
+            "rise"
+        ]
+    },
+    "VghLantern__Glazing__Options__Config": {
+        "VghLantern__Glazing__Options__Config__Description": "Available glazing specifications and tints offered in the Finish and Glazing section.",
+        "VghLantern__Glazing__Options__Config__GlazingSpecs": [
+            "Double Glazed Toughened",
+            "Double Glazed Laminate Over",
+            "Triple Glazed Toughened",
+            "Self Cleaning Double Glazed"
+        ],
+        "VghLantern__Glazing__Options__Config__GlazingTints": [
+            "Clear",
+            "Neutral Solar Control",
+            "Blue Solar Control",
+            "Opaque"
+        ],
+        "VghLantern__Glazing__Options__Config__DefaultGlazingSpec": ""
+    },
+    "VghLantern__Finish__Options__Config": {
+        "VghLantern__Finish__Options__Config__Description": "Available frame finishes. HexColor drives the 2D preview fill and the 3D material tint so both environments agree without duplicating a palette.",
+        "VghLantern__Finish__Options__Config__AvailableFinishes": [
+            {
+                "Name": "Vale Painted Softwood",
+                "MatCode": "MAT100__Timber__Painted__Generic",
+                "HexColor": "#e8e6df"
+            },
+            {
+                "Name": "Vale Painted Hardwood",
+                "MatCode": "MAT101__Timber__Painted__Hardwood",
+                "HexColor": "#e2e0d8"
+            },
+            {
+                "Name": "Natural Oak",
+                "MatCode": "MAT110__Timber__Natural__Oak",
+                "HexColor": "#c9a978"
+            },
+            {
+                "Name": "Powder Coated Aluminium",
+                "MatCode": "MAT620__Metal__Aluminium__PowderCoated",
+                "HexColor": "#8d9095"
+            }
+        ],
+        "VghLantern__Finish__Options__Config__DefaultFinish": "",
+        "VghLantern__Finish__Options__Config__ColourReferencesNote": "Paint references offered alongside the named finish. Carried straight onto the specification schedule; purely descriptive, never geometric.",
+        "VghLantern__Finish__Options__Config__ColourReferences": [
+            "RAL 9010 Pure White",
+            "RAL 9001 Cream",
+            "RAL 7016 Anthracite Grey",
+            "RAL 7038 Agate Grey",
+            "BS 4800 18B21 Slate",
+            "Vale House Colour - To Be Confirmed"
+        ]
+    },
+    "VghLantern__Validation__Config": {
+        "VghLantern__Validation__Config__Description": "Constraint envelope enforced by the ConstraintResolver and surfaced by the editor WarningSystem. Values outside these bounds are rejected on dimension entry.",
+        "VghLantern__Validation__Config__MinWidthMm": 600,
+        "VghLantern__Validation__Config__MaxWidthMm": 8000,
+        "VghLantern__Validation__Config__MinDepthMm": 600,
+        "VghLantern__Validation__Config__MaxDepthMm": 6000,
+        "VghLantern__Validation__Config__MinPitchDegrees": 10,
+        "VghLantern__Validation__Config__MaxPitchDegrees": 45,
+        "VghLantern__Validation__Config__RecommendedMinPitchDegrees": 15,
+        "VghLantern__Validation__Config__MaxGlazingPaneAreaSqM": 2.6,
+        "VghLantern__Validation__Config__MaxBarSpacingMm": 900,
+        "VghLantern__Validation__Config__MinBarSpacingMm": 200,
+        "VghLantern__Validation__Config__MaxKerbHeightMm": 600
+    },
+    "VghLantern__UserMenu__AppDefaults__Config": {
+        "VghLantern__UserMenu__AppDefaults__Config__Description": "Application-wide default menu settings mirrored from the sync user. Used when no user override config exists.",
+        "VghLantern__UserMenu__AppDefaults__Config__SourceUserSlug": "AdamW",
+        "VghLantern__UserMenu__AppDefaults__Config__OverrideEnabled": true,
+        "VghLantern__UserMenu__AppDefaults__Config__MenuPositionX": null,
+        "VghLantern__UserMenu__AppDefaults__Config__MenuPositionY": null,
+        "VghLantern__UserMenu__AppDefaults__Config__MenuSectionViewsOpen": true,
+        "VghLantern__UserMenu__AppDefaults__Config__MenuSectionDocumentOpen": true,
+        "VghLantern__UserMenu__AppDefaults__Config__MenuSectionActionsOpen": true,
+        "VghLantern__UserMenu__AppDefaults__Config__ShowDrawingSheet": true,
+        "VghLantern__UserMenu__AppDefaults__Config__ShowSpecification": true,
+        "VghLantern__UserMenu__AppDefaults__Config__ShowTakeoffSummary": true,
+        "VghLantern__UserMenu__AppDefaults__Config__ShowJobNotes": true,
+        "VghLantern__UserMenu__AppDefaults__Config__PersistMenuPosition": true,
+        "VghLantern__UserMenu__AppDefaults__Config__PersistMenuSectionState": true,
+        "VghLantern__UserMenu__AppDefaults__Config__PersistViewState": true
+    }
+}

@@ -1,0 +1,374 @@
+/* =============================================================================
+ * VGHLANTERN - DOCUMENT MANAGEMENT MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__DocManagement__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Document Management Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Project table, status badges, action bar, and empty state styles
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Project table layout with header, rows, hover, and alternating row colours
+ * - Sortable header affordance with active-column highlight
+ * - Status badge pill styles colour-coded from CSS variables
+ * - Action button bar for the New Project operation
+ * - Empty state placeholder when no projects exist
+ * - Consumes --Vale_* and --VghLantern_* tokens from the global Variables sheet
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Document Management Container and Header
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTAINER | Main Wrapper */
+    /* ------------------------------------------------------------ */
+    #VghLantern__DocManagement__Container {
+        max-width                          : var(--Vale_MaxContentWidth);
+        margin                             : 0 auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Title Row */
+    /* ------------------------------------------------------------ */
+    #VghLantern__DocManagement__Header {
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Section Title */
+    /* ------------------------------------------------------------ */
+    #VghLantern__DocManagement__Title {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Search and Actions Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Toolbar {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        gap                                : var(--Vale_Spacing_Medium);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+        flex-wrap                          : wrap;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Action Button Bar
+ * ----------------------------------------------------------------------------- */
+
+    /* ACTIONS | Button Container */
+    /* ------------------------------------------------------------ */
+    #VghLantern__DocManagement__Actions {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Primary Action Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__BtnPrimary {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        white-space                        : nowrap;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__DocManagement__BtnPrimary:hover {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Search Input
+ * ----------------------------------------------------------------------------- */
+
+    /* SEARCH | Container */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__SearchContainer {
+        display                            : flex;
+        align-items                        : center;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SEARCH | Input Field */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__SearchInput {
+        padding                            : 8px 12px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        width                              : 320px;
+        max-width                          : 100%;
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__DocManagement__SearchInput:focus {
+        outline                            : none;
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Project Table
+ * ----------------------------------------------------------------------------- */
+
+    /* TABLE | Wrapper */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Table {
+        width                              : 100%;
+        border-collapse                    : collapse;
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        overflow                           : hidden;
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Header Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Table thead th {
+        text-align                         : left;
+        padding                            : var(--Vale_Spacing_Medium);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Sortable Header Cell */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__SortableHeader {
+        cursor                             : pointer;
+        user-select                        : none;
+        transition                         : background var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__DocManagement__SortableHeader:hover,
+    .VghLantern__DocManagement__SortableHeader--active {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Body Rows */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Table tbody td {
+        padding                            : var(--Vale_Spacing_Medium);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        vertical-align                     : middle;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Alternating Row Background */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Table tbody tr:nth-child(even) {
+        background                         : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Row Hover Effect */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Table tbody tr:hover {
+        background                         : var(--Vale_HoverBackground);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Lantern Count Chip in the Project Name Cell */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__CountChip {
+        display                            : inline-block;
+        margin-left                        : var(--Vale_Spacing_Small);
+        padding                            : 1px 8px;
+        border-radius                      : 999px;
+        background                         : var(--Vale_BackgroundLight);
+        border                             : 1px solid var(--Vale_BorderLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | No Search Match Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__NoMatchCell {
+        text-align                         : center;
+        padding                            : var(--Vale_Spacing_XXLarge) var(--Vale_Spacing_Large) !important;
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Actions Cell */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__RowActions {
+        display                            : flex;
+        gap                                : var(--Vale_Spacing_Small);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Row Action Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__RowBtn {
+        padding                            : 4px var(--Vale_Spacing_Small);
+        background                         : transparent;
+        color                              : var(--VghLantern_AccentBlue);
+        border                             : 1px solid var(--VghLantern_AccentBlue);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             color      var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__DocManagement__RowBtn:hover {
+        background                         : var(--VghLantern_AccentBlue);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Delete Row Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__RowBtn--delete {
+        color                              : var(--VghLantern_ErrorRed);
+        border-color                       : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__DocManagement__RowBtn--delete:hover {
+        background                         : var(--VghLantern_ErrorRed);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Status Badge Pills
+ * ----------------------------------------------------------------------------- */
+
+    /* BADGE | Base Status Pill */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__StatusBadge {
+        display                            : inline-block;
+        padding                            : 3px var(--Vale_Spacing_Small);
+        border-radius                      : 999px;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextLight);
+        white-space                        : nowrap;
+        line-height                        : 1.4;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Workflow Status Variants */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__StatusBadge--draft      { background : var(--VghLantern_StatusDraft);      }
+    .VghLantern__DocManagement__StatusBadge--inProgress { background : var(--VghLantern_StatusInProgress); }
+    .VghLantern__DocManagement__StatusBadge--pending    { background : var(--VghLantern_StatusPending);    }
+    .VghLantern__DocManagement__StatusBadge--approved   { background : var(--VghLantern_StatusApproved);   }
+    .VghLantern__DocManagement__StatusBadge--completed  { background : var(--VghLantern_StatusCompleted);  }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * STATE | Empty State Placeholder
+ * ----------------------------------------------------------------------------- */
+
+    /* EMPTY | Container */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__EmptyState {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        justify-content                    : center;
+        padding                            : var(--Vale_Spacing_XXLarge) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Icon Placeholder */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__EmptyState__Icon {
+        font-size                          : 48px;
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+        opacity                            : 0.4;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Title Text */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__EmptyState__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* EMPTY | Description Text */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__EmptyState__Text {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        text-align                         : center;
+        max-width                          : 420px;
+        line-height                        : 1.6;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

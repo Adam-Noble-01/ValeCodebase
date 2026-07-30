@@ -1,0 +1,1004 @@
+/* =============================================================================
+ * VGHLANTERN - LANTERN ASSEMBLY EDITOR MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__LanternEditor__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Lantern Assembly Editor Mode
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Editor split layout, global bar, viewport chrome, control panel
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Two-column split: preview panel on the left, control column on the right
+ * - Preview panel sub-splits when the in-editor 3D panel is shown
+ * - Draggable resize handles between 2D/3D and between preview/controls
+ * - Global bar with project metadata, lantern tabs and panel toggles
+ * - Viewport chrome: view tab strip, floating toolbar, empty and pending states
+ * - Descriptor-driven control panel: accordion sections, sliders, toggles, selects
+ * - Warning strip with severity-coded rows
+ * - Split proportions come from --VghLantern_Editor* custom properties which the
+ *   Layout module writes from editor config; no proportion is hardcoded here
+ * - Consumes --Vale_* and --VghLantern_* tokens from the global Variables sheet
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Editor Container and Split
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTAINER | Full Height Editor Shell */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LanternEditor__Container {
+        display                            : flex;
+        flex-direction                     : column;
+        height                             : 100%;
+        min-height                         : 0;
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SPLIT | Preview and Controls Columns */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LanternEditor__SplitLayout {
+        display                            : flex;
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Preview Column */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LanternEditor__PreviewPanel {
+        display                            : flex;
+        flex-direction                     : column;
+        flex                               : 1 1 auto;
+        min-width                          : var(--VghLantern_EditorPreviewMinWidth, 280px);
+        min-height                         : 0;
+        background-color                   : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Controls Column */
+    /* ------------------------------------------------------------ */
+    /* Width is a live CSS variable so the resize handle can write it during drag
+       without touching the stylesheet. Min/max clamps live in Layout.js. */
+    #VghLantern__LanternEditor__ControlsPanel {
+        display                            : flex;
+        flex-direction                     : column;
+        flex                               : 0 0 var(--VghLantern_EditorControlsWidth, 420px);
+        width                              : var(--VghLantern_EditorControlsWidth, 420px);
+        min-width                          : 0;
+        min-height                         : 0;
+        background-color                   : var(--Vale_BackgroundWhite);
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* UTILITY | Hidden Element */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Hidden {
+        display                            : none !important;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* UTILITY | Body Lock While a Splitter Is Dragged */
+    /* ------------------------------------------------------------ */
+    body.VghLantern__Editor__IsResizing {
+        cursor                             : col-resize;
+        user-select                        : none;
+    }
+
+    body.VghLantern__Editor__IsResizing--row {
+        cursor                             : row-resize;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Resize Handles
+ * ----------------------------------------------------------------------------- */
+
+    /* HANDLE | Shared Splitter Chrome */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ResizeHandle {
+        position                           : relative;
+        z-index                            : calc(var(--VghLantern_ViewportOverlayZIndex) + 1);
+        flex                               : 0 0 auto;
+        background-color                   : var(--Vale_BorderLight);
+        transition                         : background-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Editor__ResizeHandle:hover,
+    .VghLantern__Editor__ResizeHandle--dragging {
+        background-color                   : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HANDLE | Column Splitter (Vertical Bar) */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ResizeHandle--col {
+        width                              : 4px;
+        cursor                             : col-resize;
+        touch-action                       : none;
+    }
+
+    .VghLantern__Editor__ResizeHandle--col::after {
+        content                            : '';
+        position                           : absolute;
+        top                                : 0;
+        bottom                             : 0;
+        left                               : -3px;
+        width                              : 10px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HANDLE | Row Splitter (Horizontal Bar) */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ResizeHandle--row {
+        height                             : 4px;
+        cursor                             : row-resize;
+        touch-action                       : none;
+    }
+
+    .VghLantern__Editor__ResizeHandle--row::after {
+        content                            : '';
+        position                           : absolute;
+        left                               : 0;
+        right                              : 0;
+        top                                : -3px;
+        height                             : 10px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Global Bar
+ * ----------------------------------------------------------------------------- */
+
+    /* BAR | Editor Global Bar */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LanternEditor__GlobalBar {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Medium);
+        flex                               : 0 0 auto;
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* META | Project Title Block */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarMeta {
+        display                            : flex;
+        flex-direction                     : column;
+        min-width                          : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* META | Project Name */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarTitle {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* META | Project Code and Client */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarSubtitle {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Lantern Tab Strip */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__LanternTabs {
+        display                            : flex;
+        align-items                        : stretch;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        overflow-x                         : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Single Lantern Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__LanternTab {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        background-color                   : var(--Vale_BackgroundLight);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        white-space                        : nowrap;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             color var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Lantern Tab Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__LanternTab:hover {
+        background-color                   : var(--Vale_HoverBackground);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Active Lantern Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__LanternTab--active {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+        border-color                       : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Bar Button Group */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarActions {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        margin-left                        : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Bar Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarBtn {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderPrimary);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             color var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Bar Button Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarBtn:hover {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Bar Button Active State */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__BarBtn--active {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--VghLantern_AccentBlue);
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Viewport Hosts and Preview Split
+ * ----------------------------------------------------------------------------- */
+
+    /* HOST | 2D Viewport Host */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport2dHost {
+        position                           : relative;
+        display                            : flex;
+        flex-direction                     : column;
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        min-height                         : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HOST | 3D Viewport Host */
+    /* ------------------------------------------------------------ */
+    /* Sized only when the preview panel carries a split class, so the panel
+       collapses cleanly back to a single 2D surface when 3D is switched off. */
+    .VghLantern__Editor__Viewport3dHost {
+        position                           : relative;
+        flex                               : 0 0 auto;
+        min-width                          : 0;
+        min-height                         : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SPLIT | Stacked 2D Over 3D */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LanternEditor__PreviewPanel.VghLantern__Editor__Preview--splitVertical {
+        flex-direction                     : column;
+    }
+
+    #VghLantern__LanternEditor__PreviewPanel.VghLantern__Editor__Preview--splitVertical
+    .VghLantern__Editor__Viewport3dHost {
+        flex                               : 0 0 var(--VghLantern_Editor3dSharePct, 40%);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SPLIT | Side By Side 2D and 3D */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LanternEditor__PreviewPanel.VghLantern__Editor__Preview--splitHorizontal {
+        flex-direction                     : row;
+    }
+
+    #VghLantern__LanternEditor__PreviewPanel.VghLantern__Editor__Preview--splitHorizontal
+    .VghLantern__Editor__Viewport3dHost {
+        flex                               : 0 0 var(--VghLantern_Editor3dSharePct, 40%);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WRAPPER | 2D Viewport Chrome */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport2d {
+        display                            : flex;
+        flex-direction                     : column;
+        height                             : 100%;
+        min-height                         : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* WRAPPER | 3D Viewport Chrome */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport3d {
+        display                            : flex;
+        flex-direction                     : column;
+        height                             : 100%;
+        min-height                         : 0;
+        background-color                   : var(--VghLantern_ThreeViewportBackdrop);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CANVAS | 2D Drawing Surface Host */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport2dCanvas {
+        position                           : relative;
+        flex                               : 1 1 0;
+        min-height                         : 0;
+        min-width                          : 0;
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANES | Primary / Optional Dual 2D Surfaces */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport2dPanes {
+        display                            : flex;
+        flex-direction                     : column;
+        flex                               : 1 1 0;
+        min-height                         : 0;
+        min-width                          : 0;
+    }
+
+    .VghLantern__Editor__Viewport2dPanes--dualHorizontal {
+        flex-direction                     : row;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANE | Single 2D View Slot */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport2dPane {
+        position                           : relative;
+        display                            : flex;
+        flex-direction                     : column;
+        flex                               : 1 1 0;
+        min-height                         : 0;
+        min-width                          : 0;
+    }
+
+    .VghLantern__Editor__Viewport2dPanes--dual
+    .VghLantern__Editor__Viewport2dPane--secondary {
+        flex                               : 0 0 var(--VghLantern_Editor2dDualSharePct, 50%);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BAR | Secondary Pane View Picker */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport2dSecondaryBar {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        flex                               : 0 0 auto;
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__Editor__Viewport2dSecondaryLabel {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__Editor__Viewport2dSecondarySelect {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CANVAS | 3D Renderer Host */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport3dCanvas {
+        position                           : relative;
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+        overflow                           : hidden;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* STATE | 3D Pending Message */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__Viewport3dPending {
+        margin                             : 0;
+        padding                            : var(--Vale_Spacing_Large);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | View Tabs and Viewport Toolbar
+ * ----------------------------------------------------------------------------- */
+
+    /* TABS | Plan and Elevation Tab Strip */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewTabs {
+        display                            : flex;
+        align-items                        : stretch;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        flex                               : 0 0 auto;
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Single View Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewTab {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Medium);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        background-color                   : transparent;
+        border                             : none;
+        border-bottom                      : 2px solid transparent;
+        cursor                             : pointer;
+        transition                         : color var(--Vale_Transition_Fast),
+                                             border-color var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | View Tab Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewTab:hover {
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Active View Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewTab--active {
+        color                              : var(--Vale_PrimaryBrand);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        border-bottom-color                : var(--VghLantern_NavActiveTab);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Floating Viewport Toolbar */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewportToolbar {
+        position                           : absolute;
+        right                              : var(--Vale_Spacing_Small);
+        bottom                             : var(--Vale_Spacing_Small);
+        z-index                            : var(--VghLantern_ViewportOverlayZIndex);
+        display                            : flex;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+        background-color                   : var(--VghLantern_ThreeOverlayPanel);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : var(--VghLantern_ViewportOverlayShadow);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Viewport Tool Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewportToolBtn {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_PrimaryBrand);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        white-space                        : nowrap;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             color var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Viewport Tool Button Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewportToolBtn:hover {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+        border-color                       : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Viewport Tool Button Active State */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__ViewportToolBtn--active {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--VghLantern_AccentBlue);
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Warning Strip
+ * ----------------------------------------------------------------------------- */
+
+    /* HOST | Warnings Container */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__WarningsHost {
+        flex                               : 0 0 auto;
+        max-height                         : 30%;
+        padding                            : var(--Vale_Spacing_Small);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        overflow-y                         : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LIST | Warning List */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__List {
+        margin                             : 0;
+        padding                            : 0;
+        list-style                         : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ITEM | Warning Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Item {
+        display                            : flex;
+        align-items                        : flex-start;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+        border-left                        : 3px solid var(--Vale_BorderLight);
+        background-color                   : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ITEM | Warning Row Spacing */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Item + .VghLantern__Warnings__Item {
+        margin-top                         : calc(var(--Vale_Spacing_Small) / 2);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ITEM | Error Severity */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Item--error {
+        border-left-color                  : var(--VghLantern_ErrorRed);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ITEM | Warning Severity */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Item--warning {
+        border-left-color                  : var(--VghLantern_WarningOrange);
+        background-color                   : var(--VghLantern_WarningBackground);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ITEM | Info Severity */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Item--info {
+        border-left-color                  : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BADGE | Severity Label */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Badge {
+        flex                               : 0 0 auto;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MESSAGE | Warning Text */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Message {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        line-height                        : 1.4;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* STATE | No Warnings */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Empty {
+        margin                             : 0;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--VghLantern_SuccessGreen);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Control Panel Shell and Sections
+ * ----------------------------------------------------------------------------- */
+
+    /* HOST | Controls Scroll Container */
+    /* ------------------------------------------------------------ */
+    /* flex-basis 0 is required so the host shrinks inside the column and
+       overflow-y can scroll; basis auto grows with content and never scrolls. */
+    .VghLantern__Editor__ControlsHost {
+        flex                               : 1 1 0;
+        min-height                         : 0;
+        overflow-x                         : hidden;
+        overflow-y                         : auto;
+        overscroll-behavior                : contain;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Control Panel Root */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel {
+        display                            : flex;
+        flex-direction                     : column;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Accordion Section */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Section {
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Section Header */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__SectionHeader {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        width                              : 100%;
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        text-align                         : left;
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : none;
+        cursor                             : pointer;
+        transition                         : background-color var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Section Header Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__SectionHeader:hover {
+        background-color                   : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Chevron Indicator */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__SectionChevron {
+        flex                               : 0 0 auto;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        transition                         : transform var(--Vale_Transition_Fast);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Chevron Rotated When Open */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Section--open .VghLantern__ControlPanel__SectionChevron {
+        transform                          : rotate(90deg);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Section Body */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__SectionBody {
+        display                            : none;
+        padding                            : 0 var(--Vale_Spacing_Medium) var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Section Body Shown When Open */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Section--open .VghLantern__ControlPanel__SectionBody {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Control Rows
+ * ----------------------------------------------------------------------------- */
+
+    /* CONTROL | Control Wrapper */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Control {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CONTROL | Control Label */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__ControlLabel {
+        display                            : block;
+        margin-bottom                      : calc(var(--Vale_Spacing_Small) / 2);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CONTROL | Input Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__ControlRow {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CONTROL | Explanatory Hint */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__ControlHint {
+        display                            : block;
+        margin-top                         : calc(var(--Vale_Spacing_Small) / 2);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        line-height                        : 1.35;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Range Slider */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Slider {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        accent-color                       : var(--Vale_PrimaryBrand);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Numeric Entry Beside Slider */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Numeric {
+        flex                               : 0 0 auto;
+        width                              : calc(72px * var(--Vale_UIScale));
+        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        text-align                         : right;
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Numeric Entry Focus */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Numeric:focus {
+        outline                            : none;
+        border-color                       : var(--Vale_BorderPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LABEL | Unit Suffix */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Unit {
+        flex                               : 0 0 auto;
+        min-width                          : calc(28px * var(--Vale_UIScale));
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Toggle Checkbox */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Toggle {
+        flex                               : 0 0 auto;
+        width                              : calc(16px * var(--Vale_UIScale));
+        height                             : calc(16px * var(--Vale_UIScale));
+        accent-color                       : var(--Vale_PrimaryBrand);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOGGLE | Clickable Track Label */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__ToggleTrack {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Select Dropdown */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Select {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Select Focus */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Select:focus {
+        outline                            : none;
+        border-color                       : var(--Vale_BorderPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUP | Expandable Control Group */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Group {
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUP | Expandable Group Body */
+    /* ------------------------------------------------------------ */
+    /* Indented and ruled so a nested control reads as belonging to its toggle. */
+    .VghLantern__ControlPanel__GroupBody {
+        margin-top                         : calc(var(--Vale_Spacing_Small) / 2);
+        padding-left                       : var(--Vale_Spacing_Medium);
+        border-left                        : 2px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Empty States
+ * ----------------------------------------------------------------------------- */
+
+    /* STATE | Control Panel Empty State */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__EmptyState,
+    .VghLantern__Editor__EmptyState {
+        margin                             : 0;
+        padding                            : var(--Vale_Spacing_Large) var(--Vale_Spacing_Medium);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

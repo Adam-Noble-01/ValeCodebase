@@ -1,0 +1,88 @@
+{
+    "VghLantern__ProjectFile__Metadata": {
+        "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "VghLantern__ProjectFile__Metadata__ProjectCode": "6969",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "David Brent",
+        "VghLantern__ProjectFile__Metadata__DocumentName": "Brent House Lantern - Scheme 01",
+        "VghLantern__ProjectFile__Metadata__ClientName": "",
+        "VghLantern__ProjectFile__Metadata__SiteAddress": "",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "VghLantern__ProjectFile__Metadata__DateCreated": "2026-07-30",
+        "VghLantern__ProjectFile__Metadata__DateModified": "2026-07-30",
+        "VghLantern__ProjectFile__Metadata__DateIssued": "",
+        "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
+        "VghLantern__ProjectFile__Metadata__Author": "",
+        "VghLantern__ProjectFile__Metadata__SchemaVersion": "1.0.0"
+    },
+    "VghLantern__ProjectFile__GlobalSettings": {
+        "VghLantern__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all lanterns.",
+        "VghLantern__ProjectFile__GlobalSettings__FrameFinish": "",
+        "VghLantern__ProjectFile__GlobalSettings__GlazingSpec": "",
+        "VghLantern__ProjectFile__GlobalSettings__DrawingScaleRef": "",
+        "VghLantern__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "VghLantern__ProjectFile__Lanterns": [
+        {
+            "Lantern__Identity__Config": {
+                "Lantern__Identity__Config__Id": "ltn_309499_0",
+                "Lantern__Identity__Config__Title": "",
+                "Lantern__Identity__Config__Reference": "",
+                "Lantern__Identity__Config__SortOrder": 0,
+                "Lantern__Identity__Config__Quantity": 1
+            },
+            "Lantern__Form__Config": {
+                "Lantern__Form__Config__RoofForm": "Hipped Ridge",
+                "Lantern__Form__Config__PlanRotationDeg": 0
+            },
+            "Lantern__Dimensions__Config": {
+                "Lantern__Dimensions__Config__WidthMm": 2400,
+                "Lantern__Dimensions__Config__DepthMm": 1400,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 50
+            },
+            "Lantern__RoofPitch__Config": {
+                "Lantern__RoofPitch__Config__DriveMode": "angle",
+                "Lantern__RoofPitch__Config__PitchDegrees": 25,
+                "Lantern__RoofPitch__Config__RidgeRiseMm": 0
+            },
+            "Lantern__GlazingBars__Config": {
+                "Lantern__GlazingBars__Config__DivisionMode": "count",
+                "Lantern__GlazingBars__Config__BarCountLongSlope": 3,
+                "Lantern__GlazingBars__Config__BarCountShortSlope": 1,
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
+                "Lantern__GlazingBars__Config__BarProfileId": "",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+            },
+            "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "",
+                "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
+                "Lantern__RidgeAndHips__Config__CrestingEnabled": false
+            },
+            "Lantern__Finials__Config": {
+                "Lantern__Finials__Config__Enabled": true,
+                "Lantern__Finials__Config__FinialComponentId": "",
+                "Lantern__Finials__Config__FinialBaseComponentId": "",
+                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
+                "Lantern__Finials__Config__PlaceAtApex": false
+            },
+            "Lantern__KerbAndBase__Config": {
+                "Lantern__KerbAndBase__Config__KerbHeightMm": 150,
+                "Lantern__KerbAndBase__Config__KerbProfileId": "",
+                "Lantern__KerbAndBase__Config__EavesProfileId": "",
+                "Lantern__KerbAndBase__Config__ClosingProfileId": ""
+            },
+            "Lantern__Ventilation__Config": {
+                "Lantern__Ventilation__Config__Enabled": false,
+                "Lantern__Ventilation__Config__VentComponentId": "",
+                "Lantern__Ventilation__Config__VentCount": 0,
+                "Lantern__Ventilation__Config__OperationType": ""
+            },
+            "Lantern__FinishAndGlazing__Config": {
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "",
+                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": ""
+            }
+        }
+    ]
+}

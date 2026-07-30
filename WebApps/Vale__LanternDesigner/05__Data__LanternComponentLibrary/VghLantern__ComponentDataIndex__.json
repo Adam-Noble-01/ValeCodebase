@@ -1,0 +1,108 @@
+{
+    "VghLantern__ComponentDataIndex__Meta": {
+        "GeneratedBy"                       : "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py",
+        "GeneratedDate"                     : "30-Jul-2026 at 11:40",
+        "SchemaVersion"                     : "1.0.0",
+        "LibraryRoot"                       : "05__Data__LanternComponentLibrary/",
+        "AssetCount"                        : 4,
+        "DoNotEditByHand"                   : true
+    },
+
+    "VghLantern__ComponentDataIndex__Categories": [
+        {
+            "CategoryId"                    : "VGH_FIN0000__Finials",
+            "CategoryName"                  : "Finials",
+            "FolderName"                    : "VGH_FIN0000__Finials",
+            "SortOrder"                     : 10,
+            "Description"                   : "Turned and cast finials placed at ridge ends and at the apex."
+        },
+        {
+            "CategoryId"                    : "VGH_FIN0100__FinialBases",
+            "CategoryName"                  : "Finial Bases",
+            "FolderName"                    : "VGH_FIN0100__FinialBases",
+            "SortOrder"                     : 20,
+            "Description"                   : "Base blocks seating a finial onto the ridge cap."
+        },
+        {
+            "CategoryId"                    : "VGH_CRS0000__Cresting",
+            "CategoryName"                  : "Cresting",
+            "FolderName"                    : "VGH_CRS0000__Cresting",
+            "SortOrder"                     : 30,
+            "Description"                   : "Repeating decorative cresting running along the ridge."
+        },
+        {
+            "CategoryId"                    : "VGH_VNT0000__Ventilation",
+            "CategoryName"                  : "Ventilation",
+            "FolderName"                    : "VGH_VNT0000__Ventilation",
+            "SortOrder"                     : 40,
+            "Description"                   : "Opening roof vents replacing a glazing pane on a slope."
+        }
+    ],
+
+    "VghLantern__ComponentDataIndex__Assets": [
+        {
+            "AssetId"                       : "VGH_FIN0001",
+            "Name"                          : "Finial - Ball and Spike 320mm",
+            "CategoryId"                    : "VGH_FIN0000__Finials",
+            "CategoryName"                  : "Finials",
+            "JsonUrl"                       : "VGH_FIN0000__Finials/VghLantern__Component__VGH_FIN0001__BallAndSpikeFinial__.json",
+            "PreviewUrl"                    : null,
+            "ApplicableRoles"               : ["finial"],
+            "Has2dProfile"                  : true,
+            "Has3d"                         : false,
+            "Glb3dUrl"                      : null,
+            "OverallHeightMm"               : 320.0,
+            "SeatingWidthMm"                : 92.0,
+            "Revision"                      : "A",
+            "IsDefaultForRole"              : true
+        },
+        {
+            "AssetId"                       : "VGH_FIN0101",
+            "Name"                          : "Finial Base - Moulded 130mm",
+            "CategoryId"                    : "VGH_FIN0100__FinialBases",
+            "CategoryName"                  : "Finial Bases",
+            "JsonUrl"                       : "VGH_FIN0100__FinialBases/VghLantern__Component__VGH_FIN0101__MouldedFinialBase__.json",
+            "PreviewUrl"                    : null,
+            "ApplicableRoles"               : ["finialBase"],
+            "Has2dProfile"                  : true,
+            "Has3d"                         : false,
+            "Glb3dUrl"                      : null,
+            "OverallHeightMm"               : 104.0,
+            "SeatingWidthMm"                : 130.0,
+            "Revision"                      : "A",
+            "IsDefaultForRole"              : true
+        },
+        {
+            "AssetId"                       : "VGH_CRS0001",
+            "Name"                          : "Cresting - Fleur 150mm Pitch",
+            "CategoryId"                    : "VGH_CRS0000__Cresting",
+            "CategoryName"                  : "Cresting",
+            "JsonUrl"                       : "VGH_CRS0000__Cresting/VghLantern__Component__VGH_CRS0001__FleurCresting__.json",
+            "PreviewUrl"                    : null,
+            "ApplicableRoles"               : ["cresting"],
+            "Has2dProfile"                  : true,
+            "Has3d"                         : false,
+            "Glb3dUrl"                      : null,
+            "OverallHeightMm"               : 140.0,
+            "RepeatPitchMm"                 : 150.0,
+            "Revision"                      : "A",
+            "IsDefaultForRole"              : true
+        },
+        {
+            "AssetId"                       : "VGH_VNT0001",
+            "Name"                          : "Roof Vent - Manual Winder 600 x 900",
+            "CategoryId"                    : "VGH_VNT0000__Ventilation",
+            "CategoryName"                  : "Ventilation",
+            "JsonUrl"                       : "VGH_VNT0000__Ventilation/VghLantern__Component__VGH_VNT0001__ManualRoofVent__.json",
+            "PreviewUrl"                    : null,
+            "ApplicableRoles"               : ["vent"],
+            "Has2dProfile"                  : true,
+            "Has3d"                         : false,
+            "Glb3dUrl"                      : null,
+            "OpeningWidthMm"                : 600.0,
+            "OpeningHeightMm"               : 900.0,
+            "Revision"                      : "A",
+            "IsDefaultForRole"              : true
+        }
+    ]
+}

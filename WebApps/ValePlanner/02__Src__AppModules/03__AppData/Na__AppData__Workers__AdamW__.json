@@ -2731,16 +2731,56 @@
           "id": "new-1785395650268",
           "date": "2026-07-29",
           "startTime": "08:00",
-          "endTime": "08:45",
+          "endTime": "08:30",
           "title": "Meeting |  JW",
           "color": "na-shift-color-purple"
         },
         {
           "id": "new-1785395663926",
           "date": "2026-07-29",
-          "startTime": "08:45",
-          "endTime": "10:30",
+          "startTime": "08:30",
+          "endTime": "09:30",
           "title": "Whitecard |  Harris",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1785401663263",
+          "date": "2026-07-29",
+          "startTime": "09:30",
+          "endTime": "09:45",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1785401671590",
+          "date": "2026-07-29",
+          "startTime": "09:45",
+          "endTime": "10:00",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1785401833188",
+          "date": "2026-07-29",
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "title": "Amend |  Harris",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1785416151187",
+          "date": "2026-08-02",
+          "startTime": "12:00",
+          "endTime": "13:15",
+          "title": "New Shift",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1785416151415",
+          "date": "2026-07-29",
+          "startTime": "12:00",
+          "endTime": "13:00",
+          "title": "New Shift",
           "color": "na-shift-color-cyan"
         }
       ]

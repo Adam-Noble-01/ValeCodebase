@@ -1,0 +1,135 @@
+{
+    "VghLantern__DrawingEditor__Config": {
+        "VghLantern__DrawingEditor__Config__Description": "System configuration for the Drawing Editor mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('DrawingEditor'). Sheet sizes, frame slots, scale steps and titleblock rows all live here so no sheet dimension is ever hardcoded in a module.",
+
+        "VghLantern__DrawingEditor__Config__Sheet": {
+            "DefaultSheetSize"          : "A3",
+            "DefaultOrientation"        : "landscape",
+            "MarginMm"                  : 10,
+            "TitleBlockHeightMm"        : 22,
+            "BorderStrokeMm"            : 0.5,
+            "ScreenPixelsPerMm"         : 3.2,
+            "ScreenPixelsPerMmNote"     : "Screen zoom only. Printed output is driven by the PDF exporter's target DPI, never by this value.",
+            "SheetSizes": {
+                "A4" : { "Label": "A4", "WidthMm": 297, "HeightMm": 210 },
+                "A3" : { "Label": "A3", "WidthMm": 420, "HeightMm": 297 },
+                "A2" : { "Label": "A2", "WidthMm": 594, "HeightMm": 420 },
+                "A1" : { "Label": "A1", "WidthMm": 841, "HeightMm": 594 }
+            },
+            "SheetSizesNote"            : "Dimensions are given landscape (long edge first). Portrait orientation swaps them at build time."
+        },
+
+        "VghLantern__DrawingEditor__Config__ViewSlots": [
+            {
+                "Key"          : "frontElevation",
+                "Label"        : "Front Elevation",
+                "Source"       : "env2d",
+                "ViewKey"      : "frontElevation",
+                "ColumnStart"  : 1,
+                "ColumnSpan"   : 1,
+                "RowStart"     : 1,
+                "RowSpan"      : 1,
+                "ShowScale"    : true
+            },
+            {
+                "Key"          : "sideElevation",
+                "Label"        : "Side Elevation",
+                "Source"       : "env2d",
+                "ViewKey"      : "sideElevation",
+                "ColumnStart"  : 2,
+                "ColumnSpan"   : 1,
+                "RowStart"     : 1,
+                "RowSpan"      : 1,
+                "ShowScale"    : true
+            },
+            {
+                "Key"          : "plan",
+                "Label"        : "Plan",
+                "Source"       : "env2d",
+                "ViewKey"      : "plan",
+                "ColumnStart"  : 1,
+                "ColumnSpan"   : 1,
+                "RowStart"     : 2,
+                "RowSpan"      : 1,
+                "ShowScale"    : true
+            },
+            {
+                "Key"          : "threeDimensional",
+                "Label"        : "3D View",
+                "Source"       : "env3d",
+                "PresetKey"    : "isometric",
+                "ColumnStart"  : 2,
+                "ColumnSpan"   : 1,
+                "RowStart"     : 2,
+                "RowSpan"      : 1,
+                "ShowScale"    : false,
+                "ShowScaleNote": "The 3D view is a perspective projection, so quoting a scale beside it would be misleading."
+            }
+        ],
+
+        "VghLantern__DrawingEditor__Config__ViewGrid": {
+            "Columns"                   : 2,
+            "Rows"                      : 2,
+            "GutterMm"                  : 6,
+            "FrameStrokeMm"             : 0.25,
+            "FrameLabelHeightMm"        : 7,
+            "FrameLabelFontSizeMm"      : 3.2,
+            "GridNote"                  : "Slot ColumnStart / RowStart indices are one-based and must fit within Columns x Rows."
+        },
+
+        "VghLantern__DrawingEditor__Config__Scales": {
+            "AvailableScaleDenominators": [5, 10, 20, 25, 50, 100],
+            "PreferredScaleDenominator" : 20,
+            "AutoFitEnabled"            : true,
+            "AutoFitPaddingFactor"      : 1.08,
+            "UniformScaleAcrossViews"   : true,
+            "UniformScaleAcrossViewsNote": "Vale drawings quote one scale for all orthographic views on a sheet, so the fit routine picks the coarsest scale that suits every view rather than fitting each frame independently.",
+            "ScaleLabelPrefix"          : "Scale 1:"
+        },
+
+        "VghLantern__DrawingEditor__Config__TitleBlock": {
+            "ShowValeLogo"              : true,
+            "LogoAssetPath"             : "../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png",
+            "LogoWidthMm"               : 48,
+            "ShowCompanyName"           : false,
+            "CompanyName"               : "",
+            "CompanyNameNote"           : "Left blank - the Vale logo already carries the company identity, so a text line under it only wastes titleblock height.",
+            "DrawnByLabel"              : "Drawn By",
+            "FontSizeLabelMm"           : 2.0,
+            "FontSizeValueMm"           : 2.6,
+            "Rows": [
+                { "Key": "projectName",   "Label": "Project",       "WidthMm": 96 },
+                { "Key": "projectCode",   "Label": "Project Code",  "WidthMm": 40 },
+                { "Key": "clientName",    "Label": "Client",        "WidthMm": 72 },
+                { "Key": "lanternTitle",  "Label": "Element",       "WidthMm": 72 },
+                { "Key": "drawingNumber", "Label": "Drawing No.",   "WidthMm": 44 },
+                { "Key": "revision",      "Label": "Rev",           "WidthMm": 18 },
+                { "Key": "scale",         "Label": "Scale",         "WidthMm": 30 },
+                { "Key": "issueDate",     "Label": "Date",          "WidthMm": 34 }
+            ],
+            "RowsNote"                  : "Row Key maps to a field the TitleBlockRenderer resolves from the project and lantern. An unresolved key renders an empty value box rather than being dropped, so the block layout stays stable."
+        },
+
+        "VghLantern__DrawingEditor__Config__Annotations": {
+            "Enabled"                   : true,
+            "DefaultFontSizeMm"         : 2.8,
+            "DefaultLeaderStrokeMm"     : 0.25,
+            "MaxNotes"                  : 12,
+            "NotesBlockTitle"           : "Notes",
+            "GeneralNotes": [
+                "All dimensions in millimetres unless noted otherwise.",
+                "Do not scale from this drawing; work to figured dimensions.",
+                "Glazing to be installed in accordance with the specification schedule."
+            ],
+            "GeneralNotesNote"          : "Standing notes printed on every sheet. Project-specific notes are added per drawing and stored on the project file."
+        },
+
+        "VghLantern__DrawingEditor__Config__Toolbar": {
+            "ShowSheetSizeSelect"       : true,
+            "ShowOrientationToggle"     : true,
+            "ShowScaleSelect"           : true,
+            "ShowFitButton"             : true,
+            "ShowRefreshButton"         : true
+        }
+    }
+}

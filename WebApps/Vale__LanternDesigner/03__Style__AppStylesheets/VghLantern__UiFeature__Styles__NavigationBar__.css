@@ -1,0 +1,130 @@
+/* =============================================================================
+ * VGHLANTERN - NAVIGATION BAR STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UiFeature__Styles__NavigationBar__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Navigation Bar Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Secondary navigation bar for mode switching
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Horizontal tab bar below the Vale header
+ * - Mode switching buttons for the seven application modes
+ * - Active tab indicator using Vale brand blue
+ * - Breadcrumb-style separators, right-aligned Component Index tab
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Navigation Bar
+ * ----------------------------------------------------------------------------- */
+
+    /* NAV | Navigation Bar Container */
+    /* ------------------------------------------------------------ */
+    #VghLantern__App__NavigationBar {
+        position                           : fixed;
+        top                                : var(--Vale_HeaderHeight);
+        left                               : 0;
+        right                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        height                             : var(--VghLantern_NavHeight);
+        padding                            : 0 var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        z-index                            : calc(var(--Vale_ZIndex_Header) - 1);
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Tab Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavTab {
+        display                            : inline-flex;
+        align-items                        : center;
+        height                             : 100%;
+        padding                            : 0 var(--Vale_Spacing_Medium);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSecondary);
+        background                         : transparent;
+        border                             : none;
+        border-bottom                      : 3px solid transparent;
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Tab Button Hover */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavTab:hover {
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_HoverBackground);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Active Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavTab--active {
+        color                              : var(--Vale_PrimaryBrand);
+        border-bottom-color                : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Disabled Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavTab--disabled {
+        color                              : var(--Vale_BorderLight);
+        cursor                             : not-allowed;
+        opacity                            : 0.5;
+    }
+
+    .VghLantern__App__NavTab--disabled:hover {
+        background                         : transparent;
+        color                              : var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Entry Via Button Only Tab */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavTab--entryViaButtonOnly {
+        cursor                             : default;
+        pointer-events                     : none;
+    }
+
+    .VghLantern__App__NavTab--entryViaButtonOnly:hover {
+        background                         : transparent;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Breadcrumb Separator */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavSeparator {
+        color                              : var(--Vale_BorderLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        margin                             : 0 var(--Vale_Spacing_Small);
+        user-select                        : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* NAV | Spacer */
+    /* ------------------------------------------------------------ */
+    .VghLantern__App__NavSpacer {
+        flex-grow                          : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a ProfilePathTracer export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "PRF_CLS0001",
+        "Na__Asset__Metadata__Name"         : "Closing Section - 45mm Chamfered",
+        "Na__Asset__Metadata__CategoryId"   : "PRF__ClosingSections",
+        "Na__Asset__Metadata__CategoryName" : "Closing Sections",
+        "Na__Asset__Metadata__Description"  : "Chamfered closing section used to trim the junction between the lantern kerb and the surrounding roof finish.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a traced Vale section",
+        "Na__Asset__Metadata__Material"     : "Engineered timber",
+        "Na__Asset__Metadata__Tags"         : ["closing", "trim", "chamfered"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin sits on the closing skeleton line at the underside of the section. X is centred across the member; Y rises to the chamfered top face.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -22.5, "y":  0.0 },
+            { "x":  22.5, "y":  0.0 },
+            { "x":  22.5, "y": 24.0 },
+            { "x":  16.0, "y": 30.0 },
+            { "x": -16.0, "y": 30.0 },
+            { "x": -22.5, "y": 24.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 45.0,
+            "DepthMm"                       : 30.0,
+            "MinX"                          : -22.5,
+            "MaxX"                          : 22.5,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 30.0
+        },
+        "Na__Asset__Profile2D__SectionAreaSqMm" : 1311.0
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__SweepBehaviour": {
+        "Na__Asset__SweepBehaviour__ApplicableRoles"  : ["closing"],
+        "Na__Asset__SweepBehaviour__MitreEnds"        : true,
+        "Na__Asset__SweepBehaviour__RotateToSlope"    : false,
+        "Na__Asset__SweepBehaviour__FaceWidthMm"      : 45.0
+    }
+}

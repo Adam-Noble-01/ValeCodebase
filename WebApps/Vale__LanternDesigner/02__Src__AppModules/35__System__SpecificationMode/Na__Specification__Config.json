@@ -1,0 +1,84 @@
+{
+    "VghLantern__Specification__Config": {
+        "VghLantern__Specification__Config__Description": "System configuration for the Specification mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('Specification'). Section order, table columns and rounding all live here - no schedule column is ever hardcoded in a renderer.",
+
+        "VghLantern__Specification__Config__Document": {
+            "DocumentTitle"             : "Roof Lantern Specification",
+            "ShowProjectHeader"         : true,
+            "ShowGeneratedTimestamp"    : true,
+            "AggregateWhenMultiLantern" : true,
+            "AggregateWhenMultiLanternNote": "With more than one lantern on a project the schedule prints a per-lantern breakdown plus an aggregated works-order summary. A single lantern prints the breakdown only.",
+            "DocumentMaxWidthMm"        : 252,
+            "DocumentMaxWidthNote"      : "A4 portrait width (210 mm) plus 20%. Keeps the on-screen specification reading as a document column rather than a full-bleed web page.",
+            "EmptyStateMessage"         : "Select a lantern in the Lantern Editor to derive a specification."
+        },
+
+        "VghLantern__Specification__Config__Sections": [
+            { "Key": "lanternSchedule",  "Label": "Lantern Schedule",       "Renderer": "schedule",   "Enabled": true, "StartExpanded": true },
+            { "Key": "linearSections",   "Label": "Section Lengths",        "Renderer": "linear",     "Enabled": true, "StartExpanded": true },
+            { "Key": "glazingAreas",     "Label": "Glazing Areas",          "Renderer": "areas",      "Enabled": true, "StartExpanded": true },
+            { "Key": "componentCounts",  "Label": "Components",             "Renderer": "components", "Enabled": true, "StartExpanded": true },
+            { "Key": "finishAndGlazing", "Label": "Finish and Glazing",     "Renderer": "finish",     "Enabled": true, "StartExpanded": true },
+            { "Key": "jobNotes",         "Label": "Job Notes",              "Renderer": "notes",      "Enabled": true, "StartExpanded": true }
+        ],
+        "VghLantern__Specification__Config__SectionsNote": "Renderer keys map to a builder in DocumentModel. Adding a section requires a matching builder; an unknown Renderer is skipped with a console warning rather than breaking the document.",
+
+        "VghLantern__Specification__Config__Tables": {
+            "LinearColumns": [
+                { "Key": "Label",        "Label": "Section",          "Align": "left"  },
+                { "Key": "ProfileId",    "Label": "Profile Ref",      "Align": "left"  },
+                { "Key": "MemberCount",  "Label": "Members",          "Align": "right" },
+                { "Key": "LengthMEach",  "Label": "Length m (each)",  "Align": "right" },
+                { "Key": "LengthMTotal", "Label": "Length m (total)", "Align": "right" }
+            ],
+            "AreaColumns": [
+                { "Key": "Label",        "Label": "Area",             "Align": "left"  },
+                { "Key": "AreaSqMEach",  "Label": "m2 (each)",        "Align": "right" },
+                { "Key": "AreaSqMTotal", "Label": "m2 (total)",       "Align": "right" }
+            ],
+            "ComponentColumns": [
+                { "Key": "Label",       "Label": "Component",        "Align": "left"  },
+                { "Key": "ComponentId", "Label": "Component Ref",    "Align": "left"  },
+                { "Key": "CountEach",   "Label": "Qty (each)",       "Align": "right" },
+                { "Key": "CountTotal",  "Label": "Qty (total)",      "Align": "right" }
+            ],
+            "ScheduleColumns": [
+                { "Key": "Reference",    "Label": "Ref",              "Align": "left"  },
+                { "Key": "Title",        "Label": "Lantern",          "Align": "left"  },
+                { "Key": "RoofFormLabel","Label": "Roof Form",        "Align": "left"  },
+                { "Key": "WidthMm",      "Label": "Width mm",         "Align": "right" },
+                { "Key": "DepthMm",      "Label": "Depth mm",         "Align": "right" },
+                { "Key": "PitchDegrees", "Label": "Pitch deg",        "Align": "right" },
+                { "Key": "Quantity",     "Label": "Qty",              "Align": "right" }
+            ],
+            "ShowTotalsRow"             : true,
+            "EmptyTableMessage"         : "Nothing scheduled in this section."
+        },
+
+        "VghLantern__Specification__Config__Formatting": {
+            "LinearDecimalPlaces"       : 2,
+            "AreaDecimalPlaces"         : 3,
+            "LinearUnitSuffix"          : " m",
+            "AreaUnitSuffix"            : " m2",
+            "DimensionUnitSuffix"       : " mm",
+            "PitchUnitSuffix"           : " deg",
+            "BlankValuePlaceholder"     : "-"
+        },
+
+        "VghLantern__Specification__Config__JobNotes": {
+            "Enabled"                   : true,
+            "MaxCharacters"             : 2000,
+            "PlaceholderText"           : "Job-specific notes for the workshop and the client...",
+            "AutosaveDebounceMs"        : 900,
+            "AutosaveDebounceMsNote"    : "Notes write into the project file, which triggers an autosave. Debounced so typing a paragraph is one save rather than one per keystroke.",
+            "HelperText"                : "Notes print on the specification document and on every drawing sheet."
+        },
+
+        "VghLantern__Specification__Config__RoofFormLabels": {
+            "hipped-ridge" : "Hipped with Ridge",
+            "pyramid"      : "Pyramid",
+            "gable"        : "Gable",
+            "mono-pitch"   : "Mono Pitch"
+        }
+    }
+}

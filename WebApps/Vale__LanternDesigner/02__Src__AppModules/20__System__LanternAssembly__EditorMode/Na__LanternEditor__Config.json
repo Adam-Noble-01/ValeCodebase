@@ -1,0 +1,91 @@
+{
+    "VghLantern__LanternEditor__Config": {
+        "VghLantern__LanternEditor__Config__Description": "System configuration for the Lantern Assembly Editor mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('LanternEditor'). Control bounds live here so no slider limit is ever hardcoded in a module.",
+
+        "VghLantern__LanternEditor__Config__Layout": {
+            "ShowGlobalBar"                 : true,
+            "ShowLanternTabs"               : true,
+            "ResizeHandlesEnabled"          : true,
+            "ControlsPanelMinWidthPx"       : 320,
+            "ControlsPanelMaxWidthPx"       : 640,
+            "ControlsPanelDefaultWidthPx"   : 420,
+            "PreviewPanelMinWidthPx"        : 280,
+            "Split3dOrientation"            : "horizontal",
+            "Split3dSharePct"               : 40,
+            "Split3dShareMinPct"            : 25,
+            "Split3dShareMaxPct"            : 70,
+            "SplitNote"                     : "Drag the resize handles to live-adjust the controls column width and the 2D/3D share. Split3dOrientation horizontal places drawing left and 3D right; vertical stacks them."
+        },
+
+        "VghLantern__LanternEditor__Config__ViewTabs": [
+            { "Key": "plan",           "Label": "Plan",           "Hotkey": "1" },
+            { "Key": "frontElevation", "Label": "Front Elevation", "Hotkey": "2" },
+            { "Key": "sideElevation",  "Label": "Side Elevation",  "Hotkey": "3" }
+        ],
+
+        "VghLantern__LanternEditor__Config__Sections": [
+            { "Key": "formAndSize",      "Label": "Form and Size",       "DefaultOpen": true,  "Enabled": true },
+            { "Key": "roofPitch",        "Label": "Roof Pitch",          "DefaultOpen": true,  "Enabled": true },
+            { "Key": "glazingBars",      "Label": "Glazing Bars",        "DefaultOpen": false, "Enabled": true },
+            { "Key": "ridgeAndHips",     "Label": "Ridge and Hips",      "DefaultOpen": false, "Enabled": true },
+            { "Key": "finials",          "Label": "Finials",             "DefaultOpen": false, "Enabled": true },
+            { "Key": "kerbAndBase",      "Label": "Kerb and Base",       "DefaultOpen": false, "Enabled": true },
+            { "Key": "ventilation",      "Label": "Ventilation",         "DefaultOpen": false, "Enabled": true },
+            { "Key": "finishAndGlazing", "Label": "Finish and Glazing",  "DefaultOpen": false, "Enabled": true }
+        ],
+
+        "VghLantern__LanternEditor__Config__ControlBounds": {
+            "BoundsNote"            : "Min/Max mirror VghLantern__Validation__Config so a slider can never propose a value the ConstraintResolver would reject. Step values are the increments Vale technical staff work to on the shop floor.",
+            "WidthMm"               : { "Min": 600, "Max": 8000, "Step": 10 },
+            "DepthMm"               : { "Min": 600, "Max": 6000, "Step": 10 },
+            "EavesProjectionMm"     : { "Min": 0,   "Max": 300,  "Step": 5  },
+            "PitchDegrees"          : { "Min": 10,  "Max": 45,   "Step": 0.5 },
+            "RidgeRiseMm"           : { "Min": 100, "Max": 2500, "Step": 10 },
+            "KerbHeightMm"          : { "Min": 0,   "Max": 600,  "Step": 10 },
+            "BarCountLongSlope"     : { "Min": 0,   "Max": 20,   "Step": 1  },
+            "TargetSpacingMm"       : { "Min": 200, "Max": 900,  "Step": 10 },
+            "VentCount"             : { "Min": 0,   "Max": 12,   "Step": 1  },
+            "Quantity"              : { "Min": 1,   "Max": 99,   "Step": 1  }
+        },
+
+        "VghLantern__LanternEditor__Config__ControlBehaviour": {
+            "LiveUpdateWhileDragging"   : true,
+            "SliderDebounceMs"          : 40,
+            "ShowNumericEntryBeside"    : true,
+            "ShowUnitSuffix"            : true,
+            "CollapseOthersOnOpen"      : false,
+            "EmptyOptionLabel"          : "- none selected -",
+            "BehaviourNote"             : "LiveUpdateWhileDragging redraws on input rather than change. SliderDebounceMs only coalesces the redraw, never the config write, so the value the user releases on is always the value stored."
+        },
+
+        "VghLantern__LanternEditor__Config__VentOperationTypes": [
+            "Manual Winder",
+            "Electric Actuator",
+            "Thermostatic Actuator"
+        ],
+
+        "VghLantern__LanternEditor__Config__Viewport2d": {
+            "DefaultView"              : "plan",
+            "ShowDimensions"           : true,
+            "ShowGlazingBars"          : true,
+            "ShowProfileTraces"        : false,
+            "ShowFinials"              : true,
+            "DualViewEnabledByDefault" : false,
+            "DualViewOrientation"      : "vertical",
+            "DualViewSecondaryDefault" : "frontElevation",
+            "DualViewSharePct"         : 50,
+            "DualViewShareMinPct"      : 25,
+            "DualViewShareMaxPct"      : 75,
+            "DualViewNote"             : "Dual view stacks a second 2D surface under the primary so plan and an elevation can be compared at once. Orientation vertical = stacked; horizontal = side by side.",
+            "ProfileTraceNote"         : "Profile traces are off by default in the editor because they read as clutter at configurator zoom levels. The drawing editor turns them on for the issued sheet."
+        },
+
+        "VghLantern__LanternEditor__Config__Viewport3d": {
+            "EnabledByDefault"     : false,
+            "DefaultPreset"        : "isometric",
+            "ShowPresetButtons"    : true,
+            "ShowZoomExtents"      : true,
+            "EnabledByDefaultNote" : "The 3D panel is opt-in so the editor stays light on first open; the 3D stack is not even fetched until the user asks for it."
+        }
+    }
+}

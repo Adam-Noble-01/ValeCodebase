@@ -1,0 +1,133 @@
+{
+    "VghLantern__Env3d__Config": {
+        "VghLantern__Env3d__Config__Meta": {
+            "ConfigLabel"                     : "3D Three.js Render Pipeline",
+            "ConfigVersion"                   : "0.1.0",
+            "ConfigNote"                      : "Structural and numeric values only. World units are metres: 1 Three unit = 1000 mm. All mm-to-world conversion goes through VghLantern__AppUtils__UnitConverter.",
+            "ThreeRevision"                   : "160",
+            "WorldUnitsPerMillimetre"         : 0.001
+        },
+
+        "VghLantern__Env3d__Config__Renderer": {
+            "Antialias"                       : true,
+            "MaxPixelRatio"                   : 2,
+            "ClearColorCssVar"                : "--VghLantern_ThreeViewportBackdrop",
+            "ClearColorFallback"              : "#dfe3e6",
+            "ShadowsEnabled"                  : false,
+            "PreserveDrawingBuffer"           : true,
+            "PreserveDrawingBufferNote"       : "Required so SnapshotExporter can read the canvas for drawing sheet placement.",
+            "ToneMappingExposure"             : 1.0,
+            "OnDemandRendering"               : true,
+            "OnDemandRenderingNote"           : "The loop only draws when something invalidates it, so an idle 3D panel costs nothing."
+        },
+
+        "VghLantern__Env3d__Config__Camera": {
+            "FieldOfViewDegrees"              : 38,
+            "NearPlaneMm"                     : 50,
+            "FarPlaneMm"                      : 60000,
+            "DefaultOrbitAzimuthDegrees"      : 38,
+            "DefaultOrbitElevationDegrees"    : 24,
+            "FitPaddingFactor"                : 1.35,
+            "MinDistanceMm"                   : 400,
+            "MaxDistanceMm"                   : 40000,
+            "DampingFactor"                   : 0.08,
+            "EnablePan"                       : true,
+            "MaxPolarAngleDegrees"            : 88,
+            "MaxPolarAngleNote"               : "Clamped just above the horizon so the model is never viewed from underneath."
+        },
+
+        "VghLantern__Env3d__Config__PresetViews": {
+            "isometric"      : { "Label": "Isometric",       "AzimuthDegrees":  38, "ElevationDegrees": 24 },
+            "frontElevation" : { "Label": "Front Elevation", "AzimuthDegrees":   0, "ElevationDegrees":  0 },
+            "sideElevation"  : { "Label": "Side Elevation",  "AzimuthDegrees":  90, "ElevationDegrees":  0 },
+            "plan"           : { "Label": "Plan",            "AzimuthDegrees":   0, "ElevationDegrees": 89 }
+        },
+
+        "VghLantern__Env3d__Config__Lighting": {
+            "AmbientIntensity"                : 0.62,
+            "AmbientColour"                   : "#ffffff",
+            "KeyLightIntensity"               : 1.05,
+            "KeyLightColour"                  : "#fffaf2",
+            "KeyLightAzimuthDegrees"          : 52,
+            "KeyLightElevationDegrees"        : 46,
+            "FillLightIntensity"              : 0.38,
+            "FillLightColour"                 : "#eef3f7",
+            "FillLightAzimuthDegrees"         : -120,
+            "FillLightElevationDegrees"       : 22,
+            "GroundBounceIntensity"           : 0.22,
+            "GroundBounceColour"              : "#d8dce0"
+        },
+
+        "VghLantern__Env3d__Config__Materials": {
+            "FrameColourFallback"             : "#f2efe9",
+            "FrameRoughness"                  : 0.58,
+            "FrameMetalness"                  : 0.05,
+            "GlazingColour"                   : "#a8c8d8",
+            "GlazingOpacity"                  : 0.22,
+            "GlazingRoughness"                : 0.08,
+            "GlazingDoubleSided"              : true,
+            "KerbColour"                      : "#d9d5cf",
+            "SkeletonLineColour"              : "#172b3a",
+            "MaterialsNote"                   : "PureEngine-equivalent simple PBR. Finish colours are resolved per lantern from VghLantern__AppConfig__Main__.json Finish options, never hardcoded here."
+        },
+
+        "VghLantern__Env3d__Config__MeshBuilders": {
+            "SkeletonMode"                    : "profileSweep",
+            "SkeletonModeOptions"             : ["lines", "profileSweep"],
+            "SkeletonModeNote"                : "'lines' draws centrelines only and is the cheap fallback when a profile is missing; 'profileSweep' extrudes the real section.",
+            "SweepSegmentsPerMember"          : 1,
+            "SweepCapEnds"                    : true,
+            "SweepMiterJoints"                : false,
+            "SweepMiterJointsNote"            : "Mitred joints are a later refinement; butt joints read correctly at review scale.",
+            "FallbackBarWidthMm"              : 40,
+            "FallbackBarDepthMm"              : 55,
+            "PlaceholderSectionOnMissingProfile" : true,
+            "PlaceholderSectionNote"          : "When a role has no profile assigned, sweep a plain rectangle of the fallback size so the member still reads as solid instead of vanishing.",
+            "GlazingInsetMm"                  : 6,
+            "GlazingInsetNote"                : "Glass sits back from the bar face so the frame reads as frame rather than coplanar with the glass.",
+            "MaxSweptMembers"                 : 900,
+            "MaxSweptMembersNote"             : "Guard against a pathological bar count locking the browser; excess members fall back to lines."
+        },
+
+        "VghLantern__Env3d__Config__ComponentLoader": {
+            "Enabled"                         : true,
+            "CacheLoadedGlb"                  : true,
+            "MaxConcurrentLoads"              : 3,
+            "PlaceholderOnMissingGlb"         : true,
+            "PlaceholderHeightMm"             : 300,
+            "PlaceholderRadiusMm"             : 45,
+            "ScaleGlbFromMillimetres"         : true,
+            "ScaleGlbFromMillimetresNote"     : "GLBs exported by the SketchUp CAD object builder are authored in mm, so they need the standard mm-to-world scale on import."
+        },
+
+        "VghLantern__Env3d__Config__Snapshot": {
+            "DefaultWidthPx"                  : 2000,
+            "DefaultHeightPx"                 : 1400,
+            "TransparentBackground"           : true,
+            "OutputMimeType"                  : "image/png",
+            "SupersampleFactor"               : 2,
+            "SupersampleFactorNote"           : "Rendered at this multiple then downscaled, so the 3D view on a printed sheet holds up next to true vector linework."
+        },
+
+        "VghLantern__Env3d__Config__GroundPlane": {
+            "Enabled"                         : true,
+            "ShowGrid"                        : true,
+            "GridSpacingMm"                   : 500,
+            "GridExtentMm"                    : 12000,
+            "GridColour"                      : "#c4cace",
+            "ShowShadowCatcher"               : false
+        },
+
+        "VghLantern__Env3d__Config__DedicatedViewportMode": {
+            "DefaultPreset"                   : "isometric",
+            "ShowPresetButtons"               : true,
+            "ShowZoomExtents"                 : true,
+            "ShowSkeletonModeLabel"           : true,
+            "ShowSkeletonModeLabelNote"       : "Read-only readout of the active MeshBuilders.SkeletonMode, so a reviewer can see whether they are looking at swept sections or bare centrelines.",
+            "ShowLanternSelector"             : true,
+            "DisposeOnModeExit"               : false,
+            "DisposeOnModeExitNote"           : "Keeping the context alive between visits costs one GL context but makes returning to the 3D View instant; set true on machines short of GPU memory.",
+            "ModeNote"                        : "Settings for the full-screen 3D View nav mode. Kept in the Env3d config rather than a mode config of its own because every value here is a property of the 3D environment, and the mode is only a full-bleed host for it."
+        }
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "VghLantern__DocPreview__Config": {
+        "VghLantern__DocPreview__Config__Description": "System configuration for the Preview and Send mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('DocPreview'). Page setup, content toggles and PDF settings all live here.",
+
+        "VghLantern__DocPreview__Config__Page": {
+            "PaperSizesMm": {
+                "A4" : { "WidthMm": 210, "HeightMm": 297 },
+                "A3" : { "WidthMm": 297, "HeightMm": 420 }
+            },
+            "DefaultPaperSize"          : "A4",
+            "DefaultOrientation"        : "portrait",
+            "MarginMm"                  : 12,
+            "ScreenPixelsPerMm"         : 3.2,
+            "ScreenPixelsPerMmNote"     : "Screen zoom only. Page geometry is authored in paper millimetres so the on-screen page and the exported PDF are the same document at two magnifications.",
+            "DrawingSheetOrientation"   : "landscape",
+            "DrawingSheetOrientationNote": "The drawing sheet is always landscape regardless of the document orientation - four views do not fit sensibly on a portrait page."
+        },
+
+        "VghLantern__DocPreview__Config__ViewState": {
+            "DefaultShowPlanView"       : true,
+            "DefaultShowFrontElevation" : true,
+            "DefaultShowSideElevation"  : true,
+            "DefaultShow3dView"         : true,
+            "DefaultShowTakeoffSchedule": true,
+            "DefaultShowComponentSchedule": true,
+            "DefaultShowJobNotes"       : true,
+            "PersistViewState"          : true,
+            "PersistViewStateNote"      : "When true the toggles round-trip through 08__LocalUserData via the user menu config endpoint, so a user's preferred output shape survives a reload. Toggle keys deliberately mirror VghLantern__UserMenu__ModeDocumentPreview__Config so the persistence layer needs no key translation.",
+            "ToggleGrouping": {
+                "DrawingViews"          : ["ShowPlanView", "ShowFrontElevation", "ShowSideElevation", "Show3dView"],
+                "DocumentSections"      : ["ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes"]
+            },
+            "ToggleGroupingNote"        : "The drawing page appears when any DrawingViews toggle is on; the specification pages appear when any DocumentSections toggle is on. There is no separate page-level switch to fall out of step with the view toggles."
+        },
+
+        "VghLantern__DocPreview__Config__Toolbar": {
+            "ShowContentToggles"        : true,
+            "ShowPaperSizeSelector"     : true,
+            "ShowExportPdfButton"       : true,
+            "ShowPrintButton"           : true,
+            "ExportPdfLabel"            : "Export PDF",
+            "PrintLabel"                : "Print",
+            "ToggleLabels": {
+                "ShowPlanView"          : "Plan",
+                "ShowFrontElevation"    : "Front Elevation",
+                "ShowSideElevation"     : "Side Elevation",
+                "Show3dView"            : "3D View",
+                "ShowTakeoffSchedule"   : "Takeoff Schedule",
+                "ShowComponentSchedule" : "Component Schedule",
+                "ShowJobNotes"          : "Job Notes"
+            }
+        },
+
+        "VghLantern__DocPreview__Config__Pdf": {
+            "Unit"                      : "mm",
+            "JpegQuality"               : 0.92,
+            "RasterPixelsPerMm"         : 6,
+            "RasterPixelsPerMmNote"     : "SVG views are rasterised before embedding because jsPDF cannot place vector SVG. 6 px/mm is roughly 150 dpi - enough for a workshop print without a 20 MB file.",
+            "FooterText"                : "Vale Garden Houses Limited",
+            "ShowPageNumbers"           : true,
+            "PageNumberFormat"          : "Page {page} of {total}",
+            "TitleFontSizePt"           : 16,
+            "HeadingFontSizePt"         : 11,
+            "BodyFontSizePt"            : 8.5,
+            "TableHeaderBackground"     : "#172b3a",
+            "TableHeaderTextColour"     : "#ffffff",
+            "TableAltRowBackground"     : "#f5f5f5",
+            "FilenamePattern"           : "VghLantern__{projectCode}__{projectName}__RoofLanternSpecification",
+            "FilenamePatternNote"       : "Resolved by PdfMetadataResolver. Unsafe filename characters are stripped there, not here."
+        },
+
+        "VghLantern__DocPreview__Config__Issues": {
+            "BlockExportOnError"        : true,
+            "BlockExportOnErrorNote"    : "Errors block export; warnings are printed on the document as a caveat. Issuing a drawing with an unsolved geometry error would be worse than issuing nothing.",
+            "NoProjectMessage"          : "Open a project before previewing a document.",
+            "NoLanternMessage"          : "This project has no lanterns to document.",
+            "UnsolvedGeometryMessage"   : "Lantern geometry has not been solved - open the Lantern Editor to resolve it.",
+            "NoDrawingSheetMessage"     : "Visit the Drawing Editor once so the sheet can be composed before export.",
+            "EmptySelectionMessage"     : "Every content section is switched off - nothing to preview."
+        }
+    }
+}

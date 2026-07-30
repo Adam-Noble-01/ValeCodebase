@@ -1,0 +1,170 @@
+/* =============================================================================
+ * VGHLANTERN - 3D ENVIRONMENT STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__Env3d__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Env3d - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Presentation for the 3D viewport host, canvas and overlays
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Styles the DOM around the WebGL canvas: the host element, loading and empty
+ *   states, and the view control overlay.
+ * - Nothing here styles the rendered 3D content itself. Scene colours, material
+ *   tints and light intensities are config values read by the render modules, not
+ *   CSS - see Na__Env3d__Config.json.
+ * - The one crossover is the backdrop token, which the SceneManager reads so the
+ *   WebGL clear colour and the surrounding UI agree.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Viewport Host and Canvas
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env3d__ViewportHost {
+        position                          : relative;
+        width                             : 100%;
+        height                            : 100%;
+        overflow                          : hidden;
+        background-color                  : var(--VghLantern_ThreeViewportBackdrop);
+    }
+
+    .VghLantern__Env3d__Canvas {
+        display                           : block;
+        width                             : 100%;
+        height                            : 100%;
+        touch-action                      : none;                             /* <-- OrbitControls owns the gesture */
+        outline                           : none;
+    }
+
+    /* Marks a host that currently owns a live WebGL context, so the editor can
+       tell an initialised panel from a placeholder without querying the module. */
+    .VghLantern__Env3d__Host--active {
+        cursor                            : grab;
+    }
+
+    .VghLantern__Env3d__Host--active:active {
+        cursor                            : grabbing;
+    }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Empty, Loading and Unsupported States
+ * ----------------------------------------------------------------------------- */
+
+    /* Shared centred-message base for the three transient states below. */
+    .VghLantern__Env3d__EmptyState,
+    .VghLantern__Env3d__LoadingState,
+    .VghLantern__Env3d__UnsupportedState {
+        position                          : absolute;
+        top                               : 50%;
+        left                              : 50%;
+        transform                         : translate(-50%, -50%);
+        margin                            : 0;
+        padding                           : var(--Vale_Spacing_Medium);
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_Standard);
+        text-align                        : center;
+        pointer-events                    : none;
+    }
+
+    .VghLantern__Env3d__EmptyState {
+        color                             : var(--Vale_TextSubtle);
+    }
+
+    /* Shown while the deferred ESM bootstrap is still resolving. The 3D stack is
+       lazy by design, so a brief loading state on first open is expected. */
+    .VghLantern__Env3d__LoadingState {
+        color                             : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Env3d__UnsupportedState {
+        max-width                         : calc(400px * var(--Vale_UIScale));
+        color                             : var(--Vale_TextPrimary);
+        background-color                  : var(--VghLantern_WarningBackground);
+        border                            : 1px solid var(--VghLantern_WarningOrange);
+        border-radius                     : var(--Vale_BorderRadius);
+    }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | View Control Overlay
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Env3d__ControlOverlay {
+        position                          : absolute;
+        top                               : var(--Vale_Spacing_Small);
+        right                             : var(--Vale_Spacing_Small);
+        display                           : flex;
+        flex-direction                    : column;
+        gap                               : var(--Vale_Spacing_Small);
+        z-index                           : var(--VghLantern_ViewportOverlayZIndex);
+    }
+
+    .VghLantern__Env3d__ControlGroup {
+        display                           : flex;
+        flex-direction                    : row;
+        gap                               : 1px;
+        padding                           : 2px;
+        background-color                  : var(--VghLantern_ThreeOverlayPanel);
+        border                            : 1px solid var(--Vale_BorderLight);
+        border-radius                     : var(--Vale_BorderRadius);
+        box-shadow                        : var(--VghLantern_ViewportOverlayShadow);
+    }
+
+    .VghLantern__Env3d__ControlButton {
+        padding                           : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        color                             : var(--Vale_TextPrimary);
+        background                        : transparent;
+        border                            : none;
+        border-radius                     : var(--Vale_BorderRadius);
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_Small);
+        line-height                       : 1.2;
+        white-space                       : nowrap;
+        cursor                            : pointer;
+        transition                        : background var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Env3d__ControlButton:hover {
+        background                        : var(--Vale_HoverBackground);
+    }
+
+    .VghLantern__Env3d__ControlButton--active {
+        color                             : var(--Vale_TextLight);
+        background                        : var(--Vale_PrimaryBrand);
+        font-weight                       : var(--Vale_FontWeight_SemiBold);
+    }
+
+/* endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Status Readout
+ * ----------------------------------------------------------------------------- */
+
+    /* Bottom-left readout naming the active sweep mode. It matters during
+       authoring: it is how you tell a real swept section from the line fallback
+       that appears when a role has no profile assigned yet. */
+    .VghLantern__Env3d__StatusReadout {
+        position                          : absolute;
+        bottom                            : var(--Vale_Spacing_Small);
+        left                              : var(--Vale_Spacing_Small);
+        padding                           : 2px var(--Vale_Spacing_Small);
+        color                             : var(--Vale_TextSubtle);
+        background-color                  : var(--VghLantern_ThreeOverlayPanel);
+        border-radius                     : var(--Vale_BorderRadius);
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_Small);
+        pointer-events                    : none;
+        z-index                           : var(--VghLantern_ViewportOverlayZIndex);
+    }
+
+/* endregion ------------------------------------------------------------------ */

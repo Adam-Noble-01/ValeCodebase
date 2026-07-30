@@ -1,0 +1,294 @@
+/* =============================================================================
+ * VGHLANTERN - DOCUMENT PREVIEW MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__DocPreview__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : DocPreview - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Toolbar, paginated page stage and print rules for Preview and Send
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Pages are authored in paper millimetres and scaled to the screen with a single
+ *   transform, so the on-screen page and the exported PDF share one geometry.
+ * - The print rules strip the app chrome and the screen scaling, so browser print
+ *   produces the same pages as the PDF export.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Toolbar
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__DocPreview__Toolbar {
+        display                     : flex;
+        flex-wrap                   : wrap;
+        align-items                 : center;
+        gap                         : var(--Vale_Spacing_Medium);
+        padding                     : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        background-color            : var(--Vale_BackgroundWhite);
+        border-bottom               : 1px solid var(--Vale_BorderLight);
+        position                    : sticky;
+        top                         : 0;
+        z-index                     : 5;
+    }
+
+    .VghLantern__DocPreview__ToolbarGroup {
+        display                     : flex;
+        flex-wrap                   : wrap;
+        align-items                 : center;
+        gap                         : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__DocPreview__ToolbarGroup:last-child {
+        margin-left                 : auto;                                     /* Paper size and actions sit hard right */
+    }
+
+    .VghLantern__DocPreview__ToolbarLabel {
+        font-size                   : var(--Vale_FontSize_Small);
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        text-transform              : uppercase;
+        letter-spacing              : 0.04em;
+        color                       : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__DocPreview__Toggle {
+        display                     : inline-flex;
+        align-items                 : center;
+        gap                         : 0.35rem;
+        font-size                   : var(--Vale_FontSize_Small);
+        color                       : var(--Vale_TextPrimary);
+        cursor                      : pointer;
+        user-select                 : none;
+    }
+
+    .VghLantern__DocPreview__Select {
+        font-family                 : inherit;
+        font-size                   : var(--Vale_FontSize_Small);
+        padding                     : 0.25rem 0.4rem;
+        border                      : 1px solid var(--Vale_BorderLight);
+        border-radius               : var(--Vale_BorderRadius);
+        background-color            : var(--Vale_BackgroundWhite);
+        color                       : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__DocPreview__Button {
+        font-family                 : inherit;
+        font-size                   : var(--Vale_FontSize_Small);
+        padding                     : 0.35rem 0.9rem;
+        border                      : 1px solid var(--Vale_BorderLight);
+        border-radius               : var(--Vale_BorderRadius);
+        background-color            : var(--Vale_BackgroundWhite);
+        color                       : var(--Vale_TextPrimary);
+        cursor                      : pointer;
+        transition                  : background-color var(--Vale_Transition_Fast),
+                                      border-color     var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__DocPreview__Button:hover {
+        border-color                : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__DocPreview__Button--primary {
+        background-color            : var(--Vale_PrimaryBrand);
+        border-color                : var(--Vale_PrimaryBrand);
+        color                       : var(--Vale_TextLight);
+    }
+
+    .VghLantern__DocPreview__Button--primary:hover {
+        background-color            : var(--Vale_PrimaryBrand_Dark);
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Issue Block
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__DocPreview__IssueBlock {
+        margin                      : var(--Vale_Spacing_Medium);
+        padding                     : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        border-left                 : 3px solid var(--VghLantern_WarningOrange);
+        border-radius               : var(--Vale_BorderRadius);
+        background-color            : var(--VghLantern_WarningBackground);
+        font-size                   : var(--Vale_FontSize_Small);
+    }
+
+    .VghLantern__DocPreview__IssueBlock--error {
+        border-left-color           : var(--VghLantern_ErrorRed);
+        background-color            : var(--VghLantern_ErrorBackground);
+    }
+
+    .VghLantern__DocPreview__IssueTitle {
+        margin                      : 0;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        color                       : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__DocPreview__IssueList {
+        margin                      : 0.35rem 0 0;
+        padding-left                : 1.1rem;
+    }
+
+    .VghLantern__DocPreview__IssueItem {
+        margin-bottom               : 0.2rem;
+        color                       : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__DocPreview__IssueItem--error {
+        color                       : var(--VghLantern_ErrorRed);
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Page Stage
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__DocPreview__Stage {
+        display                     : flex;
+        flex-direction              : column;
+        align-items                 : center;
+        gap                         : var(--Vale_Spacing_Large);
+        padding                     : var(--Vale_Spacing_Large);
+        background-color            : var(--VghLantern_PreviewBackground);
+        overflow                    : auto;
+    }
+
+    /* The scaler owns the on-screen footprint in pixels; the page inside keeps its
+       millimetre dimensions and is scaled into it. Sizing the wrapper is what stops a
+       transformed page leaving a hole in the flow. */
+    .VghLantern__DocPreview__PageScaler {
+        position                    : relative;
+        flex                        : 0 0 auto;
+    }
+
+    .VghLantern__DocPreview__Page {
+        position                    : absolute;
+        top                         : 0;
+        left                        : 0;
+        transform-origin            : top left;
+        box-sizing                  : border-box;
+        display                     : flex;
+        flex-direction              : column;
+        background-color            : var(--Vale_BackgroundWhite);
+        box-shadow                  : 0 2px 10px var(--VghLantern_PreviewPaperShadow);
+    }
+
+    .VghLantern__DocPreview__PageBody {
+        flex                        : 1 1 auto;
+        min-height                  : 0;
+        display                     : flex;
+        flex-direction              : column;
+        gap                         : 4mm;
+    }
+
+    .VghLantern__DocPreview__PageFooter {
+        flex                        : 0 0 auto;
+        display                     : flex;
+        justify-content             : space-between;
+        padding-top                 : 2mm;
+        border-top                  : 0.25mm solid var(--Vale_BorderLight);
+        font-size                   : 2.6mm;
+        color                       : var(--Vale_TextSubtle);
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Drawing Page Views
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__DocPreview__ViewGrid {
+        flex                        : 1 1 auto;
+        min-height                  : 0;
+        display                     : grid;
+        grid-template-columns       : repeat(2, 1fr);
+        gap                         : 6mm;
+    }
+
+    .VghLantern__DocPreview__ViewFrame {
+        display                     : flex;
+        flex-direction              : column;
+        min-height                  : 0;
+        border                      : 0.25mm solid var(--Vale_BorderPrimary);
+    }
+
+    .VghLantern__DocPreview__ViewLabel {
+        flex                        : 0 0 auto;
+        display                     : flex;
+        justify-content             : space-between;
+        padding                     : 1mm 1.5mm;
+        border-bottom               : 0.25mm solid var(--Vale_BorderLight);
+        font-size                   : 3mm;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        color                       : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__DocPreview__ViewBody {
+        flex                        : 1 1 auto;
+        min-height                  : 0;
+        display                     : flex;
+        align-items                 : center;
+        justify-content             : center;
+        overflow                    : hidden;
+    }
+
+    .VghLantern__DocPreview__ViewBody > svg,
+    .VghLantern__DocPreview__ViewBody > img {
+        max-width                   : 100%;
+        max-height                  : 100%;
+    }
+
+    .VghLantern__DocPreview__Empty {
+        margin                      : 0;
+        font-size                   : 3mm;
+        font-style                  : italic;
+        color                       : var(--Vale_TextSubtle);
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Print Rules
+ * ----------------------------------------------------------------------------- */
+
+    /* Browser print is a secondary route to the same output, so the app chrome and the
+       screen scaling both come off - print wants the millimetre page at 1:1. */
+    @media print {
+
+        .app-header,
+        #VghLantern__App__NavigationBar,
+        .VghLantern__App__ModePanel:not(.VghLantern__App__ModePanel--active),
+        .VghLantern__DocPreview__Toolbar,
+        .VghLantern__DocPreview__IssueBlock {
+            display                 : none !important;
+        }
+
+        .VghLantern__DocPreview__Stage {
+            display                 : block;
+            padding                 : 0;
+            background              : none;
+            overflow                : visible;
+        }
+
+        .VghLantern__DocPreview__PageScaler {
+            width                   : auto !important;
+            height                  : auto !important;
+        }
+
+        .VghLantern__DocPreview__Page {
+            position                : static;
+            transform               : none !important;
+            box-shadow              : none;
+            page-break-after        : always;
+        }
+
+    }
+
+/* #endregion ------------------------------------------------------------------ */

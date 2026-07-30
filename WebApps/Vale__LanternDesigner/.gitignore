@@ -1,0 +1,16 @@
+# =============================================================================
+# VALE LANTERN DESIGNER - GIT IGNORE
+# =============================================================================
+
+# Node dependency install tree (lockfile is committed; install with npm ci)
+node_modules/
+
+# Local runtime / user scratch (keep project folders, ignore generated noise)
+08__LocalUserData/**
+!08__LocalUserData/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.npm/

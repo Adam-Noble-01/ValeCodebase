@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a ProfilePathTracer export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "PRF_HIP0001",
+        "Na__Asset__Metadata__Name"         : "Hip Section - Standard 75mm",
+        "Na__Asset__Metadata__CategoryId"   : "PRF__HipSections",
+        "Na__Asset__Metadata__CategoryName" : "Hip Sections",
+        "Na__Asset__Metadata__Description"  : "Standard hip section running from ridge end to eaves corner. Also serves as the verge section on a gabled lantern form.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a traced Vale section",
+        "Na__Asset__Metadata__Material"     : "Engineered timber core with aluminium capping",
+        "Na__Asset__Metadata__Tags"         : ["hip", "verge", "standard"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin sits on the hip skeleton line at the underside of the section. X is centred across the hip; Y rises to the weathered cap.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -37.5, "y":  0.0 },
+            { "x":  37.5, "y":  0.0 },
+            { "x":  37.5, "y": 72.0 },
+            { "x":  24.0, "y": 95.0 },
+            { "x": -24.0, "y": 95.0 },
+            { "x": -37.5, "y": 72.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 75.0,
+            "DepthMm"                       : 95.0,
+            "MinX"                          : -37.5,
+            "MaxX"                          : 37.5,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 95.0
+        },
+        "Na__Asset__Profile2D__SectionAreaSqMm" : 6815.0
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__SweepBehaviour": {
+        "Na__Asset__SweepBehaviour__ApplicableRoles"  : ["hip", "verge"],
+        "Na__Asset__SweepBehaviour__MitreEnds"        : true,
+        "Na__Asset__SweepBehaviour__RotateToSlope"    : true,
+        "Na__Asset__SweepBehaviour__FaceWidthMm"      : 75.0
+    }
+}

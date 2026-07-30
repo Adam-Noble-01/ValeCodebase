@@ -1,0 +1,299 @@
+/* =============================================================================
+ * VGHLANTERN - SPECIFICATION MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__Specification__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : System - Specification - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Document header, collapsible sections, schedule tables and job notes
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Styles the specification as a document rather than a control panel - the same
+ *   markup is paginated by DocumentPreview, so it has to read as printed output.
+ * - Tables are the primary content, so they get the tightest typographic control.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Mode Container
+ * ----------------------------------------------------------------------------- */
+
+    #VghLantern__Specification__Container {
+        box-sizing                     : border-box;
+        width                          : 100%;
+        max-width                      : var(--VghLantern_SpecDocumentMaxWidth, 252mm);
+        margin                         : 0 auto;
+        padding                        : var(--Vale_Spacing_Large);
+        font-family                    : var(--Vale_FontFamily);
+        color                          : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__Spec__EmptyState {
+        padding                        : var(--Vale_Spacing_XLarge);
+        text-align                     : center;
+        font-size                      : var(--Vale_FontSize_Standard);
+        color                          : var(--Vale_TextSecondary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px dashed var(--Vale_BorderLight);
+        border-radius                  : var(--Vale_BorderRadius);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Document Header
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Spec__Header {
+        padding                        : var(--Vale_Spacing_Large);
+        margin-bottom                  : var(--Vale_Spacing_Medium);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+        border-top                     : var(--Vale_BorderWidth) solid var(--Vale_PrimaryBrand);
+        border-radius                  : var(--Vale_BorderRadius);
+    }
+
+    .VghLantern__Spec__HeaderTitle {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Heading);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Spec__HeaderGrid {
+        display                        : grid;
+        grid-template-columns          : repeat(auto-fit, minmax(200px, 1fr));
+        gap                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+    }
+
+    .VghLantern__Spec__HeaderField {
+        display                        : flex;
+        flex-direction                 : column;
+        gap                            : 2px;
+    }
+
+    .VghLantern__Spec__HeaderLabel {
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        text-transform                 : uppercase;
+        letter-spacing                 : 0.04em;
+        color                          : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Spec__HeaderValue {
+        font-size                      : var(--Vale_FontSize_Standard);
+        color                          : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__Spec__HeaderTimestamp {
+        margin                         : var(--Vale_Spacing_Medium) 0 0 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Warning List
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Spec__WarningList {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        padding                        : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Medium)
+                                         var(--Vale_Spacing_Medium) var(--Vale_Spacing_XLarge);
+        list-style                     : disc;
+        background                     : var(--VghLantern_WarningBackground);
+        border-left                    : 3px solid var(--VghLantern_WarningOrange);
+        border-radius                  : 0 var(--Vale_BorderRadius) var(--Vale_BorderRadius) 0;
+    }
+
+    .VghLantern__Spec__WarningItem {
+        font-size                      : var(--Vale_FontSize_Small);
+        line-height                    : 1.6;
+        color                          : var(--Vale_TextPrimary);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Collapsible Sections
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Spec__Section {
+        margin-bottom                  : var(--Vale_Spacing_Medium);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+        border-radius                  : var(--Vale_BorderRadius);
+        overflow                       : hidden;
+    }
+
+    .VghLantern__Spec__SectionHeader {
+        display                        : flex;
+        align-items                    : center;
+        gap                            : var(--Vale_Spacing_Small);
+        width                          : 100%;
+        padding                        : var(--Vale_Spacing_Medium);
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_SubHeading);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        text-align                     : left;
+        color                          : var(--Vale_PrimaryBrand);
+        background                     : var(--Vale_BackgroundLight);
+        border                         : none;
+        border-bottom                  : 1px solid var(--Vale_BorderLight);
+        cursor                         : pointer;
+        transition                     : background var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Spec__SectionHeader:hover {
+        background                     : var(--Vale_HoverBackground);
+    }
+
+    .VghLantern__Spec__SectionCaret {
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Spec__SectionBody {
+        padding                        : var(--Vale_Spacing_Medium);
+    }
+
+    /* Collapsed sections keep their markup mounted so DescribeDocument still
+       captures them for the PDF even when the user has them closed on screen. */
+    .VghLantern__Spec__Section--collapsed .VghLantern__Spec__SectionBody {
+        display                        : none;
+    }
+
+    .VghLantern__Spec__Section--collapsed .VghLantern__Spec__SectionHeader {
+        border-bottom                  : none;
+    }
+
+    .VghLantern__Spec__SubHeading {
+        margin                         : var(--Vale_Spacing_Medium) 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_Standard);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Spec__SectionBody > .VghLantern__Spec__SubHeading:first-child {
+        margin-top                     : 0;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Schedule Tables
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Spec__Table {
+        width                          : 100%;
+        margin-bottom                  : var(--Vale_Spacing_Medium);
+        border-collapse                : collapse;
+        font-size                      : var(--Vale_FontSize_Small);
+    }
+
+    .VghLantern__Spec__Table:last-child {
+        margin-bottom                  : 0;
+    }
+
+    .VghLantern__Spec__TableHeadCell {
+        padding                        : var(--Vale_Spacing_Small);
+        text-align                     : left;
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        white-space                    : nowrap;
+        color                          : var(--Vale_TextLight);
+        background                     : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Spec__TableCell {
+        padding                        : var(--Vale_Spacing_Small);
+        border-bottom                  : 1px solid var(--Vale_BorderLight);
+        color                          : var(--Vale_TextPrimary);
+    }
+
+    /* Tabular figures keep the quantity columns aligned digit-for-digit, which is
+       what makes a takeoff scannable rather than just readable. */
+    .VghLantern__Spec__TableCell--right,
+    .VghLantern__Spec__TableHeadCell.VghLantern__Spec__TableCell--right {
+        text-align                     : right;
+        font-variant-numeric           : tabular-nums;
+    }
+
+    .VghLantern__Spec__Table tbody tr:nth-child(even) .VghLantern__Spec__TableCell {
+        background                     : var(--Vale_BackgroundLight);
+    }
+
+    .VghLantern__Spec__TableTotalsRow .VghLantern__Spec__TableCell {
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        background                     : var(--Vale_BackgroundWhite);
+        border-top                     : var(--Vale_BorderWidth) solid var(--Vale_PrimaryBrand);
+        border-bottom                  : none;
+    }
+
+    .VghLantern__Spec__TableEmpty {
+        padding                        : var(--Vale_Spacing_Medium);
+        font-size                      : var(--Vale_FontSize_Small);
+        font-style                     : italic;
+        color                          : var(--Vale_TextSecondary);
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Job Notes Editor
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Spec__JobNotes {
+        display                        : flex;
+        flex-direction                 : column;
+        gap                            : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__Spec__JobNotesLabel {
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        text-transform                 : uppercase;
+        letter-spacing                 : 0.04em;
+        color                          : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Spec__JobNotesInput {
+        width                          : 100%;
+        padding                        : var(--Vale_Spacing_Small);
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_Standard);
+        line-height                    : 1.6;
+        color                          : var(--Vale_TextPrimary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+        border-radius                  : var(--Vale_BorderRadius);
+        resize                         : vertical;
+        box-sizing                     : border-box;
+    }
+
+    .VghLantern__Spec__JobNotesInput:focus {
+        outline                        : none;
+        border-color                   : var(--VghLantern_AccentBlue);
+    }
+
+    .VghLantern__Spec__JobNotesHelper {
+        display                        : flex;
+        justify-content                : space-between;
+        gap                            : var(--Vale_Spacing_Medium);
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__Spec__JobNotesCounter {
+        font-variant-numeric           : tabular-nums;
+        white-space                    : nowrap;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

@@ -1,0 +1,147 @@
+/* =============================================================================
+ * VGHLANTERN - CSS VARIABLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__CoreUi__Styles__Variables__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : CSS Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : CSS variables following Vale Design Suite standards
+ * CREATED    : 30-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Defines the visual design system for the Vale Lantern Designer
+ * - Vale Design Suite token block is identical to ValeSpec for cross-app consistency
+ * - Extended with VghLantern tokens for skeleton linework, glazing and profiles
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | Vale Design Suite Standards
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Color Palette and Design Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Global Scale Macro */
+        --Vale_UIScale                     : 0.9;                          /* <-- Global UI scale macro (1 = 100%, 0.9 = 90%) */
+
+        /* Color Palette Variables */
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Vale Garden Houses brand blue */
+        --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Light background */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
+        --Vale_BackgroundDark              : #3a3a3a;                      /* <-- Dark background for contrast */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
+        --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
+        --Vale_TextSubtle                  : #5a6d7a;                      /* <-- Subtle text (adjusted for blue) */
+        --Vale_TextLight                   : #ffffff;                      /* <-- Light text on dark backgrounds */
+        --Vale_BorderPrimary               : #172b3a;                      /* <-- Primary border color */
+        --Vale_BorderLight                 : #cccccc;                      /* <-- Light border color */
+        --Vale_HoverBackground             : #e8e8e8;                      /* <-- Hover state background */
+        --Vale_ActiveBackground            : #d0d0d0;                      /* <-- Active state background */
+        --Vale_StarGold                    : #ffd700;                      /* <-- Star rating color */
+        --Vale_StarEmpty                   : #cccccc;                      /* <-- Empty star color */
+
+        /* Layout Dimension Variables */
+        --Vale_HeaderHeight                : calc(60px * var(--Vale_UIScale));   /* <-- Fixed header height */
+        --Vale_FooterHeight                : calc(50px * var(--Vale_UIScale));   /* <-- Fixed footer height */
+        --Vale_MaxContentWidth             : 1800px;                             /* <-- Maximum content width */
+        --Vale_BorderWidth                 : 2px;                                /* <-- Standard border thickness */
+        --Vale_BorderRadius                : calc(8px * var(--Vale_UIScale));    /* <-- Standard border radius */
+        --Vale_Spacing_Small               : calc(8px * var(--Vale_UIScale));    /* <-- Small spacing unit */
+        --Vale_Spacing_Medium              : calc(16px * var(--Vale_UIScale));   /* <-- Medium spacing unit */
+        --Vale_Spacing_Large               : calc(24px * var(--Vale_UIScale));   /* <-- Large spacing unit */
+        --Vale_Spacing_XLarge              : calc(32px * var(--Vale_UIScale));   /* <-- Extra large spacing unit */
+        --Vale_Spacing_XXLarge             : calc(50px * var(--Vale_UIScale));   /* <-- Extra extra large spacing unit */
+
+        /* Typography Variables */
+        --Vale_FontFamily                  : 'Open Sans', sans-serif;            /* <-- Primary font */
+        --Vale_FontSize_Title              : calc(26px * var(--Vale_UIScale));   /* <-- Application title size */
+        --Vale_FontSize_Heading            : calc(24px * var(--Vale_UIScale));   /* <-- Heading text size */
+        --Vale_FontSize_SubHeading         : calc(18px * var(--Vale_UIScale));   /* <-- Sub-heading text size */
+        --Vale_FontSize_Standard           : calc(14px * var(--Vale_UIScale));   /* <-- Standard interface text */
+        --Vale_FontSize_Small              : calc(12px * var(--Vale_UIScale));   /* <-- Small text size */
+        --Vale_FontWeight_Light            : 300;                          /* <-- Light font weight */
+        --Vale_FontWeight_Regular          : 400;                          /* <-- Regular font weight */
+        --Vale_FontWeight_SemiBold         : 600;                          /* <-- Semi-bold font weight */
+
+        /* Z-Index Layer Management */
+        --Vale_ZIndex_Header               : 1000;                         /* <-- Header layer */
+        --Vale_ZIndex_Modal                : 2000;                         /* <-- Modal overlay layer */
+        --Vale_ZIndex_Tooltip              : 3000;                         /* <-- Tooltip layer */
+
+        /* Animation Variables */
+        --Vale_Transition_Fast             : 0.15s ease;                   /* <-- Fast transition */
+        --Vale_Transition_Standard         : 0.3s ease;                    /* <-- Standard transition */
+        --Vale_Transition_Slow             : 0.5s ease;                    /* <-- Slow transition */
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | VghLantern Extension Tokens
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | VghLantern Application Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Status Badge Colors */
+        --VghLantern_StatusDraft            : #d32f2f;                      /* <-- Draft status red (same as --VghLantern_ErrorRed) */
+        --VghLantern_StatusInProgress       : #e6a817;                      /* <-- In Progress status amber */
+        --VghLantern_StatusPending          : #d67e28;                      /* <-- Pending Approval status orange */
+        --VghLantern_StatusApproved         : #2a7d4f;                      /* <-- Approved status green */
+        --VghLantern_StatusCompleted        : #2a7d4f;                      /* <-- Completed status green */
+
+        /* 2D Environment - Skeleton Construction Linework */
+        --VghLantern_SvgSkeletonRidge       : #172b3a;                      /* <-- Ridge line stroke colour */
+        --VghLantern_SvgSkeletonHip         : #2f4a5e;                      /* <-- Hip line stroke colour */
+        --VghLantern_SvgSkeletonRafter      : #5a6d7a;                      /* <-- Common rafter line stroke colour */
+        --VghLantern_SvgSkeletonEaves       : #172b3a;                      /* <-- Eaves / wall plate stroke colour */
+        --VghLantern_SvgSkeletonKerb        : #8a949c;                      /* <-- Kerb / upstand stroke colour */
+        --VghLantern_SvgConstructionLine    : #b8c0c6;                      /* <-- Non-printing construction guide colour */
+
+        /* 2D Environment - Glazing And Profiles */
+        --VghLantern_SvgGlazeBarStroke      : #2f4a5e;                      /* <-- Glazing bar stroke colour */
+        --VghLantern_SvgGlazingFill         : rgba(160, 196, 214, 0.28);    /* <-- Translucent glazing pane fill */
+        --VghLantern_SvgProfileStroke       : #172b3a;                      /* <-- Swept profile section outline */
+        --VghLantern_SvgProfileFill         : #e8e4df;                      /* <-- Swept profile section hatch fill */
+        --VghLantern_SvgComponentStroke     : #172b3a;                      /* <-- Finial / cresting vector stroke */
+
+        /* 2D Environment - Dimensions */
+        --VghLantern_SvgDimensionLine       : #cc3333;                      /* <-- Red dimension line colour */
+        --VghLantern_SvgDimensionText       : #cc3333;                      /* <-- Red dimension text colour */
+        --VghLantern_SvgDimensionHover      : #ff6b3d;                      /* <-- Editable dimension hover highlight */
+
+        /* 3D Environment */
+        --VghLantern_ThreeViewportBackdrop  : #dfe3e6;                      /* <-- Three.js canvas clear colour */
+        --VghLantern_ThreeOverlayPanel      : rgba(255, 255, 255, 0.92);    /* <-- Floating 3D control overlay background */
+
+        /* Viewport Overlays (shared by the 2D and 3D environments) */
+        --VghLantern_ViewportOverlayZIndex  : 500;                          /* <-- Above canvas, below header and modals */
+        --VghLantern_ViewportOverlayShadow  : 0 1px 4px rgba(0, 0, 0, 0.18); /* <-- Soft lift for floating viewport controls */
+        --VghLantern_WarningBackground      : #fdf3e3;                      /* <-- Warning banner fill, pairs with WarningOrange */
+        --VghLantern_ErrorBackground        : #fbeaea;                      /* <-- Error banner fill, pairs with ErrorRed */
+
+        /* Configurator UI Accents */
+        --VghLantern_AccentBlue             : #336699;                      /* <-- Accent blue for links and highlights */
+        --VghLantern_WarningOrange          : #d67e28;                      /* <-- Warning flag colour */
+        --VghLantern_ErrorRed               : #d32f2f;                      /* <-- Error state colour */
+        --VghLantern_SuccessGreen           : #2a7d4f;                      /* <-- Success state colour */
+
+        /* Navigation Bar */
+        --VghLantern_NavHeight              : calc(44px * var(--Vale_UIScale));   /* <-- Secondary nav height */
+        --VghLantern_NavBackground          : var(--Vale_BackgroundLight);        /* <-- Nav bar background */
+        --VghLantern_NavActiveTab           : var(--Vale_PrimaryBrand);           /* <-- Active tab indicator */
+
+        /* Document Preview */
+        --VghLantern_PreviewBackground      : #b0b5ba;                      /* <-- Preview canvas background */
+        --VghLantern_PreviewPaperShadow     : rgba(0, 0, 0, 0.25);          /* <-- Paper drop shadow */
+
+        /* Brand Interaction States */
+        --Vale_PrimaryBrand_Dark            : #0f1e28;                      /* <-- Hover/pressed state for PrimaryBrand buttons */
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

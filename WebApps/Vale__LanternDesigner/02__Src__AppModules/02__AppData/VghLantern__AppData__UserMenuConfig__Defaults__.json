@@ -1,0 +1,70 @@
+{
+    "VghLantern__UserMenu__Meta__Config": {
+        "VghLantern__UserMenu__Meta__Config__Description"            : "Default metadata and schema controls for per-user menu persistence. Per-user overrides are written to 08__LocalUserData by the Flask server.",
+        "VghLantern__UserMenu__Meta__Config__SchemaVersion"          : "1.0.0",
+        "VghLantern__UserMenu__Meta__Config__DefaultUserSlug"        : "AdamW",
+        "VghLantern__UserMenu__Meta__Config__StorageMode"            : "disk_json_flask",
+        "VghLantern__UserMenu__Meta__Config__SaveDebounceMs"         : 350
+    },
+
+    "VghLantern__UserMenu__ModeDocManagement__Config": {
+        "VghLantern__UserMenu__ModeDocManagement__Config__Description" : "Placeholder defaults for future Projects menu persistence.",
+        "VghLantern__UserMenu__ModeDocManagement__Config__Enabled"     : false
+    },
+
+    "VghLantern__UserMenu__ModeLanternEditor__Config": {
+        "VghLantern__UserMenu__ModeLanternEditor__Config__Description"                 : "Persisted user preferences for the Lantern Editor control panel and viewport state.",
+        "VghLantern__UserMenu__ModeLanternEditor__Config__OverrideEnabled"             : true,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__ActiveView2d"                : "plan",
+        "VghLantern__UserMenu__ModeLanternEditor__Config__Show3dViewport"              : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFormAndSizeOpen"      : true,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionRoofPitchOpen"        : true,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionGlazingBarsOpen"      : true,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionRidgeAndHipsOpen"     : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFinialsOpen"          : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionKerbAndBaseOpen"      : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionVentilationOpen"      : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFinishAndGlazingOpen" : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__PersistSectionState"         : true,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__PersistViewState"            : true
+    },
+
+    "VghLantern__UserMenu__ModeViewport3d__Config": {
+        "VghLantern__UserMenu__ModeViewport3d__Config__Description"        : "Persisted user preferences for the dedicated full-screen 3D view.",
+        "VghLantern__UserMenu__ModeViewport3d__Config__OverrideEnabled"    : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__CameraPreset"       : "threeQuarter",
+        "VghLantern__UserMenu__ModeViewport3d__Config__ShowGroundPlane"    : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__ShowProfileLines"   : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__PersistViewState"   : true
+    },
+
+    "VghLantern__UserMenu__ModeDrawingEditor__Config": {
+        "VghLantern__UserMenu__ModeDrawingEditor__Config__Description" : "Placeholder defaults for future Drawing Editor menu persistence.",
+        "VghLantern__UserMenu__ModeDrawingEditor__Config__Enabled"     : false
+    },
+
+    "VghLantern__UserMenu__ModeSpecification__Config": {
+        "VghLantern__UserMenu__ModeSpecification__Config__Description" : "Placeholder defaults for future Specification menu persistence.",
+        "VghLantern__UserMenu__ModeSpecification__Config__Enabled"     : false
+    },
+
+    "VghLantern__UserMenu__ModeDocumentPreview__Config": {
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__Description"                : "Persisted user preferences for the Preview and Send floating menu and view state.",
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__OverrideEnabled"            : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__MenuPositionX"              : null,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__MenuPositionY"              : null,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__MenuSectionDrawingsOpen"    : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__MenuSectionDocumentOpen"    : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__MenuSectionActionsOpen"     : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowPlanView"               : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowFrontElevation"         : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowSideElevation"          : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__Show3dView"                 : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowTakeoffSchedule"        : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowComponentSchedule"      : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowJobNotes"               : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistMenuPosition"        : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistMenuSectionState"    : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistViewState"           : true
+    }
+}

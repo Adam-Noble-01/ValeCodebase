@@ -1,0 +1,61 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a CadObjectBuilder export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "VGH_VNT0001",
+        "Na__Asset__Metadata__Name"         : "Roof Vent - Manual Winder 600 x 900",
+        "Na__Asset__Metadata__CategoryId"   : "VGH_VNT0000__Ventilation",
+        "Na__Asset__Metadata__CategoryName" : "Ventilation",
+        "Na__Asset__Metadata__Description"  : "Manually operated top-hung roof vent occupying one glazing pane on a roof slope. 600mm wide by 900mm up the slope, opening on a winder gear.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a measured Vale component",
+        "Na__Asset__Metadata__Material"     : "Aluminium frame, powder coated",
+        "Na__Asset__Metadata__Tags"         : ["vent", "ventilation", "manual", "winder", "top hung"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin is the centre of the vent opening within the pane it replaces. X runs across the slope, Y runs up the slope. The outline is the vent frame extent as seen looking square onto the slope.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -300.0, "y": -450.0 },
+            { "x":  300.0, "y": -450.0 },
+            { "x":  300.0, "y":  450.0 },
+            { "x": -300.0, "y":  450.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 600.0,
+            "HeightMm"                      : 900.0,
+            "MinX"                          : -300.0,
+            "MaxX"                          : 300.0,
+            "MinY"                          : -450.0,
+            "MaxY"                          : 450.0
+        },
+        "Na__Asset__Profile2D__IsRevolveOutline"  : false,
+        "Na__Asset__Profile2D__RevolveAxis"       : null
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__PlacementBehaviour": {
+        "Na__Asset__PlacementBehaviour__ApplicableRoles"     : ["vent"],
+        "Na__Asset__PlacementBehaviour__AnchorPoint"         : "paneCentre",
+        "Na__Asset__PlacementBehaviour__AlignToSlope"        : true,
+        "Na__Asset__PlacementBehaviour__ReplacesGlazingPane" : true,
+        "Na__Asset__PlacementBehaviour__OperationTypes"      : ["manualWinder", "manualPole"],
+        "Na__Asset__PlacementBehaviour__OpeningWidthMm"      : 600.0,
+        "Na__Asset__PlacementBehaviour__OpeningHeightMm"     : 900.0
+    }
+}

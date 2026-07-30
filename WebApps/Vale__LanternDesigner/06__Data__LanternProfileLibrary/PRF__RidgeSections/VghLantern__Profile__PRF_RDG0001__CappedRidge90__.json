@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a ProfilePathTracer export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "PRF_RDG0001",
+        "Na__Asset__Metadata__Name"         : "Ridge Section - Capped 90mm",
+        "Na__Asset__Metadata__CategoryId"   : "PRF__RidgeSections",
+        "Na__Asset__Metadata__CategoryName" : "Ridge Sections",
+        "Na__Asset__Metadata__Description"  : "Capped ridge section for the horizontal ridge of a rectangular lantern. 90mm face width with a weathered upper cap and rafter seating shoulders.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a traced Vale section",
+        "Na__Asset__Metadata__Material"     : "Engineered timber core with aluminium capping",
+        "Na__Asset__Metadata__Tags"         : ["ridge", "capped", "weathered"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin sits on the ridge skeleton line at the underside of the section. X is centred across the ridge; Y rises to the weathered cap.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -45.0, "y":   0.0 },
+            { "x":  45.0, "y":   0.0 },
+            { "x":  45.0, "y":  86.0 },
+            { "x":  30.0, "y": 110.0 },
+            { "x": -30.0, "y": 110.0 },
+            { "x": -45.0, "y":  86.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 90.0,
+            "DepthMm"                       : 110.0,
+            "MinX"                          : -45.0,
+            "MaxX"                          : 45.0,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 110.0
+        },
+        "Na__Asset__Profile2D__SectionAreaSqMm" : 9540.0
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__SweepBehaviour": {
+        "Na__Asset__SweepBehaviour__ApplicableRoles"  : ["ridge"],
+        "Na__Asset__SweepBehaviour__MitreEnds"        : true,
+        "Na__Asset__SweepBehaviour__RotateToSlope"    : false,
+        "Na__Asset__SweepBehaviour__FaceWidthMm"      : 90.0
+    }
+}

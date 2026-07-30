@@ -1,0 +1,62 @@
+{
+    "Vale__Dependencies__ImportMap__Index__": {
+        "description"           : "Browser import-map targets for all version-locked vendor libraries. Paths are relative to VghLantern__App__.html (project root). This file is the SSOT for the import map declared inline in the HTML shell; a browser cannot read an import map from JSON, so the two must be kept in sync by hand.",
+        "lockedSetDate"         : "30-Jul-2026",
+        "coordinatedSetNote"    : "Do not upgrade three / three-mesh-bvh / clipper2-js / three-edge-projection independently; vendors 01 to 04 form one coordinated 3D and projection set. Vendor 05 (jspdf) stands alone and may be upgraded on its own.",
+
+        "vendors": {
+            "01__Vendor__ThreeJs__v0.184.0": {
+                "npmName"       : "three",
+                "version"       : "0.184.0",
+                "revision"      : "184",
+                "entry"         : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+                "addons"        : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/",
+                "webgpu"        : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.webgpu.js",
+                "tsl"           : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.tsl.js"
+            },
+            "02__Vendor__ThreeMeshBvh__v0.9.9": {
+                "npmName"       : "three-mesh-bvh",
+                "version"       : "0.9.9",
+                "entry"         : "./04__Src__Dependencies__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/index.js",
+                "worker"        : "./04__Src__Dependencies__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/workers/index.js",
+                "webgpu"        : "./04__Src__Dependencies__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/webgpu/index.js"
+            },
+            "03__Vendor__Clipper2Js__v0.9.0": {
+                "npmName"       : "clipper2-js",
+                "version"       : "0.9.0",
+                "entry"         : "./04__Src__Dependencies__VersionLocked/03__Vendor__Clipper2Js__v0.9.0/fesm2020/clipper2-js.mjs"
+            },
+            "04__Vendor__ThreeEdgeProjection__v0.0.10": {
+                "npmName"       : "three-edge-projection",
+                "version"       : "0.0.10",
+                "commit"        : "f794481125e935303575171daf454b528ac396e3",
+                "entry"         : "./04__Src__Dependencies__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/index.js",
+                "worker"        : "./04__Src__Dependencies__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/index.js",
+                "webgpu"        : "./04__Src__Dependencies__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/webgpu/index.js"
+            },
+            "05__Vendor__JsPdf__v4.1.0": {
+                "npmName"       : "jspdf",
+                "version"       : "4.1.0",
+                "moduleFormat"  : "umd-classic-script",
+                "globalName"    : "jspdf",
+                "entry"         : "./04__Src__Dependencies__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js",
+                "notInImportMap": "UMD classic script loaded via a plain <script src> tag, not a bare ES module specifier. Consumed as window.jspdf by VghLantern__DocPreview__PdfExporter__.js.",
+                "coordinatedSet": false
+            }
+        },
+
+        "importMap": {
+            "three"                         : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+            "three/addons/"                 : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/",
+            "three/webgpu"                  : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.webgpu.js",
+            "three/tsl"                     : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.tsl.js",
+            "three-mesh-bvh"                : "./04__Src__Dependencies__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/index.js",
+            "three-mesh-bvh/worker"         : "./04__Src__Dependencies__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/workers/index.js",
+            "three-mesh-bvh/webgpu"         : "./04__Src__Dependencies__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/webgpu/index.js",
+            "clipper2-js"                   : "./04__Src__Dependencies__VersionLocked/03__Vendor__Clipper2Js__v0.9.0/fesm2020/clipper2-js.mjs",
+            "three-edge-projection"         : "./04__Src__Dependencies__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/index.js",
+            "three-edge-projection/worker"  : "./04__Src__Dependencies__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/index.js",
+            "three-edge-projection/webgpu"  : "./04__Src__Dependencies__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/webgpu/index.js"
+        }
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "meta": {
+        "schema"                            : "Na__Asset__UnifiedProfileSchema",
+        "schemaVersion"                     : "1.0.0",
+        "generator"                         : "Hand-authored worked example - replace with a ProfilePathTracer export",
+        "generatedDate"                     : "30-Jul-2026",
+        "sourceModel"                       : null
+    },
+
+    "Na__Asset__Metadata": {
+        "Na__Asset__Metadata__Id"           : "PRF_GLB0001",
+        "Na__Asset__Metadata__Name"         : "Glazing Bar - Standard 50mm Capped",
+        "Na__Asset__Metadata__CategoryId"   : "PRF__GlazingBars",
+        "Na__Asset__Metadata__CategoryName" : "Glazing Bars",
+        "Na__Asset__Metadata__Description"  : "Standard capped glazing bar section for lantern roof slopes. 50mm face width with a 12mm deep external capping over a 42mm structural body.",
+        "Na__Asset__Metadata__Revision"     : "A",
+        "Na__Asset__Metadata__Author"       : "Adam Noble - Noble Architecture",
+        "Na__Asset__Metadata__CreatedDate"  : "30-Jul-2026",
+        "Na__Asset__Metadata__DataStatus"   : "Provisional - dimensions are representative pending a traced Vale section",
+        "Na__Asset__Metadata__Material"     : "Engineered timber core with aluminium capping",
+        "Na__Asset__Metadata__Tags"         : ["glazing bar", "rafter", "capped", "standard"]
+    },
+
+    "Na__Asset__Profile2D": {
+        "Na__Asset__Profile2D__Units"       : "mm",
+        "Na__Asset__Profile2D__Closed"      : true,
+        "Na__Asset__Profile2D__Winding"     : "counterClockwise",
+        "Na__Asset__Profile2D__OriginNote"  : "Origin sits on the skeleton polyline. X is centred across the member; Y is measured from the skeleton line in the member up direction, so the section occupies the positive Y half-space.",
+        "Na__Asset__Profile2D__Points": [
+            { "x": -21.0, "y":  0.0 },
+            { "x":  21.0, "y":  0.0 },
+            { "x":  21.0, "y": 70.0 },
+            { "x":  25.0, "y": 70.0 },
+            { "x":  25.0, "y": 82.0 },
+            { "x": -25.0, "y": 82.0 },
+            { "x": -25.0, "y": 70.0 },
+            { "x": -21.0, "y": 70.0 }
+        ],
+        "Na__Asset__Profile2D__BoundingBoxMm": {
+            "WidthMm"                       : 50.0,
+            "DepthMm"                       : 82.0,
+            "MinX"                          : -25.0,
+            "MaxX"                          : 25.0,
+            "MinY"                          : 0.0,
+            "MaxY"                          : 82.0
+        },
+        "Na__Asset__Profile2D__SectionAreaSqMm" : 3540.0
+    },
+
+    "Na__Asset__Mesh3D"                     : null,
+    "Na__Asset__Glb3D__Url"                 : null,
+    "Na__Asset__Has2dProfile"               : true,
+    "Na__Asset__Has3d"                      : false,
+
+    "Na__Asset__SweepBehaviour": {
+        "Na__Asset__SweepBehaviour__ApplicableRoles"  : ["glazingBar", "transom"],
+        "Na__Asset__SweepBehaviour__MitreEnds"        : true,
+        "Na__Asset__SweepBehaviour__RotateToSlope"    : true,
+        "Na__Asset__SweepBehaviour__FaceWidthMm"      : 50.0
+    }
+}

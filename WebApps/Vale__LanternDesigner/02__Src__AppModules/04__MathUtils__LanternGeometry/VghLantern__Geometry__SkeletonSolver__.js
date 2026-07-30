@@ -30,11 +30,29 @@
    - +Y              : the depth axis.
    - +Z              : vertically up.
    - Kerb base       : z = 0
-   - Kerb top/eaves  : z = kerbHeightMm
-   - Ridge / apex    : z = kerbHeightMm + riseMm
+   - Kerb top        : z = kerbHeightMm
+   - Frame top/eaves : z = kerbHeightMm + frameHeightMm
+   - Ridge / apex    : z = kerbHeightMm + frameHeightMm + riseMm
 
    The long axis is whichever of width/depth is greater once the eaves
    projection is added. The ridge always runs along the long axis.
+
+   ---------------------------------------------------------------------------
+
+   THE BASE ASSEMBLY - KERB THEN FRAME:
+   The lantern sits on a two-part base, stacked and sharing one footprint:
+
+     KERB   the studwork upstand built on the roof. A hollow rectangular prism:
+            outer face = the lantern's width x depth, wall thickness = the kerb
+            thickness, and the hole through it is the reveal the daylight comes
+            down. Width and depth are ALWAYS measured to the OUTER face.
+     FRAME  the lantern's own base frame, sitting directly on the kerb. Same
+            footprint and same wall thickness as the kerb by definition; only
+            its height is free.
+
+   The roof springs from the top of the frame, so EavesLevelMm is the frame top,
+   not the kerb top. Kerb and frame are described together in the Base block
+   below, which is what the 3D environment extrudes into a solid.
 
    ---------------------------------------------------------------------------
 
@@ -43,13 +61,23 @@
    {
        Meta : {
            RoofForm, IsValid, Warnings[],
-           WidthMm, DepthMm, EavesProjectionMm, KerbHeightMm,
+           WidthMm, DepthMm, EavesProjectionMm,
+           KerbHeightMm, KerbThicknessMm, FrameHeightMm,
            EavesHalfWidthMm, EavesHalfDepthMm,
            LongAxis            : 'x' | 'y',
            PitchDegrees, RiseMm, RidgeLengthMm,
            ShortRafterLengthMm, LongRafterLengthMm,
            HipLengthMm, HipAngleDegrees,
-           EavesLevelMm, RidgeLevelMm, OverallHeightMm
+           KerbTopLevelMm, EavesLevelMm, RidgeLevelMm, OverallHeightMm
+       },
+       Base : {
+           KerbHeightMm, KerbThicknessMm, FrameHeightMm,
+           KerbBaseLevelMm, KerbTopLevelMm, FrameTopLevelMm,
+           OuterHalfWidthMm, OuterHalfDepthMm,
+           InnerHalfWidthMm, InnerHalfDepthMm,
+           RevealWidthMm, RevealDepthMm,
+           OuterPerimeterMm, InnerPerimeterMm,
+           HasReveal
        },
        Members         : [ { Id, Role, Start, End, LengthMm } ],
        Faces           : [ { Id, Role, SlopeKey, Points[], AreaSqMm, PitchDegrees } ],
@@ -57,9 +85,14 @@
        Bounds          : { MinX, MaxX, MinY, MaxY, MinZ, MaxZ }
    }
 
-   Member roles : 'kerb' | 'kerbPost' | 'eaves' | 'ridge' | 'hip' | 'verge'
+   Member roles : 'kerb' | 'kerbPost' | 'kerbReveal' | 'frame' | 'framePost'
+                | 'eaves' | 'ridge' | 'hip' | 'verge'
    Face roles   : 'glazingFace'
    SlopeKey     : 'long+' | 'long-' | 'short+' | 'short-' for slope identification
+
+   'kerbReveal' members trace the inner face of the upstand. They are the hole
+   through the base, not a section, so they carry no profile and are drawn as an
+   annotation line rather than swept into a solid.
 
    Glazing bars are NOT solved here - they are laid out onto Faces by
    VghLantern__Geometry__GlazeBarLayout, which consumes this output.
@@ -85,6 +118,18 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
 
     const MIN_PLAN_DIMENSION_MM   =  300;                                    // <-- Below this a lantern cannot be built
     const AREA_EPSILON            =  1e-6;                                   // <-- Degenerate face rejection threshold
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Base Assembly Fallbacks and Guards
+    // ------------------------------------------------------------
+    // Used only when a lantern block reaches the solver without the field, which
+    // a schema-normalised project never does. They match the schema defaults so a
+    // hand-edited file solves to the same geometry the editor would produce.
+    const FALLBACK_KERB_HEIGHT_MM     =  150;                                // <-- Standard Vale upstand height
+    const FALLBACK_KERB_THICKNESS_MM  =  110;                                // <-- Standard studwork kerb wall thickness
+    const FALLBACK_FRAME_HEIGHT_MM    =  50;                                 // <-- Standard base frame height
+    const MIN_REVEAL_DIMENSION_MM     =  100;                                // <-- Below this the hole is not a usable reveal
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -193,44 +238,122 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Emit the Kerb Rectangle, Posts and Eaves Rectangle
+    // HELPER FUNCTION | Build a Corner Ring in the Canonical Long/Short Frame
     // ------------------------------------------------------------
-    function VghLantern__SkeletonSolver__EmitBaseMembers(members, mapTo, kerbHalfLong, kerbHalfShort, eavesHalfLong, eavesHalfShort, kerbHeightMm) {
+    // Corner order is fixed at [-L-S, +L-S, +L+S, -L+S]. Every consumer of a ring
+    // relies on that order - the hip pairing in particular - so it is defined
+    // once here rather than repeated per caller.
+    function VghLantern__SkeletonSolver__Ring(mapTo, halfLong, halfShort, levelMm) {
+        return [
+            mapTo(-halfLong, -halfShort, levelMm),
+            mapTo( halfLong, -halfShort, levelMm),
+            mapTo( halfLong,  halfShort, levelMm),
+            mapTo(-halfLong,  halfShort, levelMm)
+        ];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Push the Four Perimeter Rails of a Ring
+    // ------------------------------------------------------------
+    function VghLantern__SkeletonSolver__PushRing(members, idPrefix, role, ringPoints) {
         var i;
-
-        var kerbBase  =  [
-            mapTo(-kerbHalfLong, -kerbHalfShort, 0),
-            mapTo( kerbHalfLong, -kerbHalfShort, 0),
-            mapTo( kerbHalfLong,  kerbHalfShort, 0),
-            mapTo(-kerbHalfLong,  kerbHalfShort, 0)
-        ];
-        var kerbTop  =  [
-            mapTo(-kerbHalfLong, -kerbHalfShort, kerbHeightMm),
-            mapTo( kerbHalfLong, -kerbHalfShort, kerbHeightMm),
-            mapTo( kerbHalfLong,  kerbHalfShort, kerbHeightMm),
-            mapTo(-kerbHalfLong,  kerbHalfShort, kerbHeightMm)
-        ];
-        var eavesRing  =  [
-            mapTo(-eavesHalfLong, -eavesHalfShort, kerbHeightMm),
-            mapTo( eavesHalfLong, -eavesHalfShort, kerbHeightMm),
-            mapTo( eavesHalfLong,  eavesHalfShort, kerbHeightMm),
-            mapTo(-eavesHalfLong,  eavesHalfShort, kerbHeightMm)
-        ];
-
         for (i = 0; i < 4; i++) {
-            VghLantern__SkeletonSolver__PushMember(members, 'kerb_' + i, 'kerb',
-                kerbTop[i], kerbTop[(i + 1) % 4]);
+            VghLantern__SkeletonSolver__PushMember(members, idPrefix + '_' + i, role,
+                ringPoints[i], ringPoints[(i + 1) % 4]);
+        }
+    }
+    // ------------------------------------------------------------
 
-            VghLantern__SkeletonSolver__PushMember(members, 'eaves_' + i, 'eaves',
-                eavesRing[i], eavesRing[(i + 1) % 4]);
 
-            if (kerbHeightMm > 0) {
-                VghLantern__SkeletonSolver__PushMember(members, 'kerbPost_' + i, 'kerbPost',
-                    kerbBase[i], kerbTop[i]);
-            }
+    // HELPER FUNCTION | Push the Four Corner Posts Between Two Rings
+    // ------------------------------------------------------------
+    function VghLantern__SkeletonSolver__PushPosts(members, idPrefix, role, lowerRing, upperRing) {
+        var i;
+        for (i = 0; i < 4; i++) {
+            VghLantern__SkeletonSolver__PushMember(members, idPrefix + '_' + i, role,
+                lowerRing[i], upperRing[i]);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Emit the Kerb Box, the Frame on Top of It and the Eaves Ring
+    // ------------------------------------------------------------
+    // The kerb and the frame share one footprint and one wall thickness, so they
+    // are emitted as one stacked assembly. The reveal is traced once, from the
+    // kerb base straight through to the frame top, because the inner face is
+    // continuous - there is no step between kerb and frame to draw.
+    function VghLantern__SkeletonSolver__EmitBaseMembers(members, context) {
+        var mapTo      =  context.MapTo;
+        var outerLong  =  context.KerbHalfLongMm;
+        var outerShort =  context.KerbHalfShortMm;
+        var kerbTopMm  =  context.KerbTopLevelMm;
+        var frameTopMm =  context.FrameTopLevelMm;
+
+        var outerBase      =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, 0);
+        var outerKerbTop   =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, kerbTopMm);
+        var outerFrameTop  =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, frameTopMm);
+
+        // KERB - the studwork upstand.
+        VghLantern__SkeletonSolver__PushRing(members, 'kerbTop', 'kerb', outerKerbTop);
+        if (context.KerbHeightMm > 0) {
+            VghLantern__SkeletonSolver__PushRing(members, 'kerbBase', 'kerb', outerBase);
+            VghLantern__SkeletonSolver__PushPosts(members, 'kerbPost', 'kerbPost', outerBase, outerKerbTop);
         }
 
+        // FRAME - the lantern base frame sitting on the kerb.
+        if (context.FrameHeightMm > 0) {
+            VghLantern__SkeletonSolver__PushRing(members, 'frameTop', 'frame', outerFrameTop);
+            VghLantern__SkeletonSolver__PushPosts(members, 'framePost', 'framePost', outerKerbTop, outerFrameTop);
+        }
+
+        // REVEAL - the hole through the base, offset inward by the kerb thickness.
+        if (context.HasReveal) {
+            var innerBase  =  VghLantern__SkeletonSolver__Ring(mapTo, context.InnerHalfLongMm, context.InnerHalfShortMm, 0);
+            var innerTop   =  VghLantern__SkeletonSolver__Ring(mapTo, context.InnerHalfLongMm, context.InnerHalfShortMm, frameTopMm);
+
+            VghLantern__SkeletonSolver__PushRing(members, 'revealBase', 'kerbReveal', innerBase);
+            VghLantern__SkeletonSolver__PushRing(members, 'revealTop',  'kerbReveal', innerTop);
+            VghLantern__SkeletonSolver__PushPosts(members, 'revealPost', 'kerbReveal', innerBase, innerTop);
+        }
+
+        // EAVES - the ring the roof springs from, oversailing the frame.
+        var eavesRing  =  VghLantern__SkeletonSolver__Ring(mapTo, context.EavesHalfLongMm, context.EavesHalfShortMm, frameTopMm);
+        VghLantern__SkeletonSolver__PushRing(members, 'eaves', 'eaves', eavesRing);
+
         return eavesRing;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Describe the Base Assembly as a Prism for the 3D Environment
+    // ------------------------------------------------------------
+    // Half extents are published per WORLD axis so a consumer never has to
+    // reason about which physical axis the solver treated as long.
+    function VghLantern__SkeletonSolver__BuildBaseBlock(context) {
+        var outerHalfX  =  context.WidthMm / 2;
+        var outerHalfY  =  context.DepthMm / 2;
+        var innerHalfX  =  Math.max(0, outerHalfX - context.KerbThicknessMm);
+        var innerHalfY  =  Math.max(0, outerHalfY - context.KerbThicknessMm);
+
+        return {
+            KerbHeightMm      : context.KerbHeightMm,
+            KerbThicknessMm   : context.KerbThicknessMm,
+            FrameHeightMm     : context.FrameHeightMm,
+            KerbBaseLevelMm   : 0,
+            KerbTopLevelMm    : context.KerbTopLevelMm,
+            FrameTopLevelMm   : context.FrameTopLevelMm,
+            OuterHalfWidthMm  : outerHalfX,
+            OuterHalfDepthMm  : outerHalfY,
+            InnerHalfWidthMm  : innerHalfX,
+            InnerHalfDepthMm  : innerHalfY,
+            RevealWidthMm     : context.HasReveal ? innerHalfX * 2 : 0,
+            RevealDepthMm     : context.HasReveal ? innerHalfY * 2 : 0,
+            OuterPerimeterMm  : (outerHalfX + outerHalfY) * 4,
+            InnerPerimeterMm  : context.HasReveal ? (innerHalfX + innerHalfY) * 4 : 0,
+            HasReveal         : context.HasReveal
+        };
     }
     // ------------------------------------------------------------
 
@@ -252,19 +375,11 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var anchors  =  [];
 
         var mapTo           =  context.MapTo;
-        var eavesHalfLong   =  context.EavesHalfLongMm;
-        var eavesHalfShort  =  context.EavesHalfShortMm;
-        var eavesLevel      =  context.EavesLevelMm;
         var ridgeLevel      =  context.RidgeLevelMm;
         var ridgeHalfLength =  context.RidgeHalfLengthMm;
         var pitchSet        =  context.PitchSet;
 
-        var eavesRing  =  VghLantern__SkeletonSolver__EmitBaseMembers(
-            members, mapTo,
-            context.KerbHalfLongMm, context.KerbHalfShortMm,
-            eavesHalfLong, eavesHalfShort,
-            context.KerbHeightMm
-        );
+        var eavesRing  =  VghLantern__SkeletonSolver__EmitBaseMembers(members, context);
 
         var ridgeNeg  =  mapTo(-ridgeHalfLength, 0, ridgeLevel);
         var ridgePos  =  mapTo( ridgeHalfLength, 0, ridgeLevel);

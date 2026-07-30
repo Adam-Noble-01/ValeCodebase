@@ -35,20 +35,20 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 9000,
-                "Lantern__Dimensions__Config__DepthMm": 4350,
+                "Lantern__Dimensions__Config__WidthMm": 6500,
+                "Lantern__Dimensions__Config__DepthMm": 4000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 50
             },
             "Lantern__RoofPitch__Config": {
                 "Lantern__RoofPitch__Config__DriveMode": "angle",
-                "Lantern__RoofPitch__Config__PitchDegrees": 22.5,
+                "Lantern__RoofPitch__Config__PitchDegrees": 30,
                 "Lantern__RoofPitch__Config__RidgeRiseMm": 1050
             },
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__DivisionMode": "spacing",
                 "Lantern__GlazingBars__Config__BarCountLongSlope": 3,
                 "Lantern__GlazingBars__Config__BarCountShortSlope": 1,
-                "Lantern__GlazingBars__Config__TargetSpacingMm": 450,
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 410,
                 "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
             },
@@ -84,5 +84,34 @@
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""
             }
         }
-    ]
+    ],
+    "VghLantern__ProjectFile__DrawingLayout": {
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A3",
+        "VghLantern__ProjectFile__DrawingLayout__Orientation": "landscape",
+        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": 50,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
+        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": [
+            58.74577633620519,
+            41.25422366379481
+        ],
+        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": [
+            39.20130010714718,
+            60.79869989285282
+        ],
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.1735108709918103,
+        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
+            "threeDimensional": {
+                "Position": {
+                    "x": 9.065154172371685,
+                    "y": 6.452244844297237,
+                    "z": 11.140145685851362
+                },
+                "Target": {
+                    "x": 0.3335819130355908,
+                    "y": 0.13782272515400332,
+                    "z": -0.035757163375082564
+                }
+            }
+        }
+    }
 }

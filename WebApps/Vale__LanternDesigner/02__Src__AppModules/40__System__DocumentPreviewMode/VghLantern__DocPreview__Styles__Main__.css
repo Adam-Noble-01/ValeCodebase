@@ -267,6 +267,142 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * REGION | Drawing Furniture Markup Rendered On A Preview Page
+ * -----------------------------------------------------------------------------
+ *
+ * The notes block and the titleblock strip are built by the Drawing Editor's
+ * AnnotationLayer and TitleBlockRenderer, and this mode is the only surface that
+ * still renders them as DOM - the Drawing Editor itself draws them as SVG chrome so
+ * its sheet and its PDF export cannot drift apart. These rules therefore live here,
+ * with the one consumer, rather than in the Drawing Editor stylesheet.
+ *
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Sheet__Notes {
+        border-top                  : 0.25mm solid var(--VghLantern_SvgConstructionLine);
+        padding-top                 : 1.25mm;
+    }
+
+    .VghLantern__Sheet__NotesTitle {
+        margin                      : 0 0 1px 0;
+        font-size                   : 1.47mm;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        color                       : var(--Vale_TextPrimary);
+        text-transform              : uppercase;
+        letter-spacing              : 0.05em;
+    }
+
+    .VghLantern__Sheet__NotesList {
+        margin                      : 0;
+        padding-left                : 1.4em;
+        columns                     : 2;
+        column-gap                  : 6mm;
+    }
+
+    .VghLantern__Sheet__NotesItem {
+        font-size                   : 1.4mm;
+        line-height                 : 1.35;
+        color                       : var(--Vale_TextPrimary);
+    }
+
+    /* Project-specific notes read slightly stronger than the standing notes */
+    .VghLantern__Sheet__NotesItem--project {
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__Sheet__TitleBlock {
+        display                     : flex;
+        align-items                 : stretch;
+        height                      : 100%;
+        border                      : 1px solid var(--Vale_BorderPrimary);
+        overflow                    : hidden;
+    }
+
+    .VghLantern__Sheet__TitleBlockLogo {
+        display                     : flex;
+        flex-direction              : row;
+        justify-content             : center;
+        align-items                 : center;
+        gap                         : 0;
+        flex                        : 0 0 auto;
+        box-sizing                  : border-box;
+        padding                     : 1.8mm 2.5mm;
+        border-right                : 1px solid var(--Vale_BorderPrimary);
+    }
+
+    .VghLantern__Sheet__TitleBlockLogo img {
+        display                     : block;
+        max-height                  : 5.5mm;
+        width                       : auto;
+        height                      : auto;
+        object-fit                  : contain;
+    }
+
+    .VghLantern__Sheet__TitleBlockCompany {
+        font-size                   : 1.8mm;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        color                       : var(--Vale_PrimaryBrand);
+        white-space                 : nowrap;
+    }
+
+    /* Single horizontal strip - never wrap onto a second row */
+    .VghLantern__Sheet__TitleBlockFields {
+        display                     : flex;
+        flex-wrap                   : nowrap;
+        align-items                 : stretch;
+        flex                        : 1 1 auto;
+        min-width                   : 0;
+    }
+
+    /* Label pinned top-left; value centred vertically in the remaining cell */
+    .VghLantern__Sheet__TitleBlockField {
+        position                    : relative;
+        display                     : flex;
+        flex-direction              : column;
+        align-items                 : stretch;
+        justify-content             : center;
+        box-sizing                  : border-box;
+        padding                     : 2.4mm 1.4mm 0.8mm 1.4mm;
+        border-right                : 1px solid var(--VghLantern_SvgConstructionLine);
+        overflow                    : hidden;
+        min-width                   : 0;
+    }
+
+    .VghLantern__Sheet__TitleBlockField:last-child {
+        border-right                : none;
+    }
+
+    .VghLantern__Sheet__TitleBlockFieldLabel {
+        position                    : absolute;
+        top                         : 0.5mm;
+        left                        : 1.4mm;
+        right                       : 1.4mm;
+        font-size                   : 1.6mm;
+        line-height                 : 1;
+        color                       : var(--Vale_TextSubtle);
+        text-transform              : uppercase;
+        letter-spacing              : 0.03em;
+        white-space                 : nowrap;
+        overflow                    : hidden;
+        text-overflow               : ellipsis;
+        pointer-events              : none;
+    }
+
+    .VghLantern__Sheet__TitleBlockFieldValue {
+        font-size                   : 2.2mm;
+        line-height                 : 1;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        color                       : var(--Vale_TextPrimary);
+        white-space                 : nowrap;
+        overflow                    : hidden;
+        text-overflow               : ellipsis;
+        min-height                  : 1em;
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
  * REGION | Print-Faithful Specification Document
  * ----------------------------------------------------------------------------- */
 

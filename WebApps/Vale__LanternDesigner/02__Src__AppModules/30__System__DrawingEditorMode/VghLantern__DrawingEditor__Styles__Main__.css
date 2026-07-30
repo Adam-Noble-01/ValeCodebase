@@ -134,34 +134,33 @@
         justify-content                    : center;
     }
 
-    /* The paper. Dimensions are set inline from the resolved paper size. */
+    /* The paper. Dimensions are set inline from the solved page size, and every
+       child is positioned from the solved paper rectangles - this sheet lays
+       nothing out itself, because the PDF has to place the same boxes. */
     .VghLantern__Sheet {
-        display                            : flex;
-        flex-direction                     : column;
-        gap                                : var(--VghSheet_BlockGap, 3mm);
+        position                           : relative;
         box-sizing                         : border-box;
         background-color                   : #ffffff;
-        border                             : 1px solid var(--Vale_BorderPrimary);
         box-shadow                         : 0 2px 12px var(--VghLantern_PreviewPaperShadow);
+
+        /* An outline, not a border. A border would come out of the content box and
+           leave the chrome overlay - which stretches to fill that box - scaled a
+           couple of pixels smaller than the frames positioned inside it. The paper's
+           inner box has to be the paper, exactly. */
+        outline                            : 1px solid var(--Vale_BorderPrimary);
     }
 
-    /* View grid wrap owns the absolute gutter handles so they never become grid tracks. */
-    .VghLantern__Sheet__ViewGridWrap {
-        position                           : relative;
-        display                            : flex;
-        flex-direction                     : column;
-        flex                               : 1 1 auto;
-        min-height                         : 0;
-        min-width                          : 0;
-    }
-
-    /* View grid. Columns, rows and gap are set inline from config / gutter shares. */
-    .VghLantern__Sheet__ViewGrid {
-        display                            : grid;
-        flex                               : 1 1 auto;
-        min-height                         : 0;
+    /* Everything printed on the sheet that is not a view: frame borders, caption
+       strips, the notes block and the titleblock. Drawn by SheetChrome from the
+       same primitives the PDF export draws. Pointer-transparent, so a click still
+       reaches the dimension text or the 3D frame underneath it. */
+    .VghLantern__Sheet__ChromeLayer {
+        position                           : absolute;
+        inset                              : 0;
         width                              : 100%;
         height                             : 100%;
+        pointer-events                     : none;
+        z-index                            : 10;
     }
 
 /* #endregion ------------------------------------------------------------------- */
@@ -261,12 +260,11 @@
  * REGION | View Frames
  * ----------------------------------------------------------------------------- */
 
+    /* Frame box. Position and size are set inline from the solved frame rectangle;
+       its border and caption are drawn in the chrome overlay above it. */
     .VghLantern__Sheet__Frame {
-        display                            : flex;
-        flex-direction                     : column;
-        min-width                          : 0;
-        min-height                         : 0;
-        border                             : var(--VghSheet_FrameStroke, 0.25mm) solid var(--VghLantern_SvgConstructionLine);
+        position                           : absolute;
+        box-sizing                         : border-box;
     }
 
     /* Live camera edit on the 3D frame: the border says which viewport owns the
@@ -274,38 +272,21 @@
     .VghLantern__Sheet__Frame--cameraEdit {
         outline                            : 2px solid var(--VghLantern_AccentBlue);
         outline-offset                     : -1px;
+        z-index                            : 15;                               /* <-- Above the chrome, so the live viewport reads as active */
     }
 
-    .VghLantern__Sheet__FrameLabel {
-        display                            : flex;
-        align-items                        : baseline;
-        justify-content                    : space-between;
-        gap                                : var(--Vale_Spacing_Small);
-        flex                               : 0 0 auto;
-        padding                            : 0.6mm 1.9mm;
-        font-weight                        : var(--Vale_FontWeight_SemiBold);
-        color                              : var(--Vale_TextPrimary);
-        border-bottom                      : var(--VghSheet_FrameStroke, 0.25mm) solid var(--VghLantern_SvgConstructionLine);
-        text-transform                     : uppercase;
-        letter-spacing                     : 0.05em;
-    }
-
-    .VghLantern__Sheet__FrameScale {
-        font-weight                        : var(--Vale_FontWeight_Regular);
-        text-transform                     : none;
-        letter-spacing                     : 0;
-        color                              : var(--Vale_TextSecondary);
-    }
-
-    /* Frame body hosts either an Env2d SVG root or a 3D snapshot image */
+    /* Frame body hosts either an Env2d SVG root or a 3D snapshot image. Positioned
+       inline from the solved body rectangle, which is the same rectangle the export
+       places the view into. */
     .VghLantern__Sheet__FrameBody {
-        position                           : relative;
-        flex                               : 1 1 auto;
-        min-width                          : 0;
-        min-height                         : 0;
+        position                           : absolute;
+        box-sizing                         : border-box;
         overflow                           : hidden;
     }
 
+    /* The snapshot is captured at this frame's own aspect, so it fills its box with
+       nothing left over. contain is kept as the safety net: if a redraw is ever
+       mid-flight the previous image letterboxes rather than distorting. */
     .VghLantern__Sheet__FrameSnapshot {
         display                            : block;
         width                              : 100%;
@@ -329,145 +310,16 @@
 
 
 /* #region ----------------------------------------------------------------------
- * REGION | Notes Block
+ * REGION | Notes Block And Title Block
+ * -----------------------------------------------------------------------------
+ *
+ * Both blocks used to be DOM elements styled here and re-drawn independently by the
+ * PDF exporter, which is where the two surfaces drifted apart on font, weight and
+ * text placement. They are now primitives built by SheetChrome and painted into the
+ * sheet's chrome overlay, so there is nothing left to style on this sheet. The
+ * Document Preview mode still renders TitleBlockRenderer markup and styles it in its
+ * own stylesheet.
+ *
  * ----------------------------------------------------------------------------- */
-
-    .VghLantern__Sheet__NotesHost {
-        flex                               : 0 0 auto;
-    }
-
-    .VghLantern__Sheet__Notes {
-        border-top                         : var(--VghSheet_FrameStroke, 0.25mm) solid var(--VghLantern_SvgConstructionLine);
-        padding-top                        : var(--VghSheet_NotePadTop, 1.25mm);
-    }
-
-    .VghLantern__Sheet__NotesTitle {
-        margin                             : 0 0 1px 0;
-        font-size                          : var(--VghSheet_NoteHeadingFont, 1.47mm);
-        font-weight                        : var(--Vale_FontWeight_SemiBold);
-        color                              : var(--Vale_TextPrimary);
-        text-transform                     : uppercase;
-        letter-spacing                     : 0.05em;
-    }
-
-    .VghLantern__Sheet__NotesList {
-        margin                             : 0;
-        padding-left                       : 1.4em;
-        columns                            : 2;
-        column-gap                         : var(--VghSheet_NoteColGap, 6mm);
-    }
-
-    .VghLantern__Sheet__NotesItem {
-        font-size                          : var(--VghSheet_NoteFont, 1.4mm);
-        line-height                        : 1.35;
-        color                              : var(--Vale_TextPrimary);
-    }
-
-    /* Project-specific notes read slightly stronger than the standing notes */
-    .VghLantern__Sheet__NotesItem--project {
-        font-weight                        : var(--Vale_FontWeight_SemiBold);
-    }
-
-/* #endregion ------------------------------------------------------------------- */
-
-
-/* #region ----------------------------------------------------------------------
- * REGION | Title Block
- * ----------------------------------------------------------------------------- */
-
-    /* Host height is set inline from the configured titleblock height */
-    .VghLantern__Sheet__TitleHost {
-        flex                               : 0 0 auto;
-    }
-
-    .VghLantern__Sheet__TitleBlock {
-        display                            : flex;
-        align-items                        : stretch;
-        height                             : 100%;
-        border                             : 1px solid var(--Vale_BorderPrimary);
-        overflow                           : hidden;
-    }
-
-    .VghLantern__Sheet__TitleBlockLogo {
-        display                            : flex;
-        flex-direction                     : row;
-        justify-content                    : center;
-        align-items                        : center;
-        gap                                : 0;
-        flex                               : 0 0 auto;
-        box-sizing                         : border-box;
-        padding                            : var(--VghSheet_LogoPadV, 1.8mm) var(--VghSheet_LogoPadH, 2.5mm);
-        border-right                       : 1px solid var(--Vale_BorderPrimary);
-    }
-
-    .VghLantern__Sheet__TitleBlockLogo img {
-        display                            : block;
-        max-height                         : var(--VghSheet_LogoMaxHeight, 5.5mm);
-        width                              : auto;
-        height                             : auto;
-        object-fit                         : contain;
-    }
-
-    .VghLantern__Sheet__TitleBlockCompany {
-        font-size                          : 1.8mm;
-        font-weight                        : var(--Vale_FontWeight_SemiBold);
-        color                              : var(--Vale_PrimaryBrand);
-        white-space                        : nowrap;
-    }
-
-    /* Single horizontal strip — never wrap onto a second row */
-    .VghLantern__Sheet__TitleBlockFields {
-        display                            : flex;
-        flex-wrap                          : nowrap;
-        align-items                        : stretch;
-        flex                               : 1 1 auto;
-        min-width                          : 0;
-    }
-
-    /* Label pinned top-left; value centred vertically in the remaining cell */
-    .VghLantern__Sheet__TitleBlockField {
-        position                           : relative;
-        display                            : flex;
-        flex-direction                     : column;
-        align-items                        : stretch;
-        justify-content                    : center;
-        box-sizing                         : border-box;
-        padding                            : var(--VghSheet_FieldPadT, 2.4mm) var(--VghSheet_FieldPadH, 1.4mm) var(--VghSheet_FieldPadB, 0.8mm) var(--VghSheet_FieldPadH, 1.4mm);
-        border-right                       : 1px solid var(--VghLantern_SvgConstructionLine);
-        border-bottom                      : none;
-        overflow                           : hidden;
-        min-width                          : 0;
-    }
-
-    .VghLantern__Sheet__TitleBlockField:last-child {
-        border-right                       : none;
-    }
-
-    .VghLantern__Sheet__TitleBlockFieldLabel {
-        position                           : absolute;
-        top                                : var(--VghSheet_FieldLabelTop, 0.5mm);
-        left                               : var(--VghSheet_FieldPadH, 1.4mm);
-        right                              : var(--VghSheet_FieldPadH, 1.4mm);
-        font-size                          : var(--VghSheet_TitleLabelFont, 1.6mm);
-        line-height                        : 1;
-        color                              : var(--Vale_TextSubtle);
-        text-transform                     : uppercase;
-        letter-spacing                     : 0.03em;
-        white-space                        : nowrap;
-        overflow                           : hidden;
-        text-overflow                      : ellipsis;
-        pointer-events                     : none;
-    }
-
-    .VghLantern__Sheet__TitleBlockFieldValue {
-        font-size                          : var(--VghSheet_TitleValueFont, 2.2mm);
-        line-height                        : 1;
-        font-weight                        : var(--Vale_FontWeight_SemiBold);
-        color                              : var(--Vale_TextPrimary);
-        white-space                        : nowrap;
-        overflow                           : hidden;
-        text-overflow                      : ellipsis;
-        min-height                         : 1em;
-    }
 
 /* #endregion ------------------------------------------------------------------- */

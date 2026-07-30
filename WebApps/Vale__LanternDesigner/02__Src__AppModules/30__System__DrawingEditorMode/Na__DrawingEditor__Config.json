@@ -87,6 +87,36 @@
             "GridNote"                  : "Slot ColumnStart / RowStart indices are one-based and must fit within Columns x Rows. ColumnSharesPct / RowSharesPct are session-overridable from gutter drags."
         },
 
+        "VghLantern__DrawingEditor__Config__SheetStyle": {
+            "SheetStyleNote"            : "How everything printed on a sheet that is not a view is painted. Read by SheetChrome, which draws the on-screen sheet and the PDF export from one primitive list - so these values apply to both surfaces at once and there is nothing to keep in step by hand.",
+            "FontFamily"                : "Helvetica, Arial, 'Liberation Sans', sans-serif",
+            "FontFamilyNote"            : "Helvetica leads because that is the face jsPDF embeds by reference. Arial is metrically identical and is what Windows substitutes, so the screen sets the same glyphs on the same advances as the PDF. Changing this to a face jsPDF does not carry will reintroduce the drift it was chosen to remove.",
+            "PaperColour"               : "#ffffff",
+            "InkColour"                 : "#172b3a",
+            "FrameLineColour"           : "#b8c0c6",
+            "MutedTextColour"           : "#6c757d",
+            "FrameStrokeMm"             : 0.25,
+            "TitleStrokeMm"             : 0.25,
+            "CellPaddingMm"             : 1.9,
+            "CellPaddingMmNote"         : "Text inset from the left and right edge of a boxed cell.",
+
+            "FrameLabelWeight"          : "bold",
+            "FrameLabelTrackingMm"      : 0.16,
+            "FrameLabelUppercase"       : true,
+            "ScaleLabelWeight"          : "normal",
+
+            "NotesTitleWeight"          : "bold",
+            "NotesTitleTrackingMm"      : 0.07,
+            "NotesTitleUppercase"       : true,
+            "NoteWeight"                : "normal",
+
+            "TitleLabelWeight"          : "normal",
+            "TitleLabelTrackingMm"      : 0.05,
+            "TitleLabelUppercase"       : true,
+            "TitleValueWeight"          : "bold",
+            "TrackingNote"              : "Letter spacing in millimetres, not ems, because a PDF content stream sets character spacing in the page unit. Both renderers add it after every glyph."
+        },
+
         "VghLantern__DrawingEditor__Config__Scales": {
             "AvailableScaleDenominators": [5, 10, 20, 25, 50, 100],
             "PreferredScaleDenominator" : 20,
@@ -163,6 +193,8 @@
             "FilenamePatternNote"        : "Tokens: projectCode, projectName, drawingNumber, lanternTitle, revision, sheetSize, scale. Unresolved tokens collapse to nothing rather than printing literally.",
             "RasterPixelsPerMm"         : 12,
             "RasterPixelsPerMmNote"     : "Roughly 305 dpi. jsPDF cannot place vector SVG, so orthographic views are rasterised at this density; raise for finer linework at the cost of file size.",
+            "SnapshotPixelsPerMm"       : 12,
+            "SnapshotPixelsPerMmNote"   : "Pixel density the 3D snapshot is rendered at. The buffer is sized from the frame's paper millimetres at this density, which is what gives the snapshot the frame's exact aspect - the same image then fills the same rectangle on screen and on paper with no fitting between them. Falls back to RasterPixelsPerMm.",
             "BlockGapMm"                : 3,
             "BlockGapMmNote"            : "Legacy fallback. Prefer Sheet.BlockGapMm - both screen and PDF read Sheet first.",
             "FrameStrokeMm"             : 0.25,
@@ -170,6 +202,7 @@
             "InkColour"                 : "#172b3a",
             "FrameLineColour"           : "#b8c0c6",
             "MutedTextColour"           : "#6c757d",
+            "PaintingNote"              : "The stroke and colour values here are fallbacks only. SheetStyle owns how a sheet is painted, because those values have to serve the screen and the export at once.",
             "Author"                    : "Vale Garden Houses Limited",
             "Creator"                   : "Vale Lantern Designer",
             "ScaleNote"                 : "The PDF page is created at the sheet's true millimetre size and each view's viewBox is rewritten to span exactly (frame size x scale denominator) model millimetres, so the file prints to scale at 100 percent with page scaling switched off."

@@ -3,6 +3,48 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.3.0 - 30-Jul-2026
+### Drawing Editor: one layout and one chrome description shared by sheet and PDF, 3D snapshots framed at the frame's own aspect, and sheet setup persisted on the project file
+
+**Status: tested and confirmed working.** Sheet and export are in parity, the 3D frame matches on both surfaces, and sheet setup survives a session.
+
+#### The problem
+- The sheet and its PDF were drawn by two independent authors. The screen was a CSS grid inside a flex column with the notes block and titleblock as DOM; the exporter re-solved the same rectangles in millimetres and re-drew the same furniture with jsPDF. Anything not expressed as a shared config number drifted: font stack, font weight, letter spacing, text baselines, rule colours, and the position of every caption.
+- The 3D view was the worst of it. The snapshot was captured into a fixed **2000 x 1400** buffer whatever shape the frame was. On screen `object-fit: contain` letterboxed it; on paper `addImage` stretched it to fill. Same lantern, two different framings.
+- Nothing about the sheet was saved. Sheet size, orientation, scale, gutter positions, zoom and the 3D viewpoint were session variables, so every reopen started from the config defaults.
+
+#### One geometry source (`SheetPdfLayout__.js`, `SheetManager__.js`, `ViewportFrame__.js`)
+- **The screen sheet is now positioned from the layout solve.** Each frame and its drawable body are placed at the solved paper rectangle divided by `ScreenPixelsPerMm` and nothing else. The CSS grid, the flex column and the per-surface layout maths are gone.
+- `Solve()` returns the grid's **column and row tracks**, so the gutter handles sit on the solved gutter centre lines rather than on a second implementation of the same division. It also returns `LabelMm` and `ScreenPixelsPerMm`.
+- `ViewportFrame__CellSizeMm()` and `SlotBodySizeMm()` are **removed**. They were a parallel copy of the layout arithmetic, including a second implementation of the notes-band reservation, which is exactly the kind of duplicate that drifts.
+- `ViewPlacement__ApplyTrueScale()` takes the body rectangle from the solve instead of measuring the laid-out element, so screen rounding can no longer reach the drawn scale. `BuildFitRequests()` fits against the same rectangles.
+- The paper's outline is an **outline, not a border**: a border comes out of the content box and would leave the chrome overlay scaled a couple of pixels smaller than the frames positioned inside it.
+
+#### One chrome description (`SheetChrome__.js` - new)
+- Everything printed on a sheet that is not a view - frame boxes, caption strips, captions, scale labels, the notes block, the titleblock - is built **once** as a flat list of paper-millimetre primitives (`Rect`, `Line`, `Text`, `Image`).
+- That one list is rendered **two ways**: to an SVG overlay whose viewBox is the paper in millimetres for the Drawing Editor, and to jsPDF calls for the export. Same order, same coordinates, same face, same weights. The overlay is pointer-transparent, so clicking a dimension or double-clicking the 3D frame still reaches the view underneath.
+- **Baselines are absolute and derived from cap height.** A baseline is the only vertical anchor SVG and PDF agree on exactly; line boxes, half-leading and flex baseline alignment have no equivalent in a PDF content stream.
+- **Text is measured through jsPDF.** A throwaway document holds the Helvetica metrics the export will use, so a titleblock value truncated on paper is truncated at the same character on screen. The font stack leads with Helvetica for the same reason - Arial is metrically identical and is what Windows substitutes.
+- New **`Config__SheetStyle`** block owns colours, strokes, weights, letter spacing and the font stack for both surfaces at once. `Config__PdfExport` keeps its colour values as fallbacks only.
+- The Document Preview mode still renders `TitleBlockRenderer` and `AnnotationLayer` markup as DOM, so their CSS moved to the Document Preview stylesheet, with its one consumer.
+
+#### 3D snapshot parity (`ViewPlacement__.js`)
+- The snapshot is rendered at the frame's paper millimetres times `PdfExport.SnapshotPixelsPerMm`, so it has the **frame's exact aspect** and fills its rectangle on both surfaces with no fitting in between.
+- The offscreen stage is sized to that aspect **before** the camera preset is fitted. The preset fits against whatever aspect the surface is at, and the capture then renders without refitting; if the two disagree the fit is wrong, and a frame taller than the stage had its model clipped at the sides.
+- The snapshot cache fingerprint now includes the frame size, so changing sheet size or dragging a gutter re-shoots rather than reusing an image fitted to the previous frame.
+
+#### Sheet setup persisted (`ProjectSchemaValidator__.js`, `ProjectFileManager__.js`, `SheetManager__.js`)
+- New **`VghLantern__ProjectFile__DrawingLayout`** block on the project file: sheet size key, orientation, scale denominator, whether the scale was chosen by hand, column and row shares, sheet zoom, and the 3D view camera states.
+- Restored on `projectChanged` **before** the redraw, so a project opens on the paper, scale and viewpoint it was saved with rather than on the defaults followed by a visible correction. Every field may be null, and null means fall back to config, which is what a project created before this block existed needs to do.
+- Writes go through `MarkDirty()`, so the existing AppCore debounce turns a gutter drag or a run of zoom steps into a single disk write rather than one per event.
+- A saved sheet size is checked against the size table and a saved scale against the denominator list before either is applied, so a stale value cannot put the sheet on an unreadable scale.
+
+#### PDF export
+- `SheetPdfExporter__.js` no longer draws anything of its own. It rasterises the views into the solved body rectangles, then hands the shared chrome primitives to the shared renderer. It **reuses the layout the editor laid the screen sheet out with** rather than re-solving, so an export cannot disagree with the sheet the user approved.
+- Draw order is unchanged and still deliberate: views first, chrome over the top, because a view is an opaque raster that fills its body rectangle to the millimetre. The on-screen overlay stacks the same way.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.0.2 - 30-Jul-2026
 ### Preview & Send and Drawing Editor: drawings last, compact title block, PDF-faithful preview, true scale sheet views, sheet navigation, live 3D camera, and true-size PDF export
 

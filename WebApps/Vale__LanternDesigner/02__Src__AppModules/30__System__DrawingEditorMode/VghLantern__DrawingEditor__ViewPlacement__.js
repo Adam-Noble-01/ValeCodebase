@@ -29,6 +29,13 @@
    high-DPI raster inside a vector sheet is the standard approach and prints
    correctly. Every other view on the sheet stays vector.
 
+   WHY THE 3D SNAPSHOT IS RENDERED AT THE FRAME'S OWN ASPECT:
+   The snapshot used to be captured at a fixed 2000 x 1400 buffer whatever shape the
+   frame was. On screen the image was letterboxed to fit, on paper it was stretched
+   to fill, and the same lantern came out framed differently on the two surfaces. The
+   camera is now given the frame's aspect and the buffer is sized from the frame's
+   paper millimetres, so the image fills its rectangle exactly on both.
+
    ============================================================================= */
 
 // =============================================================================
@@ -63,6 +70,9 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // lantern. Never created rather than hidden later, so the light rig that shares
     // the helpers group is left completely alone.
     const VGHLANTERN__SHEET_VIEWPORT_OPTIONS  =  { ShowGroundPlane : false };
+
+    const SNAPSHOT_FALLBACK_PPMM  =  12;                                      // <-- About 305 dpi, used only if config is unreadable
+    const SNAPSHOT_STAGE_MAX_PX   =  1200;                                    // <-- Longest edge of the offscreen stage; only its aspect matters
     // ------------------------------------------------------------
 
 
@@ -105,20 +115,6 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 // -----------------------------------------------------------------------------
 // REGION | Config Access
 // -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | List the Configured View Slots
-    // ------------------------------------------------------------
-    function VghLantern__ViewPlacement__Slots() {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        if (!ConfigLoader) return [];
-
-        var drawingCfg  =  ConfigLoader.VghLantern__ConfigLoader__GetSection('DrawingEditor') || {};
-        var slots       =  drawingCfg['VghLantern__DrawingEditor__Config__ViewSlots'];
-
-        return Array.isArray(slots) ? slots : [];
-    }
-    // ------------------------------------------------------------
-
 
     // HELPER FUNCTION | Get the View Grid Config Block
     // ------------------------------------------------------------
@@ -166,63 +162,32 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB HELPER FUNCTION | Measure a Frame Body in Paper Millimetres
-    // ------------------------------------------------------------
-    // The sheet is laid out in pixels derived from paper millimetres at a fixed
-    // ratio, so dividing the laid-out box by that ratio recovers the true paper size
-    // of the frame. offsetWidth is used rather than a client rect because it is
-    // unaffected by the sheet's CSS zoom transform.
-    function VghLantern__ViewPlacement__MeasuredBodySizeMm(bodyElement) {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        if (!bodyElement || !ConfigLoader) return null;
-
-        var drawingCfg  =  ConfigLoader.VghLantern__ConfigLoader__GetSection('DrawingEditor') || {};
-        var sheetCfg    =  drawingCfg['VghLantern__DrawingEditor__Config__Sheet'] || {};
-        var pxPerMm     =  (typeof sheetCfg.ScreenPixelsPerMm === 'number' && sheetCfg.ScreenPixelsPerMm > 0)
-            ? sheetCfg.ScreenPixelsPerMm
-            : 3.2;
-
-        var widthPx   =  bodyElement.offsetWidth;
-        var heightPx  =  bodyElement.offsetHeight;
-        if (widthPx <= 0 || heightPx <= 0) return null;                        // <-- Not laid out yet
-
-        return { WidthMm : widthPx / pxPerMm, HeightMm : heightPx / pxPerMm };
-    }
-    // ------------------------------------------------------------
-
-
     // SUB FUNCTION | Apply the True Paper Scale to a Sheet Surface
     // ------------------------------------------------------------
     // The frame caption quotes the ScaleManager denominator, so the viewBox must
     // span exactly (frame paper size x denominator) model millimetres. Left to its
     // own devices the Env2d pipeline fits each view to its frame independently,
     // which silently gives every view a different scale.
-    function VghLantern__ViewPlacement__ApplyTrueScale(surface, slot, geometry, cellMetrics) {
-        var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        var CoordHelpers   =  window.VghLantern__Env2d__CoordHelpers;
-        if (!ScaleManager || !ViewportFrame || !CoordHelpers) return;
+    //
+    // The body rectangle comes from the solved layout rather than from measuring the
+    // laid-out element, because that is the rectangle the export will place the view
+    // into. Measuring the DOM back would import screen rounding into the scale.
+    function VghLantern__ViewPlacement__ApplyTrueScale(surface, placement, geometry) {
+        var ScaleManager  =  window.VghLantern__DrawingEditor__ScaleManager;
+        var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
+        if (!ScaleManager || !CoordHelpers) return;
         if (!surface || !surface.Instance || !geometry || !geometry.Skeleton) return;
+        if (!placement || !placement.Body) return;
 
-        var extents   =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ExtentsOfSkeleton(
+        var slot     =  placement.Slot;
+        var extents  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ExtentsOfSkeleton(
             geometry.Skeleton, slot.ViewKey || slot.Key
         );
         if (!extents) return;
 
-        // Measure the frame body that was actually laid out rather than the cell the
-        // grid was asked for. The notes block takes its height off the grid, so the
-        // two differ - and a viewBox whose aspect does not match its box gets
-        // letterboxed by preserveAspectRatio, quietly drawing under the quoted scale.
-        var bodySize  =  VghLantern__ViewPlacement__MeasuredBodySizeMm(surface.HostElement);
-
-        if (!bodySize && cellMetrics) {
-            bodySize  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SlotBodySizeMm(slot, cellMetrics);
-        }
-        if (!bodySize) return;
-
         var denominator  =  ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator();
-        var spanX        =  bodySize.WidthMm  * denominator;
-        var spanY        =  bodySize.HeightMm * denominator;
+        var spanX        =  placement.Body.WidthMm  * denominator;
+        var spanY        =  placement.Body.HeightMm * denominator;
         var centreX      =  (extents.MinX + extents.MaxX) / 2;
         var centreY      =  (extents.MinY + extents.MaxY) / 2;
 
@@ -240,10 +205,11 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 
     // SUB FUNCTION | Place One Orthographic View
     // ------------------------------------------------------------
-    async function VghLantern__ViewPlacement__PlaceOrthographic(slot, bodyElement, geometry, lantern, cellMetrics) {
+    async function VghLantern__ViewPlacement__PlaceOrthographic(placement, bodyElement, geometry, lantern) {
         var Env2d  =  window.VghLantern__Env2d__RenderPipeline;
         if (!Env2d) return false;
 
+        var slot     =  placement.Slot;
         var surface  =  VghLantern__ViewPlacement__Surfaces[slot.Key];
 
         // Remount when the body element has been rebuilt by a sheet redraw.
@@ -256,7 +222,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         if (!surface) return false;
 
         // Scale is re-applied every pass because the extents move with the geometry.
-        VghLantern__ViewPlacement__ApplyTrueScale(surface, slot, geometry, cellMetrics);
+        VghLantern__ViewPlacement__ApplyTrueScale(surface, placement, geometry);
 
         var didRender  =  await Env2d.VghLantern__Env2d__RenderPipeline__Render(
             surface, geometry ? geometry.Skeleton : null, geometry ? geometry.BarSet : null, lantern
@@ -309,13 +275,61 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Resolve the Snapshot Pixel Size for a Frame Body
+    // ------------------------------------------------------------
+    // Sized from the frame's paper millimetres at the configured print density, so
+    // the image has the frame's exact aspect and enough pixels to hold up beside
+    // vector linework at that size. Returns null when there is no solved body, which
+    // leaves the exporter's own defaults in force.
+    function VghLantern__ViewPlacement__SnapshotSizePx(placement) {
+        if (!placement || !placement.Body) return null;
+
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var drawingCfg    =  ConfigLoader ? (ConfigLoader.VghLantern__ConfigLoader__GetSection('DrawingEditor') || {}) : {};
+        var pdfCfg        =  drawingCfg['VghLantern__DrawingEditor__Config__PdfExport'] || {};
+
+        var pixelsPerMm  =  (typeof pdfCfg.SnapshotPixelsPerMm === 'number' && pdfCfg.SnapshotPixelsPerMm > 0)
+            ? pdfCfg.SnapshotPixelsPerMm
+            : ((typeof pdfCfg.RasterPixelsPerMm === 'number' && pdfCfg.RasterPixelsPerMm > 0)
+                ? pdfCfg.RasterPixelsPerMm
+                : SNAPSHOT_FALLBACK_PPMM);
+
+        var widthPx   =  Math.max(64, Math.round(placement.Body.WidthMm  * pixelsPerMm));
+        var heightPx  =  Math.max(64, Math.round(placement.Body.HeightMm * pixelsPerMm));
+
+        return { WidthPx : widthPx, HeightPx : heightPx };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Size the Offscreen Stage to the Frame's Aspect
+    // ------------------------------------------------------------
+    // The camera preset is fitted against whatever aspect the surface is at when the
+    // preset is applied, and the capture then renders at the requested aspect without
+    // refitting. If the two disagree the fit is wrong: a frame taller than the stage
+    // would have its model clipped at the sides. Sizing the stage first makes the fit
+    // and the capture agree. The stage is capped rather than sized in output pixels,
+    // because only its shape matters - the capture sets its own buffer size.
+    function VghLantern__ViewPlacement__SizeSnapshotHost(host, sizePx) {
+        if (!host || !sizePx) return;
+
+        var longest  =  Math.max(sizePx.WidthPx, sizePx.HeightPx);
+        var factor   =  (longest > SNAPSHOT_STAGE_MAX_PX) ? (SNAPSHOT_STAGE_MAX_PX / longest) : 1;
+
+        host.style.width   =  Math.max(2, Math.round(sizePx.WidthPx  * factor)) + 'px';
+        host.style.height  =  Math.max(2, Math.round(sizePx.HeightPx * factor)) + 'px';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Render the Offscreen 3D Surface for the Active Lantern
     // ------------------------------------------------------------
-    async function VghLantern__ViewPlacement__PrepareSnapshotSurface(geometry, lantern) {
+    async function VghLantern__ViewPlacement__PrepareSnapshotSurface(geometry, lantern, sizePx) {
         var Env3d  =  window.VghLantern__Env3d__RenderPipeline;
         if (!Env3d || !lantern || !geometry || !geometry.Skeleton) return null;
 
         var host  =  VghLantern__ViewPlacement__EnsureSnapshotHost();
+        VghLantern__ViewPlacement__SizeSnapshotHost(host, sizePx);
 
         if (!VghLantern__ViewPlacement__SnapshotSurface) {
             VghLantern__ViewPlacement__SnapshotSurface  =  Env3d.VghLantern__Env3d__RenderPipeline__Mount(
@@ -323,6 +337,12 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
             );
         }
         if (!VghLantern__ViewPlacement__SnapshotSurface) return null;
+
+        // Picks up the stage size set above, so the camera aspect is the frame's
+        // aspect before any preset is fitted to it.
+        if (Env3d.VghLantern__Env3d__RenderPipeline__Resize) {
+            Env3d.VghLantern__Env3d__RenderPipeline__Resize(VghLantern__ViewPlacement__SnapshotSurface);
+        }
 
         await Env3d.VghLantern__Env3d__RenderPipeline__Render(
             VghLantern__ViewPlacement__SnapshotSurface, geometry.Skeleton, geometry.BarSet, lantern
@@ -335,12 +355,15 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 
     // SUB HELPER FUNCTION | Fingerprint the Inputs a Snapshot Depends On
     // ------------------------------------------------------------
-    // The snapshot is a pure function of the lantern config and the camera preset,
-    // so re-entering the mode with neither changed can reuse the cached image and
-    // skip mounting a WebGL surface entirely.
-    function VghLantern__ViewPlacement__SnapshotKey(slot, lantern) {
+    // The snapshot is a pure function of the lantern config, the camera preset and
+    // the frame it is being drawn into, so re-entering the mode with none of them
+    // changed can reuse the cached image and skip mounting a WebGL surface entirely.
+    // The frame size is part of the key because the camera is fitted to its aspect.
+    function VghLantern__ViewPlacement__SnapshotKey(slot, lantern, sizePx) {
         try {
-            return (slot.PresetKey || '') + '|' + JSON.stringify(lantern || null);
+            return (slot.PresetKey || '') + '|' +
+                   (sizePx ? (sizePx.WidthPx + 'x' + sizePx.HeightPx) : 'auto') + '|' +
+                   JSON.stringify(lantern || null);
         } catch (e) {
             return null;                                                       // <-- Unserialisable lantern: never reuse
         }
@@ -352,32 +375,37 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // ------------------------------------------------------------
     // draggable=false keeps a stray left drag from starting a native image drag,
     // which would eat the double click that opens the camera edit.
-    function VghLantern__ViewPlacement__InjectSnapshotImage(slot, bodyElement, dataUrl, geometry, lantern) {
+    function VghLantern__ViewPlacement__InjectSnapshotImage(placement, bodyElement, dataUrl, geometry, lantern) {
         bodyElement.innerHTML  =  '<img class="' + CSS_SNAPSHOT + '" draggable="false" src="' + dataUrl + '" alt="' +
-                                  (slot.Label || '3D view') + '">';
-        VghLantern__ViewPlacement__BindCameraEditEntry(slot, bodyElement, geometry, lantern);
+                                  (placement.Slot.Label || '3D view') + '">';
+        VghLantern__ViewPlacement__BindCameraEditEntry(placement, bodyElement, geometry, lantern);
     }
     // ------------------------------------------------------------
 
 
     // SUB FUNCTION | Place the 3D View as a Snapshot Image
     // ------------------------------------------------------------
-    async function VghLantern__ViewPlacement__PlaceThreeDimensional(slot, bodyElement, geometry, lantern) {
+    async function VghLantern__ViewPlacement__PlaceThreeDimensional(placement, bodyElement, geometry, lantern) {
         var Env3d  =  window.VghLantern__Env3d__RenderPipeline;
+        var slot   =  placement.Slot;
         if (!Env3d) {
             VghLantern__ViewPlacement__ShowPlaceholder(bodyElement, MESSAGE_NO_3D);
             return false;
         }
 
+        // Sized to the frame it is going into, so the same image fills the same
+        // rectangle on screen and on paper with no fitting in between.
+        var sizePx  =  VghLantern__ViewPlacement__SnapshotSizePx(placement);
+
         // Reuse the cached snapshot when nothing it depends on has changed.
-        var snapshotKey  =  VghLantern__ViewPlacement__SnapshotKey(slot, lantern);
+        var snapshotKey  =  VghLantern__ViewPlacement__SnapshotKey(slot, lantern, sizePx);
         var cachedUrl    =  VghLantern__ViewPlacement__CachedSnapshots[slot.Key];
         if (cachedUrl && snapshotKey && VghLantern__ViewPlacement__CachedSnapshotKeys[slot.Key] === snapshotKey) {
-            VghLantern__ViewPlacement__InjectSnapshotImage(slot, bodyElement, cachedUrl, geometry, lantern);
+            VghLantern__ViewPlacement__InjectSnapshotImage(placement, bodyElement, cachedUrl, geometry, lantern);
             return true;
         }
 
-        var surface  =  await VghLantern__ViewPlacement__PrepareSnapshotSurface(geometry, lantern);
+        var surface  =  await VghLantern__ViewPlacement__PrepareSnapshotSurface(geometry, lantern, sizePx);
         if (!surface) {
             VghLantern__ViewPlacement__ShowPlaceholder(bodyElement, MESSAGE_NO_LANTERN);
             return false;
@@ -389,9 +417,9 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         var customCamera  =  VghLantern__ViewPlacement__CustomCameraStates[slot.Key];
         if (customCamera && Env3d.VghLantern__Env3d__RenderPipeline__SetCameraState) {
             Env3d.VghLantern__Env3d__RenderPipeline__SetCameraState(surface, customCamera);
-            dataUrl  =  Env3d.VghLantern__Env3d__RenderPipeline__Snapshot(surface, null);
+            dataUrl  =  Env3d.VghLantern__Env3d__RenderPipeline__Snapshot(surface, sizePx);
         } else {
-            dataUrl  =  Env3d.VghLantern__Env3d__RenderPipeline__SnapshotPreset(surface, slot.PresetKey, null);
+            dataUrl  =  Env3d.VghLantern__Env3d__RenderPipeline__SnapshotPreset(surface, slot.PresetKey, sizePx);
         }
 
         if (!dataUrl) {
@@ -399,7 +427,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
             return false;
         }
 
-        VghLantern__ViewPlacement__InjectSnapshotImage(slot, bodyElement, dataUrl, geometry, lantern);
+        VghLantern__ViewPlacement__InjectSnapshotImage(placement, bodyElement, dataUrl, geometry, lantern);
 
         VghLantern__ViewPlacement__CachedSnapshots[slot.Key]     =  dataUrl;
         VghLantern__ViewPlacement__CachedSnapshotKeys[slot.Key]  =  snapshotKey;
@@ -418,8 +446,8 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // ------------------------------------------------------------
     // Args are stored on the element rather than closed over, so a body that
     // survives several placements always enters the session with current data.
-    function VghLantern__ViewPlacement__BindCameraEditEntry(slot, bodyElement, geometry, lantern) {
-        bodyElement.__VghLantern__CameraEditArgs  =  { Slot: slot, Geometry: geometry, Lantern: lantern };
+    function VghLantern__ViewPlacement__BindCameraEditEntry(placement, bodyElement, geometry, lantern) {
+        bodyElement.__VghLantern__CameraEditArgs  =  { Placement: placement, Geometry: geometry, Lantern: lantern };
 
         if (bodyElement.__VghLantern__CameraEditBound) return;
         bodyElement.__VghLantern__CameraEditBound  =  true;
@@ -428,7 +456,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
             e.stopPropagation();                                              // <-- The sheet host must not treat this as navigation
             var args  =  bodyElement.__VghLantern__CameraEditArgs;
             if (!args) return;
-            void VghLantern__ViewPlacement__EnterCameraEdit(args.Slot, bodyElement, args.Geometry, args.Lantern);
+            void VghLantern__ViewPlacement__EnterCameraEdit(args.Placement, bodyElement, args.Geometry, args.Lantern);
         });
     }
     // ------------------------------------------------------------
@@ -436,8 +464,9 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 
     // SUB FUNCTION | Begin a Live Camera Edit Inside the 3D Frame
     // ------------------------------------------------------------
-    async function VghLantern__ViewPlacement__EnterCameraEdit(slot, bodyElement, geometry, lantern) {
+    async function VghLantern__ViewPlacement__EnterCameraEdit(placement, bodyElement, geometry, lantern) {
         var Env3d  =  window.VghLantern__Env3d__RenderPipeline;
+        var slot   =  placement.Slot;
         if (!Env3d || !geometry || !geometry.Skeleton || !lantern) return;
 
         if (VghLantern__ViewPlacement__CameraEdit) {
@@ -473,6 +502,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 
         VghLantern__ViewPlacement__CameraEdit  =  {
             Slot         : slot,
+            Placement    : placement,
             BodyElement  : bodyElement,
             FrameElement : frameElement,
             Surface      : surface,
@@ -501,13 +531,20 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         if (!skipCapture && Env3d) {
             if (Env3d.VghLantern__Env3d__RenderPipeline__GetCameraState) {
                 var cameraState  =  Env3d.VghLantern__Env3d__RenderPipeline__GetCameraState(edit.Surface);
-                if (cameraState) VghLantern__ViewPlacement__CustomCameraStates[edit.Slot.Key]  =  cameraState;
+                if (cameraState) {
+                    VghLantern__ViewPlacement__CustomCameraStates[edit.Slot.Key]  =  cameraState;
+                    VghLantern__ViewPlacement__NotifyCameraChanged();          // <-- The chosen viewpoint is part of the saved sheet setup
+                }
             }
 
-            var dataUrl  =  Env3d.VghLantern__Env3d__RenderPipeline__Snapshot(edit.Surface, null);
+            // Re-captured at the frame's own size, so ending a camera edit cannot
+            // quietly swap in a snapshot at a different aspect to the one placed.
+            var sizePx   =  VghLantern__ViewPlacement__SnapshotSizePx(edit.Placement);
+            var dataUrl  =  Env3d.VghLantern__Env3d__RenderPipeline__Snapshot(edit.Surface, sizePx);
             if (dataUrl) {
                 VghLantern__ViewPlacement__CachedSnapshots[edit.Slot.Key]     =  dataUrl;
-                VghLantern__ViewPlacement__CachedSnapshotKeys[edit.Slot.Key]  =  VghLantern__ViewPlacement__SnapshotKey(edit.Slot, edit.Lantern);
+                VghLantern__ViewPlacement__CachedSnapshotKeys[edit.Slot.Key]  =
+                    VghLantern__ViewPlacement__SnapshotKey(edit.Slot, edit.Lantern, sizePx);
             }
         }
 
@@ -516,7 +553,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         // Put the (possibly refreshed) snapshot back into the frame.
         var cachedUrl  =  VghLantern__ViewPlacement__CachedSnapshots[edit.Slot.Key];
         if (cachedUrl) {
-            VghLantern__ViewPlacement__InjectSnapshotImage(edit.Slot, edit.BodyElement, cachedUrl, edit.Geometry, edit.Lantern);
+            VghLantern__ViewPlacement__InjectSnapshotImage(edit.Placement, edit.BodyElement, cachedUrl, edit.Geometry, edit.Lantern);
         } else {
             VghLantern__ViewPlacement__ShowPlaceholder(edit.BodyElement, MESSAGE_NO_3D);
         }
@@ -533,34 +570,30 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // FUNCTION | Place Every Configured View Into a Rendered Sheet
     // ------------------------------------------------------------
     // Returns the count of slots that produced real output, which the layout uses to
-    // decide whether the sheet is worth offering for export. sheetSize drives the
-    // true-scale viewBox on the orthographic slots.
-    async function VghLantern__DrawingEditor__ViewPlacement__PlaceAll(sheetElement, geometry, lantern, sheetSize) {
+    // decide whether the sheet is worth offering for export. The solved layout drives
+    // both the true-scale viewBox on the orthographic slots and the 3D snapshot size,
+    // so every view is composed against the rectangle it will be printed into.
+    async function VghLantern__DrawingEditor__ViewPlacement__PlaceAll(sheetElement, geometry, lantern, layout) {
         var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        if (!sheetElement || !ViewportFrame) return 0;
+        if (!sheetElement || !ViewportFrame || !layout) return 0;
 
         // A sheet rebuild orphans a live camera edit's DOM, so close it first.
         if (VghLantern__ViewPlacement__CameraEdit) VghLantern__ViewPlacement__ExitCameraEdit(true);
 
-        var cellMetrics  =  sheetSize
-            ? ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__CellSizeMm(sheetSize)
-            : null;
-
-        var slots       =  VghLantern__ViewPlacement__Slots();
         var placedCount =  0;
-        var i, slot, body, didPlace;
+        var i, placement, body, didPlace;
 
-        for (i = 0; i < slots.length; i++) {
-            slot  =  slots[i];
-            body  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__FindBody(sheetElement, slot.Key);
+        for (i = 0; i < layout.Slots.length; i++) {
+            placement  =  layout.Slots[i];
+            body       =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__FindBody(sheetElement, placement.Slot.Key);
             if (!body) continue;
 
-            if (slot.Source === SOURCE_ENV3D) {
-                didPlace  =  await VghLantern__ViewPlacement__PlaceThreeDimensional(slot, body, geometry, lantern);
-            } else if (slot.Source === SOURCE_ENV2D) {
-                didPlace  =  await VghLantern__ViewPlacement__PlaceOrthographic(slot, body, geometry, lantern, cellMetrics);
+            if (placement.Slot.Source === SOURCE_ENV3D) {
+                didPlace  =  await VghLantern__ViewPlacement__PlaceThreeDimensional(placement, body, geometry, lantern);
+            } else if (placement.Slot.Source === SOURCE_ENV2D) {
+                didPlace  =  await VghLantern__ViewPlacement__PlaceOrthographic(placement, body, geometry, lantern);
             } else {
-                VghLantern__ViewPlacement__ShowPlaceholder(body, 'Unknown view source "' + slot.Source + '"');
+                VghLantern__ViewPlacement__ShowPlaceholder(body, 'Unknown view source "' + placement.Slot.Source + '"');
                 didPlace  =  false;
             }
 
@@ -593,32 +626,28 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // FUNCTION | Collect Fit Requests for the Scale Manager
     // ------------------------------------------------------------
     // Built for orthographic slots only, because a perspective view has no scale to
-    // fit. Each request pairs a view's model extents with the paper space available.
-    function VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(cellMetrics, geometry) {
-        var CoordHelpers   =  window.VghLantern__Env2d__CoordHelpers;
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        if (!CoordHelpers || !ViewportFrame || !cellMetrics || !geometry || !geometry.Skeleton) return [];
+    // fit. Each request pairs a view's model extents with the solved body rectangle
+    // it has to fit inside, so the chosen scale is the scale that will be drawn.
+    function VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(layout, geometry) {
+        var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
+        if (!CoordHelpers || !layout || !geometry || !geometry.Skeleton) return [];
 
-        var slots     =  VghLantern__ViewPlacement__Slots();
         var requests  =  [];
-        var i, slot, extents, bodySize;
+        var i, placement, extents;
 
-        for (i = 0; i < slots.length; i++) {
-            slot  =  slots[i];
-            if (slot.Source !== SOURCE_ENV2D) continue;
+        for (i = 0; i < layout.Slots.length; i++) {
+            placement  =  layout.Slots[i];
+            if (placement.Slot.Source !== SOURCE_ENV2D) continue;
 
             extents  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ExtentsOfSkeleton(
-                geometry.Skeleton, slot.ViewKey || slot.Key
+                geometry.Skeleton, placement.Slot.ViewKey || placement.Slot.Key
             );
             if (!extents) continue;
 
-            bodySize  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SlotBodySizeMm(slot, cellMetrics);
-            if (!bodySize) continue;
-
             requests.push({
                 Extents       : extents,
-                FrameWidthMm  : bodySize.WidthMm,
-                FrameHeightMm : bodySize.HeightMm
+                FrameWidthMm  : placement.Body.WidthMm,
+                FrameHeightMm : placement.Body.HeightMm
             });
         }
 
@@ -642,6 +671,45 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__ViewPlacement__CollectSnapshots() {
         return Object.assign({}, VghLantern__ViewPlacement__CachedSnapshots);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Collect the Saved Sheet Camera States
+    // ------------------------------------------------------------
+    // Handed to SheetManager so a viewpoint the user set by hand is written onto the
+    // project file with the rest of the sheet setup.
+    function VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates() {
+        return Object.assign({}, VghLantern__ViewPlacement__CustomCameraStates);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restore Sheet Camera States From a Loaded Project
+    // ------------------------------------------------------------
+    // Cached snapshots are dropped alongside the restore, because an image taken
+    // from the previous project's camera would otherwise be reused for a slot whose
+    // saved viewpoint has just changed underneath it.
+    function VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates(cameraStates) {
+        VghLantern__ViewPlacement__CustomCameraStates  =
+            (cameraStates && typeof cameraStates === 'object' && !Array.isArray(cameraStates))
+                ? Object.assign({}, cameraStates)
+                : {};
+
+        VghLantern__ViewPlacement__CachedSnapshots     =  {};
+        VghLantern__ViewPlacement__CachedSnapshotKeys  =  {};
+        VghLantern__ViewPlacement__CachedSvgMarkup     =  {};
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Tell the Sheet Manager a Camera Was Changed
+    // ------------------------------------------------------------
+    function VghLantern__ViewPlacement__NotifyCameraChanged() {
+        var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
+        if (SheetManager && SheetManager.VghLantern__DrawingEditor__SheetManager__NoteCameraChanged) {
+            SheetManager.VghLantern__DrawingEditor__SheetManager__NoteCameraChanged();
+        }
     }
     // ------------------------------------------------------------
 
@@ -704,6 +772,8 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests      : VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests,
         VghLantern__DrawingEditor__ViewPlacement__CollectSvgMarkup      : VghLantern__DrawingEditor__ViewPlacement__CollectSvgMarkup,
         VghLantern__DrawingEditor__ViewPlacement__CollectSnapshots      : VghLantern__DrawingEditor__ViewPlacement__CollectSnapshots,
+        VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates   : VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates,
+        VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates   : VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates,
         VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput     : VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput,
         VghLantern__DrawingEditor__ViewPlacement__DisposeAll            : VghLantern__DrawingEditor__ViewPlacement__DisposeAll
     };

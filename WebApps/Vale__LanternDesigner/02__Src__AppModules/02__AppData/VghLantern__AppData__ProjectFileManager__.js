@@ -318,6 +318,17 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__GlobalSettings__DrawingScaleRef'  : '',
                 'VghLantern__ProjectFile__GlobalSettings__JobNotes'         : ''
             },
+            'VghLantern__ProjectFile__DrawingLayout': {
+                'VghLantern__ProjectFile__DrawingLayout__Description'       : 'How the Drawing Editor sheet was last set up. Null means fall back to the Drawing Editor config default.',
+                'VghLantern__ProjectFile__DrawingLayout__SheetSizeKey'      : null,
+                'VghLantern__ProjectFile__DrawingLayout__Orientation'       : null,
+                'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator'  : null,
+                'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual'     : false,
+                'VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct'   : null,
+                'VghLantern__ProjectFile__DrawingLayout__RowSharesPct'      : null,
+                'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor'   : 1,
+                'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates'  : {}
+            },
             'VghLantern__ProjectFile__Lanterns': []
         };
     }

@@ -13,18 +13,19 @@
    - Pure paper-space arithmetic for a drawing sheet: where the view grid sits, where
      each frame and its drawable body sit, where the notes block and the titleblock
      strip sit. Every number returned is a real paper millimetre.
-   - No DOM, no jsPDF, no config writing. The exporter consumes this and draws; this
-     module decides nothing about appearance.
+   - No DOM, no jsPDF, no config writing. SheetManager lays the screen sheet out from
+     this and SheetPdfExporter draws the page from it; this module decides nothing
+     about appearance.
    - Sheet sizes come from ViewportFrame so the paper dimensions have exactly one
      definition in the application.
 
    -----------------------------------------------------------------------------
 
-   WHY THE PDF SOLVES ITS OWN LAYOUT RATHER THAN MEASURING THE SCREEN:
-   The on-screen sheet is a flex column whose gaps are CSS pixel spacing tokens, so
-   measuring it back would import screen rounding into a printed drawing. Solving the
-   page independently in millimetres means an A3 export is dimensionally exact
-   whatever the browser did with the preview.
+   WHY BOTH SURFACES SOLVE HERE RATHER THAN THE SCREEN MEASURING ITSELF:
+   The screen sheet used to be a CSS grid inside a flex column, and the exporter
+   re-derived the same rectangles in millimetres. Two implementations of one layout
+   drift on every rounding decision, so the screen now positions its frames from this
+   solve as well - divided by ScreenPixelsPerMm and nothing else.
 
    WHY THE BODY RECTANGLE IS THE UNIT THAT MATTERS:
    A view is drawn at 1:N by giving it a model-space window of (body size x N). The
@@ -37,11 +38,14 @@
 
      Page        { WidthMm, HeightMm, Orientation, SizeKey, Label }
      Content     { X, Y, WidthMm, HeightMm }          inside the sheet margins
-     Grid        { X, Y, WidthMm, HeightMm, GutterMm, Columns, Rows }
+     Grid        { X, Y, WidthMm, HeightMm, GutterMm, Columns, Rows,
+                   ColumnTracks, RowTracks }         tracks are { OffsetMm, SizeMm }
      Notes       { X, Y, WidthMm, HeightMm, Columns, ... } or null when empty
      TitleBlock  { X, Y, WidthMm, HeightMm }
      Slots       [ { Slot, Frame, Label, Body } ]     one entry per configured slot
      Fonts       { ... }                              millimetre type sizes
+     LabelMm     caption strip height
+     ScreenPixelsPerMm                                screen scaling only
 
    ============================================================================= */
 
@@ -189,6 +193,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             ColumnGapMm  : columnGapMm,
             LineHeightMm : lineMm,
             HeadingMm    : headingMm,
+            HeadingScale : headingScale,
             PaddingTopMm : paddingTopMm,
             HeightMm     : paddingTopMm + headingMm + (rows * lineMm),
             Title        : notesCfg.NotesBlockTitle || 'Notes'
@@ -285,8 +290,10 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
 
     // SUB FUNCTION | Place Every Configured Slot Into the Grid Rectangle
     // ------------------------------------------------------------
-    // Column and row indices in config are one-based, matching the CSS grid the
-    // screen sheet uses, so a slot table edit moves the frame on both surfaces.
+    // Column and row indices in config are one-based. The solved tracks are returned
+    // alongside the placements because the on-screen gutter handles are positioned
+    // from them - the sheet and its handles then agree by construction rather than
+    // by two implementations of the same division.
     function VghLantern__SheetPdfLayout__PlaceSlots(gridRect, labelHeightMm) {
         var slots   =  VghLantern__SheetPdfLayout__Slots();
         var shares  =  VghLantern__SheetPdfLayout__ActiveShares();
@@ -334,7 +341,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             });
         }
 
-        return placed;
+        return { Placed : placed, ColumnTracks : columnTracks, RowTracks : rowTracks };
     }
     // ------------------------------------------------------------
 
@@ -413,6 +420,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
                 ColumnGapMm  : notes.ColumnGapMm,
                 LineHeightMm : notes.LineHeightMm,
                 HeadingMm    : notes.HeadingMm,
+                HeadingScale : notes.HeadingScale,
                 PaddingTopMm : notes.PaddingTopMm || 0,
                 Title        : notes.Title
             };
@@ -429,6 +437,10 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             Rows     : rows
         };
 
+        var slots  =  VghLantern__SheetPdfLayout__PlaceSlots(grid, labelMm);
+        grid.ColumnTracks  =  slots.ColumnTracks;
+        grid.RowTracks     =  slots.RowTracks;
+
         return {
             Page       : {
                 WidthMm     : sheetSize.WidthMm,
@@ -441,9 +453,14 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             Grid       : grid,
             Notes      : notesRect,
             TitleBlock : titleBlock,
-            Slots      : VghLantern__SheetPdfLayout__PlaceSlots(grid, labelMm),
+            Slots      : slots.Placed,
             Fonts      : fonts,
-            MarginMm   : marginMm
+            MarginMm   : marginMm,
+            LabelMm    : labelMm,
+
+            // Screen-only value, carried on the layout so the Drawing Editor has one
+            // place to convert paper millimetres into laid-out pixels.
+            ScreenPixelsPerMm : VghLantern__SheetPdfLayout__Number(sheetCfg, 'ScreenPixelsPerMm', 3.2)
         };
     }
     // ------------------------------------------------------------

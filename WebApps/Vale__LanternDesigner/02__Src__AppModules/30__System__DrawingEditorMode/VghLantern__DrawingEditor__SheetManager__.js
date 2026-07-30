@@ -10,23 +10,33 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - The single owner of the Drawing Editor mode. Builds the toolbar and the paper
-     sheet, drives the scale fit, asks ViewPlacement to fill the frames, and renders
-     the titleblock and notes.
-   - Holds the sheet size and orientation selection for the session and exposes the
-     composed sheet to the Document Preview mode for PDF export.
-   - Everything measurable comes from ViewportFrame and ScaleManager; this module
-     sequences them rather than repeating their arithmetic.
+   - The single owner of the Drawing Editor mode. Solves the sheet layout, lays the
+     paper out on screen, asks ViewPlacement to fill the frames and hands the same
+     layout to the PDF exporter.
+   - Holds the sheet size, orientation, scale, grid shares and zoom for the session,
+     and persists them onto the project file so a reopened project comes back on the
+     sheet it was left on.
+   - Everything measurable comes from SheetPdfLayout; this module sequences it rather
+     than repeating its arithmetic.
 
    -----------------------------------------------------------------------------
 
-   WHY THE SHEET IS LAID OUT IN MILLIMETRES AND SCALED TO PIXELS:
-   The sheet element is sized in real paper millimetres and then scaled to the screen
-   with a single CSS transform. That keeps one set of numbers for screen and print,
-   so a view that fits on screen fits on paper - no second layout pass at export.
+   WHY THE SCREEN SHEET IS POSITIONED FROM THE PDF LAYOUT SOLVE:
+   The sheet used to be a CSS grid inside a flex column while the exporter solved the
+   same rectangles independently in millimetres. Two descriptions of one layout drift
+   on every rounding decision, and the drift lands on an issued drawing. Every frame
+   is now placed from the solved paper rectangle, divided by ScreenPixelsPerMm and
+   nothing else, so a frame on screen is the frame on paper.
+
+   WHY THE CHROME IS AN SVG OVERLAY RATHER THAN DOM:
+   Frame borders, caption strips, the notes block and the titleblock are drawn by
+   SheetChrome into one overlay whose viewBox is the paper in millimetres. That is the
+   same primitive list the exporter draws, so type sits on the same baselines in the
+   same face at the same weight on both surfaces. The overlay is pointer-transparent,
+   so clicking a dimension or double-clicking the 3D frame still reaches the view.
 
    WHY REDRAW IS DEBOUNCED:
-   Every solved-geometry event would otherwise trigger four view renders plus a 3D
+   Every solved-geometry event would otherwise trigger three view renders plus a 3D
    snapshot. Dragging a slider in the editor and then switching to this mode would
    queue a backlog of full sheet rebuilds, so redraws coalesce.
 
@@ -60,10 +70,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
     const CSS_SHEET         =  'VghLantern__Sheet';
     const CSS_SHEET_SCALER  =  'VghLantern__Sheet__Scaler';
-    const CSS_SHEET_GRID    =  'VghLantern__Sheet__ViewGrid';
-    const CSS_SHEET_GRID_WRAP =  'VghLantern__Sheet__ViewGridWrap';
-    const CSS_SHEET_NOTES   =  'VghLantern__Sheet__NotesHost';
-    const CSS_SHEET_TITLE   =  'VghLantern__Sheet__TitleHost';
+    const CSS_SHEET_CHROME  =  'VghLantern__Sheet__ChromeLayer';
     const CSS_EMPTY_STATE   =  'VghLantern__DrawingEditor__EmptyState';
 
     const CSS_RESIZE_HANDLE =  'VghLantern__Sheet__ResizeHandle';
@@ -75,6 +82,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
     const ATTR_SHEET_RESIZE =  'data-vgh-sheet-resize';
     const ATTR_SPLIT_INDEX  =  'data-vgh-split-index';
+    const ATTR_SLOT_KEY     =  'data-vgh-slot';
     // ------------------------------------------------------------
 
 
@@ -90,6 +98,24 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
     const FALLBACK_SHARE_MIN  =  20;
     const FALLBACK_SHARE_MAX  =  80;
+    const FALLBACK_PX_PER_MM  =  3.2;
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Project File Layout Block
+    // ------------------------------------------------------------
+    // The sheet setup is document state, not application state: a project issued at
+    // A2 1:20 with a rebalanced grid should reopen exactly that way, so it is written
+    // onto the project file rather than held in the session or in localStorage.
+    const LAYOUT_BLOCK          =  'VghLantern__ProjectFile__DrawingLayout';
+    const LAYOUT_SHEET_SIZE     =  'VghLantern__ProjectFile__DrawingLayout__SheetSizeKey';
+    const LAYOUT_ORIENTATION    =  'VghLantern__ProjectFile__DrawingLayout__Orientation';
+    const LAYOUT_SCALE          =  'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator';
+    const LAYOUT_SCALE_MANUAL   =  'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual';
+    const LAYOUT_COLUMN_SHARES  =  'VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct';
+    const LAYOUT_ROW_SHARES     =  'VghLantern__ProjectFile__DrawingLayout__RowSharesPct';
+    const LAYOUT_ZOOM           =  'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor';
+    const LAYOUT_CAMERAS        =  'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates';
     // ------------------------------------------------------------
 
 
@@ -97,7 +123,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
     let VghLantern__SheetManager__SheetSizeKey    =  null;                    // <-- Null means "use the config default"
     let VghLantern__SheetManager__Orientation     =  null;
-    let VghLantern__SheetManager__IsScaleManual   =  false;                   // <-- User picked a scale; auto fit stands down for the session
+    let VghLantern__SheetManager__IsScaleManual   =  false;                   // <-- User picked a scale; auto fit stands down until reset
     let VghLantern__SheetManager__IsSubscribed    =  false;                   // <-- Guards duplicate StateManager listeners
     let VghLantern__SheetManager__RedrawTimerId   =  null;
     let VghLantern__SheetManager__IsRendering     =  false;                   // <-- Prevents overlapping async sheet builds
@@ -108,9 +134,9 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // MODULE VARIABLES | Sheet Navigation State
     // ------------------------------------------------------------
     // Zoom is a CSS transform on the sheet plus an explicit size on the scaler, so
-    // the sheet keeps its true paper-pixel dimensions for export while the host's
-    // native scrollbars provide the pan surface.
-    let VghLantern__SheetManager__ZoomFactor      =  1;                       // <-- Survives sheet rebuilds within the session
+    // the sheet keeps its true paper-pixel dimensions while the host's native
+    // scrollbars provide the pan surface.
+    let VghLantern__SheetManager__ZoomFactor      =  1;
     let VghLantern__SheetManager__IsNavBound      =  false;                   // <-- Guards duplicate host listeners
     let VghLantern__SheetManager__PanState        =  null;                    // <-- Active drag-pan session, null when idle
     // ------------------------------------------------------------
@@ -124,6 +150,16 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     let VghLantern__SheetManager__RowSharesPct     =  null;
     let VghLantern__SheetManager__ActiveResize     =  null;
     let VghLantern__SheetManager__IsResizeBound    =  false;
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Last Solved Layout and Persistence Guard
+    // ------------------------------------------------------------
+    // The layout is retained because a gutter drag re-lays the sheet out between
+    // pointer moves without re-rendering any view. The restore guard stops the act of
+    // loading a project's sheet setup from being recorded as a change to it.
+    let VghLantern__SheetManager__ActiveLayout     =  null;
+    let VghLantern__SheetManager__IsRestoring      =  false;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -151,6 +187,14 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Get the View Grid Config Block
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__GridConfig() {
+        return VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__ViewGrid'] || {};
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Collect the Solved Geometry and Active Records
     // ------------------------------------------------------------
     function VghLantern__SheetManager__ReadState() {
@@ -165,6 +209,40 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
                 BarSet   : StateManager.VghLantern__StateManager__GetSolvedBarSet()
             }
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Count the Notes the Current Project Prints
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__NoteCount(project) {
+        var AnnotationLayer  =  window.VghLantern__DrawingEditor__AnnotationLayer;
+        if (!AnnotationLayer) return 0;
+        return AnnotationLayer.VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project).length;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Solve the Paper Layout of the Current Sheet
+    // ------------------------------------------------------------
+    // The one place the sheet geometry is produced. The screen build, the gutter
+    // drag, the view placement and the PDF export all consume this same shape.
+    function VghLantern__DrawingEditor__SheetManager__SolveLayout(project) {
+        var ViewportFrame   =  window.VghLantern__DrawingEditor__ViewportFrame;
+        var SheetPdfLayout  =  window.VghLantern__DrawingEditor__SheetPdfLayout;
+        if (!ViewportFrame || !SheetPdfLayout) return null;
+
+        var sheetSize  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(
+            VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
+            VghLantern__DrawingEditor__SheetManager__Orientation()
+        );
+        if (!sheetSize) return null;
+
+        VghLantern__SheetManager__EnsureShares();                             // <-- Solver reads the shares back through GetGridShares
+
+        return SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__Solve(
+            sheetSize, VghLantern__SheetManager__NoteCount(project)
+        );
     }
     // ------------------------------------------------------------
 
@@ -279,16 +357,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Grid Shares and Gutter Resize
+// REGION | Grid Shares
 // -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Get the View Grid Config Block
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__GridConfig() {
-        return VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__ViewGrid'] || {};
-    }
-    // ------------------------------------------------------------
-
 
     // HELPER FUNCTION | Clamp a Number Into a Range
     // ------------------------------------------------------------
@@ -335,7 +405,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Expose Active Grid Shares for ViewportFrame and PDF Layout
+    // FUNCTION | Expose Active Grid Shares for the Layout Solver
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__SheetManager__GetGridShares() {
         VghLantern__SheetManager__EnsureShares();
@@ -346,225 +416,6 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     }
     // ------------------------------------------------------------
 
-
-    // SUB FUNCTION | Build CSS Grid Template Tracks From Share Percents
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__BuildTrackTemplate(shares) {
-        return shares.map(function(share) { return share + 'fr'; }).join(' ');
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Build Overlay Markup for One Gutter Split
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__BuildResizeHandleMarkup(axis, splitIndex) {
-        var axisClass  =  (axis === 'col') ? CSS_RESIZE_COL : CSS_RESIZE_ROW;
-        return '<div class="' + CSS_RESIZE_HANDLE + ' ' + axisClass + '" ' +
-               ATTR_SHEET_RESIZE + '="' + axis + '" ' +
-               ATTR_SPLIT_INDEX + '="' + splitIndex + '" title="Drag to resize viewports"></div>';
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Position Absolute Gutter Handles Over the Live Grid
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__PositionResizeHandles(gridEl) {
-        if (!gridEl) return;
-
-        var wrapEl  =  gridEl.parentElement;
-        if (!wrapEl || !wrapEl.classList.contains(CSS_SHEET_GRID_WRAP)) return;
-
-        VghLantern__SheetManager__EnsureShares();
-        var gridCfg   =  VghLantern__SheetManager__GridConfig();
-        var sheetCfg  =  VghLantern__SheetManager__SheetConfig();
-        var gutterMm  =  (typeof gridCfg.GutterMm === 'number') ? gridCfg.GutterMm : 6;
-        var pxPerMm   =  (typeof sheetCfg.ScreenPixelsPerMm === 'number') ? sheetCfg.ScreenPixelsPerMm : 3.2;
-        var gutterPx  =  gutterMm * pxPerMm;
-
-        var colShares  =  VghLantern__SheetManager__ColumnSharesPct;
-        var rowShares  =  VghLantern__SheetManager__RowSharesPct;
-        var usableW    =  gridEl.clientWidth  - (gutterPx * (colShares.length - 1));
-        var usableH    =  gridEl.clientHeight - (gutterPx * (rowShares.length - 1));
-
-        var handles  =  wrapEl.querySelectorAll('[' + ATTR_SHEET_RESIZE + ']');
-        var i, axis, splitIndex, prefix, handleEl;
-
-        for (i = 0; i < handles.length; i++) {
-            handleEl     =  handles[i];
-            axis         =  handleEl.getAttribute(ATTR_SHEET_RESIZE);
-            splitIndex   =  parseInt(handleEl.getAttribute(ATTR_SPLIT_INDEX), 10) || 0;
-
-            if (axis === 'col') {
-                prefix  =  0;
-                for (var c = 0; c <= splitIndex; c++) {
-                    prefix  +=  usableW * (colShares[c] / 100);
-                    if (c < splitIndex) prefix  +=  gutterPx;
-                }
-                handleEl.style.left    =  (prefix + (gutterPx / 2)) + 'px';
-                handleEl.style.top     =  '0';
-                handleEl.style.bottom  =  '0';
-                handleEl.style.height  =  'auto';
-                handleEl.style.width   =  Math.max(10, gutterPx + 6) + 'px';
-            } else {
-                prefix  =  0;
-                for (var r = 0; r <= splitIndex; r++) {
-                    prefix  +=  usableH * (rowShares[r] / 100);
-                    if (r < splitIndex) prefix  +=  gutterPx;
-                }
-                handleEl.style.top     =  (prefix + (gutterPx / 2)) + 'px';
-                handleEl.style.left    =  '0';
-                handleEl.style.right   =  '0';
-                handleEl.style.width   =  'auto';
-                handleEl.style.height  =  Math.max(10, gutterPx + 6) + 'px';
-            }
-        }
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Apply Live Share Values Onto the Grid Element
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__ApplySharesToGrid(gridEl) {
-        if (!gridEl) return;
-        VghLantern__SheetManager__EnsureShares();
-        gridEl.style.gridTemplateColumns  =  VghLantern__SheetManager__BuildTrackTemplate(VghLantern__SheetManager__ColumnSharesPct);
-        gridEl.style.gridTemplateRows     =  VghLantern__SheetManager__BuildTrackTemplate(VghLantern__SheetManager__RowSharesPct);
-        VghLantern__SheetManager__PositionResizeHandles(gridEl);
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Rebalance One Split Pair From a Pointer Position
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__ApplyResizeDrag(clientX, clientY) {
-        var drag    =  VghLantern__SheetManager__ActiveResize;
-        var gridEl  =  drag ? drag.GridEl : null;
-        if (!drag || !gridEl) return;
-
-        var gridCfg   =  VghLantern__SheetManager__GridConfig();
-        var minPct    =  (typeof gridCfg.ShareMinPct === 'number') ? gridCfg.ShareMinPct : FALLBACK_SHARE_MIN;
-        var maxPct    =  (typeof gridCfg.ShareMaxPct === 'number') ? gridCfg.ShareMaxPct : FALLBACK_SHARE_MAX;
-        var sheetCfg  =  VghLantern__SheetManager__SheetConfig();
-        var gutterMm  =  (typeof gridCfg.GutterMm === 'number') ? gridCfg.GutterMm : 6;
-        var pxPerMm   =  (typeof sheetCfg.ScreenPixelsPerMm === 'number') ? sheetCfg.ScreenPixelsPerMm : 3.2;
-        var gutterPx  =  gutterMm * pxPerMm;
-
-        var rect       =  gridEl.getBoundingClientRect();
-        var shares     =  drag.IsColumn ? VghLantern__SheetManager__ColumnSharesPct : VghLantern__SheetManager__RowSharesPct;
-        var splitIndex =  drag.SplitIndex;
-        var pairTotal  =  shares[splitIndex] + shares[splitIndex + 1];
-        var pairMin    =  Math.max(minPct, pairTotal - maxPct);
-        var pairMax    =  Math.min(maxPct, pairTotal - minPct);
-
-        var usable     =  drag.IsColumn
-            ? (rect.width  - (gutterPx * (shares.length - 1)))
-            : (rect.height - (gutterPx * (shares.length - 1)));
-
-        var prefixPx  =  0;
-        var t;
-        for (t = 0; t < splitIndex; t++) {
-            prefixPx  +=  usable * (shares[t] / 100) + gutterPx;
-        }
-
-        var pairPx     =  usable * (pairTotal / 100);
-        var pointer    =  drag.IsColumn ? (clientX - rect.left) : (clientY - rect.top);
-        var localPx    =  pointer - prefixPx;
-        var firstPct   =  VghLantern__SheetManager__Clamp((localPx / pairPx) * pairTotal, pairMin, pairMax);
-
-        shares[splitIndex]      =  firstPct;
-        shares[splitIndex + 1]  =  pairTotal - firstPct;
-
-        VghLantern__SheetManager__ApplySharesToGrid(gridEl);
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | End a Gutter Drag and Re-Place Views at the Same Scale
-    // ------------------------------------------------------------
-    async function VghLantern__SheetManager__EndResizeDrag() {
-        var drag  =  VghLantern__SheetManager__ActiveResize;
-        if (!drag) return;
-
-        if (drag.HandleEl) drag.HandleEl.classList.remove(CSS_RESIZE_DRAG);
-        document.body.classList.remove(CSS_BODY_RESIZING, CSS_BODY_RESIZE_ROW);
-        VghLantern__SheetManager__ActiveResize  =  null;
-
-        // Re-apply true scale viewBoxes to the new body sizes. Auto-fit is skipped so
-        // the quoted 1:N stays exactly where the user left it.
-        var host     =  document.getElementById(DOM_SHEET_HOST);
-        var sheetEl  =  host ? host.querySelector('.' + CSS_SHEET) : null;
-        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        if (!sheetEl || !ViewPlacement || !ViewportFrame) return;
-
-        var state      =  VghLantern__SheetManager__ReadState();
-        var sheetSize  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(
-            VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
-            VghLantern__DrawingEditor__SheetManager__Orientation()
-        );
-        if (!state.Lantern || !state.Geometry.Skeleton || !sheetSize) return;
-
-        await ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__PlaceAll(
-            sheetEl, state.Geometry, state.Lantern, sheetSize
-        );
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Bind Delegated Gutter Drag Handles on the Sheet Host
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__BindGridResize() {
-        if (VghLantern__SheetManager__IsResizeBound) return;
-
-        var host  =  document.getElementById(DOM_SHEET_HOST);
-        if (!host) return;
-
-        host.addEventListener('pointerdown', function(ev) {
-            var handleEl  =  ev.target.closest ? ev.target.closest('[' + ATTR_SHEET_RESIZE + ']') : null;
-            if (!handleEl) return;
-
-            var wrapEl  =  handleEl.closest('.' + CSS_SHEET_GRID_WRAP);
-            var gridEl  =  wrapEl ? wrapEl.querySelector('.' + CSS_SHEET_GRID) : null;
-            if (!gridEl) return;
-
-            var isColumn    =  handleEl.getAttribute(ATTR_SHEET_RESIZE) === 'col';
-            var splitIndex  =  parseInt(handleEl.getAttribute(ATTR_SPLIT_INDEX), 10) || 0;
-
-            VghLantern__SheetManager__ActiveResize  =  {
-                HandleEl   : handleEl,
-                GridEl     : gridEl,
-                IsColumn   : isColumn,
-                SplitIndex : splitIndex
-            };
-
-            handleEl.classList.add(CSS_RESIZE_DRAG);
-            document.body.classList.add(CSS_BODY_RESIZING);
-            if (!isColumn) document.body.classList.add(CSS_BODY_RESIZE_ROW);
-
-            function onMove(moveEv) {
-                VghLantern__SheetManager__ApplyResizeDrag(moveEv.clientX, moveEv.clientY);
-            }
-
-            function onUp() {
-                document.removeEventListener('pointermove', onMove);
-                document.removeEventListener('pointerup', onUp);
-                document.removeEventListener('pointercancel', onUp);
-                void VghLantern__SheetManager__EndResizeDrag();
-            }
-
-            document.addEventListener('pointermove', onMove);
-            document.addEventListener('pointerup', onUp);
-            document.addEventListener('pointercancel', onUp);
-
-            if (handleEl.setPointerCapture) handleEl.setPointerCapture(ev.pointerId);
-            ev.preventDefault();
-            ev.stopPropagation();
-        });
-
-        VghLantern__SheetManager__IsResizeBound  =  true;
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -572,116 +423,176 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 // REGION | Sheet Construction
 // -----------------------------------------------------------------------------
 
-    // SUB FUNCTION | Build the Empty Sheet Structure at Paper Size
+    // HELPER FUNCTION | Paper Millimetres to Laid-Out Pixels
     // ------------------------------------------------------------
-    // The scaler wraps the sheet and carries the screen zoom transform, so the sheet
-    // itself keeps its true paper dimensions for export.
-    function VghLantern__SheetManager__BuildSheetStructure(sheetSize) {
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        var sheetCfg       =  VghLantern__SheetManager__SheetConfig();
-        var gridCfg        =  VghLantern__SheetManager__GridConfig();
-        var pdfCfg         =  VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__PdfExport'] || {};
-        var notesCfg       =  VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__Annotations'] || {};
-        var titleCfg       =  VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__TitleBlock'] || {};
+    function VghLantern__SheetManager__PxPerMm(layout) {
+        var value  =  layout ? layout.ScreenPixelsPerMm : null;
+        return (typeof value === 'number' && value > 0) ? value : FALLBACK_PX_PER_MM;
+    }
+    // ------------------------------------------------------------
 
-        VghLantern__SheetManager__EnsureShares();
 
-        var marginMm     =  (typeof sheetCfg.MarginMm === 'number') ? sheetCfg.MarginMm : 10;
-        var titleMm      =  (typeof sheetCfg.TitleBlockHeightMm === 'number') ? sheetCfg.TitleBlockHeightMm : 10;
-        var gutterMm     =  (typeof gridCfg.GutterMm === 'number') ? gridCfg.GutterMm : 6;
-        var pxPerMm      =  (typeof sheetCfg.ScreenPixelsPerMm === 'number') ? sheetCfg.ScreenPixelsPerMm : 3.2;
-        var blockGapMm   =  (typeof sheetCfg.BlockGapMm === 'number')
-            ? sheetCfg.BlockGapMm
-            : ((typeof pdfCfg.BlockGapMm === 'number') ? pdfCfg.BlockGapMm : 3);
-        var noteFontMm   =  (typeof notesCfg.DefaultFontSizeMm === 'number') ? notesCfg.DefaultFontSizeMm : 1.4;
-        var noteHeadMm   =  noteFontMm * ((typeof notesCfg.HeadingScale === 'number') ? notesCfg.HeadingScale : 1.05);
-        var notePadTopMm =  (typeof notesCfg.PaddingTopMm === 'number') ? notesCfg.PaddingTopMm : 1.25;
-        var noteColGapMm =  (typeof notesCfg.ColumnGapMm === 'number') ? notesCfg.ColumnGapMm : 6;
-        var labelFontMm  =  (typeof titleCfg.FontSizeLabelMm === 'number') ? titleCfg.FontSizeLabelMm : 1.6;
-        var valueFontMm  =  (typeof titleCfg.FontSizeValueMm === 'number') ? titleCfg.FontSizeValueMm : 2.2;
-        var logoMaxMm    =  (typeof titleCfg.LogoMaxHeightMm === 'number') ? titleCfg.LogoMaxHeightMm : 5.5;
-        var logoPadVMm   =  (typeof titleCfg.LogoPaddingVMm === 'number') ? titleCfg.LogoPaddingVMm : 1.8;
-        var logoPadHMm   =  (typeof titleCfg.LogoPaddingHMm === 'number') ? titleCfg.LogoPaddingHMm : 2.5;
-        var fieldPadTMm  =  (typeof titleCfg.FieldPaddingTopMm === 'number') ? titleCfg.FieldPaddingTopMm : 2.4;
-        var fieldPadHMm  =  (typeof titleCfg.FieldPaddingHMm === 'number') ? titleCfg.FieldPaddingHMm : 1.4;
-        var fieldPadBMm  =  (typeof titleCfg.FieldPaddingBottomMm === 'number') ? titleCfg.FieldPaddingBottomMm : 0.8;
-        var fieldLabTMm  =  (typeof titleCfg.FieldLabelOffsetTopMm === 'number') ? titleCfg.FieldLabelOffsetTopMm : 0.5;
-        var frameStroke  =  (typeof gridCfg.FrameStrokeMm === 'number') ? gridCfg.FrameStrokeMm : 0.25;
+    // SUB FUNCTION | Build the Chrome Overlay Markup for a Layout
+    // ------------------------------------------------------------
+    // The overlay is the whole of the sheet that is not a view. Its viewBox is the
+    // paper in millimetres, so it carries the solved coordinates unchanged.
+    function VghLantern__SheetManager__BuildChromeMarkup(layout, state, logoAsset) {
+        var SheetChrome  =  window.VghLantern__DrawingEditor__SheetChrome;
+        if (!SheetChrome) return '';
 
-        var chromeVars  =  '--VghSheet_BlockGap:' + blockGapMm + 'mm;' +
-                           '--VghSheet_NoteFont:' + noteFontMm + 'mm;' +
-                           '--VghSheet_NoteHeadingFont:' + noteHeadMm + 'mm;' +
-                           '--VghSheet_NotePadTop:' + notePadTopMm + 'mm;' +
-                           '--VghSheet_NoteColGap:' + noteColGapMm + 'mm;' +
-                           '--VghSheet_TitleLabelFont:' + labelFontMm + 'mm;' +
-                           '--VghSheet_TitleValueFont:' + valueFontMm + 'mm;' +
-                           '--VghSheet_LogoMaxHeight:' + logoMaxMm + 'mm;' +
-                           '--VghSheet_LogoPadV:' + logoPadVMm + 'mm;' +
-                           '--VghSheet_LogoPadH:' + logoPadHMm + 'mm;' +
-                           '--VghSheet_FieldPadT:' + fieldPadTMm + 'mm;' +
-                           '--VghSheet_FieldPadH:' + fieldPadHMm + 'mm;' +
-                           '--VghSheet_FieldPadB:' + fieldPadBMm + 'mm;' +
-                           '--VghSheet_FieldLabelTop:' + fieldLabTMm + 'mm;' +
-                           '--VghSheet_FrameStroke:' + frameStroke + 'mm;';
+        var primitives  =  SheetChrome.VghLantern__DrawingEditor__SheetChrome__BuildForSheet(
+            layout, state.Project, state.Lantern, logoAsset
+        );
 
-        var sheetStyle  =  chromeVars +
-                           'width:' + (sheetSize.WidthMm * pxPerMm) + 'px;' +
-                           'height:' + (sheetSize.HeightMm * pxPerMm) + 'px;' +
-                           'padding:' + (marginMm * pxPerMm) + 'px;' +
-                           'gap:' + (blockGapMm * pxPerMm) + 'px;';
+        return SheetChrome.VghLantern__DrawingEditor__SheetChrome__ToSvgMarkup(
+            primitives, layout.Page.WidthMm, layout.Page.HeightMm, CSS_SHEET_CHROME
+        );
+    }
+    // ------------------------------------------------------------
 
-        var gridStyle   =  'grid-template-columns:' + VghLantern__SheetManager__BuildTrackTemplate(VghLantern__SheetManager__ColumnSharesPct) + ';' +
-                           'grid-template-rows:' + VghLantern__SheetManager__BuildTrackTemplate(VghLantern__SheetManager__RowSharesPct) + ';' +
-                           'gap:' + (gutterMm * pxPerMm) + 'px;';
 
-        var titleStyle  =  'height:' + (titleMm * pxPerMm) + 'px;';
+    // SUB FUNCTION | Build Overlay Markup for the Gutter Split Handles
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__BuildResizeHandles(layout) {
+        var gridCfg  =  VghLantern__SheetManager__GridConfig();
+        if (gridCfg.ResizeHandlesEnabled === false) return '';
 
-        var framesHtml  =  '';
-        if (ViewportFrame) {
-            var slots  =  VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__ViewSlots'] || [];
-            var i;
-            for (i = 0; i < slots.length; i++) {
-                framesHtml  +=  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__BuildMarkup(slots[i]);
-            }
+        var html  =  '';
+        var i;
+
+        for (i = 0; i < layout.Grid.ColumnTracks.length - 1; i++) {
+            html  +=  '<div class="' + CSS_RESIZE_HANDLE + ' ' + CSS_RESIZE_COL + '" ' +
+                      ATTR_SHEET_RESIZE + '="col" ' + ATTR_SPLIT_INDEX + '="' + i + '" ' +
+                      'title="Drag to resize viewports"></div>';
+        }
+        for (i = 0; i < layout.Grid.RowTracks.length - 1; i++) {
+            html  +=  '<div class="' + CSS_RESIZE_HANDLE + ' ' + CSS_RESIZE_ROW + '" ' +
+                      ATTR_SHEET_RESIZE + '="row" ' + ATTR_SPLIT_INDEX + '="' + i + '" ' +
+                      'title="Drag to resize viewports"></div>';
         }
 
-        var handlesHtml  =  '';
-        if (gridCfg.ResizeHandlesEnabled !== false) {
-            var c, r;
-            for (c = 0; c < VghLantern__SheetManager__ColumnSharesPct.length - 1; c++) {
-                handlesHtml  +=  VghLantern__SheetManager__BuildResizeHandleMarkup('col', c);
-            }
-            for (r = 0; r < VghLantern__SheetManager__RowSharesPct.length - 1; r++) {
-                handlesHtml  +=  VghLantern__SheetManager__BuildResizeHandleMarkup('row', r);
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Sheet Structure at Paper Size
+    // ------------------------------------------------------------
+    // The scaler wraps the sheet and carries the screen zoom transform, so the sheet
+    // itself keeps its true paper-pixel dimensions.
+    function VghLantern__SheetManager__BuildSheetStructure(layout, state, logoAsset) {
+        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
+        var pxPerMm        =  VghLantern__SheetManager__PxPerMm(layout);
+
+        var sheetStyle  =  'width:'  + (layout.Page.WidthMm  * pxPerMm) + 'px;' +
+                           'height:' + (layout.Page.HeightMm * pxPerMm) + 'px;';
+
+        var framesHtml  =  '';
+        var i;
+        if (ViewportFrame) {
+            for (i = 0; i < layout.Slots.length; i++) {
+                framesHtml  +=  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__BuildMarkup(layout.Slots[i], pxPerMm);
             }
         }
 
         return '<div class="' + CSS_SHEET_SCALER + '">' +
                '<div class="' + CSS_SHEET + '" style="' + sheetStyle + '" ' +
-               'data-vgh-sheet-size="' + sheetSize.Key + '" data-vgh-sheet-orientation="' + sheetSize.Orientation + '">' +
-               '<div class="' + CSS_SHEET_GRID_WRAP + '">' +
-               '<div class="' + CSS_SHEET_GRID + '" style="' + gridStyle + '">' + framesHtml + '</div>' +
-               handlesHtml +
-               '</div>' +
-               '<div class="' + CSS_SHEET_NOTES + '"></div>' +
-               '<div class="' + CSS_SHEET_TITLE + '" style="' + titleStyle + '"></div>' +
+               'data-vgh-sheet-size="' + layout.Page.SizeKey + '" ' +
+               'data-vgh-sheet-orientation="' + layout.Page.Orientation + '">' +
+               framesHtml +
+               VghLantern__SheetManager__BuildChromeMarkup(layout, state, logoAsset) +
+               VghLantern__SheetManager__BuildResizeHandles(layout) +
                '</div></div>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Re-Position Frames, Chrome and Handles From a Layout
+    // ------------------------------------------------------------
+    // Used by the live gutter drag. Only boxes and the overlay move; no view is
+    // re-rendered and no surface is remounted, so a drag stays smooth.
+    function VghLantern__SheetManager__ApplyLayoutToDom(sheetElement, layout, state, logoAsset) {
+        if (!sheetElement || !layout) return;
+
+        var pxPerMm  =  VghLantern__SheetManager__PxPerMm(layout);
+        var i, placement, frameEl, bodyEl;
+
+        for (i = 0; i < layout.Slots.length; i++) {
+            placement  =  layout.Slots[i];
+            frameEl    =  sheetElement.querySelector('[' + ATTR_SLOT_KEY + '="' + placement.Slot.Key + '"]');
+            if (!frameEl) continue;
+
+            frameEl.style.left    =  (placement.Frame.X * pxPerMm) + 'px';
+            frameEl.style.top     =  (placement.Frame.Y * pxPerMm) + 'px';
+            frameEl.style.width   =  (placement.Frame.WidthMm  * pxPerMm) + 'px';
+            frameEl.style.height  =  (placement.Frame.HeightMm * pxPerMm) + 'px';
+
+            bodyEl  =  frameEl.querySelector('.VghLantern__Sheet__FrameBody');
+            if (!bodyEl) continue;
+
+            bodyEl.style.left    =  ((placement.Body.X - placement.Frame.X) * pxPerMm) + 'px';
+            bodyEl.style.top     =  ((placement.Body.Y - placement.Frame.Y) * pxPerMm) + 'px';
+            bodyEl.style.width   =  (placement.Body.WidthMm  * pxPerMm) + 'px';
+            bodyEl.style.height  =  (placement.Body.HeightMm * pxPerMm) + 'px';
+        }
+
+        var chromeEl  =  sheetElement.querySelector('.' + CSS_SHEET_CHROME);
+        if (chromeEl) {
+            chromeEl.outerHTML  =  VghLantern__SheetManager__BuildChromeMarkup(layout, state, logoAsset);
+        }
+
+        VghLantern__SheetManager__PositionResizeHandles(sheetElement, layout);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Position the Gutter Handles Over the Solved Tracks
+    // ------------------------------------------------------------
+    // A handle sits on the centre line of the gutter it drags, taken straight from
+    // the solved track offsets rather than measured back off the DOM.
+    function VghLantern__SheetManager__PositionResizeHandles(sheetElement, layout) {
+        if (!sheetElement || !layout) return;
+
+        var pxPerMm   =  VghLantern__SheetManager__PxPerMm(layout);
+        var grid      =  layout.Grid;
+        var gutterPx  =  grid.GutterMm * pxPerMm;
+        var handles   =  sheetElement.querySelectorAll('[' + ATTR_SHEET_RESIZE + ']');
+        var i, handleEl, isColumn, splitIndex, tracks, centreMm;
+
+        for (i = 0; i < handles.length; i++) {
+            handleEl    =  handles[i];
+            isColumn    =  handleEl.getAttribute(ATTR_SHEET_RESIZE) === 'col';
+            splitIndex  =  parseInt(handleEl.getAttribute(ATTR_SPLIT_INDEX), 10) || 0;
+            tracks      =  isColumn ? grid.ColumnTracks : grid.RowTracks;
+            if (!tracks || splitIndex + 1 >= tracks.length) continue;
+
+            centreMm  =  tracks[splitIndex].OffsetMm + tracks[splitIndex].SizeMm + (grid.GutterMm / 2);
+
+            if (isColumn) {
+                handleEl.style.left    =  ((grid.X + centreMm) * pxPerMm) + 'px';
+                handleEl.style.top     =  (grid.Y * pxPerMm) + 'px';
+                handleEl.style.height  =  (grid.HeightMm * pxPerMm) + 'px';
+                handleEl.style.width   =  Math.max(10, gutterPx + 6) + 'px';
+            } else {
+                handleEl.style.top     =  ((grid.Y + centreMm) * pxPerMm) + 'px';
+                handleEl.style.left    =  (grid.X * pxPerMm) + 'px';
+                handleEl.style.width   =  (grid.WidthMm * pxPerMm) + 'px';
+                handleEl.style.height  =  Math.max(10, gutterPx + 6) + 'px';
+            }
+        }
     }
     // ------------------------------------------------------------
 
 
     // SUB FUNCTION | Apply Auto Fit to the Scale Before Any View Is Drawn
     // ------------------------------------------------------------
-    function VghLantern__SheetManager__ApplyAutoFit(sheetSize, geometry) {
+    function VghLantern__SheetManager__ApplyAutoFit(layout, geometry) {
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
-        if (!ScaleManager || !ViewportFrame || !ViewPlacement) return;
+        if (!ScaleManager || !ViewPlacement) return;
         if (!ScaleManager.VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled()) return;
 
-        var cellMetrics  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__CellSizeMm(sheetSize);
-        var requests     =  ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(cellMetrics, geometry);
-
+        var requests  =  ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(layout, geometry);
         if (requests.length) ScaleManager.VghLantern__DrawingEditor__ScaleManager__FitToRequests(requests);
     }
     // ------------------------------------------------------------
@@ -700,49 +611,52 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         VghLantern__SheetManager__IsRendering  =  true;
 
         try {
-            var state  =  VghLantern__SheetManager__ReadState();
+            var state     =  VghLantern__SheetManager__ReadState();
             var hasModel  =  !!(state.Lantern && state.Geometry.Skeleton);
-
-            var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-            var sheetSize      =  ViewportFrame
-                ? ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(
-                      VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
-                      VghLantern__DrawingEditor__SheetManager__Orientation()
-                  )
-                : null;
+            var layout    =  VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project);
 
             // Scale first: the toolbar select, the frame captions and the titleblock
             // all quote it, so it must be settled before any of them render. A scale
             // the user picked by hand is never overridden by the auto fit.
-            if (hasModel && sheetSize && !VghLantern__SheetManager__IsScaleManual) {
-                VghLantern__SheetManager__ApplyAutoFit(sheetSize, state.Geometry);
+            if (hasModel && layout && !VghLantern__SheetManager__IsScaleManual) {
+                VghLantern__SheetManager__ApplyAutoFit(layout, state.Geometry);
             }
 
             VghLantern__SheetManager__RenderToolbar();
             VghLantern__SheetManager__BindToolbar();
 
             if (!hasModel) {
+                VghLantern__SheetManager__ActiveLayout  =  null;
                 host.innerHTML  =  '<p class="' + CSS_EMPTY_STATE + '">' + MESSAGE_NO_LANTERN + '</p>';
                 return false;
             }
 
-            if (!sheetSize) {
+            if (!layout) {
+                VghLantern__SheetManager__ActiveLayout  =  null;
                 host.innerHTML  =  '<p class="' + CSS_EMPTY_STATE + '">Sheet configuration unavailable.</p>';
                 return false;
             }
 
-            host.innerHTML  =  VghLantern__SheetManager__BuildSheetStructure(sheetSize);
+            // Awaited so the titleblock logo is placed in the first paint rather than
+            // appearing a frame later, and so the same asset is already cached when
+            // the export builds its own copy of this chrome.
+            var SheetChrome  =  window.VghLantern__DrawingEditor__SheetChrome;
+            var logoAsset    =  SheetChrome
+                ? await SheetChrome.VghLantern__DrawingEditor__SheetChrome__LoadLogo()
+                : null;
+
+            VghLantern__SheetManager__ActiveLayout  =  layout;
+
+            host.innerHTML  =  VghLantern__SheetManager__BuildSheetStructure(layout, state, logoAsset);
             VghLantern__SheetManager__ApplySheetZoom();                        // <-- Rebuilt DOM starts unscaled; re-apply the session zoom
 
             var sheetEl  =  host.querySelector('.' + CSS_SHEET);
-            var gridEl   =  host.querySelector('.' + CSS_SHEET_GRID);
-            VghLantern__SheetManager__PositionResizeHandles(gridEl);
-            VghLantern__SheetManager__RenderSheetFurniture(sheetEl, state);
+            VghLantern__SheetManager__PositionResizeHandles(sheetEl, layout);
 
             var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
             if (ViewPlacement) {
                 await ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__PlaceAll(
-                    sheetEl, state.Geometry, state.Lantern, sheetSize
+                    sheetEl, state.Geometry, state.Lantern, layout
                 );
             }
 
@@ -763,26 +677,146 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
 
-    // SUB FUNCTION | Render the Titleblock and Notes Onto a Built Sheet
+
+// -----------------------------------------------------------------------------
+// REGION | Gutter Resize
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Rebalance One Split Pair From a Pointer Position
     // ------------------------------------------------------------
-    function VghLantern__SheetManager__RenderSheetFurniture(sheetElement, state) {
-        if (!sheetElement) return;
+    // Works in solved paper millimetres throughout: the pointer is converted into
+    // the grid rectangle, so the share the user drags to is the share the export
+    // will use.
+    function VghLantern__SheetManager__ApplyResizeDrag(clientX, clientY) {
+        var drag  =  VghLantern__SheetManager__ActiveResize;
+        if (!drag || !drag.SheetEl || !VghLantern__SheetManager__ActiveLayout) return;
 
-        var TitleBlock      =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
-        var AnnotationLayer =  window.VghLantern__DrawingEditor__AnnotationLayer;
+        var layout    =  VghLantern__SheetManager__ActiveLayout;
+        var gridCfg   =  VghLantern__SheetManager__GridConfig();
+        var minPct    =  (typeof gridCfg.ShareMinPct === 'number') ? gridCfg.ShareMinPct : FALLBACK_SHARE_MIN;
+        var maxPct    =  (typeof gridCfg.ShareMaxPct === 'number') ? gridCfg.ShareMaxPct : FALLBACK_SHARE_MAX;
 
-        if (TitleBlock) {
-            TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__Render(
-                sheetElement.querySelector('.' + CSS_SHEET_TITLE), state.Project, state.Lantern
-            );
+        var rect       =  drag.SheetEl.getBoundingClientRect();
+        var zoom       =  VghLantern__SheetManager__ZoomFactor || 1;
+        var pxPerMm    =  VghLantern__SheetManager__PxPerMm(layout) * zoom;
+        var grid       =  layout.Grid;
+
+        var shares     =  drag.IsColumn ? VghLantern__SheetManager__ColumnSharesPct : VghLantern__SheetManager__RowSharesPct;
+        var splitIndex =  drag.SplitIndex;
+        var pairTotal  =  shares[splitIndex] + shares[splitIndex + 1];
+        var pairMin    =  Math.max(minPct, pairTotal - maxPct);
+        var pairMax    =  Math.min(maxPct, pairTotal - minPct);
+
+        var usableMm   =  drag.IsColumn
+            ? (grid.WidthMm  - (grid.GutterMm * (shares.length - 1)))
+            : (grid.HeightMm - (grid.GutterMm * (shares.length - 1)));
+
+        var prefixMm  =  0;
+        var t;
+        for (t = 0; t < splitIndex; t++) {
+            prefixMm  +=  (usableMm * (shares[t] / 100)) + grid.GutterMm;
         }
 
-        if (AnnotationLayer) {
-            AnnotationLayer.VghLantern__DrawingEditor__AnnotationLayer__Render(
-                sheetElement.querySelector('.' + CSS_SHEET_NOTES), state.Project
-            );
-        }
+        var pointerMm  =  drag.IsColumn
+            ? (((clientX - rect.left) / pxPerMm) - grid.X)
+            : (((clientY - rect.top)  / pxPerMm) - grid.Y);
+
+        var pairMm    =  usableMm * (pairTotal / 100);
+        var firstPct  =  VghLantern__SheetManager__Clamp(
+            ((pointerMm - prefixMm) / pairMm) * pairTotal, pairMin, pairMax
+        );
+
+        shares[splitIndex]      =  firstPct;
+        shares[splitIndex + 1]  =  pairTotal - firstPct;
+
+        var state       =  VghLantern__SheetManager__ReadState();
+        var SheetChrome =  window.VghLantern__DrawingEditor__SheetChrome;
+        var reSolved    =  VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project);
+        if (!reSolved) return;
+
+        VghLantern__SheetManager__ActiveLayout  =  reSolved;
+        VghLantern__SheetManager__ApplyLayoutToDom(
+            drag.SheetEl, reSolved, state,
+            SheetChrome ? SheetChrome.VghLantern__DrawingEditor__SheetChrome__CachedLogo() : null
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | End a Gutter Drag and Re-Place Views at the Same Scale
+    // ------------------------------------------------------------
+    async function VghLantern__SheetManager__EndResizeDrag() {
+        var drag  =  VghLantern__SheetManager__ActiveResize;
+        if (!drag) return;
+
+        if (drag.HandleEl) drag.HandleEl.classList.remove(CSS_RESIZE_DRAG);
+        document.body.classList.remove(CSS_BODY_RESIZING, CSS_BODY_RESIZE_ROW);
+        VghLantern__SheetManager__ActiveResize  =  null;
+
+        VghLantern__SheetManager__RecordLayoutState('drawingLayout:gridShares');
+
+        // Re-apply true scale viewBoxes to the new body sizes. Auto-fit is skipped so
+        // the quoted 1:N stays exactly where the user left it.
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+        var state          =  VghLantern__SheetManager__ReadState();
+        if (!drag.SheetEl || !ViewPlacement || !VghLantern__SheetManager__ActiveLayout) return;
+        if (!state.Lantern || !state.Geometry.Skeleton) return;
+
+        await ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__PlaceAll(
+            drag.SheetEl, state.Geometry, state.Lantern, VghLantern__SheetManager__ActiveLayout
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Bind Delegated Gutter Drag Handles on the Sheet Host
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__BindGridResize() {
+        if (VghLantern__SheetManager__IsResizeBound) return;
+
+        var host  =  document.getElementById(DOM_SHEET_HOST);
+        if (!host) return;
+
+        host.addEventListener('pointerdown', function(ev) {
+            var handleEl  =  ev.target.closest ? ev.target.closest('[' + ATTR_SHEET_RESIZE + ']') : null;
+            if (!handleEl) return;
+
+            var sheetEl  =  handleEl.closest('.' + CSS_SHEET);
+            if (!sheetEl) return;
+
+            VghLantern__SheetManager__ActiveResize  =  {
+                HandleEl   : handleEl,
+                SheetEl    : sheetEl,
+                IsColumn   : handleEl.getAttribute(ATTR_SHEET_RESIZE) === 'col',
+                SplitIndex : parseInt(handleEl.getAttribute(ATTR_SPLIT_INDEX), 10) || 0
+            };
+
+            handleEl.classList.add(CSS_RESIZE_DRAG);
+            document.body.classList.add(CSS_BODY_RESIZING);
+            if (!VghLantern__SheetManager__ActiveResize.IsColumn) document.body.classList.add(CSS_BODY_RESIZE_ROW);
+
+            function onMove(moveEv) {
+                VghLantern__SheetManager__ApplyResizeDrag(moveEv.clientX, moveEv.clientY);
+            }
+
+            function onUp() {
+                document.removeEventListener('pointermove', onMove);
+                document.removeEventListener('pointerup', onUp);
+                document.removeEventListener('pointercancel', onUp);
+                void VghLantern__SheetManager__EndResizeDrag();
+            }
+
+            document.addEventListener('pointermove', onMove);
+            document.addEventListener('pointerup', onUp);
+            document.addEventListener('pointercancel', onUp);
+
+            ev.preventDefault();
+            ev.stopPropagation();
+        });
+
+        VghLantern__SheetManager__IsResizeBound  =  true;
     }
     // ------------------------------------------------------------
 
@@ -814,7 +848,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // FUNCTION | Describe the Composed Sheet for the Document Preview Mode
     // ------------------------------------------------------------
     // Preview and PDF export consume this rather than reaching into the sheet DOM,
-    // so the two modes stay decoupled and the sheet can be rebuilt freely.
+    // so the two modes stay decoupled and the sheet can be rebuilt freely. The solved
+    // layout travels with it, because that is what makes an export match the screen.
     function VghLantern__DrawingEditor__SheetManager__DescribeSheet() {
         var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
@@ -832,6 +867,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             SheetSizeKey     : VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
             Orientation      : VghLantern__DrawingEditor__SheetManager__Orientation(),
             SheetSize        : sheetSize,
+            Layout           : VghLantern__SheetManager__ActiveLayout
+                               || VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project),
             ScaleDenominator : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator() : null,
             ScaleLabel       : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__FormatLabel() : '',
             ViewSvgMarkup    : ViewPlacement ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectSvgMarkup() : {},
@@ -840,6 +877,132 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             Project          : state.Project,
             Lantern          : state.Lantern
         };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Drawing Layout Persistence
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Get or Create the Layout Block on the Current Project
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__LayoutBlock(createIfMissing) {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return null;
+
+        var project  =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        if (!project) return null;
+
+        var block  =  project[LAYOUT_BLOCK];
+        if (!block || typeof block !== 'object' || Array.isArray(block)) {
+            if (!createIfMissing) return null;
+            block  =  {};
+            project[LAYOUT_BLOCK]  =  block;
+        }
+
+        return block;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Write the Current Sheet Setup Onto the Project File
+    // ------------------------------------------------------------
+    // Marking the project dirty is what schedules the write: AppCore already
+    // debounces dirty state into a single disk save, so a gutter drag or a run of
+    // zoom steps costs one file write rather than one per event.
+    function VghLantern__SheetManager__RecordLayoutState(reason) {
+        if (VghLantern__SheetManager__IsRestoring) return;
+
+        var block  =  VghLantern__SheetManager__LayoutBlock(true);
+        if (!block) return;
+
+        var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+
+        VghLantern__SheetManager__EnsureShares();
+
+        block[LAYOUT_SHEET_SIZE]    =  VghLantern__DrawingEditor__SheetManager__SheetSizeKey();
+        block[LAYOUT_ORIENTATION]   =  VghLantern__DrawingEditor__SheetManager__Orientation();
+        block[LAYOUT_SCALE]         =  ScaleManager
+            ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator()
+            : null;
+        block[LAYOUT_SCALE_MANUAL]  =  VghLantern__SheetManager__IsScaleManual;
+        block[LAYOUT_COLUMN_SHARES] =  VghLantern__SheetManager__ColumnSharesPct.slice();
+        block[LAYOUT_ROW_SHARES]    =  VghLantern__SheetManager__RowSharesPct.slice();
+        block[LAYOUT_ZOOM]          =  VghLantern__SheetManager__ZoomFactor;
+        block[LAYOUT_CAMERAS]       =  ViewPlacement
+            ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates()
+            : (block[LAYOUT_CAMERAS] || {});
+
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (StateManager) StateManager.VghLantern__StateManager__MarkDirty();
+
+        if (reason) console.log('[VghLantern__DrawingEditor__SheetManager] Sheet setup recorded: ' + reason);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restore the Sheet Setup From a Newly Loaded Project
+    // ------------------------------------------------------------
+    // A project with no recorded layout falls back to the config defaults, which is
+    // exactly what a project created before this block existed should do.
+    function VghLantern__SheetManager__RestoreLayoutState() {
+        var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+        var gridCfg        =  VghLantern__SheetManager__GridConfig();
+        var columns        =  (typeof gridCfg.Columns === 'number' && gridCfg.Columns > 0) ? gridCfg.Columns : 2;
+        var rows           =  (typeof gridCfg.Rows === 'number' && gridCfg.Rows > 0)       ? gridCfg.Rows    : 2;
+        var block          =  VghLantern__SheetManager__LayoutBlock(false) || {};
+
+        VghLantern__SheetManager__IsRestoring  =  true;
+
+        try {
+            var sizes  =  VghLantern__SheetManager__SheetConfig().SheetSizes || {};
+            VghLantern__SheetManager__SheetSizeKey  =  (block[LAYOUT_SHEET_SIZE] && sizes[block[LAYOUT_SHEET_SIZE]])
+                ? block[LAYOUT_SHEET_SIZE]
+                : null;
+
+            VghLantern__SheetManager__Orientation   =  (block[LAYOUT_ORIENTATION] === 'portrait' || block[LAYOUT_ORIENTATION] === 'landscape')
+                ? block[LAYOUT_ORIENTATION]
+                : null;
+
+            VghLantern__SheetManager__IsScaleManual =  block[LAYOUT_SCALE_MANUAL] === true;
+            if (ScaleManager && typeof block[LAYOUT_SCALE] === 'number') {
+                ScaleManager.VghLantern__DrawingEditor__ScaleManager__SetDenominator(block[LAYOUT_SCALE]);
+            }
+
+            VghLantern__SheetManager__ColumnSharesPct  =  Array.isArray(block[LAYOUT_COLUMN_SHARES])
+                ? VghLantern__SheetManager__NormaliseShares(block[LAYOUT_COLUMN_SHARES], columns)
+                : null;
+            VghLantern__SheetManager__RowSharesPct     =  Array.isArray(block[LAYOUT_ROW_SHARES])
+                ? VghLantern__SheetManager__NormaliseShares(block[LAYOUT_ROW_SHARES], rows)
+                : null;
+
+            VghLantern__SheetManager__ZoomFactor  =  (typeof block[LAYOUT_ZOOM] === 'number' && block[LAYOUT_ZOOM] > 0)
+                ? VghLantern__SheetManager__Clamp(block[LAYOUT_ZOOM], ZOOM_MIN, ZOOM_MAX)
+                : 1;
+
+            if (ViewPlacement) {
+                ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates(block[LAYOUT_CAMERAS]);
+            }
+
+            VghLantern__SheetManager__ActiveLayout  =  null;
+        } finally {
+            VghLantern__SheetManager__IsRestoring  =  false;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Record a Sheet Camera Change From the Placement Layer
+    // ------------------------------------------------------------
+    // ViewPlacement owns the camera; it calls back here when a live camera edit
+    // ends, so the chosen viewpoint is persisted with the rest of the sheet setup.
+    function VghLantern__DrawingEditor__SheetManager__NoteCameraChanged() {
+        VghLantern__SheetManager__RecordLayoutState('drawingLayout:viewCamera');
     }
     // ------------------------------------------------------------
 
@@ -862,6 +1025,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (sizeSelect) {
             sizeSelect.addEventListener('change', function(e) {
                 VghLantern__SheetManager__SheetSizeKey  =  e.currentTarget.value;
+                VghLantern__SheetManager__RecordLayoutState('drawingLayout:sheetSize');
                 void VghLantern__DrawingEditor__SheetManager__Render();
             });
         }
@@ -869,6 +1033,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (orientSelect) {
             orientSelect.addEventListener('change', function(e) {
                 VghLantern__SheetManager__Orientation  =  e.currentTarget.value;
+                VghLantern__SheetManager__RecordLayoutState('drawingLayout:orientation');
                 void VghLantern__DrawingEditor__SheetManager__Render();
             });
         }
@@ -879,6 +1044,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
                 if (!ScaleManager) return;
                 ScaleManager.VghLantern__DrawingEditor__ScaleManager__SetDenominator(e.currentTarget.value);
                 VghLantern__SheetManager__IsScaleManual  =  true;             // <-- The choice sticks; auto fit no longer overrides it
+                VghLantern__SheetManager__RecordLayoutState('drawingLayout:scale');
                 void VghLantern__DrawingEditor__SheetManager__Render();
             });
         }
@@ -953,6 +1119,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         host.scrollLeft  =  (contentX * clamped) - offsetX;
         host.scrollTop   =  (contentY * clamped) - offsetY;
+
+        VghLantern__SheetManager__RecordLayoutState(null);                     // <-- Silent; a wheel produces a run of these
     }
     // ------------------------------------------------------------
 
@@ -1036,7 +1204,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
     // SUB FUNCTION | Queue a Debounced Sheet Rebuild
     // ------------------------------------------------------------
-    // Skipped entirely while the mode is off screen. A sheet rebuild costs four view
+    // Skipped entirely while the mode is off screen. A sheet rebuild costs three view
     // renders and a 3D snapshot, which is far too much work to spend on a panel
     // nobody is looking at - mode entry rebuilds it anyway.
     function VghLantern__SheetManager__QueueRedraw() {
@@ -1066,7 +1234,14 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (!StateManager) return;
 
         StateManager.VghLantern__StateManager__On('geometrySolved', VghLantern__SheetManager__QueueRedraw);
-        StateManager.VghLantern__StateManager__On('projectChanged', VghLantern__SheetManager__QueueRedraw);
+
+        // The sheet setup is restored before the redraw, so a project opens on the
+        // paper, scale and viewpoint it was last saved with rather than on the
+        // defaults followed by a visible correction.
+        StateManager.VghLantern__StateManager__On('projectChanged', function() {
+            VghLantern__SheetManager__RestoreLayoutState();
+            VghLantern__SheetManager__QueueRedraw();
+        });
 
         VghLantern__SheetManager__BindSheetNavigation();                       // <-- Host element is static DOM, so once is enough
         VghLantern__SheetManager__BindGridResize();                            // <-- Gutter drags also bind once on the host
@@ -1094,13 +1269,15 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DrawingEditor__SheetManager__Init           : VghLantern__DrawingEditor__SheetManager__Init,
-        VghLantern__DrawingEditor__SheetManager__Render         : VghLantern__DrawingEditor__SheetManager__Render,
-        VghLantern__DrawingEditor__SheetManager__DescribeSheet   : VghLantern__DrawingEditor__SheetManager__DescribeSheet,
-        VghLantern__DrawingEditor__SheetManager__GetGridShares   : VghLantern__DrawingEditor__SheetManager__GetGridShares,
-        VghLantern__DrawingEditor__SheetManager__SheetSizeKey    : VghLantern__DrawingEditor__SheetManager__SheetSizeKey,
-        VghLantern__DrawingEditor__SheetManager__Orientation     : VghLantern__DrawingEditor__SheetManager__Orientation,
-        VghLantern__DrawingEditor__SheetManager__OnModeExit      : VghLantern__DrawingEditor__SheetManager__OnModeExit
+        VghLantern__DrawingEditor__SheetManager__Init             : VghLantern__DrawingEditor__SheetManager__Init,
+        VghLantern__DrawingEditor__SheetManager__Render           : VghLantern__DrawingEditor__SheetManager__Render,
+        VghLantern__DrawingEditor__SheetManager__DescribeSheet    : VghLantern__DrawingEditor__SheetManager__DescribeSheet,
+        VghLantern__DrawingEditor__SheetManager__SolveLayout      : VghLantern__DrawingEditor__SheetManager__SolveLayout,
+        VghLantern__DrawingEditor__SheetManager__GetGridShares    : VghLantern__DrawingEditor__SheetManager__GetGridShares,
+        VghLantern__DrawingEditor__SheetManager__SheetSizeKey     : VghLantern__DrawingEditor__SheetManager__SheetSizeKey,
+        VghLantern__DrawingEditor__SheetManager__Orientation      : VghLantern__DrawingEditor__SheetManager__Orientation,
+        VghLantern__DrawingEditor__SheetManager__NoteCameraChanged : VghLantern__DrawingEditor__SheetManager__NoteCameraChanged,
+        VghLantern__DrawingEditor__SheetManager__OnModeExit       : VghLantern__DrawingEditor__SheetManager__OnModeExit
     };
 
 // endregion -------------------------------------------------------------------

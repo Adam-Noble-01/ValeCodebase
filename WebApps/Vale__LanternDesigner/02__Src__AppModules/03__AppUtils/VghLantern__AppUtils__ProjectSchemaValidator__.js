@@ -11,6 +11,8 @@
 
    DESCRIPTION:
    - Normalises project metadata / global settings keys and supplies defaults.
+   - Normalises the drawing layout block so a reopened project comes back on the
+     sheet size, orientation, scale, grid split and 3D viewpoint it was left on.
    - Normalises every lantern block to the current Lantern Editor expectations.
    - Canonicalises roof form, pitch mode, and glazing bar division mode strings.
    - Repairs missing objects so UI hydration never falls back to placeholders.
@@ -506,6 +508,52 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Normalise the Drawing Layout Block
+    // ------------------------------------------------------------
+    // Holds how the Drawing Editor sheet was last set up: paper, orientation, scale,
+    // grid shares, zoom and the 3D viewpoint. Every field is allowed to be null and
+    // null means "fall back to config", which is exactly what a project created
+    // before this block existed needs to do. Nothing here is dimensional geometry, so
+    // no value is clamped to a lantern range - the Drawing Editor validates a sheet
+    // size against the size table and a scale against the denominator list itself.
+    function VghLantern__SchemaValidator__NormaliseDrawingLayout(layoutCfg) {
+        var didMutate  =  false;
+
+        if (!('VghLantern__ProjectFile__DrawingLayout__SheetSizeKey' in layoutCfg)) {
+            layoutCfg['VghLantern__ProjectFile__DrawingLayout__SheetSizeKey']  =  null;
+            didMutate  =  true;
+        }
+        if (!('VghLantern__ProjectFile__DrawingLayout__Orientation' in layoutCfg)) {
+            layoutCfg['VghLantern__ProjectFile__DrawingLayout__Orientation']  =  null;
+            didMutate  =  true;
+        }
+        if (!('VghLantern__ProjectFile__DrawingLayout__ScaleDenominator' in layoutCfg)) {
+            layoutCfg['VghLantern__ProjectFile__DrawingLayout__ScaleDenominator']  =  null;
+            didMutate  =  true;
+        }
+        if (VghLantern__SchemaValidator__ApplyBoolField(layoutCfg, 'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual', false)) didMutate  =  true;
+
+        if (!Array.isArray(layoutCfg['VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct'])) {
+            layoutCfg['VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct']  =  null;
+            didMutate  =  true;
+        }
+        if (!Array.isArray(layoutCfg['VghLantern__ProjectFile__DrawingLayout__RowSharesPct'])) {
+            layoutCfg['VghLantern__ProjectFile__DrawingLayout__RowSharesPct']  =  null;
+            didMutate  =  true;
+        }
+
+        if (typeof layoutCfg['VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor'] !== 'number') {
+            layoutCfg['VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor']  =  1;
+            didMutate  =  true;
+        }
+
+        if (VghLantern__SchemaValidator__EnsureObject(layoutCfg, 'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Validate and Normalise Full Project Data
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__ValidateAndNormaliseProject(projectData, sourceLabel) {
@@ -521,6 +569,10 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             didMutate  =  true;
             notes.push('Created missing project global settings object.');
         }
+        if (VghLantern__SchemaValidator__EnsureObject(clonedProject, 'VghLantern__ProjectFile__DrawingLayout')) {
+            didMutate  =  true;
+            notes.push('Created missing drawing layout object.');
+        }
         if (!Array.isArray(clonedProject['VghLantern__ProjectFile__Lanterns'])) {
             clonedProject['VghLantern__ProjectFile__Lanterns']  =  [];
             didMutate  =  true;
@@ -529,6 +581,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
         if (VghLantern__SchemaValidator__NormaliseMetadata(clonedProject['VghLantern__ProjectFile__Metadata'])) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseGlobalSettings(clonedProject['VghLantern__ProjectFile__GlobalSettings'])) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseDrawingLayout(clonedProject['VghLantern__ProjectFile__DrawingLayout'])) didMutate  =  true;
 
         var lanterns  =  clonedProject['VghLantern__ProjectFile__Lanterns'];
         for (var i = 0; i < lanterns.length; i++) {

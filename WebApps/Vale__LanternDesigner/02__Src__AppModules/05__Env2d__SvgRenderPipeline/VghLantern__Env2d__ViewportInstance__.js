@@ -69,11 +69,7 @@ const VghLantern__Env2d__ViewportInstance = (function() {
     const CSS_VIEW_LABEL     =  'VghLantern__Env2d__ViewLabel';              // <-- Corner view label class
     const CSS_VIEW_LABEL_RULE =  'VghLantern__Env2d__ViewLabelUnderline';     // <-- CAD underline under the title
 
-    const DEFAULT_PADDING_FACTOR       =  0.14;                              // <-- Used when config is unavailable
-    const FALLBACK_EXTENT_MM           =  2000;                              // <-- Empty-scene viewBox size
-    const FALLBACK_LABEL_SIZE_FACTOR   =  0.00875;                           // <-- 0.25x of the previous 0.035 factor
-    const FALLBACK_LABEL_STROKE_FACTOR =  0.0009;                            // <-- Underline stroke vs viewBox span
-    const FALLBACK_LABEL_GAP_FACTOR    =  0.025;                             // <-- Gap under drawn content before the title
+    const FALLBACK_EXTENT_MM           =  2000;                              // <-- Empty-scene viewBox size; a structural default, not a design value
 
     // Layers whose painted bounds pull the title next to the lantern (not the frame)
     const VIEW_LABEL_BOUNDS_LAYERS  =  [
@@ -229,7 +225,14 @@ const VghLantern__Env2d__ViewportInstance = (function() {
 
         // FUNCTION | Fit the ViewBox to Extents with Proportional Padding
         instance.FitToExtents  =  function(extents, paddingFactor) {
-            var factor  =  (typeof paddingFactor === 'number') ? paddingFactor : DEFAULT_PADDING_FACTOR;
+            var factor  =  paddingFactor;
+            if (typeof factor !== 'number') {
+                var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+                var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
+                var viewportCfg   =  (env2d && env2d['VghLantern__Env2d__Config__Viewport']) || {};
+                factor  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+                    viewportCfg, 'FitPaddingFactor', 'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Viewport');
+            }
 
             if (!extents || extents.Width <= 0 || extents.Height <= 0) {
                 instance.SetViewBox({
@@ -285,15 +288,10 @@ const VghLantern__Env2d__ViewportInstance = (function() {
             var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
             var viewportCfg   =  (env2d && env2d['VghLantern__Env2d__Config__Viewport']) || {};
-            var sizeFactor    =  (typeof viewportCfg.ViewLabelSizeFactor === 'number')
-                ? viewportCfg.ViewLabelSizeFactor
-                : FALLBACK_LABEL_SIZE_FACTOR;
-            var strokeFactor  =  (typeof viewportCfg.ViewLabelUnderlineStrokeFactor === 'number')
-                ? viewportCfg.ViewLabelUnderlineStrokeFactor
-                : FALLBACK_LABEL_STROKE_FACTOR;
-            var gapFactor     =  (typeof viewportCfg.ViewLabelGapFactor === 'number')
-                ? viewportCfg.ViewLabelGapFactor
-                : FALLBACK_LABEL_GAP_FACTOR;
+            var VIEWPORT_LABEL  =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Viewport';
+            var sizeFactor    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'ViewLabelSizeFactor', VIEWPORT_LABEL);
+            var strokeFactor  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'ViewLabelUnderlineStrokeFactor', VIEWPORT_LABEL);
+            var gapFactor     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'ViewLabelGapFactor', VIEWPORT_LABEL);
 
             var box       =  instance.GetViewBox();
             var span      =  Math.max(box.Width, box.Height);

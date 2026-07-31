@@ -38,9 +38,9 @@
 import * as THREE from 'three';
 
 import {
-    VghLantern__Env3d__ConfigAccess__Section,
     VghLantern__Env3d__ConfigAccess__MmToWorld,
-    VghLantern__Env3d__ConfigAccess__PointToWorld
+    VghLantern__Env3d__ConfigAccess__PointToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireNumber
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 // =============================================================================
@@ -56,6 +56,7 @@ import {
     const MIN_MEMBER_LENGTH_MM  =  0.5;                                      // <-- Below this a member is degenerate
     const MIN_OUTLINE_POINTS    =  3;                                        // <-- A section needs at least a triangle
     const VERTICAL_DOT_LIMIT    =  0.999;                                    // <-- Above this the member is effectively vertical
+    const FLOATS_PER_TRIANGLE   =  9;                                        // <-- Three vertices of three floats, non-indexed
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -70,9 +71,8 @@ import {
     // Used when a member has no profile assigned yet, so the 3D view still shows
     // a solid member of roughly the right size rather than nothing at all.
     export function VghLantern__Env3d__ProfileSweep__FallbackOutline(widthMm, depthMm) {
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
-        const w       =  Number(widthMm) || Number(config.FallbackBarWidthMm) || 40;
-        const d       =  Number(depthMm) || Number(config.FallbackBarDepthMm) || 55;
+        const w       =  Number(widthMm) || VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'FallbackBarWidthMm');
+        const d       =  Number(depthMm) || VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'FallbackBarDepthMm');
         const halfW   =  w / 2;
 
         return [
@@ -177,11 +177,10 @@ import {
 
         if (lengthWorld < VghLantern__Env3d__ConfigAccess__MmToWorld(MIN_MEMBER_LENGTH_MM)) return null;
 
-        const config    =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
         const geometry  =  new THREE.ExtrudeGeometry(shape, {
             depth          : lengthWorld,
             bevelEnabled   : false,
-            steps          : Math.max(1, Number(config.SweepSegmentsPerMember) || 1),
+            steps          : Math.max(1, VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'SweepSegmentsPerMember')),
             curveSegments  : 8
         });
 
@@ -210,23 +209,43 @@ import {
     // Glazing bars are the volume case - dozens of identical sections. Merging
     // them into a single geometry keeps the draw call count flat as bar count
     // rises, which is what stops a heavily divided lantern from stuttering.
-    export function VghLantern__Env3d__ProfileSweep__BuildMergedMesh(outlinePoints, members, material, meshName) {
+    //
+    // memberSpansOut is optional. When supplied it is filled with one
+    // { Record, SpanStart, SpanCount } entry per member that actually produced
+    // geometry, spans measured in triangles and ascending. That is what lets a
+    // caller name the individual member behind a raycast hit on the merged mesh;
+    // degenerate members are absent from it, exactly as they are from the buffer.
+    export function VghLantern__Env3d__ProfileSweep__BuildMergedMesh(outlinePoints, members, material, meshName, memberSpansOut) {
         if (!Array.isArray(members) || members.length === 0) return null;
 
         const geometries  =  [];
+        const built       =  [];
         for (let i = 0; i < members.length; i++) {
             const member    =  members[i];
             const geometry  =  VghLantern__Env3d__ProfileSweep__BuildGeometry(outlinePoints, member.Start, member.End);
-            if (geometry) geometries.push(geometry);
+            if (!geometry) continue;
+
+            geometries.push(geometry);
+            built.push(member);
         }
 
         if (geometries.length === 0) return null;
 
         const merged  =  VghLantern__Env3d__ProfileSweep__MergeGeometries(geometries);
         for (let i = 0; i < geometries.length; i++) geometries[i].dispose();   // <-- Sources are no longer needed
-        if (!merged) return null;
+        if (!merged || !merged.Geometry) return null;
 
-        const mesh  =  new THREE.Mesh(merged, material);
+        if (Array.isArray(memberSpansOut)) {
+            for (let i = 0; i < built.length; i++) {
+                memberSpansOut.push({
+                    Record    : built[i],
+                    SpanStart : merged.Spans[i].TriangleStart,
+                    SpanCount : merged.Spans[i].TriangleCount
+                });
+            }
+        }
+
+        const mesh  =  new THREE.Mesh(merged.Geometry, material);
         mesh.name   =  meshName || 'VghLantern__Env3d__SweptMemberSet';
         return mesh;
     }
@@ -238,6 +257,10 @@ import {
     // Hand-rolled rather than pulled from BufferGeometryUtils, because every
     // extrusion here has an identical attribute layout and the merge is trivial.
     // Avoiding the addon keeps the vendored Three surface as small as possible.
+    //
+    // Returns the merged geometry alongside the triangle span each source occupies
+    // within it. The spans are a by-product of the copy, so recording them costs
+    // nothing and is the only point at which source identity is still known.
     function VghLantern__Env3d__ProfileSweep__MergeGeometries(geometries) {
         let totalVertices  =  0;
         for (let i = 0; i < geometries.length; i++) {
@@ -248,6 +271,7 @@ import {
 
         const positions  =  new Float32Array(totalVertices * 3);
         const normals    =  new Float32Array(totalVertices * 3);
+        const spans      =  [];
         let cursor       =  0;
 
         for (let i = 0; i < geometries.length; i++) {
@@ -257,6 +281,11 @@ import {
 
             positions.set(pos, cursor);
             if (norm) normals.set(norm, cursor);
+
+            spans.push({
+                TriangleStart : cursor      / FLOATS_PER_TRIANGLE,
+                TriangleCount : pos.length  / FLOATS_PER_TRIANGLE
+            });
             cursor  +=  pos.length;
 
             if (source !== geometries[i]) source.dispose();                   // <-- Dispose the temporary non-indexed copy
@@ -266,7 +295,8 @@ import {
         const merged  =  new THREE.BufferGeometry();
         merged.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         merged.setAttribute('normal',   new THREE.BufferAttribute(normals, 3));
-        return merged;
+
+        return { Geometry : merged, Spans : spans };
     }
     // ------------------------------------------------------------
 

@@ -23,6 +23,7 @@
        Mount(hostElement)              create renderer, camera, lights
        Render(surface, skeleton, ...)   rebuild the model groups
        ApplyPreset(surface, key)        isometric / front / side / plan
+       AttachInspector(surface, cb)     hover and pin model inspection
        Snapshot(surface, options)       PNG data URL for the drawing sheet
        Dispose(surface)                 release the WebGL context
 
@@ -54,6 +55,13 @@ import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__En
 import { VghLantern__Env3d__ComponentLoader__Glb__Build, VghLantern__Env3d__ComponentLoader__Glb__ClearCache } from './VghLantern__Env3d__ComponentLoader__Glb__.mjs';
 import { VghLantern__Env3d__SnapshotExporter__Capture, VghLantern__Env3d__SnapshotExporter__CapturePreset } from './VghLantern__Env3d__SnapshotExporter__.mjs';
 import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+
+import {
+    VghLantern__Env3d__HoverInspector__Attach,
+    VghLantern__Env3d__HoverInspector__Detach,
+    VghLantern__Env3d__HoverInspector__Clear,
+    VghLantern__Env3d__HoverInspector__IsAttached
+} from './VghLantern__Env3d__HoverInspector__.mjs';
 
 // =============================================================================
 // REGION | 3D Render Pipeline Module
@@ -139,6 +147,7 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
     export function VghLantern__Env3d__RenderPipeline__Dispose(surface) {
         if (!surface) return;
 
+        VghLantern__Env3d__HoverInspector__Detach(surface);                   // <-- Listeners outlive the canvas otherwise
         VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, null);
         VghLantern__Env3d__SceneManager__Destroy(surface);
 
@@ -183,7 +192,16 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
     export async function VghLantern__Env3d__RenderPipeline__Render(surface, skeleton, barSet, lantern) {
         if (!surface || surface.IsDestroyed) return;
 
+        // Any highlight in flight refers to meshes that are about to be disposed,
+        // and any pinned target to a member index the rebuild may renumber.
+        VghLantern__Env3d__HoverInspector__Clear(surface);
         VghLantern__Env3d__SceneManager__ClearModelGroups(surface);
+
+        // Held so the inspector can name what it picks without re-reading the
+        // application state, which matters for a surface showing a lantern other
+        // than the one currently selected.
+        surface.LastSkeleton  =  skeleton || null;
+        surface.LastLantern   =  lantern  || null;
 
         if (!skeleton) {
             VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, MESSAGE_NO_MODEL);
@@ -288,12 +306,61 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
 
 
 // -----------------------------------------------------------------------------
+// REGION | Hover Inspector
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Attach the Hover Inspector to a Surface
+    // ------------------------------------------------------------
+    // onTargetChanged receives a composed payload, or null when nothing is under
+    // the cursor:
+    //     { Pick, Description : { CategoryLabel, TypeLabel, InstanceLabel,
+    //                             InstanceCount, Facts : [{ Label, Value }] },
+    //       IsPinned, PointerX, PointerY }
+    // Returns false when the feature is switched off in config, so a caller can
+    // skip building its own panel rather than binding to something inert.
+    export function VghLantern__Env3d__RenderPipeline__AttachInspector(surface, onTargetChanged) {
+        return VghLantern__Env3d__HoverInspector__Attach(surface, onTargetChanged);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Detach the Hover Inspector From a Surface
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__DetachInspector(surface) {
+        VghLantern__Env3d__HoverInspector__Detach(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Drop the Active Inspector Target Without Detaching
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__ClearInspector(surface) {
+        VghLantern__Env3d__HoverInspector__Clear(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether a Surface Currently Has an Inspector Attached
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__HasInspector(surface) {
+        return VghLantern__Env3d__HoverInspector__IsAttached(surface);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Snapshot Export
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Capture the Current View as a PNG Data URL
     // ------------------------------------------------------------
+    // The inspector is cleared first, unconditionally. The drawing editor prefers
+    // the live 3D View surface for its sheet viewports, and a highlight left over
+    // from a reviewer's last hover would be captured into an issued drawing.
     export function VghLantern__Env3d__RenderPipeline__Snapshot(surface, options) {
+        VghLantern__Env3d__HoverInspector__Clear(surface);
         return VghLantern__Env3d__SnapshotExporter__Capture(surface, options);
     }
     // ------------------------------------------------------------
@@ -304,6 +371,7 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
     export function VghLantern__Env3d__RenderPipeline__SnapshotPreset(surface, presetKey, options) {
         if (!surface) return null;
 
+        VghLantern__Env3d__HoverInspector__Clear(surface);
         return VghLantern__Env3d__SnapshotExporter__CapturePreset(
             surface, presetKey, surface.LastBounds, options,
             VghLantern__Env3d__CameraRig__ApplyPreset

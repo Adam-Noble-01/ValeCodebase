@@ -118,6 +118,25 @@
         color                          : var(--Vale_TextPrimary);
     }
 
+    /* Staff-authored Document Warnings - red, ranked above the orange rule-based
+       list above since a human flagged these rather than an automatic check. */
+    .VghLantern__Spec__UserWarningList {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        padding                        : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Medium)
+                                         var(--Vale_Spacing_Medium) var(--Vale_Spacing_XLarge);
+        list-style                     : disc;
+        background                     : var(--VghLantern_ErrorBackground);
+        border-left                    : 3px solid var(--VghLantern_ErrorRed);
+        border-radius                  : 0 var(--Vale_BorderRadius) var(--Vale_BorderRadius) 0;
+    }
+
+    .VghLantern__Spec__UserWarningItem {
+        font-size                      : var(--Vale_FontSize_Small);
+        line-height                    : 1.6;
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--VghLantern_ErrorRed);
+    }
+
 /* #endregion ------------------------------------------------------------------- */
 
 

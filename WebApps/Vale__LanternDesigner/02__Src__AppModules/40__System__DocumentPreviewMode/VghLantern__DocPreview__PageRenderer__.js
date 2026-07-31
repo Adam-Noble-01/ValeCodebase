@@ -129,8 +129,12 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
         if (!DocumentState) return '';
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var toolbarCfg  =  VghLantern__PageRenderer__Config()['VghLantern__DocPreview__Config__Toolbar'] || {};
-        if (toolbarCfg.ShowContentToggles === false) return '';
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                toolbarCfg, 'ShowContentToggles', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Toolbar')) {
+            return '';
+        }
 
         var labels  =  toolbarCfg.ToggleLabels || {};
         var state   =  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState();
@@ -171,9 +175,12 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         var toolbarCfg     =  config['VghLantern__DocPreview__Config__Toolbar'] || {};
         var pageCfg        =  config['VghLantern__DocPreview__Config__Page'] || {};
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var TOOLBAR_LABEL =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Toolbar';
+
         var html  =  '<div class="' + CSS_TOOLBAR_GROUP + '">';
 
-        if (toolbarCfg.ShowPaperSizeSelector !== false && DocumentState) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowPaperSizeSelector', TOOLBAR_LABEL) && DocumentState) {
             var page   =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage();
             var sizes  =  pageCfg.PaperSizesMm || {};
             var sizeKey;
@@ -191,15 +198,15 @@ const VghLantern__DocPreview__PageRenderer = (function() {
             html  +=  '</select>';
         }
 
-        if (toolbarCfg.ShowPrintButton !== false) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowPrintButton', TOOLBAR_LABEL)) {
             html  +=  '<button type="button" class="' + CSS_BUTTON + '" ' + ATTR_ACTION + '="print">' +
-                      VghLantern__PageRenderer__Escape(toolbarCfg.PrintLabel || 'Print') + '</button>';
+                      VghLantern__PageRenderer__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(toolbarCfg, 'PrintLabel', TOOLBAR_LABEL)) + '</button>';
         }
 
-        if (toolbarCfg.ShowExportPdfButton !== false) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowExportPdfButton', TOOLBAR_LABEL)) {
             html  +=  '<button type="button" class="' + CSS_BUTTON + ' ' + CSS_BUTTON_PRIMARY + '" ' +
                       ATTR_ACTION + '="exportPdf">' +
-                      VghLantern__PageRenderer__Escape(toolbarCfg.ExportPdfLabel || 'Export PDF') + '</button>';
+                      VghLantern__PageRenderer__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(toolbarCfg, 'ExportPdfLabel', TOOLBAR_LABEL)) + '</button>';
         }
 
         return html + '</div>';
@@ -234,9 +241,12 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         var scaledH     =  page.HeightMm * page.PxPerMm;
 
         var footerHtml  =  '';
-        if (pdfCfg.ShowPageNumbers !== false) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var PDF_LABEL     =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf';
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(pdfCfg, 'ShowPageNumbers', PDF_LABEL)) {
+            var footerText  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(pdfCfg, 'FooterText', PDF_LABEL);
             footerHtml  =  '<div class="' + CSS_PAGE_FOOTER + '">' +
-                           '<span>' + VghLantern__PageRenderer__Escape(pdfCfg.FooterText || '') + '</span>' +
+                           '<span>' + VghLantern__PageRenderer__Escape(footerText) + '</span>' +
                            '<span>Page ' + pageNumber + '</span>' +
                            '</div>';
         }
@@ -323,8 +333,10 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         }
 
         if (TitleBlock) {
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             var sheetCfg  =  VghLantern__PageRenderer__DrawingConfig()['VghLantern__DrawingEditor__Config__Sheet'] || {};
-            var titleMm   =  (typeof sheetCfg.TitleBlockHeightMm === 'number') ? sheetCfg.TitleBlockHeightMm : 10;
+            var titleMm   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+                sheetCfg, 'TitleBlockHeightMm', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Sheet');
 
             html  +=  '<div class="' + CSS_TITLE_HOST + '" style="height:' + titleMm + 'mm">' +
                       TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup(sheet.Project, sheet.Lantern) +

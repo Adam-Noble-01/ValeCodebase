@@ -74,15 +74,18 @@ const VghLantern__Env2d__DimensionEditor = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var editorCfg     =  (env2d && env2d['VghLantern__Env2d__Config__DimensionEditor']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__DimensionEditor';
+
+        function bool(key) { return ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(editorCfg, key, LABEL); }
 
         return {
-            Enabled            : editorCfg.Enabled           !== false,
-            CommitOnEnter      : editorCfg.CommitOnEnter     !== false,
-            CommitOnBlur       : editorCfg.CommitOnBlur      !== false,
-            CancelOnEscape     : editorCfg.CancelOnEscape    !== false,
-            SelectAllOnOpen    : editorCfg.SelectAllOnOpen   !== false,
-            ShowWarningToasts  : editorCfg.ShowWarningToasts !== false,
-            InputWidthPx       : (typeof editorCfg.InputWidthPx === 'number') ? editorCfg.InputWidthPx : 96
+            Enabled            : bool('Enabled'),
+            CommitOnEnter      : bool('CommitOnEnter'),
+            CommitOnBlur       : bool('CommitOnBlur'),
+            CancelOnEscape     : bool('CancelOnEscape'),
+            SelectAllOnOpen    : bool('SelectAllOnOpen'),
+            ShowWarningToasts  : bool('ShowWarningToasts'),
+            InputWidthPx       : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(editorCfg, 'InputWidthPx', LABEL)
         };
     }
     // ------------------------------------------------------------

@@ -26,6 +26,7 @@
        skeleton     swept or line-drawn structural members
        glazing      translucent glass faces
        components   loaded GLB finials, bases, cresting, vents
+       highlight    hover inspector instance overlay, transient
 
    ---------------------------------------------------------------------------
 
@@ -39,9 +40,10 @@
 import * as THREE from 'three';
 
 import {
-    VghLantern__Env3d__ConfigAccess__Section,
-    VghLantern__Env3d__ConfigAccess__Value,
-    VghLantern__Env3d__ConfigAccess__MmToWorld
+    VghLantern__Env3d__ConfigAccess__MmToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireNumber,
+    VghLantern__Env3d__ConfigAccess__RequireString,
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 // =============================================================================
@@ -54,7 +56,7 @@ import {
 
     // MODULE CONSTANTS | Group Names and Canvas Classes
     // ------------------------------------------------------------
-    const GROUP_ORDER      =  ['helpers', 'skeleton', 'glazing', 'components']; // <-- Fixed stack, created once per surface
+    const GROUP_ORDER      =  ['helpers', 'skeleton', 'glazing', 'components', 'highlight']; // <-- Fixed stack, created once per surface
     const CSS_CANVAS       =  'VghLantern__Env3d__Canvas';                   // <-- Styled by Env3d Styles__Main__.css
     const CSS_HOST_ACTIVE  =  'VghLantern__Env3d__Host--active';             // <-- Marks a host that owns a live surface
     const MIN_CANVAS_PX    =  2;                                             // <-- Below this the host is not laid out yet
@@ -112,14 +114,14 @@ import {
     // SUB FUNCTION | Build the Ground Grid Helper
     // ------------------------------------------------------------
     function VghLantern__Env3d__SceneManager__BuildGroundGrid() {
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('GroundPlane');
-        if (config.Enabled !== true || config.ShowGrid !== true) return null;
+        if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('GroundPlane', 'Enabled')) return null;
+        if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('GroundPlane', 'ShowGrid')) return null;
 
-        const extentMm   =  Number(config.GridExtentMm)  || 12000;
-        const spacingMm  =  Number(config.GridSpacingMm) || 500;
+        const extentMm   =  VghLantern__Env3d__ConfigAccess__RequireNumber('GroundPlane', 'GridExtentMm');
+        const spacingMm  =  VghLantern__Env3d__ConfigAccess__RequireNumber('GroundPlane', 'GridSpacingMm');
         const divisions  =  Math.max(2, Math.round(extentMm / spacingMm));
         const sizeWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(extentMm);
-        const colour     =  new THREE.Color(config.GridColour || '#c4cace');
+        const colour     =  new THREE.Color(VghLantern__Env3d__ConfigAccess__RequireString('GroundPlane', 'GridColour'));
 
         const grid  =  new THREE.GridHelper(sizeWorld, divisions, colour, colour);
         grid.name                =  GROUND_GRID_NAME;
@@ -149,17 +151,16 @@ import {
         if (!hostElement) return null;
 
         const surfaceOptions  =  options || {};
-        const rendererConfig  =  VghLantern__Env3d__ConfigAccess__Section('Renderer');
 
         // RENDERER
         const renderer  =  new THREE.WebGLRenderer({
-            antialias             : rendererConfig.Antialias !== false,
-            preserveDrawingBuffer : rendererConfig.PreserveDrawingBuffer !== false,
+            antialias             : VghLantern__Env3d__ConfigAccess__RequireBoolean('Renderer', 'Antialias'),
+            preserveDrawingBuffer : VghLantern__Env3d__ConfigAccess__RequireBoolean('Renderer', 'PreserveDrawingBuffer'),
             alpha                 : true
         });
         renderer.domElement.className  =  CSS_CANVAS;
-        renderer.setClearColor(new THREE.Color(rendererConfig.ClearColorFallback || '#dfe3e6'), 1);
-        renderer.toneMappingExposure   =  Number(rendererConfig.ToneMappingExposure) || 1.0;
+        renderer.setClearColor(new THREE.Color(VghLantern__Env3d__ConfigAccess__RequireString('Renderer', 'ClearColorFallback')), 1);
+        renderer.toneMappingExposure   =  VghLantern__Env3d__ConfigAccess__RequireNumber('Renderer', 'ToneMappingExposure');
         hostElement.appendChild(renderer.domElement);
         hostElement.classList.add(CSS_HOST_ACTIVE);
 
@@ -223,7 +224,7 @@ import {
         const heightPx  =  surface.HostElement.clientHeight;
         if (widthPx < MIN_CANVAS_PX || heightPx < MIN_CANVAS_PX) return;      // <-- Host is hidden or not laid out yet
 
-        const maxRatio  =  Number(VghLantern__Env3d__ConfigAccess__Value('Renderer', 'MaxPixelRatio', 2)) || 2;
+        const maxRatio  =  VghLantern__Env3d__ConfigAccess__RequireNumber('Renderer', 'MaxPixelRatio');
         const ratio     =  Math.min(window.devicePixelRatio || 1, maxRatio);
 
         surface.Renderer.setPixelRatio(ratio);
@@ -263,7 +264,7 @@ import {
     // SUB FUNCTION | Run the On-Demand Draw Loop
     // ------------------------------------------------------------
     function VghLantern__Env3d__SceneManager__StartLoop(surface) {
-        const onDemand  =  VghLantern__Env3d__ConfigAccess__Value('Renderer', 'OnDemandRendering', true) !== false;
+        const onDemand  =  VghLantern__Env3d__ConfigAccess__RequireBoolean('Renderer', 'OnDemandRendering');
 
         function VghLantern__Env3d__SceneManager__Frame() {
             if (surface.IsDestroyed) return;
@@ -314,7 +315,11 @@ import {
 
     // FUNCTION | Clear Every Model Group, Leaving Helpers Intact
     // ------------------------------------------------------------
+    // The highlight group is cleared with the model, not after it. Its contents are
+    // slices of the very buffers about to be disposed, so leaving them a frame
+    // longer would leave the overlay pointing at freed geometry.
     export function VghLantern__Env3d__SceneManager__ClearModelGroups(surface) {
+        VghLantern__Env3d__SceneManager__ClearGroup(surface, 'highlight');
         VghLantern__Env3d__SceneManager__ClearGroup(surface, 'skeleton');
         VghLantern__Env3d__SceneManager__ClearGroup(surface, 'glazing');
         VghLantern__Env3d__SceneManager__ClearGroup(surface, 'components');

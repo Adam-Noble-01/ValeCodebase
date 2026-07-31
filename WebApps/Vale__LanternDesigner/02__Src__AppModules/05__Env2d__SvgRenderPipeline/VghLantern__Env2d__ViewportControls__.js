@@ -38,9 +38,8 @@ const VghLantern__Env2d__ViewportControls = (function() {
 
     // MODULE CONSTANTS | Interaction Defaults
     // ------------------------------------------------------------
-    const DEFAULT_MIN_SPAN_MM      =  50;                                    // <-- Tightest zoom-in span
-    const DEFAULT_MAX_SPAN_MM      =  400000;                                // <-- Widest zoom-out span
-    const DEFAULT_WHEEL_STEP       =  0.0016;                                // <-- Wheel delta to zoom factor
+    const DEFAULT_MIN_SPAN_MM      =  50;                                    // <-- Tightest zoom-in span; interaction limit, not a design value
+    const DEFAULT_MAX_SPAN_MM      =  400000;                                // <-- Widest zoom-out span; interaction limit, not a design value
     const CSS_PANNING_CLASS        =  'VghLantern__Env2d__Svg--panning';     // <-- Applied to the root while dragging
     // ------------------------------------------------------------
 
@@ -66,13 +65,14 @@ const VghLantern__Env2d__ViewportControls = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var viewportCfg   =  (env2d && env2d['VghLantern__Env2d__Config__Viewport']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Viewport';
 
         return {
-            FitPaddingFactor  : (typeof viewportCfg.FitPaddingFactor === 'number') ? viewportCfg.FitPaddingFactor : 0.14,
-            WheelZoomStep     : (typeof viewportCfg.WheelZoomStep    === 'number') ? viewportCfg.WheelZoomStep    : DEFAULT_WHEEL_STEP,
-            ButtonZoomStep    : (typeof viewportCfg.ButtonZoomStep   === 'number') ? viewportCfg.ButtonZoomStep   : 1.25,
-            PanButton         : (typeof viewportCfg.PanButton        === 'number') ? viewportCfg.PanButton        : 0,
-            DoubleClickFit    : viewportCfg.DoubleClickZoomExtents !== false
+            FitPaddingFactor  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'FitPaddingFactor', LABEL),
+            WheelZoomStep     : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'WheelZoomStep',    LABEL),
+            ButtonZoomStep    : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'ButtonZoomStep',   LABEL),
+            PanButton         : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'PanButton',        LABEL),
+            DoubleClickFit    : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(viewportCfg, 'DoubleClickZoomExtents', LABEL)
         };
     }
     // ------------------------------------------------------------

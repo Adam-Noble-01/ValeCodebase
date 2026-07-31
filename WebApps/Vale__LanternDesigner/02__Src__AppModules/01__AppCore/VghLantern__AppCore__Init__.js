@@ -32,18 +32,11 @@
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Autosave Debounce Fallback
-    // ------------------------------------------------------------
-    // Config supplies the real value; this is only used before config resolves.
-    const VGHLANTERN__AUTOSAVE_DEBOUNCE_FALLBACK_MS  =  1200;
-    // ------------------------------------------------------------
-
-
     // MODULE VARIABLES | Autosave Debounce State
     // ------------------------------------------------------------
     let VghLantern__AppCore__AutosaveTimerId     =  null;                    // <-- Pending autosave timeout handle
     let VghLantern__AppCore__LastAutosaveSource  =  'autosave:unknown';      // <-- Most recent update source label
-    let VghLantern__AppCore__AutosaveDebounceMs  =  VGHLANTERN__AUTOSAVE_DEBOUNCE_FALLBACK_MS;
+    let VghLantern__AppCore__AutosaveDebounceMs  =  0;                       // <-- Set from config in InitApp(), before which no autosave can fire
     // ------------------------------------------------------------
 
 
@@ -109,8 +102,10 @@
         }
 
         var appSection  =  configData['VghLantern__Application__Config'] || {};
-        var debounceMs  =  appSection['VghLantern__Application__Config__AutosaveDebounceMs'];
-        if (typeof debounceMs === 'number' && debounceMs > 0) VghLantern__AppCore__AutosaveDebounceMs  =  debounceMs;
+        VghLantern__AppCore__AutosaveDebounceMs  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            appSection, 'VghLantern__Application__Config__AutosaveDebounceMs',
+            'VghLantern__AppConfig__Main__.json -> VghLantern__Application__Config'
+        );
 
         await VghLantern__AppCore__LoadDataLibraries();
 

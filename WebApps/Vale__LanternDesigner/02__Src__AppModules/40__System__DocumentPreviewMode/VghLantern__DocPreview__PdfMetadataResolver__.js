@@ -37,10 +37,6 @@ const VghLantern__DocPreview__PdfMetadataResolver = (function() {
 
     // MODULE CONSTANTS | Defaults and Sanitisation
     // ------------------------------------------------------------
-    const FALLBACK_PATTERN   =  'VghLantern__{projectCode}__{projectName}__RoofLanternSpecification';
-    const FALLBACK_AUTHOR    =  'Vale Garden Houses Limited';
-    const FALLBACK_CREATOR   =  'Vale Lantern Designer';
-
     const UNSAFE_CHARS       =  /[^A-Za-z0-9_\-]+/g;                           // <-- Everything outside this set becomes a hyphen
     const COLLAPSE_SEPARATOR =  /-{2,}/g;
     const TRIM_SEPARATOR     =  /^[-_]+|[-_]+$/g;
@@ -144,7 +140,11 @@ const VghLantern__DocPreview__PdfMetadataResolver = (function() {
     // FUNCTION | Resolve the Export Filename Without Extension
     // ------------------------------------------------------------
     function VghLantern__DocPreview__PdfMetadataResolver__ResolveFilename() {
-        var pattern  =  VghLantern__PdfMetadata__Config().FilenamePattern || FALLBACK_PATTERN;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var pattern  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            VghLantern__PdfMetadata__Config(), 'FilenamePattern',
+            'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf'
+        );
         var tokens   =  VghLantern__PdfMetadata__BuildTokens();
 
         var resolved  =  pattern.replace(/\{(\w+)\}/g, function(match, tokenName) {
@@ -164,6 +164,8 @@ const VghLantern__DocPreview__PdfMetadataResolver = (function() {
     // FUNCTION | Resolve the Embedded PDF Document Properties
     // ------------------------------------------------------------
     function VghLantern__DocPreview__PdfMetadataResolver__ResolveProperties() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var PDF_LABEL     =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf';
         var tokens  =  VghLantern__PdfMetadata__BuildTokens();
         var config  =  VghLantern__PdfMetadata__Config();
 
@@ -179,8 +181,8 @@ const VghLantern__DocPreview__PdfMetadataResolver = (function() {
         return {
             Title    : titleParts.join(' - '),
             Subject  : tokens.client ? ('Roof lantern specification for ' + tokens.client) : 'Roof lantern specification',
-            Author   : config.FooterText || FALLBACK_AUTHOR,
-            Creator  : FALLBACK_CREATOR,
+            Author   : ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'FooterText',  PDF_LABEL),
+            Creator  : ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'PdfCreator',  PDF_LABEL),
             Keywords : keywords.join(', '),
             Revision : tokens.revision
         };

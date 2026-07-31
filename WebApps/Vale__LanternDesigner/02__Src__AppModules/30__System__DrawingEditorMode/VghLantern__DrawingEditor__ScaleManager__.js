@@ -41,12 +41,13 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Fallbacks Used Only Before Config Resolves
+    // MODULE CONSTANTS | Structural Guard When the Denominator List Is Missing
     // ------------------------------------------------------------
+    // Only used if AvailableScaleDenominators is absent from JSON entirely - a
+    // config authoring bug, not a value this module is entitled to define.
     const FALLBACK_DENOMINATORS  =  [10, 20, 50, 100];
-    const FALLBACK_PREFERRED     =  20;
-    const FALLBACK_PADDING       =  1.08;
-    const FALLBACK_LABEL_PREFIX  =  'Scale 1:';
+
+    const SCALES_LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Scales';
     // ------------------------------------------------------------
 
 
@@ -82,7 +83,11 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
         var scaleCfg  =  VghLantern__ScaleManager__ScaleConfig();
         var list      =  scaleCfg.AvailableScaleDenominators;
 
-        if (!Array.isArray(list) || !list.length) return FALLBACK_DENOMINATORS.slice();
+        if (!Array.isArray(list) || !list.length) {
+            console.error('[VghLantern__ScaleManager] Missing or empty config key "AvailableScaleDenominators" (' +
+                SCALES_LABEL + '). Add it to the JSON config - do not hardcode a fallback in JS.');
+            return FALLBACK_DENOMINATORS.slice();
+        }
 
         return list.slice().sort(function(a, b) { return a - b; });
     }
@@ -100,12 +105,11 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     function VghLantern__DrawingEditor__ScaleManager__GetDenominator() {
         if (VghLantern__ScaleManager__ActiveDenominator !== null) return VghLantern__ScaleManager__ActiveDenominator;
 
-        var scaleCfg   =  VghLantern__ScaleManager__ScaleConfig();
-        var preferred  =  scaleCfg.PreferredScaleDenominator;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var scaleCfg      =  VghLantern__ScaleManager__ScaleConfig();
 
-        VghLantern__ScaleManager__ActiveDenominator  =  (typeof preferred === 'number' && preferred > 0)
-            ? preferred
-            : FALLBACK_PREFERRED;
+        VghLantern__ScaleManager__ActiveDenominator  =
+            ConfigLoader.VghLantern__ConfigLoader__RequireNumber(scaleCfg, 'PreferredScaleDenominator', SCALES_LABEL);
 
         return VghLantern__ScaleManager__ActiveDenominator;
     }
@@ -163,9 +167,10 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     // available is returned when nothing fits, because a small drawing beats a
     // clipped one.
     function VghLantern__DrawingEditor__ScaleManager__FitToRequests(requests) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var scaleCfg    =  VghLantern__ScaleManager__ScaleConfig();
         var available   =  VghLantern__ScaleManager__Denominators();
-        var padding     =  (typeof scaleCfg.AutoFitPaddingFactor === 'number') ? scaleCfg.AutoFitPaddingFactor : FALLBACK_PADDING;
+        var padding     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(scaleCfg, 'AutoFitPaddingFactor', SCALES_LABEL);
 
         if (!Array.isArray(requests) || !requests.length) return VghLantern__DrawingEditor__ScaleManager__GetDenominator();
 
@@ -194,7 +199,9 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     // FUNCTION | Test Whether Auto Fit Is Enabled
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled() {
-        return VghLantern__ScaleManager__ScaleConfig().AutoFitEnabled !== false;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+            VghLantern__ScaleManager__ScaleConfig(), 'AutoFitEnabled', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Scales');
     }
     // ------------------------------------------------------------
 
@@ -226,8 +233,9 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     // FUNCTION | Format the Scale for the Titleblock
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__ScaleManager__FormatLabel() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var scaleCfg  =  VghLantern__ScaleManager__ScaleConfig();
-        var prefix    =  scaleCfg.ScaleLabelPrefix || FALLBACK_LABEL_PREFIX;
+        var prefix    =  ConfigLoader.VghLantern__ConfigLoader__RequireString(scaleCfg, 'ScaleLabelPrefix', SCALES_LABEL);
 
         return prefix + String(VghLantern__DrawingEditor__ScaleManager__GetDenominator());
     }

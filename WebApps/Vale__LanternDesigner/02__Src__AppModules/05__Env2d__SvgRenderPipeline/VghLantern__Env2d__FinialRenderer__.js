@@ -37,11 +37,7 @@ const VghLantern__Env2d__FinialRenderer = (function() {
     const CSS_FINIAL           =  'VghLantern__Env2d__Finial';               // <-- Traced component outline
     const CSS_FINIAL_FALLBACK  =  'VghLantern__Env2d__Finial--placeholder';  // <-- Proportional placeholder
     const CSS_FINIAL_ANCHOR    =  'VghLantern__Env2d__FinialAnchor';         // <-- Plan-view anchor marker
-
-    const FALLBACK_HEIGHT_MM   =  300;
-    const FALLBACK_WIDTH_MM    =  90;
-    const FALLBACK_STROKE_MM   =  3;
-    const PLAN_MARKER_FACTOR   =  0.5;                                       // <-- Plan marker radius as a share of width
+    const PLAN_MARKER_FACTOR   =  0.5;                                       // <-- Plan marker radius as a share of width; a proportion, not a config value
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -57,13 +53,14 @@ const VghLantern__Env2d__FinialRenderer = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var finialCfg     =  (env2d && env2d['VghLantern__Env2d__Config__Finials']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Finials';
 
         return {
-            ShowInPlan            : finialCfg.ShowInPlan      !== false,
-            ShowInElevation       : finialCfg.ShowInElevation !== false,
-            FallbackHeightMm      : (typeof finialCfg.FallbackHeightMm      === 'number') ? finialCfg.FallbackHeightMm      : FALLBACK_HEIGHT_MM,
-            FallbackWidthMm       : (typeof finialCfg.FallbackWidthMm       === 'number') ? finialCfg.FallbackWidthMm       : FALLBACK_WIDTH_MM,
-            OutlineStrokeWidthMm  : (typeof finialCfg.OutlineStrokeWidthMm  === 'number') ? finialCfg.OutlineStrokeWidthMm  : FALLBACK_STROKE_MM
+            ShowInPlan            : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(finialCfg, 'ShowInPlan',      LABEL),
+            ShowInElevation       : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(finialCfg, 'ShowInElevation', LABEL),
+            FallbackHeightMm      : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(finialCfg, 'FallbackHeightMm',     LABEL),
+            FallbackWidthMm       : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(finialCfg, 'FallbackWidthMm',      LABEL),
+            OutlineStrokeWidthMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(finialCfg, 'OutlineStrokeWidthMm', LABEL)
         };
     }
     // ------------------------------------------------------------

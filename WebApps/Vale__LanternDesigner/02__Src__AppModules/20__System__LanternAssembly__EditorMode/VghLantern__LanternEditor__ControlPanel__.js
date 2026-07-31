@@ -63,6 +63,9 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_TOGGLE          =  'VghLantern__ControlPanel__Toggle';
     const CSS_TOGGLE_TRACK    =  'VghLantern__ControlPanel__ToggleTrack';
     const CSS_SELECT          =  'VghLantern__ControlPanel__Select';
+    const CSS_TEXT_INPUT      =  'VghLantern__ControlPanel__TextInput';
+    const CSS_TEXTAREA        =  'VghLantern__ControlPanel__TextArea';
+    const CSS_BUTTON          =  'VghLantern__ControlPanel__Button';
     const CSS_GROUP           =  'VghLantern__ControlPanel__Group';
     const CSS_GROUP_BODY      =  'VghLantern__ControlPanel__GroupBody';
     const CSS_SUBHEADING      =  'VghLantern__ControlPanel__SubHeading';
@@ -74,7 +77,13 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // ------------------------------------------------------------
     const ATTR_SECTION  =  'data-vgh-section';                               // <-- Section key on headers
     const ATTR_CONTROL  =  'data-vgh-control';                               // <-- Descriptor key on inputs
-    const ATTR_ROLE     =  'data-vgh-role';                                  // <-- slider | numeric | toggle | select
+    const ATTR_ROLE     =  'data-vgh-role';                                  // <-- slider | numeric | toggle | select | text | button
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Config Context Label
+    // ------------------------------------------------------------
+    const BEHAVIOUR_CONFIG_LABEL  =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__ControlBehaviour';
     // ------------------------------------------------------------
 
 
@@ -86,6 +95,8 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     let VghLantern__ControlPanel__OpenKeys      =  null;                     // <-- Set of open section keys, null until first build
     let VghLantern__ControlPanel__IsBound       =  false;                    // <-- Delegated listeners attached once
     let VghLantern__ControlPanel__RedrawTimer   =  null;                     // <-- Coalesces redraws during a slider drag
+    let VghLantern__ControlPanel__TextCommitTimer    =  null;                // <-- Coalesces keystrokes into one write
+    let VghLantern__ControlPanel__PendingTextCommit  =  null;                // <-- { ControlKey, RawValue } awaiting the timer, or null
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -134,10 +145,11 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // SUB HELPER FUNCTION | Build a Slider Control
     // ------------------------------------------------------------
     function VghLantern__ControlPanel__BuildSlider(descriptor, currentValue) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
         var behaviour    =  Descriptors ? Descriptors.VghLantern__ControlDescriptors__Behaviour() : {};
-        var showNumeric  =  behaviour.ShowNumericEntryBeside !== false;
-        var showUnit     =  behaviour.ShowUnitSuffix !== false && !!descriptor.Unit;
+        var showNumeric  =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(behaviour, 'ShowNumericEntryBeside', BEHAVIOUR_CONFIG_LABEL);
+        var showUnit     =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(behaviour, 'ShowUnitSuffix', BEHAVIOUR_CONFIG_LABEL) && !!descriptor.Unit;
 
         var displayValue  =  VghLantern__ControlPanel__FormatNumber(currentValue, descriptor.Decimals);
         var keyAttr       =  VghLantern__ControlPanel__Escape(descriptor.Key);
@@ -196,9 +208,11 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
         if (!Descriptors) return '';
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var options    =  Descriptors.VghLantern__ControlDescriptors__ResolveOptions(descriptor);
         var behaviour  =  Descriptors.VghLantern__ControlDescriptors__Behaviour();
-        var emptyLabel =  behaviour.EmptyOptionLabel || '- none selected -';
+        var emptyLabel =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            behaviour, 'EmptyOptionLabel', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__ControlBehaviour');
         var selected   =  String(currentValue === null || currentValue === undefined ? '' : currentValue);
 
         var html  =  '<select class="' + CSS_SELECT + '"'
@@ -244,6 +258,57 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Build a Text or Textarea Control
+    // ------------------------------------------------------------
+    // Both share the same 'text' role attribute so the input/change/focusout
+    // handlers never need to branch between the two - only Multiline decides
+    // which element renders.
+    function VghLantern__ControlPanel__BuildTextField(descriptor, currentValue) {
+        var keyAttr    =  VghLantern__ControlPanel__Escape(descriptor.Key);
+        var textValue  =  String(currentValue === null || currentValue === undefined ? '' : currentValue);
+        var maxAttr    =  descriptor.MaxLength > 0 ? ' maxlength="' + descriptor.MaxLength + '"' : '';
+
+        if (descriptor.Multiline) {
+            return '<textarea class="' + CSS_TEXTAREA + '"'
+                +      ' ' + ATTR_CONTROL + '="' + keyAttr + '"'
+                +      ' ' + ATTR_ROLE + '="text"'
+                +      ' rows="' + descriptor.Rows + '"'
+                +      maxAttr + '>' + VghLantern__ControlPanel__Escape(textValue) + '</textarea>';
+        }
+
+        return '<input type="text" class="' + CSS_TEXT_INPUT + '"'
+            +      ' ' + ATTR_CONTROL + '="' + keyAttr + '"'
+            +      ' ' + ATTR_ROLE + '="text"'
+            +      maxAttr
+            +      ' value="' + VghLantern__ControlPanel__Escape(textValue) + '">';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Build a Button Control
+    // ------------------------------------------------------------
+    // A button holds no value, so BuildControl returns this directly rather
+    // than wrapping it in the usual label-plus-input control shell.
+    function VghLantern__ControlPanel__BuildButtonBlock(descriptor) {
+        var keyAttr        =  VghLantern__ControlPanel__Escape(descriptor.Key);
+        var variantClass   =  descriptor.Variant ? ' ' + CSS_BUTTON + '--' + descriptor.Variant : '';
+
+        var html  =  '<div class="' + CSS_CONTROL + ' ' + CSS_CONTROL + '--button">';
+        html     +=      '<button type="button" class="' + CSS_BUTTON + variantClass + '"'
+                      +      ' ' + ATTR_CONTROL + '="' + keyAttr + '"'
+                      +      ' ' + ATTR_ROLE + '="button">'
+                      +      VghLantern__ControlPanel__Escape(descriptor.Label) + '</button>';
+
+        if (descriptor.Hint) {
+            html  +=     '<p class="' + CSS_CONTROL_HINT + '">' + VghLantern__ControlPanel__Escape(descriptor.Hint) + '</p>';
+        }
+
+        html     +=  '</div>';
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build a Single Control Block
     // ------------------------------------------------------------
     function VghLantern__ControlPanel__BuildControl(descriptor, lantern) {
@@ -256,6 +321,13 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         // event can never resolve to it.
         if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeHeading) {
             return '<h4 class="' + CSS_SUBHEADING + '">' + VghLantern__ControlPanel__Escape(descriptor.Label) + '</h4>';
+        }
+
+        // A button holds no Block/Field either, but it does need to be resolvable
+        // by key when it is clicked, so it registers in the map and returns early.
+        if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeButton) {
+            VghLantern__ControlPanel__DescriptorMap[descriptor.Key]  =  descriptor;
+            return VghLantern__ControlPanel__BuildButtonBlock(descriptor);
         }
 
         VghLantern__ControlPanel__DescriptorMap[descriptor.Key]  =  descriptor;
@@ -271,6 +343,9 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             inputHtml  =  VghLantern__ControlPanel__BuildToggle(descriptor, currentValue);
         } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeSelect) {
             inputHtml  =  VghLantern__ControlPanel__BuildSelect(descriptor, currentValue);
+        } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeText
+                || descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeTextarea) {
+            inputHtml  =  VghLantern__ControlPanel__BuildTextField(descriptor, currentValue);
         } else {
             inputHtml  =  VghLantern__ControlPanel__BuildSlider(descriptor, currentValue);
         }
@@ -400,9 +475,11 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // Only needed when a write changes which controls are visible. Debouncing
     // stops a slider drag from rebuilding the DOM on every pointer move.
     function VghLantern__ControlPanel__ScheduleRedraw() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
         var behaviour    =  Descriptors ? Descriptors.VghLantern__ControlDescriptors__Behaviour() : {};
-        var delayMs      =  (typeof behaviour.SliderDebounceMs === 'number') ? behaviour.SliderDebounceMs : 40;
+        var delayMs      =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            behaviour, 'SliderDebounceMs', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__ControlBehaviour');
 
         if (VghLantern__ControlPanel__RedrawTimer) clearTimeout(VghLantern__ControlPanel__RedrawTimer);
 
@@ -459,9 +536,57 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
 
         // Toggles and selects can change which controls apply, so the panel needs
         // rebuilding. Slider drags never do, so they skip the redraw entirely and
-        // keep the pointer grab intact.
-        var isStructural  =  descriptor.Type !== Descriptors.VghLantern__ControlDescriptors__TypeSlider;
+        // keep the pointer grab intact. Text and textarea are excluded for the
+        // same reason a slider is: rebuilding the DOM mid-sentence would drop the
+        // text cursor, and neither type ever changes which controls are visible.
+        var isStructural  =  descriptor.Type !== Descriptors.VghLantern__ControlDescriptors__TypeSlider
+                           && descriptor.Type !== Descriptors.VghLantern__ControlDescriptors__TypeText
+                           && descriptor.Type !== Descriptors.VghLantern__ControlDescriptors__TypeTextarea;
         if (isStructural) VghLantern__ControlPanel__ScheduleRedraw();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Queue a Debounced Commit for a Text or Textarea Field
+    // ------------------------------------------------------------
+    // Typing fires an input event per keystroke; committing on every one of them
+    // would walk WriteValue -> UpdateCurrentLantern -> solve on every letter.
+    // This coalesces those into one write, the same way ScheduleRedraw coalesces
+    // a slider drag into one redraw.
+    function VghLantern__ControlPanel__QueueTextCommit(controlKey, rawValue) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var Descriptors   =  window.VghLantern__LanternEditor__ControlDescriptors;
+        var behaviour     =  Descriptors ? Descriptors.VghLantern__ControlDescriptors__Behaviour() : {};
+        var delayMs       =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            behaviour, 'TextCommitDebounceMs', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__ControlBehaviour');
+
+        VghLantern__ControlPanel__PendingTextCommit  =  { ControlKey: controlKey, RawValue: rawValue };
+
+        if (VghLantern__ControlPanel__TextCommitTimer) clearTimeout(VghLantern__ControlPanel__TextCommitTimer);
+
+        VghLantern__ControlPanel__TextCommitTimer  =  setTimeout(function() {
+            VghLantern__ControlPanel__TextCommitTimer  =  null;
+            VghLantern__ControlPanel__FlushTextCommit();
+        }, delayMs);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Flush Any Pending Debounced Text Commit Immediately
+    // ------------------------------------------------------------
+    // Called on focusout so leaving the field is an explicit end of editing,
+    // not a wait for the timer - the same contract JobNotes uses.
+    function VghLantern__ControlPanel__FlushTextCommit() {
+        if (VghLantern__ControlPanel__TextCommitTimer) {
+            clearTimeout(VghLantern__ControlPanel__TextCommitTimer);
+            VghLantern__ControlPanel__TextCommitTimer  =  null;
+        }
+
+        var pending  =  VghLantern__ControlPanel__PendingTextCommit;
+        if (!pending) return;
+
+        VghLantern__ControlPanel__PendingTextCommit  =  null;
+        VghLantern__ControlPanel__CommitValue(pending.ControlKey, pending.RawValue, null);
     }
     // ------------------------------------------------------------
 
@@ -496,16 +621,24 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         var role        =  target.getAttribute(ATTR_ROLE);
         if (!controlKey || !role) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
         var behaviour    =  Descriptors ? Descriptors.VghLantern__ControlDescriptors__Behaviour() : {};
 
         // Live dragging is opt-out. When off, the value lands on 'change' only.
-        if (role === 'slider' && behaviour.LiveUpdateWhileDragging === false) {
+        if (role === 'slider' && !ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(behaviour, 'LiveUpdateWhileDragging', BEHAVIOUR_CONFIG_LABEL)) {
             VghLantern__ControlPanel__MirrorPair(controlKey, role, target.value);
             return;
         }
 
         if (role === 'toggle') return;                                       // <-- Checkboxes commit on change, not input
+
+        // Text and textarea route through the debounce queue rather than
+        // committing straight away, so a keystroke never triggers a solve.
+        if (role === 'text') {
+            VghLantern__ControlPanel__QueueTextCommit(controlKey, target.value);
+            return;
+        }
 
         VghLantern__ControlPanel__CommitValue(controlKey, target.value, role);
     }
@@ -522,15 +655,73 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         var role        =  target.getAttribute(ATTR_ROLE);
         if (!controlKey || !role) return;
 
+        if (role === 'text') return;                                         // <-- Handled by input debounce + focusout flush only
+
         var rawValue  =  (role === 'toggle') ? target.checked : target.value;
         VghLantern__ControlPanel__CommitValue(controlKey, rawValue, role === 'toggle' ? null : role);
     }
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Handle a Delegated Click for Section Headers
+    // SUB FUNCTION | Handle a Delegated Focusout Event
+    // ------------------------------------------------------------
+    // Leaving a text field is treated as an explicit end of editing, so any
+    // debounced keystroke still waiting on the timer is written immediately
+    // rather than left to fire after focus has already moved on.
+    function VghLantern__ControlPanel__OnFocusOut(e) {
+        var target  =  e.target;
+        if (!target || !target.getAttribute) return;
+
+        var role  =  target.getAttribute(ATTR_ROLE);
+        if (role === 'text') VghLantern__ControlPanel__FlushTextCommit();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Handle a Click on an Action Button Control
+    // ------------------------------------------------------------
+    // Confirm is optional: most Action buttons fire straight away, but a
+    // destructive one (e.g. Delete Lantern) supplies a Confirm block so this
+    // routes through the shared ConfirmModal before calling Action.
+    function VghLantern__ControlPanel__OnActionButtonClick(controlKey) {
+        var descriptor  =  VghLantern__ControlPanel__DescriptorMap[controlKey];
+        if (!descriptor || typeof descriptor.Action !== 'function') return;
+
+        var lantern  =  VghLantern__ControlPanel__ActiveLantern();
+        if (!lantern) return;
+
+        if (!descriptor.Confirm) {
+            descriptor.Action(lantern);
+            return;
+        }
+
+        var ConfirmModal  =  window.VghLantern__AppCore__ConfirmModal;
+        if (!ConfirmModal) {
+            descriptor.Action(lantern);                                      // <-- Fail open rather than silently drop the action
+            return;
+        }
+
+        ConfirmModal.VghLantern__ConfirmModal__Show({
+            Title        : descriptor.Confirm.Title,
+            Message      : descriptor.Confirm.Message,
+            ConfirmLabel : descriptor.Confirm.ConfirmLabel,
+            Danger       : true,
+            OnConfirm    : function() { descriptor.Action(lantern); }
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Handle a Delegated Click for Section Headers and Buttons
     // ------------------------------------------------------------
     function VghLantern__ControlPanel__OnClick(e) {
+        var actionButton  =  e.target.closest ? e.target.closest('[' + ATTR_ROLE + '="button"]') : null;
+        if (actionButton) {
+            var controlKey  =  actionButton.getAttribute(ATTR_CONTROL);
+            if (controlKey) VghLantern__ControlPanel__OnActionButtonClick(controlKey);
+            return;
+        }
+
         var header  =  e.target.closest ? e.target.closest('[' + ATTR_SECTION + ']') : null;
         if (!header) return;
 
@@ -545,9 +736,10 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     function VghLantern__ControlPanel__BindDelegated(hostElement) {
         if (VghLantern__ControlPanel__IsBound || !hostElement) return;
 
-        hostElement.addEventListener('input',  VghLantern__ControlPanel__OnInput);
-        hostElement.addEventListener('change', VghLantern__ControlPanel__OnChange);
-        hostElement.addEventListener('click',  VghLantern__ControlPanel__OnClick);
+        hostElement.addEventListener('input',     VghLantern__ControlPanel__OnInput);
+        hostElement.addEventListener('change',    VghLantern__ControlPanel__OnChange);
+        hostElement.addEventListener('click',     VghLantern__ControlPanel__OnClick);
+        hostElement.addEventListener('focusout',  VghLantern__ControlPanel__OnFocusOut);
 
         VghLantern__ControlPanel__IsBound  =  true;
     }

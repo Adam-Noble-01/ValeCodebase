@@ -164,7 +164,7 @@ import { VghLantern__Env3d__SceneManager__ClearGroup, VghLantern__Env3d__SceneMa
     // Returns null when the pick names a whole object, because in that case the
     // object itself has already been given the instance material and an overlay
     // would only double-draw it.
-    function VghLantern__Env3d__HighlightLayer__BuildOverlay(pick) {
+    function VghLantern__Env3d__HighlightLayer__BuildOverlay(pick, instanceMaterial) {
         const sourceGeometry  =  pick.Object3d ? pick.Object3d.geometry : null;
         if (!sourceGeometry || pick.SpanCount <= 0) return null;
 
@@ -192,10 +192,11 @@ import { VghLantern__Env3d__SceneManager__ClearGroup, VghLantern__Env3d__SceneMa
         if (normals) geometry.setAttribute('normal', new THREE.BufferAttribute(normals, FLOATS_PER_VERTEX));
         else         geometry.computeVertexNormals();                         // <-- Source had none, so derive them
 
-        // The overlay is coincident with the mesh it was sliced from. The instance
-        // material carries a polygon offset for exactly that reason - without it the
-        // two surfaces z-fight and the highlight shimmers as the camera moves.
-        const mesh  =  new THREE.Mesh(geometry, VghLantern__Env3d__MaterialLibrary__HighlightInstance());
+        // The overlay is coincident with the mesh it was sliced from. The solid
+        // instance material carries a polygon offset for exactly that reason -
+        // without it the two surfaces z-fight and the highlight shimmers as the
+        // camera moves. The glazing variant needs none: glass writes no depth.
+        const mesh  =  new THREE.Mesh(geometry, instanceMaterial);
         mesh.name         =  OVERLAY_NAME;
         mesh.renderOrder  =  OVERLAY_RENDER_ORDER;
 
@@ -274,15 +275,23 @@ import { VghLantern__Env3d__SceneManager__ClearGroup, VghLantern__Env3d__SceneMa
         const isGlazing   =  pick.CategoryKey === 'glazing';
         const isLoneItem  =  pick.EntryCount <= 1 || pick.IndexMode === VghLantern__Env3d__PickIndex__ModeWhole;
 
+        const instanceMaterial  =  isGlazing
+            ? VghLantern__Env3d__MaterialLibrary__HighlightGlazing()
+            : VghLantern__Env3d__MaterialLibrary__HighlightInstance();
+
+        // Glazing has no sibling tier. All four slopes live in one mesh, and tinting
+        // that whole mesh would light up every pane at once, which is the opposite
+        // of picking one out. The set recedes to ghost instead and the overlay alone
+        // carries the accent.
         let setMaterial;
-        if (isGlazing)        setMaterial  =  VghLantern__Env3d__MaterialLibrary__HighlightGlazing();
-        else if (isLoneItem)  setMaterial  =  VghLantern__Env3d__MaterialLibrary__HighlightInstance();
-        else                  setMaterial  =  VghLantern__Env3d__MaterialLibrary__HighlightSibling();
+        if (isLoneItem)     setMaterial  =  instanceMaterial;
+        else if (isGlazing) setMaterial  =  VghLantern__Env3d__MaterialLibrary__GhostGlazing();
+        else                setMaterial  =  VghLantern__Env3d__MaterialLibrary__HighlightSibling();
 
         VghLantern__Env3d__HighlightLayer__PaintTiers(surface, pick, state, setMaterial);
 
         if (!isLoneItem) {
-            const overlay  =  VghLantern__Env3d__HighlightLayer__BuildOverlay(pick);
+            const overlay  =  VghLantern__Env3d__HighlightLayer__BuildOverlay(pick, instanceMaterial);
             if (overlay && surface.Groups[GROUP_HIGHLIGHT]) surface.Groups[GROUP_HIGHLIGHT].add(overlay);
         }
 

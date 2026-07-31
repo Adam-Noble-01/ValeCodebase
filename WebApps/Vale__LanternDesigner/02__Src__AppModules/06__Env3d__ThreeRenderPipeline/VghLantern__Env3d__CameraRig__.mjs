@@ -33,9 +33,10 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import {
     VghLantern__Env3d__ConfigAccess__Section,
-    VghLantern__Env3d__ConfigAccess__Value,
     VghLantern__Env3d__ConfigAccess__MmToWorld,
-    VghLantern__Env3d__ConfigAccess__PointToWorld
+    VghLantern__Env3d__ConfigAccess__PointToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireNumber,
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d__SceneManager__.mjs';
@@ -90,10 +91,10 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
     // paddingOverride lets the snapshot exporter frame tighter than the live view
     // without disturbing the interactive camera config.
     function VghLantern__Env3d__CameraRig__DistanceForRadius(radiusWorld, camera, paddingOverride) {
-        const fovDegrees  =  camera ? camera.fov : Number(VghLantern__Env3d__ConfigAccess__Value('Camera', 'FieldOfViewDegrees', 38));
+        const fovDegrees  =  camera ? camera.fov : VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'FieldOfViewDegrees');
         const padding     =  (typeof paddingOverride === 'number' && paddingOverride > 0)
             ? paddingOverride
-            : (Number(VghLantern__Env3d__ConfigAccess__Value('Camera', 'FitPaddingFactor', 1.35)) || 1.35);
+            : VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'FitPaddingFactor');
         const halfFovRad  =  (fovDegrees * DEG_TO_RAD) / 2;
 
         // Correct for narrow viewports, where horizontal field is the binding constraint.
@@ -132,25 +133,24 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
     export function VghLantern__Env3d__CameraRig__Attach(surface) {
         if (!surface) return null;
 
-        const config    =  VghLantern__Env3d__ConfigAccess__Section('Camera');
         const widthPx   =  Math.max(1, surface.HostElement.clientWidth);
         const heightPx  =  Math.max(1, surface.HostElement.clientHeight);
 
         const camera  =  new THREE.PerspectiveCamera(
-            Number(config.FieldOfViewDegrees) || 38,
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'FieldOfViewDegrees'),
             widthPx / heightPx,
-            VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.NearPlaneMm) || 50),
-            VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.FarPlaneMm)  || 60000)
+            VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'NearPlaneMm')),
+            VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'FarPlaneMm'))
         );
         camera.name  =  'VghLantern__Env3d__Camera';
 
         const controls  =  new OrbitControls(camera, surface.Renderer.domElement);
         controls.enableDamping   =  true;
-        controls.dampingFactor   =  Number(config.DampingFactor) || 0.08;
-        controls.enablePan       =  config.EnablePan !== false;
-        controls.minDistance     =  VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.MinDistanceMm) || 400);
-        controls.maxDistance     =  VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.MaxDistanceMm) || 40000);
-        controls.maxPolarAngle   =  (Number(config.MaxPolarAngleDegrees) || 88) * DEG_TO_RAD;
+        controls.dampingFactor   =  VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'DampingFactor');
+        controls.enablePan       =  VghLantern__Env3d__ConfigAccess__RequireBoolean('Camera', 'EnablePan');
+        controls.minDistance     =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MinDistanceMm'));
+        controls.maxDistance     =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MaxDistanceMm'));
+        controls.maxPolarAngle   =  VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MaxPolarAngleDegrees') * DEG_TO_RAD;
 
         surface.Camera    =  camera;
         surface.Controls  =  controls;

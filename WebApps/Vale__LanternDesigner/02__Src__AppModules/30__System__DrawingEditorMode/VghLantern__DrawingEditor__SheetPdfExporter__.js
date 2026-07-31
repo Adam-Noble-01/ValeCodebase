@@ -56,15 +56,8 @@ const VghLantern__DrawingEditor__SheetPdfExporter = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Rasterisation Defaults
+    // MODULE CONSTANTS | Failure Messages
     // ------------------------------------------------------------
-    const FALLBACK_RASTER_PPMM   =  12;                                       // <-- About 305 dpi, crisp for linework
-    // ------------------------------------------------------------
-
-
-    // MODULE CONSTANTS | Filename and Failure Messages
-    // ------------------------------------------------------------
-    const FALLBACK_FILENAME_PATTERN  =  'VghLantern__{projectCode}__{drawingNumber}__{sheetSize}';
     const MESSAGE_NO_LIBRARY         =  'PDF export failed - the jsPDF library did not load.';
     const MESSAGE_NO_SHEET           =  'Open a lantern in the Drawing Editor before exporting a PDF.';
     const MESSAGE_FAILED             =  'PDF export failed - see the browser console for details.';
@@ -250,8 +243,10 @@ const VghLantern__DrawingEditor__SheetPdfExporter = (function() {
     // ------------------------------------------------------------
     function VghLantern__SheetPdfExporter__ResolveFilename(sheet, layout) {
         var TitleBlock  =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pdfCfg      =  VghLantern__SheetPdfExporter__Block('PdfExport');
-        var pattern     =  pdfCfg.FilenamePattern || FALLBACK_FILENAME_PATTERN;
+        var pattern     =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            pdfCfg, 'FilenamePattern', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__PdfExport');
 
         var fields  =  TitleBlock
             ? TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(sheet.Project, sheet.Lantern)
@@ -286,8 +281,9 @@ const VghLantern__DrawingEditor__SheetPdfExporter = (function() {
     // as into the page geometry, so anyone checking why a print measured short can
     // read the intended paper and scale straight out of the document properties.
     function VghLantern__SheetPdfExporter__ApplyMetadata(doc, sheet, layout) {
-        var TitleBlock  =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
-        var pdfCfg      =  VghLantern__SheetPdfExporter__Block('PdfExport');
+        var TitleBlock    =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var pdfCfg        =  VghLantern__SheetPdfExporter__Block('PdfExport');
 
         var fields  =  TitleBlock
             ? TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(sheet.Project, sheet.Lantern)
@@ -310,8 +306,10 @@ const VghLantern__DrawingEditor__SheetPdfExporter = (function() {
             Title    : titleParts.join(' - '),
             Subject  : 'Drawn at ' + (sheet.ScaleLabel || 'the sheet scale') + ' on ' + sheetLabel.trim() +
                        ' (' + sizeLabel + '). Print at 100 percent with no page scaling for a true scale drawing.',
-            Author   : pdfCfg.Author  || 'Vale Garden Houses Limited',
-            Creator  : pdfCfg.Creator || 'Vale Lantern Designer',
+            Author   : ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                pdfCfg, 'Author', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__PdfExport'),
+            Creator  : ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                pdfCfg, 'Creator', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__PdfExport'),
             Keywords : keywords.join(', ')
         });
     }
@@ -357,10 +355,10 @@ const VghLantern__DrawingEditor__SheetPdfExporter = (function() {
                 return false;
             }
 
-            var pdfCfg       =  VghLantern__SheetPdfExporter__Block('PdfExport');
-            var pixelsPerMm  =  (typeof pdfCfg.RasterPixelsPerMm === 'number' && pdfCfg.RasterPixelsPerMm > 0)
-                ? pdfCfg.RasterPixelsPerMm
-                : FALLBACK_RASTER_PPMM;
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+            var pdfCfg        =  VghLantern__SheetPdfExporter__Block('PdfExport');
+            var pixelsPerMm   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+                pdfCfg, 'RasterPixelsPerMm', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__PdfExport');
 
             // The page is created at the sheet's real millimetre size. Passing the
             // orientation that already matches the format stops jsPDF swapping the

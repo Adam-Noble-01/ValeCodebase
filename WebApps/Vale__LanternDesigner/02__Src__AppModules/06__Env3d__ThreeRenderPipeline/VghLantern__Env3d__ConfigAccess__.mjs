@@ -90,13 +90,18 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Read a Single Value With an Explicit Default
+    // FUNCTION | Read a Single Value From a Config Section
     // ------------------------------------------------------------
-    export function VghLantern__Env3d__ConfigAccess__Value(sectionName, fieldName, fallbackValue) {
+    // No caller-supplied fallback: Section() already resolves to the live config
+    // or the documented FALLBACK_SECTIONS entry, so a second fallback literal at
+    // the call site would only be a second place for the same number to drift.
+    export function VghLantern__Env3d__ConfigAccess__Value(sectionName, fieldName) {
         const section  =  VghLantern__Env3d__ConfigAccess__Section(sectionName);
         const value    =  section ? section[fieldName] : undefined;
+        if (value !== undefined && value !== null) return value;
 
-        return (value === undefined || value === null) ? fallbackValue : value;
+        const fallbackSection  =  FALLBACK_SECTIONS[sectionName] || {};
+        return fallbackSection[fieldName];
     }
     // ------------------------------------------------------------
 
@@ -105,6 +110,52 @@
     // ------------------------------------------------------------
     export function VghLantern__Env3d__ConfigAccess__IsResolved() {
         return !!VghLantern__Env3d__ConfigAccess__Root();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read a Required Number from a Config Section
+    // ------------------------------------------------------------
+    // Section() already resolves to live JSON or the documented FALLBACK_SECTIONS
+    // entry, so a value missing from BOTH means the key was typed wrong in either
+    // Na__Env3d__Config.json or FALLBACK_SECTIONS above - never patch over it with
+    // a third fallback literal at the call site.
+    export function VghLantern__Env3d__ConfigAccess__RequireNumber(sectionName, fieldName) {
+        const value  =  VghLantern__Env3d__ConfigAccess__Value(sectionName, fieldName);
+        if (typeof value === 'number' && !isNaN(value)) return value;
+
+        console.error('[VghLantern__Env3d__ConfigAccess] Missing or non-numeric config key "' + fieldName +
+            '" in section "' + sectionName + '" (Na__Env3d__Config.json -> ' + SECTION_PREFIX + sectionName + '). ' +
+            'Add it to the JSON config - do not hardcode a fallback in JS.');
+        return 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read a Required String from a Config Section
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__ConfigAccess__RequireString(sectionName, fieldName) {
+        const value  =  VghLantern__Env3d__ConfigAccess__Value(sectionName, fieldName);
+        if (typeof value === 'string' && value.length > 0) return value;
+
+        console.error('[VghLantern__Env3d__ConfigAccess] Missing or non-string config key "' + fieldName +
+            '" in section "' + sectionName + '" (Na__Env3d__Config.json -> ' + SECTION_PREFIX + sectionName + '). ' +
+            'Add it to the JSON config - do not hardcode a fallback in JS.');
+        return '';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read a Required Boolean from a Config Section
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__ConfigAccess__RequireBoolean(sectionName, fieldName) {
+        const value  =  VghLantern__Env3d__ConfigAccess__Value(sectionName, fieldName);
+        if (typeof value === 'boolean') return value;
+
+        console.error('[VghLantern__Env3d__ConfigAccess] Missing or non-boolean config key "' + fieldName +
+            '" in section "' + sectionName + '" (Na__Env3d__Config.json -> ' + SECTION_PREFIX + sectionName + '). ' +
+            'Add it to the JSON config - do not hardcode a fallback in JS.');
+        return false;
     }
     // ------------------------------------------------------------
 
@@ -125,7 +176,7 @@
             return UnitConverter.VghLantern__UnitConverter__MmToWorld(millimetres);
         }
 
-        const scale  =  VghLantern__Env3d__ConfigAccess__Value('Meta', 'WorldUnitsPerMillimetre', 0.001);
+        const scale  =  VghLantern__Env3d__ConfigAccess__Value('Meta', 'WorldUnitsPerMillimetre');
         return (Number(millimetres) || 0) * scale;
     }
     // ------------------------------------------------------------

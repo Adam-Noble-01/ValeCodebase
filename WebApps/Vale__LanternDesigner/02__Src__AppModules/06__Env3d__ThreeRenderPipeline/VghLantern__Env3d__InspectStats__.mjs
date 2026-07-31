@@ -46,7 +46,8 @@
 
    ============================================================================= */
 
-import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import { VghLantern__Env3d__ConfigAccess__RequireNumber } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__PickIndex__.mjs';
 
 // =============================================================================
 // REGION | 3D Inspect Stats Module
@@ -240,9 +241,8 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
             return '';
         }
 
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
-        const width   =  Number(config.FallbackBarWidthMm) || 40;
-        const depth   =  Number(config.FallbackBarDepthMm) || 55;
+        const width   =  VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'FallbackBarWidthMm');
+        const depth   =  VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'FallbackBarDepthMm');
 
         return width + ' x ' + depth + ' mm (placeholder)';
     }
@@ -255,7 +255,7 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     // produced the mesh, so it describes what is actually drawn rather than what a
     // separate schedule pass believes should be.
     function VghLantern__Env3d__InspectStats__TotalLengthMm(pick) {
-        const table  =  pick.Object3d.userData['VghLantern__PickTable'];
+        const table  =  VghLantern__Env3d__PickIndex__TableOf(pick.Object3d);
         if (!table || !Array.isArray(table.Entries)) return 0;
 
         let total  =  0;
@@ -271,7 +271,7 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     // HELPER FUNCTION | Sum the Area of Every Entry in a Pick Table
     // ------------------------------------------------------------
     function VghLantern__Env3d__InspectStats__TotalAreaSqMm(pick) {
-        const table  =  pick.Object3d.userData['VghLantern__PickTable'];
+        const table  =  VghLantern__Env3d__PickIndex__TableOf(pick.Object3d);
         if (!table || !Array.isArray(table.Entries)) return 0;
 
         let total  =  0;
@@ -332,7 +332,6 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     function VghLantern__Env3d__InspectStats__DescribeGlazing(pick, lantern) {
         const face    =  pick.Record  || {};
         const block   =  lantern ? lantern[FINISH_BLOCK] : null;
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
         const facts   =  [];
 
         VghLantern__Env3d__InspectStats__Push(facts, 'Face id',    face.Id);
@@ -347,7 +346,7 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
         VghLantern__Env3d__InspectStats__Push(facts, 'Glazing spec', (block && block[FIELD_GLAZING_SPEC]) || VALUE_UNSPECIFIED);
         VghLantern__Env3d__InspectStats__Push(facts, 'Tint',        (block && block[FIELD_GLAZING_TINT]) || VALUE_UNSPECIFIED);
         VghLantern__Env3d__InspectStats__Push(facts, 'Set back from frame',
-            VghLantern__Env3d__InspectStats__Mm(config.GlazingInsetMm));
+            VghLantern__Env3d__InspectStats__Mm(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInsetMm')));
 
         return {
             TypeLabel : 'Glazing Panel',

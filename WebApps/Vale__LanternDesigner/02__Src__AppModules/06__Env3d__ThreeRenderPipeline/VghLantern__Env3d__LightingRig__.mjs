@@ -28,7 +28,10 @@
 
 import * as THREE from 'three';
 
-import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import {
+    VghLantern__Env3d__ConfigAccess__RequireNumber,
+    VghLantern__Env3d__ConfigAccess__RequireString
+} from './VghLantern__Env3d__ConfigAccess__.mjs';
 import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d__SceneManager__.mjs';
 
 // =============================================================================
@@ -94,14 +97,13 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
 
         VghLantern__Env3d__LightingRig__Detach(surface);                      // <-- Never stack two rigs
 
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('Lighting');
-        const rig     =  new THREE.Group();
-        rig.name      =  RIG_GROUP_NAME;
+        const rig  =  new THREE.Group();
+        rig.name   =  RIG_GROUP_NAME;
 
         // AMBIENT FILL | Lifts the shadow side so nothing reads as solid black
         const ambient  =  new THREE.AmbientLight(
-            new THREE.Color(config.AmbientColour || '#ffffff'),
-            Number(config.AmbientIntensity) || 0.62
+            new THREE.Color(VghLantern__Env3d__ConfigAccess__RequireString('Lighting', 'AmbientColour')),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'AmbientIntensity')
         );
         ambient.name  =  'VghLantern__Env3d__Light__Ambient';
         rig.add(ambient);
@@ -109,8 +111,10 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
         // KEY LIGHT | Primary modelling light, high and off to one side
         const key  =  VghLantern__Env3d__LightingRig__BuildDirectional(
             'VghLantern__Env3d__Light__Key',
-            config.KeyLightColour, config.KeyLightIntensity,
-            config.KeyLightAzimuthDegrees, config.KeyLightElevationDegrees
+            VghLantern__Env3d__ConfigAccess__RequireString('Lighting', 'KeyLightColour'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'KeyLightIntensity'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'KeyLightAzimuthDegrees'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'KeyLightElevationDegrees')
         );
         rig.add(key);
         rig.add(key.target);
@@ -118,8 +122,10 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
         // FILL LIGHT | Opposing and lower, keeps the far slope legible
         const fill  =  VghLantern__Env3d__LightingRig__BuildDirectional(
             'VghLantern__Env3d__Light__Fill',
-            config.FillLightColour, config.FillLightIntensity,
-            config.FillLightAzimuthDegrees, config.FillLightElevationDegrees
+            VghLantern__Env3d__ConfigAccess__RequireString('Lighting', 'FillLightColour'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'FillLightIntensity'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'FillLightAzimuthDegrees'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'FillLightElevationDegrees')
         );
         rig.add(fill);
         rig.add(fill.target);
@@ -127,7 +133,8 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
         // GROUND BOUNCE | Weak uplight so soffits and eaves undersides are not dead
         const bounce  =  VghLantern__Env3d__LightingRig__BuildDirectional(
             'VghLantern__Env3d__Light__GroundBounce',
-            config.GroundBounceColour, config.GroundBounceIntensity,
+            VghLantern__Env3d__ConfigAccess__RequireString('Lighting', 'GroundBounceColour'),
+            VghLantern__Env3d__ConfigAccess__RequireNumber('Lighting', 'GroundBounceIntensity'),
             0, -70
         );
         rig.add(bounce);

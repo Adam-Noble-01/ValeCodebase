@@ -293,7 +293,10 @@ const VghLantern__Env2d__RenderPipeline = (function() {
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var viewportCfg   =  (env2d && env2d['VghLantern__Env2d__Config__Viewport']) || {};
 
-        if (viewportCfg.ShowViewLabel === false) return;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                viewportCfg, 'ShowViewLabel', 'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Viewport')) {
+            return;
+        }
 
         var views    =  (env2d && env2d['VghLantern__Env2d__Config__Views']) || {};
         var viewCfg  =  views[surface.ViewKey] || {};

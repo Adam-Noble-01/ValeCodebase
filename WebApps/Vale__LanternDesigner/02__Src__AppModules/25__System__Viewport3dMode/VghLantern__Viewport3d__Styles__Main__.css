@@ -183,3 +183,134 @@
     /* ------------------------------------------------------------ */
 
 /* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Hover Inspector Readout Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* PANEL | Cursor Following Object Readout */
+    /* ------------------------------------------------------------ */
+    /* Positioned entirely by transform from the InspectorPanel module, so the box
+       never triggers layout as it follows the pointer. It is never interactive:
+       pointer-events stay off so it can sit under the cursor without ever
+       interrupting an orbit drag. */
+    .VghLantern__Viewport3d__Inspector {
+        position                           : absolute;
+        top                                : 0;
+        left                               : 0;
+        z-index                            : var(--VghLantern_ViewportOverlayZIndex);
+        min-width                          : calc(190px * var(--Vale_UIScale));
+        max-width                          : calc(320px * var(--Vale_UIScale));
+        padding                            : var(--Vale_Spacing_Small);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-left                        : 3px solid var(--VghLantern_AccentBlue);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : var(--VghLantern_ViewportOverlayShadow);
+        font-family                        : var(--Vale_FontFamily);
+        pointer-events                     : none;
+        will-change                        : transform;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Pinned State */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__Inspector--pinned {
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEAD | Object Type and Pin Badge */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__InspectorHead {
+        display                            : flex;
+        align-items                        : baseline;
+        justify-content                    : space-between;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__Viewport3d__InspectorType {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Viewport3d__InspectorBadge {
+        flex                               : 0 0 auto;
+        padding                            : 1px calc(var(--Vale_Spacing_Small) / 2);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--VghLantern_AccentBlue);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SUBHEAD | Category and Instance Position */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__InspectorCategory {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+
+    .VghLantern__Viewport3d__InspectorInstance {
+        margin-top                         : calc(var(--Vale_Spacing_Small) / 4);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FACTS | Label and Value Rows */
+    /* ------------------------------------------------------------ */
+    /* A two column grid rather than a flex row per fact, so every value in the
+       list lines up regardless of how long its label runs. */
+    .VghLantern__Viewport3d__InspectorFacts {
+        display                            : grid;
+        grid-template-columns              : auto 1fr;
+        gap                                : calc(var(--Vale_Spacing_Small) / 4) var(--Vale_Spacing_Small);
+        margin                             : var(--Vale_Spacing_Small) 0 0 0;
+        padding-top                        : var(--Vale_Spacing_Small);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__Viewport3d__InspectorFact {
+        display                            : contents;
+    }
+
+    .VghLantern__Viewport3d__InspectorFactLabel {
+        margin                             : 0;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__Viewport3d__InspectorFactValue {
+        margin                             : 0;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        text-align                         : right;
+        overflow-wrap                      : anywhere;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HINT | Pin Instruction Footer */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__InspectorHint {
+        margin-top                         : var(--Vale_Spacing_Small);
+        padding-top                        : calc(var(--Vale_Spacing_Small) / 2);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-style                         : italic;
+        color                              : var(--Vale_TextSubtle);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

@@ -59,6 +59,7 @@
             "RasterPixelsPerMm"         : 6,
             "RasterPixelsPerMmNote"     : "SVG views are rasterised before embedding because jsPDF cannot place vector SVG. 6 px/mm is roughly 150 dpi - enough for a workshop print without a 20 MB file.",
             "FooterText"                : "Vale Garden Houses Limited",
+            "PdfCreator"                : "Vale Lantern Designer",
             "ShowPageNumbers"           : true,
             "PageNumberFormat"          : "Page {page} of {total}",
             "TitleFontSizePt"           : 16,

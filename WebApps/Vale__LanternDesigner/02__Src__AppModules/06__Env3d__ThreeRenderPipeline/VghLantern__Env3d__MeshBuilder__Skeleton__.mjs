@@ -36,9 +36,15 @@
 
 import * as THREE from 'three';
 
-import { VghLantern__Env3d__ConfigAccess__Section, VghLantern__Env3d__ConfigAccess__PointToWorld } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import {
+    VghLantern__Env3d__ConfigAccess__PointToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireNumber,
+    VghLantern__Env3d__ConfigAccess__RequireString,
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
+} from './VghLantern__Env3d__ConfigAccess__.mjs';
 import { VghLantern__Env3d__MaterialLibrary__Frame, VghLantern__Env3d__MaterialLibrary__BuildersUpstand, VghLantern__Env3d__MaterialLibrary__SkeletonLine } from './VghLantern__Env3d__MaterialLibrary__.mjs';
 import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__ProfileSweep__FallbackOutline } from './VghLantern__Env3d__MeshBuilder__ProfileSweep__.mjs';
+import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__ModeTriangle, VghLantern__Env3d__PickIndex__ModeSegment } from './VghLantern__Env3d__PickIndex__.mjs';
 
 // =============================================================================
 // REGION | Skeleton Mesh Builder Module
@@ -148,10 +154,14 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
 
     // SUB FUNCTION | Build a Line Segments Object for a Set of Members
     // ------------------------------------------------------------
-    function VghLantern__Env3d__SkeletonBuilder__BuildLines(memberList, objectName) {
+    // Every member contributes exactly one segment whether or not it is degenerate,
+    // so segment ordinal and member index stay in step and the pick spans below are
+    // a straight one to one.
+    function VghLantern__Env3d__SkeletonBuilder__BuildLines(memberList, roleKey, objectName) {
         if (!Array.isArray(memberList) || memberList.length === 0) return null;
 
         const positions  =  new Float32Array(memberList.length * 6);
+        const spans      =  [];
         let cursor       =  0;
 
         for (let i = 0; i < memberList.length; i++) {
@@ -164,6 +174,8 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
             positions[cursor++]  =  endWorld.x;
             positions[cursor++]  =  endWorld.y;
             positions[cursor++]  =  endWorld.z;
+
+            spans.push({ Record : memberList[i], SpanStart : i, SpanCount : 1 });
         }
 
         const geometry  =  new THREE.BufferGeometry();
@@ -171,6 +183,8 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
 
         const lines  =  new THREE.LineSegments(geometry, VghLantern__Env3d__MaterialLibrary__SkeletonLine());
         lines.name   =  objectName || 'VghLantern__Env3d__SkeletonLines';
+
+        VghLantern__Env3d__PickIndex__Register(lines, 'member', roleKey, spans, VghLantern__Env3d__PickIndex__ModeSegment);
         return lines;
     }
     // ------------------------------------------------------------
@@ -184,9 +198,9 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
 
     // SUB FUNCTION | Build the Objects for One Role Group
     // ------------------------------------------------------------
-    async function VghLantern__Env3d__SkeletonBuilder__BuildRole(roleKey, memberList, lantern, config) {
-        const wantsSweep  =  config.SkeletonMode !== MODE_LINES;
-        const budget      =  Number(config.MaxSweptMembers) || 900;
+    async function VghLantern__Env3d__SkeletonBuilder__BuildRole(roleKey, memberList, lantern) {
+        const wantsSweep  =  VghLantern__Env3d__ConfigAccess__RequireString('MeshBuilders', 'SkeletonMode') !== MODE_LINES;
+        const budget      =  VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'MaxSweptMembers');
         const withinBudget =  memberList.length <= budget;
 
         if (wantsSweep && withinBudget) {
@@ -194,21 +208,26 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
 
             // No authored profile yet: sweep a plain rectangular section so the
             // member still reads as solid rather than vanishing from the model.
-            if (!outline && config.PlaceholderSectionOnMissingProfile !== false) {
+            if (!outline && VghLantern__Env3d__ConfigAccess__RequireBoolean('MeshBuilders', 'PlaceholderSectionOnMissingProfile')) {
                 outline  =  VghLantern__Env3d__ProfileSweep__FallbackOutline(null, null);
             }
 
             if (outline) {
                 const material  =  VghLantern__Env3d__SkeletonBuilder__MaterialForRole(roleKey, VghLantern__Env3d__SkeletonBuilder__FinishName(lantern));
+                const spans     =  [];
                 const mesh      =  VghLantern__Env3d__ProfileSweep__BuildMergedMesh(
                     outline, memberList, material,
-                    'VghLantern__Env3d__Members__' + roleKey
+                    'VghLantern__Env3d__Members__' + roleKey,
+                    spans                                                     // <-- Filled with one triangle span per built member
                 );
-                if (mesh) return mesh;
+                if (mesh) {
+                    VghLantern__Env3d__PickIndex__Register(mesh, 'member', roleKey, spans, VghLantern__Env3d__PickIndex__ModeTriangle);
+                    return mesh;
+                }
             }
         }
 
-        return VghLantern__Env3d__SkeletonBuilder__BuildLines(memberList, 'VghLantern__Env3d__MemberLines__' + roleKey);
+        return VghLantern__Env3d__SkeletonBuilder__BuildLines(memberList, roleKey, 'VghLantern__Env3d__MemberLines__' + roleKey);
     }
     // ------------------------------------------------------------
 
@@ -218,7 +237,6 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
     export async function VghLantern__Env3d__MeshBuilder__Skeleton__Build(targetGroup, skeleton, barSet, lantern) {
         if (!targetGroup || !skeleton) return;
 
-        const config   =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
         const members  =  (skeleton.Members || []).slice();
 
         // Glazing bars and transoms are members for meshing purposes, even though
@@ -227,11 +245,12 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
             for (let i = 0; i < barSet.Bars.length; i++) members.push(barSet.Bars[i]);
         }
 
-        const grouped  =  VghLantern__Env3d__SkeletonBuilder__GroupByRole(members, config.BuildBaseAsSolid !== false);
+        const buildBaseAsSolid  =  VghLantern__Env3d__ConfigAccess__RequireBoolean('MeshBuilders', 'BuildBaseAsSolid');
+        const grouped  =  VghLantern__Env3d__SkeletonBuilder__GroupByRole(members, buildBaseAsSolid);
         const roles    =  Object.keys(grouped);
 
         for (let i = 0; i < roles.length; i++) {
-            const object3d  =  await VghLantern__Env3d__SkeletonBuilder__BuildRole(roles[i], grouped[roles[i]], lantern, config);
+            const object3d  =  await VghLantern__Env3d__SkeletonBuilder__BuildRole(roles[i], grouped[roles[i]], lantern);
             if (object3d) targetGroup.add(object3d);
         }
     }
@@ -243,8 +262,9 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
     // Surfaced by the 3D controls so the user can see whether they are looking at
     // real sections or the line fallback.
     export function VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode() {
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
-        return config.SkeletonMode === MODE_LINES ? MODE_LINES : MODE_PROFILE_SWEEP;
+        return VghLantern__Env3d__ConfigAccess__RequireString('MeshBuilders', 'SkeletonMode') === MODE_LINES
+            ? MODE_LINES
+            : MODE_PROFILE_SWEEP;
     }
     // ------------------------------------------------------------
 

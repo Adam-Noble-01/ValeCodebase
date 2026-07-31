@@ -71,7 +71,6 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // the helpers group is left completely alone.
     const VGHLANTERN__SHEET_VIEWPORT_OPTIONS  =  { ShowGroundPlane : false };
 
-    const SNAPSHOT_FALLBACK_PPMM  =  12;                                      // <-- About 305 dpi, used only if config is unreadable
     const SNAPSHOT_STAGE_MAX_PX   =  1200;                                    // <-- Longest edge of the offscreen stage; only its aspect matters
     // ------------------------------------------------------------
 
@@ -242,8 +241,12 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // would query. Cleared after the render rather than suppressed inside the
     // renderer, so the editor viewport keeps its grid untouched.
     function VghLantern__ViewPlacement__StripConstructionGrid(surface) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var gridCfg  =  VghLantern__ViewPlacement__GridConfig();
-        if (gridCfg.ShowConstructionGrid === true) return;
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                gridCfg, 'ShowConstructionGrid', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid')) {
+            return;
+        }
 
         if (surface && surface.Instance && surface.Instance.ClearLayer) {
             surface.Instance.ClearLayer('grid');
@@ -291,9 +294,8 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 
         var pixelsPerMm  =  (typeof pdfCfg.SnapshotPixelsPerMm === 'number' && pdfCfg.SnapshotPixelsPerMm > 0)
             ? pdfCfg.SnapshotPixelsPerMm
-            : ((typeof pdfCfg.RasterPixelsPerMm === 'number' && pdfCfg.RasterPixelsPerMm > 0)
-                ? pdfCfg.RasterPixelsPerMm
-                : SNAPSHOT_FALLBACK_PPMM);
+            : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+                pdfCfg, 'RasterPixelsPerMm', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__PdfExport');
 
         var widthPx   =  Math.max(64, Math.round(placement.Body.WidthMm  * pixelsPerMm));
         var heightPx  =  Math.max(64, Math.round(placement.Body.HeightMm * pixelsPerMm));

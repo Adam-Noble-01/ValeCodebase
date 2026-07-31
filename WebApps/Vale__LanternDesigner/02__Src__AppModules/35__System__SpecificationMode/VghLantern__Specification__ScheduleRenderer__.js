@@ -49,6 +49,9 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
     const CSS_SUBHEADING    =  'VghLantern__Spec__SubHeading';
     const CSS_WARNING_LIST  =  'VghLantern__Spec__WarningList';
     const CSS_WARNING_ITEM  =  'VghLantern__Spec__WarningItem';
+
+    const CSS_USER_WARNING_LIST  =  'VghLantern__Spec__UserWarningList';
+    const CSS_USER_WARNING_ITEM  =  'VghLantern__Spec__UserWarningItem';
     // ------------------------------------------------------------
 
 
@@ -115,8 +118,10 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
     function VghLantern__Specification__ScheduleRenderer__BuildHeader(documentModel) {
         if (!documentModel) return '';
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var DOC_LABEL  =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Document';
         var docCfg  =  VghLantern__ScheduleRenderer__SpecConfig()['VghLantern__Specification__Config__Document'] || {};
-        if (docCfg.ShowProjectHeader === false) return '';
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(docCfg, 'ShowProjectHeader', DOC_LABEL)) return '';
 
         var meta  =  documentModel.Meta;
         var html  =  '<header class="' + CSS_HEADER + '">' +
@@ -130,7 +135,7 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
                      VghLantern__ScheduleRenderer__HeaderField('Lanterns',  String(meta.LanternCount)) +
                      '</div>';
 
-        if (docCfg.ShowGeneratedTimestamp !== false) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(docCfg, 'ShowGeneratedTimestamp', DOC_LABEL)) {
             var DateFormatter  =  window.VghLantern__AppUtils__DateFormatter;
             var stamp          =  DateFormatter
                 ? DateFormatter.VghLantern__DateFormatter__FormatShort(meta.GeneratedAt)
@@ -161,6 +166,27 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Build the Staff-Authored Document Warning List
+    // ------------------------------------------------------------
+    // Separate list and styling from BuildWarnings above: these are free text a
+    // person wrote, not a rule the app evaluated, so they are shown in red ahead
+    // of the rule-based (orange) warnings rather than merged into that list.
+    function VghLantern__Specification__ScheduleRenderer__BuildUserWarnings(documentModel) {
+        if (!documentModel || !documentModel.UserWarnings.length) return '';
+
+        var html  =  '<ul class="' + CSS_USER_WARNING_LIST + '">';
+        var i;
+
+        for (i = 0; i < documentModel.UserWarnings.length; i++) {
+            html  +=  '<li class="' + CSS_USER_WARNING_ITEM + '">' +
+                      VghLantern__ScheduleRenderer__Escape(documentModel.UserWarnings[i]) + '</li>';
+        }
+
+        return html + '</ul>';
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -174,8 +200,10 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
         var TableRenderer  =  window.VghLantern__Specification__TakeoffTableRenderer;
         if (!documentModel || !TableRenderer) return '';
 
-        var tablesCfg  =  VghLantern__ScheduleRenderer__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
-        var columns    =  tablesCfg.ScheduleColumns || [];
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var tablesCfg     =  VghLantern__ScheduleRenderer__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
+        var columns       =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            tablesCfg, 'ScheduleColumns', 'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables');
 
         return TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildTable(
             columns, documentModel.ScheduleRows, null, null
@@ -278,6 +306,7 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
     return {
         VghLantern__Specification__ScheduleRenderer__BuildHeader          : VghLantern__Specification__ScheduleRenderer__BuildHeader,
         VghLantern__Specification__ScheduleRenderer__BuildWarnings        : VghLantern__Specification__ScheduleRenderer__BuildWarnings,
+        VghLantern__Specification__ScheduleRenderer__BuildUserWarnings    : VghLantern__Specification__ScheduleRenderer__BuildUserWarnings,
         VghLantern__Specification__ScheduleRenderer__BuildLanternSchedule : VghLantern__Specification__ScheduleRenderer__BuildLanternSchedule,
         VghLantern__Specification__ScheduleRenderer__BuildFinishSchedule  : VghLantern__Specification__ScheduleRenderer__BuildFinishSchedule,
         VghLantern__Specification__ScheduleRenderer__BuildPerLantern      : VghLantern__Specification__ScheduleRenderer__BuildPerLantern,

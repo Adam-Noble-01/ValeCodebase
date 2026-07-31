@@ -32,7 +32,8 @@
 
      {
        Key           : 'widthMm',                       unique within its section
-       Type          : 'slider' | 'toggle' | 'select' | 'expandable' | 'heading',
+       Type          : 'slider' | 'toggle' | 'select' | 'expandable' | 'heading'
+                       | 'text' | 'textarea' | 'button',
        Label         : 'Width',
        Block         : 'Lantern__Dimensions__Config',   lantern block name
        Field         : 'Lantern__Dimensions__Config__WidthMm',
@@ -43,7 +44,12 @@
        AllowEmpty    : true,                            select may resolve to ''
        VisibleWhen   : function(lantern) -> boolean,
        Children      : [ descriptors ],                 expandable only
-       Hint          : 'shown under the control'
+       Hint          : 'shown under the control',
+       MaxLength     : 500,                             text / textarea only
+       Rows          : 3,                                textarea only
+       Variant       : 'danger',                         button styling hook
+       Action        : function(lantern) -> void,        button only
+       Confirm       : { Title, Message, ConfirmLabel }  button only, optional
      }
 
    Only Key, Type and Label are mandatory. Everything else is optional and the
@@ -53,6 +59,12 @@
    section into named subsections without introducing a nested accordion, which
    is what a section like Frame and Builders Upstand needs: two groups of controls that
    belong together and should both be visible at once.
+
+   A 'button' descriptor has no Block/Field - it has no stored value, it only
+   fires Action(lantern) when clicked. Confirm, when present, routes the click
+   through the shared VghLantern__AppCore__ConfirmModal instead of firing
+   immediately, which is how the Delete Lantern control avoids an accidental
+   click destroying data.
 
    ============================================================================= */
 
@@ -73,6 +85,9 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const TYPE_SELECT      =  'select';                                      // <-- Single choice from a resolved option list
     const TYPE_EXPANDABLE   =  'expandable';                                 // <-- Nested group revealed by its own toggle
     const TYPE_HEADING      =  'heading';                                    // <-- Subsection label, no value and no input
+    const TYPE_TEXT         =  'text';                                       // <-- Single-line free text entry
+    const TYPE_TEXTAREA     =  'textarea';                                   // <-- Multi-line free text entry
+    const TYPE_BUTTON       =  'button';                                     // <-- Fires an Action, holds no value
     // ------------------------------------------------------------
 
 
@@ -82,13 +97,15 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     // Declaring the binding here rather than having sections self-register keeps
     // the load order irrelevant: sections are plain builders with no side effects.
     const SECTION_BUILDERS  =  {
+        'lanternInfo'      : { Global : 'VghLantern__LanternEditor__Section__LanternInfo',      Fn : 'VghLantern__Section__LanternInfo__Build'      },
         'formAndSize'      : { Global : 'VghLantern__LanternEditor__Section__FormAndSize',      Fn : 'VghLantern__Section__FormAndSize__Build'      },
         'glazingBars'      : { Global : 'VghLantern__LanternEditor__Section__GlazingBars',      Fn : 'VghLantern__Section__GlazingBars__Build'      },
         'ridgeAndHips'     : { Global : 'VghLantern__LanternEditor__Section__RidgeAndHips',     Fn : 'VghLantern__Section__RidgeAndHips__Build'     },
         'finials'          : { Global : 'VghLantern__LanternEditor__Section__Finials',          Fn : 'VghLantern__Section__Finials__Build'          },
         'buildersUpstandAndBase'      : { Global : 'VghLantern__LanternEditor__Section__BuildersUpstandAndBase',      Fn : 'VghLantern__Section__BuildersUpstandAndBase__Build'      },
         'ventilation'      : { Global : 'VghLantern__LanternEditor__Section__Ventilation',      Fn : 'VghLantern__Section__Ventilation__Build'      },
-        'finishAndGlazing' : { Global : 'VghLantern__LanternEditor__Section__FinishAndGlazing', Fn : 'VghLantern__Section__FinishAndGlazing__Build' }
+        'finishAndGlazing' : { Global : 'VghLantern__LanternEditor__Section__FinishAndGlazing', Fn : 'VghLantern__Section__FinishAndGlazing__Build' },
+        'warningsAndComments' : { Global : 'VghLantern__LanternEditor__Section__WarningsAndComments', Fn : 'VghLantern__Section__WarningsAndComments__Build' }
     };
     // ------------------------------------------------------------
 
@@ -320,6 +337,12 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             Options       : Array.isArray(descriptor.Options) ? descriptor.Options : null,
             AllowEmpty    : descriptor.AllowEmpty !== false,
             VisibleWhen   : (typeof descriptor.VisibleWhen === 'function') ? descriptor.VisibleWhen : null,
+            Multiline     : descriptor.Type === TYPE_TEXTAREA,
+            MaxLength     : (typeof descriptor.MaxLength === 'number') ? descriptor.MaxLength : 0,
+            Rows          : (typeof descriptor.Rows === 'number') ? descriptor.Rows : 3,
+            Variant       : descriptor.Variant || '',
+            Action        : (typeof descriptor.Action === 'function') ? descriptor.Action : null,
+            Confirm       : (descriptor.Confirm && typeof descriptor.Confirm === 'object') ? descriptor.Confirm : null,
             Children      : []
         };
 
@@ -379,6 +402,14 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
 
         if (descriptor.Type === TYPE_SELECT) {
             return String(rawValue === null || rawValue === undefined ? '' : rawValue);
+        }
+
+        if (descriptor.Type === TYPE_TEXT || descriptor.Type === TYPE_TEXTAREA) {
+            var textValue  =  String(rawValue === null || rawValue === undefined ? '' : rawValue);
+            if (descriptor.MaxLength > 0 && textValue.length > descriptor.MaxLength) {
+                textValue  =  textValue.slice(0, descriptor.MaxLength);
+            }
+            return textValue;
         }
 
         var numeric  =  parseFloat(rawValue);
@@ -500,6 +531,9 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__TypeSelect      : TYPE_SELECT,
         VghLantern__ControlDescriptors__TypeExpandable  : TYPE_EXPANDABLE,
         VghLantern__ControlDescriptors__TypeHeading     : TYPE_HEADING,
+        VghLantern__ControlDescriptors__TypeText        : TYPE_TEXT,
+        VghLantern__ControlDescriptors__TypeTextarea    : TYPE_TEXTAREA,
+        VghLantern__ControlDescriptors__TypeButton      : TYPE_BUTTON,
 
         VghLantern__ControlDescriptors__BuildSections   : VghLantern__ControlDescriptors__BuildSections,
         VghLantern__ControlDescriptors__Normalise       : VghLantern__ControlDescriptors__Normalise,

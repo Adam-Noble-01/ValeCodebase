@@ -14,6 +14,11 @@ Notes:
 - Despite the "FlaskServer" filename this uses the Python stdlib ThreadingHTTPServer.
   The name is retained for consistency with the sibling Vale WebApps.
 - Port 8006 is reserved for this app. See the WebApps localhost ports Cursor rule.
+- The handler forces HTTP/1.1 keep-alive (see Na__Server__RequestHandler.protocol_version).
+  The app boots via ~90 individual <script> tags; HTTP/1.0 (the http.server default)
+  opens and closes a brand-new socket per file, which on Windows exhausts socket
+  buffer space and surfaces in Chrome as net::ERR_NO_BUFFER_SPACE. Keep-alive lets
+  the browser reuse a handful of persistent connections for the whole page load.
 """
 
 from __future__ import annotations
@@ -62,6 +67,8 @@ NA__SERVER__USER_MENU_APP_DEFAULTS_SECTION_KEY = "VghLantern__UserMenu__AppDefau
 # -----------------------------------------------------------------------------
 
 class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"    # <-- Enables keep-alive; avoids one fresh TCP socket per <script> tag (fixes ERR_NO_BUFFER_SPACE)
+
     extensions_map = {
         **SimpleHTTPRequestHandler.extensions_map,
         ".webmanifest": "application/manifest+json",
@@ -560,6 +567,7 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, X-VghLantern-UpdateSource")
+        self.send_header("Content-Length", "0")    # <-- Explicit zero-length body keeps HTTP/1.1 keep-alive framing unambiguous
         self.end_headers()
     # ------------------------------------------------------------
 
@@ -573,6 +581,10 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         request_time = datetime.now().strftime("%d-%b-%Y - %H:%M")
         print(f"[REQUEST] {request_time} | {client_ip} | {message}")
     # ------------------------------------------------------------
+
+
+class Na__Server__HttpServer(ThreadingHTTPServer):
+    request_queue_size = 128    # <-- Larger accept() backlog absorbs the page-load burst of 90+ concurrent script requests
 
 
 # endregion ----------------------------------------------------
@@ -857,7 +869,7 @@ def main() -> int:
 
     try:
         while True:
-            httpd = ThreadingHTTPServer((args.host, args.port), Na__Server__RequestHandler)
+            httpd = Na__Server__HttpServer((args.host, args.port), Na__Server__RequestHandler)
             should_restart_server = Na__Server__RunHttpLoopWithConsoleCommands(httpd, command_queue)
             httpd.server_close()
             if not should_restart_server:

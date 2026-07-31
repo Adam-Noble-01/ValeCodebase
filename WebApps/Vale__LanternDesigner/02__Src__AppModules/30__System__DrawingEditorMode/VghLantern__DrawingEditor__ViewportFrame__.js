@@ -94,6 +94,7 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
     // Config lists sizes landscape (long edge first); portrait swaps them here so a
     // size is only described once.
     function VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(sheetSizeKey, orientation) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var sheetCfg     =  VghLantern__ViewportFrame__SheetConfig();
         var sizes        =  sheetCfg.SheetSizes || {};
         var resolvedKey  =  sheetSizeKey || sheetCfg.DefaultSheetSize;
@@ -101,7 +102,8 @@ const VghLantern__DrawingEditor__ViewportFrame = (function() {
 
         if (!entry) return null;
 
-        var resolvedOrientation  =  orientation || sheetCfg.DefaultOrientation || 'landscape';
+        var resolvedOrientation  =  orientation || ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            sheetCfg, 'DefaultOrientation', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Sheet');
         var isPortrait           =  resolvedOrientation === 'portrait';
 
         return {

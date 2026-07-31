@@ -37,7 +37,9 @@
 
    ============================================================================= */
 
-import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import {
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
+} from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 // =============================================================================
 // REGION | 3D Pick Index Module
@@ -81,13 +83,12 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     // FUNCTION | Report Whether a Pickable Category Is Enabled by Config
     // ------------------------------------------------------------
     export function VghLantern__Env3d__PickIndex__IsCategoryEnabled(categoryKey) {
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('HoverInspector');
-        if (config.Enabled === false) return false;
+        if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('HoverInspector', 'Enabled')) return false;
 
         const field  =  CATEGORY_ENABLE_FIELDS[categoryKey];
         if (!field) return false;                                            // <-- Unknown category is never pickable
 
-        return config[field] !== false;                                      // <-- Absent means enabled
+        return VghLantern__Env3d__ConfigAccess__RequireBoolean('HoverInspector', field);
     }
     // ------------------------------------------------------------
 
@@ -109,6 +110,17 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
         };
 
         return object3d;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Pick Table Registered on an Object
+    // ------------------------------------------------------------
+    // The one published way to reach a table, so the userData key stays a private
+    // detail of this module rather than a string repeated across the environment.
+    export function VghLantern__Env3d__PickIndex__TableOf(object3d) {
+        if (!object3d || !object3d.userData) return null;
+        return object3d.userData[PICK_TABLE_KEY] || null;
     }
     // ------------------------------------------------------------
 

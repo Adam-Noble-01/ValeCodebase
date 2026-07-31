@@ -35,10 +35,6 @@ const VghLantern__Env2d__GlazeBarRenderer = (function() {
     const CSS_TRANSOM        =  'VghLantern__Env2d__GlazeBar--transom';      // <-- Horizontal transom centreline
     const CSS_BAR_HIDDEN     =  'VghLantern__Env2d__GlazeBar--hidden';       // <-- Behind the viewing plane
     const CSS_PANE_FILL      =  'VghLantern__Env2d__PaneFill';               // <-- Glazing wash polygon
-
-    const FALLBACK_BAR_STROKE_MM      =  4;
-    const FALLBACK_TRANSOM_STROKE_MM  =  5;
-    const FALLBACK_FILL_OPACITY       =  0.10;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -54,12 +50,13 @@ const VghLantern__Env2d__GlazeBarRenderer = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var barsCfg       =  (env2d && env2d['VghLantern__Env2d__Config__GlazeBars']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__GlazeBars';
 
         return {
-            BarStrokeWidthMm      : (typeof barsCfg.BarStrokeWidthMm     === 'number') ? barsCfg.BarStrokeWidthMm     : FALLBACK_BAR_STROKE_MM,
-            TransomStrokeWidthMm  : (typeof barsCfg.TransomStrokeWidthMm === 'number') ? barsCfg.TransomStrokeWidthMm : FALLBACK_TRANSOM_STROKE_MM,
-            ShowPaneFills         : barsCfg.ShowPaneFills !== false,
-            PaneFillOpacity       : (typeof barsCfg.PaneFillOpacity      === 'number') ? barsCfg.PaneFillOpacity      : FALLBACK_FILL_OPACITY
+            BarStrokeWidthMm      : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(barsCfg, 'BarStrokeWidthMm',     LABEL),
+            TransomStrokeWidthMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(barsCfg, 'TransomStrokeWidthMm', LABEL),
+            ShowPaneFills         : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(barsCfg, 'ShowPaneFills', LABEL),
+            PaneFillOpacity       : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(barsCfg, 'PaneFillOpacity',      LABEL)
         };
     }
     // ------------------------------------------------------------

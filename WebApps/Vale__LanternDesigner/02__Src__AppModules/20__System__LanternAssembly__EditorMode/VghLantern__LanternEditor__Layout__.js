@@ -111,15 +111,11 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Fallback Layout Values
+    // MODULE CONSTANTS | Placeholder Layout Values
     // ------------------------------------------------------------
-    const FALLBACK_CONTROLS_MIN_PX      =  320;
-    const FALLBACK_CONTROLS_MAX_PX      =  640;
-    const FALLBACK_CONTROLS_WIDTH_PX    =  420;
-    const FALLBACK_PREVIEW_MIN_PX      =  280;
-    const FALLBACK_3D_SHARE_PCT        =  40;
-    const FALLBACK_3D_SHARE_MIN_PCT    =  25;
-    const FALLBACK_3D_SHARE_MAX_PCT    =  70;
+    // Bootstrap-only placeholders before ApplyLayoutVariables() first reads config.
+    const BOOTSTRAP_CONTROLS_WIDTH_PX   =  420;
+    const BOOTSTRAP_3D_SHARE_PCT        =  40;
 
     const EMPTY_PROJECT_MESSAGE          =  'No project loaded.';
     const CONTROLS_UNAVAILABLE_MESSAGE   =  'The control panel module failed to load.';
@@ -137,8 +133,8 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
     // Seeded from config on Init, then overwritten by the resize handles for the
     // rest of the session so a drag is not wiped by the next Refresh.
-    let VghLantern__EditorLayout__ControlsWidthPx  =  FALLBACK_CONTROLS_WIDTH_PX;
-    let VghLantern__EditorLayout__Split3dSharePct  =  FALLBACK_3D_SHARE_PCT;
+    let VghLantern__EditorLayout__ControlsWidthPx  =  BOOTSTRAP_CONTROLS_WIDTH_PX;
+    let VghLantern__EditorLayout__Split3dSharePct  =  BOOTSTRAP_3D_SHARE_PCT;
     let VghLantern__EditorLayout__ActiveResize     =  null;                  // <-- Live drag state, or null when idle
     // ------------------------------------------------------------
 
@@ -212,13 +208,15 @@ const VghLantern__LanternEditor__Layout = (function() {
         var container  =  document.getElementById(ID_CONTAINER);
         if (!container) return;
 
-        var layoutCfg  =  VghLantern__EditorLayout__LayoutConfig();
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var layoutCfg     =  VghLantern__EditorLayout__LayoutConfig();
+        var LAYOUT_LABEL  =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout';
 
-        var controlsMin    =  Number(layoutCfg.ControlsPanelMinWidthPx)     || FALLBACK_CONTROLS_MIN_PX;
-        var controlsMax    =  Number(layoutCfg.ControlsPanelMaxWidthPx)     || FALLBACK_CONTROLS_MAX_PX;
-        var controlsWidth  =  Number(layoutCfg.ControlsPanelDefaultWidthPx) || FALLBACK_CONTROLS_WIDTH_PX;
-        var previewMin     =  Number(layoutCfg.PreviewPanelMinWidthPx)      || FALLBACK_PREVIEW_MIN_PX;
-        var split3dShare   =  Number(layoutCfg.Split3dSharePct)             || FALLBACK_3D_SHARE_PCT;
+        var controlsMin    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'ControlsPanelMinWidthPx',     LAYOUT_LABEL);
+        var controlsMax    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'ControlsPanelMaxWidthPx',     LAYOUT_LABEL);
+        var controlsWidth  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'ControlsPanelDefaultWidthPx', LAYOUT_LABEL);
+        var previewMin     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'PreviewPanelMinWidthPx',      LAYOUT_LABEL);
+        var split3dShare   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'Split3dSharePct',             LAYOUT_LABEL);
 
         // Seed live values from config only on the first apply; later calls keep
         // whatever the user last dragged to.
@@ -252,8 +250,10 @@ const VghLantern__LanternEditor__Layout = (function() {
         var previewPanel   =  document.getElementById(ID_PREVIEW_PANEL);
         var controlsPanel  =  document.getElementById(ID_CONTROLS_PANEL);
         var splitLayout    =  document.getElementById(ID_SPLIT_LAYOUT);
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
         var layoutCfg      =  VghLantern__EditorLayout__LayoutConfig();
-        var handlesOn      =  layoutCfg.ResizeHandlesEnabled !== false;
+        var handlesOn      =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+            layoutCfg, 'ResizeHandlesEnabled', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout');
         var isHorizontal   =  layoutCfg.Split3dOrientation === 'horizontal';
         var preview3dOrient = isHorizontal ? CSS_RESIZE_COL : CSS_RESIZE_ROW;
 
@@ -348,8 +348,10 @@ const VghLantern__LanternEditor__Layout = (function() {
         var barEl  =  document.getElementById(ID_GLOBAL_BAR);
         if (!barEl) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var LAYOUT_LABEL  =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout';
         var layoutCfg  =  VghLantern__EditorLayout__LayoutConfig();
-        if (layoutCfg.ShowGlobalBar === false) {
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(layoutCfg, 'ShowGlobalBar', LAYOUT_LABEL)) {
             barEl.classList.add(CSS_HIDDEN);
             return;
         }
@@ -370,7 +372,7 @@ const VghLantern__LanternEditor__Layout = (function() {
 
         var html  =  VghLantern__EditorLayout__BuildMetaMarkup(project);
 
-        if (layoutCfg.ShowLanternTabs !== false && lanterns) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(layoutCfg, 'ShowLanternTabs', LAYOUT_LABEL) && lanterns) {
             html  +=  VghLantern__EditorLayout__BuildLanternTabsMarkup(lanterns, state.currentLanternIndex);
         }
 
@@ -491,10 +493,12 @@ const VghLantern__LanternEditor__Layout = (function() {
     // HELPER FUNCTION | Read Controls Width Clamp Bounds From Config
     // ------------------------------------------------------------
     function VghLantern__EditorLayout__ControlsWidthBounds() {
-        var layoutCfg  =  VghLantern__EditorLayout__LayoutConfig();
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var layoutCfg     =  VghLantern__EditorLayout__LayoutConfig();
+        var LAYOUT_LABEL  =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout';
         return {
-            Min  : Number(layoutCfg.ControlsPanelMinWidthPx) || FALLBACK_CONTROLS_MIN_PX,
-            Max  : Number(layoutCfg.ControlsPanelMaxWidthPx) || FALLBACK_CONTROLS_MAX_PX
+            Min  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'ControlsPanelMinWidthPx', LAYOUT_LABEL),
+            Max  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'ControlsPanelMaxWidthPx', LAYOUT_LABEL)
         };
     }
     // ------------------------------------------------------------
@@ -503,10 +507,12 @@ const VghLantern__LanternEditor__Layout = (function() {
     // HELPER FUNCTION | Read 3D Share Clamp Bounds From Config
     // ------------------------------------------------------------
     function VghLantern__EditorLayout__Split3dShareBounds() {
-        var layoutCfg  =  VghLantern__EditorLayout__LayoutConfig();
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var layoutCfg     =  VghLantern__EditorLayout__LayoutConfig();
+        var LAYOUT_LABEL  =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout';
         return {
-            Min  : Number(layoutCfg.Split3dShareMinPct) || FALLBACK_3D_SHARE_MIN_PCT,
-            Max  : Number(layoutCfg.Split3dShareMaxPct) || FALLBACK_3D_SHARE_MAX_PCT
+            Min  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'Split3dShareMinPct', LAYOUT_LABEL),
+            Max  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(layoutCfg, 'Split3dShareMaxPct', LAYOUT_LABEL)
         };
     }
     // ------------------------------------------------------------
@@ -515,9 +521,13 @@ const VghLantern__LanternEditor__Layout = (function() {
     // SUB HELPER FUNCTION | Push Live Controls Width Into the CSS Variable
     // ------------------------------------------------------------
     function VghLantern__EditorLayout__SetControlsWidth(widthPx) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var container  =  document.getElementById(ID_CONTAINER);
         var bounds     =  VghLantern__EditorLayout__ControlsWidthBounds();
-        var previewMin =  Number(VghLantern__EditorLayout__LayoutConfig().PreviewPanelMinWidthPx) || FALLBACK_PREVIEW_MIN_PX;
+        var previewMin =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            VghLantern__EditorLayout__LayoutConfig(), 'PreviewPanelMinWidthPx',
+            'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout'
+        );
         var splitLayout = document.getElementById(ID_SPLIT_LAYOUT);
 
         // Keep enough room for the drawing pane so a fast drag cannot collapse it.
@@ -609,8 +619,12 @@ const VghLantern__LanternEditor__Layout = (function() {
     // SUB FUNCTION | Bind Pointer Listeners for Both Resize Handles
     // ------------------------------------------------------------
     function VghLantern__EditorLayout__BindResizeHandles() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var layoutCfg  =  VghLantern__EditorLayout__LayoutConfig();
-        if (layoutCfg.ResizeHandlesEnabled === false) return;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                layoutCfg, 'ResizeHandlesEnabled', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout')) {
+            return;
+        }
 
         var container  =  document.getElementById(ID_CONTAINER);
         if (!container) return;
@@ -655,6 +669,8 @@ const VghLantern__LanternEditor__Layout = (function() {
     }
     // ------------------------------------------------------------
 
+// endregion -------------------------------------------------------------------
+
 
 // -----------------------------------------------------------------------------
 // REGION | Lantern Selection
@@ -689,6 +705,32 @@ const VghLantern__LanternEditor__Layout = (function() {
 
         var newIndex  =  lanterns.length;
         lanterns.push(SchemaValidator.VghLantern__SchemaValidator__BuildDefaultLantern(newIndex));
+
+        StateManager.VghLantern__StateManager__MarkDirty();                   // <-- Triggers the autosave path in AppCore
+        StateManager.VghLantern__StateManager__SetCurrentLanternIndex(newIndex);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Remove the Active Lantern and Select Its Neighbour
+    // ------------------------------------------------------------
+    // Called from the Lantern Info section's Delete Lantern button, which is
+    // itself hidden via VisibleWhen whenever only one lantern remains; the
+    // length guard here is a second line of defence against the same mistake.
+    // Splicing in place (rather than SetCurrentProject) keeps the rest of the
+    // project - and the tab strip - untouched bar the one removed entry.
+    function VghLantern__EditorLayout__DeleteLantern() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var lanterns      =  VghLantern__EditorLayout__Lanterns();
+        if (!StateManager || !lanterns || lanterns.length <= 1) return;
+
+        var state         =  StateManager.VghLantern__StateManager__GetState();
+        var removedIndex  =  state.currentLanternIndex;
+        if (removedIndex < 0 || removedIndex >= lanterns.length) return;
+
+        lanterns.splice(removedIndex, 1);
+
+        var newIndex  =  Math.min(removedIndex, lanterns.length - 1);         // <-- Land on the same slot, or the new last lantern
 
         StateManager.VghLantern__StateManager__MarkDirty();                   // <-- Triggers the autosave path in AppCore
         StateManager.VghLantern__StateManager__SetCurrentLanternIndex(newIndex);
@@ -822,8 +864,9 @@ const VghLantern__LanternEditor__Layout = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__LanternEditor__Layout__Init     : VghLantern__LanternEditor__Layout__Init,
-        VghLantern__LanternEditor__Layout__Refresh  : VghLantern__LanternEditor__Layout__Refresh
+        VghLantern__LanternEditor__Layout__Init           : VghLantern__LanternEditor__Layout__Init,
+        VghLantern__LanternEditor__Layout__Refresh        : VghLantern__LanternEditor__Layout__Refresh,
+        VghLantern__LanternEditor__Layout__DeleteLantern  : VghLantern__EditorLayout__DeleteLantern
     };
 
 // endregion -------------------------------------------------------------------

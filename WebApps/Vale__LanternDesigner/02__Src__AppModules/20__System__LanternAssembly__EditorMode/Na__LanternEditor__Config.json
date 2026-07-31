@@ -24,13 +24,15 @@
         ],
 
         "VghLantern__LanternEditor__Config__Sections": [
+            { "Key": "lanternInfo",      "Label": "Lantern Info",        "DefaultOpen": true,  "Enabled": true },
             { "Key": "formAndSize",      "Label": "Form and Size",       "DefaultOpen": true,  "Enabled": true },
             { "Key": "glazingBars",      "Label": "Glazing Bars",        "DefaultOpen": false, "Enabled": true },
             { "Key": "ridgeAndHips",     "Label": "Ridge and Hips",      "DefaultOpen": false, "Enabled": true },
             { "Key": "finials",          "Label": "Finials",             "DefaultOpen": false, "Enabled": true },
             { "Key": "buildersUpstandAndBase",      "Label": "Frame and Builders Upstand",      "DefaultOpen": false, "Enabled": true },
             { "Key": "ventilation",      "Label": "Ventilation",         "DefaultOpen": false, "Enabled": true },
-            { "Key": "finishAndGlazing", "Label": "Finish and Glazing",  "DefaultOpen": false, "Enabled": true }
+            { "Key": "finishAndGlazing", "Label": "Finish and Glazing",  "DefaultOpen": false, "Enabled": true },
+            { "Key": "warningsAndComments", "Label": "Warnings and Comments", "DefaultOpen": false, "Enabled": true }
         ],
 
         "VghLantern__LanternEditor__Config__ControlBounds": {
@@ -50,11 +52,12 @@
         "VghLantern__LanternEditor__Config__ControlBehaviour": {
             "LiveUpdateWhileDragging"   : true,
             "SliderDebounceMs"          : 40,
+            "TextCommitDebounceMs"      : 400,
             "ShowNumericEntryBeside"    : true,
             "ShowUnitSuffix"            : true,
             "CollapseOthersOnOpen"      : false,
             "EmptyOptionLabel"          : "- none selected -",
-            "BehaviourNote"             : "LiveUpdateWhileDragging redraws on input rather than change. SliderDebounceMs only coalesces the redraw, never the config write, so the value the user releases on is always the value stored."
+            "BehaviourNote"             : "LiveUpdateWhileDragging redraws on input rather than change. SliderDebounceMs only coalesces the redraw, never the config write, so the value the user releases on is always the value stored. TextCommitDebounceMs coalesces text/textarea keystrokes into one write, flushed immediately on focusout."
         },
 
         "VghLantern__LanternEditor__Config__VentOperationTypes": [

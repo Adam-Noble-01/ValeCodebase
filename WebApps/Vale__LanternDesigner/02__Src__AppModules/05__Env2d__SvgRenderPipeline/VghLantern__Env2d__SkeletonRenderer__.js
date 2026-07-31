@@ -56,21 +56,7 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
     const CSS_GRID_MINOR       =  'VghLantern__Env2d__Grid--minor';
     const CSS_GRID_MAJOR       =  'VghLantern__Env2d__Grid--major';
     const CSS_GRID_AXIS        =  'VghLantern__Env2d__Grid--axis';
-
-    // Fallbacks used only when the Env2d config has not resolved.
-    const FALLBACK_STROKE_WIDTHS  =  {
-        buildersUpstand : 8,
-        buildersUpstandPost   : 8,
-        buildersUpstandReveal : 6,
-        frame      : 8,
-        eaves      : 8,
-        ridge      : 9,
-        hip        : 8,
-        verge      : 8
-    };
-    const FALLBACK_MEMBER_STROKE_MM  =  6;
-    const FALLBACK_REVEAL_DASH_MM    =  '90 60';                             // <-- Reveal dash when config has not resolved
-    const MAX_GRID_LINES_PER_AXIS    =  400;                                 // <-- Guards against a runaway grid at wide zoom
+    const MAX_GRID_LINES_PER_AXIS    =  400;                                 // <-- Guards against a runaway grid at wide zoom; not a design value, a safety cap
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -96,7 +82,12 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
 
     // HELPER FUNCTION | Stroke Width in Millimetres for a Member Role
     // ------------------------------------------------------------
+    // Every role maps onto a named key that Na__Env2d__Config.json always
+    // defines - no per-role or generic hardcoded width lives in JS, so a
+    // missing key surfaces as a loud console error rather than a plausible
+    // guessed line weight.
     function VghLantern__Env2d__SkeletonRenderer__StrokeWidthForRole(skeletonCfg, roleKey) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var configKey  =  {
             buildersUpstand : 'BuildersUpstandStrokeWidthMm',
             buildersUpstandPost   : 'BuildersUpstandStrokeWidthMm',
@@ -106,11 +97,10 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
             ridge      : 'RidgeStrokeWidthMm',
             hip        : 'HipStrokeWidthMm',
             verge      : 'HipStrokeWidthMm'
-        }[roleKey];
+        }[roleKey] || 'MemberStrokeWidthMm';
 
-        if (configKey && typeof skeletonCfg[configKey] === 'number') return skeletonCfg[configKey];
-        if (typeof skeletonCfg.MemberStrokeWidthMm === 'number')     return skeletonCfg.MemberStrokeWidthMm;
-        return FALLBACK_STROKE_WIDTHS[roleKey] || FALLBACK_MEMBER_STROKE_MM;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            skeletonCfg, configKey, 'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Skeleton');
     }
     // ------------------------------------------------------------
 
@@ -155,7 +145,8 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
             'data-vgh-role'       : member.Role
         };
         if (member.Role === ROLE_BUILDERS_UPSTAND_REVEAL) {
-            attrs['stroke-dasharray']  =  skeletonCfg.BuildersUpstandRevealDashPatternMm || FALLBACK_REVEAL_DASH_MM;
+            attrs['stroke-dasharray']  =  window.VghLantern__AppCore__ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                skeletonCfg, 'BuildersUpstandRevealDashPatternMm', 'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Skeleton');
         } else if (isHidden && skeletonCfg.HiddenDashPatternMm) {
             attrs['stroke-dasharray']  =  skeletonCfg.HiddenDashPatternMm;
         }
@@ -170,7 +161,8 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
     function VghLantern__Env2d__SkeletonRenderer__DrawNodeMarkers(targetLayer, skeleton, viewKey, skeletonCfg) {
         var SvgHelpers    =  window.VghLantern__Env2d__SvgHelpers;
         var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
-        var radius        =  (typeof skeletonCfg.NodeMarkerRadiusMm === 'number') ? skeletonCfg.NodeMarkerRadiusMm : 9;
+        var radius        =  window.VghLantern__AppCore__ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            skeletonCfg, 'NodeMarkerRadiusMm', 'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Skeleton');
 
         var seen  =  {};
         var i, ends, e, pt, key;
@@ -265,34 +257,36 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
 
         var config    =  VghLantern__Env2d__SkeletonRenderer__ReadConfig();
         var gridCfg   =  config.Grid;
-        if (gridCfg.Enabled === false) return;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var GRID_LABEL    =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Grid';
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(gridCfg, 'Enabled', GRID_LABEL)) return;
 
         var gridLayer  =  instance.GetLayer('grid');
         if (!gridLayer) return;
 
-        var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
-        var box         =  instance.GetViewBox();
-        var zoomScale   =  instance.GetZoomScale();
+        var SvgHelpers    =  window.VghLantern__Env2d__SvgHelpers;
+        var box           =  instance.GetViewBox();
+        var zoomScale     =  instance.GetZoomScale();
 
-        var minorSpacing  =  (typeof gridCfg.MinorSpacingMm === 'number') ? gridCfg.MinorSpacingMm : 100;
-        var majorSpacing  =  (typeof gridCfg.MajorSpacingMm === 'number') ? gridCfg.MajorSpacingMm : 500;
-        var hideMinorAt   =  (typeof gridCfg.HideMinorBelowZoomScale === 'number') ? gridCfg.HideMinorBelowZoomScale : 0.35;
+        var minorSpacing  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'MinorSpacingMm', GRID_LABEL);
+        var majorSpacing  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'MajorSpacingMm', GRID_LABEL);
+        var hideMinorAt   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'HideMinorBelowZoomScale', GRID_LABEL);
 
         if (zoomScale >= hideMinorAt) {
             VghLantern__Env2d__SkeletonRenderer__DrawGridFamily(
                 gridLayer, box, minorSpacing,
-                (typeof gridCfg.MinorStrokeWidthMm === 'number') ? gridCfg.MinorStrokeWidthMm : 0.7,
+                ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'MinorStrokeWidthMm', GRID_LABEL),
                 CSS_GRID_MINOR
             );
         }
 
         VghLantern__Env2d__SkeletonRenderer__DrawGridFamily(
             gridLayer, box, majorSpacing,
-            (typeof gridCfg.MajorStrokeWidthMm === 'number') ? gridCfg.MajorStrokeWidthMm : 1.2,
+            ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'MajorStrokeWidthMm', GRID_LABEL),
             CSS_GRID_MAJOR
         );
 
-        if (gridCfg.ShowOriginAxes !== false) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(gridCfg, 'ShowOriginAxes', GRID_LABEL)) {
             gridLayer.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
                 { x: box.MinX, y: 0 }, { x: box.MaxX, y: 0 }, CSS_GRID_AXIS, { 'stroke-width': 1.4 }));
             gridLayer.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(

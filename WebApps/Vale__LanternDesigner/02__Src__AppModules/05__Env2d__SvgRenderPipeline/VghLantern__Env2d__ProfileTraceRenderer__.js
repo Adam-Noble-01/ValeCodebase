@@ -47,10 +47,7 @@ const VghLantern__Env2d__ProfileTraceRenderer = (function() {
     // ------------------------------------------------------------
     const CSS_TRACE_BAND    =  'VghLantern__Env2d__ProfileTrace';            // <-- Traced section band outline
     const CSS_TRACE_CAP     =  'VghLantern__Env2d__ProfileTrace--cap';       // <-- End cap across the band
-
-    const FALLBACK_STROKE_MM       =  1.5;
-    const FALLBACK_MAX_MEMBERS     =  400;
-    const MIN_TRACEABLE_WIDTH_MM   =  2;                                     // <-- Below this a band is not worth drawing
+    const MIN_TRACEABLE_WIDTH_MM   =  2;                                     // <-- Below this a band is not worth drawing; a rendering threshold, not a config value
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -66,11 +63,12 @@ const VghLantern__Env2d__ProfileTraceRenderer = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var traceCfg      =  (env2d && env2d['VghLantern__Env2d__Config__ProfileTrace']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__ProfileTrace';
 
         return {
-            Enabled             : traceCfg.Enabled === true,
-            TraceStrokeWidthMm  : (typeof traceCfg.TraceStrokeWidthMm === 'number') ? traceCfg.TraceStrokeWidthMm : FALLBACK_STROKE_MM,
-            MaxTracedMembers    : (typeof traceCfg.MaxTracedMembers   === 'number') ? traceCfg.MaxTracedMembers   : FALLBACK_MAX_MEMBERS
+            Enabled             : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(traceCfg, 'Enabled', LABEL),
+            TraceStrokeWidthMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(traceCfg, 'TraceStrokeWidthMm', LABEL),
+            MaxTracedMembers    : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(traceCfg, 'MaxTracedMembers',   LABEL)
         };
     }
     // ------------------------------------------------------------

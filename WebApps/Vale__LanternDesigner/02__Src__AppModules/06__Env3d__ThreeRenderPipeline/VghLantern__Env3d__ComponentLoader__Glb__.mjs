@@ -33,12 +33,14 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import {
-    VghLantern__Env3d__ConfigAccess__Section,
     VghLantern__Env3d__ConfigAccess__MmToWorld,
-    VghLantern__Env3d__ConfigAccess__PointToWorld
+    VghLantern__Env3d__ConfigAccess__PointToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireNumber,
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d__PickIndex__.mjs';
 
 // =============================================================================
 // REGION | GLB Component Loader Module
@@ -147,15 +149,15 @@ import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env
     // Deliberately a plain turned form rather than a box: it reads as "a finial
     // belongs here, not yet specified" without pretending to be a real product.
     function VghLantern__Env3d__ComponentLoader__BuildPlaceholder(finishName) {
-        const config      =  VghLantern__Env3d__ConfigAccess__Section('ComponentLoader');
-        const heightWorld =  VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.PlaceholderHeightMm) || 300);
-        const radiusWorld =  VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.PlaceholderRadiusMm) || 45);
+        const heightWorld =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('ComponentLoader', 'PlaceholderHeightMm'));
+        const radiusWorld =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('ComponentLoader', 'PlaceholderRadiusMm'));
 
         const geometry  =  new THREE.CylinderGeometry(radiusWorld * 0.35, radiusWorld, heightWorld, 12, 1);
         geometry.translate(0, heightWorld / 2, 0);                            // <-- Sit the base on the anchor point
 
         const mesh  =  new THREE.Mesh(geometry, VghLantern__Env3d__MaterialLibrary__Component(finishName));
         mesh.name   =  'VghLantern__Env3d__ComponentPlaceholder';
+        mesh.userData.VghLantern__IsPlaceholder  =  true;                     // <-- Reported by the inspector as unmodelled
         return mesh;
     }
     // ------------------------------------------------------------
@@ -164,10 +166,9 @@ import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env
     // HELPER FUNCTION | Clone and Scale a Cached GLB Scene
     // ------------------------------------------------------------
     function VghLantern__Env3d__ComponentLoader__InstanceFromScene(sourceScene) {
-        const config    =  VghLantern__Env3d__ConfigAccess__Section('ComponentLoader');
         const instance  =  sourceScene.clone(true);
 
-        if (config.ScaleGlbFromMillimetres !== false) {
+        if (VghLantern__Env3d__ConfigAccess__RequireBoolean('ComponentLoader', 'ScaleGlbFromMillimetres')) {
             const scale  =  VghLantern__Env3d__ConfigAccess__MmToWorld(1);     // <-- Source authored in mm
             instance.scale.setScalar(scale);
         }
@@ -183,7 +184,7 @@ import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env
     // An unassigned anchor yields nothing - the user has not chosen a component
     // there. A chosen component with a missing GLB yields the placeholder, which
     // is the case worth flagging visually.
-    async function VghLantern__Env3d__ComponentLoader__ResolveObject(componentId, finishName, config) {
+    async function VghLantern__Env3d__ComponentLoader__ResolveObject(componentId, finishName) {
         if (!componentId) return null;
 
         const asset  =  await VghLantern__Env3d__ComponentLoader__ReadAsset(componentId);
@@ -195,7 +196,7 @@ import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env
             if (scene) return VghLantern__Env3d__ComponentLoader__InstanceFromScene(scene);
         }
 
-        if (config.PlaceholderOnMissingGlb === false) return null;
+        if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('ComponentLoader', 'PlaceholderOnMissingGlb')) return null;
         return VghLantern__Env3d__ComponentLoader__BuildPlaceholder(finishName);
     }
     // ------------------------------------------------------------
@@ -253,8 +254,7 @@ import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env
     export async function VghLantern__Env3d__ComponentLoader__Glb__Build(targetGroup, skeleton, lantern) {
         if (!targetGroup || !skeleton) return;
 
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('ComponentLoader');
-        if (config.Enabled === false) return;
+        if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('ComponentLoader', 'Enabled')) return;
 
         const anchors  =  skeleton.FinialAnchors;
         if (!Array.isArray(anchors) || anchors.length === 0) return;
@@ -266,12 +266,23 @@ import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env
             if (!anchor || !anchor.Position) continue;
 
             const componentId  =  VghLantern__Env3d__ComponentLoader__ComponentIdForRole(lantern, anchor.Role);
-            const object3d     =  await VghLantern__Env3d__ComponentLoader__ResolveObject(componentId, finishName, config);
+            const object3d     =  await VghLantern__Env3d__ComponentLoader__ResolveObject(componentId, finishName);
             if (!object3d) continue;
 
             const world  =  VghLantern__Env3d__ConfigAccess__PointToWorld(anchor.Position);
             object3d.position.set(world.x, world.y, world.z);
             object3d.userData.VghLantern__AnchorId  =  anchor.Id;
+
+            // A placed component is its own object rather than one of a merged set,
+            // so it registers whole. The record carries what the inspector cannot
+            // recover from the scene graph: which asset was asked for, and whether
+            // what landed is the real model or the stand-in.
+            VghLantern__Env3d__PickIndex__RegisterWhole(object3d, 'component', anchor.Role, {
+                Anchor        : anchor,
+                ComponentId   : componentId,
+                IsPlaceholder : object3d.userData.VghLantern__IsPlaceholder === true
+            });
+
             targetGroup.add(object3d);
         }
     }

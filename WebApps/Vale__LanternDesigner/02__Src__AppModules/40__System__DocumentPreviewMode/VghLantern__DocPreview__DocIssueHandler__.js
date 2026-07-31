@@ -103,15 +103,18 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
             return issues;
         }
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var ISSUES_LABEL  =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues';
+
         var project  =  StateManager.VghLantern__StateManager__GetCurrentProject();
         if (!project) {
-            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR, messages.NoProjectMessage || 'No project is open.'));
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR, ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'NoProjectMessage', ISSUES_LABEL)));
             return issues;                                                     // <-- Nothing further is meaningful without a project
         }
 
         var lanterns  =  project['VghLantern__ProjectFile__Lanterns'] || [];
         if (!lanterns.length) {
-            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR, messages.NoLanternMessage || 'This project has no lanterns.'));
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR, ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'NoLanternMessage', ISSUES_LABEL)));
             return issues;
         }
 
@@ -119,7 +122,7 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
                        ? StateManager.VghLantern__StateManager__GetSolvedSkeleton()
                        : null;
         if (!skeleton) {
-            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR, messages.UnsolvedGeometryMessage || 'Lantern geometry has not been solved.'));
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR, ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'UnsolvedGeometryMessage', ISSUES_LABEL)));
         }
 
         return issues;
@@ -137,7 +140,9 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
         var hasSpec     =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesSpecificationPage();
 
         if (!hasDrawing && !hasSpec) {
-            return [VghLantern__DocIssue__Make(SEVERITY_ERROR, messages.EmptySelectionMessage || 'No content is selected.')];
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+            return [VghLantern__DocIssue__Make(SEVERITY_ERROR, ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                messages, 'EmptySelectionMessage', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues'))];
         }
 
         return [];
@@ -196,8 +201,12 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
     // FUNCTION | Report Whether Export Is Blocked
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocIssueHandler__IsExportBlocked(issues) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var config  =  VghLantern__DocIssue__Config();
-        if (config.BlockExportOnError === false) return false;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                config, 'BlockExportOnError', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues')) {
+            return false;
+        }
 
         issues  =  issues || VghLantern__DocPreview__DocIssueHandler__Collect();
 

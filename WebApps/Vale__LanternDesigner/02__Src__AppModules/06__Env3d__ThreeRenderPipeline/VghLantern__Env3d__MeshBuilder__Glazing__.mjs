@@ -29,12 +29,13 @@
 import * as THREE from 'three';
 
 import {
-    VghLantern__Env3d__ConfigAccess__Section,
     VghLantern__Env3d__ConfigAccess__MmToWorld,
-    VghLantern__Env3d__ConfigAccess__PointToWorld
+    VghLantern__Env3d__ConfigAccess__PointToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireNumber
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 import { VghLantern__Env3d__MaterialLibrary__Glazing } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__ModeTriangle } from './VghLantern__Env3d__PickIndex__.mjs';
 
 // =============================================================================
 // REGION | Glazing Mesh Builder Module
@@ -46,8 +47,9 @@ import { VghLantern__Env3d__MaterialLibrary__Glazing } from './VghLantern__Env3d
 
     // MODULE CONSTANTS | Face Filtering and Geometry Guards
     // ------------------------------------------------------------
-    const FACE_ROLE_GLAZING  =  'glazingFace';                               // <-- Only glazing faces get glass
-    const MIN_FACE_POINTS    =  3;                                           // <-- A face needs at least a triangle
+    const FACE_ROLE_GLAZING     =  'glazingFace';                            // <-- Only glazing faces get glass
+    const MIN_FACE_POINTS       =  3;                                        // <-- A face needs at least a triangle
+    const VERTICES_PER_TRIANGLE =  3;                                        // <-- The vertex sink is a flat triangle list
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -116,17 +118,28 @@ import { VghLantern__Env3d__MaterialLibrary__Glazing } from './VghLantern__Env3d
     export function VghLantern__Env3d__MeshBuilder__Glazing__Build(targetGroup, skeleton) {
         if (!targetGroup || !skeleton || !Array.isArray(skeleton.Faces)) return;
 
-        const config      =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
-        const insetWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(Number(config.GlazingInsetMm) || 0);
+        const insetWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInsetMm'));
         const vertices    =  [];
+        const spans       =  [];
 
         for (let i = 0; i < skeleton.Faces.length; i++) {
             const face  =  skeleton.Faces[i];
             if (!face || face.Role !== FACE_ROLE_GLAZING) continue;
             if (!Array.isArray(face.Points) || face.Points.length < MIN_FACE_POINTS) continue;
 
+            // Recorded either side of the fan so each face knows which triangles of
+            // the shared buffer are its own, which is what lets the hover inspector
+            // name one slope out of a mesh holding all four.
+            const triangleStart  =  vertices.length / VERTICES_PER_TRIANGLE;
+
             const worldPoints  =  VghLantern__Env3d__GlazingBuilder__InsetFacePoints(face, insetWorld);
             VghLantern__Env3d__GlazingBuilder__FanTriangles(worldPoints, vertices);
+
+            spans.push({
+                Record    : face,
+                SpanStart : triangleStart,
+                SpanCount : (vertices.length / VERTICES_PER_TRIANGLE) - triangleStart
+            });
         }
 
         if (vertices.length === 0) return;
@@ -145,6 +158,8 @@ import { VghLantern__Env3d__MaterialLibrary__Glazing } from './VghLantern__Env3d
         const mesh      =  new THREE.Mesh(geometry, VghLantern__Env3d__MaterialLibrary__Glazing());
         mesh.name       =  'VghLantern__Env3d__Glazing';
         mesh.renderOrder =  1;                                                // <-- Transparent geometry draws after the frame
+
+        VghLantern__Env3d__PickIndex__Register(mesh, 'glazing', FACE_ROLE_GLAZING, spans, VghLantern__Env3d__PickIndex__ModeTriangle);
         targetGroup.add(mesh);
     }
     // ------------------------------------------------------------

@@ -3,6 +3,108 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.7 - 31-Jul-2026
+### Lantern Info: naming + delete, and staff Warnings & Comments
+
+#### Added
+- **Lantern Info** section (new, open by default) on every lantern tab:
+  - **Lantern Name** field overrides the sequential "Lantern 1" / "Lantern 2" label used on the tab strip, the Specification schedule and every downstream document. Leaving it blank restores the sequential label rather than printing an empty name.
+  - **Delete Lantern** button under a "Danger Zone" heading. Only rendered when the project holds more than one lantern - a project must always keep at least one - and routes through a confirmation modal before Layout splices the lantern out and re-selects a neighbour.
+- **Warnings and Comments** section with two free-text fields:
+  - **Warning (appears on documents)** - printed in red on the Specification document (on-screen, Preview and Send, and the exported PDF) for anything the automatic manufacturability checks cannot catch, e.g. a site access or delivery constraint. Also surfaces as a red "Document Warning" badge in the live editor warnings strip, ranked above the automatic checks because a human flagged it - but it never blocks issue, since the app cannot judge free text.
+  - **General Comments (internal only)** - staff coordination notes that are never printed on any document.
+- Shared `VghLantern__AppCore__ConfirmModal__` module wrapping the existing `#VghLantern__Modal__Root` overlay behind a single `Show({ Title, Message, ConfirmLabel, Danger, OnConfirm })` call, so new destructive actions do not need to hand-roll modal wiring.
+- Three new control-panel primitives so section builders are no longer limited to sliders/dropdowns: `text` (single-line, debounced commit), `textarea` (multi-line, debounced commit) and `button` (optional `VisibleWhen` + `Confirm`).
+
+#### Why the text controls needed a debounced commit path
+Every other control commits on `change` and lets ControlPanel do a full structural re-render, because a slider or dropdown only fires occasionally. A textarea firing that same re-render on every keystroke would drop focus mid-word. `CommitValue` now excludes `text`/`textarea` from its "structural" check, and input on those roles queues a debounced commit (`TextCommitDebounceMs` in `Na__LanternEditor__Config.json`) flushed early on `focusout`, matching the existing pattern in `VghLantern__Specification__JobNotes__.js`.
+
+#### Changed
+- `Na__LanternEditor__Warnings__.json` gains a `userWarning` severity (Rank 4, `BlocksIssue: false`, label "Document Warning") - ranked above the rule-based severities since a person wrote it, but never gates issue the way `error` does.
+- Project schema now normalises a `Lantern__Notes__Config` block (`DocumentWarning`, `InternalComments`) on every lantern, old and new.
+- Specification `DocumentModel` carries a `DocumentWarning` per lantern entry and a document-level `UserWarnings` list (`"Title: message"`, same shape as the existing rule-based `Warnings`). All three Specification surfaces - the on-screen ScheduleRenderer, the Preview/Send print-faithful renderer, and the PdfExporter - print `UserWarnings` in red immediately above the existing orange rule-based warnings, so the human-flagged note reads first.
+- `PdfExporter__WriteHeading` / `WriteParagraph` take an optional `colorRgb` override (defaults unchanged) so the PDF's new "Document Warnings" block can print red without a parallel set of drawing helpers.
+
+#### Files - new
+- `VghLantern__AppCore__ConfirmModal__.js`
+- `VghLantern__LanternEditor__Section__LanternInfo__.js`
+- `VghLantern__LanternEditor__Section__WarningsAndComments__.js`
+
+#### Files - changed
+- `VghLantern__AppUtils__ProjectSchemaValidator__.js` - `Lantern__Notes__Config` normalisation
+- `VghLantern__LanternEditor__ControlDescriptors__.js` - `text` / `textarea` / `button` types, new section registrations
+- `VghLantern__LanternEditor__ControlPanel__.js` - text/textarea/button rendering, debounced commit, action button + Confirm wiring
+- `Na__LanternEditor__Config.json` - `TextCommitDebounceMs`, `lanternInfo` and `warningsAndComments` sections
+- `VghLantern__LanternEditor__Layout__.js` - `DeleteLantern`
+- `Na__LanternEditor__Warnings__.json`, `VghLantern__LanternEditor__WarningSystem__.js` - `userWarning` severity and collector
+- `VghLantern__LanternEditor__Styles__Main__.css` - text input / textarea / button (incl. danger variant) / user-warning badge styles
+- `VghLantern__Specification__DocumentModel__.js` - `DocumentWarning` field, `CollectUserWarnings`, `UserWarnings`
+- `VghLantern__Specification__ScheduleRenderer__.js`, `VghLantern__Specification__SectionManager__.js`, `VghLantern__Specification__Styles__Main__.css` - `BuildUserWarnings` and red on-screen styling
+- `VghLantern__DocPreview__PrintDocumentRenderer__.js`, `VghLantern__DocPreview__Styles__Main__.css` - `BuildUserWarnings`, red heading modifier
+- `VghLantern__DocPreview__PdfExporter__.js` - colour param on `WriteHeading` / `WriteParagraph`, Document Warnings block
+- `VghLantern__App__.html` - new script tags
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.6 - 31-Jul-2026
+### Local dev server: HTTP/1.1 keep-alive stops ERR_NO_BUFFER_SPACE on load
+
+#### Fixed
+- Chrome intermittently failed a random `<script>` request on startup with `net::ERR_NO_BUFFER_SPACE`. The app boots via ~90 individual `<script>` tags, and the dev server's request handler never set `protocol_version`, so it defaulted to HTTP/1.0 and opened + closed a brand-new TCP socket for every single file. That rapid socket churn exhausts Windows' socket buffer space; whichever request lost the race got reported as a network error even though the file itself was never missing or broken.
+- `Na__Server__RequestHandler` now sets `protocol_version = "HTTP/1.1"`, so the browser reuses a handful of persistent connections for the whole page load instead of opening one per file. Every response path already sent `Content-Length` (required for safe keep-alive framing), so no other handler logic needed to change.
+- `do_OPTIONS` now sends an explicit `Content-Length: 0` on its 204 response, removing any ambiguity for keep-alive clients.
+
+#### Changed
+- Listen backlog raised via a new `Na__Server__HttpServer(ThreadingHTTPServer)` subclass (`request_queue_size = 128`), giving the initial page-load burst of concurrent connections more headroom.
+
+#### Verified
+- Restarted the local server and fired all ~90 script/style requests from `VghLantern__App__.html` concurrently (`curl --parallel`) - all returned `200`. A sequential multi-request `curl` trace confirmed a single TCP connection now serves multiple files instead of one connection per file.
+
+#### Files
+- `VghLantern__FlaskServer__Localhost__.py`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.5 - 31-Jul-2026
+### 3D View: hover to isolate and inspect any object in the model
+
+#### Added
+- **Hover inspection** in the 3D View tab. Moving the cursor over the model picks out the single object beneath it and reads the rest of the lantern back, so the thing under the cursor is unmistakable while the model around it still reads as a lantern.
+- Three shading tiers: the **instance** under the cursor in full accent, its **siblings** (every other member of the same role) in a mid accent, and **everything else** ghosted.
+- A **cursor-following readout panel** naming the object and listing its figures: member id, length, slope, instances in the model, total length, profile name and id, section size, material and finish. Glazing panels report slope, gross area, pitch, panel count, total gross area, glazing spec and tint. The base assembly reports height, wall thickness, outer size, reveal and perimeter. Placed components report anchor, asset, overall height and whether what is drawn is the authored GLB or the placeholder.
+- **Click to pin.** A pin locks both highlight and panel so the model can be orbited right around a member while its figures stay on screen. Click it again, click empty space, or press Escape to release. A press that travels past the click tolerance is an orbit drag and never pins.
+
+#### Why it needed new plumbing
+The mesh builders merge every member of a role into **one** mesh - that is what keeps a sixty bar lantern at one draw call - so a raycast against it reports *the glazing bars*, not *bar 7*. Each merged mesh now carries a table of which triangle span belongs to which solver record, binary searched at pick time. The instance highlight is sliced straight out of that same buffer rather than re-swept, so it matches what is on screen to the vertex and needs no async profile load.
+
+#### Files - new
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__PickIndex__.mjs` - span tables and hit resolution
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__InspectStats__.mjs` - naming and figures, composed at hover time from live config
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__HighlightLayer__.mjs` - the three shading tiers
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__HoverInspector__.mjs` - pointer, raycast and pin controller
+- `25__System__Viewport3dMode/VghLantern__Viewport3d__InspectorPanel__.js` - the DOM readout
+
+#### Files - changed
+- `VghLantern__Env3d__RenderPipeline__.mjs` - AttachInspector / DetachInspector / ClearInspector on the public surface; holds the last skeleton and lantern per surface
+- `VghLantern__Env3d__SceneManager__.mjs` - new `highlight` group in the fixed stack, cleared with the model
+- `VghLantern__Env3d__MeshBuilder__ProfileSweep__.mjs` - the merge now reports the triangle span each member occupies
+- `VghLantern__Env3d__MeshBuilder__Skeleton__.mjs`, `__Glazing__.mjs`, `__BuildersUpstandBox__.mjs`, `VghLantern__Env3d__ComponentLoader__Glb__.mjs` - register pick tables
+- `VghLantern__Env3d__MaterialLibrary__.mjs` - six cached inspector materials
+- `VghLantern__Viewport3d__Layout__.js`, `VghLantern__Viewport3d__Styles__Main__.css`, `VghLantern__App__.html`
+
+#### Config
+- `Na__Env3d__Config.json` → new `VghLantern__Env3d__Config__HoverInspector` block: master switch, a per-category pick gate (members / glazing / base / components), pin behaviour and tolerances, cursor offset, and every tier colour.
+- `VghLantern__Env3d__Config__DedicatedViewportMode` → `ShowHoverInspector`. The 3D View opts in; the editor's small 3D panel and the drawing sheet viewports deliberately do not.
+- The ghost tier fades by **colour** rather than opacity by default. This scene has no order-independent transparency, so genuinely translucent ghosting makes members behind members flicker as the camera turns. `GhostOpacity` is exposed if that trade is ever wanted.
+
+#### Drawing safety
+Snapshot capture and 3D View mode exit both clear the inspector unconditionally. The Drawing Editor prefers this surface for its sheet 3D views, so a member left pinned in accent blue must never be captured into an issued drawing.
+
+#### Noted, not changed
+`ComponentLoader__Glb` matches anchor roles against `'finial'` / `'finialBase'` / `'cresting'`, but `SkeletonSolver` emits anchors with `Role` of `'ridgeEnd'` or `'apex'`. Nothing matches, so `ComponentIdForRole` always returns empty and **no finial, base or cresting is ever placed in 3D**. This predates the inspector and is left alone here because fixing it changes what the model renders, which is a separate decision. Component picking is wired and correct; the category is simply inert until components are actually placed.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.4.4 - 31-Jul-2026
 ### Projects table: tighter Actions column and Client Name for drawings
 
@@ -21,6 +123,17 @@
 - `VghLantern__DocManagement__ProjectList__.js`, `VghLantern__DocManagement__ProjectActions__.js`
 - `VghLantern__AppData__ProjectFileManager__.js`, `VghLantern__FlaskServer__Localhost__.py`
 - `07__LocalProjectData/VghLantern__ProjectFile__6969__David_Brent__.json`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.4 - 31-Jul-2026
+### Pitch annotation arc tripled in size
+
+#### Changed
+- `AngleArcRadiusMm` raised 3x (320 → 960) per direct request for a more prominent arc. The existing `len * 0.22` safety cap is left in place, so on shorter hips the rendered radius is still clamped below that ceiling rather than sprawling the whole symbol away from the hip midpoint.
+
+#### Config
+- `Na__Env2d__Config.json` → `AngleArcRadiusMm` (960).
 
 
 # ---------------------------------------------------------

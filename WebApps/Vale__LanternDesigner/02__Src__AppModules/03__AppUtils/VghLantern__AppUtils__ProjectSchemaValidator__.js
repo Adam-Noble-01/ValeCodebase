@@ -512,6 +512,22 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Normalise Lantern Notes Block
+    // ------------------------------------------------------------
+    // DocumentWarning is user-authored and surfaces as a red warning on the
+    // Specification document; InternalComments is staff-only and never printed.
+    function VghLantern__SchemaValidator__NormaliseNotes(lantern) {
+        var didMutate  =  false;
+        var notesCfg   =  lantern['Lantern__Notes__Config'];
+
+        if (VghLantern__SchemaValidator__ApplyStringField(notesCfg, 'Lantern__Notes__Config__DocumentWarning', '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(notesCfg, 'Lantern__Notes__Config__InternalComments', '')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Normalise a Single Lantern Block
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__NormaliseLantern(lantern, index) {
@@ -532,7 +548,8 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             'Lantern__Finials__Config',
             'Lantern__BuildersUpstandAndBase__Config',
             'Lantern__Ventilation__Config',
-            'Lantern__FinishAndGlazing__Config'
+            'Lantern__FinishAndGlazing__Config',
+            'Lantern__Notes__Config'
         ];
         for (var i = 0; i < requiredBlocks.length; i++) {
             if (VghLantern__SchemaValidator__EnsureObject(lantern, requiredBlocks[i])) didMutate  =  true;
@@ -548,6 +565,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseBuildersUpstandAndBase(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseVentilation(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinishAndGlazing(lantern)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseNotes(lantern)) didMutate  =  true;
 
         return { LanternData: lantern, DidMutate: didMutate };
     }

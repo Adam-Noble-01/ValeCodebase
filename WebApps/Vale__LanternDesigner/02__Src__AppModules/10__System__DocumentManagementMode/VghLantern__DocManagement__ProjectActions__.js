@@ -147,17 +147,19 @@ const VghLantern__DocManagement__ProjectActions = (function() {
     // FUNCTION | Handle New Project Button Click
     // ------------------------------------------------------------
     function VghLantern__ProjectActions__OnNewProjectClick() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var NEW_PROJECT_LABEL  =  'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProject';
         var config  =  VghLantern__ProjectActions__NewProjectConfig();
 
         var bodyHtml  =  '';
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
-            'Project Code',  'VghLantern__Modal__InputProjectCode',  config.PlaceholderProjectCode  || 'e.g. 2601');
+            'Project Code',  'VghLantern__Modal__InputProjectCode',  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'PlaceholderProjectCode',  NEW_PROJECT_LABEL));
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
-            'Project Name',  'VghLantern__Modal__InputProjectName',  config.PlaceholderProjectName  || 'e.g. Jones Residence');
+            'Project Name',  'VghLantern__Modal__InputProjectName',  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'PlaceholderProjectName',  NEW_PROJECT_LABEL));
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
-            'Client Name',   'VghLantern__Modal__InputClientName',   config.PlaceholderClientName   || 'e.g. Mr & Mrs Jones');
+            'Client Name',   'VghLantern__Modal__InputClientName',   ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'PlaceholderClientName',   NEW_PROJECT_LABEL));
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
-            'Document Name', 'VghLantern__Modal__InputDocumentName', config.PlaceholderDocumentName || 'e.g. Orangery Roof Lantern');
+            'Document Name', 'VghLantern__Modal__InputDocumentName', ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'PlaceholderDocumentName', NEW_PROJECT_LABEL));
         bodyHtml     +=  '<div id="VghLantern__Modal__ValidationMsg" class="VghLantern__Modal__ValidationMsg"></div>';
 
         var actionsHtml  =  '';
@@ -236,8 +238,10 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         VghLantern__ProjectActions__Toast('Project ' + projectCode + ' created.', 'success');
 
         if (ModeManager) {
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             var config      =  VghLantern__ProjectActions__NewProjectConfig();
-            var landingMode =  config.LandingModeKey || 'LanternEditor';
+            var landingMode =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                config, 'LandingModeKey', 'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProject');
             ModeManager.VghLantern__ModeManager__SwitchToMode(landingMode);        // <-- Straight into the Lantern Editor
         }
     }
@@ -270,8 +274,10 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         }
 
         if (ModeManager) {
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             var config      =  VghLantern__ProjectActions__NewProjectConfig();
-            var landingMode =  config.LandingModeKey || 'LanternEditor';
+            var landingMode =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                config, 'LandingModeKey', 'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProject');
             ModeManager.VghLantern__ModeManager__SwitchToMode(landingMode);
         }
     }

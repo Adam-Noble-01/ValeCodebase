@@ -446,10 +446,12 @@ const VghLantern__DocManagement__ProjectList = (function() {
     // HELPER FUNCTION | Build Empty State Placeholder HTML
     // ------------------------------------------------------------
     function VghLantern__ProjectList__BuildEmptyState() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var EMPTY_LABEL   =  'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__EmptyState';
         var config     =  VghLantern__ProjectList__EmptyStateConfig();
-        var glyphHtml  =  config.Glyph || '&#128736;';                            // <-- Hammer and spanner default
-        var titleText  =  VghLantern__ProjectList__Escape(config.Title || 'No Lantern Projects Yet');
-        var bodyText   =  VghLantern__ProjectList__Escape(config.Text  || 'Create a new project to start configuring a roof lantern.');
+        var glyphHtml  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'Glyph', EMPTY_LABEL);
+        var titleText  =  VghLantern__ProjectList__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'Title', EMPTY_LABEL));
+        var bodyText   =  VghLantern__ProjectList__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'Text',  EMPTY_LABEL));
 
         var html  =  '<div class="VghLantern__DocManagement__EmptyState">';
         html     +=      '<div class="VghLantern__DocManagement__EmptyState__Icon">'  + glyphHtml + '</div>';
@@ -473,8 +475,10 @@ const VghLantern__DocManagement__ProjectList = (function() {
         var wrapper  =  document.getElementById(SEARCH_WRAPPER_ID);
         if (!wrapper) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var config       =  VghLantern__ProjectList__TableConfig();
-        var placeholder  =  VghLantern__ProjectList__Escape(config.SearchPlaceholder || 'Search lantern projects...');
+        var placeholder  =  VghLantern__ProjectList__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            config, 'SearchPlaceholder', 'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__Table'));
         var currentValue =  VghLantern__ProjectList__Escape(VghLantern__ProjectList__SearchQuery);
 
         var html  =  '<div class="VghLantern__DocManagement__SearchContainer">';

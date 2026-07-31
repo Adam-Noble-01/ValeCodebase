@@ -684,6 +684,19 @@
     /* ------------------------------------------------------------ */
 
 
+    /* ITEM | User Warning Severity (staff-authored, prints red on documents) */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Warnings__Item--userWarning {
+        border-left-color                  : var(--VghLantern_ErrorRed);
+        background-color                   : var(--VghLantern_ErrorBackground);
+    }
+
+    .VghLantern__Warnings__Item--userWarning .VghLantern__Warnings__Badge {
+        color                               : var(--VghLantern_ErrorRed);
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* BADGE | Severity Label */
     /* ------------------------------------------------------------ */
     .VghLantern__Warnings__Badge {
@@ -961,6 +974,109 @@
     .VghLantern__ControlPanel__Select:focus {
         outline                            : none;
         border-color                       : var(--Vale_BorderPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Single Line Text Entry */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__TextInput {
+        width                               : 100%;
+        box-sizing                          : border-box;
+        padding                             : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : var(--Vale_FontSize_Small);
+        color                               : var(--Vale_TextPrimary);
+        background-color                    : var(--Vale_BackgroundWhite);
+        border                              : 1px solid var(--Vale_BorderLight);
+        border-radius                       : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Single Line Text Entry Focus */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__TextInput:focus {
+        outline                             : none;
+        border-color                        : var(--Vale_BorderPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Multi Line Text Entry */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__TextArea {
+        width                               : 100%;
+        box-sizing                          : border-box;
+        padding                             : var(--Vale_Spacing_Small);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : var(--Vale_FontSize_Small);
+        color                               : var(--Vale_TextPrimary);
+        line-height                         : 1.4;
+        background-color                    : var(--Vale_BackgroundWhite);
+        border                              : 1px solid var(--Vale_BorderLight);
+        border-radius                       : var(--Vale_BorderRadius);
+        resize                              : vertical;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Multi Line Text Entry Focus */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__TextArea:focus {
+        outline                             : none;
+        border-color                        : var(--Vale_BorderPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CONTROL | Button Control Wrapper */
+    /* ------------------------------------------------------------ */
+    /* Buttons hold no label-plus-input row, so the shared Control wrapper is
+       overridden here to stack the button above its own hint text instead. */
+    .VghLantern__ControlPanel__Control--button {
+        display                             : flex;
+        flex-direction                      : column;
+        align-items                         : flex-start;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Action Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Button {
+        padding                             : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Medium);
+        font-family                         : var(--Vale_FontFamily);
+        font-size                           : var(--Vale_FontSize_Small);
+        font-weight                         : var(--Vale_FontWeight_SemiBold);
+        color                               : var(--Vale_PrimaryBrand);
+        background-color                    : var(--Vale_BackgroundWhite);
+        border                              : 1px solid var(--Vale_BorderPrimary);
+        border-radius                       : var(--Vale_BorderRadius);
+        cursor                              : pointer;
+        transition                          : background-color var(--Vale_Transition_Fast),
+                                              color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ControlPanel__Button:hover {
+        color                               : var(--Vale_TextLight);
+        background-color                    : var(--Vale_PrimaryBrand);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUT | Danger Variant Action Button */
+    /* ------------------------------------------------------------ */
+    /* Used for irreversible actions (Delete Lantern); red at rest rather than
+       only on hover, so its destructive intent reads before the click. */
+    .VghLantern__ControlPanel__Button--danger {
+        color                               : var(--VghLantern_ErrorRed);
+        border-color                        : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__ControlPanel__Button--danger:hover {
+        color                               : var(--Vale_TextLight);
+        background-color                    : var(--VghLantern_ErrorRed);
     }
     /* ------------------------------------------------------------ */
 

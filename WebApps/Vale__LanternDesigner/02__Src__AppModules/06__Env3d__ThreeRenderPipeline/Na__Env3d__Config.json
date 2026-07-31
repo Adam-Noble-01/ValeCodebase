@@ -123,10 +123,50 @@
             "ShowShadowCatcher"               : false
         },
 
+        "VghLantern__Env3d__Config__HoverInspector": {
+            "Enabled"                         : true,
+            "EnabledNote"                     : "Master switch for hover and pin model inspection. Off means no pick tables are written at build time, so the feature costs nothing at all rather than being hidden.",
+
+            "PickMembers"                     : true,
+            "PickGlazing"                     : true,
+            "PickBase"                        : true,
+            "PickComponents"                  : true,
+            "PickCategoryNote"                : "Each pickable class can be switched off independently. A disabled class is not registered, so the cursor sees straight through it to whatever sits behind.",
+
+            "PinOnClick"                      : true,
+            "ClickMoveTolerancePx"            : 4,
+            "ClickMoveToleranceNote"          : "A press that travels further than this before release is an orbit drag, not a click, and never pins. Raise it for touch screens where a tap wanders.",
+            "LinePickToleranceMm"             : 25,
+            "LinePickToleranceNote"           : "Pick radius around a centreline in the 'lines' skeleton mode only. Stated in millimetres because Three's own default is one world unit, which in this metre-scale scene would be a one metre pick radius.",
+
+            "CursorOffsetPx"                  : 18,
+            "ShowHintRow"                     : true,
+            "ShowHintRowNote"                 : "Adds the 'Click to pin' / 'Click again or press Escape to release' line at the foot of the panel.",
+
+            "GhostColour"                     : "#d7dbde",
+            "GhostOpacity"                    : 1.0,
+            "GhostOpacityNote"                : "The ghost tier fades by colour rather than by transparency at the default of 1.0. This scene has no order-independent transparency, so genuinely translucent ghosting makes members behind members flicker as the camera turns. Drop this below 1 only if that trade is wanted.",
+            "GhostGlazingColour"              : "#cfd8dd",
+            "GhostGlazingOpacity"             : 0.06,
+
+            "SiblingColour"                   : "#9dbdd2",
+            "SiblingColourNote"               : "Every other instance of the hovered role. Reads as a family without competing with the one instance under the cursor.",
+
+            "InstanceColour"                  : "#1c6f9e",
+            "InstanceEmissiveColour"          : "#0b3c58",
+            "InstanceEmissiveIntensity"       : 0.35,
+            "GlazingHighlightColour"          : "#5fa4c8",
+            "GlazingHighlightOpacity"         : 0.30,
+
+            "InspectorNote"                   : "Presentation and behaviour for the hover inspector. The tier colours live here rather than in the Materials block so the whole feature is tuned from one place; MaterialLibrary reads them from here."
+        },
+
         "VghLantern__Env3d__Config__DedicatedViewportMode": {
             "DefaultPreset"                   : "isometric",
             "ShowPresetButtons"               : true,
             "ShowZoomExtents"                 : true,
+            "ShowHoverInspector"              : true,
+            "ShowHoverInspectorNote"          : "Whether the full-screen 3D View mode attaches the hover inspector. The editor's small 3D panel and the drawing sheet viewports deliberately do not, so a review surface behaves differently to a working one.",
             "ShowSkeletonModeLabel"           : true,
             "ShowSkeletonModeLabelNote"       : "Read-only readout of the active MeshBuilders.SkeletonMode, so a reviewer can see whether they are looking at swept sections or bare centrelines.",
             "ShowLanternSelector"             : true,

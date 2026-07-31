@@ -56,9 +56,10 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
 
     // MODULE CONSTANTS | Severity Keys and Fallbacks
     // ------------------------------------------------------------
-    const SEVERITY_ERROR    =  'error';
-    const SEVERITY_WARNING  =  'warning';
-    const SEVERITY_INFO     =  'info';
+    const SEVERITY_ERROR         =  'error';
+    const SEVERITY_WARNING       =  'warning';
+    const SEVERITY_INFO          =  'info';
+    const SEVERITY_USER_WARNING  =  'userWarning';
 
     const FALLBACK_SEVERITY_RANK  =  2;                                      // <-- Unknown severity sorts with warnings
     const SOLVER_SEVERITY         =  SEVERITY_WARNING;                       // <-- Solver notes are advisory, not blocking
@@ -72,6 +73,7 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
     const BLOCK_BARS        =  'Lantern__GlazingBars__Config';
     const BLOCK_FINIALS     =  'Lantern__Finials__Config';
     const BLOCK_VENTS       =  'Lantern__Ventilation__Config';
+    const BLOCK_NOTES       =  'Lantern__Notes__Config';
     // ------------------------------------------------------------
 
 
@@ -344,6 +346,27 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Collect the User-Authored Document Warning, If Any
+    // ------------------------------------------------------------
+    // Lets staff flag something the rule table cannot know about (e.g. a site
+    // access constraint) straight from the Warnings and Comments section. The
+    // same field is what the Specification document prints in red, so showing
+    // it here too means the editor and the document can never disagree about
+    // whether a warning is set.
+    function VghLantern__WarningSystem__CollectUserWarning(lantern) {
+        var text  =  VghLantern__WarningSystem__ReadText(lantern, BLOCK_NOTES, 'Lantern__Notes__Config__DocumentWarning').trim();
+        if (text === '') return [];
+
+        return [{
+            Key      : 'userWarning',
+            Severity : SEVERITY_USER_WARNING,
+            Message  : text,
+            Origin   : 'user'
+        }];
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Evaluate the Rule Table Against a Lantern
     // ------------------------------------------------------------
     // Returns a severity-sorted entry list and caches it for HasBlockingWarnings.
@@ -376,6 +399,7 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
         }
 
         entries  =  entries.concat(VghLantern__WarningSystem__CollectGeometryNotes(skeleton, barSet));
+        entries  =  entries.concat(VghLantern__WarningSystem__CollectUserWarning(lantern));
 
         entries.sort(function(a, b) {
             return VghLantern__WarningSystem__Severity(b.Severity).Rank - VghLantern__WarningSystem__Severity(a.Severity).Rank;
@@ -470,7 +494,8 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
         VghLantern__WarningSystem__HasBlockingWarnings  : VghLantern__WarningSystem__HasBlockingWarnings,
         VghLantern__WarningSystem__SeverityError        : SEVERITY_ERROR,
         VghLantern__WarningSystem__SeverityWarning      : SEVERITY_WARNING,
-        VghLantern__WarningSystem__SeverityInfo         : SEVERITY_INFO
+        VghLantern__WarningSystem__SeverityInfo         : SEVERITY_INFO,
+        VghLantern__WarningSystem__SeverityUserWarning  : SEVERITY_USER_WARNING
     };
 
 // endregion -------------------------------------------------------------------

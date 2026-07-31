@@ -165,19 +165,19 @@ const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
     // Company name text is opt-in only - the logo already carries the brand, so
     // printing "Vale Garden Houses Limited" under it just burns titleblock height.
     function VghLantern__TitleBlockRenderer__BuildLogoCell(config) {
-        var cellWidthMm  =  (typeof config.LogoCellWidthMm === 'number')
-            ? config.LogoCellWidthMm
-            : ((typeof config.LogoWidthMm === 'number') ? config.LogoWidthMm * 1.5 : 0);
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var LABEL         =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__TitleBlock';
+        var cellWidthMm   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(config, 'LogoCellWidthMm', LABEL);
         var cellStyle    =  cellWidthMm ? ' style="width:' + cellWidthMm + 'mm;min-width:' + cellWidthMm + 'mm"' : '';
         var html         =  '<div class="' + CSS_LOGO_CELL + '"' + cellStyle + '>';
 
-        if (config.ShowValeLogo !== false && config.LogoAssetPath) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'ShowValeLogo', LABEL) && config.LogoAssetPath) {
             var widthStyle  =  config.LogoWidthMm ? ' style="width:' + config.LogoWidthMm + 'mm"' : '';
             html  +=  '<img src="' + VghLantern__TitleBlockRenderer__Escape(config.LogoAssetPath) + '"' +
                       widthStyle + ' alt="Vale Garden Houses">';
         }
 
-        if (config.ShowCompanyName === true && config.CompanyName) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'ShowCompanyName', LABEL) && config.CompanyName) {
             html  +=  '<span class="' + CSS_COMPANY + '">' +
                       VghLantern__TitleBlockRenderer__Escape(config.CompanyName) + '</span>';
         }

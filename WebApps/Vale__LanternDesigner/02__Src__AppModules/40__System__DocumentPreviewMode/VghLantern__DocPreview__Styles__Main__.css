@@ -436,6 +436,12 @@
         color                       : var(--Vale_PrimaryBrand);
     }
 
+    /* Staff-authored Document Warnings heading - red rather than brand blue so
+       it reads as urgent ahead of the automatic (unstyled) Warnings list below. */
+    .VghLantern__DocPreview__PrintDocHeading--error {
+        color                       : var(--VghLantern_ErrorRed);
+    }
+
     .VghLantern__DocPreview__PrintDocParagraph {
         margin                      : 0 0 2mm 0;
         font-size                   : 3mm;
@@ -448,6 +454,14 @@
         padding-left                : 4mm;
         font-size                   : 3mm;
         color                       : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__DocPreview__PrintDocUserWarnings {
+        margin                      : 0 0 2mm 0;
+        padding-left                : 4mm;
+        font-size                   : 3mm;
+        font-weight                 : var(--Vale_FontWeight_SemiBold);
+        color                       : var(--VghLantern_ErrorRed);
     }
 
     /* Tables inside the print doc mirror PdfExporter header / alt-row colours */

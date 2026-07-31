@@ -52,8 +52,7 @@ const VghLantern__Specification__JobNotes = (function() {
     const GLOBALS_BLOCK   =  'VghLantern__ProjectFile__GlobalSettings';
     const NOTES_FIELD     =  'VghLantern__ProjectFile__GlobalSettings__JobNotes';
 
-    const FALLBACK_MAX    =  2000;
-    const FALLBACK_DEBOUNCE_MS  =  900;
+    const JOB_NOTES_LABEL  =  'Na__Specification__Config.json -> VghLantern__Specification__Config__JobNotes';
     // ------------------------------------------------------------
 
 
@@ -135,8 +134,10 @@ const VghLantern__Specification__JobNotes = (function() {
     // SUB FUNCTION | Queue a Debounced Notes Write
     // ------------------------------------------------------------
     function VghLantern__JobNotes__QueueCommit(noteText) {
-        var debounceMs  =  VghLantern__JobNotes__Config().AutosaveDebounceMs;
-        if (typeof debounceMs !== 'number') debounceMs  =  FALLBACK_DEBOUNCE_MS;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var debounceMs    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            VghLantern__JobNotes__Config(), 'AutosaveDebounceMs', JOB_NOTES_LABEL
+        );
 
         if (VghLantern__JobNotes__WriteTimerId !== null) clearTimeout(VghLantern__JobNotes__WriteTimerId);
 
@@ -186,12 +187,13 @@ const VghLantern__Specification__JobNotes = (function() {
         if (!host) return;
 
         var config  =  VghLantern__JobNotes__Config();
-        if (config.Enabled === false) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'Enabled', JOB_NOTES_LABEL)) {
             host.innerHTML  =  '';
             return;
         }
 
-        var maxChars  =  (typeof config.MaxCharacters === 'number') ? config.MaxCharacters : FALLBACK_MAX;
+        var maxChars  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(config, 'MaxCharacters', JOB_NOTES_LABEL);
         var noteText  =  VghLantern__JobNotes__ReadNotes();
 
         host.innerHTML  =
@@ -199,10 +201,10 @@ const VghLantern__Specification__JobNotes = (function() {
             '<label class="' + CSS_LABEL + '" for="' + DOM_TEXTAREA + '">Job Notes</label>' +
             '<textarea class="' + CSS_TEXTAREA + '" id="' + DOM_TEXTAREA + '" ' +
             'maxlength="' + maxChars + '" rows="6" ' +
-            'placeholder="' + VghLantern__JobNotes__Escape(config.PlaceholderText || '') + '">' +
+            'placeholder="' + VghLantern__JobNotes__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'PlaceholderText', JOB_NOTES_LABEL)) + '">' +
             VghLantern__JobNotes__Escape(noteText) + '</textarea>' +
             '<div class="' + CSS_HELPER + '">' +
-            '<span>' + VghLantern__JobNotes__Escape(config.HelperText || '') + '</span>' +
+            '<span>' + VghLantern__JobNotes__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'HelperText', JOB_NOTES_LABEL)) + '</span>' +
             '<span class="' + CSS_COUNTER + '">' + noteText.length + ' / ' + maxChars + '</span>' +
             '</div></section>';
     }
@@ -216,7 +218,8 @@ const VghLantern__Specification__JobNotes = (function() {
     // Specification mode has ever been opened.
     function VghLantern__Specification__JobNotes__BuildStatic() {
         var config  =  VghLantern__JobNotes__Config();
-        if (config.Enabled === false) return '';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'Enabled', JOB_NOTES_LABEL)) return '';
 
         var noteText  =  VghLantern__JobNotes__ReadNotes();
         if (!noteText) return '';
@@ -241,8 +244,9 @@ const VghLantern__Specification__JobNotes = (function() {
         host.addEventListener('input', function(e) {
             if (!e.target || e.target.id !== DOM_TEXTAREA) return;
 
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             var config    =  VghLantern__JobNotes__Config();
-            var maxChars  =  (typeof config.MaxCharacters === 'number') ? config.MaxCharacters : FALLBACK_MAX;
+            var maxChars  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(config, 'MaxCharacters', JOB_NOTES_LABEL);
 
             VghLantern__JobNotes__UpdateCounter(host, e.target.value.length, maxChars);
             VghLantern__JobNotes__QueueCommit(e.target.value);

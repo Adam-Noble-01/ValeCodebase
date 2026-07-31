@@ -14,6 +14,9 @@
      surface handle for the life of the session.
    - Renders the control overlay through Viewport3d__Controls and services its
      intents: camera presets, zoom-extents and lantern selection.
+   - Attaches the Env3d hover inspector and feeds its payloads to
+     Viewport3d__InspectorPanel, so hovering a member names it, counts its
+     siblings and shades the rest of the model back.
    - Rebuilds the model whenever geometry is re-solved, and resizes the drawing
      buffer whenever the mode is entered or the window changes size.
    - Classic script; it waits for the ESM bootstrap to publish the pipeline rather
@@ -45,6 +48,7 @@ const VghLantern__Viewport3d__Layout = (function() {
 
     // MODULE CONSTANTS | DOM Identifiers
     // ------------------------------------------------------------
+    const DOM_CONTAINER        =  'VghLantern__Viewport3d__Container';
     const DOM_CANVAS_HOST      =  'VghLantern__Viewport3d__CanvasHost';
     const DOM_CONTROLS_OVERLAY =  'VghLantern__Viewport3d__ControlsOverlay';
     // ------------------------------------------------------------
@@ -169,6 +173,59 @@ const VghLantern__Viewport3d__Layout = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Model Inspection
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Attach the Hover Inspector and Its Readout Panel
+    // ------------------------------------------------------------
+    // Two independent gates, both honoured. The pipeline decides whether the
+    // feature exists at all; this mode decides whether it wants it. The panel is
+    // only built once the pipeline confirms it has something to feed it, so a
+    // disabled feature leaves no empty element in the DOM.
+    function VghLantern__Viewport3dLayout__AttachInspector() {
+        var pipeline   =  window.VghLantern__Env3d__RenderPipeline;
+        var Panel      =  window.VghLantern__Viewport3d__InspectorPanel;
+        var container  =  document.getElementById(DOM_CONTAINER);
+
+        if (!pipeline || !Panel || !container) return;
+        if (!VghLantern__Viewport3dLayout__Surface) return;
+        var ConfigLoaderForInspector  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoaderForInspector.VghLantern__ConfigLoader__RequireBoolean(
+                VghLantern__Viewport3dLayout__ModeConfig(), 'ShowHoverInspector',
+                'Na__Env3d__Config.json -> VghLantern__Env3d__Config__DedicatedViewportMode')) {
+            return;
+        }
+        if (!pipeline.VghLantern__Env3d__RenderPipeline__AttachInspector) return;
+
+        var attached  =  pipeline.VghLantern__Env3d__RenderPipeline__AttachInspector(
+            VghLantern__Viewport3dLayout__Surface,
+            function(payload) {
+                Panel.VghLantern__Viewport3d__InspectorPanel__Show(payload);
+            }
+        );
+
+        if (attached) Panel.VghLantern__Viewport3d__InspectorPanel__Render(container);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Drop Any Active Inspector Target
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dLayout__ClearInspector() {
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Panel     =  window.VghLantern__Viewport3d__InspectorPanel;
+
+        if (pipeline && pipeline.VghLantern__Env3d__RenderPipeline__ClearInspector && VghLantern__Viewport3dLayout__Surface) {
+            pipeline.VghLantern__Env3d__RenderPipeline__ClearInspector(VghLantern__Viewport3dLayout__Surface);
+        }
+        if (Panel) Panel.VghLantern__Viewport3d__InspectorPanel__Hide();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Mount and Redraw
 // -----------------------------------------------------------------------------
 
@@ -214,6 +271,7 @@ const VghLantern__Viewport3d__Layout = (function() {
             Controls.VghLantern__Viewport3d__Controls__SetActivePreset(modeConfig.DefaultPreset);
         }
 
+        VghLantern__Viewport3dLayout__AttachInspector();                      // <-- Before the first draw, so the model is pickable as soon as it lands
         VghLantern__Viewport3dLayout__Subscribe();
         await VghLantern__Viewport3d__Layout__Redraw();
     }
@@ -282,6 +340,7 @@ const VghLantern__Viewport3d__Layout = (function() {
         if (VghLantern__Viewport3dLayout__Surface) {
             VghLantern__Viewport3d__Layout__Resize();
             VghLantern__Viewport3dLayout__RenderOverlay();
+            VghLantern__Viewport3dLayout__AttachInspector();                  // <-- Idempotent, and covers a first mount that raced the config load
             await VghLantern__Viewport3d__Layout__Redraw();
             return;
         }
@@ -328,10 +387,12 @@ const VghLantern__Viewport3d__Layout = (function() {
     // ------------------------------------------------------------
     function VghLantern__Viewport3d__Layout__Dispose() {
         var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Panel     =  window.VghLantern__Viewport3d__InspectorPanel;
 
         if (pipeline && VghLantern__Viewport3dLayout__Surface) {
             pipeline.VghLantern__Env3d__RenderPipeline__Dispose(VghLantern__Viewport3dLayout__Surface);
         }
+        if (Panel) Panel.VghLantern__Viewport3d__InspectorPanel__Dispose();
 
         VghLantern__Viewport3dLayout__Surface  =  null;
     }
@@ -341,9 +402,13 @@ const VghLantern__Viewport3d__Layout = (function() {
     // FUNCTION | Leave the 3D View Mode
     // ------------------------------------------------------------
     // Only tears the context down when config asks for it, so the common case keeps
-    // returning to this mode instant.
+    // returning to this mode instant. The inspector is released either way: this
+    // surface is the one the Drawing Editor prefers for its sheet 3D views, and a
+    // member left pinned in accent blue must not follow the user onto a drawing.
     function VghLantern__Viewport3d__Layout__OnModeExit() {
         var modeConfig  =  VghLantern__Viewport3dLayout__ModeConfig();
+
+        VghLantern__Viewport3dLayout__ClearInspector();
         if (modeConfig.DisposeOnModeExit === true) VghLantern__Viewport3d__Layout__Dispose();
     }
     // ------------------------------------------------------------

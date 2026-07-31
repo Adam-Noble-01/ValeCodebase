@@ -45,9 +45,6 @@ const VghLantern__DrawingEditor__AnnotationLayer = (function() {
 
     const GLOBALS_BLOCK   =  'VghLantern__ProjectFile__GlobalSettings';
     const NOTES_FIELD     =  'VghLantern__ProjectFile__GlobalSettings__JobNotes';
-
-    const FALLBACK_TITLE  =  'Notes';
-    const FALLBACK_MAX    =  12;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -113,10 +110,13 @@ const VghLantern__DrawingEditor__AnnotationLayer = (function() {
     // General notes lead, project notes follow, and the list is truncated to the
     // configured maximum so the notes block cannot overrun its space.
     function VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var config    =  VghLantern__AnnotationLayer__Config();
         var general   =  Array.isArray(config.GeneralNotes) ? config.GeneralNotes : [];
         var projected =  VghLantern__AnnotationLayer__ProjectNoteLines(project);
-        var maxNotes  =  (typeof config.MaxNotes === 'number' && config.MaxNotes > 0) ? config.MaxNotes : FALLBACK_MAX;
+        var maxNotes  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            config, 'MaxNotes', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Annotations'
+        );
 
         var notes  =  [];
         var i;
@@ -141,12 +141,14 @@ const VghLantern__DrawingEditor__AnnotationLayer = (function() {
     // to print, so the caller can insert the result unconditionally.
     function VghLantern__DrawingEditor__AnnotationLayer__BuildMarkup(project) {
         var config  =  VghLantern__AnnotationLayer__Config();
-        if (config.Enabled === false) return '';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var ANNOTATIONS_LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Annotations';
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'Enabled', ANNOTATIONS_LABEL)) return '';
 
         var notes  =  VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project);
         if (!notes.length) return '';
 
-        var title  =  config.NotesBlockTitle || FALLBACK_TITLE;
+        var title  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'NotesBlockTitle', ANNOTATIONS_LABEL);
         var html   =  '<aside class="' + CSS_BLOCK + '">' +
                       '<h4 class="' + CSS_TITLE + '">' + VghLantern__AnnotationLayer__Escape(title) + '</h4>' +
                       '<ol class="' + CSS_LIST + '">';

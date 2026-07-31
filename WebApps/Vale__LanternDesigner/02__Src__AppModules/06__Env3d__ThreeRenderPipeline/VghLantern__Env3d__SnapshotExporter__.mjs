@@ -31,7 +31,11 @@
 
 import * as THREE from 'three';
 
-import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__ConfigAccess__.mjs';
+import {
+    VghLantern__Env3d__ConfigAccess__RequireNumber,
+    VghLantern__Env3d__ConfigAccess__RequireString,
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
+} from './VghLantern__Env3d__ConfigAccess__.mjs';
 import { VghLantern__Env3d__SceneManager__Resize, VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d__SceneManager__.mjs';
 
 // =============================================================================
@@ -60,12 +64,11 @@ import { VghLantern__Env3d__SceneManager__Resize, VghLantern__Env3d__SceneManage
     // Honours a caller-supplied size, else the config default, then applies the
     // supersample factor and clamps to the safe pixel budget.
     function VghLantern__Env3d__SnapshotExporter__ResolveSize(options) {
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('Snapshot');
-        const opts    =  options || {};
+        const opts  =  options || {};
 
-        const baseWidth   =  Math.max(MIN_OUTPUT_PX, Number(opts.WidthPx)  || Number(config.DefaultWidthPx)  || 2000);
-        const baseHeight  =  Math.max(MIN_OUTPUT_PX, Number(opts.HeightPx) || Number(config.DefaultHeightPx) || 1400);
-        const factor      =  Math.max(1, Number(opts.SupersampleFactor) || Number(config.SupersampleFactor) || 1);
+        const baseWidth   =  Math.max(MIN_OUTPUT_PX, Number(opts.WidthPx)  || VghLantern__Env3d__ConfigAccess__RequireNumber('Snapshot', 'DefaultWidthPx'));
+        const baseHeight  =  Math.max(MIN_OUTPUT_PX, Number(opts.HeightPx) || VghLantern__Env3d__ConfigAccess__RequireNumber('Snapshot', 'DefaultHeightPx'));
+        const factor      =  Math.max(1, Number(opts.SupersampleFactor) || VghLantern__Env3d__ConfigAccess__RequireNumber('Snapshot', 'SupersampleFactor'));
 
         let width   =  Math.round(baseWidth  * factor);
         let height  =  Math.round(baseHeight * factor);
@@ -119,12 +122,11 @@ import { VghLantern__Env3d__SceneManager__Resize, VghLantern__Env3d__SceneManage
     export function VghLantern__Env3d__SnapshotExporter__Capture(surface, options) {
         if (!surface || surface.IsDestroyed || !surface.Camera) return null;
 
-        const config     =  VghLantern__Env3d__ConfigAccess__Section('Snapshot');
-        const size       =  VghLantern__Env3d__SnapshotExporter__ResolveSize(options);
-        const mimeType   =  (options && options.MimeType) || config.OutputMimeType || 'image/png';
+        const size        =  VghLantern__Env3d__SnapshotExporter__ResolveSize(options);
+        const mimeType    =  (options && options.MimeType) || VghLantern__Env3d__ConfigAccess__RequireString('Snapshot', 'OutputMimeType');
         const transparent =  (options && options.TransparentBackground !== undefined)
             ? options.TransparentBackground
-            : config.TransparentBackground !== false;
+            : VghLantern__Env3d__ConfigAccess__RequireBoolean('Snapshot', 'TransparentBackground');
 
         const renderer  =  surface.Renderer;
 
@@ -179,8 +181,7 @@ import { VghLantern__Env3d__SceneManager__Resize, VghLantern__Env3d__SceneManage
 
         // Sheet snapshots frame tighter than the live view: the bounding-sphere fit
         // plus the interactive padding leaves a wide flat lantern tiny in its frame.
-        const snapshotConfig  =  VghLantern__Env3d__ConfigAccess__Section('Snapshot');
-        const framePadding    =  Number(snapshotConfig.FramePaddingFactor);
+        const framePadding    =  VghLantern__Env3d__ConfigAccess__RequireNumber('Snapshot', 'FramePaddingFactor');
 
         try {
             applyPresetFn(surface, presetKey, bounds, framePadding > 0 ? framePadding : null);

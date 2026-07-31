@@ -34,8 +34,10 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     const CSS_TITLE      =  'VghLantern__DocPreview__PrintDocTitle';
     const CSS_META       =  'VghLantern__DocPreview__PrintDocMeta';
     const CSS_HEADING    =  'VghLantern__DocPreview__PrintDocHeading';
+    const CSS_HEADING_ERROR   =  'VghLantern__DocPreview__PrintDocHeading--error';
     const CSS_PARAGRAPH  =  'VghLantern__DocPreview__PrintDocParagraph';
     const CSS_WARNINGS   =  'VghLantern__DocPreview__PrintDocWarnings';
+    const CSS_USER_WARNINGS  =  'VghLantern__DocPreview__PrintDocUserWarnings';
     const CSS_EMPTY      =  'VghLantern__DocPreview__Empty';
     // ------------------------------------------------------------
 
@@ -68,8 +70,12 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
 
     // HELPER FUNCTION | Build a Heading Element
     // ------------------------------------------------------------
-    function VghLantern__PrintDocument__Heading(text) {
-        return '<h3 class="' + CSS_HEADING + '">' + VghLantern__PrintDocument__Escape(text) + '</h3>';
+    // isError adds the red modifier class, used only for the staff-authored
+    // Document Warnings heading so it reads as urgent against the brand-blue
+    // headings used everywhere else in the document.
+    function VghLantern__PrintDocument__Heading(text, isError) {
+        var cls  =  CSS_HEADING + (isError ? ' ' + CSS_HEADING_ERROR : '');
+        return '<h3 class="' + cls + '">' + VghLantern__PrintDocument__Escape(text) + '</h3>';
     }
     // ------------------------------------------------------------
 
@@ -96,6 +102,27 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
 
         var html  =  VghLantern__PrintDocument__Heading('Warnings') +
                      '<ul class="' + CSS_WARNINGS + '">';
+        var i;
+
+        for (i = 0; i < warnings.length; i++) {
+            html  +=  '<li>' + VghLantern__PrintDocument__Escape(warnings[i]) + '</li>';
+        }
+
+        return html + '</ul>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build Staff-Authored Document Warning List Markup
+    // ------------------------------------------------------------
+    // Kept separate from BuildWarnings above: this is free text a person wrote,
+    // not a rule the app evaluated, so it prints in red ahead of the rule-based
+    // warnings rather than merging into that list.
+    function VghLantern__PrintDocument__BuildUserWarnings(warnings) {
+        if (!warnings || !warnings.length) return '';
+
+        var html  =  VghLantern__PrintDocument__Heading('Document Warnings', true) +
+                     '<ul class="' + CSS_USER_WARNINGS + '">';
         var i;
 
         for (i = 0; i < warnings.length; i++) {
@@ -151,19 +178,22 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
             return '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
         }
 
-        var state  =  viewState || {};
-        var tableCfg  =  VghLantern__PrintDocument__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
-        var metaLine  =  [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
+        var state         =  viewState || {};
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var tableCfg      =  VghLantern__PrintDocument__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
+        var TABLE_LABEL   =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables';
+        var metaLine      =  [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
             .filter(function(part) { return !!part; }).join('  |  ');
 
         var html  =  '<div class="' + CSS_ROOT + '">' +
                      '<h2 class="' + CSS_TITLE + '">' +
                      VghLantern__PrintDocument__Escape(model.Meta.DocumentTitle) + '</h2>' +
                      '<p class="' + CSS_META + '">' + VghLantern__PrintDocument__Escape(metaLine) + '</p>' +
+                     VghLantern__PrintDocument__BuildUserWarnings(model.UserWarnings) +
                      VghLantern__PrintDocument__BuildWarnings(model.Warnings) +
                      VghLantern__PrintDocument__Heading('Lantern Schedule') +
                      Tables.VghLantern__Specification__TakeoffTableRenderer__BuildTable(
-                         tableCfg.ScheduleColumns || [], model.ScheduleRows, null, null
+                         ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ScheduleColumns', TABLE_LABEL), model.ScheduleRows, null, null
                      );
 
         var i;

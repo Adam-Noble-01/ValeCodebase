@@ -8,7 +8,8 @@
         "VghLantern__Application__Config__UserDataFolder": "08__LocalUserData",
         "VghLantern__Application__Config__SharedAssetsBase": "../assets__CommonApplicationAssets/",
         "VghLantern__Application__Config__AutosaveDebounceMs": 1200,
-        "VghLantern__Application__Config__DefaultMode": "DocManagement"
+        "VghLantern__Application__Config__DefaultMode": "DocManagement",
+        "VghLantern__Application__Config__ToastLifetimeMs": 3200
     },
     "VghLantern__DataLibraries__Config": {
         "VghLantern__DataLibraries__Config__Description": "Locations of the two generated data library indexes. Both indexes are build output produced by 60__Dev__WebBuildUtils and must never be hand edited.",

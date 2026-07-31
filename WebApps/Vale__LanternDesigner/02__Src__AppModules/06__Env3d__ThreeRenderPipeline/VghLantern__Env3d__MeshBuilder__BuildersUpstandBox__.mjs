@@ -47,14 +47,16 @@
 import * as THREE from 'three';
 
 import {
-    VghLantern__Env3d__ConfigAccess__Section,
-    VghLantern__Env3d__ConfigAccess__MmToWorld
+    VghLantern__Env3d__ConfigAccess__MmToWorld,
+    VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 import {
     VghLantern__Env3d__MaterialLibrary__Frame,
     VghLantern__Env3d__MaterialLibrary__BuildersUpstand
 } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+
+import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d__PickIndex__.mjs';
 
 // =============================================================================
 // REGION | Builders Upstand Box Mesh Builder Module
@@ -200,22 +202,30 @@ import {
     export function VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(targetGroup, skeleton, lantern) {
         if (!targetGroup || !skeleton || !skeleton.Base) return;
 
-        const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
-        if (config.BuildBaseAsSolid === false) return;                        // <-- Line mode already drew the base rings
+        if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('MeshBuilders', 'BuildBaseAsSolid')) return; // <-- Line mode already drew the base rings
 
         const base  =  skeleton.Base;
 
+        // Each prism is its own object, so it registers as a single pickable
+        // instance carrying the whole Base block - both prisms describe the same
+        // footprint and differ only in which height the inspector should read.
         const upstandMesh  =  VghLantern__Env3d__BuildersUpstandBox__BuildPrism(
             base, base.UpstandBaseLevelMm, base.UpstandHeightMm,
             VghLantern__Env3d__MaterialLibrary__BuildersUpstand(), OBJECT_NAME_UPSTAND
         );
-        if (upstandMesh) targetGroup.add(upstandMesh);
+        if (upstandMesh) {
+            VghLantern__Env3d__PickIndex__RegisterWhole(upstandMesh, 'base', 'buildersUpstand', base);
+            targetGroup.add(upstandMesh);
+        }
 
         const frameMesh  =  VghLantern__Env3d__BuildersUpstandBox__BuildPrism(
             base, base.UpstandTopLevelMm, base.FrameHeightMm,
             VghLantern__Env3d__MaterialLibrary__Frame(VghLantern__Env3d__BuildersUpstandBox__FinishName(lantern)), OBJECT_NAME_FRAME
         );
-        if (frameMesh) targetGroup.add(frameMesh);
+        if (frameMesh) {
+            VghLantern__Env3d__PickIndex__RegisterWhole(frameMesh, 'base', 'frame', base);
+            targetGroup.add(frameMesh);
+        }
     }
     // ------------------------------------------------------------
 

@@ -69,19 +69,11 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Style Fallbacks Used Before Config Resolves
+    // MODULE CONSTANTS | Hex Sanity Fallback for Malformed Colour Input
     // ------------------------------------------------------------
-    // The font stack names Helvetica first because that is the face jsPDF embeds by
-    // reference. Arial is metrically identical and is what Windows substitutes, so
-    // the two surfaces set the same glyphs on the same advances.
-    const FALLBACK_FONT_STACK    =  'Helvetica, Arial, "Liberation Sans", sans-serif';
-    const FALLBACK_INK_COLOUR    =  '#172b3a';
-    const FALLBACK_FRAME_COLOUR  =  '#b8c0c6';
-    const FALLBACK_MUTED_COLOUR  =  '#6c757d';
-    const FALLBACK_PAPER_COLOUR  =  '#ffffff';
-    const FALLBACK_FRAME_STROKE  =  0.25;
-    const FALLBACK_TITLE_STROKE  =  0.25;
-    const FALLBACK_CELL_PAD_MM   =  1.9;                                      // <-- Text inset inside a boxed cell
+    // Rgb() below sanitises arbitrary hex strings; this is a defensive guard against
+    // malformed input, not a duplicate of any single config value.
+    const SANITY_INK_COLOUR      =  '#172b3a';
     // ------------------------------------------------------------
 
 
@@ -113,49 +105,58 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Read a Numeric Config Value With a Fallback
+    // HELPER FUNCTION | Strictly Read a Numeric Config Value
     // ------------------------------------------------------------
-    function VghLantern__SheetChrome__Number(block, key, fallback) {
-        return (typeof block[key] === 'number' && isFinite(block[key])) ? block[key] : fallback;
+    // blockName identifies which named config block is being read (e.g.
+    // 'SheetStyle', 'TitleBlock') so a missing-key console error points at the
+    // right place in Na__DrawingEditor__Config.json instead of always blaming SheetStyle.
+    function VghLantern__SheetChrome__Number(block, key, blockName) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            block, key, 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__' + (blockName || 'SheetStyle'));
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Resolve the Sheet Style Every Surface Paints With
     // ------------------------------------------------------------
-    // SheetStyle is the owner. PdfExport colours are still read as fallbacks so an
-    // older config file keeps producing the sheet it always did.
+    // SheetStyle is the owner. PdfExport colours are read second only as a legacy
+    // cross-block lookup for older config files that set colours there instead.
     function VghLantern__DrawingEditor__SheetChrome__Style() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var style  =  VghLantern__SheetChrome__Block('SheetStyle');
         var pdf    =  VghLantern__SheetChrome__Block('PdfExport');
+        var LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__SheetStyle';
 
         return {
-            FontFamily   : style.FontFamily || FALLBACK_FONT_STACK,
-            PaperColour  : style.PaperColour     || FALLBACK_PAPER_COLOUR,
-            InkColour    : style.InkColour       || pdf.InkColour       || FALLBACK_INK_COLOUR,
-            FrameColour  : style.FrameLineColour || pdf.FrameLineColour || FALLBACK_FRAME_COLOUR,
-            MutedColour  : style.MutedTextColour || pdf.MutedTextColour || FALLBACK_MUTED_COLOUR,
+            FontFamily   : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FontFamily', LABEL),
+            PaperColour  : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'PaperColour', LABEL),
+            InkColour    : style.InkColour       || pdf.InkColour       || ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'InkColour', LABEL),
+            FrameColour  : style.FrameLineColour || pdf.FrameLineColour || ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FrameLineColour', LABEL),
+            MutedColour  : style.MutedTextColour || pdf.MutedTextColour || ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'MutedTextColour', LABEL),
 
-            FrameStrokeMm : VghLantern__SheetChrome__Number(style, 'FrameStrokeMm',
-                            VghLantern__SheetChrome__Number(pdf, 'FrameStrokeMm', FALLBACK_FRAME_STROKE)),
-            TitleStrokeMm : VghLantern__SheetChrome__Number(style, 'TitleStrokeMm',
-                            VghLantern__SheetChrome__Number(pdf, 'TitleStrokeMm', FALLBACK_TITLE_STROKE)),
-            CellPaddingMm : VghLantern__SheetChrome__Number(style, 'CellPaddingMm', FALLBACK_CELL_PAD_MM),
+            FrameStrokeMm : (typeof style.FrameStrokeMm === 'number') ? style.FrameStrokeMm
+                            : (typeof pdf.FrameStrokeMm === 'number') ? pdf.FrameStrokeMm
+                            : VghLantern__SheetChrome__Number(style, 'FrameStrokeMm'),
+            TitleStrokeMm : (typeof style.TitleStrokeMm === 'number') ? style.TitleStrokeMm
+                            : (typeof pdf.TitleStrokeMm === 'number') ? pdf.TitleStrokeMm
+                            : VghLantern__SheetChrome__Number(style, 'TitleStrokeMm'),
+            CellPaddingMm : VghLantern__SheetChrome__Number(style, 'CellPaddingMm'),
 
-            FrameLabelWeight        : style.FrameLabelWeight || 'bold',
-            FrameLabelTrackingMm    : VghLantern__SheetChrome__Number(style, 'FrameLabelTrackingMm', 0.16),
-            FrameLabelUppercase     : style.FrameLabelUppercase !== false,
-            ScaleLabelWeight        : style.ScaleLabelWeight || 'normal',
+            FrameLabelWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FrameLabelWeight', LABEL),
+            FrameLabelTrackingMm    : VghLantern__SheetChrome__Number(style, 'FrameLabelTrackingMm'),
+            FrameLabelUppercase     : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(style, 'FrameLabelUppercase', LABEL),
+            ScaleLabelWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'ScaleLabelWeight', LABEL),
 
-            NotesTitleWeight        : style.NotesTitleWeight || 'bold',
-            NotesTitleTrackingMm    : VghLantern__SheetChrome__Number(style, 'NotesTitleTrackingMm', 0.07),
-            NotesTitleUppercase     : style.NotesTitleUppercase !== false,
-            NoteWeight              : style.NoteWeight || 'normal',
+            NotesTitleWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'NotesTitleWeight', LABEL),
+            NotesTitleTrackingMm    : VghLantern__SheetChrome__Number(style, 'NotesTitleTrackingMm'),
+            NotesTitleUppercase     : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(style, 'NotesTitleUppercase', LABEL),
+            NoteWeight              : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'NoteWeight', LABEL),
 
-            TitleLabelWeight        : style.TitleLabelWeight || 'normal',
-            TitleLabelTrackingMm    : VghLantern__SheetChrome__Number(style, 'TitleLabelTrackingMm', 0.05),
-            TitleLabelUppercase     : style.TitleLabelUppercase !== false,
-            TitleValueWeight        : style.TitleValueWeight || 'bold'
+            TitleLabelWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'TitleLabelWeight', LABEL),
+            TitleLabelTrackingMm    : VghLantern__SheetChrome__Number(style, 'TitleLabelTrackingMm'),
+            TitleLabelUppercase     : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(style, 'TitleLabelUppercase', LABEL),
+            TitleValueWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'TitleValueWeight', LABEL)
         };
     }
     // ------------------------------------------------------------
@@ -410,14 +411,16 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         var rect  =  layout.Notes;
         if (!rect || !notes || !notes.length) return;
 
-        var padTopMm     =  (typeof rect.PaddingTopMm === 'number') ? rect.PaddingTopMm : 0;
-        var headingFont  =  fonts.NoteMm * ((typeof rect.HeadingScale === 'number') ? rect.HeadingScale : 1);
+        // PaddingTopMm, HeadingScale and Title are already resolved strictly from
+        // config by SheetPdfLayout, so no fallback is needed (or wanted) here.
+        var padTopMm     =  rect.PaddingTopMm;
+        var headingFont  =  fonts.NoteMm * rect.HeadingScale;
         var originY      =  rect.Y + padTopMm;
 
         VghLantern__SheetChrome__PushLine(list, rect.X, rect.Y, rect.X + rect.WidthMm, rect.Y,
                                           style.FrameColour, style.FrameStrokeMm);
 
-        var headingText  =  String(rect.Title || 'Notes');
+        var headingText  =  String(rect.Title);
         if (style.NotesTitleUppercase) headingText  =  headingText.toUpperCase();
 
         VghLantern__SheetChrome__PushText(list, {
@@ -473,18 +476,20 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // height, preserving its own aspect. Returned even when there is no image, so
     // the field strip always starts at the same x.
     function VghLantern__SheetChrome__SolveLogo(titleRect, titleCfg, logoAsset) {
-        var cellWidthMm  =  VghLantern__SheetChrome__Number(titleCfg, 'LogoCellWidthMm',
-            VghLantern__SheetChrome__Number(titleCfg, 'LogoWidthMm', 0) * 1.5);
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var cellWidthMm  =  VghLantern__SheetChrome__Number(titleCfg, 'LogoCellWidthMm', 'TitleBlock');
 
         var solved  =  { CellWidthMm : cellWidthMm || 0, Image : null };
-        if (!cellWidthMm || !logoAsset || !logoAsset.DataUrl || titleCfg.ShowValeLogo === false) return solved;
+        var showLogo  =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+            titleCfg, 'ShowValeLogo', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__TitleBlock');
+        if (!cellWidthMm || !logoAsset || !logoAsset.DataUrl || !showLogo) return solved;
 
-        var padVMm      =  VghLantern__SheetChrome__Number(titleCfg, 'LogoPaddingVMm', 1.8);
-        var padHMm      =  VghLantern__SheetChrome__Number(titleCfg, 'LogoPaddingHMm', 2.5);
-        var maxHeightMm =  VghLantern__SheetChrome__Number(titleCfg, 'LogoMaxHeightMm', 5.5);
+        var padVMm      =  VghLantern__SheetChrome__Number(titleCfg, 'LogoPaddingVMm', 'TitleBlock');
+        var padHMm      =  VghLantern__SheetChrome__Number(titleCfg, 'LogoPaddingHMm', 'TitleBlock');
+        var maxHeightMm =  VghLantern__SheetChrome__Number(titleCfg, 'LogoMaxHeightMm', 'TitleBlock');
         var aspect      =  logoAsset.HeightPx / logoAsset.WidthPx;
 
-        var widthMm   =  VghLantern__SheetChrome__Number(titleCfg, 'LogoWidthMm', cellWidthMm * 0.8);
+        var widthMm   =  VghLantern__SheetChrome__Number(titleCfg, 'LogoWidthMm', 'TitleBlock');
         var heightMm  =  widthMm * aspect;
 
         var roomWidthMm   =  Math.max(0, cellWidthMm - (padHMm * 2));
@@ -539,10 +544,10 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
         var fieldsX      =  rect.X + logo.CellWidthMm;
         var fieldsWidth  =  rect.WidthMm - logo.CellWidthMm;
-        var padHMm       =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingHMm', 1.4);
-        var padTopMm     =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingTopMm', 2.4);
-        var padBottomMm  =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingBottomMm', 0.8);
-        var labelTopMm   =  VghLantern__SheetChrome__Number(titleCfg, 'FieldLabelOffsetTopMm', 0.5);
+        var padHMm       =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingHMm', 'TitleBlock');
+        var padTopMm     =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingTopMm', 'TitleBlock');
+        var padBottomMm  =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingBottomMm', 'TitleBlock');
+        var labelTopMm   =  VghLantern__SheetChrome__Number(titleCfg, 'FieldLabelOffsetTopMm', 'TitleBlock');
 
         var totalShare  =  0;
         var i, share;
@@ -620,10 +625,14 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // sheet or the export. Both surfaces await this before building primitives, so
     // the logo rectangle is identical on paper and on screen.
     function VghLantern__DrawingEditor__SheetChrome__LoadLogo() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var titleCfg  =  VghLantern__SheetChrome__Block('TitleBlock');
         var logoPath  =  titleCfg.LogoAssetPath;
 
-        if (!logoPath || titleCfg.ShowValeLogo === false) return Promise.resolve(null);
+        if (!logoPath || !ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                titleCfg, 'ShowValeLogo', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__TitleBlock')) {
+            return Promise.resolve(null);
+        }
         if (VghLantern__SheetChrome__LogoAsset !== null) {
             return Promise.resolve(VghLantern__SheetChrome__LogoAsset || null);
         }
@@ -829,7 +838,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // value cannot silently paint something black in an issued drawing.
     function VghLantern__SheetChrome__Rgb(hexColour) {
         var value  =  String(hexColour || '').trim();
-        if (!/^#?[0-9a-fA-F]{6}$/.test(value)) value  =  FALLBACK_INK_COLOUR;
+        if (!/^#?[0-9a-fA-F]{6}$/.test(value)) value  =  SANITY_INK_COLOUR;
 
         value  =  value.replace('#', '');
 

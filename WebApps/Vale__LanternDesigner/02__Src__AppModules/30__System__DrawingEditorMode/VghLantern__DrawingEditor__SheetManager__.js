@@ -96,9 +96,6 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     const ZOOM_WHEEL_STEP     =  0.0016;                                      // <-- Wheel delta to zoom factor, matches Env2d feel
     const CSS_HOST_PANNING    =  'VghLantern__DrawingEditor__SheetHost--panning';
 
-    const FALLBACK_SHARE_MIN  =  20;
-    const FALLBACK_SHARE_MAX  =  80;
-    const FALLBACK_PX_PER_MM  =  3.2;
     // ------------------------------------------------------------
 
 
@@ -334,16 +331,18 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         var host  =  document.getElementById(DOM_TOOLBAR);
         if (!host) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var TOOLBAR_LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Toolbar';
         var toolbarCfg  =  VghLantern__SheetManager__DrawingConfig()['VghLantern__DrawingEditor__Config__Toolbar'] || {};
         var html        =  '<div class="' + CSS_TOOLBAR + '">';
 
-        if (toolbarCfg.ShowSheetSizeSelect   !== false) html  +=  VghLantern__SheetManager__BuildSheetSizeGroup();
-        if (toolbarCfg.ShowOrientationToggle !== false) html  +=  VghLantern__SheetManager__BuildOrientationGroup();
-        if (toolbarCfg.ShowScaleSelect       !== false) html  +=  VghLantern__SheetManager__BuildScaleGroup();
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowSheetSizeSelect',   TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildSheetSizeGroup();
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowOrientationToggle', TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildOrientationGroup();
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowScaleSelect',       TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildScaleGroup();
 
         // Export sits hard right, away from the sheet setup controls, because it is
         // the one action on this toolbar that produces a file.
-        if (toolbarCfg.ShowDownloadPdfButton !== false) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowDownloadPdfButton', TOOLBAR_LABEL)) {
             html  +=  '<div class="' + CSS_TOOL_SPACER + '"></div>' +
                       '<button type="button" class="' + CSS_TOOL_BUTTON + '" ' +
                       'id="VghLantern__DrawingEditor__DownloadPdfButton">Download PDF</button>';
@@ -391,9 +390,11 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // SUB FUNCTION | Ensure Session Shares Are Seeded From Config
     // ------------------------------------------------------------
     function VghLantern__SheetManager__EnsureShares() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var gridCfg  =  VghLantern__SheetManager__GridConfig();
-        var columns  =  (typeof gridCfg.Columns === 'number' && gridCfg.Columns > 0) ? gridCfg.Columns : 2;
-        var rows     =  (typeof gridCfg.Rows === 'number' && gridCfg.Rows > 0)       ? gridCfg.Rows    : 2;
+        var GRID_LABEL =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid';
+        var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Columns', GRID_LABEL);
+        var rows     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Rows', GRID_LABEL);
 
         if (!VghLantern__SheetManager__ColumnSharesPct) {
             VghLantern__SheetManager__ColumnSharesPct  =  VghLantern__SheetManager__NormaliseShares(gridCfg.ColumnSharesPct, columns);
@@ -427,7 +428,9 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
     function VghLantern__SheetManager__PxPerMm(layout) {
         var value  =  layout ? layout.ScreenPixelsPerMm : null;
-        return (typeof value === 'number' && value > 0) ? value : FALLBACK_PX_PER_MM;
+        // Layout__Solve already enforces this via ConfigLoader.RequireNumber and logs
+        // loudly if the JSON key is missing - only guarding here against divide-by-zero.
+        return (typeof value === 'number' && value > 0) ? value : 0.01;
     }
     // ------------------------------------------------------------
 
@@ -454,8 +457,12 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // SUB FUNCTION | Build Overlay Markup for the Gutter Split Handles
     // ------------------------------------------------------------
     function VghLantern__SheetManager__BuildResizeHandles(layout) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var gridCfg  =  VghLantern__SheetManager__GridConfig();
-        if (gridCfg.ResizeHandlesEnabled === false) return '';
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                gridCfg, 'ResizeHandlesEnabled', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid')) {
+            return '';
+        }
 
         var html  =  '';
         var i;
@@ -693,10 +700,12 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         var drag  =  VghLantern__SheetManager__ActiveResize;
         if (!drag || !drag.SheetEl || !VghLantern__SheetManager__ActiveLayout) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var layout    =  VghLantern__SheetManager__ActiveLayout;
         var gridCfg   =  VghLantern__SheetManager__GridConfig();
-        var minPct    =  (typeof gridCfg.ShareMinPct === 'number') ? gridCfg.ShareMinPct : FALLBACK_SHARE_MIN;
-        var maxPct    =  (typeof gridCfg.ShareMaxPct === 'number') ? gridCfg.ShareMaxPct : FALLBACK_SHARE_MAX;
+        var GRID_LABEL =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid';
+        var minPct    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'ShareMinPct', GRID_LABEL);
+        var maxPct    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'ShareMaxPct', GRID_LABEL);
 
         var rect       =  drag.SheetEl.getBoundingClientRect();
         var zoom       =  VghLantern__SheetManager__ZoomFactor || 1;
@@ -831,7 +840,9 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__SheetManager__SheetSizeKey() {
         if (VghLantern__SheetManager__SheetSizeKey) return VghLantern__SheetManager__SheetSizeKey;
-        return VghLantern__SheetManager__SheetConfig().DefaultSheetSize || 'A3';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            VghLantern__SheetManager__SheetConfig(), 'DefaultSheetSize', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Sheet');
     }
     // ------------------------------------------------------------
 
@@ -840,7 +851,9 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__SheetManager__Orientation() {
         if (VghLantern__SheetManager__Orientation) return VghLantern__SheetManager__Orientation;
-        return VghLantern__SheetManager__SheetConfig().DefaultOrientation || 'landscape';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            VghLantern__SheetManager__SheetConfig(), 'DefaultOrientation', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Sheet');
     }
     // ------------------------------------------------------------
 
@@ -950,11 +963,13 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // A project with no recorded layout falls back to the config defaults, which is
     // exactly what a project created before this block existed should do.
     function VghLantern__SheetManager__RestoreLayoutState() {
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
+        var GRID_LABEL     =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid';
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
         var gridCfg        =  VghLantern__SheetManager__GridConfig();
-        var columns        =  (typeof gridCfg.Columns === 'number' && gridCfg.Columns > 0) ? gridCfg.Columns : 2;
-        var rows           =  (typeof gridCfg.Rows === 'number' && gridCfg.Rows > 0)       ? gridCfg.Rows    : 2;
+        var columns        =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Columns', GRID_LABEL);
+        var rows           =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Rows',    GRID_LABEL);
         var block          =  VghLantern__SheetManager__LayoutBlock(false) || {};
 
         VghLantern__SheetManager__IsRestoring  =  true;

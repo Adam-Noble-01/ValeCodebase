@@ -143,10 +143,12 @@ const VghLantern__LanternEditor__ViewportHost__3d = (function() {
     // Preset list comes from the camera rig, so adding a preset to Env3d config
     // surfaces it here with no change to this module.
     function VghLantern__ViewportHost3d__BuildToolbarMarkup(pipeline) {
-        var viewportCfg  =  VghLantern__ViewportHost3d__ViewportConfig();
-        var html         =  '<div class="' + CSS_TOOLBAR + '">';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var viewportCfg   =  VghLantern__ViewportHost3d__ViewportConfig();
+        var VIEWPORT_LABEL =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Viewport3d';
+        var html          =  '<div class="' + CSS_TOOLBAR + '">';
 
-        if (viewportCfg.ShowPresetButtons !== false && pipeline.VghLantern__Env3d__RenderPipeline__ListPresets) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(viewportCfg, 'ShowPresetButtons', VIEWPORT_LABEL) && pipeline.VghLantern__Env3d__RenderPipeline__ListPresets) {
             var presets  =  pipeline.VghLantern__Env3d__RenderPipeline__ListPresets() || [];
             var i, preset, presetKey, presetLabel;
 
@@ -163,7 +165,7 @@ const VghLantern__LanternEditor__ViewportHost__3d = (function() {
             }
         }
 
-        if (viewportCfg.ShowZoomExtents !== false) {
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(viewportCfg, 'ShowZoomExtents', VIEWPORT_LABEL)) {
             html  +=  '<button type="button" class="' + CSS_TOOL_BTN + '" ' + ATTR_TOOL + '="' + TOOL_ZOOM_EXTENTS + '"' +
                       ' title="Zoom to fit">Fit</button>';
         }

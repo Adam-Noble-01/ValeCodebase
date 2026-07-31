@@ -95,11 +95,6 @@ const VghLantern__LanternEditor__ViewportHost__2d = (function() {
         { Key : 'frontElevation', Label : 'Front Elevation' },
         { Key : 'sideElevation',  Label : 'Side Elevation' }
     ];
-
-    const FALLBACK_DUAL_SHARE_PCT      =  50;
-    const FALLBACK_DUAL_SHARE_MIN_PCT  =  25;
-    const FALLBACK_DUAL_SHARE_MAX_PCT  =  75;
-    const FALLBACK_SECONDARY_VIEW      =  'frontElevation';
     // ------------------------------------------------------------
 
 
@@ -112,8 +107,8 @@ const VghLantern__LanternEditor__ViewportHost__2d = (function() {
     let VghLantern__ViewportHost2d__SecondarySurface  =  null;               // <-- Opaque Env2d surface handle when dual
     let VghLantern__ViewportHost2d__IsSubscribed      =  false;              // <-- Guards duplicate StateManager listeners
     let VghLantern__ViewportHost2d__IsDualVisible     =  false;              // <-- Dual pane currently shown
-    let VghLantern__ViewportHost2d__SecondaryViewKey  =  FALLBACK_SECONDARY_VIEW;
-    let VghLantern__ViewportHost2d__DualSharePct      =  FALLBACK_DUAL_SHARE_PCT;
+    let VghLantern__ViewportHost2d__SecondaryViewKey  =  'frontElevation';        // <-- Overwritten on Mount() from config
+    let VghLantern__ViewportHost2d__DualSharePct      =  50;                      // <-- Overwritten on Mount() from config
     let VghLantern__ViewportHost2d__ActiveResize      =  null;               // <-- Live dual-share drag state
     // ------------------------------------------------------------
 
@@ -175,8 +170,11 @@ const VghLantern__LanternEditor__ViewportHost__2d = (function() {
     // HELPER FUNCTION | Pick a Sensible Secondary View Distinct From Primary
     // ------------------------------------------------------------
     function VghLantern__ViewportHost2d__DefaultSecondaryFor(primaryKey) {
-        var viewportCfg  =  VghLantern__ViewportHost2d__ViewportConfig();
-        var preferred    =  viewportCfg.DualViewSecondaryDefault || FALLBACK_SECONDARY_VIEW;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var viewportCfg   =  VghLantern__ViewportHost2d__ViewportConfig();
+        var preferred     =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            viewportCfg, 'DualViewSecondaryDefault', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Viewport2d'
+        );
         if (preferred !== primaryKey) return preferred;
 
         var tabs  =  VghLantern__ViewportHost2d__ViewTabs();
@@ -474,9 +472,11 @@ const VghLantern__LanternEditor__ViewportHost__2d = (function() {
     // SUB HELPER FUNCTION | Push Live Dual Share Into the CSS Variable
     // ------------------------------------------------------------
     function VghLantern__ViewportHost2d__SetDualShare(sharePct) {
-        var viewportCfg  =  VghLantern__ViewportHost2d__ViewportConfig();
-        var minPct       =  Number(viewportCfg.DualViewShareMinPct) || FALLBACK_DUAL_SHARE_MIN_PCT;
-        var maxPct       =  Number(viewportCfg.DualViewShareMaxPct) || FALLBACK_DUAL_SHARE_MAX_PCT;
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
+        var viewportCfg    =  VghLantern__ViewportHost2d__ViewportConfig();
+        var VIEWPORT_LABEL =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Viewport2d';
+        var minPct         =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'DualViewShareMinPct', VIEWPORT_LABEL);
+        var maxPct         =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(viewportCfg, 'DualViewShareMaxPct', VIEWPORT_LABEL);
         var panesEl      =  VghLantern__ViewportHost2d__HostElement
             ? VghLantern__ViewportHost2d__HostElement.querySelector('.' + CSS_PANES)
             : null;
@@ -626,16 +626,21 @@ const VghLantern__LanternEditor__ViewportHost__2d = (function() {
     async function VghLantern__ViewportHost2d__Mount(hostElement) {
         if (!hostElement) return;
 
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
         var viewportCfg    =  VghLantern__ViewportHost2d__ViewportConfig();
         var activeViewKey  =  VghLantern__ViewportHost2d__ActiveViewKey();
         var isFirstMount   =  VghLantern__ViewportHost2d__HostElement !== hostElement;
 
         VghLantern__ViewportHost2d__DualSharePct      =
-            Number(viewportCfg.DualViewSharePct) || FALLBACK_DUAL_SHARE_PCT;
+            ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+                viewportCfg, 'DualViewSharePct', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Viewport2d'
+            );
         VghLantern__ViewportHost2d__SecondaryViewKey  =
             VghLantern__ViewportHost2d__DefaultSecondaryFor(activeViewKey);
         VghLantern__ViewportHost2d__IsDualVisible  =
-            viewportCfg.DualViewEnabledByDefault === true;
+            ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                viewportCfg, 'DualViewEnabledByDefault', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Viewport2d'
+            );
 
         hostElement.classList.add(CSS_WRAP);
         hostElement.innerHTML  =

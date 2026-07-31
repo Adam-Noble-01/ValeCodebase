@@ -75,10 +75,126 @@
                 "Lantern__Ventilation__Config__OperationType": "Electric Actuator"
             },
             "Lantern__FinishAndGlazing__Config": {
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Vale Painted Hardwood",
+                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Triple Glazed Toughened",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": "Neutral Solar Control"
+            }
+        },
+        {
+            "Lantern__Identity__Config": {
+                "Lantern__Identity__Config__Id": "ltn_009205_1",
+                "Lantern__Identity__Config__Title": "",
+                "Lantern__Identity__Config__Reference": "",
+                "Lantern__Identity__Config__SortOrder": 1,
+                "Lantern__Identity__Config__Quantity": 1
+            },
+            "Lantern__Form__Config": {
+                "Lantern__Form__Config__RoofForm": "Hipped Ridge",
+                "Lantern__Form__Config__PlanRotationDeg": 0
+            },
+            "Lantern__Dimensions__Config": {
+                "Lantern__Dimensions__Config__WidthMm": 2400,
+                "Lantern__Dimensions__Config__DepthMm": 1400,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 50
+            },
+            "Lantern__RoofPitch__Config": {
+                "Lantern__RoofPitch__Config__PitchDegrees": 25
+            },
+            "Lantern__GlazingBars__Config": {
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
+                "Lantern__GlazingBars__Config__BarProfileId": "",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+            },
+            "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "",
+                "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
+                "Lantern__RidgeAndHips__Config__CrestingEnabled": false
+            },
+            "Lantern__Finials__Config": {
+                "Lantern__Finials__Config__Enabled": true,
+                "Lantern__Finials__Config__FinialComponentId": "",
+                "Lantern__Finials__Config__FinialBaseComponentId": "",
+                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
+                "Lantern__Finials__Config__PlaceAtApex": false
+            },
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+            },
+            "Lantern__Ventilation__Config": {
+                "Lantern__Ventilation__Config__Enabled": false,
+                "Lantern__Ventilation__Config__VentComponentId": "",
+                "Lantern__Ventilation__Config__VentCount": 0,
+                "Lantern__Ventilation__Config__OperationType": ""
+            },
+            "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "",
                 "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
-                "Lantern__FinishAndGlazing__Config__GlazingTint": "Neutral Solar Control"
+                "Lantern__FinishAndGlazing__Config__GlazingTint": ""
+            }
+        },
+        {
+            "Lantern__Identity__Config": {
+                "Lantern__Identity__Config__Id": "ltn_010225_2",
+                "Lantern__Identity__Config__Title": "",
+                "Lantern__Identity__Config__Reference": "",
+                "Lantern__Identity__Config__SortOrder": 2,
+                "Lantern__Identity__Config__Quantity": 1
+            },
+            "Lantern__Form__Config": {
+                "Lantern__Form__Config__RoofForm": "Hipped Ridge",
+                "Lantern__Form__Config__PlanRotationDeg": 0
+            },
+            "Lantern__Dimensions__Config": {
+                "Lantern__Dimensions__Config__WidthMm": 2400,
+                "Lantern__Dimensions__Config__DepthMm": 1400,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 50
+            },
+            "Lantern__RoofPitch__Config": {
+                "Lantern__RoofPitch__Config__PitchDegrees": 25
+            },
+            "Lantern__GlazingBars__Config": {
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
+                "Lantern__GlazingBars__Config__BarProfileId": "",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+            },
+            "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "",
+                "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
+                "Lantern__RidgeAndHips__Config__CrestingEnabled": false
+            },
+            "Lantern__Finials__Config": {
+                "Lantern__Finials__Config__Enabled": true,
+                "Lantern__Finials__Config__FinialComponentId": "",
+                "Lantern__Finials__Config__FinialBaseComponentId": "",
+                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
+                "Lantern__Finials__Config__PlaceAtApex": false
+            },
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+            },
+            "Lantern__Ventilation__Config": {
+                "Lantern__Ventilation__Config__Enabled": false,
+                "Lantern__Ventilation__Config__VentComponentId": "",
+                "Lantern__Ventilation__Config__VentCount": 0,
+                "Lantern__Ventilation__Config__OperationType": ""
+            },
+            "Lantern__FinishAndGlazing__Config": {
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "",
+                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": ""
             }
         }
     ],
@@ -95,7 +211,7 @@
             50,
             50
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.2382581060987796,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.453109348600649,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {

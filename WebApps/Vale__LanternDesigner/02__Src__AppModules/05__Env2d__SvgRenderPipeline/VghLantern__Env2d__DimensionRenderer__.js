@@ -71,30 +71,36 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
     // HELPER FUNCTION | Read the Dimension Section of the 2D Config
     // ------------------------------------------------------------
+    // No numeric or string literal here may mirror a config value - every
+    // fallback used to be a hardcoded guess that silently drifted out of
+    // sync with Na__Env2d__Config.json. Values now come exclusively from
+    // JSON via ConfigLoader's Require* helpers, which log loudly instead of
+    // inventing a plausible-looking wrong number.
     function VghLantern__Env2d__DimensionRenderer__ReadConfig() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
         var dimCfg        =  (env2d && env2d['VghLantern__Env2d__Config__Dimensions']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Dimensions';
 
-        function num(key, fallback) {
-            return (typeof dimCfg[key] === 'number') ? dimCfg[key] : fallback;
-        }
+        function num(key)    { return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(dimCfg, key, LABEL); }
+        function str(key)    { return ConfigLoader.VghLantern__ConfigLoader__RequireString(dimCfg, key, LABEL); }
+        function bool(key)   { return ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(dimCfg, key, LABEL); }
 
         return {
-            Enabled                : dimCfg.Enabled !== false,
-            OffsetFromGeometryMm   : num('OffsetFromGeometryMm',   220),
-            ChainOffsetStepMm      : num('ChainOffsetStepMm',      160),
-            ExtensionLineOverrunMm : num('ExtensionLineOverrunMm',  40),
-            ExtensionLineGapMm     : num('ExtensionLineGapMm',      30),
-            TerminatorLengthMm     : num('TerminatorLengthMm',      60),
-            TerminatorStyle        : dimCfg.TerminatorStyle || 'tick',
-            TextFontSizeMm            : num('TextFontSizeMm',              90),
-            TextOffsetFromLineMm      : num('TextOffsetFromLineMm',        34),
-            AngleTextFontSizeMm       : num('AngleTextFontSizeMm',        115),
-            AngleTextOffsetFromSlopeMm: num('AngleTextOffsetFromSlopeMm',  60),
-            AngleArcRadiusMm          : num('AngleArcRadiusMm',           320),
-            AngleTickLengthMm         : num('AngleTickLengthMm',           55),
-            EditHintTooltip           : dimCfg.EditHintTooltip || 'Click to type a new value'
+            Enabled                   : bool('Enabled'),
+            OffsetFromGeometryMm      : num('OffsetFromGeometryMm'),
+            ChainOffsetStepMm         : num('ChainOffsetStepMm'),
+            ExtensionLineOverrunMm    : num('ExtensionLineOverrunMm'),
+            ExtensionLineGapMm        : num('ExtensionLineGapMm'),
+            TerminatorLengthMm        : num('TerminatorLengthMm'),
+            TerminatorStyle           : str('TerminatorStyle'),
+            TextFontSizeMm            : num('TextFontSizeMm'),
+            TextOffsetFromLineMm      : num('TextOffsetFromLineMm'),
+            AngleTextFontSizeMm       : num('AngleTextFontSizeMm'),
+            AngleTextOffsetFromSlopeMm: num('AngleTextOffsetFromSlopeMm'),
+            AngleArcRadiusMm          : num('AngleArcRadiusMm'),
+            AngleTickLengthMm         : num('AngleTickLengthMm'),
+            EditHintTooltip           : str('EditHintTooltip')
         };
     }
     // ------------------------------------------------------------
@@ -541,8 +547,11 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             y : (edge.Anchor.y + edge.Toward.y) / 2
         };
 
-        var radius  =  Math.min(config.AngleArcRadiusMm, len * 0.22);
-        if (radius < 40) return;
+        // Radius comes straight from config - it must NEVER be silently clamped
+        // against the hip length here. A clamp like that is invisible config
+        // drift: the JSON value looks honoured but a short hip quietly halves it.
+        var radius  =  config.AngleArcRadiusMm;
+        if (radius < 1) return;
 
         var signX   =  (dx >= 0) ? 1 : -1;
         var ux      =  dx / len;

@@ -57,10 +57,8 @@ const VghLantern__DocPreview__DocumentState = (function() {
 
     // MODULE CONSTANTS | Fallback Defaults
     // ------------------------------------------------------------
-    const FALLBACK_PAPER_SIZE   =  'A4';
-    const FALLBACK_ORIENTATION  =  'portrait';
-    const FALLBACK_MARGIN_MM    =  12;
-    const FALLBACK_PX_PER_MM    =  3.2;
+    // These have no config equivalent to fall back to - PaperSizesMm may be missing
+    // the exact size key requested, and this is the last-resort geometry guard.
     const FALLBACK_SIZES_MM     =  {
         A4 : { WidthMm: 210, HeightMm: 297 },
         A3 : { WidthMm: 297, HeightMm: 420 }
@@ -110,16 +108,6 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Coerce a Value to Boolean with a Fallback
-    // ------------------------------------------------------------
-    function VghLantern__DocumentState__ToBool(value, fallbackValue) {
-        if (typeof value === 'boolean') return value;
-        if (value === 'true')  return true;
-        if (value === 'false') return false;
-        return !!fallbackValue;
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -130,13 +118,16 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // SUB FUNCTION | Seed View State from Config Defaults
     // ------------------------------------------------------------
     function VghLantern__DocumentState__SeedFromConfig() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var VIEW_LABEL  =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__ViewState';
         var viewCfg  =  VghLantern__DocumentState__ViewConfig();
         var state    =  {};
         var i, key;
 
         for (i = 0; i < ALL_TOGGLE_KEYS.length; i++) {
             key  =  ALL_TOGGLE_KEYS[i];
-            state[key]  =  VghLantern__DocumentState__ToBool(viewCfg['Default' + key], true);
+            state[key]  =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                viewCfg, 'Default' + key, VIEW_LABEL);
         }
 
         return state;
@@ -147,8 +138,12 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // SUB FUNCTION | Overlay the Persisted Per-User Toggles
     // ------------------------------------------------------------
     function VghLantern__DocumentState__ApplyPersistedOverride(targetState) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var viewCfg  =  VghLantern__DocumentState__ViewConfig();
-        if (viewCfg.PersistViewState === false) return targetState;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                viewCfg, 'PersistViewState', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__ViewState')) {
+            return targetState;
+        }
 
         var MenuDataHandler  =  window.VghLantern__DocPreview__MenuDataHandler;
         if (!MenuDataHandler) return targetState;
@@ -178,13 +173,15 @@ const VghLantern__DocPreview__DocumentState = (function() {
         var MenuDataHandler  =  window.VghLantern__DocPreview__MenuDataHandler;
         if (MenuDataHandler) MenuDataHandler.VghLantern__DocPreview__MenuDataHandler__EnsureLoaded();
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pageCfg  =  VghLantern__DocumentState__PageConfig();
+        var PAGE_LABEL =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page';
 
         VghLantern__DocumentState__ViewState    =  VghLantern__DocumentState__ApplyPersistedOverride(
                                                        VghLantern__DocumentState__SeedFromConfig()
                                                    );
-        VghLantern__DocumentState__PaperSize    =  pageCfg.DefaultPaperSize   || FALLBACK_PAPER_SIZE;
-        VghLantern__DocumentState__Orientation  =  pageCfg.DefaultOrientation || FALLBACK_ORIENTATION;
+        VghLantern__DocumentState__PaperSize    =  ConfigLoader.VghLantern__ConfigLoader__RequireString(pageCfg, 'DefaultPaperSize',   PAGE_LABEL);
+        VghLantern__DocumentState__Orientation  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(pageCfg, 'DefaultOrientation', PAGE_LABEL);
 
         VghLantern__DocumentState__IsInitialised  =  true;
     }
@@ -330,17 +327,19 @@ const VghLantern__DocPreview__DocumentState = (function() {
     function VghLantern__DocPreview__DocumentState__DescribePage(orientationOverride) {
         VghLantern__DocumentState__EnsureInitialised();
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pageCfg  =  VghLantern__DocumentState__PageConfig();
+        var PAGE_LABEL =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page';
         var sizes    =  pageCfg.PaperSizesMm || FALLBACK_SIZES_MM;
-        var size     =  sizes[VghLantern__DocumentState__PaperSize] || FALLBACK_SIZES_MM[FALLBACK_PAPER_SIZE];
+        var size     =  sizes[VghLantern__DocumentState__PaperSize] || FALLBACK_SIZES_MM.A4;
 
         var orientation  =  orientationOverride || VghLantern__DocumentState__Orientation;
         var isLandscape  =  (orientation === 'landscape');
 
         var widthMm   =  isLandscape ? size.HeightMm : size.WidthMm;
         var heightMm  =  isLandscape ? size.WidthMm  : size.HeightMm;
-        var marginMm  =  (typeof pageCfg.MarginMm === 'number') ? pageCfg.MarginMm : FALLBACK_MARGIN_MM;
-        var pxPerMm   =  (typeof pageCfg.ScreenPixelsPerMm === 'number') ? pageCfg.ScreenPixelsPerMm : FALLBACK_PX_PER_MM;
+        var marginMm  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pageCfg, 'MarginMm', PAGE_LABEL);
+        var pxPerMm   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pageCfg, 'ScreenPixelsPerMm', PAGE_LABEL);
 
         return {
             PaperSize    : VghLantern__DocumentState__PaperSize,
@@ -359,7 +358,10 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // FUNCTION | Get the Drawing Page Orientation
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocumentState__DrawingOrientation() {
-        return VghLantern__DocumentState__PageConfig().DrawingSheetOrientation || 'landscape';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            VghLantern__DocumentState__PageConfig(), 'DrawingSheetOrientation',
+            'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page');
     }
     // ------------------------------------------------------------
 

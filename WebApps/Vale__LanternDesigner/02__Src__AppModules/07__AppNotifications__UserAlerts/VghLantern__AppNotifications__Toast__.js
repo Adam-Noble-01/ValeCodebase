@@ -86,6 +86,9 @@ const VghLantern__AppNotifications__Toast = (function() {
 
     // HELPER FUNCTION | Read the Configured Toast Lifetime
     // ------------------------------------------------------------
+    // DEFAULT_LIFETIME_MS is a bootstrap-only fallback for the brief window
+    // before StateManager/ConfigLoader are wired up (e.g. an early boot-error
+    // toast) - once config is available, the value always comes from JSON.
     function VghLantern__Toast__LifetimeMs() {
         var StateManager  =  window.VghLantern__AppCore__StateManager;
         if (!StateManager) return DEFAULT_LIFETIME_MS;
@@ -93,10 +96,12 @@ const VghLantern__AppNotifications__Toast = (function() {
         var appConfig  =  StateManager.VghLantern__StateManager__GetAppConfig();
         if (!appConfig) return DEFAULT_LIFETIME_MS;
 
-        var appSection  =  appConfig['VghLantern__Application__Config'] || {};
-        var configured  =  appSection['VghLantern__Application__Config__ToastLifetimeMs'];
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var appSection    =  appConfig['VghLantern__Application__Config'] || {};
 
-        return (typeof configured === 'number' && configured > 0) ? configured : DEFAULT_LIFETIME_MS;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            appSection, 'VghLantern__Application__Config__ToastLifetimeMs',
+            'VghLantern__AppConfig__Main__.json -> VghLantern__Application__Config');
     }
     // ------------------------------------------------------------
 

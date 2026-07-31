@@ -3,6 +3,12 @@
         "VghLantern__LanternEditor__Warnings__Config__Description": "Declarative rule table for the editor WarningSystem. Each rule names a metric the WarningSystem knows how to measure, a comparison operator, and a limit that is either literal or read from VghLantern__Validation__Config. Adding a manufacturing rule is a JSON edit; the module never hardcodes a threshold.",
 
         "VghLantern__LanternEditor__Warnings__Config__Severities": {
+            "userWarning": {
+                "Label"       : "Document Warning",
+                "Rank"        : 4,
+                "BlocksIssue" : false,
+                "Note"        : "Free text staff wrote in the Warnings and Comments section. Ranked above the automatic checks because a human flagged it, but never blocks issue - the app cannot judge free text, only the person who wrote it can."
+            },
             "error": {
                 "Label"    : "Not Manufacturable",
                 "Rank"     : 3,

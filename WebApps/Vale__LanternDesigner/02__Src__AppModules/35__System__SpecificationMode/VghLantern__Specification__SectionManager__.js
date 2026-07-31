@@ -64,7 +64,6 @@ const VghLantern__Specification__SectionManager = (function() {
     const VAR_DOC_MAX_WIDTH =  '--VghLantern_SpecDocumentMaxWidth';
 
     const NOTES_RENDERER    =  'notes';                                        // <-- The one section whose body is a live editor, not static markup
-    const FALLBACK_DOC_MAX_WIDTH_MM  =  252;                                  // <-- A4 (210 mm) + 20%
     // ------------------------------------------------------------
 
 
@@ -99,8 +98,10 @@ const VghLantern__Specification__SectionManager = (function() {
         var container  =  document.getElementById(DOM_CONTAINER);
         if (!container) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var docCfg   =  VghLantern__SectionManager__SpecConfig()['VghLantern__Specification__Config__Document'] || {};
-        var widthMm  =  Number(docCfg.DocumentMaxWidthMm) || FALLBACK_DOC_MAX_WIDTH_MM;
+        var widthMm  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            docCfg, 'DocumentMaxWidthMm', 'Na__Specification__Config.json -> VghLantern__Specification__Config__Document');
 
         container.style.setProperty(VAR_DOC_MAX_WIDTH, widthMm + 'mm');
     }
@@ -241,15 +242,18 @@ const VghLantern__Specification__SectionManager = (function() {
         VghLantern__SectionManager__CachedModel  =  model;
 
         if (!model || !model.Lanterns.length) {
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             var docCfg  =  VghLantern__SectionManager__SpecConfig()['VghLantern__Specification__Config__Document'] || {};
             headerHost.innerHTML    =  '';
             sectionsHost.innerHTML  =  '<p class="' + CSS_EMPTY_STATE + '">' +
-                                       VghLantern__SectionManager__Escape(docCfg.EmptyStateMessage || 'No lanterns to schedule.') +
+                                       VghLantern__SectionManager__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                                           docCfg, 'EmptyStateMessage', 'Na__Specification__Config.json -> VghLantern__Specification__Config__Document')) +
                                        '</p>';
             return;
         }
 
         headerHost.innerHTML  =  Schedules.VghLantern__Specification__ScheduleRenderer__BuildHeader(model) +
+                                 Schedules.VghLantern__Specification__ScheduleRenderer__BuildUserWarnings(model) +
                                  Schedules.VghLantern__Specification__ScheduleRenderer__BuildWarnings(model);
 
         var sections  =  DocumentModel.VghLantern__Specification__DocumentModel__ListSections();
@@ -273,8 +277,10 @@ const VghLantern__Specification__SectionManager = (function() {
     // opened the Specification mode, and the printed version needs sections open and
     // the notes as static text.
     function VghLantern__Specification__SectionManager__DescribeDocument() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var docCfg  =  VghLantern__SectionManager__SpecConfig()['VghLantern__Specification__Config__Document'] || {};
-        var title   =  docCfg.DocumentTitle || 'Roof Lantern Specification';
+        var title   =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            docCfg, 'DocumentTitle', 'Na__Specification__Config.json -> VghLantern__Specification__Config__Document');
 
         var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
         var Schedules      =  window.VghLantern__Specification__ScheduleRenderer;
@@ -302,6 +308,7 @@ const VghLantern__Specification__SectionManager = (function() {
             Title        : title,
             Model        : model,
             HeaderHtml   : Schedules.VghLantern__Specification__ScheduleRenderer__BuildHeader(model) +
+                           Schedules.VghLantern__Specification__ScheduleRenderer__BuildUserWarnings(model) +
                            Schedules.VghLantern__Specification__ScheduleRenderer__BuildWarnings(model),
             SectionsHtml : html,
             HasContent   : true

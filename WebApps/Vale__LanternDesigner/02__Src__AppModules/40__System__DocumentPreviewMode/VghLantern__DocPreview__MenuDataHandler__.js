@@ -47,8 +47,6 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
 
     const LOADED_EVENT_NAME   =  'VghLantern__UserMenuConfigLoaded';
 
-    const FALLBACK_SLUG       =  'AdamW';
-    const FALLBACK_DEBOUNCE_MS=  350;
 
     // The toggle keys shared by the view state, the persisted user file and the
     // app-level defaults block. One list, three consumers.
@@ -93,8 +91,12 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
     // HELPER FUNCTION | Resolve the Active User Slug
     // ------------------------------------------------------------
     function VghLantern__MenuData__ResolveUserSlug() {
-        var defaults  =  VghLantern__MenuData__AppConfig()[APP_DEFAULTS_KEY] || {};
-        return defaults[APP_DEFAULTS_PREFIX + 'SourceUserSlug'] || FALLBACK_SLUG;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var defaults      =  VghLantern__MenuData__AppConfig()[APP_DEFAULTS_KEY] || {};
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            defaults, APP_DEFAULTS_PREFIX + 'SourceUserSlug',
+            'VghLantern__AppConfig__Main__.json -> VghLantern__UserMenu__AppDefaults__Config'
+        );
     }
     // ------------------------------------------------------------
 
@@ -102,9 +104,12 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
     // HELPER FUNCTION | Resolve the Save Debounce Interval
     // ------------------------------------------------------------
     function VghLantern__MenuData__ResolveDebounceMs() {
-        var meta  =  VghLantern__MenuData__AppConfig()['VghLantern__UserMenu__Meta__Config'] || {};
-        var value =  meta['VghLantern__UserMenu__Meta__Config__SaveDebounceMs'];
-        return (typeof value === 'number') ? value : FALLBACK_DEBOUNCE_MS;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var meta          =  VghLantern__MenuData__AppConfig()['VghLantern__UserMenu__Meta__Config'] || {};
+        return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            meta, 'VghLantern__UserMenu__Meta__Config__SaveDebounceMs',
+            'VghLantern__AppData__UserMenuConfig__Defaults__.json -> VghLantern__UserMenu__Meta__Config'
+        );
     }
     // ------------------------------------------------------------
 

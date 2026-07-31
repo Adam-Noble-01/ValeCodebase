@@ -55,6 +55,12 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     const PITCH_KEYS   =  ['PitchDegrees'];
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Config Context Label
+    // ------------------------------------------------------------
+    const TABLES_CONFIG_LABEL  =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -103,23 +109,25 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     // Unit suffixes and decimal places are driven by the column key rather than by
     // the table, so a length column reads identically wherever it appears.
     function VghLantern__TakeoffTable__FormatValue(columnKey, rawValue) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var FMT_LABEL     =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Formatting';
         var fmt          =  VghLantern__TakeoffTable__FormattingConfig();
-        var placeholder  =  fmt.BlankValuePlaceholder || '-';
+        var placeholder  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(fmt, 'BlankValuePlaceholder', FMT_LABEL);
 
         if (rawValue === undefined || rawValue === null || rawValue === '') return placeholder;
 
         if (LINEAR_KEYS.indexOf(columnKey) !== -1) {
-            var linearDp  =  (typeof fmt.LinearDecimalPlaces === 'number') ? fmt.LinearDecimalPlaces : 2;
-            return Number(rawValue).toFixed(linearDp) + (fmt.LinearUnitSuffix || ' m');
+            var linearDp  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(fmt, 'LinearDecimalPlaces', FMT_LABEL);
+            return Number(rawValue).toFixed(linearDp) + ConfigLoader.VghLantern__ConfigLoader__RequireString(fmt, 'LinearUnitSuffix', FMT_LABEL);
         }
 
         if (AREA_KEYS.indexOf(columnKey) !== -1) {
-            var areaDp  =  (typeof fmt.AreaDecimalPlaces === 'number') ? fmt.AreaDecimalPlaces : 3;
-            return Number(rawValue).toFixed(areaDp) + (fmt.AreaUnitSuffix || ' m2');
+            var areaDp  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(fmt, 'AreaDecimalPlaces', FMT_LABEL);
+            return Number(rawValue).toFixed(areaDp) + ConfigLoader.VghLantern__ConfigLoader__RequireString(fmt, 'AreaUnitSuffix', FMT_LABEL);
         }
 
-        if (MM_KEYS.indexOf(columnKey) !== -1)    return Math.round(Number(rawValue)) + (fmt.DimensionUnitSuffix || ' mm');
-        if (PITCH_KEYS.indexOf(columnKey) !== -1) return Number(rawValue) + (fmt.PitchUnitSuffix || ' deg');
+        if (MM_KEYS.indexOf(columnKey) !== -1)    return Math.round(Number(rawValue)) + ConfigLoader.VghLantern__ConfigLoader__RequireString(fmt, 'DimensionUnitSuffix', FMT_LABEL);
+        if (PITCH_KEYS.indexOf(columnKey) !== -1) return Number(rawValue) + ConfigLoader.VghLantern__ConfigLoader__RequireString(fmt, 'PitchUnitSuffix', FMT_LABEL);
 
         return String(rawValue);
     }
@@ -206,16 +214,19 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     // FUNCTION | Build a Complete Quantity Table
     // ------------------------------------------------------------
     function VghLantern__Specification__TakeoffTableRenderer__BuildTable(columns, rows, totalsMap, totalsLabel) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var tablesCfg  =  VghLantern__TakeoffTable__TablesConfig();
 
         if (!Array.isArray(columns) || !columns.length) return '';
         if (!Array.isArray(rows) || !rows.length) {
             return '<p class="' + CSS_EMPTY + '">' +
-                   VghLantern__TakeoffTable__Escape(tablesCfg.EmptyTableMessage || 'Nothing scheduled in this section.') +
+                   VghLantern__TakeoffTable__Escape(ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                       tablesCfg, 'EmptyTableMessage', TABLES_CONFIG_LABEL)) +
                    '</p>';
         }
 
-        var showTotals  =  tablesCfg.ShowTotalsRow !== false;
+        var showTotals  =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+            tablesCfg, 'ShowTotalsRow', TABLES_CONFIG_LABEL);
 
         return '<table class="' + CSS_TABLE + '">' +
                VghLantern__TakeoffTable__BuildHead(columns) +
@@ -237,7 +248,9 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     function VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable(takeoff) {
         if (!takeoff) return '';
 
-        var columns  =  VghLantern__TakeoffTable__TablesConfig().LinearColumns || [];
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            VghLantern__TakeoffTable__TablesConfig(), 'LinearColumns', TABLES_CONFIG_LABEL);
         var totals   =  {
             LengthMEach  : takeoff.Totals.LinearMEach,
             LengthMTotal : takeoff.Totals.LinearMTotal
@@ -257,7 +270,9 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     function VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable(takeoff) {
         if (!takeoff) return '';
 
-        var columns  =  VghLantern__TakeoffTable__TablesConfig().AreaColumns || [];
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            VghLantern__TakeoffTable__TablesConfig(), 'AreaColumns', TABLES_CONFIG_LABEL);
         return VghLantern__Specification__TakeoffTableRenderer__BuildTable(columns, takeoff.Areas, null, null);
     }
     // ------------------------------------------------------------
@@ -268,7 +283,9 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     function VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable(takeoff) {
         if (!takeoff) return '';
 
-        var columns  =  VghLantern__TakeoffTable__TablesConfig().ComponentColumns || [];
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            VghLantern__TakeoffTable__TablesConfig(), 'ComponentColumns', TABLES_CONFIG_LABEL);
         var totals   =  { CountTotal : takeoff.Totals.ComponentCountTotal };
 
         return VghLantern__Specification__TakeoffTableRenderer__BuildTable(
@@ -285,11 +302,12 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     function VghLantern__Specification__TakeoffTableRenderer__BuildAggregateTable(aggregate) {
         if (!aggregate) return '';
 
-        var tablesCfg    =  VghLantern__TakeoffTable__TablesConfig();
-        var linearCols   =  (tablesCfg.LinearColumns || []).filter(function(column) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var tablesCfg     =  VghLantern__TakeoffTable__TablesConfig();
+        var linearCols    =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(tablesCfg, 'LinearColumns', TABLES_CONFIG_LABEL).filter(function(column) {
             return column.Key !== 'LengthMEach' && column.Key !== 'MemberCount';
         });
-        var componentCols =  (tablesCfg.ComponentColumns || []).filter(function(column) {
+        var componentCols =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(tablesCfg, 'ComponentColumns', TABLES_CONFIG_LABEL).filter(function(column) {
             return column.Key !== 'CountEach';
         });
 

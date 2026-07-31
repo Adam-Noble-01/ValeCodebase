@@ -59,32 +59,6 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Layout Fallbacks Used Before Config Resolves
-    // ------------------------------------------------------------
-    const FALLBACK_MARGIN_MM      =  5;
-    const FALLBACK_TITLE_MM       =  10;
-    const FALLBACK_COLUMNS        =  2;
-    const FALLBACK_ROWS           =  2;
-    const FALLBACK_GUTTER_MM      =  6;
-    const FALLBACK_LABEL_MM       =  7;
-    const FALLBACK_BLOCK_GAP_MM   =  3;                                       // <-- Between grid, notes and titleblock
-    // ------------------------------------------------------------
-
-
-    // MODULE CONSTANTS | Typography Fallbacks in Millimetres
-    // ------------------------------------------------------------
-    const FALLBACK_NOTE_FONT_MM   =  1.4;
-    const FALLBACK_LABEL_FONT_MM  =  3.2;
-    const FALLBACK_TITLE_LABEL_MM =  1.6;
-    const FALLBACK_TITLE_VALUE_MM =  2.2;
-
-    const FALLBACK_LINE_SPACING   =  1.35;                                    // <-- Line box height as a multiple of type size
-    const FALLBACK_NOTE_COLUMNS   =  2;
-    const FALLBACK_NOTE_COL_GAP   =  6;
-    const FALLBACK_NOTE_HEADING   =  1.05;
-    const FALLBACK_NOTE_PAD_TOP   =  1.25;
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -110,10 +84,23 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Read a Numeric Config Value With a Fallback
+    // HELPER FUNCTION | Strictly Read a Numeric Config Value
     // ------------------------------------------------------------
-    function VghLantern__SheetPdfLayout__Number(block, key, fallback) {
-        return (typeof block[key] === 'number' && isFinite(block[key])) ? block[key] : fallback;
+    // No fallbacks - a missing key must be fixed in JSON, not papered over here.
+    function VghLantern__SheetPdfLayout__Number(block, key) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            block, key, 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__*');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read a Required String from a Named Config Block
+    // ------------------------------------------------------------
+    function VghLantern__SheetPdfLayout__String(block, key) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            block, key, 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__*');
     }
     // ------------------------------------------------------------
 
@@ -143,11 +130,11 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
         var titleCfg  =  VghLantern__SheetPdfLayout__Block('TitleBlock');
 
         return {
-            FrameLabelMm : VghLantern__SheetPdfLayout__Number(gridCfg,  'FrameLabelFontSizeMm', FALLBACK_LABEL_FONT_MM),
-            NoteMm       : VghLantern__SheetPdfLayout__Number(notesCfg, 'DefaultFontSizeMm',    FALLBACK_NOTE_FONT_MM),
-            TitleLabelMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeLabelMm',      FALLBACK_TITLE_LABEL_MM),
-            TitleValueMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeValueMm',      FALLBACK_TITLE_VALUE_MM),
-            LineSpacing  : VghLantern__SheetPdfLayout__Number(notesCfg, 'LineSpacing',         FALLBACK_LINE_SPACING)
+            FrameLabelMm : VghLantern__SheetPdfLayout__Number(gridCfg,  'FrameLabelFontSizeMm'),
+            NoteMm       : VghLantern__SheetPdfLayout__Number(notesCfg, 'DefaultFontSizeMm'),
+            TitleLabelMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeLabelMm'),
+            TitleValueMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeValueMm'),
+            LineSpacing  : VghLantern__SheetPdfLayout__Number(notesCfg, 'LineSpacing')
         };
     }
     // ------------------------------------------------------------
@@ -156,8 +143,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
     // FUNCTION | Line Box Height for a Millimetre Type Size
     // ------------------------------------------------------------
     function VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm(fontSizeMm, lineSpacing) {
-        var spacing  =  (typeof lineSpacing === 'number' && lineSpacing > 0) ? lineSpacing : FALLBACK_LINE_SPACING;
-        return fontSizeMm * spacing;
+        return fontSizeMm * lineSpacing;
     }
     // ------------------------------------------------------------
 
@@ -175,14 +161,17 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
     // driven by the note count so a long note list never overruns the titleblock.
     // Screen CellSizeMm and PDF Solve both call this so the reserved band matches.
     function VghLantern__SheetPdfLayout__MeasureNotes(noteCount, fonts) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var notesCfg  =  VghLantern__SheetPdfLayout__Block('Annotations');
-        if (notesCfg.Enabled === false || noteCount <= 0) return null;
+        var notesEnabled  =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+            notesCfg, 'Enabled', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Annotations');
+        if (!notesEnabled || noteCount <= 0) return null;
 
-        var columns      =  Math.max(1, VghLantern__SheetPdfLayout__Number(notesCfg, 'ColumnCount', FALLBACK_NOTE_COLUMNS));
-        var columnGapMm  =  VghLantern__SheetPdfLayout__Number(notesCfg, 'ColumnGapMm', FALLBACK_NOTE_COL_GAP);
-        var lineSpacing  =  VghLantern__SheetPdfLayout__Number(notesCfg, 'LineSpacing', FALLBACK_LINE_SPACING);
-        var headingScale =  VghLantern__SheetPdfLayout__Number(notesCfg, 'HeadingScale', FALLBACK_NOTE_HEADING);
-        var paddingTopMm =  VghLantern__SheetPdfLayout__Number(notesCfg, 'PaddingTopMm', FALLBACK_NOTE_PAD_TOP);
+        var columns      =  Math.max(1, VghLantern__SheetPdfLayout__Number(notesCfg, 'ColumnCount'));
+        var columnGapMm  =  VghLantern__SheetPdfLayout__Number(notesCfg, 'ColumnGapMm');
+        var lineSpacing  =  VghLantern__SheetPdfLayout__Number(notesCfg, 'LineSpacing');
+        var headingScale =  VghLantern__SheetPdfLayout__Number(notesCfg, 'HeadingScale');
+        var paddingTopMm =  VghLantern__SheetPdfLayout__Number(notesCfg, 'PaddingTopMm');
         var rows         =  Math.ceil(noteCount / columns);
         var lineMm       =  VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm(fonts.NoteMm, lineSpacing);
         var headingMm    =  VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm(fonts.NoteMm * headingScale, lineSpacing);
@@ -196,7 +185,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             HeadingScale : headingScale,
             PaddingTopMm : paddingTopMm,
             HeightMm     : paddingTopMm + headingMm + (rows * lineMm),
-            Title        : notesCfg.NotesBlockTitle || 'Notes'
+            Title        : VghLantern__SheetPdfLayout__String(notesCfg, 'NotesBlockTitle')
         };
     }
     // ------------------------------------------------------------
@@ -376,15 +365,16 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
         var gridCfg   =  VghLantern__SheetPdfLayout__Block('ViewGrid');
         var pdfCfg    =  VghLantern__SheetPdfLayout__Block('PdfExport');
 
-        var marginMm    =  VghLantern__SheetPdfLayout__Number(sheetCfg, 'MarginMm',            FALLBACK_MARGIN_MM);
-        var titleMm     =  VghLantern__SheetPdfLayout__Number(sheetCfg, 'TitleBlockHeightMm',  FALLBACK_TITLE_MM);
-        var gutterMm    =  VghLantern__SheetPdfLayout__Number(gridCfg,  'GutterMm',            FALLBACK_GUTTER_MM);
-        var labelMm     =  VghLantern__SheetPdfLayout__Number(gridCfg,  'FrameLabelHeightMm',  FALLBACK_LABEL_MM);
-        var blockGapMm  =  VghLantern__SheetPdfLayout__Number(sheetCfg, 'BlockGapMm',
-            VghLantern__SheetPdfLayout__Number(pdfCfg, 'BlockGapMm', FALLBACK_BLOCK_GAP_MM));
+        var marginMm    =  VghLantern__SheetPdfLayout__Number(sheetCfg, 'MarginMm');
+        var titleMm     =  VghLantern__SheetPdfLayout__Number(sheetCfg, 'TitleBlockHeightMm');
+        var gutterMm    =  VghLantern__SheetPdfLayout__Number(gridCfg,  'GutterMm');
+        var labelMm     =  VghLantern__SheetPdfLayout__Number(gridCfg,  'FrameLabelHeightMm');
+        var blockGapMm  =  (typeof sheetCfg.BlockGapMm === 'number')
+            ? sheetCfg.BlockGapMm
+            : VghLantern__SheetPdfLayout__Number(pdfCfg, 'BlockGapMm');
 
-        var columns  =  Math.max(1, VghLantern__SheetPdfLayout__Number(gridCfg, 'Columns', FALLBACK_COLUMNS));
-        var rows     =  Math.max(1, VghLantern__SheetPdfLayout__Number(gridCfg, 'Rows',    FALLBACK_ROWS));
+        var columns  =  Math.max(1, VghLantern__SheetPdfLayout__Number(gridCfg, 'Columns'));
+        var rows     =  Math.max(1, VghLantern__SheetPdfLayout__Number(gridCfg, 'Rows'));
 
         var fonts  =  VghLantern__SheetPdfLayout__ResolveFonts();
         var notes  =  VghLantern__SheetPdfLayout__MeasureNotes(noteCount, fonts);
@@ -460,7 +450,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
 
             // Screen-only value, carried on the layout so the Drawing Editor has one
             // place to convert paper millimetres into laid-out pixels.
-            ScreenPixelsPerMm : VghLantern__SheetPdfLayout__Number(sheetCfg, 'ScreenPixelsPerMm', 3.2)
+            ScreenPixelsPerMm : VghLantern__SheetPdfLayout__Number(sheetCfg, 'ScreenPixelsPerMm')
         };
     }
     // ------------------------------------------------------------

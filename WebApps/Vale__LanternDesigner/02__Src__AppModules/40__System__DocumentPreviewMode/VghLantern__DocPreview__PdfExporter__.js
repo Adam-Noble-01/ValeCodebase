@@ -38,20 +38,17 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Typography and Layout Fallbacks
+    // MODULE CONSTANTS | Layout Constants Not Sourced From Config
     // ------------------------------------------------------------
-    const PT_TO_MM              =  0.352778;                                   // <-- Points to millimetres
-    const FALLBACK_TITLE_PT     =  16;
-    const FALLBACK_HEADING_PT   =  11;
-    const FALLBACK_BODY_PT      =  8.5;
-    const FALLBACK_RASTER_PPMM  =  6;
-    const FALLBACK_JPEG_QUALITY =  0.92;
+    const PT_TO_MM              =  0.352778;                                   // <-- Points to millimetres, a unit conversion constant
 
     const LINE_SPACING          =  1.35;                                       // <-- Multiplier applied to font size for row height
     const TABLE_CELL_PADDING_MM =  1.2;
     const SECTION_GAP_MM        =  4;
     const FRAME_STROKE_MM       =  0.25;
     const FOOTER_RESERVE_MM     =  8;                                          // <-- Space kept clear at the foot of every page
+
+    const COLOR_ERROR_RED       =  [211, 47, 47];                              // <-- Matches --VghLantern_ErrorRed (#d32f2f), for staff-authored Document Warnings
     // ------------------------------------------------------------
 
 
@@ -157,9 +154,11 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // The canvas is filled white first: JPEG has no alpha channel, so an unfilled
     // canvas rasterises transparent pixels to black.
     async function VghLantern__PdfExporter__RasteriseSvg(svgMarkup, targetWidthMm, targetHeightMm) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pdfCfg   =  VghLantern__PdfExporter__PdfConfig();
-        var pxPerMm  =  Number(pdfCfg.RasterPixelsPerMm) || FALLBACK_RASTER_PPMM;
-        var quality  =  (typeof pdfCfg.JpegQuality === 'number') ? pdfCfg.JpegQuality : FALLBACK_JPEG_QUALITY;
+        var PDF_LABEL =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf';
+        var pxPerMm  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pdfCfg, 'RasterPixelsPerMm', PDF_LABEL);
+        var quality  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pdfCfg, 'JpegQuality', PDF_LABEL);
 
         var image   =  await VghLantern__PdfExporter__LoadSvgImage(svgMarkup);
         var canvas  =  document.createElement('canvas');
@@ -186,9 +185,11 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // SUB FUNCTION | Compute the Paper Rectangle for One Grid Slot
     // ------------------------------------------------------------
     function VghLantern__PdfExporter__SlotRect(slot, gridConfig, bodyRect) {
-        var columns  =  Number(gridConfig.Columns) || 2;
-        var rows     =  Number(gridConfig.Rows)    || 2;
-        var gutter   =  (typeof gridConfig.GutterMm === 'number') ? gridConfig.GutterMm : 6;
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var GRID_LABEL    =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid';
+        var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridConfig, 'Columns',  GRID_LABEL);
+        var rows     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridConfig, 'Rows',     GRID_LABEL);
+        var gutter   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridConfig, 'GutterMm', GRID_LABEL);
 
         var cellW  =  (bodyRect.WidthMm  - (gutter * (columns - 1))) / columns;
         var cellH  =  (bodyRect.HeightMm - (gutter * (rows    - 1))) / rows;
@@ -264,10 +265,10 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         if (!rows.length) return 0;
 
         var fields  =  TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(sheet.Project, sheet.Lantern);
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var lineHeight  =  VghLantern__PdfExporter__LineHeightMm(bodyFontPt);
-        var stripHeight =  (typeof sheetCfg.TitleBlockHeightMm === 'number')
-            ? sheetCfg.TitleBlockHeightMm
-            : (lineHeight * 2.4);
+        var stripHeight =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            sheetCfg, 'TitleBlockHeightMm', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Sheet');
         var stripY      =  bodyRect.Y + bodyRect.HeightMm - stripHeight;
         var columnWidth =  bodyRect.WidthMm / rows.length;
 
@@ -299,9 +300,11 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // FUNCTION | Render the Drawing Page
     // ------------------------------------------------------------
     async function VghLantern__PdfExporter__RenderDrawingPage(doc, page, sheet) {
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
         var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
         var pdfCfg         =  VghLantern__PdfExporter__PdfConfig();
-        var bodyFontPt     =  Number(pdfCfg.BodyFontSizePt) || FALLBACK_BODY_PT;
+        var bodyFontPt     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            pdfCfg, 'BodyFontSizePt', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf');
 
         var enabled  =  DocumentState.VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys();
         var drawCfg  =  VghLantern__PdfExporter__DrawingConfig();
@@ -368,12 +371,15 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 
     // SUB FUNCTION | Write a Heading
     // ------------------------------------------------------------
-    function VghLantern__PdfExporter__WriteHeading(cursor, text, fontSizePt) {
+    // colorRgb is an optional [r, g, b] override, used only for the staff-authored
+    // Document Warnings heading so it prints red instead of the default navy.
+    function VghLantern__PdfExporter__WriteHeading(cursor, text, fontSizePt, colorRgb) {
         var lineHeight  =  VghLantern__PdfExporter__LineHeightMm(fontSizePt);
         VghLantern__PdfExporter__EnsureSpace(cursor, lineHeight * 2);
 
+        var color  =  colorRgb || [23, 43, 58];
         cursor.Doc.setFontSize(fontSizePt);
-        cursor.Doc.setTextColor(23, 43, 58);
+        cursor.Doc.setTextColor(color[0], color[1], color[2]);
         cursor.Doc.text(String(text), cursor.X, cursor.Y + lineHeight * 0.8);
 
         cursor.Y  +=  lineHeight * 1.4;
@@ -383,15 +389,18 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 
     // SUB FUNCTION | Write Wrapped Body Text
     // ------------------------------------------------------------
-    function VghLantern__PdfExporter__WriteParagraph(cursor, text, fontSizePt) {
+    // colorRgb is an optional [r, g, b] override, used only for the staff-authored
+    // Document Warnings paragraphs so they print red instead of the default body colour.
+    function VghLantern__PdfExporter__WriteParagraph(cursor, text, fontSizePt, colorRgb) {
         if (!text) return;
 
         var lineHeight  =  VghLantern__PdfExporter__LineHeightMm(fontSizePt);
         var lines       =  cursor.Doc.splitTextToSize(String(text), cursor.WidthMm);
+        var color       =  colorRgb || [30, 30, 30];
         var i;
 
         cursor.Doc.setFontSize(fontSizePt);
-        cursor.Doc.setTextColor(30, 30, 30);
+        cursor.Doc.setTextColor(color[0], color[1], color[2]);
 
         for (i = 0; i < lines.length; i++) {
             VghLantern__PdfExporter__EnsureSpace(cursor, lineHeight);
@@ -411,6 +420,8 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     function VghLantern__PdfExporter__WriteTable(cursor, columns, rows, fontSizePt) {
         if (!columns.length || !rows.length) return;
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var PDF_LABEL   =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf';
         var pdfCfg      =  VghLantern__PdfExporter__PdfConfig();
         var lineHeight  =  VghLantern__PdfExporter__LineHeightMm(fontSizePt);
         var rowHeight   =  lineHeight + (TABLE_CELL_PADDING_MM * 2) - 0.6;
@@ -420,11 +431,11 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         function drawHeader() {
             VghLantern__PdfExporter__EnsureSpace(cursor, rowHeight * 2);
 
-            cursor.Doc.setFillColor(pdfCfg.TableHeaderBackground || '#172b3a');
+            cursor.Doc.setFillColor(ConfigLoader.VghLantern__ConfigLoader__RequireString(pdfCfg, 'TableHeaderBackground', PDF_LABEL));
             cursor.Doc.rect(cursor.X, cursor.Y, cursor.WidthMm, rowHeight, 'F');
 
             cursor.Doc.setFontSize(fontSizePt);
-            cursor.Doc.setTextColor(pdfCfg.TableHeaderTextColour || '#ffffff');
+            cursor.Doc.setTextColor(ConfigLoader.VghLantern__ConfigLoader__RequireString(pdfCfg, 'TableHeaderTextColour', PDF_LABEL));
 
             var c, cellX;
             for (c = 0; c < columns.length; c++) {
@@ -452,7 +463,7 @@ const VghLantern__DocPreview__PdfExporter = (function() {
             if (cursor.PageCount !== startPage) drawHeader();               // <-- A split table still reads as a table
 
             if (r % 2 === 1) {
-                cursor.Doc.setFillColor(pdfCfg.TableAltRowBackground || '#f5f5f5');
+                cursor.Doc.setFillColor(ConfigLoader.VghLantern__ConfigLoader__RequireString(pdfCfg, 'TableAltRowBackground', PDF_LABEL));
                 cursor.Doc.rect(cursor.X, cursor.Y, cursor.WidthMm, rowHeight, 'F');
             }
 
@@ -484,17 +495,19 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // SUB FUNCTION | Write Every Table for One Lantern
     // ------------------------------------------------------------
     function VghLantern__PdfExporter__WriteLanternTakeoff(cursor, entry, viewState, fonts) {
-        var tableCfg  =  VghLantern__PdfExporter__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var tableCfg      =  VghLantern__PdfExporter__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
+        var TABLE_LABEL   =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables';
 
         VghLantern__PdfExporter__WriteHeading(cursor, entry.Title, fonts.HeadingPt);
 
         if (viewState.ShowTakeoffSchedule) {
-            VghLantern__PdfExporter__WriteTable(cursor, tableCfg.LinearColumns || [], entry.Takeoff.Linear, fonts.BodyPt);
-            VghLantern__PdfExporter__WriteTable(cursor, tableCfg.AreaColumns   || [], entry.Takeoff.Areas,  fonts.BodyPt);
+            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'LinearColumns', TABLE_LABEL), entry.Takeoff.Linear, fonts.BodyPt);
+            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'AreaColumns',   TABLE_LABEL), entry.Takeoff.Areas,  fonts.BodyPt);
         }
 
         if (viewState.ShowComponentSchedule) {
-            VghLantern__PdfExporter__WriteTable(cursor, tableCfg.ComponentColumns || [], entry.Takeoff.Components, fonts.BodyPt);
+            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ComponentColumns', TABLE_LABEL), entry.Takeoff.Components, fonts.BodyPt);
         }
     }
     // ------------------------------------------------------------
@@ -503,12 +516,15 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // FUNCTION | Render the Specification Pages
     // ------------------------------------------------------------
     function VghLantern__PdfExporter__RenderSpecificationPages(doc, page, model, viewState) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pdfCfg    =  VghLantern__PdfExporter__PdfConfig();
         var tableCfg  =  VghLantern__PdfExporter__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
+        var PDF_LABEL   =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf';
+        var TABLE_LABEL =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables';
         var fonts     =  {
-            TitlePt   : Number(pdfCfg.TitleFontSizePt)   || FALLBACK_TITLE_PT,
-            HeadingPt : Number(pdfCfg.HeadingFontSizePt) || FALLBACK_HEADING_PT,
-            BodyPt    : Number(pdfCfg.BodyFontSizePt)    || FALLBACK_BODY_PT
+            TitlePt   : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pdfCfg, 'TitleFontSizePt',   PDF_LABEL),
+            HeadingPt : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pdfCfg, 'HeadingFontSizePt', PDF_LABEL),
+            BodyPt    : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pdfCfg, 'BodyFontSizePt',    PDF_LABEL)
         };
 
         var cursor  =  VghLantern__PdfExporter__CreateCursor(doc, page);
@@ -520,6 +536,13 @@ const VghLantern__DocPreview__PdfExporter = (function() {
                 .filter(function(part) { return !!part; }).join('  |  '),
             fonts.BodyPt);
 
+        if (model.UserWarnings.length) {
+            VghLantern__PdfExporter__WriteHeading(cursor, 'Document Warnings', fonts.HeadingPt, COLOR_ERROR_RED);
+            for (i = 0; i < model.UserWarnings.length; i++) {
+                VghLantern__PdfExporter__WriteParagraph(cursor, '- ' + model.UserWarnings[i], fonts.BodyPt, COLOR_ERROR_RED);
+            }
+        }
+
         if (model.Warnings.length) {
             VghLantern__PdfExporter__WriteHeading(cursor, 'Warnings', fonts.HeadingPt);
             for (i = 0; i < model.Warnings.length; i++) {
@@ -528,7 +551,7 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         }
 
         VghLantern__PdfExporter__WriteHeading(cursor, 'Lantern Schedule', fonts.HeadingPt);
-        VghLantern__PdfExporter__WriteTable(cursor, tableCfg.ScheduleColumns || [], model.ScheduleRows, fonts.BodyPt);
+        VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ScheduleColumns', TABLE_LABEL), model.ScheduleRows, fonts.BodyPt);
 
         for (i = 0; i < model.Lanterns.length; i++) {
             VghLantern__PdfExporter__WriteLanternTakeoff(cursor, model.Lanterns[i], viewState, fonts);
@@ -536,8 +559,8 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 
         if (model.Aggregate && viewState.ShowTakeoffSchedule) {
             VghLantern__PdfExporter__WriteHeading(cursor, 'Project Totals', fonts.HeadingPt);
-            VghLantern__PdfExporter__WriteTable(cursor, tableCfg.LinearColumns || [], model.Aggregate.Linear, fonts.BodyPt);
-            VghLantern__PdfExporter__WriteTable(cursor, tableCfg.ComponentColumns || [], model.Aggregate.Components, fonts.BodyPt);
+            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'LinearColumns',    TABLE_LABEL), model.Aggregate.Linear, fonts.BodyPt);
+            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ComponentColumns', TABLE_LABEL), model.Aggregate.Components, fonts.BodyPt);
         }
 
         if (viewState.ShowJobNotes && model.JobNotes) {
@@ -559,11 +582,13 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // Run last, because the total page count is not known until all content is laid
     // out and "Page 2 of 5" needs the 5.
     function VghLantern__PdfExporter__StampFooters(doc) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pdfCfg  =  VghLantern__PdfExporter__PdfConfig();
-        if (pdfCfg.ShowPageNumbers === false) return;
+        var PDF_LABEL  =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Pdf';
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(pdfCfg, 'ShowPageNumbers', PDF_LABEL)) return;
 
-        var pattern    =  pdfCfg.PageNumberFormat || 'Page {page} of {total}';
-        var fontSizePt =  (Number(pdfCfg.BodyFontSizePt) || FALLBACK_BODY_PT) * 0.85;
+        var pattern    =  ConfigLoader.VghLantern__ConfigLoader__RequireString(pdfCfg, 'PageNumberFormat', PDF_LABEL);
+        var fontSizePt =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(pdfCfg, 'BodyFontSizePt', PDF_LABEL) * 0.85;
         var total      =  doc.internal.getNumberOfPages();
         var p, size, label;
 

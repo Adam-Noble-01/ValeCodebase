@@ -83,6 +83,8 @@
             "FallbackBarDepthMm"              : 55,
             "PlaceholderSectionOnMissingProfile" : true,
             "PlaceholderSectionNote"          : "When a role has no profile assigned, sweep a plain rectangle of the fallback size so the member still reads as solid instead of vanishing.",
+            "BuildBaseAsSolid"                : true,
+            "BuildBaseAsSolidNote"            : "Extrudes the kerb and the base frame as solid prisms with the reveal cut through them, which is what they physically are. Set false to fall back to swept sections along the base rings, which reads as a wireframe box with open corners.",
             "GlazingInsetMm"                  : 6,
             "GlazingInsetNote"                : "Glass sits back from the bar face so the frame reads as frame rather than coplanar with the glass.",
             "MaxSweptMembers"                 : 900,

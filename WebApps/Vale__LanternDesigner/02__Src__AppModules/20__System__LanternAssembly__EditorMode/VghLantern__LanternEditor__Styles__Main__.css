@@ -965,6 +965,30 @@
     /* ------------------------------------------------------------ */
 
 
+    /* GROUP | Subsection Heading */
+    /* ------------------------------------------------------------ */
+    /* Splits a long section into named groups without nesting an accordion. The
+       rule above it does the separating, so the first heading in a section drops
+       its rule and top margin. */
+    .VghLantern__ControlPanel__SubHeading {
+        margin                             : var(--Vale_Spacing_Medium) 0 calc(var(--Vale_Spacing_Small) / 2);
+        padding-top                        : var(--Vale_Spacing_Small);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.06em;
+        text-transform                     : uppercase;
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__ControlPanel__SubHeading:first-child {
+        margin-top                         : calc(var(--Vale_Spacing_Small) / 2);
+        padding-top                        : 0;
+        border-top                         : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* GROUP | Expandable Control Group */
     /* ------------------------------------------------------------ */
     .VghLantern__ControlPanel__Group {

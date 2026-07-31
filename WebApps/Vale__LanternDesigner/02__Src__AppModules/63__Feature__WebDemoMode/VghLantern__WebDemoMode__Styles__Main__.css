@@ -1,0 +1,326 @@
+/* =============================================================================
+ * VGHLANTERN - WEB DEMO MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__WebDemoMode__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : WebDemoMode - Notice Modal and Badge
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Styling for the read-only demo notice and its header badge
+ * CREATED    : 31-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Two surfaces driven by VghLantern__WebDemoMode__NoticeModal:
+ *     * .vghdemo-notice : the on-load explanation panel
+ *     * .vghdemo-badge  : the persistent header reminder left behind after it
+ *                          is dismissed
+ * - The notice layer sits above the install prompt. When both would appear the
+ *   install controller defers, but the z-order guarantees the right answer even
+ *   if that deferral is bypassed.
+ * - The badge is absolutely positioned inside the fixed header so it does not
+ *   disturb the existing flex layout of the logo and title.
+ * - Amber rather than red: this is a limitation to understand, not an error.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * TOKENS | Local Palette and Animations
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        --vghdemo-color-bg                 : #ffffff;                                    /* <-- Panel background */
+        --vghdemo-color-fg                 : #172b3a;                                    /* <-- Vale primary text colour */
+        --vghdemo-color-fg-muted           : #4a6076;                                    /* <-- Secondary text colour */
+        --vghdemo-color-accent             : #172b3a;                                    /* <-- Primary action background */
+        --vghdemo-color-accent-fg          : #ffffff;                                    /* <-- Primary action text */
+        --vghdemo-color-accent-hover       : #243d50;                                    /* <-- Primary action hover */
+        --vghdemo-color-warning            : #b26a00;                                    /* <-- Amber warning text */
+        --vghdemo-color-warning-bg         : #fdf3e3;                                    /* <-- Amber warning background */
+        --vghdemo-color-warning-border     : #e6c68a;                                    /* <-- Amber warning border */
+        --vghdemo-color-positive           : #2f6b4f;                                    /* <-- Available capability marker */
+        --vghdemo-color-border             : rgba(23, 43, 58, 0.12);                     /* <-- Subtle border colour */
+        --vghdemo-shadow                   : 0 18px 44px rgba(23, 43, 58, 0.28);         /* <-- Floating panel shadow */
+        --vghdemo-color-backdrop           : rgba(23, 43, 58, 0.55);                     /* <-- Modal backdrop tint */
+        --vghdemo-radius                   : 14px;                                       /* <-- Corner radius */
+        --vghdemo-radius-sm                : 8px;                                        /* <-- Button corner radius */
+        --vghdemo-spacing                  : 16px;                                       /* <-- Default spacing unit */
+        --vghdemo-font-stack               : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        --vghdemo-zindex                   : 2147483100;                                 /* <-- One layer above the install prompt */
+    }
+
+    @keyframes vghdemoFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes vghdemoPanelIn {
+        from { transform: translate(-50%, -50%) scale(0.96); opacity: 0; }
+        to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+    }
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Notice Modal
+ * ----------------------------------------------------------------------------- */
+
+    /* ROOT | Full-Viewport Layer */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice {
+        position                           : fixed;
+        inset                              : 0;
+        z-index                            : var(--vghdemo-zindex);
+        font-family                        : var(--vghdemo-font-stack);
+        color                              : var(--vghdemo-color-fg);
+        opacity                            : 0;
+        transition                         : opacity 200ms ease-out;
+    }
+
+    .vghdemo-notice--visible {
+        opacity                            : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BACKDROP | Dimmed Overlay */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__backdrop {
+        position                           : absolute;
+        inset                              : 0;
+        background                         : var(--vghdemo-color-backdrop);
+        animation                          : vghdemoFadeIn 200ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Centred Explanation Panel */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__panel {
+        position                           : absolute;
+        left                               : 50%;
+        top                                : 50%;
+        transform                          : translate(-50%, -50%);
+        width                              : calc(100vw - (var(--vghdemo-spacing) * 2));
+        max-width                          : 520px;
+        max-height                         : calc(100vh - (var(--vghdemo-spacing) * 3));
+        overflow-y                         : auto;
+        padding                            : calc(var(--vghdemo-spacing) * 1.75) calc(var(--vghdemo-spacing) * 1.5) calc(var(--vghdemo-spacing) * 1.25);
+        background                         : var(--vghdemo-color-bg);
+        border-top                         : 4px solid var(--vghdemo-color-warning);
+        border-radius                      : var(--vghdemo-radius);
+        box-shadow                         : var(--vghdemo-shadow);
+        animation                          : vghdemoPanelIn 240ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CLOSE | Panel Dismiss Control */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__close {
+        position                           : absolute;
+        top                                : 10px;
+        right                              : 12px;
+        width                              : 28px;
+        height                             : 28px;
+        padding                            : 0;
+        font-family                        : var(--vghdemo-font-stack);
+        font-size                          : 13px;
+        font-weight                        : 600;
+        line-height                        : 1;
+        color                              : var(--vghdemo-color-fg-muted);
+        background                         : transparent;
+        border                             : none;
+        border-radius                      : 50%;
+        cursor                             : pointer;
+    }
+
+    .vghdemo-notice__close:hover {
+        background                         : rgba(23, 43, 58, 0.08);
+        color                              : var(--vghdemo-color-fg);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TITLE | Panel Heading */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__title {
+        margin-bottom                      : 10px;
+        font-size                          : 19px;
+        font-weight                        : 600;
+        line-height                        : 1.25;
+        color                              : var(--vghdemo-color-fg);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BODY | Explanation Paragraphs */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__body {
+        margin                             : 0 0 12px;
+        font-size                          : 14px;
+        font-weight                        : 400;
+        line-height                        : 1.55;
+        color                              : var(--vghdemo-color-fg-muted);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LIST | Capability Breakdown */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__list {
+        margin                             : 0 0 14px;
+        padding                            : 12px 14px;
+        list-style                         : none;
+        background                         : var(--vghdemo-color-warning-bg);
+        border                             : 1px solid var(--vghdemo-color-warning-border);
+        border-radius                      : var(--vghdemo-radius-sm);
+    }
+
+    .vghdemo-notice__list-item {
+        position                           : relative;
+        padding                            : 5px 0 5px 22px;
+        font-size                          : 13px;
+        line-height                        : 1.5;
+        color                              : var(--vghdemo-color-fg);
+    }
+
+    .vghdemo-notice__list-item::before {
+        position                           : absolute;
+        left                               : 0;
+        font-weight                        : 700;
+    }
+
+    .vghdemo-notice__list-item--yes::before {
+        content                            : "+";
+        color                              : var(--vghdemo-color-positive);
+    }
+
+    .vghdemo-notice__list-item--no::before {
+        content                            : "!";
+        color                              : var(--vghdemo-color-warning);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Button Row */
+    /* ------------------------------------------------------------ */
+    .vghdemo-notice__actions {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : flex-end;
+        gap                                : 8px;
+        flex-wrap                          : wrap;
+    }
+
+    .vghdemo-notice__button {
+        padding                            : 10px 20px;
+        font-family                        : var(--vghdemo-font-stack);
+        font-size                          : 13px;
+        font-weight                        : 600;
+        line-height                        : 1;
+        white-space                        : nowrap;
+        border                             : none;
+        border-radius                      : var(--vghdemo-radius-sm);
+        cursor                             : pointer;
+        transition                         : background-color 150ms ease-out;
+    }
+
+    .vghdemo-notice__button--primary {
+        color                              : var(--vghdemo-color-accent-fg);
+        background                         : var(--vghdemo-color-accent);
+    }
+
+    .vghdemo-notice__button--primary:hover {
+        background                         : var(--vghdemo-color-accent-hover);
+    }
+
+    .vghdemo-notice__button--secondary {
+        color                              : var(--vghdemo-color-fg);
+        background                         : transparent;
+        border                             : 1px solid var(--vghdemo-color-border);
+    }
+
+    .vghdemo-notice__button--secondary:hover {
+        background                         : rgba(23, 43, 58, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Persistent Header Badge
+ * ----------------------------------------------------------------------------- */
+
+    /* BADGE | Header Reminder Pill */
+    /* ------------------------------------------------------------ */
+    .vghdemo-badge {
+        position                           : absolute;
+        left                               : 50%;
+        top                                : 50%;
+        transform                          : translate(-50%, -50%);
+        max-width                          : 42%;
+        overflow                           : hidden;
+        padding                            : 5px 12px;
+        font-family                        : var(--vghdemo-font-stack);
+        font-size                          : 12px;
+        font-weight                        : 600;
+        line-height                        : 1.3;
+        white-space                        : nowrap;
+        text-overflow                      : ellipsis;
+        color                              : var(--vghdemo-color-warning);
+        background                         : var(--vghdemo-color-warning-bg);
+        border                             : 1px solid var(--vghdemo-color-warning-border);
+        border-radius                      : 999px;
+        cursor                             : pointer;
+        transition                         : background-color 150ms ease-out;
+    }
+
+    .vghdemo-badge:hover {
+        background                         : #f7e6c9;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * RESPONSIVE | Narrow Viewport Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 720px) {
+
+        .vghdemo-badge {
+            max-width                      : 34%;
+            font-size                      : 11px;
+            padding                        : 4px 9px;
+        }
+    }
+
+    @media (max-width: 520px) {
+
+        .vghdemo-notice__actions {
+            justify-content                : stretch;
+        }
+
+        .vghdemo-notice__button {
+            flex                           : 1 1 auto;
+        }
+
+        .vghdemo-badge {
+            display                        : none;                                       /* <-- Header is too tight, the modal already carried the message */
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .vghdemo-notice,
+        .vghdemo-notice__panel,
+        .vghdemo-notice__backdrop {
+            animation                      : none;
+            transition                     : none;
+        }
+    }
+
+/* #endregion -------------------------------------------------------------------- */

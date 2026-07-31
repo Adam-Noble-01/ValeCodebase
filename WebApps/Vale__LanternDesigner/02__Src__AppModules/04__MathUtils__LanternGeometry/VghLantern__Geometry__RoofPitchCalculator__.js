@@ -11,8 +11,10 @@
 
    DESCRIPTION:
    - Pure trigonometry. No DOM, no state, no config reads, no side effects.
-   - The lantern editor lets the user drive pitch either by angle or by ridge
-     rise; this module is the single place those two representations convert.
+   - Pitch angle is the stored property; ridge rise is always derived from it.
+     This module is the single place that conversion happens, in either
+     direction: the solver goes angle to rise, and the ConstraintResolver goes
+     rise back to angle when the user types an overall height.
    - Also derives the true hip angle, which is shallower than the slope pitch
      because a hip travels diagonally in plan.
 
@@ -122,30 +124,21 @@ const VghLantern__Geometry__RoofPitchCalculator = (function() {
 
     // FUNCTION | Resolve the Complete Pitch Set for a Lantern
     // ------------------------------------------------------------
-    // Accepts whichever value the user is driving (angle or rise) and returns
-    // both, plus the derived slope lengths. The SkeletonSolver calls this once
-    // so that the rest of the solve never re-derives pitch.
+    // Takes the stored pitch angle and returns the rise it produces plus every
+    // derived slope length. The SkeletonSolver calls this once so that the rest
+    // of the solve never re-derives pitch.
     //
-    // driveMode    : 'angle' | 'rise'
     // shortRunMm   : horizontal run of the short-axis slope (eaves to ridge)
     // longRunMm    : horizontal run of the long-axis slope  (eaves to ridge end)
     //
     // Returns { PitchDegrees, RiseMm, ShortRafterLengthMm, LongSlopePitchDegrees,
     //           LongRafterLengthMm, HipRunMm, HipAngleDegrees, HipLengthMm }
-    function VghLantern__RoofPitch__ResolvePitchSet(driveMode, shortRunMm, longRunMm, pitchDegrees, riseMm) {
+    function VghLantern__RoofPitch__ResolvePitchSet(shortRunMm, longRunMm, pitchDegrees) {
         var shortRun  =  Math.max(MIN_SAFE_RUN_MM, Number(shortRunMm) || 0);
         var longRun   =  Math.max(0, Number(longRunMm) || 0);
 
-        var resolvedPitch;
-        var resolvedRise;
-
-        if (driveMode === 'rise') {
-            resolvedRise   =  Math.max(0, Number(riseMm) || 0);
-            resolvedPitch  =  VghLantern__RoofPitch__PitchFromRise(shortRun, resolvedRise);
-        } else {
-            resolvedPitch  =  Number(pitchDegrees) || 0;
-            resolvedRise   =  VghLantern__RoofPitch__RiseFromPitch(shortRun, resolvedPitch);
-        }
+        var resolvedPitch  =  Number(pitchDegrees) || 0;
+        var resolvedRise   =  VghLantern__RoofPitch__RiseFromPitch(shortRun, resolvedPitch);
 
         var hipRun  =  VghLantern__RoofPitch__HipRun(shortRun, shortRun);    // <-- Equal-pitch hip bisects the corner in plan
 

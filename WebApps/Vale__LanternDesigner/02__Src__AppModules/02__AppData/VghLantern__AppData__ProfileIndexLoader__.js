@@ -281,11 +281,17 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
     // The single definition of which lantern config field names the profile for
     // each skeleton member role. Both render environments resolve through this, so
     // a profile swap updates the SVG trace and the Three.js sweep from one edit.
+    //
+    // 'kerbReveal' is deliberately absent. It traces the hole through the base,
+    // not a section, so an unmapped role here is exactly what stops it being
+    // swept or traced as though it were a member.
     const ROLE_PROFILE_FIELDS  =  {
         'ridge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__RidgeProfileId'],
         'hip'        : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
         'verge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
         'eaves'      : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__EavesProfileId'],
+        'frame'      : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__EavesProfileId'],
+        'framePost'  : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__EavesProfileId'],
         'kerb'       : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__KerbProfileId'],
         'kerbPost'   : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__KerbProfileId'],
         'glazingBar' : ['Lantern__GlazingBars__Config',   'Lantern__GlazingBars__Config__BarProfileId'],

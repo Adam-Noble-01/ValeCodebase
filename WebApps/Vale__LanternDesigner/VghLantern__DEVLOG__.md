@@ -3,6 +3,81 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.0 - 31-Jul-2026
+### Full PWA support on Windows, iOS and Android, a real caching service worker, an honest read-only notice for the hosted build, and Component Index thumbnails at a consistent line weight and scale
+
+**Status: the PWA and web demo work is written, not yet run.** Every file is syntax-checked, every path and precache entry is verified to resolve, and the URL resolver and service worker routing are unit-tested against all four deployment surfaces. None of it has been exercised in a browser. The Component Index work at the end of this entry is the exception - that is confirmed working in the running app.
+
+#### The problem
+- Installability was a copy of the ValeSpec scaffolding and had never worked. The manifest and the head both pointed at `01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png` and its 512 sibling; the folder contained nothing but an empty `UiIcons__MenuIcons__ToolsMenu`. Six references, two files, zero of them present. Chromium will not offer an install for a manifest whose icons 404.
+- The service worker was a no-op with **no fetch handler at all**. It existed purely to satisfy the "has a service worker" criterion. No offline, no caching, nothing.
+- The manifest declared `"scope": "/"` and `"start_url": "/VghLantern__App__.html"`. Correct only where the app root is the origin root, which is true on localhost:8006 and false on any hosted sub-path. Under GitHub Pages both pointed at the wrong place.
+- There was no iOS path. Safari has no `beforeinstallprompt` and no programmatic install, so a manifest alone gets an iPhone user nowhere.
+
+#### Assets (`01__AppAssets__VghLantern`)
+- **The 404 is fixed.** ValeSpec's 192 and 512 icons copied in under the VghLantern names, as agreed, pending a lantern-specific icon.
+- The Vale header logo copied in as well. It previously resolved through `../assets__CommonApplicationAssets/`, which sits **above** the app folder and therefore outside any Lantern-scoped service worker, so it could never be cached for offline use.
+
+#### PWA module set (`62__Feature__AppInstallability` - rebuilt)
+Ported from the Whitecardopedia stack, which was by a wide margin the best of the three implementations in the codebase, with two of its decisions deliberately **not** carried over. Whitecardopedia puts its worker at the WebApps root and pulls the logic in via `importScripts()` purely so one worker can cover two apps; Lantern is a single app, so its worker belongs at its own root. Whitecardopedia also hand-maintains a ninety-entry precache list, which is why its version token needs bumping on nearly every commit.
+
+- **`Url__Constructor`** resolves the app root three ways in order: a `<meta name="vale-pwa-base">` override, the `Vale__LanternDesigner` path segment, then the directory of the current document. The app is a single page served from its own folder root, so the last of those is always correct and the segment probe is belt-and-braces for a hosted sub-path. Everything else in the stack reads its paths from here, and the static manifest and apple-touch-icon hrefs are rewritten to absolute URLs at load so the manifest, the worker scope and the start URL can never resolve from three different bases.
+- **`PlatformDetector`** produces twelve platform tokens. Handles the iPadOS-reports-as-MacIntel quirk through `maxTouchPoints`, the legacy `navigator.standalone` flag, and four display-mode queries including `window-controls-overlay` for the Windows app shell.
+- **`SessionState`** holds a per-platform dismissal ladder of 1 minute, 1 hour, 1 day, 1 week, 1 month, in localStorage with an in-memory fallback so private browsing cannot throw.
+- **`PromptUi`** renders two variants in vanilla DOM so it can mount before the app finishes booting: a compact bottom bar and a centred instruction sheet with an animated arrow.
+- **Five handlers.** Chromium captures `beforeinstallprompt` and drives the native dialog; iOS Safari walks through the share sheet with the arrow pointing down on iPhone and up on iPad; iOS non-Safari explains that only Safari can install and offers to copy the link; macOS Safari covers File then Add to Dock; InstalledStandalone is a real handler rather than a null so the controller needs no special case.
+- **The Chromium handler attaches its listener at module load, not at `activate()`.** Chromium can fire `beforeinstallprompt` before the controller has initialised and the event is never replayed. Whitecardopedia papers over this with a retry loop; capturing early removes the race instead.
+- **`InstallController`** waits 4.5 s then retries up to six times at 1.5 s, probes `getInstalledRelatedApps()`, and subscribes to live standalone changes. It also **defers while the web demo notice is on screen**, so a first-time web visitor reads one panel at a time.
+- **`ServiceWorker__Registrar`** gates on secure context, bridges `controllerchange` to a single guarded reload, and offers three escalating resets. `purgeAppCache()` preserves `VghLantern__Project__*` and `VghLantern__ProjectManifest` **by prefix** - on the hosted build that mirror is the only copy of a user's work, so a purge that took it would be destructive. It aborts rather than proceeding if it cannot snapshot those keys first. `ClearCache` typed into the console still works as it does elsewhere.
+
+#### Service worker (`Na__ServiceWorker__VghLantern.js` - rewritten in place)
+- **The filename is unchanged on purpose.** Registering a differently named worker would leave the old registration in place as an orphan rather than replacing it.
+- Two buckets, `vghlantern-shell-vN` and `vghlantern-data-vN`. The superseded `na-vghlantern-cache-` prefix is still in the owned list so anything the stub left behind is cleaned up on first activate.
+- **`/api/*` is bypassed entirely.** Those routes carry live project state and health checks; a cached answer there would be actively wrong. On GitHub Pages they fall outside the scope anyway, but on localhost the scope is the origin root and the explicit bypass is what makes it safe.
+- HTML is network-first so a stale document cannot load against a newer module graph. **All JSON is network-first**, with `cache: 'no-store'` on the network leg so a "network-first" read cannot be quietly satisfied by the browser's own HTTP disk cache. Treating the whole extension this way is simpler than an allow-list and safer during development, where an edited config must never be shadowed. Everything else is stale-while-revalidate.
+- **Precache is twelve entries**, not ninety: the document, the stylesheet index, the two vendor builds the app actually loads, the icons, and the boot-critical JSON. The rest enters the cache through stale-while-revalidate as it is first requested, so the app is fully offline after one visit with no file list to keep in step with the source tree.
+
+#### Manifest (`VghLantern__Pwa__Manifest__.webmanifest` - new)
+- `start_url` and `scope` are now **relative to the manifest**, so the same file is correct on localhost, on GitHub Pages and on any future custom domain.
+- `id` is `vghlantern-designer`, resolved against the origin. This matters: every Vale app shares the `github.io` origin, so a path-based id risks colliding with another app's.
+- Gains `display_override` led by `window-controls-overlay`, `handle_links`, `categories`, `lang`, and **`maskable` icon entries**, which were absent before and are why an installed Android icon would otherwise render badly.
+
+#### Web demo mode (`63__Feature__WebDemoMode` - new)
+The app runs perfectly well without the Flask server. Every loader already falls back to a static file, and `ProjectFileManager` already catches an unreachable server and falls back to localStorage. What it cannot do is **write to disk**, and that gap is invisible: a save succeeds into localStorage and the user has no way to know their work never reached a file. This exists to make it visible.
+
+- **`EnvironmentDetector`** classifies hostname-first so the answer is available with no race against boot, then confirms with a health probe. Not localhost means demo, resolved immediately. Localhost with a live health route means full mode. **Localhost with a dead one also means demo**, which catches opening the app without starting the server. The probe only runs on localhost; probing the hosted build would add a guaranteed 404 for no information.
+- **`NoticeModal`** shows once per browser session, then leaves a persistent badge in the header that reopens it. It states plainly that projects live in this browser alone and are lost if browser data is cleared, and points at the localhost build for real editing.
+- **Editing stays enabled.** Locking the app down would make it useless for showing the tool to someone. The warning plus an escape hatch covers the real risk, which is silent data loss.
+- That escape hatch is **Export all projects**, which writes every stored project into one JSON bundle. One file rather than a loop of downloads, because a loop trips popup blocking and a bundle is easier to hand back to the local build later.
+
+#### Verification performed
+- All fourteen new and rewritten JS files pass `node --check`.
+- Manifest parses; `start_url`, `scope` and all four icon entries resolve to files that exist. An initial `../../../` was one level too deep and was caught here.
+- All 95 local references in the app HTML and all 18 stylesheet imports resolve.
+- All 12 precache entries resolve.
+- The URL resolver was run against localhost, GitHub Pages, a custom-domain sub-path and a root-mounted custom domain. All four produce correct roots, scopes and start URLs.
+- Service worker routing was tested against 14 representative URLs covering all five classifications. No misroutes.
+- No global is read that is not defined, beyond `VghLantern__AppData__ProjectFileManager` and the opt-in `VghLantern__App__SuppressReload` flag, which nothing sets yet by design.
+
+#### Known and accepted
+- `ComponentIndexLoader` and `ProfileIndexLoader` request the origin-absolute `/api/component-index` and `/api/profile-index` first. On the hosted build those 404 before the static fallback succeeds, so the console shows two expected 404s on load. Harmless, and left alone rather than reworked as part of a PWA change.
+- The install prompt covers Chromium, both iOS paths and macOS Safari. Desktop and Android Firefox get no handler, because neither offers a usable install route worth prompting for.
+
+#### Component Index (`50__System__ComponentIndex`) - consistent thumbnails and an insertion origin marker
+**Confirmed working in the browser**, unlike the PWA work above.
+
+The gallery traced every profile with an inline `stroke-width` of `max(Width, Height) / 120 * 6` while the stylesheet also applied `vector-effect: non-scaling-stroke`. Those two together make the attribute a **screen-pixel** width that is then scaled by the size of the section, so the 120mm eaves drew at well over twice the line weight of the 50mm glazing bar. Nothing marked where a profile is inserted onto the skeleton, either.
+
+- **The outline weight is a fixed `1.5` owned by the stylesheet** and no inline attribute is emitted at all. Paired with the non-scaling stroke that was already there, every section now reads at one weight whatever it measures. This is what `ProfilePathTracer` in the SketchUp plugin has always done, and this change brings the two galleries into line.
+- **The viewBox is square and centred on the outline**, sized off the longer edge plus 12% either side, rather than padded per axis. Padding each axis independently left a wide eaves tight to the sides of its square well while a narrow glazing bar floated with slack all round. A square box frames every section to the same proportion of its well.
+- **The insertion origin carries a red diagonal cross** at `(0, 0)`, which needs no transform because only Y is negated when the path is built. It is turned 45 degrees so it cannot be read as part of the section - an upright crosshair lies along the outline edges on most lantern profiles. Its arms are sized off the framed span, so like the stroke it is the same size on every card. `--VghLantern_SvgOriginLine` is the new token.
+- **The cross is drawn after the path, not before.** `ProfilePathTracer` draws its marker first because its profile line has no fill; the Lantern preview path *is* filled, so a marker underneath is buried on any profile whose origin sits inside the section rather than on its boundary.
+- **A small / medium / large thumbnail toggle** sits in the toolbar at 140 / 190 / 260px. Grid columns are a **fixed width per setting rather than a `1fr` stretch**, so a card is the same size whatever the viewport - which is the point of having the control at all. Below 600px the row falls back to a fluid fill so the large setting cannot overflow the panel. Changing size swaps classes on the live DOM instead of re-rendering, so the grid does not drop back to loading shims on every click.
+
+The detail panel picks all of this up for free. It already called `BuildPreviewSvg` rather than tracing its own copy, so there was one place to change.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.3.0 - 30-Jul-2026
 ### Drawing Editor: one layout and one chrome description shared by sheet and PDF, 3D snapshots framed at the frame's own aspect, and sheet setup persisted on the project file
 
@@ -143,7 +218,7 @@ First build of the **VghLantern Roof Lantern Designer**, a parametric roof lante
 #### Geometry solver (`04__MathUtils__LanternGeometry`)
 The single source of geometric truth; both render environments and the takeoff consume its output rather than deriving their own.
 - **`VghLantern__Geometry__SkeletonSolver__.js`** — resolves a lantern config into a named member skeleton (eaves, ridge, hips, verges, closing sections) as 3D points in millimetres, branching on roof form.
-- **`VghLantern__Geometry__RoofPitchCalculator__.js`** — angle ⇄ rise conversion so the editor can be driven either way (`DefaultPitchDriveMode`).
+- **`VghLantern__Geometry__RoofPitchCalculator__.js`** — pitch angle is the stored property and roof height derives from it; this is the one place angle ⇄ rise conversion happens (`DefaultPitchDegrees`).
 - **`VghLantern__Geometry__GlazeBarLayout__.js`** — distributes glazing bars per slope by **count** or **target spacing**, returning bar lines with their slope association.
 - **`VghLantern__Geometry__ConstraintResolver__.js`** — clamps interdependent dimensions so the editor cannot produce an unbuildable lantern.
 - **`VghLantern__Geometry__QuantityTakeoff__.js`** — pure function over solved skeleton + bar set returning linear metres per member role, glazing areas, and component counts. No DOM, no config reads.
@@ -163,7 +238,7 @@ The single source of geometric truth; both render environments and the takeoff c
 
 #### Lantern Editor (`20__System__LanternAssembly__EditorMode`)
 - **`ControlDescriptors__.js` is the SSOT for controls** — every slider, dropdown, and toggle is declared as data (bounds, step, options source, visibility predicate). **`ControlPanel__.js`** is a generic renderer over those descriptors, so a new control is a data edit, not new DOM code.
-- **Eight section modules** supply descriptors: **`FormAndSize`**, **`RoofPitch`**, **`GlazingBars`**, **`RidgeAndHips`**, **`Finials`**, **`KerbAndBase`**, **`Ventilation`**, **`FinishAndGlazing`**. Dropdown options come from the library indexes filtered by **`ApplicableRoles`**, so no module hardcodes a category-to-role mapping.
+- **Seven section modules** supply descriptors: **`FormAndSize`**, **`GlazingBars`**, **`RidgeAndHips`**, **`Finials`**, **`KerbAndBase`**, **`Ventilation`**, **`FinishAndGlazing`**. Dropdown options come from the library indexes filtered by **`ApplicableRoles`**, so no module hardcodes a category-to-role mapping.
 - **`WarningSystem__.js`** + **`Na__LanternEditor__Warnings__.json`** — declarative rules evaluated against lantern metrics and solved geometry; renders inline warnings and errors in the editor.
 - **`ViewportHost__2d__.js`** / **`ViewportHost__3d__.js`** — host the two environments inside the editor split layout, with view tabs (plan / front / side) and an optional live 3D preview.
 
@@ -200,7 +275,7 @@ The single source of geometric truth; both render environments and the takeoff c
 - **Unified asset schema** shared by both libraries: metadata block, 2D profile points, optional 3D mesh (inline or GLB URL), and behaviour block (sweep or placement).
 - **Profile coordinate convention:** origin sits on the skeleton line at the section's bottom-centre; **x** spans ±half-width, **y** rises into the member. Each asset carries its own origin note.
 - **Component coordinate convention:** finials and bases use the seating point; cresting uses the centre of one repeat; vents use the centre of the pane they replace.
-- **Worked examples** so the whole pipeline renders end to end: five profiles (**`PRF_GLB0001`** 50 mm capped glazing bar, **`PRF_RDG0001`** 90 mm capped ridge, **`PRF_HIP0001`** 75 mm hip, **`PRF_EVK0001`** 120 mm eaves/kerb, **`PRF_CLS0001`** 45 mm closing section) and four components (**`VGH_FIN0001`** ball-and-spike finial, **`VGH_FIN0101`** moulded finial base, **`VGH_CRS0001`** fleur cresting, **`VGH_VNT0001`** manual roof vent). Dimensions are provisional pending real Vale sections.
+- **Worked examples** so the whole pipeline renders end to end: four profiles (**`PRF_GLB0001`** 50 mm capped glazing bar, **`PRF_RDG0001`** 90 mm capped ridge, **`PRF_HIP0001`** 75 mm hip, **`PRF_CLS0001`** 45 mm closing section) and four components (**`VGH_FIN0001`** ball-and-spike finial, **`VGH_FIN0101`** moulded finial base, **`VGH_CRS0001`** fleur cresting, **`VGH_VNT0001`** manual roof vent). Dimensions are provisional pending real Vale sections.
 - **`VghLantern__ProfileDataIndex__.json`** / **`VghLantern__ComponentDataIndex__.json`** are **generated output** — marked `DoNotEditByHand`, served by the Flask server at `/api/profile-index` and `/api/component-index` with `no-store`, with the static files as a fallback.
 
 #### Version-locked dependencies (`04__Src__Dependencies__VersionLocked`)

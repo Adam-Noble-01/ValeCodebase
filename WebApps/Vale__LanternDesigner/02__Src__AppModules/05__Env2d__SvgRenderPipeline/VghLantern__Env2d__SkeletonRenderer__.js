@@ -11,7 +11,7 @@
 
    DESCRIPTION:
    - Draws the skeletal construction lines that are the backbone of every 2D
-     view: kerb, kerb posts, eaves, ridge and hips.
+     view: kerb, kerb posts, the base frame, eaves, ridge and hips.
    - Members behind the viewing plane are drawn dashed into the hidden layer so
      an elevation reads correctly without a full hidden-line solver.
    - Also owns the construction grid, because the grid exists to measure the
@@ -21,10 +21,19 @@
    ROLE TO CSS CLASS MAP:
        kerb        VghLantern__Env2d__Member--kerb
        kerbPost    VghLantern__Env2d__Member--kerbPost
+       kerbReveal  VghLantern__Env2d__Member--kerbReveal
+       frame       VghLantern__Env2d__Member--frame
+       framePost   VghLantern__Env2d__Member--framePost
        eaves       VghLantern__Env2d__Member--eaves
        ridge       VghLantern__Env2d__Member--ridge
        hip         VghLantern__Env2d__Member--hip
        verge       VghLantern__Env2d__Member--verge
+
+   THE KERB REVEAL:
+   'kerbReveal' members trace the inner face of the upstand - the hole the
+   daylight comes down. They are an annotation rather than a section, so they
+   are always drawn dashed in the annotation red, in plan and in elevation
+   alike, and they are never treated as hidden linework.
 
    ============================================================================= */
 
@@ -44,20 +53,25 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
     const CSS_MEMBER_PREFIX    =  'VghLantern__Env2d__Member--';             // <-- Role modifier prefix
     const CSS_MEMBER_HIDDEN    =  'VghLantern__Env2d__Member--hidden';       // <-- Behind the viewing plane
     const CSS_NODE_MARKER      =  'VghLantern__Env2d__NodeMarker';           // <-- Optional joint marker
+    const ROLE_KERB_REVEAL     =  'kerbReveal';                              // <-- Inner face of the upstand
     const CSS_GRID_MINOR       =  'VghLantern__Env2d__Grid--minor';
     const CSS_GRID_MAJOR       =  'VghLantern__Env2d__Grid--major';
     const CSS_GRID_AXIS        =  'VghLantern__Env2d__Grid--axis';
 
     // Fallbacks used only when the Env2d config has not resolved.
     const FALLBACK_STROKE_WIDTHS  =  {
-        kerb     : 8,
-        kerbPost : 8,
-        eaves    : 8,
-        ridge    : 9,
-        hip      : 8,
-        verge    : 8
+        kerb       : 8,
+        kerbPost   : 8,
+        kerbReveal : 6,
+        frame      : 8,
+        framePost  : 8,
+        eaves      : 8,
+        ridge      : 9,
+        hip        : 8,
+        verge      : 8
     };
     const FALLBACK_MEMBER_STROKE_MM  =  6;
+    const FALLBACK_REVEAL_DASH_MM    =  '90 60';                             // <-- Reveal dash when config has not resolved
     const MAX_GRID_LINES_PER_AXIS    =  400;                                 // <-- Guards against a runaway grid at wide zoom
     // ------------------------------------------------------------
 
@@ -86,12 +100,15 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
     // ------------------------------------------------------------
     function VghLantern__Env2d__SkeletonRenderer__StrokeWidthForRole(skeletonCfg, roleKey) {
         var configKey  =  {
-            kerb     : 'KerbStrokeWidthMm',
-            kerbPost : 'KerbStrokeWidthMm',
-            eaves    : 'EavesStrokeWidthMm',
-            ridge    : 'RidgeStrokeWidthMm',
-            hip      : 'HipStrokeWidthMm',
-            verge    : 'HipStrokeWidthMm'
+            kerb       : 'KerbStrokeWidthMm',
+            kerbPost   : 'KerbStrokeWidthMm',
+            kerbReveal : 'KerbRevealStrokeWidthMm',
+            frame      : 'FrameStrokeWidthMm',
+            framePost  : 'FrameStrokeWidthMm',
+            eaves      : 'EavesStrokeWidthMm',
+            ridge      : 'RidgeStrokeWidthMm',
+            hip        : 'HipStrokeWidthMm',
+            verge      : 'HipStrokeWidthMm'
         }[roleKey];
 
         if (configKey && typeof skeletonCfg[configKey] === 'number') return skeletonCfg[configKey];
@@ -114,6 +131,7 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
     // wireframe where members do not cross mid-span.
     function VghLantern__Env2d__SkeletonRenderer__IsHidden(member, viewKey) {
         if (viewKey === 'plan') return false;
+        if (member.Role === ROLE_KERB_REVEAL) return false;                  // <-- Already an annotation; never fade it further
 
         var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
         var depth         =  CoordHelpers.VghLantern__Env2d__CoordHelpers__MemberDepth(member, viewKey);
@@ -139,7 +157,9 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
             'data-vgh-member-id'  : member.Id,
             'data-vgh-role'       : member.Role
         };
-        if (isHidden && skeletonCfg.HiddenDashPatternMm) {
+        if (member.Role === ROLE_KERB_REVEAL) {
+            attrs['stroke-dasharray']  =  skeletonCfg.KerbRevealDashPatternMm || FALLBACK_REVEAL_DASH_MM;
+        } else if (isHidden && skeletonCfg.HiddenDashPatternMm) {
             attrs['stroke-dasharray']  =  skeletonCfg.HiddenDashPatternMm;
         }
 

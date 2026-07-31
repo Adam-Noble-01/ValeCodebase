@@ -1,0 +1,395 @@
+/* =============================================================================
+ * VGHLANTERN - PWA INSTALLABILITY PROMPT STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UiFeature__Styles__PwaInstallability__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : UiFeature - PwaInstallability
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Banner and instruction sheet styling for the install prompt
+ * CREATED    : 31-Jul-2026
+ *
+ * DESCRIPTION:
+ * - Two layouts driven by VghLantern__Pwa__PromptUi:
+ *     * .vghpwa-prompt--bar   : compact bar docked to the bottom of the viewport
+ *     * .vghpwa-prompt--sheet : centred instruction sheet with a backdrop
+ * - Local tokens rather than the Vale token set, because the prompt can mount
+ *   before the stylesheet index has finished resolving its imports. The values
+ *   mirror the Vale palette so the two are visually identical.
+ * - The root layer sits above all application chrome. It is pointer-transparent
+ *   by default so only the prompt surfaces themselves capture clicks.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * TOKENS | Local Palette and Animations
+ * ----------------------------------------------------------------------------- */
+
+    :root {
+        --vghpwa-color-bg                  : #ffffff;                                    /* <-- Surface background */
+        --vghpwa-color-fg                  : #172b3a;                                    /* <-- Vale primary text colour */
+        --vghpwa-color-fg-muted            : #4a6076;                                    /* <-- Secondary text colour */
+        --vghpwa-color-accent              : #172b3a;                                    /* <-- Primary action background */
+        --vghpwa-color-accent-fg           : #ffffff;                                    /* <-- Primary action text */
+        --vghpwa-color-accent-hover        : #243d50;                                    /* <-- Primary action hover */
+        --vghpwa-color-secondary-fg        : #4a6076;                                    /* <-- Secondary action text */
+        --vghpwa-color-border              : rgba(23, 43, 58, 0.12);                     /* <-- Subtle border colour */
+        --vghpwa-shadow                    : 0 14px 32px rgba(23, 43, 58, 0.20);         /* <-- Floating panel shadow */
+        --vghpwa-color-backdrop            : rgba(23, 43, 58, 0.45);                     /* <-- Modal backdrop tint */
+        --vghpwa-radius                    : 14px;                                       /* <-- Corner radius */
+        --vghpwa-radius-sm                 : 8px;                                        /* <-- Button corner radius */
+        --vghpwa-spacing                   : 16px;                                       /* <-- Default spacing unit */
+        --vghpwa-font-stack                : 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        --vghpwa-zindex                    : 2147483000;                                 /* <-- Above every application layer */
+    }
+
+    @keyframes vghpwaFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes vghpwaSlideUp {
+        from { transform: translate(-50%, 16px); opacity: 0; }
+        to   { transform: translate(-50%, 0);    opacity: 1; }
+    }
+
+    @keyframes vghpwaSheetIn {
+        from { transform: translate(-50%, -50%) scale(0.96); opacity: 0; }
+        to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+    }
+
+    @keyframes vghpwaArrowBounceDown {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(8px); }
+    }
+
+    @keyframes vghpwaArrowBounceUp {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Root Container
+ * ----------------------------------------------------------------------------- */
+
+    /* ROOT | Full-Viewport Pointer-Transparent Layer */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt {
+        position                           : fixed;
+        inset                              : 0;
+        pointer-events                     : none;
+        z-index                            : var(--vghpwa-zindex);
+        font-family                        : var(--vghpwa-font-stack);
+        color                              : var(--vghpwa-color-fg);
+        opacity                            : 0;
+        transition                         : opacity 200ms ease-out;
+    }
+
+    .vghpwa-prompt--visible {
+        opacity                            : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BACKDROP | Dimmed Overlay for the Sheet Variant */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__backdrop {
+        position                           : absolute;
+        inset                              : 0;
+        background                         : var(--vghpwa-color-backdrop);
+        pointer-events                     : auto;
+        animation                          : vghpwaFadeIn 200ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Compact Bar Variant
+ * ----------------------------------------------------------------------------- */
+
+    /* BAR | Bottom Docked Install Bar */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__bar {
+        position                           : absolute;
+        left                               : 50%;
+        bottom                             : calc(var(--vghpwa-spacing) + env(safe-area-inset-bottom, 0px));
+        transform                          : translateX(-50%);
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--vghpwa-spacing);
+        width                              : calc(100vw - (var(--vghpwa-spacing) * 2));
+        max-width                          : 640px;
+        padding                            : var(--vghpwa-spacing);
+        background                         : var(--vghpwa-color-bg);
+        border                             : 1px solid var(--vghpwa-color-border);
+        border-radius                      : var(--vghpwa-radius);
+        box-shadow                         : var(--vghpwa-shadow);
+        pointer-events                     : auto;
+        animation                          : vghpwaSlideUp 240ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Instruction Sheet Variant
+ * ----------------------------------------------------------------------------- */
+
+    /* SHEET | Centred Instruction Panel */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__sheet {
+        position                           : absolute;
+        left                               : 50%;
+        top                                : 50%;
+        transform                          : translate(-50%, -50%);
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : calc(var(--vghpwa-spacing) * 0.75);
+        width                              : calc(100vw - (var(--vghpwa-spacing) * 2));
+        max-width                          : 420px;
+        max-height                         : calc(100vh - (var(--vghpwa-spacing) * 4));
+        overflow-y                         : auto;
+        padding                            : calc(var(--vghpwa-spacing) * 1.75) var(--vghpwa-spacing) var(--vghpwa-spacing);
+        text-align                         : center;
+        background                         : var(--vghpwa-color-bg);
+        border-radius                      : var(--vghpwa-radius);
+        box-shadow                         : var(--vghpwa-shadow);
+        pointer-events                     : auto;
+        animation                          : vghpwaSheetIn 240ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CLOSE | Sheet Dismiss Control */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__close {
+        position                           : absolute;
+        top                                : 8px;
+        right                              : 10px;
+        width                              : 28px;
+        height                             : 28px;
+        padding                            : 0;
+        font-family                        : var(--vghpwa-font-stack);
+        font-size                          : 13px;
+        font-weight                        : 600;
+        line-height                        : 1;
+        color                              : var(--vghpwa-color-fg-muted);
+        background                         : transparent;
+        border                             : none;
+        border-radius                      : 50%;
+        cursor                             : pointer;
+    }
+
+    .vghpwa-prompt__close:hover {
+        background                         : rgba(23, 43, 58, 0.08);
+        color                              : var(--vghpwa-color-fg);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Shared Content Elements
+ * ----------------------------------------------------------------------------- */
+
+    /* ICON | Application Icon */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__icon {
+        flex                               : 0 0 auto;
+        width                              : 48px;
+        height                             : 48px;
+        border-radius                      : 10px;
+        user-select                        : none;
+    }
+
+    .vghpwa-prompt__sheet .vghpwa-prompt__icon {
+        width                              : 64px;
+        height                             : 64px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TEXT | Title and Body Block */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__text {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+    }
+
+    .vghpwa-prompt__title {
+        font-size                          : 15px;
+        font-weight                        : 600;
+        line-height                        : 1.3;
+        color                              : var(--vghpwa-color-fg);
+    }
+
+    .vghpwa-prompt__body {
+        margin-top                         : 4px;
+        font-size                          : 13px;
+        font-weight                        : 400;
+        line-height                        : 1.45;
+        color                              : var(--vghpwa-color-fg-muted);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* STEPS | Numbered Instruction List */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__steps {
+        width                              : 100%;
+        margin                             : 4px 0 0;
+        padding                            : 0;
+        list-style                         : none;
+        text-align                         : left;
+    }
+
+    .vghpwa-prompt__step {
+        display                            : flex;
+        align-items                        : flex-start;
+        gap                                : 10px;
+        padding                            : 7px 0;
+        border-top                         : 1px solid var(--vghpwa-color-border);
+    }
+
+    .vghpwa-prompt__step:first-child {
+        border-top                         : none;
+    }
+
+    .vghpwa-prompt__step-number {
+        flex                               : 0 0 auto;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 20px;
+        height                             : 20px;
+        font-size                          : 11px;
+        font-weight                        : 600;
+        color                              : var(--vghpwa-color-accent-fg);
+        background                         : var(--vghpwa-color-accent);
+        border-radius                      : 50%;
+    }
+
+    .vghpwa-prompt__step-text {
+        flex                               : 1 1 auto;
+        font-size                          : 13px;
+        line-height                        : 1.45;
+        color                              : var(--vghpwa-color-fg-muted);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ARROW | Animated Directional Indicator */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__arrow {
+        width                              : 0;
+        height                             : 0;
+        border-left                        : 10px solid transparent;
+        border-right                       : 10px solid transparent;
+    }
+
+    .vghpwa-prompt__arrow--top {
+        border-bottom                      : 12px solid var(--vghpwa-color-accent);
+        animation                          : vghpwaArrowBounceUp 1.6s ease-in-out infinite;
+    }
+
+    .vghpwa-prompt__arrow--bottom {
+        border-top                         : 12px solid var(--vghpwa-color-accent);
+        animation                          : vghpwaArrowBounceDown 1.6s ease-in-out infinite;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Button Row */
+    /* ------------------------------------------------------------ */
+    .vghpwa-prompt__actions {
+        flex                               : 0 0 auto;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+    }
+
+    .vghpwa-prompt__sheet .vghpwa-prompt__actions {
+        width                              : 100%;
+        justify-content                    : center;
+        margin-top                         : 4px;
+    }
+
+    .vghpwa-prompt__button {
+        padding                            : 9px 18px;
+        font-family                        : var(--vghpwa-font-stack);
+        font-size                          : 13px;
+        font-weight                        : 600;
+        line-height                        : 1;
+        white-space                        : nowrap;
+        border                             : none;
+        border-radius                      : var(--vghpwa-radius-sm);
+        cursor                             : pointer;
+        transition                         : background-color 150ms ease-out;
+    }
+
+    .vghpwa-prompt__button--primary {
+        color                              : var(--vghpwa-color-accent-fg);
+        background                         : var(--vghpwa-color-accent);
+    }
+
+    .vghpwa-prompt__button--primary:hover {
+        background                         : var(--vghpwa-color-accent-hover);
+    }
+
+    .vghpwa-prompt__button--secondary {
+        color                              : var(--vghpwa-color-secondary-fg);
+        background                         : transparent;
+    }
+
+    .vghpwa-prompt__button--secondary:hover {
+        background                         : rgba(23, 43, 58, 0.06);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion -------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * RESPONSIVE | Narrow Viewport Adjustments
+ * ----------------------------------------------------------------------------- */
+
+    @media (max-width: 520px) {
+
+        .vghpwa-prompt__bar {
+            flex-wrap                      : wrap;
+            gap                            : 10px;
+        }
+
+        .vghpwa-prompt__bar .vghpwa-prompt__actions {
+            width                          : 100%;
+            justify-content                : flex-end;
+        }
+
+        .vghpwa-prompt__icon {
+            width                          : 40px;
+            height                         : 40px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .vghpwa-prompt,
+        .vghpwa-prompt__bar,
+        .vghpwa-prompt__sheet,
+        .vghpwa-prompt__backdrop,
+        .vghpwa-prompt__arrow--top,
+        .vghpwa-prompt__arrow--bottom {
+            animation                      : none;
+            transition                     : none;
+        }
+    }
+
+/* #endregion -------------------------------------------------------------------- */

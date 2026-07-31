@@ -2,7 +2,7 @@
     "VghLantern__Application__Config": {
         "VghLantern__Application__Config__Description": "Core application identity, version, and global paths for the VghLantern Roof Lantern Designer. This file is the single source of truth for app-wide settings; system specific settings live in each system folder and are merged over this file by AppCore ConfigLoader.",
         "VghLantern__Application__Config__AppName": "VghLantern Roof Lantern Designer",
-        "VghLantern__Application__Config__AppVersion": "0.3.0",
+        "VghLantern__Application__Config__AppVersion": "0.4.0",
         "VghLantern__Application__Config__ServerPort": 8006,
         "VghLantern__Application__Config__ProjectDataFolder": "07__LocalProjectData",
         "VghLantern__Application__Config__UserDataFolder": "08__LocalUserData",
@@ -26,9 +26,11 @@
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultWidthMm": 2400,
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultDepthMm": 1400,
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultKerbHeightMm": 150,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultKerbThicknessMm": 110,
+        "VghLantern__Lantern__GlobalDefaults__Config__DefaultFrameHeightMm": 50,
+        "VghLantern__Lantern__GlobalDefaults__Config__BaseAssemblyNote": "Width and depth are measured to the OUTER face of the kerb. The kerb is a hollow upstand of DefaultKerbThicknessMm wall; the base frame sits on top of it at the same thickness and DefaultFrameHeightMm tall.",
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultEavesProjectionMm": 50,
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultPitchDegrees": 25,
-        "VghLantern__Lantern__GlobalDefaults__Config__DefaultPitchDriveMode": "angle",
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultBarDivisionMode": "count",
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultBarCountLongSlope": 3,
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultTargetBarSpacingMm": 500
@@ -44,10 +46,6 @@
         "VghLantern__RoofForm__Options__Config__DisabledRoofForms": [
             "Gable",
             "Mono Pitch"
-        ],
-        "VghLantern__RoofForm__Options__Config__PitchDriveModes": [
-            "angle",
-            "rise"
         ]
     },
     "VghLantern__Glazing__Options__Config": {
@@ -113,7 +111,16 @@
         "VghLantern__Validation__Config__MaxGlazingPaneAreaSqM": 2.6,
         "VghLantern__Validation__Config__MaxBarSpacingMm": 900,
         "VghLantern__Validation__Config__MinBarSpacingMm": 200,
-        "VghLantern__Validation__Config__MaxKerbHeightMm": 600
+
+        "VghLantern__Validation__Config__BaseAssemblyNote": "Kerb and frame limits. A Recommended bound raises an advisory warning; a Min/Max bound is a hard limit the editor slider and the schema both clamp to. 150 mm is the standard Vale upstand and 110 mm the standard studwork wall, so anything under those is flagged for confirmation rather than rejected.",
+        "VghLantern__Validation__Config__MinKerbHeightMm": 100,
+        "VghLantern__Validation__Config__MaxKerbHeightMm": 400,
+        "VghLantern__Validation__Config__RecommendedMinKerbHeightMm": 150,
+        "VghLantern__Validation__Config__MinKerbThicknessMm": 90,
+        "VghLantern__Validation__Config__MaxKerbThicknessMm": 150,
+        "VghLantern__Validation__Config__RecommendedMinKerbThicknessMm": 100,
+        "VghLantern__Validation__Config__MinFrameHeightMm": 30,
+        "VghLantern__Validation__Config__MaxFrameHeightMm": 100
     },
     "VghLantern__UserMenu__AppDefaults__Config": {
         "VghLantern__UserMenu__AppDefaults__Config__Description": "Application-wide default menu settings mirrored from the sync user. Used when no user override config exists.",

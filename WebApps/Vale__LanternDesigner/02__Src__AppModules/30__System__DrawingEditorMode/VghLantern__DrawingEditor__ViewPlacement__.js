@@ -103,8 +103,9 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // MODULE VARIABLES | Sheet Camera Edit Session
     // ------------------------------------------------------------
     // Double clicking the 3D frame swaps the snapshot for a live orbitable surface.
-    // Escape ends the session, re-captures the snapshot from wherever the camera
-    // was left, and the chosen camera survives later geometry redraws.
+    // Escape, Enter, or a click anywhere outside the viewport ends the session,
+    // re-captures the snapshot from wherever the camera was left, and the chosen
+    // camera survives later geometry redraws.
     let VghLantern__ViewPlacement__CameraEdit          =  null;                // <-- Active session, null when idle
     let VghLantern__ViewPlacement__CustomCameraStates  =  {};                  // <-- slotKey -> saved camera, replayed on redraws
     // ------------------------------------------------------------
@@ -493,12 +494,23 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         if (frameElement) frameElement.classList.add(CSS_FRAME_CAM_EDIT);
 
         function VghLantern__ViewPlacement__OnCameraEditKey(e) {
-            if (e.key !== 'Escape') return;
-            e.stopPropagation();                                              // <-- Escape belongs to the session, not the app hotkeys
+            if (e.key !== 'Escape' && e.key !== 'Enter') return;              // <-- Both commit and exit, same as CAD viewports
+            e.stopPropagation();                                              // <-- Session owns these keys, not the app hotkeys
             e.preventDefault();
             VghLantern__ViewPlacement__ExitCameraEdit(false);
         }
+
+        // Clicks inside the frame keep orbiting; anywhere else commits and exits.
+        // Capture phase so sheet chrome / UI outside the frame still receive the
+        // click after we leave edit - exit does not swallow the event.
+        function VghLantern__ViewPlacement__OnCameraEditOutsideClick(e) {
+            var frame  =  frameElement || bodyElement;
+            if (frame && frame.contains(e.target)) return;                    // <-- Inside the live viewport - keep editing
+            VghLantern__ViewPlacement__ExitCameraEdit(false);
+        }
+
         document.addEventListener('keydown', VghLantern__ViewPlacement__OnCameraEditKey, true);
+        document.addEventListener('click', VghLantern__ViewPlacement__OnCameraEditOutsideClick, true);
 
         VghLantern__ViewPlacement__CameraEdit  =  {
             Slot         : slot,
@@ -508,7 +520,8 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
             Surface      : surface,
             Geometry     : geometry,
             Lantern      : lantern,
-            OnKey        : VghLantern__ViewPlacement__OnCameraEditKey
+            OnKey        : VghLantern__ViewPlacement__OnCameraEditKey,
+            OnOutsideClick : VghLantern__ViewPlacement__OnCameraEditOutsideClick
         };
     }
     // ------------------------------------------------------------
@@ -524,6 +537,9 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         VghLantern__ViewPlacement__CameraEdit  =  null;
 
         document.removeEventListener('keydown', edit.OnKey, true);
+        if (edit.OnOutsideClick) {
+            document.removeEventListener('click', edit.OnOutsideClick, true);
+        }
         if (edit.FrameElement) edit.FrameElement.classList.remove(CSS_FRAME_CAM_EDIT);
 
         var Env3d  =  window.VghLantern__Env3d__RenderPipeline;

@@ -17,7 +17,6 @@ the ridge. Discrete objects placed at a point (finials, vents) live in
 ├── PRF__GlazingBars/
 ├── PRF__RidgeSections/
 ├── PRF__HipSections/
-├── PRF__EavesAndKerb/
 └── PRF__ClosingSections/
 ```
 

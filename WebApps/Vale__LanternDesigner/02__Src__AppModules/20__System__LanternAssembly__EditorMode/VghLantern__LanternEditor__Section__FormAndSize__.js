@@ -6,15 +6,19 @@
    NAMESPACE  : VghLantern
    MODULE     : System - LanternEditor - Section - FormAndSize
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Declare the roof form, overall size and quantity controls
+   PURPOSE    : Declare the roof form, overall size, pitch and quantity controls
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
    - Emits the descriptor list for the Form and Size accordion section.
    - Roof form drives which members the SkeletonSolver produces, so it sits first.
-   - Width is the long plan axis, depth the short one; both are structural extents
-     measured to the outside of the kerb, matching the dimensions the plan view
-     puts under the click-to-type editor.
+   - Width is the long plan axis, depth the short one. Both are measured to the
+     OUTSIDE face of the kerb, which is the face the builder sets out to, and
+     they match the dimensions the plan view puts under the click-to-type editor.
+     The kerb thickness therefore reduces the reveal, never the stated size.
+   - Roof pitch follows width and depth because it is the third number that fixes
+     the shape: with the plan size set, the pitch is what decides how tall the
+     roof stands. It is the only thing that drives roof height.
    - Pure data. No DOM, no lantern mutation, no config duplication.
 
    ============================================================================= */
@@ -51,7 +55,7 @@ const VghLantern__LanternEditor__Section__FormAndSize = (function() {
                 Field     : 'Lantern__Dimensions__Config__WidthMm',
                 BoundsKey : 'WidthMm',
                 Unit      : 'mm',
-                Hint      : 'Long plan axis, measured over the kerb.'
+                Hint      : 'Long plan axis, measured to the outside face of the kerb.'
             },
             {
                 Key       : 'depthMm',
@@ -61,7 +65,18 @@ const VghLantern__LanternEditor__Section__FormAndSize = (function() {
                 Field     : 'Lantern__Dimensions__Config__DepthMm',
                 BoundsKey : 'DepthMm',
                 Unit      : 'mm',
-                Hint      : 'Short plan axis, measured over the kerb.'
+                Hint      : 'Short plan axis, measured to the outside face of the kerb.'
+            },
+            {
+                Key       : 'pitchDegrees',
+                Type      : 'slider',
+                Label     : 'Roof Pitch',
+                Block     : 'Lantern__RoofPitch__Config',
+                Field     : 'Lantern__RoofPitch__Config__PitchDegrees',
+                BoundsKey : 'PitchDegrees',
+                Unit      : 'deg',
+                Decimals  : 1,
+                Hint      : 'Slope angle from horizontal; sets the height of the roof.'
             },
             {
                 Key       : 'eavesProjectionMm',

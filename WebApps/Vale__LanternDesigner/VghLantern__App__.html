@@ -15,12 +15,24 @@
     <meta name="theme-color" content="#172b3a">
     <title>Lantern Designer |  Roof Lantern Configurator</title>
 
+    <!-- PWA - Apple Standalone Behaviour (iOS ignores the manifest for these) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lantern Designer">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Lantern Designer">
+
     <!-- Favicon - VghLantern PWA Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="01__AppAssets__VghLantern/Na__VghLanternApp__Icon__512x512.png">
     <link rel="shortcut icon" type="image/png" href="01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png">
     <link rel="apple-touch-icon" sizes="192x192" href="01__AppAssets__VghLantern/Na__VghLanternApp__Icon__192x192.png">
-    <link rel="manifest" href="02__Src__AppModules/62__Feature__AppInstallability/Na__AppInstallability__Manifest.webmanifest">
+
+    <!-- PWA Manifest - href is rewritten to an absolute URL at runtime by      -->
+    <!-- VghLantern__Pwa__Url__Constructor so the manifest, the service worker  -->
+    <!-- scope and the start_url all resolve from one shared base regardless of -->
+    <!-- whether the app is served from localhost or a hosted sub-path.         -->
+    <link rel="manifest" href="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Manifest__.webmanifest">
 
     <!-- Single Stylesheet (hub @imports all other CSS including system-local sheets) -->
     <link rel="stylesheet" href="03__Style__AppStylesheets/VghLantern__CoreUi__Styles__Index__.css">
@@ -275,7 +287,6 @@
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__ControlDescriptors__.js"></script>
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__ControlPanel__.js"></script>
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Section__FormAndSize__.js"></script>
-    <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Section__RoofPitch__.js"></script>
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Section__GlazingBars__.js"></script>
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Section__RidgeAndHips__.js"></script>
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Section__Finials__.js"></script>
@@ -325,8 +336,29 @@
     <script src="02__Src__AppModules/50__System__ComponentIndex/VghLantern__ComponentIndex__DetailView__.js"></script>
     <script src="02__Src__AppModules/50__System__ComponentIndex/VghLantern__ComponentIndex__Main__.js"></script>
 
-    <!-- Feature: App Installability -->
-    <script src="02__Src__AppModules/62__Feature__AppInstallability/Na__Feature__AppInstallability__ServiceWorkerRegistration__.js"></script>
+    <!-- Feature: Web Demo Mode                                                     -->
+    <!-- Loaded before the install stack so the install controller can see the      -->
+    <!-- notice modal and defer to it rather than stacking two panels on a          -->
+    <!-- first-time visitor.                                                        -->
+    <script src="02__Src__AppModules/63__Feature__WebDemoMode/VghLantern__WebDemoMode__EnvironmentDetector__.js"></script>
+    <script src="02__Src__AppModules/63__Feature__WebDemoMode/VghLantern__WebDemoMode__NoticeModal__.js"></script>
+
+    <!-- Feature: App Installability                                                -->
+    <!-- Load order matters. The URL constructor resolves the paths every other     -->
+    <!-- module reads, the handlers must exist before the controller resolves one,  -->
+    <!-- and the registrar runs last because it registers against the resolved      -->
+    <!-- service worker URL.                                                        -->
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Url__Constructor__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__PlatformDetector__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__SessionState__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__PromptUi__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Handler__Chromium__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Handler__IosSafari__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Handler__IosNonSafari__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Handler__MacSafari__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__Handler__InstalledStandalone__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__InstallController__.js"></script>
+    <script src="02__Src__AppModules/62__Feature__AppInstallability/VghLantern__Pwa__ServiceWorker__Registrar__.js"></script>
 
     <!-- Init (last classic script - boots the app) -->
     <script src="02__Src__AppModules/01__AppCore/VghLantern__AppCore__Init__.js"></script>

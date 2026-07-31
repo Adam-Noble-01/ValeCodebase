@@ -189,9 +189,19 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__EavesProfileId', ''),
             totalFor('eaves'), countFor('eaves'), quantity);
 
-        VghLantern__QuantityTakeoff__PushLinear(rows, 'kerb', 'Kerb Section',
+        // The kerb and the frame are prisms, not swept members, so their runs come
+        // from the Base block rather than from a member-role total. Summing the
+        // 'kerb' role would double-count: the solver draws that box at both its
+        // base and its top, and each ring is one full perimeter.
+        var base  =  skeleton.Base || {};
+
+        VghLantern__QuantityTakeoff__PushLinear(rows, 'frame', 'Base Frame',
+            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__EavesProfileId', ''),
+            (Number(base.FrameHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
+
+        VghLantern__QuantityTakeoff__PushLinear(rows, 'kerb', 'Kerb Upstand',
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbProfileId', ''),
-            totalFor('kerb'), countFor('kerb'), quantity);
+            (Number(base.KerbHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
 
         if (barSet && barSet.Meta) {
             var barProfileId  =  VghLantern__QuantityTakeoff__Read(lantern, BLOCK_GLAZING_BARS, 'Lantern__GlazingBars__Config__BarProfileId', '');

@@ -198,7 +198,10 @@ const VghLantern__DocManagement__ProjectList = (function() {
     function VghLantern__ProjectList__BuildDateSortValue(dateText) {
         if (!dateText) return 0;
 
-        var parsedValue  =  Date.parse(dateText);
+        var DateFormatter  =  window.VghLantern__AppUtils__DateFormatter;
+        var parsedValue    =  DateFormatter
+            ? DateFormatter.VghLantern__DateFormatter__ToDate(dateText).getTime()   // <-- Handles "30-Jul-2026" and legacy ISO
+            : Date.parse(dateText);                                                 // <-- Raw fallback
         if (isNaN(parsedValue)) return 0;
 
         return parsedValue;

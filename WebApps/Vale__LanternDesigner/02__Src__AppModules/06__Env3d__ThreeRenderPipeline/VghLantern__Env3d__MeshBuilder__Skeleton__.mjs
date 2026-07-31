@@ -26,6 +26,12 @@
    through that shared table, so swapping a profile updates the SVG views and the
    3D model from a single edit.
 
+   ROLES THIS MODULE DOES NOT BUILD:
+   The base assembly - kerb, kerb posts, frame, frame posts - is a pair of solid
+   prisms, not swept sections, so MeshBuilder__KerbBox owns it and this module
+   skips those roles. 'kerbReveal' is skipped by every builder: it is the hole
+   through the base and exists only as 2D setting-out linework.
+
    ============================================================================= */
 
 import * as THREE from 'three';
@@ -49,6 +55,13 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
 
     const ROLE_KERB_SET         =  ['kerb', 'kerbPost'];                     // <-- Roles that take the kerb material
 
+    // The base assembly is extruded as solid prisms by MeshBuilder__KerbBox, so
+    // its members are construction linework here and must not also be swept -
+    // doing both would put a section inside the solid it describes. 'kerbReveal'
+    // is skipped outright: it is the hole through the base, not a member.
+    const ROLE_BASE_SOLID_SET   =  ['kerb', 'kerbPost', 'frame', 'framePost'];
+    const ROLE_ANNOTATION_SET   =  ['kerbReveal'];
+
     const FINISH_BLOCK          =  'Lantern__FinishAndGlazing__Config';      // <-- Frame finish lives here
     const FINISH_FIELD          =  'Lantern__FinishAndGlazing__Config__FrameFinish';
     // ------------------------------------------------------------
@@ -60,15 +73,27 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
 // REGION | Member Grouping and Profile Resolution
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Whether a Role Is Built Elsewhere or Not Built at All
+    // ------------------------------------------------------------
+    // buildsBaseAsSolid is false only when the base has been left to this module,
+    // in which case the kerb and frame rings fall through to the normal path.
+    function VghLantern__Env3d__SkeletonBuilder__IsExcludedRole(roleKey, buildsBaseAsSolid) {
+        if (ROLE_ANNOTATION_SET.indexOf(roleKey) !== -1) return true;
+        return buildsBaseAsSolid && ROLE_BASE_SOLID_SET.indexOf(roleKey) !== -1;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Group Members by Their Role
     // ------------------------------------------------------------
-    function VghLantern__Env3d__SkeletonBuilder__GroupByRole(memberList) {
+    function VghLantern__Env3d__SkeletonBuilder__GroupByRole(memberList, buildsBaseAsSolid) {
         const grouped  =  {};
         if (!Array.isArray(memberList)) return grouped;
 
         for (let i = 0; i < memberList.length; i++) {
             const member  =  memberList[i];
             if (!member || !member.Role) continue;
+            if (VghLantern__Env3d__SkeletonBuilder__IsExcludedRole(member.Role, buildsBaseAsSolid)) continue;
             if (!grouped[member.Role]) grouped[member.Role]  =  [];
             grouped[member.Role].push(member);
         }
@@ -202,7 +227,7 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
             for (let i = 0; i < barSet.Bars.length; i++) members.push(barSet.Bars[i]);
         }
 
-        const grouped  =  VghLantern__Env3d__SkeletonBuilder__GroupByRole(members);
+        const grouped  =  VghLantern__Env3d__SkeletonBuilder__GroupByRole(members, config.BuildBaseAsSolid !== false);
         const roles    =  Object.keys(grouped);
 
         for (let i = 0; i < roles.length; i++) {

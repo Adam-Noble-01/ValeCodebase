@@ -447,6 +447,17 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
 // REGION | Solve Context Assembly
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Read a Numeric Config Field with a Documented Fallback
+    // ------------------------------------------------------------
+    // A missing field falls back; a present-but-zero field is honoured, so a
+    // deliberate zero (no frame, for instance) is never quietly overridden.
+    function VghLantern__SkeletonSolver__ReadNumber(configBlock, fieldKey, fallbackValue) {
+        var value  =  Number(configBlock[fieldKey]);
+        return isFinite(value) ? value : fallbackValue;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Read the Lantern Config into a Flat Solve Context
     // ------------------------------------------------------------
     function VghLantern__SkeletonSolver__BuildContext(lantern, warnings) {
@@ -461,7 +472,14 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var widthMm        =  Number(dimsCfg['Lantern__Dimensions__Config__WidthMm']) || 0;
         var depthMm        =  Number(dimsCfg['Lantern__Dimensions__Config__DepthMm']) || 0;
         var eavesProjMm    =  Number(dimsCfg['Lantern__Dimensions__Config__EavesProjectionMm']) || 0;
-        var kerbHeightMm   =  Number(kerbCfg['Lantern__KerbAndBase__Config__KerbHeightMm']) || 0;
+
+        // BASE ASSEMBLY - width and depth are measured to the OUTER kerb face.
+        var kerbHeightMm     =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(kerbCfg, 'Lantern__KerbAndBase__Config__KerbHeightMm',    FALLBACK_KERB_HEIGHT_MM));
+        var kerbThicknessMm  =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(kerbCfg, 'Lantern__KerbAndBase__Config__KerbThicknessMm', FALLBACK_KERB_THICKNESS_MM));
+        var frameHeightMm    =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(kerbCfg, 'Lantern__KerbAndBase__Config__FrameHeightMm',   FALLBACK_FRAME_HEIGHT_MM));
+
+        var kerbTopLevelMm   =  kerbHeightMm;
+        var frameTopLevelMm  =  kerbHeightMm + frameHeightMm;
 
         var eavesHalfX  =  (widthMm / 2) + eavesProjMm;
         var eavesHalfY  =  (depthMm / 2) + eavesProjMm;
@@ -472,17 +490,20 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var kerbHalfLong    =  longAxis === 'x' ? widthMm / 2 : depthMm / 2;
         var kerbHalfShort   =  longAxis === 'x' ? depthMm / 2 : widthMm / 2;
 
+        var innerHalfLong   =  kerbHalfLong  - kerbThicknessMm;
+        var innerHalfShort  =  kerbHalfShort - kerbThicknessMm;
+        var hasReveal       =  (innerHalfShort * 2) >= MIN_REVEAL_DIMENSION_MM
+                            && (innerHalfLong  * 2) >= MIN_REVEAL_DIMENSION_MM;
+
         // A pyramid collapses the ridge to a point; every other form keeps it.
         var ridgeHalfLength  =  roofForm === ROOF_FORM_PYRAMID
             ? 0
             : Math.max(0, eavesHalfLong - eavesHalfShort);
 
         var pitchSet  =  PitchCalculator.VghLantern__RoofPitch__ResolvePitchSet(
-            pitchCfg['Lantern__RoofPitch__Config__DriveMode'] === 'rise' ? 'rise' : 'angle',
             eavesHalfShort,
             eavesHalfLong - ridgeHalfLength,
-            pitchCfg['Lantern__RoofPitch__Config__PitchDegrees'],
-            pitchCfg['Lantern__RoofPitch__Config__RidgeRiseMm']
+            pitchCfg['Lantern__RoofPitch__Config__PitchDegrees']
         );
 
         return {
@@ -491,15 +512,22 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             DepthMm            : depthMm,
             EavesProjectionMm  : eavesProjMm,
             KerbHeightMm       : kerbHeightMm,
+            KerbThicknessMm    : kerbThicknessMm,
+            FrameHeightMm      : frameHeightMm,
             LongAxis           : longAxis,
             MapTo              : VghLantern__SkeletonSolver__BuildAxisMapper(longAxis),
             EavesHalfLongMm    : eavesHalfLong,
             EavesHalfShortMm   : eavesHalfShort,
             KerbHalfLongMm     : kerbHalfLong,
             KerbHalfShortMm    : kerbHalfShort,
+            InnerHalfLongMm    : innerHalfLong,
+            InnerHalfShortMm   : innerHalfShort,
+            HasReveal          : hasReveal,
             RidgeHalfLengthMm  : ridgeHalfLength,
-            EavesLevelMm       : kerbHeightMm,
-            RidgeLevelMm       : kerbHeightMm + pitchSet.RiseMm,
+            KerbTopLevelMm     : kerbTopLevelMm,
+            FrameTopLevelMm    : frameTopLevelMm,
+            EavesLevelMm       : frameTopLevelMm,
+            RidgeLevelMm       : frameTopLevelMm + pitchSet.RiseMm,
             PitchSet           : pitchSet,
             Warnings           : warnings
         };
@@ -517,11 +545,15 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             isValid  =  false;
         }
         if (context.PitchSet.RiseMm <= 0) {
-            context.Warnings.push('Resolved ridge rise is zero - the roof would be flat.');
+            context.Warnings.push('The roof pitch resolves to no rise at all - the roof would be flat.');
             isValid  =  false;
         }
         if (context.EavesProjectionMm > context.KerbHalfShortMm) {
             context.Warnings.push('Eaves projection exceeds half the short span - check the overhang.');
+        }
+        if (!context.HasReveal) {
+            context.Warnings.push('A kerb thickness of ' + Math.round(context.KerbThicknessMm)
+                + ' mm leaves no usable reveal at this size - the upstand is solid through.');
         }
 
         return isValid;
@@ -595,6 +627,8 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
                 DepthMm              : context.DepthMm,
                 EavesProjectionMm    : context.EavesProjectionMm,
                 KerbHeightMm         : context.KerbHeightMm,
+                KerbThicknessMm      : context.KerbThicknessMm,
+                FrameHeightMm        : context.FrameHeightMm,
                 LongAxis             : context.LongAxis,
                 EavesHalfWidthMm     : context.LongAxis === 'x' ? context.EavesHalfLongMm : context.EavesHalfShortMm,
                 EavesHalfDepthMm     : context.LongAxis === 'x' ? context.EavesHalfShortMm : context.EavesHalfLongMm,
@@ -606,10 +640,12 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
                 LongSlopePitchDeg    : pitchSet.LongSlopePitchDegrees,
                 HipLengthMm          : pitchSet.HipLengthMm,
                 HipAngleDegrees      : pitchSet.HipAngleDegrees,
+                KerbTopLevelMm       : context.KerbTopLevelMm,
                 EavesLevelMm         : context.EavesLevelMm,
                 RidgeLevelMm         : context.RidgeLevelMm,
                 OverallHeightMm      : context.RidgeLevelMm
             },
+            Base           : VghLantern__SkeletonSolver__BuildBaseBlock(context),
             Members        : solved.Members,
             Faces          : solved.Faces,
             FinialAnchors  : solved.FinialAnchors,

@@ -49,6 +49,7 @@ import {
 
 import { VghLantern__Env3d__LightingRig__Attach } from './VghLantern__Env3d__LightingRig__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Skeleton__Build, VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode } from './VghLantern__Env3d__MeshBuilder__Skeleton__.mjs';
+import { VghLantern__Env3d__MeshBuilder__KerbBox__Build } from './VghLantern__Env3d__MeshBuilder__KerbBox__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
 import { VghLantern__Env3d__ComponentLoader__Glb__Build, VghLantern__Env3d__ComponentLoader__Glb__ClearCache } from './VghLantern__Env3d__ComponentLoader__Glb__.mjs';
 import { VghLantern__Env3d__SnapshotExporter__Capture, VghLantern__Env3d__SnapshotExporter__CapturePreset } from './VghLantern__Env3d__SnapshotExporter__.mjs';
@@ -199,6 +200,7 @@ import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__En
         const componentsGroup  =  VghLantern__Env3d__SceneManager__GetGroup(surface, 'components');
 
         VghLantern__Env3d__MeshBuilder__Glazing__Build(glazingGroup, skeleton);
+        VghLantern__Env3d__MeshBuilder__KerbBox__Build(skeletonGroup, skeleton, lantern);
         await VghLantern__Env3d__MeshBuilder__Skeleton__Build(skeletonGroup, skeleton, barSet, lantern);
         await VghLantern__Env3d__ComponentLoader__Glb__Build(componentsGroup, skeleton, lantern);
 

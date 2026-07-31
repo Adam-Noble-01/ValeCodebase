@@ -5,7 +5,7 @@
         "VghLantern__DrawingEditor__Config__Sheet": {
             "DefaultSheetSize"          : "A3",
             "DefaultOrientation"        : "landscape",
-            "MarginMm"                  : 10,
+            "MarginMm"                  : 5,
             "TitleBlockHeightMm"        : 10,
             "BlockGapMm"                : 3,
             "BlockGapMmNote"            : "Vertical gap between the view grid, the notes block and the titleblock. Screen sheet and PDF both honour this value.",

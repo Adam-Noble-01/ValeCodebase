@@ -7,8 +7,8 @@
         "VghLantern__ProjectFile__Metadata__ClientName": "",
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
-        "VghLantern__ProjectFile__Metadata__DateCreated": "2026-07-30",
-        "VghLantern__ProjectFile__Metadata__DateModified": "2026-07-30",
+        "VghLantern__ProjectFile__Metadata__DateCreated": "30-Jul-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "31-Jul-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -35,14 +35,12 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 6500,
+                "Lantern__Dimensions__Config__WidthMm": 6000,
                 "Lantern__Dimensions__Config__DepthMm": 4000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 50
             },
             "Lantern__RoofPitch__Config": {
-                "Lantern__RoofPitch__Config__DriveMode": "angle",
-                "Lantern__RoofPitch__Config__PitchDegrees": 30,
-                "Lantern__RoofPitch__Config__RidgeRiseMm": 1050
+                "Lantern__RoofPitch__Config__PitchDegrees": 22.5
             },
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__DivisionMode": "spacing",
@@ -69,7 +67,9 @@
                 "Lantern__KerbAndBase__Config__KerbHeightMm": 150,
                 "Lantern__KerbAndBase__Config__KerbProfileId": "",
                 "Lantern__KerbAndBase__Config__EavesProfileId": "",
-                "Lantern__KerbAndBase__Config__ClosingProfileId": ""
+                "Lantern__KerbAndBase__Config__ClosingProfileId": "",
+                "Lantern__KerbAndBase__Config__KerbThicknessMm": 110,
+                "Lantern__KerbAndBase__Config__FrameHeightMm": 50
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -86,7 +86,7 @@
         }
     ],
     "VghLantern__ProjectFile__DrawingLayout": {
-        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A3",
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A4",
         "VghLantern__ProjectFile__DrawingLayout__Orientation": "landscape",
         "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": 50,
         "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
@@ -98,7 +98,7 @@
             39.20130010714718,
             60.79869989285282
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.1735108709918103,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.6160744021928957,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {

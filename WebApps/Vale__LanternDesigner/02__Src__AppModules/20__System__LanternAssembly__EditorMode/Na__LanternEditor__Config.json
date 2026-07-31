@@ -25,11 +25,10 @@
 
         "VghLantern__LanternEditor__Config__Sections": [
             { "Key": "formAndSize",      "Label": "Form and Size",       "DefaultOpen": true,  "Enabled": true },
-            { "Key": "roofPitch",        "Label": "Roof Pitch",          "DefaultOpen": true,  "Enabled": true },
             { "Key": "glazingBars",      "Label": "Glazing Bars",        "DefaultOpen": false, "Enabled": true },
             { "Key": "ridgeAndHips",     "Label": "Ridge and Hips",      "DefaultOpen": false, "Enabled": true },
             { "Key": "finials",          "Label": "Finials",             "DefaultOpen": false, "Enabled": true },
-            { "Key": "kerbAndBase",      "Label": "Kerb and Base",       "DefaultOpen": false, "Enabled": true },
+            { "Key": "kerbAndBase",      "Label": "Frame and Kerb",      "DefaultOpen": false, "Enabled": true },
             { "Key": "ventilation",      "Label": "Ventilation",         "DefaultOpen": false, "Enabled": true },
             { "Key": "finishAndGlazing", "Label": "Finish and Glazing",  "DefaultOpen": false, "Enabled": true }
         ],
@@ -40,8 +39,9 @@
             "DepthMm"               : { "Min": 600, "Max": 6000, "Step": 10 },
             "EavesProjectionMm"     : { "Min": 0,   "Max": 300,  "Step": 5  },
             "PitchDegrees"          : { "Min": 10,  "Max": 45,   "Step": 0.5 },
-            "RidgeRiseMm"           : { "Min": 100, "Max": 2500, "Step": 10 },
-            "KerbHeightMm"          : { "Min": 0,   "Max": 600,  "Step": 10 },
+            "KerbHeightMm"          : { "Min": 100, "Max": 400,  "Step": 10 },
+            "KerbThicknessMm"       : { "Min": 90,  "Max": 150,  "Step": 5  },
+            "FrameHeightMm"         : { "Min": 30,  "Max": 100,  "Step": 5  },
             "BarCountLongSlope"     : { "Min": 0,   "Max": 20,   "Step": 1  },
             "TargetSpacingMm"       : { "Min": 200, "Max": 900,  "Step": 10 },
             "VentCount"             : { "Min": 0,   "Max": 12,   "Step": 1  },

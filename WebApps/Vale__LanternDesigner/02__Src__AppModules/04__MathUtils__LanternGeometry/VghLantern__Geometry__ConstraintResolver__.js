@@ -26,7 +26,7 @@
                (width, depth, eaves projection, kerb height, pitch).
    - Derived : the typed value is a consequence of other fields, so the resolver
                back-solves which field to move. Examples:
-                 overall height -> ridge rise, holding kerb height
+                 overall height -> pitch angle, holding the base assembly
                  ridge length   -> depth, holding width
                Every derived case documents which field it holds constant.
 
@@ -59,12 +59,12 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     // MODULE CONSTANTS | Config Block Keys
     // ------------------------------------------------------------
     const BLOCK_DIMENSIONS   =  'Lantern__Dimensions__Config';               // <-- Width, depth, eaves projection
-    const BLOCK_ROOF_PITCH   =  'Lantern__RoofPitch__Config';                // <-- Pitch angle, ridge rise, drive mode
+    const BLOCK_ROOF_PITCH   =  'Lantern__RoofPitch__Config';                // <-- Pitch angle, the sole driver of roof height
     const BLOCK_KERB         =  'Lantern__KerbAndBase__Config';              // <-- Kerb height and section ids
     const BLOCK_GLAZING_BARS =  'Lantern__GlazingBars__Config';              // <-- Division mode, counts, spacing
 
-    const PITCH_MODE_ANGLE   =  'angle';                                     // <-- Pitch is driven by the angle field
-    const PITCH_MODE_RISE    =  'rise';                                      // <-- Pitch is driven by the rise field
+    const PITCH_MIN_DEGREES  =  5;                                           // <-- Mirrors the schema validator's pitch bounds
+    const PITCH_MAX_DEGREES  =  70;
     const DIVISION_SPACING   =  'spacing';                                   // <-- Bar division driven by target spacing
     // ------------------------------------------------------------
 
@@ -142,6 +142,22 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Horizontal Run of the Short Axis Slope, Eaves to Ridge
+    // ------------------------------------------------------------
+    // Mirrors the SkeletonSolver: width and depth are measured over the kerb and
+    // the eaves project past both, so the eaves half-extent of the SHORT axis is
+    // the run a full-height slope covers. Every rise-to-pitch conversion works
+    // from this number, so the two modules must agree on it exactly.
+    function VghLantern__ConstraintResolver__ShortSlopeRun(lantern) {
+        var widthMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__WidthMm');
+        var depthMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__DepthMm');
+        var eavesMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__EavesProjectionMm');
+
+        return Math.min((widthMm / 2) + eavesMm, (depthMm / 2) + eavesMm);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -149,24 +165,41 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
 // REGION | Derived Dimension Appliers
 // -----------------------------------------------------------------------------
 
-    // SUB FUNCTION | Apply an Overall Height Edit by Moving the Ridge Rise
+    // SUB FUNCTION | Apply an Overall Height Edit by Moving the Roof Pitch
     // ------------------------------------------------------------
-    // Holds kerb height constant, because the kerb is usually a site-fixed
-    // dimension while the ridge rise is the designer's free variable.
+    // Holds the whole base assembly and the plan size constant: the kerb is
+    // site-fixed, the frame is a standard section, and width and depth are the
+    // opening the lantern has to match. That leaves the pitch as the only free
+    // variable, which is also the only field that drives roof height. Overall
+    // height is measured from the kerb base, so the rise the pitch has to
+    // produce is what is left after BOTH the kerb and the frame.
     function VghLantern__ConstraintResolver__ApplyOverallHeight(result, lantern, descriptor, typedValue) {
-        var kerbHeight  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbHeightMm');
-        var nextRise    =  Math.round(typedValue - kerbHeight);
+        var kerbHeight   =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbHeightMm');
+        var frameHeight  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__FrameHeightMm');
+        var baseHeight   =  kerbHeight + frameHeight;
+        var targetRise   =  typedValue - baseHeight;
 
-        if (nextRise <= 0) {
-            result.Warnings.push('Overall height must exceed the kerb height of ' + kerbHeight + ' mm.');
+        if (targetRise <= 0) {
+            result.Warnings.push('Overall height must exceed the ' + baseHeight + ' mm kerb and frame below the eaves.');
             return;
         }
 
-        nextRise  =  VghLantern__ConstraintResolver__Clamp(result, nextRise, 0, 6000, 'mm');
+        var runMm  =  VghLantern__ConstraintResolver__ShortSlopeRun(lantern);
+        if (runMm <= 0) {
+            result.Warnings.push('Set a width and depth before typing an overall height.');
+            return;
+        }
 
-        VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_ROOF_PITCH, 'Lantern__RoofPitch__Config__RidgeRiseMm', nextRise);
-        VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_ROOF_PITCH, 'Lantern__RoofPitch__Config__DriveMode', PITCH_MODE_RISE);
-        result.Notes.push('Kerb height held at ' + kerbHeight + ' mm; ridge rise resolved to ' + nextRise + ' mm.');
+        var PitchCalculator  =  window.VghLantern__Geometry__RoofPitchCalculator;
+        var nextPitch        =  PitchCalculator
+            ? PitchCalculator.VghLantern__RoofPitch__PitchFromRise(runMm, targetRise)
+            : Math.atan(targetRise / runMm) * (180 / Math.PI);
+
+        nextPitch  =  Math.round(nextPitch * 10) / 10;                        // <-- One decimal, matching the pitch control
+        nextPitch  =  VghLantern__ConstraintResolver__Clamp(result, nextPitch, PITCH_MIN_DEGREES, PITCH_MAX_DEGREES, 'deg');
+
+        VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_ROOF_PITCH, 'Lantern__RoofPitch__Config__PitchDegrees', nextPitch);
+        result.Notes.push('Kerb held at ' + kerbHeight + ' mm and frame at ' + frameHeight + ' mm; pitch resolved to ' + nextPitch + ' deg.');
     }
     // ------------------------------------------------------------
 
@@ -252,8 +285,26 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             Block      : BLOCK_KERB,
             Field      : 'Lantern__KerbAndBase__Config__KerbHeightMm',
             Unit       : 'mm',
-            MinMm      : 0,
-            MaxMm      : 1200,
+            MinMm      : 100,
+            MaxMm      : 400,
+            Views      : ['frontElevation', 'sideElevation']
+        },
+        'kerbThickness' : {
+            Label      : 'Kerb Thickness',
+            Block      : BLOCK_KERB,
+            Field      : 'Lantern__KerbAndBase__Config__KerbThicknessMm',
+            Unit       : 'mm',
+            MinMm      : 90,
+            MaxMm      : 150,
+            Views      : ['plan']
+        },
+        'frameHeight' : {
+            Label      : 'Frame Height',
+            Block      : BLOCK_KERB,
+            Field      : 'Lantern__KerbAndBase__Config__FrameHeightMm',
+            Unit       : 'mm',
+            MinMm      : 30,
+            MaxMm      : 100,
             Views      : ['frontElevation', 'sideElevation']
         },
         'pitch' : {
@@ -261,20 +312,9 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             Block      : BLOCK_ROOF_PITCH,
             Field      : 'Lantern__RoofPitch__Config__PitchDegrees',
             Unit       : 'deg',
-            MinMm      : 5,
-            MaxMm      : 70,
-            Views      : ['frontElevation', 'sideElevation'],
-            SideEffect : { Block: BLOCK_ROOF_PITCH, Field: 'Lantern__RoofPitch__Config__DriveMode', Value: PITCH_MODE_ANGLE }
-        },
-        'ridgeRise' : {
-            Label      : 'Ridge Rise',
-            Block      : BLOCK_ROOF_PITCH,
-            Field      : 'Lantern__RoofPitch__Config__RidgeRiseMm',
-            Unit       : 'mm',
-            MinMm      : 0,
-            MaxMm      : 6000,
-            Views      : ['frontElevation', 'sideElevation'],
-            SideEffect : { Block: BLOCK_ROOF_PITCH, Field: 'Lantern__RoofPitch__Config__DriveMode', Value: PITCH_MODE_RISE }
+            MinMm      : PITCH_MIN_DEGREES,
+            MaxMm      : PITCH_MAX_DEGREES,
+            Views      : ['frontElevation', 'sideElevation']
         },
         'overallHeight' : {
             Label      : 'Overall Height',
@@ -397,10 +437,6 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
         if (descriptor.Unit === 'mm') nextValue  =  Math.round(nextValue);
 
         VghLantern__ConstraintResolver__WriteField(result, lantern, descriptor.Block, descriptor.Field, nextValue);
-
-        if (descriptor.SideEffect) {
-            VghLantern__ConstraintResolver__WriteField(result, lantern, descriptor.SideEffect.Block, descriptor.SideEffect.Field, descriptor.SideEffect.Value);
-        }
 
         return result;
     }

@@ -34,6 +34,15 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Get Today's Date in Vale Storage Format "30-Jul-2026"
+    // ------------------------------------------------------------
+    function VghLantern__ProjectFileManager__GetTodayStamp() {
+        return window.VghLantern__AppUtils__DateFormatter
+            .VghLantern__DateFormatter__FormatDdMmmYyyy(new Date());         // <-- DateFormatter is the date format SSOT
+    }
+    // ------------------------------------------------------------
+
+
 // -----------------------------------------------------------------------------
 // REGION | Manifest Read and Write Helpers
 // -----------------------------------------------------------------------------
@@ -62,7 +71,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     function VghLantern__ProjectFileManager__BuildManifestEntry(code, name, docName, status, dateCreated, dateModified) {
         var safeStatus        =  (typeof status === 'string' && status.trim()) ? status.trim() : 'Draft';
         var safeDateCreated   =  dateCreated || '';
-        var safeDateModified  =  dateModified || safeDateCreated || new Date().toISOString().split('T')[0];
+        var safeDateModified  =  dateModified || safeDateCreated || VghLantern__ProjectFileManager__GetTodayStamp();
 
         return {
             projectCode   : code     || '',
@@ -294,7 +303,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // SUB FUNCTION | Build a Fresh Project Data Object
     // ------------------------------------------------------------
     function VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName) {
-        var now  =  new Date().toISOString().split('T')[0];
+        var now  =  VghLantern__ProjectFileManager__GetTodayStamp();
 
         return {
             'VghLantern__ProjectFile__Metadata': {
@@ -339,7 +348,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
     function VghLantern__ProjectFileManager__CreateProject(projectCode, projectName, documentName) {
         var storageKey   =  STORAGE_PREFIX + projectCode;
-        var now          =  new Date().toISOString().split('T')[0];
+        var now          =  VghLantern__ProjectFileManager__GetTodayStamp();
         var projectData  =  VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName);
 
         var normalisedCreate  =  VghLantern__ProjectFileManager__NormaliseProjectData(projectData, 'createProject');
@@ -404,7 +413,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
         var projectCode  =  metadata['VghLantern__ProjectFile__Metadata__ProjectCode'];
         var storageKey   =  STORAGE_PREFIX + projectCode;
 
-        metadata['VghLantern__ProjectFile__Metadata__DateModified']  =  new Date().toISOString().split('T')[0];
+        metadata['VghLantern__ProjectFile__Metadata__DateModified']  =  VghLantern__ProjectFileManager__GetTodayStamp();
 
         localStorage.setItem(storageKey, JSON.stringify(projectData));       // <-- Update local cache
         VghLantern__ProjectFileManager__UpdateManifestEntry(projectCode, metadata);

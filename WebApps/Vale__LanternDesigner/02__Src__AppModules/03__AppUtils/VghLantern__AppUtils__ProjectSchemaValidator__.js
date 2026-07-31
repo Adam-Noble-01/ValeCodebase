@@ -14,7 +14,9 @@
    - Normalises the drawing layout block so a reopened project comes back on the
      sheet size, orientation, scale, grid split and 3D viewpoint it was left on.
    - Normalises every lantern block to the current Lantern Editor expectations.
-   - Canonicalises roof form, pitch mode, and glazing bar division mode strings.
+   - Canonicalises roof form and glazing bar division mode strings.
+   - Migrates lanterns saved under the retired ridge rise drive onto the pitch
+     angle that reproduces their height, then strips the two retired fields.
    - Repairs missing objects so UI hydration never falls back to placeholders.
    - Returns a result payload with ProjectData, DidMutate and Notes.
    - IMPORTANT: single source of truth for project schema compatibility.
@@ -46,10 +48,22 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
     // MODULE CONSTANTS | Canonical Mode Labels
     // ------------------------------------------------------------
-    const SCHEMA__PITCH_MODE_ANGLE        =  'angle';                        // <-- Pitch driven by degrees
-    const SCHEMA__PITCH_MODE_RISE         =  'rise';                         // <-- Pitch driven by ridge rise in mm
     const SCHEMA__DIVISION_MODE_COUNT     =  'count';                        // <-- Bar count fixed, spacing derived
     const SCHEMA__DIVISION_MODE_SPACING   =  'spacing';                      // <-- Target spacing fixed, count derived
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Retired Roof Pitch Fields
+    // ------------------------------------------------------------
+    // Roof height used to be drivable either by pitch angle or by a stored ridge
+    // rise, selected by a drive mode. Pitch is now the only driver, so both
+    // fields are stripped on load. They are named here rather than inline so the
+    // migration reads as a list of what went, not as two magic strings.
+    const SCHEMA__RETIRED_PITCH_FIELDS    =  [
+        'Lantern__RoofPitch__Config__DriveMode',
+        'Lantern__RoofPitch__Config__RidgeRiseMm'
+    ];
+    const SCHEMA__LEGACY_RISE_DRIVE_MODE  =  'rise';                         // <-- Value that meant "rise is authoritative"
     // ------------------------------------------------------------
 
 
@@ -57,10 +71,29 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
     const SCHEMA__DEFAULT_WIDTH_MM        =  2400;                           // <-- Default lantern width  (long axis)
     const SCHEMA__DEFAULT_DEPTH_MM        =  1400;                           // <-- Default lantern depth  (short axis)
-    const SCHEMA__DEFAULT_KERB_HEIGHT_MM  =  150;                            // <-- Default upstand kerb height
     const SCHEMA__DEFAULT_PITCH_DEGREES   =  25;                             // <-- Default roof pitch
     const SCHEMA__DEFAULT_EAVES_PROJ_MM   =  50;                             // <-- Default eaves projection past kerb
     const SCHEMA__DEFAULT_BAR_SPACING_MM  =  500;                            // <-- Default target glazing bar spacing
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Base Assembly Defaults and Bounds
+    // ------------------------------------------------------------
+    // Width and depth are measured to the OUTER face of the kerb, so the kerb
+    // thickness only ever eats into the reveal, never into the stated size.
+    // Bounds mirror VghLantern__Validation__Config and the editor ControlBounds;
+    // all three must move together.
+    const SCHEMA__DEFAULT_KERB_HEIGHT_MM     =  150;                         // <-- Standard Vale upstand height
+    const SCHEMA__MIN_KERB_HEIGHT_MM         =  100;
+    const SCHEMA__MAX_KERB_HEIGHT_MM         =  400;
+
+    const SCHEMA__DEFAULT_KERB_THICKNESS_MM  =  110;                         // <-- Standard studwork kerb wall thickness
+    const SCHEMA__MIN_KERB_THICKNESS_MM      =  90;
+    const SCHEMA__MAX_KERB_THICKNESS_MM      =  150;
+
+    const SCHEMA__DEFAULT_FRAME_HEIGHT_MM    =  50;                          // <-- Base frame sitting on the kerb
+    const SCHEMA__MIN_FRAME_HEIGHT_MM        =  30;
+    const SCHEMA__MAX_FRAME_HEIGHT_MM        =  100;
     // ------------------------------------------------------------
 
 
@@ -203,16 +236,6 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Canonicalise Roof Pitch Drive Mode
-    // ------------------------------------------------------------
-    function VghLantern__SchemaValidator__NormalisePitchMode(rawPitchMode) {
-        var cleaned  =  VghLantern__SchemaValidator__CleanToken(rawPitchMode);
-        if (cleaned.indexOf('rise') !== -1 || cleaned.indexOf('height') !== -1) return SCHEMA__PITCH_MODE_RISE;
-        return SCHEMA__PITCH_MODE_ANGLE;
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | Canonicalise Glazing Bar Division Mode
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__NormaliseDivisionMode(rawDivisionMode) {
@@ -282,19 +305,55 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Migrate a Rise Driven Lantern onto Its Pitch Angle
+    // ------------------------------------------------------------
+    // A lantern saved in the retired rise drive mode carries a stored pitch that
+    // was never authoritative and may be nothing like the shape on screen. Left
+    // alone it would silently change pitch the first time it is reopened, so the
+    // rise is converted back to the angle that reproduces it before the fields
+    // are dropped. The run is the eaves half-extent of the SHORT axis, exactly as
+    // the SkeletonSolver measures it, so the roof comes back the same height.
+    function VghLantern__SchemaValidator__MigrateRiseDrivenPitch(lantern) {
+        var pitchCfg   =  lantern['Lantern__RoofPitch__Config'];
+        var driveMode  =  VghLantern__SchemaValidator__CleanToken(pitchCfg['Lantern__RoofPitch__Config__DriveMode']);
+        var riseMm     =  Number(pitchCfg['Lantern__RoofPitch__Config__RidgeRiseMm']);
+
+        if (driveMode.indexOf(SCHEMA__LEGACY_RISE_DRIVE_MODE) === -1) return false;
+        if (!isFinite(riseMm) || riseMm <= 0) return false;
+
+        var dimsCfg  =  lantern['Lantern__Dimensions__Config'] || {};
+        var widthMm  =  Number(dimsCfg['Lantern__Dimensions__Config__WidthMm'])            || 0;
+        var depthMm  =  Number(dimsCfg['Lantern__Dimensions__Config__DepthMm'])            || 0;
+        var eavesMm  =  Number(dimsCfg['Lantern__Dimensions__Config__EavesProjectionMm'])  || 0;
+        var runMm    =  Math.min((widthMm / 2) + eavesMm, (depthMm / 2) + eavesMm);
+
+        if (runMm <= 0) return false;
+
+        var derivedPitch  =  Math.atan(riseMm / runMm) * (180 / Math.PI);
+        pitchCfg['Lantern__RoofPitch__Config__PitchDegrees']  =  Math.round(derivedPitch * 10) / 10;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB HELPER FUNCTION | Normalise Lantern Roof Pitch Block
     // ------------------------------------------------------------
+    // Runs after the dimensions block so the migration can read a width and depth
+    // that have already been defaulted and clamped.
     function VghLantern__SchemaValidator__NormaliseRoofPitch(lantern) {
         var didMutate  =  false;
         var pitchCfg   =  lantern['Lantern__RoofPitch__Config'];
 
-        var nextMode  =  VghLantern__SchemaValidator__NormalisePitchMode(pitchCfg['Lantern__RoofPitch__Config__DriveMode']);
-        if (pitchCfg['Lantern__RoofPitch__Config__DriveMode'] !== nextMode) {
-            pitchCfg['Lantern__RoofPitch__Config__DriveMode']  =  nextMode;
-            didMutate  =  true;
+        if (VghLantern__SchemaValidator__MigrateRiseDrivenPitch(lantern)) didMutate  =  true;
+
+        for (var i = 0; i < SCHEMA__RETIRED_PITCH_FIELDS.length; i++) {
+            if (SCHEMA__RETIRED_PITCH_FIELDS[i] in pitchCfg) {
+                delete pitchCfg[SCHEMA__RETIRED_PITCH_FIELDS[i]];
+                didMutate  =  true;
+            }
         }
+
         if (VghLantern__SchemaValidator__ApplyFloatField(pitchCfg, 'Lantern__RoofPitch__Config__PitchDegrees', SCHEMA__DEFAULT_PITCH_DEGREES, 5, 70)) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyIntField(pitchCfg, 'Lantern__RoofPitch__Config__RidgeRiseMm', 0, 0, 6000)) didMutate  =  true;
 
         return didMutate;
     }
@@ -357,11 +416,18 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
     // SUB HELPER FUNCTION | Normalise Lantern Kerb and Base Block
     // ------------------------------------------------------------
+    // KerbThicknessMm and FrameHeightMm were introduced after the first release.
+    // A project saved before them has neither field, and ApplyIntField writes the
+    // default in on load, which is exactly the migration those projects need:
+    // they were drawn against a 110 mm kerb and a 50 mm frame all along.
     function VghLantern__SchemaValidator__NormaliseKerbAndBase(lantern) {
         var didMutate  =  false;
         var kerbCfg    =  lantern['Lantern__KerbAndBase__Config'];
 
-        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbHeightMm', SCHEMA__DEFAULT_KERB_HEIGHT_MM, 0, 1200)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbHeightMm',    SCHEMA__DEFAULT_KERB_HEIGHT_MM,    SCHEMA__MIN_KERB_HEIGHT_MM,    SCHEMA__MAX_KERB_HEIGHT_MM))    didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbThicknessMm', SCHEMA__DEFAULT_KERB_THICKNESS_MM, SCHEMA__MIN_KERB_THICKNESS_MM, SCHEMA__MAX_KERB_THICKNESS_MM)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__FrameHeightMm',   SCHEMA__DEFAULT_FRAME_HEIGHT_MM,   SCHEMA__MIN_FRAME_HEIGHT_MM,   SCHEMA__MAX_FRAME_HEIGHT_MM))   didMutate  =  true;
+
         if (VghLantern__SchemaValidator__ApplyStringField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbProfileId', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(kerbCfg, 'Lantern__KerbAndBase__Config__EavesProfileId', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(kerbCfg, 'Lantern__KerbAndBase__Config__ClosingProfileId', '')) didMutate  =  true;

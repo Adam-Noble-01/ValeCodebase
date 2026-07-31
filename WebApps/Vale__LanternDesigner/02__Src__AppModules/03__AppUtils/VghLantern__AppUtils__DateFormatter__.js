@@ -12,8 +12,9 @@
    DESCRIPTION:
    - Formats dates in Vale standard formats
    - Supports: "30 Jul 2026", "Thu 30 Jul 2026", "Thursday 30th Jul 2026"
+   - Vale data storage format is "30-Jul-2026" (DD-MMM-YYYY)
    - Ordinal suffixes with superscript support (th, st, nd, rd)
-   - Accepts Date objects or ISO date strings
+   - Accepts Date objects, "DD-MMM-YYYY" strings, or legacy ISO date strings
 
    ============================================================================= */
 
@@ -31,11 +32,53 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Supported Date String Patterns
+    // ------------------------------------------------------------
+    const PATTERN_DD_MMM_YYYY  =  /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/;      // <-- Vale storage format "30-Jul-2026"
+    const PATTERN_ISO_DATE     =  /^(\d{4})-(\d{2})-(\d{2})$/;              // <-- Legacy stored format "2026-07-30"
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve Short Month Name to Zero-Based Index
+    // ------------------------------------------------------------
+    function VghLantern__DateFormatter__MonthNameToIndex(monthName) {
+        var target  =  String(monthName).toLowerCase();
+        for (var i = 0; i < MONTHS_SHORT.length; i++) {
+            if (MONTHS_SHORT[i].toLowerCase() === target) return i;
+        }
+        return -1;                                                          // <-- Unrecognised month name
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Parse Date String in Any Supported Format
+    // ------------------------------------------------------------
+    function VghLantern__DateFormatter__ParseDateString(text) {
+        var trimmed  =  String(text).trim();
+
+        var valeMatch  =  PATTERN_DD_MMM_YYYY.exec(trimmed);                // <-- Try Vale storage format first
+        if (valeMatch) {
+            var monthIndex  =  VghLantern__DateFormatter__MonthNameToIndex(valeMatch[2]);
+            if (monthIndex >= 0) {
+                return new Date(parseInt(valeMatch[3], 10), monthIndex, parseInt(valeMatch[1], 10));
+            }
+        }
+
+        var isoMatch  =  PATTERN_ISO_DATE.exec(trimmed);                    // <-- Fall back to legacy ISO strings
+        if (isoMatch) {
+            return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
+        }
+
+        return new Date(trimmed);                                           // <-- Native parse handles everything else
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Parse Input to Date Object
     // ------------------------------------------------------------
     function VghLantern__DateFormatter__ToDate(input) {
         if (input instanceof Date) return input;
-        if (typeof input === 'string') return new Date(input + 'T00:00:00');
+        if (typeof input === 'string') return VghLantern__DateFormatter__ParseDateString(input);
         return new Date();
     }
     // ------------------------------------------------------------
@@ -103,6 +146,15 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Format Vale Data Storage String "30-Jul-2026"
+    // ------------------------------------------------------------
+    function VghLantern__DateFormatter__FormatDdMmmYyyy(input) {
+        var d  =  VghLantern__DateFormatter__ToDate(input);
+        return VghLantern__DateFormatter__PadDay(d.getDate()) + '-' + MONTHS_SHORT[d.getMonth()] + '-' + d.getFullYear();
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Format ISO String "2026-07-30"
     // ------------------------------------------------------------
     function VghLantern__DateFormatter__FormatIso(input) {
@@ -120,7 +172,9 @@ const VghLantern__AppUtils__DateFormatter = (function() {
         VghLantern__DateFormatter__FormatWithDay     : VghLantern__DateFormatter__FormatWithDay,
         VghLantern__DateFormatter__FormatFullDay     : VghLantern__DateFormatter__FormatFullDay,
         VghLantern__DateFormatter__FormatFullDayHtml : VghLantern__DateFormatter__FormatFullDayHtml,
-        VghLantern__DateFormatter__FormatIso         : VghLantern__DateFormatter__FormatIso
+        VghLantern__DateFormatter__FormatDdMmmYyyy   : VghLantern__DateFormatter__FormatDdMmmYyyy,
+        VghLantern__DateFormatter__FormatIso         : VghLantern__DateFormatter__FormatIso,
+        VghLantern__DateFormatter__ToDate            : VghLantern__DateFormatter__ToDate
     };
 
 })();

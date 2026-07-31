@@ -1,10 +1,10 @@
 {
     "VghLantern__ProfileDataIndex__Meta": {
         "GeneratedBy"                       : "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ProfileDataIndex__.py",
-        "GeneratedDate"                     : "30-Jul-2026 at 11:40",
+        "GeneratedDate"                     : "31-Jul-2026 at 09:54",
         "SchemaVersion"                     : "1.0.0",
         "LibraryRoot"                       : "06__Data__LanternProfileLibrary/",
-        "ProfileCount"                      : 5,
+        "ProfileCount"                      : 4,
         "DoNotEditByHand"                   : true
     },
 
@@ -29,13 +29,6 @@
             "FolderName"                    : "PRF__HipSections",
             "SortOrder"                     : 30,
             "Description"                   : "Sections swept along hips and, on gabled forms, verges."
-        },
-        {
-            "CategoryId"                    : "PRF__EavesAndKerb",
-            "CategoryName"                  : "Eaves and Kerb",
-            "FolderName"                    : "PRF__EavesAndKerb",
-            "SortOrder"                     : 40,
-            "Description"                   : "Eaves beams, kerb upstands and kerb posts at the lantern base."
         },
         {
             "CategoryId"                    : "PRF__ClosingSections",
@@ -95,23 +88,6 @@
             "FaceWidthMm"                   : 75.0,
             "SectionDepthMm"                : 95.0,
             "SectionAreaSqMm"               : 6815.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
-        },
-        {
-            "ProfileId"                     : "PRF_EVK0001",
-            "Name"                          : "Eaves and Kerb Section - 120mm",
-            "CategoryId"                    : "PRF__EavesAndKerb",
-            "CategoryName"                  : "Eaves and Kerb",
-            "JsonUrl"                       : "PRF__EavesAndKerb/VghLantern__Profile__PRF_EVK0001__EavesKerb120__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["eaves", "kerb", "kerbPost"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "FaceWidthMm"                   : 120.0,
-            "SectionDepthMm"                : 140.0,
-            "SectionAreaSqMm"               : 8800.0,
             "Revision"                      : "A",
             "IsDefaultForRole"              : true
         },

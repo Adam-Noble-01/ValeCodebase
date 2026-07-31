@@ -133,6 +133,7 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     // ------------------------------------------------------------
     function VghLantern__Env2d__DimensionRenderer__PlanRuns(skeleton) {
         var meta        =  skeleton.Meta;
+        var base        =  skeleton.Base || {};
         var halfWidth   =  meta.WidthMm / 2;
         var halfDepth   =  meta.DepthMm / 2;
         var eavesHalfW  =  meta.EavesHalfWidthMm;
@@ -159,6 +160,17 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
                 Chain : 1
             }
         };
+
+        // Kerb thickness is dimensioned off the near edge, so the reveal offset
+        // reads against the same line the width is measured from.
+        if (base.HasReveal) {
+            runs['kerbThickness']  =  {
+                Start : Pt(-halfWidth,                       -halfDepth, 0),
+                End   : Pt(-base.InnerHalfWidthMm,           -halfDepth, 0),
+                Side  : SIDE_BELOW,
+                Chain : 2
+            };
+        }
 
         // The ridge only exists as a run when it has length - a pyramid has none.
         var ridgeMembers  =  window.VghLantern__Geometry__SkeletonSolver
@@ -211,25 +223,27 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             Chain : 0
         };
 
+        // The base reads bottom-up on the same side: kerb, then the frame that
+        // sits on it, then the overall height chained outside both.
         runs['kerbHeight']  =  {
             Start : acrossPt(acrossHalf, 0),
-            End   : acrossPt(acrossHalf, meta.KerbHeightMm),
+            End   : acrossPt(acrossHalf, meta.KerbTopLevelMm),
             Side  : SIDE_RIGHT,
             Chain : 0
+        };
+
+        runs['frameHeight']  =  {
+            Start : acrossPt(acrossHalf, meta.KerbTopLevelMm),
+            End   : acrossPt(acrossHalf, meta.EavesLevelMm),
+            Side  : SIDE_RIGHT,
+            Chain : 1
         };
 
         runs['overallHeight']  =  {
             Start : acrossPt(acrossHalf, 0),
             End   : acrossPt(acrossHalf, meta.OverallHeightMm),
             Side  : SIDE_RIGHT,
-            Chain : 1
-        };
-
-        runs['ridgeRise']  =  {
-            Start : acrossPt(-acrossHalf, meta.EavesLevelMm),
-            End   : acrossPt(-acrossHalf, meta.RidgeLevelMm),
-            Side  : SIDE_LEFT,
-            Chain : 0
+            Chain : 2
         };
 
         if (Math.abs(eavesHalf - acrossHalf) >= 1) {
@@ -241,7 +255,8 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             };
         }
 
-        if (meta.KerbHeightMm <= 0) delete runs['kerbHeight'];
+        if (meta.KerbHeightMm  <= 0) delete runs['kerbHeight'];
+        if (meta.FrameHeightMm <= 0) delete runs['frameHeight'];
 
         return runs;
     }

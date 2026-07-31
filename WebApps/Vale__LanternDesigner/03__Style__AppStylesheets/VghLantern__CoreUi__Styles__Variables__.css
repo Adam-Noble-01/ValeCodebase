@@ -114,6 +114,8 @@
         --VghLantern_SvgSkeletonRafter      : #5a6d7a;                      /* <-- Common rafter line stroke colour */
         --VghLantern_SvgSkeletonEaves       : #172b3a;                      /* <-- Eaves / wall plate stroke colour */
         --VghLantern_SvgSkeletonKerb        : #8a949c;                      /* <-- Kerb / upstand stroke colour */
+        --VghLantern_SvgSkeletonFrame       : #6c7780;                      /* <-- Base frame stroke colour — a shade over the kerb */
+        --VghLantern_SvgKerbReveal          : #cc3333;                      /* <-- Inner face of the kerb — the reveal, drawn dashed red */
         --VghLantern_SvgConstructionLine    : #e2e5e8;                      /* <-- Soft grid guide — stays behind geometry */
 
         /* 2D Environment - Glazing And Profiles */
@@ -122,6 +124,9 @@
         --VghLantern_SvgProfileStroke       : #172b3a;                      /* <-- Swept profile section outline */
         --VghLantern_SvgProfileFill         : #e8e4df;                      /* <-- Swept profile section hatch fill */
         --VghLantern_SvgComponentStroke     : #172b3a;                      /* <-- Finial / cresting vector stroke */
+
+        /* 2D Environment - Insertion Origin Marker */
+        --VghLantern_SvgOriginLine          : #cc3333;                      /* <-- Diagonal cross marking the insertion point */
 
         /* 2D Environment - Dimensions */
         --VghLantern_SvgDimensionLine       : #cc3333;                      /* <-- Red dimension line colour */

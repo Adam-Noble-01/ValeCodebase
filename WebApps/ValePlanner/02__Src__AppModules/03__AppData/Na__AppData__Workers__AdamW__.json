@@ -2768,20 +2768,12 @@
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1785416151187",
-          "date": "2026-08-02",
-          "startTime": "12:00",
-          "endTime": "13:15",
-          "title": "New Shift",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1785416151415",
           "date": "2026-07-29",
-          "startTime": "12:00",
-          "endTime": "13:00",
-          "title": "New Shift",
-          "color": "na-shift-color-cyan"
+          "startTime": "11:00",
+          "endTime": "18:00",
+          "title": "Dev |  Lantern Config",
+          "color": "na-shift-color-slate"
         }
       ]
     }

@@ -31,6 +31,16 @@
    shared with the 2D environment via Env2d__SvgHelpers, so a profile looks the
    same here as it does on a plan or elevation.
 
+   Every preview draws at one fixed outline weight, frames the section in a
+   square viewBox so all cards read at the same proportion, and marks the
+   insertion origin with a red diagonal cross. Both the card grid and the
+   detail panel come through BuildPreviewSvg, so neither can drift from the
+   other.
+
+   The toolbar carries a small / medium / large thumbnail toggle. Grid columns
+   are a fixed width per setting rather than a fluid stretch, so a card is the
+   same size whatever the viewport.
+
    ============================================================================= */
 
 // =============================================================================
@@ -54,9 +64,25 @@ const VghLantern__System__ComponentIndex = (function() {
 
     // MODULE CONSTANTS | Card Preview Geometry
     // ------------------------------------------------------------
-    const PREVIEW_BOX_PX      =  120;                                             // <-- Square preview viewport in px
+    // Outline weight is a fixed screen width owned by the stylesheet, never a
+    // scaled attribute, so a 120mm eaves reads at the same line weight as a
+    // 50mm glazing bar. The origin cross is sized off the framed span for the
+    // same reason - identical on every card whatever the section measures.
     const PREVIEW_PADDING_PCT =  0.12;                                            // <-- Breathing room around the outline
-    const PREVIEW_STROKE_MM   =  6;                                               // <-- Scaled to the outline extents below
+    const PREVIEW_ORIGIN_ARM  =  0.09;                                            // <-- Cross arm as a fraction of the framed span
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Thumbnail Size Options
+    // ------------------------------------------------------------
+    // Keys pair with the .VghLantern__ComponentIndex__Grid--* modifiers that
+    // carry the actual pixel widths, so the sizes live in the stylesheet.
+    const THUMB_SIZE_DEFAULT  =  'medium';                                        // <-- Size used until the user picks another
+    const THUMB_SIZE_OPTIONS  =  [
+        { Key : 'small',  Label : 'S', Title : 'Small thumbnails'  },
+        { Key : 'medium', Label : 'M', Title : 'Medium thumbnails' },
+        { Key : 'large',  Label : 'L', Title : 'Large thumbnails'  }
+    ];
     // ------------------------------------------------------------
 
 
@@ -65,6 +91,7 @@ const VghLantern__System__ComponentIndex = (function() {
     let VghLantern__ComponentIndex__ActiveLibrary   =  LIBRARY_COMPONENTS;        // <-- Selected library tab
     let VghLantern__ComponentIndex__ActiveCategory   =  CATEGORY_ALL;             // <-- Selected category chip
     let VghLantern__ComponentIndex__SearchQuery      =  '';                       // <-- Live search text
+    let VghLantern__ComponentIndex__ThumbSize        =  THUMB_SIZE_DEFAULT;       // <-- Selected thumbnail size
     let VghLantern__ComponentIndex__IsDelegationBound = false;                    // <-- One-time listener guard
     // ------------------------------------------------------------
 
@@ -263,6 +290,28 @@ const VghLantern__System__ComponentIndex = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build the Insertion Origin Cross
+    // ------------------------------------------------------------
+    // Profile skeletons declare their insertion point at (0, 0), which stays at
+    // (0, 0) in SVG space because only Y is negated by the path builder. The
+    // cross is turned 45 degrees so it never sits along an outline edge, where
+    // an upright crosshair would read as part of the section.
+    function VghLantern__ComponentIndex__OriginMarker(viewSpan) {
+        var armLength  =  viewSpan * PREVIEW_ORIGIN_ARM;                          // <-- Half length of each arm
+        var offset     =  armLength / Math.SQRT2;                                 // <-- Diagonal step that preserves the arm length
+        var far        =  offset.toFixed(2);
+        var near       =  (-offset).toFixed(2);
+
+        var marker  =  '<line class="VghLantern__ComponentIndex__OriginLine"';
+        marker     +=      ' x1="' + near + '" y1="' + near + '" x2="' + far + '" y2="' + far + '" />';
+        marker     +=  '<line class="VghLantern__ComponentIndex__OriginLine"';
+        marker     +=      ' x1="' + near + '" y1="' + far + '" x2="' + far + '" y2="' + near + '" />';
+
+        return marker;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build an Inline SVG Preview from Outline Points
     // ------------------------------------------------------------
     function VghLantern__ComponentIndex__BuildPreviewSvg(points) {
@@ -271,25 +320,29 @@ const VghLantern__System__ComponentIndex = (function() {
         var bounds  =  VghLantern__ComponentIndex__OutlineBounds(points);
         if (!bounds) return '';
 
-        var padX  =  bounds.Width  * PREVIEW_PADDING_PCT;
-        var padY  =  bounds.Height * PREVIEW_PADDING_PCT;
+        // A square viewBox centred on the outline, sized off the longer edge, so
+        // every section is framed to the same proportion of the square well. A
+        // per-axis pad would leave a wide eaves tight to the sides while a
+        // narrow glazing bar floated in space.
+        var outlineSpan  =  Math.max(bounds.Width, bounds.Height);
+        var viewSpan     =  outlineSpan * (1 + PREVIEW_PADDING_PCT * 2);
+        var centreX      =  bounds.MinX + bounds.Width  / 2;
+        var centreY      =  -(bounds.MinY + bounds.Height / 2);                   // <-- Negated to match the flipped path
 
         var viewBox  =  [
-            (bounds.MinX - padX).toFixed(2),
-            (-(bounds.MinY + bounds.Height) - padY).toFixed(2),                   // <-- Top edge is the negated max Y
-            (bounds.Width  + padX * 2).toFixed(2),
-            (bounds.Height + padY * 2).toFixed(2)
+            (centreX - viewSpan / 2).toFixed(2),
+            (centreY - viewSpan / 2).toFixed(2),
+            viewSpan.toFixed(2),
+            viewSpan.toFixed(2)
         ].join(' ');
 
         var pathData  =  VghLantern__ComponentIndex__OutlinePathData(points);
         if (!pathData) return '';
 
-        var strokeWidth  =  Math.max(bounds.Width, bounds.Height) / PREVIEW_BOX_PX * PREVIEW_STROKE_MM;
-
         var svg  =  '<svg class="VghLantern__ComponentIndex__PreviewSvg" viewBox="' + viewBox + '"';
         svg     +=      ' preserveAspectRatio="xMidYMid meet" aria-hidden="true">';
-        svg     +=      '<path d="' + pathData + '" class="VghLantern__ComponentIndex__PreviewPath"';
-        svg     +=          ' stroke-width="' + strokeWidth.toFixed(3) + '" />';
+        svg     +=      '<path d="' + pathData + '" class="VghLantern__ComponentIndex__PreviewPath" />';
+        svg     +=      VghLantern__ComponentIndex__OriginMarker(viewSpan);       // <-- Drawn last, the section fill would otherwise bury it
         svg     +=  '</svg>';
 
         return svg;
@@ -378,6 +431,39 @@ const VghLantern__System__ComponentIndex = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build the Thumbnail Size Toggle
+    // ------------------------------------------------------------
+    function VghLantern__ComponentIndex__BuildSizeToggle() {
+        var html  =  '<div class="VghLantern__ComponentIndex__SizeToggle"' +
+                     ' role="group" aria-label="Thumbnail size">';
+
+        for (var i = 0; i < THUMB_SIZE_OPTIONS.length; i++) {
+            var option    =  THUMB_SIZE_OPTIONS[i];
+            var isActive  =  (VghLantern__ComponentIndex__ThumbSize === option.Key);
+            var cssClass  =  'VghLantern__ComponentIndex__SizeButton' +
+                             (isActive ? ' VghLantern__ComponentIndex__SizeButton--active' : '');
+
+            html  +=  '<button class="' + cssClass + '" data-thumb-size="' + option.Key + '"';
+            html  +=      ' title="' + option.Title + '" aria-label="' + option.Title + '"';
+            html  +=      ' aria-pressed="' + (isActive ? 'true' : 'false') + '">';
+            html  +=      option.Label + '</button>';
+        }
+
+        html     +=  '</div>';
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the Class List for the Card Grid
+    // ------------------------------------------------------------
+    function VghLantern__ComponentIndex__GridClass() {
+        return 'VghLantern__ComponentIndex__Grid ' +
+               'VghLantern__ComponentIndex__Grid--' + VghLantern__ComponentIndex__ThumbSize;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Toolbar - Tabs, Search, and Chips
     // ------------------------------------------------------------
     function VghLantern__ComponentIndex__BuildToolbar(visibleCount, totalCount) {
@@ -386,6 +472,7 @@ const VghLantern__System__ComponentIndex = (function() {
         html     +=      '<div class="VghLantern__ComponentIndex__ToolbarRight">';
         html     +=          '<span class="VghLantern__ComponentIndex__Count">' +
                                  visibleCount + ' of ' + totalCount + '</span>';
+        html     +=          VghLantern__ComponentIndex__BuildSizeToggle();
         html     +=          '<input type="text" id="VghLantern__ComponentIndex__SearchInput"';
         html     +=              ' class="VghLantern__ComponentIndex__SearchInput"';
         html     +=              ' autocomplete="off" data-vghlantern-noautofill="true"';
@@ -501,7 +588,7 @@ const VghLantern__System__ComponentIndex = (function() {
             return;
         }
 
-        html  +=  '<div class="VghLantern__ComponentIndex__Grid">';
+        html  +=  '<div class="' + VghLantern__ComponentIndex__GridClass() + '">';
 
         var entryIds  =  [];
         for (var i = 0; i < visibleEntries.length; i++) {
@@ -539,9 +626,34 @@ const VghLantern__System__ComponentIndex = (function() {
 // REGION | Event Delegation and Initialisation
 // -----------------------------------------------------------------------------
 
+    // SUB FUNCTION | Apply the Selected Thumbnail Size to the Live DOM
+    // ------------------------------------------------------------
+    // Swapping classes in place rather than re-rendering keeps every preview
+    // SVG on screen - a redraw would drop the grid back to loading shims.
+    function VghLantern__ComponentIndex__ApplyThumbSize() {
+        var grid  =  document.querySelector('.VghLantern__ComponentIndex__Grid');
+        if (grid) grid.className  =  VghLantern__ComponentIndex__GridClass();
+
+        var buttons  =  document.querySelectorAll('.VghLantern__ComponentIndex__SizeButton');
+        for (var i = 0; i < buttons.length; i++) {
+            var isActive  =  (buttons[i].getAttribute('data-thumb-size') === VghLantern__ComponentIndex__ThumbSize);
+            buttons[i].classList.toggle('VghLantern__ComponentIndex__SizeButton--active', isActive);
+            buttons[i].setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Route a Delegated Gallery Click
     // ------------------------------------------------------------
     function VghLantern__ComponentIndex__OnGalleryClick(event) {
+        var sizeButton  =  event.target.closest('.VghLantern__ComponentIndex__SizeButton');
+        if (sizeButton) {
+            VghLantern__ComponentIndex__ThumbSize  =  sizeButton.getAttribute('data-thumb-size');
+            VghLantern__ComponentIndex__ApplyThumbSize();
+            return;
+        }
+
         var libraryTab  =  event.target.closest('.VghLantern__ComponentIndex__LibraryTab');
         if (libraryTab) {
             VghLantern__ComponentIndex__ActiveLibrary   =  libraryTab.getAttribute('data-library');

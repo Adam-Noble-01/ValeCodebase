@@ -24,7 +24,7 @@
 
    WHY A DESCRIPTOR LAYER AT ALL:
    The editor is a continuous control panel with roughly forty controls across
-   eight sections. Hand-writing markup and change handlers per control would
+   seven sections. Hand-writing markup and change handlers per control would
    mean forty near-identical blocks that drift apart. Declaring each control as
    data means one renderer, one write path, one place to fix a bug.
 
@@ -32,7 +32,7 @@
 
      {
        Key           : 'widthMm',                       unique within its section
-       Type          : 'slider' | 'toggle' | 'select' | 'expandable',
+       Type          : 'slider' | 'toggle' | 'select' | 'expandable' | 'heading',
        Label         : 'Width',
        Block         : 'Lantern__Dimensions__Config',   lantern block name
        Field         : 'Lantern__Dimensions__Config__WidthMm',
@@ -48,6 +48,11 @@
 
    Only Key, Type and Label are mandatory. Everything else is optional and the
    normaliser fills the gaps, so a section can declare a control in three lines.
+
+   A 'heading' descriptor carries a Label and nothing else. It splits a long
+   section into named subsections without introducing a nested accordion, which
+   is what a section like Frame and Kerb needs: two groups of controls that
+   belong together and should both be visible at once.
 
    ============================================================================= */
 
@@ -67,6 +72,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const TYPE_TOGGLE      =  'toggle';                                      // <-- Boolean switch
     const TYPE_SELECT      =  'select';                                      // <-- Single choice from a resolved option list
     const TYPE_EXPANDABLE   =  'expandable';                                 // <-- Nested group revealed by its own toggle
+    const TYPE_HEADING      =  'heading';                                    // <-- Subsection label, no value and no input
     // ------------------------------------------------------------
 
 
@@ -77,7 +83,6 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     // the load order irrelevant: sections are plain builders with no side effects.
     const SECTION_BUILDERS  =  {
         'formAndSize'      : { Global : 'VghLantern__LanternEditor__Section__FormAndSize',      Fn : 'VghLantern__Section__FormAndSize__Build'      },
-        'roofPitch'        : { Global : 'VghLantern__LanternEditor__Section__RoofPitch',        Fn : 'VghLantern__Section__RoofPitch__Build'        },
         'glazingBars'      : { Global : 'VghLantern__LanternEditor__Section__GlazingBars',      Fn : 'VghLantern__Section__GlazingBars__Build'      },
         'ridgeAndHips'     : { Global : 'VghLantern__LanternEditor__Section__RidgeAndHips',     Fn : 'VghLantern__Section__RidgeAndHips__Build'     },
         'finials'          : { Global : 'VghLantern__LanternEditor__Section__Finials',          Fn : 'VghLantern__Section__Finials__Build'          },
@@ -225,20 +230,6 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             return VghLantern__ControlDescriptors__OptionsFromStrings(
                 roofCfg['VghLantern__RoofForm__Options__Config__RoofForms'],
                 roofCfg['VghLantern__RoofForm__Options__Config__DisabledRoofForms']);
-        }
-
-        if (sourceName === 'pitchDriveModes') {
-            return [
-                { Value : 'angle', Label : 'Pitch Angle', Disabled : false },
-                { Value : 'rise',  Label : 'Ridge Rise',  Disabled : false }
-            ];
-        }
-
-        if (sourceName === 'divisionModes') {
-            return [
-                { Value : 'count',   Label : 'Fixed Bar Count',    Disabled : false },
-                { Value : 'spacing', Label : 'Target Bar Spacing', Disabled : false }
-            ];
         }
 
         if (sourceName === 'glazingSpecs') {
@@ -508,6 +499,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__TypeToggle      : TYPE_TOGGLE,
         VghLantern__ControlDescriptors__TypeSelect      : TYPE_SELECT,
         VghLantern__ControlDescriptors__TypeExpandable  : TYPE_EXPANDABLE,
+        VghLantern__ControlDescriptors__TypeHeading     : TYPE_HEADING,
 
         VghLantern__ControlDescriptors__BuildSections   : VghLantern__ControlDescriptors__BuildSections,
         VghLantern__ControlDescriptors__Normalise       : VghLantern__ControlDescriptors__Normalise,

@@ -41,6 +41,11 @@
 @import url('VghLantern__UiFeature__Styles__ModalsAndToasts__.css');
 
 
+/* PWA Install Prompt - Banner & Instruction Sheet */
+/* ----------------------------------------------------------------- */
+@import url('VghLantern__UiFeature__Styles__PwaInstallability__.css');
+
+
 /* System-Specific Sheets (imported from module folders) */
 /* ----------------------------------------------------------------- */
 @import url('../02__Src__AppModules/05__Env2d__SvgRenderPipeline/VghLantern__Env2d__Styles__Main__.css');
@@ -53,6 +58,7 @@
 @import url('../02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__Styles__Main__.css');
 @import url('../02__Src__AppModules/50__System__ComponentIndex/VghLantern__ComponentIndex__Styles__Main__.css');
 @import url('../02__Src__AppModules/07__AppNotifications__UserAlerts/VghLantern__AppNotifications__Styles__ServerConnectionBanner__.css');
+@import url('../02__Src__AppModules/63__Feature__WebDemoMode/VghLantern__WebDemoMode__Styles__Main__.css');
 
 
 /* #endregion -------------------------------------------------------- */

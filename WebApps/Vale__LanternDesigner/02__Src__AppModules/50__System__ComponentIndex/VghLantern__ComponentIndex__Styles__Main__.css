@@ -13,6 +13,9 @@
  * - Library tab strip and category filter chips
  * - Responsive auto-fill card grid for component and profile assets
  * - Square SVG preview wells with a loading shim and missing-profile state
+ * - Fixed non-scaling outline weight so every section reads at the same line
+ *   thickness, plus the red insertion-origin cross
+ * - Small / medium / large thumbnail toggle driving fixed-width grid columns
  * - Capability badges for the Has2dProfile / Has3d gating flags
  * - Two-column detail panel layout used inside the shared app modal
  * - Consumes --Vale_* and --VghLantern_* tokens from the global Variables sheet
@@ -61,6 +64,48 @@
         font-size                          : var(--Vale_FontSize_Small);
         color                              : var(--Vale_TextSecondary);
         white-space                        : nowrap;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Thumbnail Size Toggle */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__SizeToggle {
+        display                            : flex;
+        gap                                : 2px;
+        background                         : var(--Vale_BackgroundLight);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TOOLBAR | Individual Size Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__SizeButton {
+        min-width                          : 30px;
+        padding                            : 5px 8px;
+        background                         : transparent;
+        color                              : var(--Vale_TextSecondary);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        line-height                        : 1;
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             color      var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ComponentIndex__SizeButton:hover {
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__ComponentIndex__SizeButton--active {
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
     }
     /* ------------------------------------------------------------ */
 
@@ -181,10 +226,43 @@
 
     /* GRID | Auto-Fill Card Layout */
     /* ------------------------------------------------------------ */
+    /* Columns are a fixed width rather than a 1fr stretch so a thumbnail is the
+       same size whatever the viewport - the size toggle is the only thing that
+       changes it. Cards pack from the left and the row simply wraps.          */
     .VghLantern__ComponentIndex__Grid {
+        --VghLantern_ComponentIndex_ThumbWidth : 190px;                          /* <-- Overridden by the size modifiers below */
         display                            : grid;
-        grid-template-columns              : repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns              : repeat(auto-fill, var(--VghLantern_ComponentIndex_ThumbWidth));
+        justify-content                    : start;
         gap                                : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GRID | Thumbnail Size Modifiers */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__Grid--small {
+        --VghLantern_ComponentIndex_ThumbWidth : 140px;
+    }
+
+    .VghLantern__ComponentIndex__Grid--medium {
+        --VghLantern_ComponentIndex_ThumbWidth : 190px;
+    }
+
+    .VghLantern__ComponentIndex__Grid--large {
+        --VghLantern_ComponentIndex_ThumbWidth : 260px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GRID | Narrow Viewport Fallback */
+    /* ------------------------------------------------------------ */
+    /* Below the large card width a fixed column would overflow the panel, so
+       hand the row back to a fluid fill on small screens.                     */
+    @media (max-width: 600px) {
+        .VghLantern__ComponentIndex__Grid {
+            grid-template-columns          : repeat(auto-fill, minmax(140px, 1fr));
+        }
     }
     /* ------------------------------------------------------------ */
 
@@ -260,7 +338,18 @@
     .VghLantern__ComponentIndex__PreviewPath {
         fill                               : var(--VghLantern_SvgProfileFill);
         stroke                             : var(--VghLantern_SvgProfileStroke);
+        stroke-width                       : 1.5;                                /* <-- Fixed screen px, paired with the non-scaling stroke below */
         stroke-linejoin                    : round;
+        vector-effect                      : non-scaling-stroke;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Insertion Origin Cross */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ComponentIndex__OriginLine {
+        stroke                             : var(--VghLantern_SvgOriginLine);
+        stroke-width                       : 1.1;
         vector-effect                      : non-scaling-stroke;
     }
     /* ------------------------------------------------------------ */

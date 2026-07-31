@@ -6,14 +6,13 @@
    NAMESPACE  : VghLantern
    MODULE     : System - LanternEditor - Section - GlazingBars
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Declare the bar profile, division mode and division controls
+   PURPOSE    : Declare the bar profile and bar division controls
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
    - Emits the descriptor list for the Glazing Bars accordion section.
-   - Division is either a fixed bar count along the long eaves, or a target spacing
-     the GlazeBarLayout rounds to a whole number of panes. Only the controls
-     belonging to the active mode are shown.
+   - Division is always by target spacing, which the GlazeBarLayout rounds to a
+     whole number of panes.
    - There is no separate hip end control. One set-out drives the whole lantern and
      the hip end bars are wrapped from it, which is what makes them converge on the
      hip and ridge points.
@@ -32,42 +31,9 @@ const VghLantern__LanternEditor__Section__GlazingBars = (function() {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Bars Block and Division Mode Values
+    // MODULE CONSTANTS | Bars Block
     // ------------------------------------------------------------
     const BARS_BLOCK    =  'Lantern__GlazingBars__Config';
-    const FIELD_MODE    =  'Lantern__GlazingBars__Config__DivisionMode';
-    const MODE_SPACING  =  'spacing';
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Visibility Predicates
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Read the Current Division Mode
-    // ------------------------------------------------------------
-    function VghLantern__Section__GlazingBars__DivisionMode(lantern) {
-        var block  =  lantern && lantern[BARS_BLOCK];
-        return (block && block[FIELD_MODE]) || 'count';
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | True When Division Is by Explicit Bar Count
-    // ------------------------------------------------------------
-    function VghLantern__Section__GlazingBars__IsCountMode(lantern) {
-        return VghLantern__Section__GlazingBars__DivisionMode(lantern) !== MODE_SPACING;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | True When Division Is by Target Spacing
-    // ------------------------------------------------------------
-    function VghLantern__Section__GlazingBars__IsSpacingMode(lantern) {
-        return VghLantern__Section__GlazingBars__DivisionMode(lantern) === MODE_SPACING;
-    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -91,26 +57,6 @@ const VghLantern__LanternEditor__Section__GlazingBars = (function() {
                 Hint          : 'Traced along every rafter and transom in both views.'
             },
             {
-                Key           : 'divisionMode',
-                Type          : 'select',
-                Label         : 'Divide By',
-                Block         : BARS_BLOCK,
-                Field         : FIELD_MODE,
-                OptionsSource : 'divisionModes',
-                AllowEmpty    : false
-            },
-            {
-                Key         : 'barCountLongSlope',
-                Type        : 'slider',
-                Label       : 'Bars - Long Slopes',
-                Block       : BARS_BLOCK,
-                Field       : 'Lantern__GlazingBars__Config__BarCountLongSlope',
-                BoundsKey   : 'BarCountLongSlope',
-                Unit        : 'off',
-                VisibleWhen : VghLantern__Section__GlazingBars__IsCountMode,
-                Hint        : 'Sets out the whole lantern - the hip ends wrap from the same spacing.'
-            },
-            {
                 Key         : 'targetSpacingMm',
                 Type        : 'slider',
                 Label       : 'Target Spacing',
@@ -118,7 +64,6 @@ const VghLantern__LanternEditor__Section__GlazingBars = (function() {
                 Field       : 'Lantern__GlazingBars__Config__TargetSpacingMm',
                 BoundsKey   : 'TargetSpacingMm',
                 Unit        : 'mm',
-                VisibleWhen : VghLantern__Section__GlazingBars__IsSpacingMode,
                 Hint        : 'Rounded to whole panes, so actual spacing will differ slightly.'
             },
             {

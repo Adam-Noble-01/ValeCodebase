@@ -65,6 +65,7 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_SELECT          =  'VghLantern__ControlPanel__Select';
     const CSS_GROUP           =  'VghLantern__ControlPanel__Group';
     const CSS_GROUP_BODY      =  'VghLantern__ControlPanel__GroupBody';
+    const CSS_SUBHEADING      =  'VghLantern__ControlPanel__SubHeading';
     const CSS_EMPTY           =  'VghLantern__ControlPanel__EmptyState';
     // ------------------------------------------------------------
 
@@ -249,6 +250,13 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
         if (!Descriptors) return '';
         if (!Descriptors.VghLantern__ControlDescriptors__IsVisible(descriptor, lantern)) return '';
+
+        // A heading is pure labelling: no value to read, nothing to commit, and
+        // deliberately not registered in the descriptor map so a stray input
+        // event can never resolve to it.
+        if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeHeading) {
+            return '<h4 class="' + CSS_SUBHEADING + '">' + VghLantern__ControlPanel__Escape(descriptor.Label) + '</h4>';
+        }
 
         VghLantern__ControlPanel__DescriptorMap[descriptor.Key]  =  descriptor;
 

@@ -61,7 +61,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
 
     // MODULE CONSTANTS | Layout Fallbacks Used Before Config Resolves
     // ------------------------------------------------------------
-    const FALLBACK_MARGIN_MM      =  10;
+    const FALLBACK_MARGIN_MM      =  5;
     const FALLBACK_TITLE_MM       =  10;
     const FALLBACK_COLUMNS        =  2;
     const FALLBACK_ROWS           =  2;

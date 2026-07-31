@@ -125,6 +125,15 @@
         stroke-linecap                    : butt;
     }
 
+    /* In elevation the reveal is not a setting-out line - it is an edge concealed
+       behind the upstand face, and the red reads as a dimension that is not there.
+       Mid grey, a finer dash set by the renderer, and drawn into the layer beneath
+       the geometry so every real member line passes over the top of it. Must follow
+       the rule above; both are single-class selectors, so source order decides. */
+    .VghLantern__Env2d__Member--buildersUpstandRevealElevation {
+        stroke                            : var(--VghLantern_SvgBuildersUpstandRevealElevation);
+    }
+
     /* Members behind the cutting plane read as faded dashes, drawing convention. */
     .VghLantern__Env2d__Member--hidden {
         stroke-opacity                    : 0.38;

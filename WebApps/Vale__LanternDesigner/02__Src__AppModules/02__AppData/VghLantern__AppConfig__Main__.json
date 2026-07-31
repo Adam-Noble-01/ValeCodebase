@@ -34,6 +34,71 @@
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultPitchDegrees": 25,
         "VghLantern__Lantern__GlobalDefaults__Config__DefaultTargetBarSpacingMm": 500
     },
+    "VghLantern__NewProject__SeedLantern__Config": {
+        "VghLantern__NewProject__SeedLantern__Config__Description": "The roof lantern a brand new project is created with. A project created with an empty lantern schedule opens on an empty configurator, because the editor has nothing to select, so every new project is seeded with this one. Written in the project file's own lantern schema and merged block for block over the schema defaults at creation time, so any key omitted here simply keeps its schema default. Identity Id is deliberately absent - it is generated per lantern and must stay unique. All linear values are millimetres.",
+        "VghLantern__NewProject__SeedLantern__Config__SeedLanternOnCreate": true,
+        "VghLantern__NewProject__SeedLantern__Config__LanternTemplate": {
+            "Lantern__Identity__Config": {
+                "Lantern__Identity__Config__Title": "",
+                "Lantern__Identity__Config__Reference": "",
+                "Lantern__Identity__Config__SortOrder": 0,
+                "Lantern__Identity__Config__Quantity": 1
+            },
+            "Lantern__Form__Config": {
+                "Lantern__Form__Config__RoofForm": "Hipped Ridge",
+                "Lantern__Form__Config__PlanRotationDeg": 0
+            },
+            "Lantern__Dimensions__Config": {
+                "Lantern__Dimensions__Config__WidthMm": 3000,
+                "Lantern__Dimensions__Config__DepthMm": 2000,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 25
+            },
+            "Lantern__RoofPitch__Config": {
+                "Lantern__RoofPitch__Config__PitchDegrees": 22.5
+            },
+            "Lantern__GlazingBars__Config": {
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
+                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+            },
+            "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
+                "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
+                "Lantern__RidgeAndHips__Config__CrestingEnabled": false
+            },
+            "Lantern__Finials__Config": {
+                "Lantern__Finials__Config__Enabled": true,
+                "Lantern__Finials__Config__FinialComponentId": "VGH_FIN0001",
+                "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
+                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
+                "Lantern__Finials__Config__PlaceAtApex": false
+            },
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+            },
+            "Lantern__Ventilation__Config": {
+                "Lantern__Ventilation__Config__Enabled": false,
+                "Lantern__Ventilation__Config__VentComponentId": "",
+                "Lantern__Ventilation__Config__VentCount": 0,
+                "Lantern__Ventilation__Config__OperationType": ""
+            },
+            "Lantern__FinishAndGlazing__Config": {
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Vale Painted Hardwood",
+                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
+            },
+            "Lantern__Notes__Config": {
+                "Lantern__Notes__Config__DocumentWarning": "",
+                "Lantern__Notes__Config__InternalComments": ""
+            }
+        }
+    },
     "VghLantern__RoofForm__Options__Config": {
         "VghLantern__RoofForm__Options__Config__Description": "Selectable roof forms. The SkeletonSolver branches on these labels, so they must match the canonical set in AppUtils ProjectSchemaValidator exactly.",
         "VghLantern__RoofForm__Options__Config__RoofForms": [
@@ -110,7 +175,6 @@
         "VghLantern__Validation__Config__MaxGlazingPaneAreaSqM": 2.6,
         "VghLantern__Validation__Config__MaxBarSpacingMm": 900,
         "VghLantern__Validation__Config__MinBarSpacingMm": 200,
-
         "VghLantern__Validation__Config__BaseAssemblyNote": "Builders upstand and Vale frame limits. A Recommended bound raises an advisory warning; a Min/Max bound is a hard limit the editor slider and the schema both clamp to. 150 mm is the standard builders upstand height and 110 mm the standard studwork wall; the upstand is site-built by others, not Vale manufacture.",
         "VghLantern__Validation__Config__MinUpstandHeightMm": 100,
         "VghLantern__Validation__Config__MaxUpstandHeightMm": 400,

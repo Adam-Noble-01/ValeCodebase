@@ -146,6 +146,14 @@ const VghLantern__Viewport3d__Layout = (function() {
                 pipeline.VghLantern__Env3d__RenderPipeline__ZoomExtents(VghLantern__Viewport3dLayout__Surface);
             },
 
+            OnDisplayMode: function(modeKey) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface) return;
+
+                pipeline.VghLantern__Env3d__RenderPipeline__SetDisplayMode(VghLantern__Viewport3dLayout__Surface, modeKey);
+                VghLantern__Viewport3dLayout__SyncDisplayMode();
+            },
+
             OnLanternSelected: function(lanternIndex) {
                 var StateManager  =  window.VghLantern__AppCore__StateManager;
                 if (!StateManager || typeof lanternIndex !== 'number' || isNaN(lanternIndex)) return;
@@ -209,6 +217,18 @@ const VghLantern__Viewport3d__Layout = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Create the Setting Out Key Panel
+    // ------------------------------------------------------------
+    function VghLantern__Viewport3dLayout__AttachSetOutLegend() {
+        var Legend     =  window.VghLantern__Viewport3d__SetOutLegend;
+        var container  =  document.getElementById(DOM_CONTAINER);
+        if (!Legend || !container) return;
+
+        Legend.VghLantern__Viewport3d__SetOutLegend__Render(container);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Drop Any Active Inspector Target
     // ------------------------------------------------------------
     function VghLantern__Viewport3dLayout__ClearInspector() {
@@ -219,6 +239,51 @@ const VghLantern__Viewport3d__Layout = (function() {
             pipeline.VghLantern__Env3d__RenderPipeline__ClearInspector(VghLantern__Viewport3dLayout__Surface);
         }
         if (Panel) Panel.VghLantern__Viewport3d__InspectorPanel__Hide();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Setting Out Display
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Push the Surface's Display Mode Out to Both Panels
+    // ------------------------------------------------------------
+    // The surface owns the mode, not the UI. Both the button highlight and the
+    // key panel's visibility are derived from it, so neither can disagree with
+    // what is actually on screen.
+    function VghLantern__Viewport3dLayout__SyncDisplayMode() {
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Controls  =  window.VghLantern__Viewport3d__Controls;
+        var Legend    =  window.VghLantern__Viewport3d__SetOutLegend;
+        if (!pipeline || !VghLantern__Viewport3dLayout__Surface) return;
+        if (!pipeline.VghLantern__Env3d__RenderPipeline__GetDisplayMode) return;
+
+        var modeKey  =  pipeline.VghLantern__Env3d__RenderPipeline__GetDisplayMode(VghLantern__Viewport3dLayout__Surface);
+
+        if (Controls) Controls.VghLantern__Viewport3d__Controls__SetActiveDisplayMode(modeKey);
+        if (Legend)   Legend.VghLantern__Viewport3d__SetOutLegend__SetDisplayMode(modeKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Refresh the Setting Out Key and Check Results
+    // ------------------------------------------------------------
+    // Fed from what the pipeline actually drew and from the model it built, so a
+    // line class switched off in config leaves the key by itself.
+    function VghLantern__Viewport3dLayout__RefreshSetOutLegend() {
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Legend    =  window.VghLantern__Viewport3d__SetOutLegend;
+        if (!pipeline || !Legend || !VghLantern__Viewport3dLayout__Surface) return;
+        if (!pipeline.VghLantern__Env3d__RenderPipeline__GetSetOutLegend) return;
+
+        Legend.VghLantern__Viewport3d__SetOutLegend__SetContent(
+            pipeline.VghLantern__Env3d__RenderPipeline__GetSetOutLegend(VghLantern__Viewport3dLayout__Surface),
+            pipeline.VghLantern__Env3d__RenderPipeline__GetSetOutModel(VghLantern__Viewport3dLayout__Surface)
+        );
+        VghLantern__Viewport3dLayout__SyncDisplayMode();
     }
     // ------------------------------------------------------------
 
@@ -242,6 +307,8 @@ const VghLantern__Viewport3d__Layout = (function() {
             StateManager.VghLantern__StateManager__GetSolvedBarSet(),
             StateManager.VghLantern__StateManager__GetCurrentLantern()
         );
+
+        VghLantern__Viewport3dLayout__RefreshSetOutLegend();                  // <-- Key and checks follow every rebuild
     }
     // ------------------------------------------------------------
 
@@ -272,6 +339,7 @@ const VghLantern__Viewport3d__Layout = (function() {
         }
 
         VghLantern__Viewport3dLayout__AttachInspector();                      // <-- Before the first draw, so the model is pickable as soon as it lands
+        VghLantern__Viewport3dLayout__AttachSetOutLegend();
         VghLantern__Viewport3dLayout__Subscribe();
         await VghLantern__Viewport3d__Layout__Redraw();
     }
@@ -341,6 +409,7 @@ const VghLantern__Viewport3d__Layout = (function() {
             VghLantern__Viewport3d__Layout__Resize();
             VghLantern__Viewport3dLayout__RenderOverlay();
             VghLantern__Viewport3dLayout__AttachInspector();                  // <-- Idempotent, and covers a first mount that raced the config load
+            VghLantern__Viewport3dLayout__AttachSetOutLegend();
             await VghLantern__Viewport3d__Layout__Redraw();
             return;
         }
@@ -393,6 +462,9 @@ const VghLantern__Viewport3d__Layout = (function() {
             pipeline.VghLantern__Env3d__RenderPipeline__Dispose(VghLantern__Viewport3dLayout__Surface);
         }
         if (Panel) Panel.VghLantern__Viewport3d__InspectorPanel__Dispose();
+        if (window.VghLantern__Viewport3d__SetOutLegend) {
+            window.VghLantern__Viewport3d__SetOutLegend.VghLantern__Viewport3d__SetOutLegend__Dispose();
+        }
 
         VghLantern__Viewport3dLayout__Surface  =  null;
     }
@@ -408,8 +480,13 @@ const VghLantern__Viewport3d__Layout = (function() {
     function VghLantern__Viewport3d__Layout__OnModeExit() {
         var modeConfig  =  VghLantern__Viewport3dLayout__ModeConfig();
 
+        var ConfigLoaderForDispose  =  window.VghLantern__AppCore__ConfigLoader;
         VghLantern__Viewport3dLayout__ClearInspector();
-        if (modeConfig.DisposeOnModeExit === true) VghLantern__Viewport3d__Layout__Dispose();
+        if (ConfigLoaderForDispose.VghLantern__ConfigLoader__RequireBoolean(
+                modeConfig, 'DisposeOnModeExit',
+                'Na__Env3d__Config.json -> VghLantern__Env3d__Config__DedicatedViewportMode')) {
+            VghLantern__Viewport3d__Layout__Dispose();
+        }
     }
     // ------------------------------------------------------------
 

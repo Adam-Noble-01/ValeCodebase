@@ -1,12 +1,12 @@
 {
     "VghLantern__ProjectFile__Metadata": {
         "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
-        "VghLantern__ProjectFile__Metadata__ProjectCode": "2321",
-        "VghLantern__ProjectFile__Metadata__ProjectName": "The Glebe House",
-        "VghLantern__ProjectFile__Metadata__DocumentName": "Two Lanterns",
-        "VghLantern__ProjectFile__Metadata__ClientName": "Mr Dennis Rodman",
+        "VghLantern__ProjectFile__Metadata__ProjectCode": "6901",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "Bergkamp",
+        "VghLantern__ProjectFile__Metadata__DocumentName": "Roof Lanterns",
+        "VghLantern__ProjectFile__Metadata__ClientName": "Dennis Bergkamp",
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
-        "VghLantern__ProjectFile__Metadata__DocumentStatus": "For Approval",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "31-Jul-2026",
         "VghLantern__ProjectFile__Metadata__DateModified": "31-Jul-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
@@ -23,38 +23,19 @@
     },
     "VghLantern__ProjectFile__DrawingLayout": {
         "VghLantern__ProjectFile__DrawingLayout__Description": "How the Drawing Editor sheet was last set up. Null means fall back to the Drawing Editor config default.",
-        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A4",
-        "VghLantern__ProjectFile__DrawingLayout__Orientation": "landscape",
-        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": 50,
-        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": true,
-        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": [
-            60.4300915019011,
-            39.5699084980989
-        ],
-        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": [
-            40.80588212205906,
-            59.19411787794095
-        ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.7973158564688863,
-        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
-            "threeDimensional": {
-                "Position": {
-                    "x": 5.466870793123987,
-                    "y": 5.896432850931144,
-                    "z": 5.121689357809124
-                },
-                "Target": {
-                    "x": 0.5030251652107536,
-                    "y": -0.1502647928509566,
-                    "z": 0.09169013711195625
-                }
-            }
-        }
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": null,
+        "VghLantern__ProjectFile__DrawingLayout__Orientation": null,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": null,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
+        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
+        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
+        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {}
     },
     "VghLantern__ProjectFile__Lanterns": [
         {
             "Lantern__Identity__Config": {
-                "Lantern__Identity__Config__Id": "ltn_001042_0",
+                "Lantern__Identity__Config__Id": "ltn_231403_0",
                 "Lantern__Identity__Config__Title": "",
                 "Lantern__Identity__Config__Reference": "",
                 "Lantern__Identity__Config__SortOrder": 0,
@@ -65,8 +46,8 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 5000,
-                "Lantern__Dimensions__Config__DepthMm": 3000,
+                "Lantern__Dimensions__Config__WidthMm": 3000,
+                "Lantern__Dimensions__Config__DepthMm": 2000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 25
             },
             "Lantern__RoofPitch__Config": {

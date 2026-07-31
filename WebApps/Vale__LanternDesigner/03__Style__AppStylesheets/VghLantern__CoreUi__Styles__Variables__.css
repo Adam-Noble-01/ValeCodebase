@@ -112,8 +112,9 @@
         --VghLantern_SvgSkeletonRafter      : #5a6d7a;                      /* <-- Common rafter line stroke colour */
         --VghLantern_SvgSkeletonEaves       : #172b3a;                      /* <-- Eaves / wall plate stroke colour */
         --VghLantern_SvgSkeletonBuildersUpstand        : #8a949c;                      /* <-- Builders Upstand / upstand stroke colour */
-        --VghLantern_SvgSkeletonFrame       : #6c7780;                      /* <-- Base frame stroke colour — a shade over the builders upstand */
-        --VghLantern_SvgBuildersUpstandReveal          : #cc3333;                      /* <-- Inner face of the builders upstand — the reveal, drawn dashed red */
+        --VghLantern_SvgSkeletonFrame       : #172b3a;                      /* <-- Base frame stroke colour - Vale manufacture, so it takes the same main line as ridge and eaves rather than the site-built upstand grey */
+        --VghLantern_SvgBuildersUpstandReveal          : #cc3333;                      /* <-- Inner face of the builders upstand — the reveal, drawn dashed red in PLAN, where it is the setting-out line the builder cuts to */
+        --VghLantern_SvgBuildersUpstandRevealElevation : #6c7780;                      /* <-- The same reveal in ELEVATION, where it is a concealed edge rather than a setting-out line — mid grey so it sits behind the lantern linework instead of competing with the red dimensions */
         --VghLantern_SvgConstructionLine    : #e2e5e8;                      /* <-- Soft grid guide — stays behind geometry */
 
         /* 2D Environment - Glazing And Profiles */

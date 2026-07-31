@@ -13,27 +13,47 @@
    - Factory module. Each call to Create returns an independent 3D surface, so the
      Lantern Editor 3D panel and the dedicated 3D View mode can both be alive
      without sharing a renderer or fighting over the canvas.
-   - Owns the fixed group stack (skeleton / glazing / components / helpers) so
-     every mesh builder writes into a known, clearable group rather than adding
-     loose objects to the scene root.
+   - Owns the fixed group stack, and publishes its vocabulary, so every builder
+     writes into a known, clearable group rather than adding loose objects to the
+     scene root - and so no consumer has to spell a group name as a literal.
    - Draws on demand only. Nothing renders until something calls Invalidate,
      which keeps an idle 3D panel at zero GPU cost.
 
    ---------------------------------------------------------------------------
 
    GROUP STACK (drawn in scene-graph order, cleared independently):
-       helpers      ground plane, grid, debug aids
-       skeleton     swept or line-drawn structural members
-       glazing      translucent glass faces
-       components   loaded GLB finials, bases, cresting, vents
-       highlight    hover inspector instance overlay, transient
+       Helpers             ground plane, grid, debug aids
+       Solid3d__Frame      swept or line-drawn structural members, and the base
+                           prisms. SOLID GEOMETRY - what the user sees and what a
+                           snapshot captures.
+       Solid3d__Glazing    translucent glass faces
+       Solid3d__Components loaded GLB finials, bases, cresting, vents
+       SetOut__Lines       datum and construction linework, the setting-out view
+       Overlay__Highlight  hover inspector instance overlay, transient
+
+   ---------------------------------------------------------------------------
+
+   WHY THE GROUP NAMES ARE EXPORTED RATHER THAN WRITTEN AS LITERALS
+
+   Four separate lists used to name these groups as bare strings - the stack here,
+   the rebuild clear, the hover picker's raycast roots and the highlight layer's
+   ghosting sweep. Adding a group meant editing all four, and forgetting any one
+   of them failed silently: a group that is never cleared leaks geometry, one that
+   is never raycast is invisible to the cursor, one that is never ghosted stays
+   bright while the model recedes around it.
+
+   The names and the meaningful SETS of them are now published from this module,
+   so there is one place to add a group and nowhere to forget it. The old name
+   'skeleton' is gone deliberately: it held every solid mesh in the model and read
+   as though it held setting-out linework, which is the exact confusion the
+   SetOut__Lines group now resolves.
 
    ---------------------------------------------------------------------------
 
    RESOURCE OWNERSHIP:
    Geometries and materials created by the mesh builders are disposed here when a
-   group is cleared. Materials owned by MaterialLibrary are shared and are NOT
-   disposed on clear - only on surface Destroy.
+   group is cleared. Materials owned by MaterialLibrary and by the setting-out
+   LineFactory are shared and are NOT disposed on clear - only on surface Destroy.
 
    ============================================================================= */
 
@@ -54,9 +74,53 @@ import {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Group Names and Canvas Classes
+    // MODULE CONSTANTS | Scene Group Vocabulary
     // ------------------------------------------------------------
-    const GROUP_ORDER      =  ['helpers', 'skeleton', 'glazing', 'components', 'highlight']; // <-- Fixed stack, created once per surface
+    // Two stage names: the geometry CLASS, then the part. Solid3d is mesh geometry
+    // the user sees and a snapshot captures. SetOut is setting-out linework, which
+    // is neither manufactured nor issued. Overlay is transient interaction state.
+    export const VghLantern__Env3d__SceneGroup  =  {
+        Helpers             : 'helpers',
+        Solid3d__Frame      : 'solid3d__frame',
+        Solid3d__Glazing    : 'solid3d__glazing',
+        Solid3d__Components : 'solid3d__components',
+        SetOut__Lines       : 'setOut__lines',
+        Overlay__Highlight  : 'overlay__highlight'
+    };
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Meaningful Sets of Groups
+    // ------------------------------------------------------------
+    // Every consumer that needs "the solid model" or "everything a rebuild
+    // replaces" takes it from here rather than writing its own list.
+    export const VghLantern__Env3d__SceneGroupOrder  =  [                    // <-- Creation and draw order
+        VghLantern__Env3d__SceneGroup.Helpers,
+        VghLantern__Env3d__SceneGroup.Solid3d__Frame,
+        VghLantern__Env3d__SceneGroup.Solid3d__Glazing,
+        VghLantern__Env3d__SceneGroup.Solid3d__Components,
+        VghLantern__Env3d__SceneGroup.SetOut__Lines,
+        VghLantern__Env3d__SceneGroup.Overlay__Highlight
+    ];
+
+    export const VghLantern__Env3d__SceneGroupSet__Solid3d  =  [             // <-- The visible solid model
+        VghLantern__Env3d__SceneGroup.Solid3d__Frame,
+        VghLantern__Env3d__SceneGroup.Solid3d__Glazing,
+        VghLantern__Env3d__SceneGroup.Solid3d__Components
+    ];
+
+    export const VghLantern__Env3d__SceneGroupSet__Rebuilt  =  [             // <-- Cleared and rebuilt on every solve
+        VghLantern__Env3d__SceneGroup.Overlay__Highlight,                    // <-- First: its geometry slices the buffers below
+        VghLantern__Env3d__SceneGroup.Solid3d__Frame,
+        VghLantern__Env3d__SceneGroup.Solid3d__Glazing,
+        VghLantern__Env3d__SceneGroup.Solid3d__Components,
+        VghLantern__Env3d__SceneGroup.SetOut__Lines
+    ];
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Canvas Classes and Guards
+    // ------------------------------------------------------------
     const CSS_CANVAS       =  'VghLantern__Env3d__Canvas';                   // <-- Styled by Env3d Styles__Main__.css
     const CSS_HOST_ACTIVE  =  'VghLantern__Env3d__Host--active';             // <-- Marks a host that owns a live surface
     const MIN_CANVAS_PX    =  2;                                             // <-- Below this the host is not laid out yet
@@ -167,11 +231,11 @@ import {
         // SCENE AND GROUP STACK
         const scene   =  new THREE.Scene();
         const groups  =  {};
-        for (let i = 0; i < GROUP_ORDER.length; i++) {
+        for (let i = 0; i < VghLantern__Env3d__SceneGroupOrder.length; i++) {
             const group  =  new THREE.Group();
-            group.name   =  'VghLantern__Env3d__Group__' + GROUP_ORDER[i];
+            group.name   =  'VghLantern__Env3d__Group__' + VghLantern__Env3d__SceneGroupOrder[i];
             scene.add(group);
-            groups[GROUP_ORDER[i]]  =  group;
+            groups[VghLantern__Env3d__SceneGroupOrder[i]]  =  group;
         }
 
         const surface  =  {
@@ -204,7 +268,7 @@ import {
     // ------------------------------------------------------------
     function VghLantern__Env3d__SceneManager__AttachGroundPlane(surface) {
         const grid  =  VghLantern__Env3d__SceneManager__BuildGroundGrid();
-        if (grid) surface.Groups.helpers.add(grid);
+        if (grid) surface.Groups[VghLantern__Env3d__SceneGroup.Helpers].add(grid);
     }
     // ------------------------------------------------------------
 
@@ -319,10 +383,9 @@ import {
     // slices of the very buffers about to be disposed, so leaving them a frame
     // longer would leave the overlay pointing at freed geometry.
     export function VghLantern__Env3d__SceneManager__ClearModelGroups(surface) {
-        VghLantern__Env3d__SceneManager__ClearGroup(surface, 'highlight');
-        VghLantern__Env3d__SceneManager__ClearGroup(surface, 'skeleton');
-        VghLantern__Env3d__SceneManager__ClearGroup(surface, 'glazing');
-        VghLantern__Env3d__SceneManager__ClearGroup(surface, 'components');
+        for (let i = 0; i < VghLantern__Env3d__SceneGroupSet__Rebuilt.length; i++) {
+            VghLantern__Env3d__SceneManager__ClearGroup(surface, VghLantern__Env3d__SceneGroupSet__Rebuilt[i]);
+        }
     }
     // ------------------------------------------------------------
 
@@ -337,8 +400,8 @@ import {
         if (surface.ResizeObs)   surface.ResizeObs.disconnect();
         if (surface.Controls && typeof surface.Controls.dispose === 'function') surface.Controls.dispose();
 
-        for (let i = 0; i < GROUP_ORDER.length; i++) {
-            VghLantern__Env3d__SceneManager__EmptyGroup(surface.Groups[GROUP_ORDER[i]]);
+        for (let i = 0; i < VghLantern__Env3d__SceneGroupOrder.length; i++) {
+            VghLantern__Env3d__SceneManager__EmptyGroup(surface.Groups[VghLantern__Env3d__SceneGroupOrder[i]]);
         }
 
         surface.Renderer.dispose();

@@ -3,7 +3,189 @@
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.7 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.18 - 31-Jul-2026
+### A new project is created with its first roof lantern already in it
+
+#### Fixed
+- **A brand new project opened on an empty configurator.** `BuildNewProjectData` created the project with an empty lantern schedule, and the editor only selects a lantern when the schedule holds one (`EnsureLanternSelected` returns early on a zero length array), so `currentLanternIndex` stayed at `-1` and the control panel rendered its "nothing selected" state. The project looked broken on the way in and only came good after a reload and a reopen. Creating a project now seeds Lantern 1 with it, so the configurator is populated the moment the New Project modal closes.
+
+#### Changed
+- The seed lantern is **3000 x 2000 mm**, and every other value on it matches the Glebe House lantern: Hipped Ridge at 22.5 degrees, 25 mm eaves projection, 390 mm target bar spacing on `PRF_GLB0001`, `PRF_RDG0001` ridge and `PRF_HIP0001` hips, `VGH_FIN0001` finials on `VGH_FIN0101` bases at the ridge ends, a 150 mm builders upstand at 110 mm wall with a 75 mm base frame, and Vale Painted Hardwood in RAL 7016 Anthracite Grey with Double Glazed Laminate Over, clear. A new project therefore starts on a real, buildable Vale lantern rather than on schema defaults.
+- The seed is written in the **project file's own lantern schema** and merged block for block over `BuildDefaultLantern`, so it is always a fully formed lantern block, any key left out of the template keeps its schema default, and the identity Id stays generated per lantern rather than copied from config.
+
+#### Config
+`VghLantern__AppConfig__Main__.json` -> new `VghLantern__NewProject__SeedLantern__Config` block: `SeedLanternOnCreate` (true) switches seeding on, `LanternTemplate` holds the lantern itself. This is the only place the seed values exist; changing what a new project starts as is a JSON edit. Reachable as ConfigLoader section `NewProjectSeed`.
+
+#### Files
+- `VghLantern__AppConfig__Main__.json` - seed lantern block
+- `VghLantern__AppData__ProjectFileManager__.js` - `BuildSeedLanterns` and `ApplySeedTemplate`, called from `BuildNewProjectData`
+- `VghLantern__AppCore__ConfigLoader__.js` - `NewProjectSeed` section accessor
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.17 - 31-Jul-2026
+### Pitch annotation measured from the eaves corner, with real terminators and sheet-consistent text
+
+#### Fixed
+- **The pitch angle was drawn from the middle of the hip.** The vertex sat at the hip midpoint, so the arc and the value floated halfway up the slope with the angle's horizontal leg hanging in mid-air over the glazing. A pitch is the angle between the eaves and the rafter, and it exists at the corner where the hip springs. The vertex now sits on that corner in every elevation.
+- **The terminator ticks were invisible because they were drawn along the arc.** The tick direction was taken as perpendicular to the *radius*, which is the arc's own tangent - so each "tick" simply extended the arc by 60 mm and no terminator appeared at either crossing. The Vale terminator is a 45 degree slash **across** the dimension line, and on an angular dimension the dimension line is the arc, so the tick now sits at 45 degrees to the local tangent. Same glyph as a linear dimension, rotated to suit.
+- **The arc was a fixed 960 mm regardless of the lantern.** One hardcoded radius had to serve a 1200 mm hip and a 4000 mm one, so it overwhelmed small hip triangles and looked lost on large ones. Radius is now a fraction of the hip's drawn length in the active view (`AngleArcRadiusFactorOfHip`, 0.42), between JSON-owned min and max rails that exist only for legibility at 1:50.
+- **The bisector was computed as `atan2(slope) / 2`, which is only right when the slope rises to the right.** On a mirrored silhouette that put the label roughly beneath the vertex rather than inside the wedge. The bisector is now taken between the two legs properly, so both hands work.
+
+#### Changed
+- **The pitch value is sized from the sheet, not from the geometry.** It was a fixed 115 mm against 85 mm dimension text, so it already read as oversized; sizing it off the available wedge instead made that worse, pushing it to 160 mm on a 3000 mm elevation. A value that scales with the lantern shouts on a big one and whispers on a small one when every other number on the sheet is one height. It now takes `TextFontSizeMm` x 0.95 (81 mm) and is only ever allowed to **shrink** from there, never grow, and never below 0.70x.
+- **Space for the label is found by moving it, not by resizing it.** The wedge widens with distance from the corner, so on a shallow pitch or a small lantern the value slides out along the bisector to where the room is, capped at `AngleTextMaxStationFactorOfHip` (0.82) of the hip run so it can never drift past the ridge. Only if the capped station still cannot clear it does the text shrink. In practice it holds full size down to about 12 degrees and down to a 1500 x 900 lantern.
+- **Terminator ticks are the sheet's tick length**, off `TerminatorLengthMm` rather than a fraction of the arc, so angular and linear dimensions carry the same terminator at the same size.
+- **The horizontal leg is no longer stroked by default.** With the vertex on the eaves, that leg *is* the eaves line, already drawn - the witness stroke only painted annotation red over black. `AngleShowBaselineLeg` (default `false`) restores it for any sheet that wants the leg restated.
+
+#### Config
+Replaces `AngleArcRadiusMm`, `AngleTextFontSizeMm`, `AngleTextOffsetFromSlopeMm` and `AngleTickLengthMm`, which were absolute millimetre values that could not scale. `Na__Env2d__Config.json` -> `AngleArcRadiusFactorOfHip` (0.42), `AngleArcRadiusMinMm` (160), `AngleArcRadiusMaxMm` (900), `AngleTextSizeFactorOfDimensionText` (0.95), `AngleTextSizeMinFactorOfDimensionText` (0.70), `AngleTextHeightFactorOfWedge` (0.55), `AngleTextOffsetFactorOfRadius` (0.12), `AngleTextMaxStationFactorOfHip` (0.82), `AngleTickLengthFactorOfTerminator` (1.0), `AngleShowBaselineLeg` (false). `AngleBaselineOverrunFactor` (1.15) is unchanged and now only applies when the leg is switched on.
+
+#### Files
+- `VghLantern__Env2d__DimensionRenderer__.js` - vertex at the springing point, oblique terminator ticks, sheet-sized label, slide-not-shrink placement, bisector fix
+- `Na__Env2d__Config.json` - angle block replaced with factors tied to the sheet's own text and tick sizes
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.16 - 31-Jul-2026
+### Working datum is now the top of the builders upstand, and the key reports levels
+
+#### Changed
+- **The setting-out datum is the top of the builders upstand, and it is zero.** Every reported level is now signed from it. On a 150 mm upstand with a 75 mm base frame:
+
+| Level | From datum |
+|---|---|
+| Ridge | `+544.7 mm` |
+| Top of framework at eaves | `+75 mm` |
+| **Top of builders upstand** | **`0 mm`** |
+| Top of roof deck | `-150 mm` |
+| Glazing plane (sloped) | `+75 to +544.7 mm` |
+
+  The solver keeps working in a model space whose zero is the roof deck, because that is where it builds upward from. That is an implementation origin, not a working one. On site the top of the upstand is the surface Vale's framework lands on - the last thing built by others, the first thing Vale touches - so it is the level a fitter measures from and a saw is set to.
+
+- **Nothing moved.** Geometry keeps its solver coordinates exactly; only the reported levels changed frame. Every datum now carries **both** `LevelMm` (solver coordinates, so the checks still compare against what the solver actually publishes) and `RelativeLevelMm` (working coordinates, for reading). All 14 datum checks still pass unchanged.
+- Datum rows in the key are **ordered highest first**, so the block reads as a level schedule rather than in build order. The zero row is weighted to read as the reference it is.
+- A sloped datum has no single level, so the glazing plane reports the **range** it spans rather than nothing.
+- `Deck Datum` relabelled **`Top of Roof Deck`**, matching how the level is described on site.
+
+#### Fixed
+- **The right-hand column of the key was reporting stamped dash segments, which is meaningless and looked like a measurement.** A dashed datum is cut into hundreds of dashes, so "Top of Builders Upstand Datum ... 743" was counting dashes. The column now reports what the row is actually about: a datum reports its level in mm, a construction triangle reports how many of that triangle exist, a centreline reports how many members it traces.
+
+#### Files
+- `VghLantern__Geometry__SettingOutModel__.js` - datum origin, relative levels and ranges, level ordering
+- `VghLantern__Env3d__SetOut__Builder__.mjs` - manifest carries levels and instance counts instead of segment counts
+- `VghLantern__Viewport3d__SetOutLegend__.js`, `VghLantern__Viewport3d__Styles__Main__.css`, `Na__Env3d__Config.json`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.15 - 31-Jul-2026
+### Setting Out key moved to the top right and enlarged for reading at distance
+
+#### Changed
+- **Setting Out key** repositioned from bottom left to **top right**, diagonally opposite the Display and Views controls. As well as separating the two panels, this keeps the key clear of the hover readout, which follows the cursor over the model and could previously land on top of it.
+- Panel widened 320px to **400px**, capped at `34vw` so it never eats the viewport on a narrow window.
+- Max height now runs the full viewport less the top and bottom margin rather than 55%, so all thirteen line classes plus the datum checks fit without scrolling on a normal screen.
+- Body text raised from Small to **Standard** (12px to 14px at the 0.9 UI scale). Row padding and section gaps roughly doubled. The key is read while comparing a colour against linework several metres away in the model, not skimmed.
+- Colour swatches widened 34px to **52px**, stroke 2.5 to 3.
+
+#### Fixed
+- The swatch `viewBox` was `0 0 34 8` and had to be re-proportioned to `0 0 52 10` alongside the CSS box. Widening the box alone would have letterboxed the line rather than filling the wider column, because the default `preserveAspectRatio` centres and fits. Dash arrays lengthened to suit; dash-dot in particular needed the extra room to still read as dash-dot rather than as two dashes.
+
+#### Confirmed working
+First run against a real lantern reports **14 of 14 datum checks agreeing within 0.5 mm**, with all thirteen line classes drawing and the hover readout still resolving individual glazing panels while in Setting Out mode.
+
+#### Files
+- `VghLantern__Viewport3d__Styles__Main__.css`, `VghLantern__Viewport3d__SetOutLegend__.js`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.14 - 31-Jul-2026
+### Setting Out mode: see the datums and construction triangles the factory cuts to
+
+#### Added
+- **Display toggle** in the 3D View overlay, three states: **Model** (as before), **Model + Setting Out** (the model ghosted with the linework over it), **Setting Out** (linework alone).
+- **Construction and datum linework** drawn as screen-thick coloured lines, to the stated key:
+  - Glaze bar centre lines - **purple, solid**
+  - Roof and hip-end construction triangles - **yellow, dotted**
+  - Hip construction triangles - **green, dotted**
+  - Ridge datum - **red, dash-dot**
+  - Top of builders upstand / top of framework at eaves / deck / glazing plane datums - own hues, dash-dot and dashed
+- **Setting Out key** panel, bottom left, built from what was *actually drawn* rather than a hardcoded list, so a line class switched off in config leaves the key by itself.
+- **Datum checks.** Every level and triangle is drawn from real solved member end points, then compared against the scalar the solver publishes for it. Disagreements are listed on screen with the delta. This is what makes the mode an audit of the engine rather than a picture of it.
+
+#### The naming rationalisation
+Three classes of geometry had all been called some variant of "line", "geometry" or "skeleton". They are now named apart and cannot be confused:
+
+| Class | Means | Wrong means |
+|---|---|---|
+| `Solid3d` | mesh geometry the user sees and a snapshot captures | a bad-looking render |
+| `Construction` | the derivation triangles - run, rise, hypotenuse | a datum lands in the wrong place |
+| `Datum` | a named level or plane the factory sets to | wrong metal |
+| `Centreline` | a member axis; where construction becomes solid | a profile registers to the wrong line |
+
+Entity keys are three stage, same delimiter style as the config JSON: `<Class>__<Family>__<Item>` - `Datum__Upstand__TopLevel`, `Construction__Roof__PitchTriangle`, `Centreline__GlazeBar__Set`.
+
+**The naming IS the styling.** A line's appearance is looked up by `<Class>__<Family>`, composed from the entity's own fields. There is no mapping table between geometry and appearance to drift, and adding a datum family plus a config style is the whole of adding a line class.
+
+#### Scene groups renamed and centralised
+`skeleton` / `glazing` / `components` / `highlight` became `solid3d__frame` / `solid3d__glazing` / `solid3d__components` / `overlay__highlight`, plus the new `setOut__lines`. The old name `skeleton` held **every solid mesh in the model** while reading as though it held setting-out linework - the exact confusion this release resolves.
+
+The names and the meaningful *sets* of them are now exported from SceneManager. Four separate lists previously spelled these as literals (the stack, the rebuild clear, the hover picker's raycast roots, the highlight layer's ghosting sweep) and forgetting any one failed silently.
+
+#### Why dash patterns are stamped into geometry
+The vendored `LineMaterial` dash mode was rejected on four specific grounds: it cannot draw dash-dot at all (one dash length, one gap); dash phase accumulates across disjoint segments in one buffer; dashed lines lose their end caps; and the vendor source carries an unresolved defect note on its dash handling. Patterns are instead cut into discrete segments in real millimetres, so every line type is ordinary solid geometry with caps intact and no phase management. Lengths being in model mm means they scale with the lantern, as drawn linework does.
+
+#### Files - new
+- `04__MathUtils__LanternGeometry/VghLantern__Geometry__SettingOutModel__.js` - the published datums, triangles, centrelines and checks. **Additive**: renames nothing, changes no existing published number.
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__SetOut__DashStamp__.mjs` - line types cut into segments
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__SetOut__LineFactory__.mjs` - the only place the fat-line addon is touched
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__SetOut__Builder__.mjs` - model to linework
+- `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__DisplayMode__.mjs` - the three-state mode
+- `25__System__Viewport3dMode/VghLantern__Viewport3d__SetOutLegend__.js` - key and check results
+
+#### Files - changed
+- `VghLantern__Env3d__SceneManager__.mjs` - group vocabulary exported, `setOut__lines` group added
+- `VghLantern__Env3d__RenderPipeline__.mjs` - builds setting out alongside the solid model; display mode API; snapshot guard
+- `VghLantern__Env3d__PickIndex__.mjs`, `__HighlightLayer__.mjs` - consume the shared group sets
+- `VghLantern__Viewport3d__Controls__.js`, `__Layout__.js`, `__Styles__Main__.css`, `VghLantern__App__.html`, `VghLantern__Env3d__ConfigAccess__.mjs`
+
+#### Config
+- `Na__Env3d__Config.json` → new `VghLantern__Env3d__Config__SetOut`: master switch, per-class gates, check tolerance, depth test, the four named dash patterns in mm, and all thirteen line styles.
+- `DedicatedViewportMode` → `ShowDisplayModeToggle`.
+
+#### Drawing safety
+Setting out is **never** captured into a snapshot. `BeginCapture` forces the surface to Model mode and restores after, because the Drawing Editor prefers the live 3D View surface for its sheet viewports.
+
+#### Two defects this surfaced, neither fixed here
+1. **`Meta.HipLengthMm` and `HipAngleDegrees` are wrong on a rectangular Pyramid.** `RoofPitchCalculator` hardcodes the hip run as `HipRun(shortRun, shortRun)`, valid only when the hip's two plan components are equal. A Pyramid forces `ridgeHalfLength = 0`, so the true components are `(eavesHalfLong, eavesHalfShort)`. At 2400 x 1600, 25 degrees that is a **295.69 mm error**. Cut lists are safe because `QuantityTakeoff` sums real member lengths, but any annotation quoting `Meta.HipLengthMm` is wrong. **The new Hip length check catches this on screen.** Left unfixed because correcting it changes published numbers on drawings already issued.
+2. **2D and 3D place a profile cross-section differently.** 3D lands outline `(0,0)` on the centreline with the section above it; 2D discards the outline entirely and draws a symmetric band of the section's *width* straddling the line. They agree only in plan and only for an x-symmetric outline. Masked today because `ProfileTrace.Enabled` is false. Relevant directly to adding real authored profiles - see the profile origin note below.
+
+#### Note for authoring real profiles
+The convention "y = 0 is the registration line, section lives in +Y" is asserted only in prose in each asset's `OriginNote` and demonstrated only by the fallback rectangle. **Nothing validates or normalises it.** A section authored with y centred (say -55 to +55) will sweep half its depth below the centreline silently, and will not change the 2D view at all. Also: `ProfileSweep` reads only lowercase `x`/`y`, while the Component Index preview accepts `X_mm`/`Y_mm` - a profile exported with the capitalised keys previews correctly and then sweeps to NaN.
+
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.13 - 31-Jul-2026
+### Pitch arc size is JSON-owned, and local config fetches never cache
+
+#### Fixed
+- Pitch angle arc radius is controlled only by `Na__Env2d__Config.json` → `AngleArcRadiusMm` (960). The JS no longer invents a fallback radius and no longer clamps against hip length, so the JSON value is what you see.
+- Baseline overrun factor moved out of JS (`1.15` magic number) into `AngleBaselineOverrunFactor` in the same JSON block.
+- ConfigLoader now fetches every JSON file with `cache: 'no-store'`, and the local Flask/stdlib server sets `Cache-Control: no-store` on all responses. Stale browser-cached config was the main reason arc-size edits looked like they did nothing.
+
+#### Philosophy (enforced)
+- Tunable numbers live in JSON. JS reads via `ConfigLoader.RequireNumber` / `RequireString` / `RequireBoolean` and must not hardcode a parallel default for any key that belongs in config.
+
+#### Config
+- `Na__Env2d__Config.json` → `AngleArcRadiusMm` (960), `AngleTickLengthMm` (70), `AngleTextFontSizeMm` (115), `AngleTextOffsetFromSlopeMm` (80), `AngleBaselineOverrunFactor` (1.15).
+
+#### Files
+- `Na__Env2d__Config.json`, `VghLantern__Env2d__DimensionRenderer__.js`, `VghLantern__AppCore__ConfigLoader__.js`, `VghLantern__FlaskServer__Localhost__.py`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.0.12 - 31-Jul-2026
 ### Lantern Info: naming + delete, and staff Warnings & Comments
 
 #### Added
@@ -46,7 +228,7 @@ Every other control commits on `change` and lets ControlPanel do a full structur
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.6 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.11 - 31-Jul-2026
 ### Local dev server: HTTP/1.1 keep-alive stops ERR_NO_BUFFER_SPACE on load
 
 #### Fixed
@@ -65,7 +247,7 @@ Every other control commits on `change` and lets ControlPanel do a full structur
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.5 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.10 - 31-Jul-2026
 ### 3D View: hover to isolate and inspect any object in the model
 
 #### Added
@@ -105,7 +287,7 @@ Snapshot capture and 3D View mode exit both clear the inspector unconditionally.
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.4 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.8 - 31-Jul-2026
 ### Projects table: tighter Actions column and Client Name for drawings
 
 #### Added
@@ -126,7 +308,7 @@ Snapshot capture and 3D View mode exit both clear the inspector unconditionally.
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.4 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.9 - 31-Jul-2026
 ### Pitch annotation arc tripled in size
 
 #### Changed
@@ -137,11 +319,11 @@ Snapshot capture and 3D View mode exit both clear the inspector unconditionally.
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.3 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.7 - 31-Jul-2026
 ### Pitch annotation arc sized to stay compact and centred on the hip
 
 #### Fixed
-- The mid-hip pitch arc introduced in v0.4.1 used a radius small enough that a 22.5° sweep produced almost no visible curvature - it read as a flat, tick-ended line rather than an arc.
+- The mid-hip pitch arc introduced in v0.0.5 used a radius small enough that a 22.5° sweep produced almost no visible curvature - it read as a flat, tick-ended line rather than an arc.
 - A first attempt enlarged the radius to 900mm, but because a shallow 22.5° arc's bow is a fixed proportion of its own chord, this dragged the whole symbol (baseline, arc, ticks) a long way out from the pivot - the horizontal reference line ended up floating below the roofline and the text drifted off-centre toward the ridge.
 - Settled on a modest radius (320mm) that keeps the whole assembly (baseline + arc + ticks + text) tight at the true hip midpoint, and tightened the radius safety cap (`len * 0.22`) so it only ever engages on genuinely small lanterns rather than routinely overriding the configured size.
 
@@ -153,7 +335,7 @@ Snapshot capture and 3D View mode exit both clear the inspector unconditionally.
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.2 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.6 - 31-Jul-2026
 ### Inline project row edit and simplified status tracker
 
 #### Added
@@ -172,7 +354,7 @@ Snapshot capture and 3D View mode exit both clear the inspector unconditionally.
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.1 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.5 - 31-Jul-2026
 ### Elevation pitch annotation centred on the hip
 
 #### Changed
@@ -186,7 +368,7 @@ Snapshot capture and 3D View mode exit both clear the inspector unconditionally.
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.4.0 - 31-Jul-2026
+## Vale__LanternDesigner v0.0.4 - 31-Jul-2026
 ### Full PWA support on Windows, iOS and Android, a real caching service worker, an honest read-only notice for the hosted build, and Component Index thumbnails at a consistent line weight and scale
 
 **Status: the PWA and web demo work is written, not yet run.** Every file is syntax-checked, every path and precache entry is verified to resolve, and the URL resolver and service worker routing are unit-tested against all four deployment surfaces. None of it has been exercised in a browser. The Component Index work at the end of this entry is the exception - that is confirmed working in the running app.
@@ -261,7 +443,7 @@ The detail panel picks all of this up for free. It already called `BuildPreviewS
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.3.0 - 30-Jul-2026
+## Vale__LanternDesigner v0.0.3 - 30-Jul-2026
 ### Drawing Editor: one layout and one chrome description shared by sheet and PDF, 3D snapshots framed at the frame's own aspect, and sheet setup persisted on the project file
 
 **Status: tested and confirmed working.** Sheet and export are in parity, the 3D frame matches on both surfaces, and sheet setup survives a session.

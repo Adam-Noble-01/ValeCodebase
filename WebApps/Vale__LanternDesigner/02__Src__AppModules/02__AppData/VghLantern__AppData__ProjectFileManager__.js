@@ -11,6 +11,10 @@
 
    DESCRIPTION:
    - Creates, loads, saves, and deletes project files.
+   - A newly created project is seeded with one lantern, described by the JSON
+     block VghLantern__NewProject__SeedLantern__Config. Without it the Lantern
+     Editor opens on an empty configurator, because it only selects a lantern
+     when the schedule holds one.
    - Primary storage: server API writing JSON files to 07__LocalProjectData/.
    - Fast read cache: localStorage mirrors server data for synchronous access.
    - SyncFromServer() fetches all projects from disk and rebuilds the cache.
@@ -31,6 +35,16 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     const STORAGE_PREFIX  =  'VghLantern__Project__';
     const MANIFEST_KEY    =  'VghLantern__ProjectManifest';
     const API_BASE        =  '/api/projects';                                // <-- Server project API root
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Seed Lantern Config Keys
+    // ------------------------------------------------------------
+    // Key names only. Every seed VALUE lives in the JSON block named below.
+    const SEED_SECTION        =  'NewProjectSeed';                           // <-- ConfigLoader section name
+    const SEED_ENABLED_KEY    =  'VghLantern__NewProject__SeedLantern__Config__SeedLanternOnCreate';
+    const SEED_TEMPLATE_KEY   =  'VghLantern__NewProject__SeedLantern__Config__LanternTemplate';
+    const SEED_CONFIG_LABEL   =  'VghLantern__AppConfig__Main__.json -> VghLantern__NewProject__SeedLantern__Config';
     // ------------------------------------------------------------
 
 
@@ -306,6 +320,63 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Copy a Seed Template Over a Lantern Block for Block
+    // ------------------------------------------------------------
+    // Only keys the template actually carries are written, so the schema default
+    // stands for everything the template leaves out - including the generated
+    // identity Id, which the template must never supply.
+    function VghLantern__ProjectFileManager__ApplySeedTemplate(lanternData, templateData) {
+        var blockKey, fieldKey, templateBlock;
+
+        for (blockKey in templateData) {
+            if (!Object.prototype.hasOwnProperty.call(templateData, blockKey)) continue;
+
+            templateBlock  =  templateData[blockKey];
+            if (!templateBlock || typeof templateBlock !== 'object' || Array.isArray(templateBlock)) continue;
+
+            if (!lanternData[blockKey] || typeof lanternData[blockKey] !== 'object') lanternData[blockKey]  =  {};
+
+            for (fieldKey in templateBlock) {
+                if (!Object.prototype.hasOwnProperty.call(templateBlock, fieldKey)) continue;
+                lanternData[blockKey][fieldKey]  =  templateBlock[fieldKey];
+            }
+        }
+
+        return lanternData;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Lantern Schedule a New Project Starts With
+    // ------------------------------------------------------------
+    // A project created with an empty schedule opens on an empty configurator,
+    // because the editor has no lantern to select and only selects one when the
+    // array is non-empty. Every new project therefore starts on the seed lantern
+    // described in JSON config, built from the schema defaults so it is a fully
+    // formed lantern block rather than a partial one. If the seed is switched off
+    // or the config block is missing the project is still created, just empty -
+    // the error is logged by the Require* read rather than swallowed here.
+    function VghLantern__ProjectFileManager__BuildSeedLanterns() {
+        var ConfigLoader     =  window.VghLantern__AppCore__ConfigLoader;
+        var SchemaValidator  =  window.VghLantern__AppUtils__ProjectSchemaValidator;
+        if (!ConfigLoader || !SchemaValidator) return [];
+
+        var seedConfig  =  ConfigLoader.VghLantern__ConfigLoader__GetSection(SEED_SECTION);
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(seedConfig, SEED_ENABLED_KEY, SEED_CONFIG_LABEL)) return [];
+
+        var templateData  =  seedConfig[SEED_TEMPLATE_KEY];
+        if (!templateData || typeof templateData !== 'object' || Array.isArray(templateData)) {
+            console.error('[VghLantern__ProjectFileManager] Missing seed lantern template "' + SEED_TEMPLATE_KEY +
+                '" (' + SEED_CONFIG_LABEL + '). Add it to the JSON config - do not hardcode a fallback in JS.');
+            return [];
+        }
+
+        var seedLantern  =  SchemaValidator.VghLantern__SchemaValidator__BuildDefaultLantern(0);
+        return [VghLantern__ProjectFileManager__ApplySeedTemplate(seedLantern, templateData)];
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build a Fresh Project Data Object
     // ------------------------------------------------------------
     function VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName) {
@@ -344,7 +415,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor'   : 1,
                 'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates'  : {}
             },
-            'VghLantern__ProjectFile__Lanterns': []
+            'VghLantern__ProjectFile__Lanterns': VghLantern__ProjectFileManager__BuildSeedLanterns()
         };
     }
     // ------------------------------------------------------------

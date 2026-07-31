@@ -75,6 +75,16 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
         ".mjs": "text/javascript",
     }
 
+    # SUB FUNCTION | Force no-store on every local-dev response
+    # ------------------------------------------------------------
+    # Local JSON / JS / CSS edits must reach the browser on the next refresh.
+    # Without this, Chrome can keep serving a stale Na__Env2d__Config.json and
+    # config changes look like they "do nothing" while the disk file is correct.
+    def end_headers(self) -> None:
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+    # ------------------------------------------------------------
+
     # SUB FUNCTION | Serve shared app assets from parent WebApps folder
     # ------------------------------------------------------------
     def Na__Server__TryHandleSharedAssetRead(self) -> bool:

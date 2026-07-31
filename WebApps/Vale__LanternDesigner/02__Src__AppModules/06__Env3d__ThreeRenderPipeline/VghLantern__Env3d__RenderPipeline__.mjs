@@ -21,11 +21,24 @@
 
    SURFACE LIFECYCLE:
        Mount(hostElement)              create renderer, camera, lights
-       Render(surface, skeleton, ...)   rebuild the model groups
+       Render(surface, skeleton, ...)   rebuild the solid model AND the setting out
        ApplyPreset(surface, key)        isometric / front / side / plan
+       SetDisplayMode(surface, key)     solid3d / both / setOut
        AttachInspector(surface, cb)     hover and pin model inspection
        Snapshot(surface, options)       PNG data URL for the drawing sheet
        Dispose(surface)                 release the WebGL context
+
+   ---------------------------------------------------------------------------
+
+   TWO CLASSES OF GEOMETRY, BOTH ALWAYS BUILT
+
+   A render builds the SOLID model and the SETTING OUT linework together, and the
+   display mode then decides which is visible. Building both every time costs a
+   few hundred line segments and makes switching instant; more importantly it
+   means the setting out on screen can never be stale relative to the metal
+   beside it, which is the whole basis of trusting it as a check.
+
+   Setting out is never captured into a snapshot. See BeginCapture.
 
    Two surfaces can be alive at once - the Lantern Editor's toggleable 3D panel
    and the dedicated 3D View mode - each with its own camera state.
@@ -38,7 +51,8 @@ import {
     VghLantern__Env3d__SceneManager__Resize,
     VghLantern__Env3d__SceneManager__Invalidate,
     VghLantern__Env3d__SceneManager__GetGroup,
-    VghLantern__Env3d__SceneManager__ClearModelGroups
+    VghLantern__Env3d__SceneManager__ClearModelGroups,
+    VghLantern__Env3d__SceneGroup
 } from './VghLantern__Env3d__SceneManager__.mjs';
 
 import {
@@ -55,6 +69,18 @@ import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__En
 import { VghLantern__Env3d__ComponentLoader__Glb__Build, VghLantern__Env3d__ComponentLoader__Glb__ClearCache } from './VghLantern__Env3d__ComponentLoader__Glb__.mjs';
 import { VghLantern__Env3d__SnapshotExporter__Capture, VghLantern__Env3d__SnapshotExporter__CapturePreset } from './VghLantern__Env3d__SnapshotExporter__.mjs';
 import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+
+import { VghLantern__Env3d__SetOut__Builder__Build } from './VghLantern__Env3d__SetOut__Builder__.mjs';
+import { VghLantern__Env3d__SetOut__LineFactory__DisposeMaterials, VghLantern__Env3d__SetOut__LineFactory__SeedResolution } from './VghLantern__Env3d__SetOut__LineFactory__.mjs';
+
+import {
+    VghLantern__Env3d__DisplayMode__Apply,
+    VghLantern__Env3d__DisplayMode__Current,
+    VghLantern__Env3d__DisplayMode__Cycle,
+    VghLantern__Env3d__DisplayMode__List,
+    VghLantern__Env3d__DisplayMode__Label,
+    VghLantern__Env3d__DisplayMode__Solid3d
+} from './VghLantern__Env3d__DisplayMode__.mjs';
 
 import {
     VghLantern__Env3d__HoverInspector__Attach,
@@ -166,6 +192,7 @@ import {
             VghLantern__Env3d__RenderPipeline__Dispose(surfaces[i]);
         }
         VghLantern__Env3d__MaterialLibrary__DisposeAll();
+        VghLantern__Env3d__SetOut__LineFactory__DisposeMaterials();
         VghLantern__Env3d__ComponentLoader__Glb__ClearCache();
     }
     // ------------------------------------------------------------
@@ -177,6 +204,7 @@ import {
     // being display:none needs an explicit nudge.
     export function VghLantern__Env3d__RenderPipeline__Resize(surface) {
         VghLantern__Env3d__SceneManager__Resize(surface);
+        VghLantern__Env3d__SetOut__LineFactory__SeedResolution(surface);      // <-- Fat line width is driven by viewport size
     }
     // ------------------------------------------------------------
 
@@ -213,14 +241,18 @@ import {
         }
         VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, null);
 
-        const skeletonGroup    =  VghLantern__Env3d__SceneManager__GetGroup(surface, 'skeleton');
-        const glazingGroup     =  VghLantern__Env3d__SceneManager__GetGroup(surface, 'glazing');
-        const componentsGroup  =  VghLantern__Env3d__SceneManager__GetGroup(surface, 'components');
+        const solidFrameGroup       =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Frame);
+        const solidGlazingGroup     =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Glazing);
+        const solidComponentsGroup  =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Components);
 
-        VghLantern__Env3d__MeshBuilder__Glazing__Build(glazingGroup, skeleton);
-        VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(skeletonGroup, skeleton, lantern);
-        await VghLantern__Env3d__MeshBuilder__Skeleton__Build(skeletonGroup, skeleton, barSet, lantern);
-        await VghLantern__Env3d__ComponentLoader__Glb__Build(componentsGroup, skeleton, lantern);
+        // SOLID GEOMETRY | The finished model
+        VghLantern__Env3d__MeshBuilder__Glazing__Build(solidGlazingGroup, skeleton);
+        VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(solidFrameGroup, skeleton, lantern);
+        await VghLantern__Env3d__MeshBuilder__Skeleton__Build(solidFrameGroup, skeleton, barSet, lantern);
+        await VghLantern__Env3d__ComponentLoader__Glb__Build(solidComponentsGroup, skeleton, lantern);
+
+        // SETTING OUT GEOMETRY | The datums and construction triangles behind it
+        VghLantern__Env3d__RenderPipeline__BuildSetOut(surface, skeleton, barSet, lantern);
 
         // Frame on the first render only. Reframing on every dimension edit would
         // fight the user every time they nudge a value while zoomed in.
@@ -230,7 +262,37 @@ import {
         }
 
         surface.LastBounds  =  skeleton.Bounds || null;                        // <-- Kept so presets and Zoom Extents can reframe
+
+        // The display mode is a property of the surface, not of a build, so it is
+        // re-applied after every rebuild. Without this a reviewer inspecting the
+        // setting out would be thrown back to the solid model by any edit.
+        VghLantern__Env3d__DisplayMode__Apply(surface, VghLantern__Env3d__DisplayMode__Current(surface));
         VghLantern__Env3d__SceneManager__Invalidate(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Setting Out Model and Draw It
+    // ------------------------------------------------------------
+    // The model is built by the geometry layer, not here, so the lines drawn and
+    // the numbers checked come from one derivation. A missing SettingOutModel
+    // module leaves the setting-out group empty rather than failing the render -
+    // the solid model must never be held hostage to an inspection aid.
+    function VghLantern__Env3d__RenderPipeline__BuildSetOut(surface, skeleton, barSet, lantern) {
+        surface.SetOutModel     =  null;
+        surface.SetOutManifest  =  [];
+
+        const SettingOutModel  =  window.VghLantern__Geometry__SettingOutModel;
+        if (!SettingOutModel) {
+            console.warn('[VghLantern Env3d] SettingOutModel is not loaded, so no setting-out linework was built.');
+            return;
+        }
+
+        const setOutGroup  =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.SetOut__Lines);
+        if (!setOutGroup) return;
+
+        surface.SetOutModel     =  SettingOutModel.VghLantern__SettingOutModel__Build(skeleton, barSet, lantern);
+        surface.SetOutManifest  =  VghLantern__Env3d__SetOut__Builder__Build(setOutGroup, surface.SetOutModel, surface);
     }
     // ------------------------------------------------------------
 
@@ -306,6 +368,76 @@ import {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Display Mode and Setting Out
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Set the Display Mode on a Surface
+    // ------------------------------------------------------------
+    // 'solid3d' the finished model, 'both' the model ghosted under the setting out,
+    // 'setOut' the setting out alone.
+    export function VghLantern__Env3d__RenderPipeline__SetDisplayMode(surface, modeKey) {
+        VghLantern__Env3d__DisplayMode__Apply(surface, modeKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Display Mode a Surface Is In
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__GetDisplayMode(surface) {
+        return VghLantern__Env3d__DisplayMode__Current(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Advance a Surface to the Next Display Mode
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__CycleDisplayMode(surface) {
+        return VghLantern__Env3d__DisplayMode__Cycle(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Available Display Modes
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__ListDisplayModes() {
+        return VghLantern__Env3d__DisplayMode__List();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Human Readable Name for a Display Mode
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__DisplayModeLabel(modeKey) {
+        return VghLantern__Env3d__DisplayMode__Label(modeKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Setting Out Model a Surface Last Built
+    // ------------------------------------------------------------
+    // Plain data - datums, construction triangles, centrelines and the results of
+    // every measured-against-reported check. Surfaced so the 3D overlay can list
+    // the checks without recomputing any of them.
+    export function VghLantern__Env3d__RenderPipeline__GetSetOutModel(surface) {
+        return (surface && surface.SetOutModel) ? surface.SetOutModel : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read What the Setting Out View Actually Drew
+    // ------------------------------------------------------------
+    // One entry per line class on screen, carrying its label, colour and line type.
+    // The overlay legend is built from this rather than from a hardcoded list, so
+    // it can never claim to show something that was not drawn.
+    export function VghLantern__Env3d__RenderPipeline__GetSetOutLegend(surface) {
+        return (surface && surface.SetOutManifest) ? surface.SetOutManifest : [];
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Hover Inspector
 // -----------------------------------------------------------------------------
 
@@ -354,14 +486,34 @@ import {
 // REGION | Snapshot Export
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Put a Surface Into Issue Condition for a Capture
+    // ------------------------------------------------------------
+    // A sheet drawing shows the manufactured article, never the setting out that
+    // derived it, and never a reviewer's leftover hover highlight. Both are
+    // therefore forced off for the duration of a capture and restored after, which
+    // matters because the Drawing Editor prefers the live 3D View surface for its
+    // sheet viewports rather than mounting one of its own.
+    function VghLantern__Env3d__RenderPipeline__BeginCapture(surface) {
+        VghLantern__Env3d__HoverInspector__Clear(surface);
+
+        const restoreMode  =  VghLantern__Env3d__DisplayMode__Current(surface);
+        VghLantern__Env3d__DisplayMode__Apply(surface, VghLantern__Env3d__DisplayMode__Solid3d);
+
+        return restoreMode;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Capture the Current View as a PNG Data URL
     // ------------------------------------------------------------
-    // The inspector is cleared first, unconditionally. The drawing editor prefers
-    // the live 3D View surface for its sheet viewports, and a highlight left over
-    // from a reviewer's last hover would be captured into an issued drawing.
     export function VghLantern__Env3d__RenderPipeline__Snapshot(surface, options) {
-        VghLantern__Env3d__HoverInspector__Clear(surface);
-        return VghLantern__Env3d__SnapshotExporter__Capture(surface, options);
+        const restoreMode  =  VghLantern__Env3d__RenderPipeline__BeginCapture(surface);
+
+        try {
+            return VghLantern__Env3d__SnapshotExporter__Capture(surface, options);
+        } finally {
+            VghLantern__Env3d__DisplayMode__Apply(surface, restoreMode);
+        }
     }
     // ------------------------------------------------------------
 
@@ -371,11 +523,16 @@ import {
     export function VghLantern__Env3d__RenderPipeline__SnapshotPreset(surface, presetKey, options) {
         if (!surface) return null;
 
-        VghLantern__Env3d__HoverInspector__Clear(surface);
-        return VghLantern__Env3d__SnapshotExporter__CapturePreset(
-            surface, presetKey, surface.LastBounds, options,
-            VghLantern__Env3d__CameraRig__ApplyPreset
-        );
+        const restoreMode  =  VghLantern__Env3d__RenderPipeline__BeginCapture(surface);
+
+        try {
+            return VghLantern__Env3d__SnapshotExporter__CapturePreset(
+                surface, presetKey, surface.LastBounds, options,
+                VghLantern__Env3d__CameraRig__ApplyPreset
+            );
+        } finally {
+            VghLantern__Env3d__DisplayMode__Apply(surface, restoreMode);
+        }
     }
     // ------------------------------------------------------------
 

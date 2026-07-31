@@ -142,13 +142,13 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
 
         var html  =  VghLantern__PrintDocument__Heading(entry.Title);
 
+        if (viewState.ShowComponentSchedule) {
+            html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable(entry.Takeoff);
+        }
+
         if (viewState.ShowTakeoffSchedule) {
             html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable(entry.Takeoff);
             html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable(entry.Takeoff);
-        }
-
-        if (viewState.ShowComponentSchedule) {
-            html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable(entry.Takeoff);
         }
 
         return html;

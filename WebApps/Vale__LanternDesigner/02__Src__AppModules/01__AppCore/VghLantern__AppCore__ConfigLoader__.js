@@ -77,6 +77,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     // rather than inventing local copies of the same numbers.
     let VghLantern__ConfigLoader__Application       =  null;                 // <-- App identity, version, server port
     let VghLantern__ConfigLoader__LanternDefaults   =  null;                 // <-- Default lantern dimensions and pitch
+    let VghLantern__ConfigLoader__NewProjectSeed    =  null;                 // <-- Lantern every new project is created with
     let VghLantern__ConfigLoader__RoofFormOptions   =  null;                 // <-- Selectable roof forms
     let VghLantern__ConfigLoader__GlazingOptions    =  null;                 // <-- Glazing spec option lists
     let VghLantern__ConfigLoader__FinishOptions     =  null;                 // <-- Frame finish option lists
@@ -101,9 +102,11 @@ const VghLantern__AppCore__ConfigLoader = (function() {
 
     // HELPER FUNCTION | Fetch a JSON File Returning Null on Failure
     // ------------------------------------------------------------
+    // cache: 'no-store' is mandatory - a stale browser-cached JSON is exactly
+    // how config edits appear to "not work" while the disk file is correct.
     async function VghLantern__ConfigLoader__FetchJsonSafe(path, label) {
         try {
-            var response  =  await fetch(path);
+            var response  =  await fetch(path, { cache: 'no-store' });
             if (!response.ok) throw new Error('HTTP ' + response.status);
             return await response.json();
         } catch (e) {
@@ -119,6 +122,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     function VghLantern__ConfigLoader__AssignSections(configData) {
         VghLantern__ConfigLoader__Application      =  configData['VghLantern__Application__Config']            || {};
         VghLantern__ConfigLoader__LanternDefaults  =  configData['VghLantern__Lantern__GlobalDefaults__Config'] || {};
+        VghLantern__ConfigLoader__NewProjectSeed   =  configData['VghLantern__NewProject__SeedLantern__Config'] || {};
         VghLantern__ConfigLoader__RoofFormOptions  =  configData['VghLantern__RoofForm__Options__Config']       || {};
         VghLantern__ConfigLoader__GlazingOptions   =  configData['VghLantern__Glazing__Options__Config']        || {};
         VghLantern__ConfigLoader__FinishOptions    =  configData['VghLantern__Finish__Options__Config']         || {};
@@ -142,7 +146,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     // keep a parallel set of hardcoded defaults "just in case load fails".
     async function VghLantern__ConfigLoader__LoadConfig() {
         try {
-            var responseMain  =  await fetch(CONFIG_PATH);
+            var responseMain  =  await fetch(CONFIG_PATH, { cache: 'no-store' });
             if (!responseMain.ok) throw new Error('Config fetch failed: ' + responseMain.status);
 
             var configData  =  await responseMain.json();
@@ -189,6 +193,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         var sections  =  {
             'Application'      : VghLantern__ConfigLoader__Application,
             'LanternDefaults'  : VghLantern__ConfigLoader__LanternDefaults,
+            'NewProjectSeed'   : VghLantern__ConfigLoader__NewProjectSeed,
             'RoofFormOptions'  : VghLantern__ConfigLoader__RoofFormOptions,
             'GlazingOptions'   : VghLantern__ConfigLoader__GlazingOptions,
             'FinishOptions'    : VghLantern__ConfigLoader__FinishOptions,

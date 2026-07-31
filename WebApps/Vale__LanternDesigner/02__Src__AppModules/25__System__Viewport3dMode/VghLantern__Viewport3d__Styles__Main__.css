@@ -186,6 +186,141 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * COMPONENT | Setting Out Key and Datum Checks
+ * ----------------------------------------------------------------------------- */
+
+    /* PANEL | Top Right Key for the Construction and Datum Linework */
+    /* ------------------------------------------------------------ */
+    /* Sits diagonally opposite the control overlay so the two never collide, and
+       clear of the cursor readout which follows the pointer over the model. It
+       scrolls internally rather than growing past the viewport when every line
+       class is enabled at once. */
+    .VghLantern__Viewport3d__SetOutLegend {
+        position                           : absolute;
+        top                                : var(--Vale_Spacing_Medium);
+        right                              : var(--Vale_Spacing_Medium);
+        z-index                            : var(--VghLantern_ViewportOverlayZIndex);
+        width                              : calc(400px * var(--Vale_UIScale));
+        max-width                          : 34vw;
+        max-height                         : calc(100% - (2 * var(--Vale_Spacing_Medium)));
+        overflow-y                         : auto;
+        padding                            : var(--Vale_Spacing_Medium);
+        background-color                   : var(--VghLantern_ThreeOverlayPanel);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : var(--VghLantern_ViewportOverlayShadow);
+        font-family                        : var(--Vale_FontFamily);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Titled Block Within the Panel */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__SetOutSection + .VghLantern__Viewport3d__SetOutSection {
+        margin-top                         : var(--Vale_Spacing_Medium);
+        padding-top                        : var(--Vale_Spacing_Medium);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__Viewport3d__SetOutTitle {
+        margin-bottom                      : var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ROW | Swatch, Label and Segment Count */
+    /* ------------------------------------------------------------ */
+    /* Rows are deliberately generous. This key is read while comparing a colour
+       against linework several metres away in the model, not skimmed. */
+    .VghLantern__Viewport3d__SetOutRow {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) 0;
+    }
+
+    .VghLantern__Viewport3d__SetOutSwatch {
+        flex                               : 0 0 auto;
+        width                              : calc(52px * var(--Vale_UIScale));
+        height                             : 10px;
+        overflow                           : visible;
+    }
+
+    .VghLantern__Viewport3d__SetOutLabel {
+        flex                               : 1 1 auto;
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__Viewport3d__SetOutCount {
+        flex                               : 0 0 auto;
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSubtle);
+        font-variant-numeric               : tabular-nums;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ORIGIN | The Datum Every Other Level Is Measured From */
+    /* ------------------------------------------------------------ */
+    /* States the reference once at the head of the key, so a signed level in the
+       rows below needs no unit or qualifier repeated against it. */
+    .VghLantern__Viewport3d__SetOutOrigin {
+        margin-bottom                      : var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-style                         : italic;
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    /* The zero row is not one level among several - it is the level the rest of
+       the panel is measured from, so it is weighted to read as the reference. */
+    .VghLantern__Viewport3d__SetOutRow--origin .VghLantern__Viewport3d__SetOutLabel,
+    .VghLantern__Viewport3d__SetOutRow--origin .VghLantern__Viewport3d__SetOutCount {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHECKS | Measured Against Reported Results */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__SetOutCheckRow {
+        display                            : flex;
+        align-items                        : baseline;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) 0;
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__Viewport3d__SetOutCheckDelta {
+        flex                               : 0 0 auto;
+        font-variant-numeric               : tabular-nums;
+    }
+
+    /* A failing check means a published number and the solved geometry disagree,
+       which on an issued drawing is a wrong dimension. It is coloured as the
+       warning it is. */
+    .VghLantern__Viewport3d__SetOutCheck--fail,
+    .VghLantern__Viewport3d__SetOutCheck--fail .VghLantern__Viewport3d__SetOutLabel {
+        color                              : var(--VghLantern_WarningOrange);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__Viewport3d__SetOutCheck--pass {
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
  * COMPONENT | Hover Inspector Readout Panel
  * ----------------------------------------------------------------------------- */
 

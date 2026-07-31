@@ -484,10 +484,12 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             if (normalised) controls.push(normalised);
         }
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         return {
             Key      : sectionCfg.Key,
             Label    : sectionCfg.Label || sectionCfg.Key,
-            IsOpen   : sectionCfg.DefaultOpen === true,
+            IsOpen   : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                sectionCfg, 'DefaultOpen', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Sections[]'),
             Controls : controls
         };
     }
@@ -504,9 +506,13 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         var sectionConfig =  editorCfg['VghLantern__LanternEditor__Config__Sections'] || [];
         var sections      =  [];
 
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         for (var i = 0; i < sectionConfig.length; i++) {
             var sectionCfg  =  sectionConfig[i];
-            if (!sectionCfg || sectionCfg.Enabled === false) continue;
+            if (!sectionCfg || !ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                    sectionCfg, 'Enabled', 'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Sections[]')) {
+                continue;
+            }
 
             var section  =  VghLantern__ControlDescriptors__BuildOneSection(sectionCfg, lantern);
             if (section && section.Controls.length > 0) sections.push(section);

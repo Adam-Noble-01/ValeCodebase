@@ -30,9 +30,22 @@
 
    THE KERB REVEAL:
    'buildersUpstandReveal' members trace the inner face of the upstand - the hole the
-   daylight comes down. They are an annotation rather than a section, so they
-   are always drawn dashed in the annotation red, in plan and in elevation
-   alike, and they are never treated as hidden linework.
+   daylight comes down. They are an annotation rather than a section, so they are
+   always drawn dashed and are never treated as hidden linework.
+
+   The two views want different things from that same line:
+
+       PLAN       It is the setting-out line the builder cuts to, nothing sits
+                  over it, and it runs the full length of the lantern. Annotation
+                  red, coarse dash, drawn in the geometry layer.
+       ELEVATION  It is a concealed edge behind a solid upstand, it runs only the
+                  base assembly height, and red would read as a dimension that is
+                  not there. Mid grey, a quarter-length dash so the run still
+                  reads as dashed, and drawn into the hidden layer so the lantern
+                  linework passes over the top of it.
+
+   Both the colour and the dash come from named config and token values, so the
+   split is one class and one config key apart - not a hardcoded view test.
 
    ============================================================================= */
 
@@ -51,8 +64,10 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
     const CSS_MEMBER_BASE      =  'VghLantern__Env2d__Member';               // <-- Base class on every member line
     const CSS_MEMBER_PREFIX    =  'VghLantern__Env2d__Member--';             // <-- Role modifier prefix
     const CSS_MEMBER_HIDDEN    =  'VghLantern__Env2d__Member--hidden';       // <-- Behind the viewing plane
+    const CSS_MEMBER_REVEAL_ELEVATION  =  'VghLantern__Env2d__Member--buildersUpstandRevealElevation'; // <-- Reveal seen in elevation, not in plan
     const CSS_NODE_MARKER      =  'VghLantern__Env2d__NodeMarker';           // <-- Optional joint marker
     const ROLE_BUILDERS_UPSTAND_REVEAL     =  'buildersUpstandReveal';                              // <-- Inner face of the upstand
+    const VIEW_KEY_PLAN        =  'plan';                                    // <-- The one view that is not an elevation
     const CSS_GRID_MINOR       =  'VghLantern__Env2d__Grid--minor';
     const CSS_GRID_MAJOR       =  'VghLantern__Env2d__Grid--major';
     const CSS_GRID_AXIS        =  'VghLantern__Env2d__Grid--axis';
@@ -111,13 +126,36 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
 // REGION | Member Drawing
 // -----------------------------------------------------------------------------
 
+    // SUB FUNCTION | Whether a View Reads Across a Vertical Plane
+    // ------------------------------------------------------------
+    function VghLantern__Env2d__SkeletonRenderer__IsElevationView(viewKey) {
+        return viewKey !== VIEW_KEY_PLAN;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Whether a Member Is Drawn Beneath the Geometry Layer
+    // ------------------------------------------------------------
+    // The reveal earns its red in plan, where it is the setting-out line the
+    // builder cuts to and nothing overlaps it. In elevation it is the far side
+    // of a hole seen through a solid upstand, so it belongs under the linework
+    // rather than over it. Dropping it into the hidden layer is what puts it
+    // there - it is NOT given the hidden member class, because it is an
+    // annotation and must not be faded on top of being underlaid.
+    function VghLantern__Env2d__SkeletonRenderer__IsUnderlaid(member, viewKey) {
+        return member.Role === ROLE_BUILDERS_UPSTAND_REVEAL
+            && VghLantern__Env2d__SkeletonRenderer__IsElevationView(viewKey);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Whether a Member Sits Behind the Viewing Plane
     // ------------------------------------------------------------
     // Plan views have no hidden members. In elevation, anything on the far half
     // of the viewer axis is treated as hidden - accurate enough for a whitecard
     // wireframe where members do not cross mid-span.
     function VghLantern__Env2d__SkeletonRenderer__IsHidden(member, viewKey) {
-        if (viewKey === 'plan') return false;
+        if (!VghLantern__Env2d__SkeletonRenderer__IsElevationView(viewKey)) return false;
         if (member.Role === ROLE_BUILDERS_UPSTAND_REVEAL) return false;                  // <-- Already an annotation; never fade it further
 
         var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
@@ -145,8 +183,16 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
             'data-vgh-role'       : member.Role
         };
         if (member.Role === ROLE_BUILDERS_UPSTAND_REVEAL) {
+            // An elevation only ever shows the reveal over the base assembly
+            // height, so it takes the finer pattern - the plan dash would leave
+            // barely one stroke across that run and stop reading as dashed.
+            var inElevation  =  VghLantern__Env2d__SkeletonRenderer__IsElevationView(viewKey);
+            if (inElevation) cssClass  +=  ' ' + CSS_MEMBER_REVEAL_ELEVATION;
+
             attrs['stroke-dasharray']  =  window.VghLantern__AppCore__ConfigLoader.VghLantern__ConfigLoader__RequireString(
-                skeletonCfg, 'BuildersUpstandRevealDashPatternMm', 'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Skeleton');
+                skeletonCfg,
+                inElevation ? 'BuildersUpstandRevealDashPatternElevationMm' : 'BuildersUpstandRevealDashPatternMm',
+                'Na__Env2d__Config.json -> VghLantern__Env2d__Config__Skeleton');
         } else if (isHidden && skeletonCfg.HiddenDashPatternMm) {
             attrs['stroke-dasharray']  =  skeletonCfg.HiddenDashPatternMm;
         }
@@ -200,11 +246,12 @@ const VghLantern__Env2d__SkeletonRenderer = (function() {
                  - CoordHelpers.VghLantern__Env2d__CoordHelpers__MemberDepth(b, viewKey);
         });
 
-        var i, isHidden;
+        var i, isHidden, isUnderlaid;
         for (i = 0; i < ordered.length; i++) {
-            isHidden  =  VghLantern__Env2d__SkeletonRenderer__IsHidden(ordered[i], viewKey);
+            isHidden     =  VghLantern__Env2d__SkeletonRenderer__IsHidden(ordered[i], viewKey);
+            isUnderlaid  =  VghLantern__Env2d__SkeletonRenderer__IsUnderlaid(ordered[i], viewKey);
             VghLantern__Env2d__SkeletonRenderer__DrawMember(
-                isHidden ? hiddenLayer : geometryLayer,
+                (isHidden || isUnderlaid) ? hiddenLayer : geometryLayer,
                 ordered[i], viewKey, config.Skeleton, isHidden
             );
         }

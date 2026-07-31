@@ -48,7 +48,10 @@
             down. Width and depth are ALWAYS measured to the OUTER face.
      FRAME  the lantern's own base frame, sitting directly on the builders upstand. Same
             footprint and same wall thickness as the builders upstand by definition; only
-            its height is free.
+            its height is free. Emitted as a CLOSED box - base ring, top ring and
+            four corner posts - so it projects to a full rectangle in elevation
+            the same way the upstand does. Both are solids, and a solid reads as
+            an outline, not as a pair of loose rails.
 
    The roof springs from the top of the frame, so EavesLevelMm is the frame top,
    not the builders upstand top. Builders upstand and frame are described together in the Base block
@@ -303,8 +306,14 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         }
 
         // FRAME - the lantern base frame sitting on the builders upstand.
+        // Closed as a box in its own right, exactly as the upstand below it is,
+        // so an elevation reads a complete rectangle FrameHeightMm tall across
+        // the full width or depth rather than two unterminated rails. Its base
+        // ring sits on the upstand top, which is where the two physically meet.
         if (context.FrameHeightMm > 0) {
-            VghLantern__SkeletonSolver__PushRing(members, 'frameTop', 'frame', outerFrameTop);
+            VghLantern__SkeletonSolver__PushRing(members, 'frameBase', 'frame', outerUpstandTop);
+            VghLantern__SkeletonSolver__PushRing(members, 'frameTop',  'frame', outerFrameTop);
+            VghLantern__SkeletonSolver__PushPosts(members, 'framePost', 'frame', outerUpstandTop, outerFrameTop);
         }
 
         // REVEAL - the hole through the base, offset inward by the builders upstand thickness.

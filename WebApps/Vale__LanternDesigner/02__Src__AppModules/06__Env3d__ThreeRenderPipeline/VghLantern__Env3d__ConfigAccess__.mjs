@@ -52,7 +52,8 @@
         Lighting      : { AmbientIntensity : 0.62, KeyLightIntensity : 1.05, FillLightIntensity : 0.38 },
         Materials     : { FrameColourFallback : '#f2efe9', GlazingColour : '#a8c8d8', GlazingOpacity : 0.22 },
         MeshBuilders  : { SkeletonMode : 'profileSweep', FallbackBarWidthMm : 40, FallbackBarDepthMm : 55 },
-        Snapshot      : { DefaultWidthPx : 2000, DefaultHeightPx : 1400, SupersampleFactor : 2 }
+        Snapshot      : { DefaultWidthPx : 2000, DefaultHeightPx : 1400, SupersampleFactor : 2 },
+        SetOut        : { Enabled : true, DefaultDisplayMode : 'solid3d', CheckToleranceMm : 0.5, DepthTest : false, RenderOrder : 20 }
     };
     // ------------------------------------------------------------
 

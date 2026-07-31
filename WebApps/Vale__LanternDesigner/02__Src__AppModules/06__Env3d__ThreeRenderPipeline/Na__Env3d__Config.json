@@ -123,6 +123,57 @@
             "ShowShadowCatcher"               : false
         },
 
+        "VghLantern__Env3d__Config__SetOut": {
+            "Enabled"                         : true,
+            "EnabledNote"                     : "Master switch for the setting-out display mode: the datums and construction triangles the factory works to, drawn as coloured linework over or instead of the solid model.",
+
+            "DefaultDisplayMode"              : "solid3d",
+            "DisplayModeOptions"              : ["solid3d", "both", "setOut"],
+            "DisplayModeNote"                 : "'solid3d' the finished model alone. 'both' the model ghosted with the setting out drawn over it, which is the mode that proves a datum governs the metal it is meant to govern. 'setOut' the setting out alone with nothing occluding it.",
+
+            "ShowDatums"                      : true,
+            "ShowConstructionTriangles"       : true,
+            "ShowCentrelines"                 : true,
+            "ShowClassNote"                   : "Each CLASS of setting-out geometry can be switched off independently, so a reviewer chasing one datum can strip the view back to it.",
+
+            "CheckToleranceMm"                : 0.5,
+            "CheckToleranceNote"              : "How far a value measured from solved vertices may differ from the scalar the solver reports before the check is called a failure. Also applied to degrees, so tighten it if angular agreement needs to be finer than half a degree.",
+
+            "DepthTest"                       : false,
+            "DepthTestNote"                   : "False draws every construction line through the model, so the whole setting-out cage reads at once including the far side. That is what makes it an inspection aid rather than a decoration. Set true to have the solid model occlude the lines.",
+            "RenderOrder"                     : 20,
+
+            "LinePatternsMm": {
+                "solid"                       : [],
+                "dotted"                      : [6, 10],
+                "dashed"                      : [40, 22],
+                "dashDot"                     : [48, 16, 4, 16]
+            },
+            "LinePatternsNote"                : "Alternating ON and OFF lengths in real millimetres, always starting ON. Patterns are stamped into geometry as discrete segments rather than shaded, which is the only way to get a true dash-dot and avoids the vendored line material's unfinished dash handling entirely. Because the lengths are in model millimetres they scale with the lantern, exactly as drawn linework does.",
+
+            "LineStyles": {
+                "Centreline__GlazeBar"        : { "Colour": "#8e44c8", "WidthPx": 2.0, "Pattern": "solid",   "Label": "Glaze Bar Centre Lines" },
+                "Centreline__Transom"         : { "Colour": "#a06bd4", "WidthPx": 2.0, "Pattern": "solid",   "Label": "Transom Centre Lines" },
+                "Centreline__Ridge"           : { "Colour": "#7b3fb0", "WidthPx": 2.5, "Pattern": "solid",   "Label": "Ridge Centre Line" },
+                "Centreline__Hip"             : { "Colour": "#7b3fb0", "WidthPx": 2.5, "Pattern": "solid",   "Label": "Hip Centre Lines" },
+                "Centreline__Eaves"           : { "Colour": "#9b6fc4", "WidthPx": 2.0, "Pattern": "solid",   "Label": "Eaves Centre Lines" },
+
+                "Construction__Roof"          : { "Colour": "#e0b400", "WidthPx": 2.0, "Pattern": "dotted",  "Label": "Roof Construction Triangle" },
+                "Construction__HipEnd"        : { "Colour": "#e0b400", "WidthPx": 2.0, "Pattern": "dotted",  "Label": "Hip End Construction Triangle" },
+                "Construction__Hip"           : { "Colour": "#2e9e4f", "WidthPx": 2.0, "Pattern": "dotted",  "Label": "Hip Construction Triangle" },
+
+                "Datum__Ridge"                : { "Colour": "#cc3333", "WidthPx": 2.5, "Pattern": "dashDot", "Label": "Ridge Datum" },
+                "Datum__Upstand"              : { "Colour": "#1f7fa8", "WidthPx": 2.0, "Pattern": "dashDot", "Label": "Top of Builders Upstand Datum" },
+                "Datum__Frame"                : { "Colour": "#d4762a", "WidthPx": 2.0, "Pattern": "dashDot", "Label": "Top of Framework at Eaves Datum" },
+                "Datum__Deck"                 : { "Colour": "#6b7480", "WidthPx": 1.5, "Pattern": "dashed",  "Label": "Top of Roof Deck" },
+                "Datum__Glazing"              : { "Colour": "#3fa9c9", "WidthPx": 1.5, "Pattern": "dashed",  "Label": "Glazing Plane Datum" }
+            },
+            "LineStylesNote"                  : "Keyed by <Class>__<Family>, which is composed from the setting-out entity's own Class and Family fields. There is no mapping table between geometry and appearance - the naming scheme IS the mapping - so adding a datum family to VghLantern__Geometry__SettingOutModel and a style here is the whole of adding a line class. A key with no style draws in magenta so the omission is visible rather than silent.",
+            "WidthPxNote"                     : "CSS pixels, zoom invariant. Deliberately not millimetres: setting out is an inspection aid read on screen, not linework issued at a scale. The 2D SVG environment takes the opposite decision for the opposite reason.",
+
+            "SetOutNote"                      : "Setting out is built on every render alongside the solid model and is never captured into a snapshot - a sheet drawing shows the manufactured article, not the geometry that derived it."
+        },
+
         "VghLantern__Env3d__Config__HoverInspector": {
             "Enabled"                         : true,
             "EnabledNote"                     : "Master switch for hover and pin model inspection. Off means no pick tables are written at build time, so the feature costs nothing at all rather than being hidden.",
@@ -165,6 +216,8 @@
             "DefaultPreset"                   : "isometric",
             "ShowPresetButtons"               : true,
             "ShowZoomExtents"                 : true,
+            "ShowDisplayModeToggle"           : true,
+            "ShowDisplayModeToggleNote"       : "Adds the Display cluster to the 3D View overlay, switching between the solid model, the model with setting out over it, and the setting out alone. The editor's small 3D panel and the drawing sheet viewports never offer it.",
             "ShowHoverInspector"              : true,
             "ShowHoverInspectorNote"          : "Whether the full-screen 3D View mode attaches the hover inspector. The editor's small 3D panel and the drawing sheet viewports deliberately do not, so a review surface behaves differently to a working one.",
             "ShowSkeletonModeLabel"           : true,

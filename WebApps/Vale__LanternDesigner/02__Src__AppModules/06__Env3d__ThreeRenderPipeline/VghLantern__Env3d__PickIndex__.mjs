@@ -41,6 +41,8 @@ import {
     VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
+import { VghLantern__Env3d__SceneGroupSet__Solid3d } from './VghLantern__Env3d__SceneManager__.mjs';
+
 // =============================================================================
 // REGION | 3D Pick Index Module
 // =============================================================================
@@ -272,10 +274,9 @@ import {
         if (!surface || !surface.Groups) return [];
 
         const roots  =  [];
-        const names  =  ['skeleton', 'glazing', 'components'];
 
-        for (let i = 0; i < names.length; i++) {
-            const group  =  surface.Groups[names[i]];
+        for (let i = 0; i < VghLantern__Env3d__SceneGroupSet__Solid3d.length; i++) {
+            const group  =  surface.Groups[VghLantern__Env3d__SceneGroupSet__Solid3d[i]];
             if (group) roots.push(group);
         }
         return roots;

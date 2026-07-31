@@ -96,11 +96,18 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             TerminatorStyle           : str('TerminatorStyle'),
             TextFontSizeMm            : num('TextFontSizeMm'),
             TextOffsetFromLineMm      : num('TextOffsetFromLineMm'),
-            AngleTextFontSizeMm       : num('AngleTextFontSizeMm'),
-            AngleTextOffsetFromSlopeMm: num('AngleTextOffsetFromSlopeMm'),
-            AngleArcRadiusMm          : num('AngleArcRadiusMm'),
-            AngleTickLengthMm         : num('AngleTickLengthMm'),
-            EditHintTooltip           : str('EditHintTooltip')
+            AngleArcRadiusFactorOfHip    : num('AngleArcRadiusFactorOfHip'),
+            AngleArcRadiusMinMm          : num('AngleArcRadiusMinMm'),
+            AngleArcRadiusMaxMm          : num('AngleArcRadiusMaxMm'),
+            AngleTextSizeFactorOfDimensionText    : num('AngleTextSizeFactorOfDimensionText'),
+            AngleTextSizeMinFactorOfDimensionText : num('AngleTextSizeMinFactorOfDimensionText'),
+            AngleTextHeightFactorOfWedge : num('AngleTextHeightFactorOfWedge'),
+            AngleTextOffsetFactorOfRadius: num('AngleTextOffsetFactorOfRadius'),
+            AngleTextMaxStationFactorOfHip: num('AngleTextMaxStationFactorOfHip'),
+            AngleTickLengthFactorOfTerminator: num('AngleTickLengthFactorOfTerminator'),
+            AngleShowBaselineLeg         : bool('AngleShowBaselineLeg'),
+            AngleBaselineOverrunFactor   : num('AngleBaselineOverrunFactor'),
+            EditHintTooltip              : str('EditHintTooltip')
         };
     }
     // ------------------------------------------------------------
@@ -502,10 +509,13 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB HELPER FUNCTION | Draw a Short Tick Across an Arc Endpoint
+    // SUB HELPER FUNCTION | Draw the Oblique Terminator Tick at an Arc Endpoint
     // ------------------------------------------------------------
-    // The tick is perpendicular to the ray from the pivot through the endpoint,
-    // matching the Vale angle-dimension convention on issued drawings.
+    // The Vale terminator is a 45 degree slash ACROSS the dimension line, and an
+    // angular dimension line is the arc. The tick therefore sits at 45 degrees to
+    // the arc's tangent, which is the same glyph a linear dimension gets, rotated
+    // to suit. Drawing it along the tangent instead - as this did - just extends
+    // the arc by the tick length and reads as no terminator at all.
     function VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, atPt, tickLengthMm) {
         var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
         var dx   =  atPt.x - pivot.x;
@@ -513,24 +523,50 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         var len  =  Math.sqrt((dx * dx) + (dy * dy));
         if (len < 1) return;
 
+        var rx  =  dx / len;                                                 // <-- Radial unit, pivot out to the endpoint
+        var ry  =  dy / len;
+        var tx  =  -ry;                                                      // <-- Tangent unit, along the arc
+        var ty  =   rx;
+
+        // Bisecting tangent and radius puts the slash at 45 degrees to both, so
+        // it crosses the arc rather than continuing it.
+        var sx    =  tx - rx;
+        var sy    =  ty - ry;
+        var sLen  =  Math.sqrt((sx * sx) + (sy * sy));
+        if (sLen < 1e-6) return;
+
         var half  =  tickLengthMm / 2;
-        var nx    =  -dy / len;                                              // <-- Unit normal across the ray
-        var ny    =   dx / len;
+        sx  =  (sx / sLen) * half;
+        sy  =  (sy / sLen) * half;
 
         group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
-            { x: atPt.x - (nx * half), y: atPt.y - (ny * half) },
-            { x: atPt.x + (nx * half), y: atPt.y + (ny * half) },
+            { x: atPt.x - sx, y: atPt.y - sy },
+            { x: atPt.x + sx, y: atPt.y + sy },
             CSS_DIM_TERMINATOR
         ));
     }
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Draw the Pitch Angle Arc and Label Centred on the Hip
+    // SUB HELPER FUNCTION | Clamp a Value Between Two JSON-Owned Rails
     // ------------------------------------------------------------
-    // Pivot sits at the silhouette hip midpoint so the arc and the degree text
-    // read mid-slope rather than crowding the eaves corner. A short horizontal
-    // baseline, the arc, ticks at both ends, and the value outside the arc.
+    function VghLantern__Env2d__DimensionRenderer__Clamp(value, minValue, maxValue) {
+        if (!isFinite(value))   return minValue;
+        if (value < minValue)   return minValue;
+        if (value > maxValue)   return maxValue;
+        return value;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Draw the Pitch Angle Arc and Label at the Foot of the Hip
+    // ------------------------------------------------------------
+    // The vertex sits on the eaves corner where the hip actually springs, which
+    // is where a draughtsman measures a pitch from - the angle exists at the
+    // corner, not halfway up the slope. Every length in the symbol is then
+    // derived from the drawn hip and from the wedge of space the hip triangle
+    // actually offers, so the annotation fills the same share of a 1200mm hip
+    // as it does of a 4000mm one instead of sprawling out of small triangles.
     function VghLantern__Env2d__DimensionRenderer__DrawAngular(targetLayer, skeleton, viewKey, numericValue, isEditable, config) {
         var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
         var edge        =  VghLantern__Env2d__DimensionRenderer__FindSlopeEdge(skeleton, viewKey);
@@ -541,25 +577,34 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         var len  =  Math.sqrt((dx * dx) + (dy * dy));
         if (len < 1) return;
 
-        // Pivot at mid-hip so the whole annotation rides the centre of the slope.
-        var pivot  =  {
-            x : (edge.Anchor.x + edge.Toward.x) / 2,
-            y : (edge.Anchor.y + edge.Toward.y) / 2
-        };
-
-        // Radius comes straight from config - it must NEVER be silently clamped
-        // against the hip length here. A clamp like that is invisible config
-        // drift: the JSON value looks honoured but a short hip quietly halves it.
-        var radius  =  config.AngleArcRadiusMm;
-        if (radius < 1) return;
+        // Vertex at the eaves end of the hip - FindSlopeEdge already returns the
+        // lower end as Anchor, so this is the springing point in every view.
+        var pivot  =  { x: edge.Anchor.x, y: edge.Anchor.y };
 
         var signX   =  (dx >= 0) ? 1 : -1;
         var ux      =  dx / len;
         var uy      =  dy / len;
 
+        // Baseline is the horizontal leg of the angle, kept on the same turn as
+        // the slope so the bisector below cannot fold the label under the eaves.
+        var baselineAngle  =  (signX > 0) ? 0 : -Math.PI;
+        var slopeAngle     =  Math.atan2(uy, ux);
+        var includedAngle  =  Math.abs(slopeAngle - baselineAngle);          // <-- Apparent pitch of the drawn hip
+        if (includedAngle < 0.01) return;                                     // <-- Degenerate: no wedge to annotate
+
+        // Radius is a fraction of the DRAWN hip, so the symbol scales with the
+        // triangle it sits in. This is deliberate hip-relative sizing, not the
+        // old silent clamp: JSON owns the factor and both legibility rails, so
+        // the rendered radius is always traceable back to a stated number.
+        var radius  =  VghLantern__Env2d__DimensionRenderer__Clamp(
+            len * config.AngleArcRadiusFactorOfHip,
+            config.AngleArcRadiusMinMm,
+            config.AngleArcRadiusMaxMm);
+        if (radius < 1) return;
+
         // Arc runs from the horizontal baseline round to the slope edge.
-        var startPt  =  { x: pivot.x + (signX * radius), y: pivot.y };
-        var endPt    =  { x: pivot.x + (ux * radius),    y: pivot.y + (uy * radius) };
+        var startPt  =  { x: pivot.x + (Math.cos(baselineAngle) * radius), y: pivot.y + (Math.sin(baselineAngle) * radius) };
+        var endPt    =  { x: pivot.x + (ux * radius),                      y: pivot.y + (uy * radius) };
 
         // Slope edges rise up the page, so the sweep is always the short way.
         var sweepFlag  =  (signX > 0) ? 0 : 1;
@@ -570,25 +615,60 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             'data-vgh-dimension-group' : 'pitch'
         });
 
-        // Short horizontal baseline makes the angle legible against the hip.
-        group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
-            pivot, { x: pivot.x + (signX * radius * 1.15), y: pivot.y }, CSS_DIM_WITNESS));
+        // The horizontal leg of the angle is the eaves line, and with the vertex
+        // now sitting on the eaves that line is already drawn - a witness stroke
+        // along it would only paint red over black. Kept as a JSON toggle for
+        // sheets that want the leg stated explicitly.
+        // Overrun factor is JSON-owned (AngleBaselineOverrunFactor) - never hardcode it.
+        if (config.AngleShowBaselineLeg) {
+            var baselineRun  =  radius * config.AngleBaselineOverrunFactor;
+            group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
+                pivot,
+                { x: pivot.x + (Math.cos(baselineAngle) * baselineRun), y: pivot.y + (Math.sin(baselineAngle) * baselineRun) },
+                CSS_DIM_WITNESS));
+        }
 
         group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreatePath(pathData, CSS_DIM_ARC));
 
-        VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, startPt, config.AngleTickLengthMm);
-        VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, endPt,   config.AngleTickLengthMm);
+        // Terminators match the linear dimensions - one tick size across the whole
+        // sheet, so the angular dimension reads as part of the same drawing.
+        var tickLengthMm  =  config.TerminatorLengthMm * config.AngleTickLengthFactorOfTerminator;
+        VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, startPt, tickLengthMm);
+        VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, endPt,   tickLengthMm);
 
-        // Text sits outside the arc on the angle bisector (horizontal angle is 0).
-        var midAngle   =  Math.atan2(uy, ux) / 2;
-        var textRadius =  radius + config.AngleTextOffsetFromSlopeMm;
-        var textPt     =  {
+        // Text sits just outside the arc on the bisector of the two legs.
+        var midAngle   =  (baselineAngle + slopeAngle) / 2;
+        var cosMid     =  Math.abs(Math.cos(midAngle));
+
+        // The label is a drawing annotation, so it takes the sheet's dimension
+        // text size. It must NEVER grow to fill the wedge - a value that sizes
+        // itself off the geometry ends up shouting on a big lantern and whispering
+        // on a small one, when every other number on the sheet is one height.
+        var baseFontMm  =  config.TextFontSizeMm * config.AngleTextSizeFactorOfDimensionText;
+        var minFontMm   =  config.TextFontSizeMm * config.AngleTextSizeMinFactorOfDimensionText;
+
+        // Space is found by moving, not by shrinking. The wedge widens with
+        // distance from the corner, so slide out along the bisector until it
+        // clears the label - capped inside the triangle so it cannot drift past
+        // the ridge. Only if the capped station still cannot hold the label does
+        // the text shrink, and never below the legibility floor.
+        var naturalRun  =  radius * (1 + config.AngleTextOffsetFactorOfRadius) * cosMid;
+        var neededRun   =  baseFontMm / (Math.tan(includedAngle) * config.AngleTextHeightFactorOfWedge);
+        var maxRun      =  Math.abs(dx) * config.AngleTextMaxStationFactorOfHip;
+        var textRun     =  Math.max(naturalRun, Math.min(neededRun, maxRun));
+
+        var wedgeHeightMm  =  textRun * Math.tan(includedAngle);
+        var fontSizeMm     =  Math.min(baseFontMm, Math.max(minFontMm,
+            wedgeHeightMm * config.AngleTextHeightFactorOfWedge));
+
+        var textRadius  =  textRun / cosMid;
+        var textPt      =  {
             x : pivot.x + (Math.cos(midAngle) * textRadius),
             y : pivot.y + (Math.sin(midAngle) * textRadius)
         };
 
         var angleConfig  =  Object.assign({}, config, {
-            TextFontSizeMm       : config.AngleTextFontSizeMm,
+            TextFontSizeMm       : fontSizeMm,
             TextOffsetFromLineMm : 0
         });
 

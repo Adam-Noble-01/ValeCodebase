@@ -50,7 +50,12 @@ import {
 } from './VghLantern__Env3d__MaterialLibrary__.mjs';
 
 import { VghLantern__Env3d__PickIndex__ModeSegment, VghLantern__Env3d__PickIndex__ModeWhole } from './VghLantern__Env3d__PickIndex__.mjs';
-import { VghLantern__Env3d__SceneManager__ClearGroup, VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d__SceneManager__.mjs';
+import {
+    VghLantern__Env3d__SceneManager__ClearGroup,
+    VghLantern__Env3d__SceneManager__Invalidate,
+    VghLantern__Env3d__SceneGroup,
+    VghLantern__Env3d__SceneGroupSet__Solid3d
+} from './VghLantern__Env3d__SceneManager__.mjs';
 
 // =============================================================================
 // REGION | 3D Highlight Layer Module
@@ -62,9 +67,9 @@ import { VghLantern__Env3d__SceneManager__ClearGroup, VghLantern__Env3d__SceneMa
 
     // MODULE CONSTANTS | Group Names and Overlay Identity
     // ------------------------------------------------------------
-    const GROUP_HIGHLIGHT     =  'highlight';                                // <-- Holds the instance overlay only
-    const GROUP_GLAZING       =  'glazing';                                  // <-- Ghosted with the translucent variant
-    const TIER_GROUP_NAMES    =  ['skeleton', 'glazing', 'components'];      // <-- The model, in the order it is drawn
+    const GROUP_HIGHLIGHT     =  VghLantern__Env3d__SceneGroup.Overlay__Highlight;   // <-- Holds the instance overlay only
+    const GROUP_GLAZING       =  VghLantern__Env3d__SceneGroup.Solid3d__Glazing;     // <-- Ghosted with the translucent variant
+    const TIER_GROUP_NAMES    =  VghLantern__Env3d__SceneGroupSet__Solid3d;          // <-- The solid model, in the order it is drawn
 
     const OVERLAY_NAME        =  'VghLantern__Env3d__HighlightInstance';
     const OVERLAY_RENDER_ORDER =  2;                                         // <-- Above the glazing pass at render order 1

@@ -15,9 +15,9 @@
 
         "VghLantern__Specification__Config__Sections": [
             { "Key": "lanternSchedule",  "Label": "Lantern Schedule",       "Renderer": "schedule",   "Enabled": true, "StartExpanded": true },
+            { "Key": "componentCounts",  "Label": "Components",             "Renderer": "components", "Enabled": true, "StartExpanded": true },
             { "Key": "linearSections",   "Label": "Section Lengths",        "Renderer": "linear",     "Enabled": true, "StartExpanded": true },
             { "Key": "glazingAreas",     "Label": "Glazing Areas",          "Renderer": "areas",      "Enabled": true, "StartExpanded": true },
-            { "Key": "componentCounts",  "Label": "Components",             "Renderer": "components", "Enabled": true, "StartExpanded": true },
             { "Key": "finishAndGlazing", "Label": "Finish and Glazing",     "Renderer": "finish",     "Enabled": true, "StartExpanded": true },
             { "Key": "jobNotes",         "Label": "Job Notes",              "Renderer": "notes",      "Enabled": true, "StartExpanded": true }
         ],

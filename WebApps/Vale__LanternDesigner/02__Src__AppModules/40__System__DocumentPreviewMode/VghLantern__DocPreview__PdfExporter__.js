@@ -501,13 +501,13 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 
         VghLantern__PdfExporter__WriteHeading(cursor, entry.Title, fonts.HeadingPt);
 
+        if (viewState.ShowComponentSchedule) {
+            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ComponentColumns', TABLE_LABEL), entry.Takeoff.Components, fonts.BodyPt);
+        }
+
         if (viewState.ShowTakeoffSchedule) {
             VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'LinearColumns', TABLE_LABEL), entry.Takeoff.Linear, fonts.BodyPt);
             VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'AreaColumns',   TABLE_LABEL), entry.Takeoff.Areas,  fonts.BodyPt);
-        }
-
-        if (viewState.ShowComponentSchedule) {
-            VghLantern__PdfExporter__WriteTable(cursor, ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ComponentColumns', TABLE_LABEL), entry.Takeoff.Components, fonts.BodyPt);
         }
     }
     // ------------------------------------------------------------

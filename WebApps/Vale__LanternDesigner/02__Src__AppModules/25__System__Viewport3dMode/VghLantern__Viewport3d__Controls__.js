@@ -54,6 +54,7 @@ const VghLantern__Viewport3d__Controls = (function() {
     const ATTR_PRESET       =  'data-vgh-preset';
     const ATTR_ACTION       =  'data-vgh-action';
     const ATTR_LANTERN      =  'data-vgh-lantern-select';
+    const ATTR_DISPLAY_MODE =  'data-vgh-display-mode';
 
     const ACTION_ZOOM_FIT   =  'zoomExtents';
     // ------------------------------------------------------------
@@ -64,8 +65,15 @@ const VghLantern__Viewport3d__Controls = (function() {
     const LABEL_VIEWS       =  'Views';
     const LABEL_TOOLS       =  'Tools';
     const LABEL_LANTERN     =  'Lantern';
+    const LABEL_DISPLAY     =  'Display';
     const LABEL_FIT         =  'Zoom to Fit';
     const LABEL_MODE_PREFIX =  'Members: ';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Config Context Label
+    // ------------------------------------------------------------
+    const MODE_CONFIG_LABEL =  'Na__Env3d__Config.json -> VghLantern__Env3d__Config__DedicatedViewportMode';
     // ------------------------------------------------------------
 
 
@@ -74,6 +82,7 @@ const VghLantern__Viewport3d__Controls = (function() {
     let VghLantern__Viewport3dControls__HostElement  =  null;                 // <-- Overlay container this module owns
     let VghLantern__Viewport3dControls__Callbacks     =  {};                  // <-- Intent handlers supplied by Layout
     let VghLantern__Viewport3dControls__ActivePreset  =  '';                  // <-- Preset key currently highlighted
+    let VghLantern__Viewport3dControls__ActiveDisplay =  '';                  // <-- Display mode key currently highlighted
     let VghLantern__Viewport3dControls__IsBound       =  false;               // <-- Guards duplicate delegated listeners
     // ------------------------------------------------------------
 
@@ -158,10 +167,47 @@ const VghLantern__Viewport3d__Controls = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build the Display Mode Button Group
+    // ------------------------------------------------------------
+    // The three modes are asked of the pipeline rather than written out here, for
+    // the same reason the preset list is: a mode added to the 3D environment
+    // appears in this overlay with no edit to the overlay.
+    //
+    // This is the control that switches between the finished model and the
+    // setting-out view - the datums and construction triangles the factory works
+    // to - so it sits above the camera presets rather than below them.
+    function VghLantern__Viewport3dControls__BuildDisplayGroup(modeConfig) {
+        if (modeConfig.ShowDisplayModeToggle === false) return '';
+
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        if (!pipeline || !pipeline.VghLantern__Env3d__RenderPipeline__ListDisplayModes) return '';
+
+        var modes  =  pipeline.VghLantern__Env3d__RenderPipeline__ListDisplayModes() || [];
+        if (!modes.length) return '';
+
+        var html  =  '<div class="' + CSS_GROUP + '">' +
+                     '<span class="' + CSS_GROUP_LABEL + '">' + LABEL_DISPLAY + '</span>';
+
+        var i, activeClass;
+        for (i = 0; i < modes.length; i++) {
+            activeClass  =  (modes[i].Key === VghLantern__Viewport3dControls__ActiveDisplay) ? ' ' + CSS_BTN_ACTIVE : '';
+
+            html  +=  '<button type="button" class="' + CSS_BTN + activeClass + '"' +
+                      ' ' + ATTR_DISPLAY_MODE + '="' + VghLantern__Viewport3dControls__Escape(modes[i].Key) + '">' +
+                      VghLantern__Viewport3dControls__Escape(modes[i].Label) +
+                      '</button>';
+        }
+
+        return html + '</div>';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build the Tool Button Group
     // ------------------------------------------------------------
     function VghLantern__Viewport3dControls__BuildToolGroup(modeConfig) {
-        if (modeConfig.ShowZoomExtents === false) return '';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(modeConfig, 'ShowZoomExtents', MODE_CONFIG_LABEL)) return '';
 
         return '<div class="' + CSS_GROUP + '">' +
                '<span class="' + CSS_GROUP_LABEL + '">' + LABEL_TOOLS + '</span>' +
@@ -177,7 +223,8 @@ const VghLantern__Viewport3d__Controls = (function() {
     // Only rendered when the project actually holds more than one lantern; a single
     // lantern job gets no redundant dropdown.
     function VghLantern__Viewport3dControls__BuildLanternGroup(modeConfig) {
-        if (modeConfig.ShowLanternSelector === false) return '';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(modeConfig, 'ShowLanternSelector', MODE_CONFIG_LABEL)) return '';
 
         var lanterns  =  VghLantern__Viewport3dControls__Lanterns();
         if (lanterns.length < 2) return '';
@@ -210,7 +257,8 @@ const VghLantern__Viewport3d__Controls = (function() {
     // SUB FUNCTION | Build the Skeleton Mode Readout
     // ------------------------------------------------------------
     function VghLantern__Viewport3dControls__BuildModeReadout(modeConfig) {
-        if (modeConfig.ShowSkeletonModeLabel === false) return '';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(modeConfig, 'ShowSkeletonModeLabel', MODE_CONFIG_LABEL)) return '';
 
         var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
         if (!pipeline || !pipeline.VghLantern__Env3d__RenderPipeline__ActiveSkeletonMode) return '';
@@ -243,6 +291,12 @@ const VghLantern__Viewport3d__Controls = (function() {
             var presetEl  =  ev.target.closest('[' + ATTR_PRESET + ']');
             if (presetEl) {
                 VghLantern__Viewport3dControls__Invoke('OnPreset', presetEl.getAttribute(ATTR_PRESET));
+                return;
+            }
+
+            var displayEl  =  ev.target.closest('[' + ATTR_DISPLAY_MODE + ']');
+            if (displayEl) {
+                VghLantern__Viewport3dControls__Invoke('OnDisplayMode', displayEl.getAttribute(ATTR_DISPLAY_MODE));
                 return;
             }
 
@@ -290,7 +344,8 @@ const VghLantern__Viewport3d__Controls = (function() {
 
         var modeConfig  =  VghLantern__Viewport3dControls__ModeConfig();
 
-        hostElement.innerHTML  =  VghLantern__Viewport3dControls__BuildPresetGroup() +
+        hostElement.innerHTML  =  VghLantern__Viewport3dControls__BuildDisplayGroup(modeConfig) +
+                                  VghLantern__Viewport3dControls__BuildPresetGroup() +
                                   VghLantern__Viewport3dControls__BuildToolGroup(modeConfig) +
                                   VghLantern__Viewport3dControls__BuildLanternGroup(modeConfig) +
                                   VghLantern__Viewport3dControls__BuildModeReadout(modeConfig);
@@ -322,6 +377,29 @@ const VghLantern__Viewport3d__Controls = (function() {
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Highlight the Display Mode the Surface Is In
+    // ------------------------------------------------------------
+    // Updated in place for the same reason the preset highlight is: repainting the
+    // whole overlay on a mode click would rebuild the lantern selector under the
+    // user's cursor.
+    function VghLantern__Viewport3d__Controls__SetActiveDisplayMode(modeKey) {
+        VghLantern__Viewport3dControls__ActiveDisplay  =  modeKey || '';
+
+        var hostElement  =  VghLantern__Viewport3dControls__HostElement;
+        if (!hostElement) return;
+
+        var buttons  =  hostElement.querySelectorAll('[' + ATTR_DISPLAY_MODE + ']');
+        var i;
+        for (i = 0; i < buttons.length; i++) {
+            if (buttons[i].getAttribute(ATTR_DISPLAY_MODE) === VghLantern__Viewport3dControls__ActiveDisplay) {
+                buttons[i].classList.add(CSS_BTN_ACTIVE);
+            } else {
+                buttons[i].classList.remove(CSS_BTN_ACTIVE);
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -333,7 +411,8 @@ const VghLantern__Viewport3d__Controls = (function() {
     // ------------------------------------------------------------
     return {
         VghLantern__Viewport3d__Controls__Render          : VghLantern__Viewport3d__Controls__Render,
-        VghLantern__Viewport3d__Controls__SetActivePreset : VghLantern__Viewport3d__Controls__SetActivePreset
+        VghLantern__Viewport3d__Controls__SetActivePreset      : VghLantern__Viewport3d__Controls__SetActivePreset,
+        VghLantern__Viewport3d__Controls__SetActiveDisplayMode : VghLantern__Viewport3d__Controls__SetActiveDisplayMode
     };
 
 // endregion -------------------------------------------------------------------

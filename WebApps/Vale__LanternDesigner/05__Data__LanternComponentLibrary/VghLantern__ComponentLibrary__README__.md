@@ -2,7 +2,7 @@
 
 Discrete objects placed at a point on the lantern — finials, finial bases,
 cresting and ventilation. Cross-sections swept along skeleton lines (glazing
-bars, ridge caps, kerbs) live in `06__Data__LanternProfileLibrary` instead.
+bars, ridge caps, builders upstands) live in `06__Data__LanternProfileLibrary` instead.
 
 ---
 

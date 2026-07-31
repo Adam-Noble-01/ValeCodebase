@@ -390,6 +390,7 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
                     "projectCode"  : project_code,
                     "projectName"  : metadata.get("VghLantern__ProjectFile__Metadata__ProjectName", ""),
                     "documentName" : metadata.get("VghLantern__ProjectFile__Metadata__DocumentName", ""),
+                    "clientName"   : metadata.get("VghLantern__ProjectFile__Metadata__ClientName", ""),
                     "status"       : metadata.get("VghLantern__ProjectFile__Metadata__DocumentStatus", "Draft"),
                     "dateCreated"  : metadata.get("VghLantern__ProjectFile__Metadata__DateCreated", ""),
                     "dateModified" : metadata.get("VghLantern__ProjectFile__Metadata__DateModified", ""),

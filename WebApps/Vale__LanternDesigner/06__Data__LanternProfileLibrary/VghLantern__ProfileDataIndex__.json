@@ -1,10 +1,10 @@
 {
     "VghLantern__ProfileDataIndex__Meta": {
         "GeneratedBy"                       : "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ProfileDataIndex__.py",
-        "GeneratedDate"                     : "31-Jul-2026 at 09:54",
+        "GeneratedDate"                     : "31-Jul-2026 at 10:20",
         "SchemaVersion"                     : "1.0.0",
         "LibraryRoot"                       : "06__Data__LanternProfileLibrary/",
-        "ProfileCount"                      : 4,
+        "ProfileCount"                      : 3,
         "DoNotEditByHand"                   : true
     },
 
@@ -29,13 +29,6 @@
             "FolderName"                    : "PRF__HipSections",
             "SortOrder"                     : 30,
             "Description"                   : "Sections swept along hips and, on gabled forms, verges."
-        },
-        {
-            "CategoryId"                    : "PRF__ClosingSections",
-            "CategoryName"                  : "Closing Sections",
-            "FolderName"                    : "PRF__ClosingSections",
-            "SortOrder"                     : 50,
-            "Description"                   : "Trim sections closing the junction to the surrounding roof finish."
         }
     ],
 
@@ -88,23 +81,6 @@
             "FaceWidthMm"                   : 75.0,
             "SectionDepthMm"                : 95.0,
             "SectionAreaSqMm"               : 6815.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
-        },
-        {
-            "ProfileId"                     : "PRF_CLS0001",
-            "Name"                          : "Closing Section - 45mm Chamfered",
-            "CategoryId"                    : "PRF__ClosingSections",
-            "CategoryName"                  : "Closing Sections",
-            "JsonUrl"                       : "PRF__ClosingSections/VghLantern__Profile__PRF_CLS0001__ClosingSection45__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["closing"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "FaceWidthMm"                   : 45.0,
-            "SectionDepthMm"                : 30.0,
-            "SectionAreaSqMm"               : 1311.0,
             "Revision"                      : "A",
             "IsDefaultForRole"              : true
         }

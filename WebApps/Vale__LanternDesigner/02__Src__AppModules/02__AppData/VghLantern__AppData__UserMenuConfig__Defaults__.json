@@ -22,7 +22,7 @@
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionGlazingBarsOpen"      : true,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionRidgeAndHipsOpen"     : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFinialsOpen"          : false,
-        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionKerbAndBaseOpen"      : false,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionBuildersUpstandAndBaseOpen"      : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionVentilationOpen"      : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFinishAndGlazingOpen" : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__PersistSectionState"         : true,

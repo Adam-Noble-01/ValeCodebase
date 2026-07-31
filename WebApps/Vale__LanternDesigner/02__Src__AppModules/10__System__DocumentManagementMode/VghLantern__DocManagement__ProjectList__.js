@@ -13,8 +13,9 @@
    - Reads the project manifest via ProjectFileManager.VghLantern__ProjectFileManager__ListProjects()
    - Renders a full HTML table with project metadata columns
    - Sortable column headers, defaulting to newest Date Created first
-   - Status column renders a colour-coded pill badge
-   - Each row provides Open and Delete action buttons
+   - Status column renders a colour-coded pill badge (Draft / For Approval / Issued)
+   - Each row provides Open, Edit, and Delete action buttons
+   - Inline edit mode turns name/document/status cells into inputs and swaps Edit for Save
    - Renders an empty-state placeholder when no projects exist
    - Subscribes to StateManager 'projectChanged' so the table self-refreshes
 
@@ -43,26 +44,27 @@ const VghLantern__DocManagement__ProjectList = (function() {
     const TABLE_CONTAINER_ID   =  'VghLantern__DocManagement__TableContainer';    // <-- Table injection point
     const SEARCH_WRAPPER_ID    =  'VghLantern__DocManagement__SearchWrapper';     // <-- Search field injection point
     const SEARCH_INPUT_ID      =  'VghLantern__DocManagement__SearchInput';       // <-- Generated search input
-    const COLUMN_COUNT         =  7;                                              // <-- Used for the no-match spanning row
+    const COLUMN_COUNT         =  8;                                              // <-- Used for the no-match spanning row
     // ------------------------------------------------------------
 
 
     // MODULE CONSTANTS | Status Badge CSS Class Mapping
     // ------------------------------------------------------------
     const STATUS_CLASS_MAP  =  {
-        'Draft'              : 'VghLantern__DocManagement__StatusBadge--draft',
-        'In Progress'        : 'VghLantern__DocManagement__StatusBadge--inProgress',
-        'Pending Approval'   : 'VghLantern__DocManagement__StatusBadge--pending',
-        'Approved'           : 'VghLantern__DocManagement__StatusBadge--approved',
-        'Completed'          : 'VghLantern__DocManagement__StatusBadge--completed'
+        'Draft'         : 'VghLantern__DocManagement__StatusBadge--draft',
+        'For Approval'  : 'VghLantern__DocManagement__StatusBadge--forApproval',
+        'Issued'        : 'VghLantern__DocManagement__StatusBadge--issued'
     };
+
+    const DEFAULT_STATUS_OPTIONS  =  ['Draft', 'For Approval', 'Issued'];         // <-- Fallback when config is unavailable
     // ------------------------------------------------------------
 
 
     // MODULE CONSTANTS | Sortable Column Field Keys and Defaults
     // ------------------------------------------------------------
     const SORT_FIELD_PROJECT_CODE   =  'projectCode';                             // <-- Vale job number
-    const SORT_FIELD_PROJECT_NAME   =  'projectName';                             // <-- Client / site name
+    const SORT_FIELD_PROJECT_NAME   =  'projectName';                             // <-- Site / job name
+    const SORT_FIELD_CLIENT_NAME    =  'clientName';                              // <-- Client shown on drawings
     const SORT_FIELD_DOCUMENT_NAME  =  'documentName';                            // <-- Document title
     const SORT_FIELD_STATUS         =  'status';                                  // <-- Workflow status
     const SORT_FIELD_DATE_CREATED   =  'dateCreated';                             // <-- Creation timestamp
@@ -71,20 +73,19 @@ const VghLantern__DocManagement__ProjectList = (function() {
     const DEFAULT_SORT_DIRECTION    =  'desc';
 
     const STATUS_SORT_ORDER  =  {
-        'Draft'              : 1,
-        'In Progress'        : 2,
-        'Pending Approval'   : 3,
-        'Approved'           : 4,
-        'Completed'          : 5
+        'Draft'         : 1,
+        'For Approval'  : 2,
+        'Issued'        : 3
     };
     // ------------------------------------------------------------
 
 
-    // MODULE VARIABLES | Current Table Sort and Search State
+    // MODULE VARIABLES | Current Table Sort, Search, and Edit State
     // ------------------------------------------------------------
     let VghLantern__ProjectList__SortField      =  DEFAULT_SORT_FIELD;            // <-- Active sort column
     let VghLantern__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;        // <-- 'asc' or 'desc'
     let VghLantern__ProjectList__SearchQuery    =  '';                            // <-- Live search filter text
+    let VghLantern__ProjectList__EditingCode    =  null;                          // <-- Project code currently in inline edit mode
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -145,6 +146,37 @@ const VghLantern__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Status Options from Config with Fallback
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__BuildStatusOptionsList() {
+        var config   =  VghLantern__ProjectList__TableConfig();
+        var options  =  Array.isArray(config.StatusOptions) && config.StatusOptions.length
+            ? config.StatusOptions
+            : DEFAULT_STATUS_OPTIONS;
+        return options;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Status Select HTML for Inline Edit Mode
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__BuildStatusSelect(currentStatus) {
+        var options  =  VghLantern__ProjectList__BuildStatusOptionsList();
+        var html     =  '<select class="VghLantern__DocManagement__EditSelect" data-field="status">';
+
+        for (var i = 0; i < options.length; i++) {
+            var optionValue  =  options[i];
+            var selectedAttr =  (optionValue === currentStatus) ? ' selected' : '';
+            html  +=  '<option value="' + VghLantern__ProjectList__Escape(optionValue) + '"' + selectedAttr + '>' +
+                      VghLantern__ProjectList__Escape(optionValue) + '</option>';
+        }
+
+        html  +=  '</select>';
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Format Date via DateFormatter Utility
     // ------------------------------------------------------------
     function VghLantern__ProjectList__FormatDate(dateStr) {
@@ -174,6 +206,7 @@ const VghLantern__DocManagement__ProjectList = (function() {
         return (
             fieldName === SORT_FIELD_PROJECT_CODE  ||
             fieldName === SORT_FIELD_PROJECT_NAME  ||
+            fieldName === SORT_FIELD_CLIENT_NAME   ||
             fieldName === SORT_FIELD_DOCUMENT_NAME ||
             fieldName === SORT_FIELD_STATUS        ||
             fieldName === SORT_FIELD_DATE_CREATED  ||
@@ -265,7 +298,7 @@ const VghLantern__DocManagement__ProjectList = (function() {
         var config       =  VghLantern__ProjectList__TableConfig();
         var searchFields =  Array.isArray(config.SearchFields) && config.SearchFields.length
             ? config.SearchFields
-            : [SORT_FIELD_PROJECT_CODE, SORT_FIELD_PROJECT_NAME, SORT_FIELD_DOCUMENT_NAME, SORT_FIELD_STATUS];
+            : [SORT_FIELD_PROJECT_CODE, SORT_FIELD_PROJECT_NAME, SORT_FIELD_CLIENT_NAME, SORT_FIELD_DOCUMENT_NAME, SORT_FIELD_STATUS];
 
         var query  =  VghLantern__ProjectList__SearchQuery.toLowerCase();
 
@@ -338,6 +371,7 @@ const VghLantern__DocManagement__ProjectList = (function() {
         var html  =  '<thead><tr>';
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Project Code',  SORT_FIELD_PROJECT_CODE);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Project Name',  SORT_FIELD_PROJECT_NAME);
+        html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Client Name',   SORT_FIELD_CLIENT_NAME);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Document Name', SORT_FIELD_DOCUMENT_NAME);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Status',        SORT_FIELD_STATUS);
         html     +=  VghLantern__ProjectList__BuildSortableHeaderCell('Date Created',  SORT_FIELD_DATE_CREATED);
@@ -353,33 +387,57 @@ const VghLantern__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
     function VghLantern__ProjectList__BuildTableRow(project) {
         var code          =  VghLantern__ProjectList__Escape(project.projectCode  || '');
-        var name          =  VghLantern__ProjectList__Escape(project.projectName  || '');
-        var docName       =  VghLantern__ProjectList__Escape(project.documentName || '');
+        var nameRaw       =  project.projectName  || '';
+        var clientRaw     =  project.clientName   || '';
+        var docNameRaw    =  project.documentName || '';
+        var name          =  VghLantern__ProjectList__Escape(nameRaw);
+        var clientName    =  VghLantern__ProjectList__Escape(clientRaw);
+        var docName       =  VghLantern__ProjectList__Escape(docNameRaw);
         var status        =  project.status || 'Draft';
         var dateCreated   =  VghLantern__ProjectList__FormatDate(project.dateCreated);
         var dateModified  =  VghLantern__ProjectList__FormatDate(project.dateModified);
         var lanternCount  =  Number(project.lanternCount || 0);                   // <-- Optional manifest hint
+        var isEditing     =  (VghLantern__ProjectList__EditingCode === (project.projectCode || ''));
 
-        var nameCell      =  name || '&mdash;';
-        if (lanternCount > 0) {
-            nameCell  +=  ' <span class="VghLantern__DocManagement__CountChip">' + lanternCount +
-                          (lanternCount === 1 ? ' lantern' : ' lanterns') + '</span>';
+        var html  =  '<tr' + (isEditing ? ' class="VghLantern__DocManagement__TableRow--editing"' : '') + '>';
+        html     +=  '<td>' + (code || '&mdash;') + '</td>';
+
+        if (isEditing) {
+            html  +=  '<td><input type="text" class="VghLantern__DocManagement__EditInput" data-field="projectName" value="' + name + '"></td>';
+            html  +=  '<td><input type="text" class="VghLantern__DocManagement__EditInput" data-field="clientName" value="' + clientName + '"></td>';
+            html  +=  '<td><input type="text" class="VghLantern__DocManagement__EditInput" data-field="documentName" value="' + docName + '"></td>';
+            html  +=  '<td>' + VghLantern__ProjectList__BuildStatusSelect(status) + '</td>';
+            html  +=  '<td>' + dateCreated  + '</td>';
+            html  +=  '<td>' + dateModified + '</td>';
+            html  +=  '<td>';
+            html  +=      '<div class="VghLantern__DocManagement__RowActions">';
+            html  +=          '<button class="VghLantern__DocManagement__RowBtn VghLantern__DocManagement__RowBtn--save" data-action="save-edit" data-code="' + code + '">Save</button>';
+            html  +=          '<button class="VghLantern__DocManagement__RowBtn VghLantern__DocManagement__RowBtn--cancel" data-action="cancel-edit" data-code="' + code + '">Cancel</button>';
+            html  +=      '</div>';
+            html  +=  '</td>';
+        } else {
+            var nameCell  =  name || '&mdash;';
+            if (lanternCount > 0) {
+                nameCell  +=  ' <span class="VghLantern__DocManagement__CountChip">' + lanternCount +
+                              (lanternCount === 1 ? ' lantern' : ' lanterns') + '</span>';
+            }
+
+            html  +=  '<td>' + nameCell                    + '</td>';
+            html  +=  '<td>' + (clientName || '&mdash;')   + '</td>';
+            html  +=  '<td>' + (docName || '&mdash;')      + '</td>';
+            html  +=  '<td>' + VghLantern__ProjectList__BuildStatusBadge(status) + '</td>';
+            html  +=  '<td>' + dateCreated  + '</td>';
+            html  +=  '<td>' + dateModified + '</td>';
+            html  +=  '<td>';
+            html  +=      '<div class="VghLantern__DocManagement__RowActions">';
+            html  +=          '<button class="VghLantern__DocManagement__RowBtn" data-action="open" data-code="' + code + '">Open</button>';
+            html  +=          '<button class="VghLantern__DocManagement__RowBtn" data-action="edit" data-code="' + code + '">Edit</button>';
+            html  +=          '<button class="VghLantern__DocManagement__RowBtn VghLantern__DocManagement__RowBtn--delete" data-action="delete" data-code="' + code + '">Delete</button>';
+            html  +=      '</div>';
+            html  +=  '</td>';
         }
 
-        var html  =  '<tr>';
-        html     +=  '<td>' + (code    || '&mdash;') + '</td>';
-        html     +=  '<td>' + nameCell               + '</td>';
-        html     +=  '<td>' + (docName || '&mdash;') + '</td>';
-        html     +=  '<td>' + VghLantern__ProjectList__BuildStatusBadge(status) + '</td>';
-        html     +=  '<td>' + dateCreated  + '</td>';
-        html     +=  '<td>' + dateModified + '</td>';
-        html     +=  '<td>';
-        html     +=      '<div class="VghLantern__DocManagement__RowActions">';
-        html     +=          '<button class="VghLantern__DocManagement__RowBtn" data-action="open" data-code="' + code + '">Open</button>';
-        html     +=          '<button class="VghLantern__DocManagement__RowBtn VghLantern__DocManagement__RowBtn--delete" data-action="delete" data-code="' + code + '">Delete</button>';
-        html     +=      '</div>';
-        html     +=  '</td>';
-        html     +=  '</tr>';
+        html  +=  '</tr>';
         return html;
     }
     // ------------------------------------------------------------
@@ -545,6 +603,24 @@ const VghLantern__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Enter Inline Edit Mode for a Project Row
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__SetEditingRow(projectCode) {
+        VghLantern__ProjectList__EditingCode  =  projectCode || null;
+        VghLantern__ProjectList__RenderTableOnly();                               // <-- Table-only redraw keeps search caret
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Exit Inline Edit Mode and Re-render Display Rows
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__ClearEditingRow() {
+        VghLantern__ProjectList__EditingCode  =  null;
+        VghLantern__ProjectList__RenderTableOnly();
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Subscribe to State Change Events
     // ------------------------------------------------------------
     function VghLantern__ProjectList__SubscribeToStateEvents() {
@@ -575,7 +651,9 @@ const VghLantern__DocManagement__ProjectList = (function() {
     return {
         VghLantern__ProjectList__Render              : VghLantern__ProjectList__Render,
         VghLantern__ProjectList__ToggleSortByField   : VghLantern__ProjectList__ToggleSortByField,
-        VghLantern__ProjectList__ClearSearch         : VghLantern__ProjectList__ClearSearch
+        VghLantern__ProjectList__ClearSearch         : VghLantern__ProjectList__ClearSearch,
+        VghLantern__ProjectList__SetEditingRow       : VghLantern__ProjectList__SetEditingRow,
+        VghLantern__ProjectList__ClearEditingRow     : VghLantern__ProjectList__ClearEditingRow
     };
 
 // endregion -------------------------------------------------------------------

@@ -111,18 +111,17 @@
     .VghLantern__Env2d__Member--hip      { stroke : var(--VghLantern_SvgSkeletonHip);   }
     .VghLantern__Env2d__Member--rafter   { stroke : var(--VghLantern_SvgSkeletonRafter);}
     .VghLantern__Env2d__Member--eaves     { stroke : var(--VghLantern_SvgSkeletonEaves); }
-    .VghLantern__Env2d__Member--kerb      { stroke : var(--VghLantern_SvgSkeletonKerb);  }
-    .VghLantern__Env2d__Member--kerbPost  { stroke : var(--VghLantern_SvgSkeletonKerb);  }
+    .VghLantern__Env2d__Member--buildersUpstand      { stroke : var(--VghLantern_SvgSkeletonBuildersUpstand);  }
+    .VghLantern__Env2d__Member--buildersUpstandPost  { stroke : var(--VghLantern_SvgSkeletonBuildersUpstand);  }
     .VghLantern__Env2d__Member--frame     { stroke : var(--VghLantern_SvgSkeletonFrame); }
-    .VghLantern__Env2d__Member--framePost { stroke : var(--VghLantern_SvgSkeletonFrame); }
 
-    /* The inner face of the kerb is the reveal - the hole the daylight comes
+    /* The inner face of the builders upstand is the reveal - the hole the daylight comes
        down - not a section. Dashed red marks it as the setting-out line the
        builder cuts to, matching the annotation colour of the dimensions. The
        dash pattern itself is set by the renderer in millimetres, so it holds its
        real-world length at every zoom. */
-    .VghLantern__Env2d__Member--kerbReveal {
-        stroke                            : var(--VghLantern_SvgKerbReveal);
+    .VghLantern__Env2d__Member--buildersUpstandReveal {
+        stroke                            : var(--VghLantern_SvgBuildersUpstandReveal);
         stroke-linecap                    : butt;
     }
 
@@ -242,6 +241,15 @@
         font-family                       : var(--Vale_FontFamily);
         font-weight                       : 600;
         pointer-events                    : none;
+    }
+
+    /* Pitch label: heavier weight and a paper halo so it reads over the hip line. */
+    .VghLantern__Env2d__Dimension__Text--angle {
+        font-weight                       : 700;
+        paint-order                       : stroke;
+        stroke                            : var(--Vale_BackgroundWhite);
+        stroke-width                      : 18;
+        stroke-linejoin                   : round;
     }
 
     /* Only resolver-backed dimensions are clickable, so only they invite a click. */

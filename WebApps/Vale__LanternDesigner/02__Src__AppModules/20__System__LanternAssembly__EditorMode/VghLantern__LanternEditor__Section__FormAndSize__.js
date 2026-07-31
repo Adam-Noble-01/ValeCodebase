@@ -13,9 +13,9 @@
    - Emits the descriptor list for the Form and Size accordion section.
    - Roof form drives which members the SkeletonSolver produces, so it sits first.
    - Width is the long plan axis, depth the short one. Both are measured to the
-     OUTSIDE face of the kerb, which is the face the builder sets out to, and
+     OUTSIDE face of the builders upstand, which is the face the builder sets out to, and
      they match the dimensions the plan view puts under the click-to-type editor.
-     The kerb thickness therefore reduces the reveal, never the stated size.
+     The builders upstand thickness therefore reduces the reveal, never the stated size.
    - Roof pitch follows width and depth because it is the third number that fixes
      the shape: with the plan size set, the pitch is what decides how tall the
      roof stands. It is the only thing that drives roof height.
@@ -55,7 +55,7 @@ const VghLantern__LanternEditor__Section__FormAndSize = (function() {
                 Field     : 'Lantern__Dimensions__Config__WidthMm',
                 BoundsKey : 'WidthMm',
                 Unit      : 'mm',
-                Hint      : 'Long plan axis, measured to the outside face of the kerb.'
+                Hint      : 'Long plan axis, measured to the outside face of the builders upstand.'
             },
             {
                 Key       : 'depthMm',
@@ -65,7 +65,7 @@ const VghLantern__LanternEditor__Section__FormAndSize = (function() {
                 Field     : 'Lantern__Dimensions__Config__DepthMm',
                 BoundsKey : 'DepthMm',
                 Unit      : 'mm',
-                Hint      : 'Short plan axis, measured to the outside face of the kerb.'
+                Hint      : 'Short plan axis, measured to the outside face of the builders upstand.'
             },
             {
                 Key       : 'pitchDegrees',
@@ -86,7 +86,7 @@ const VghLantern__LanternEditor__Section__FormAndSize = (function() {
                 Field     : 'Lantern__Dimensions__Config__EavesProjectionMm',
                 BoundsKey : 'EavesProjectionMm',
                 Unit      : 'mm',
-                Hint      : 'Overhang of the eaves beyond the kerb face.'
+                Hint      : 'Overhang of the eaves beyond the builders upstand face.'
             },
             {
                 Key       : 'quantity',

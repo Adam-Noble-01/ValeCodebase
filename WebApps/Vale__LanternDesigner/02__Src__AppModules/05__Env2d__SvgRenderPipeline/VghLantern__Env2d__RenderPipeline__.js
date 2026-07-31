@@ -66,6 +66,7 @@ const VghLantern__Env2d__RenderPipeline = (function() {
         'stroke-dasharray',
         'stroke-linecap',
         'stroke-linejoin',
+        'paint-order',
         'opacity',
         'font-family',
         'font-size',

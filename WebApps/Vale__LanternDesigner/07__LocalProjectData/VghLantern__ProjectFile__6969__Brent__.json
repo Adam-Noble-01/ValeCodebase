@@ -2,9 +2,9 @@
     "VghLantern__ProjectFile__Metadata": {
         "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
         "VghLantern__ProjectFile__Metadata__ProjectCode": "6969",
-        "VghLantern__ProjectFile__Metadata__ProjectName": "David Brent",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "Brent",
         "VghLantern__ProjectFile__Metadata__DocumentName": "Brent House Lantern - Scheme 01",
-        "VghLantern__ProjectFile__Metadata__ClientName": "",
+        "VghLantern__ProjectFile__Metadata__ClientName": "David Brent",
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "30-Jul-2026",
@@ -43,10 +43,8 @@
                 "Lantern__RoofPitch__Config__PitchDegrees": 22.5
             },
             "Lantern__GlazingBars__Config": {
-                "Lantern__GlazingBars__Config__DivisionMode": "spacing",
-                "Lantern__GlazingBars__Config__BarCountLongSlope": 3,
                 "Lantern__GlazingBars__Config__BarCountShortSlope": 1,
-                "Lantern__GlazingBars__Config__TargetSpacingMm": 410,
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 490,
                 "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
             },
@@ -63,13 +61,12 @@
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
             },
-            "Lantern__KerbAndBase__Config": {
-                "Lantern__KerbAndBase__Config__KerbHeightMm": 150,
-                "Lantern__KerbAndBase__Config__KerbProfileId": "",
-                "Lantern__KerbAndBase__Config__EavesProfileId": "",
-                "Lantern__KerbAndBase__Config__ClosingProfileId": "",
-                "Lantern__KerbAndBase__Config__KerbThicknessMm": 110,
-                "Lantern__KerbAndBase__Config__FrameHeightMm": 50
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -98,7 +95,7 @@
             39.20130010714718,
             60.79869989285282
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.6160744021928957,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 2.4751335672245633,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {

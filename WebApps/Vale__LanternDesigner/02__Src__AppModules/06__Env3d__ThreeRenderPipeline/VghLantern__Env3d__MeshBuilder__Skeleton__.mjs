@@ -27,9 +27,9 @@
    3D model from a single edit.
 
    ROLES THIS MODULE DOES NOT BUILD:
-   The base assembly - kerb, kerb posts, frame, frame posts - is a pair of solid
-   prisms, not swept sections, so MeshBuilder__KerbBox owns it and this module
-   skips those roles. 'kerbReveal' is skipped by every builder: it is the hole
+   The base assembly - builders upstand, builders upstand posts, and frame - is a pair of solid
+   prisms, not swept sections, so MeshBuilder__BuildersUpstandBox owns it and this module
+   skips those roles. 'buildersUpstandReveal' is skipped by every builder: it is the hole
    through the base and exists only as 2D setting-out linework.
 
    ============================================================================= */
@@ -37,7 +37,7 @@
 import * as THREE from 'three';
 
 import { VghLantern__Env3d__ConfigAccess__Section, VghLantern__Env3d__ConfigAccess__PointToWorld } from './VghLantern__Env3d__ConfigAccess__.mjs';
-import { VghLantern__Env3d__MaterialLibrary__Frame, VghLantern__Env3d__MaterialLibrary__Kerb, VghLantern__Env3d__MaterialLibrary__SkeletonLine } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+import { VghLantern__Env3d__MaterialLibrary__Frame, VghLantern__Env3d__MaterialLibrary__BuildersUpstand, VghLantern__Env3d__MaterialLibrary__SkeletonLine } from './VghLantern__Env3d__MaterialLibrary__.mjs';
 import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__ProfileSweep__FallbackOutline } from './VghLantern__Env3d__MeshBuilder__ProfileSweep__.mjs';
 
 // =============================================================================
@@ -53,14 +53,14 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
     const MODE_LINES            =  'lines';                                  // <-- Centreline only
     const MODE_PROFILE_SWEEP    =  'profileSweep';                           // <-- Real authored section
 
-    const ROLE_KERB_SET         =  ['kerb', 'kerbPost'];                     // <-- Roles that take the kerb material
+    const ROLE_BUILDERS_UPSTAND_SET         =  ['buildersUpstand', 'buildersUpstandPost'];                     // <-- Roles that take the builders upstand material
 
-    // The base assembly is extruded as solid prisms by MeshBuilder__KerbBox, so
+    // The base assembly is extruded as solid prisms by MeshBuilder__BuildersUpstandBox, so
     // its members are construction linework here and must not also be swept -
-    // doing both would put a section inside the solid it describes. 'kerbReveal'
+    // doing both would put a section inside the solid it describes. 'buildersUpstandReveal'
     // is skipped outright: it is the hole through the base, not a member.
-    const ROLE_BASE_SOLID_SET   =  ['kerb', 'kerbPost', 'frame', 'framePost'];
-    const ROLE_ANNOTATION_SET   =  ['kerbReveal'];
+    const ROLE_BASE_SOLID_SET   =  ['buildersUpstand', 'buildersUpstandPost', 'frame'];
+    const ROLE_ANNOTATION_SET   =  ['buildersUpstandReveal'];
 
     const FINISH_BLOCK          =  'Lantern__FinishAndGlazing__Config';      // <-- Frame finish lives here
     const FINISH_FIELD          =  'Lantern__FinishAndGlazing__Config__FrameFinish';
@@ -76,7 +76,7 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
     // HELPER FUNCTION | Whether a Role Is Built Elsewhere or Not Built at All
     // ------------------------------------------------------------
     // buildsBaseAsSolid is false only when the base has been left to this module,
-    // in which case the kerb and frame rings fall through to the normal path.
+    // in which case the builders upstand and frame rings fall through to the normal path.
     function VghLantern__Env3d__SkeletonBuilder__IsExcludedRole(roleKey, buildsBaseAsSolid) {
         if (ROLE_ANNOTATION_SET.indexOf(roleKey) !== -1) return true;
         return buildsBaseAsSolid && ROLE_BASE_SOLID_SET.indexOf(roleKey) !== -1;
@@ -121,8 +121,8 @@ import { VghLantern__Env3d__ProfileSweep__BuildMergedMesh, VghLantern__Env3d__Pr
     // HELPER FUNCTION | Select the Material for a Role
     // ------------------------------------------------------------
     function VghLantern__Env3d__SkeletonBuilder__MaterialForRole(roleKey, finishName) {
-        if (ROLE_KERB_SET.indexOf(roleKey) !== -1) {
-            return VghLantern__Env3d__MaterialLibrary__Kerb();
+        if (ROLE_BUILDERS_UPSTAND_SET.indexOf(roleKey) !== -1) {
+            return VghLantern__Env3d__MaterialLibrary__BuildersUpstand();
         }
         return VghLantern__Env3d__MaterialLibrary__Frame(finishName);
     }

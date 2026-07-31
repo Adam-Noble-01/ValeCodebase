@@ -51,7 +51,7 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     // ------------------------------------------------------------
     const LINEAR_KEYS  =  ['LengthMEach', 'LengthMTotal'];
     const AREA_KEYS    =  ['AreaSqMEach', 'AreaSqMTotal'];
-    const MM_KEYS      =  ['WidthMm', 'DepthMm', 'LengthMmEach', 'AreaSqMmEach'];
+    const MM_KEYS      =  ['WidthMm', 'DepthMm', 'LengthMmEach', 'AreaSqMmEach', 'SectionWidthMm', 'SectionHeightMm'];
     const PITCH_KEYS   =  ['PitchDegrees'];
     // ------------------------------------------------------------
 

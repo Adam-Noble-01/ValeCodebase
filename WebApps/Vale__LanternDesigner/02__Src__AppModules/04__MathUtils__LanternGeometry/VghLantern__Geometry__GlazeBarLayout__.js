@@ -22,9 +22,10 @@
 
    LAYOUT RULES (Vale convention - the hip wrap):
    - One set-out  : a single pitch measured along the long eaves drives the whole
-                    lantern. The hip ends are not set out independently, they are
-                    wrapped from the same offsets, which is what makes every bar
-                    land exactly on a hip or ridge point.
+                    lantern, resolved from the target spacing rounded to a whole
+                    number of panes. The hip ends are not set out independently,
+                    they are wrapped from the same offsets, which is what makes
+                    every bar land exactly on a hip or ridge point.
    - Long slopes  : bars run square to the eaves, up the slope. A bar inboard of
                     the ridge ends terminates on the ridge; a bar outboard of
                     them terminates on the hip, walked in plan by
@@ -48,7 +49,6 @@
 
    {
        Meta : {
-           DivisionMode         : 'count' | 'spacing',
            LongSlopeBarCount, ShortSlopeBarCount,
            ResolvedLongSpacingMm, ResolvedShortSpacingMm,
            TotalBarLengthMm, TransomEnabled, TotalTransomLengthMm
@@ -75,10 +75,8 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Division Modes and Layout Guards
+    // MODULE CONSTANTS | Layout Guards
     // ------------------------------------------------------------
-    const DIVISION_MODE_COUNT    =  'count';                                 // <-- User states how many bars per slope
-    const DIVISION_MODE_SPACING  =  'spacing';                               // <-- User states a target spacing and count is derived
     const MAX_BARS_PER_SLOPE     =  40;                                      // <-- Hard ceiling matching the schema clamp
     const MIN_PANE_WIDTH_MM      =  120;                                     // <-- Below this a pane is unbuildable
     const TRANSOM_HEIGHT_FACTOR  =  0.5;                                     // <-- Transom sits at half the slope rise
@@ -205,17 +203,11 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 // REGION | Division Resolution
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Resolve a Bar Count for an Edge from the Division Mode
+    // HELPER FUNCTION | Resolve a Bar Count for an Edge from the Target Spacing
     // ------------------------------------------------------------
-    function VghLantern__GlazeBarLayout__ResolveBarCount(divisionMode, edgeLengthMm, requestedCount, targetSpacingMm) {
-        var count;
-
-        if (divisionMode === DIVISION_MODE_SPACING) {
-            var spacing  =  Math.max(1, Number(targetSpacingMm) || 0);
-            count        =  Math.max(0, Math.round(edgeLengthMm / spacing) - 1);
-        } else {
-            count  =  Math.max(0, Math.round(Number(requestedCount) || 0));
-        }
+    function VghLantern__GlazeBarLayout__ResolveBarCount(edgeLengthMm, targetSpacingMm) {
+        var spacing  =  Math.max(1, Number(targetSpacingMm) || 0);            // <-- Guard against a zero or junk spacing
+        var count    =  Math.max(0, Math.round(edgeLengthMm / spacing) - 1);  // <-- Rounded to whole panes
 
         return Math.min(MAX_BARS_PER_SLOPE, count);
     }
@@ -384,16 +376,9 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
         var warnings =  [];
         var bars     =  [];
 
-        var divisionMode  =  barsCfg['Lantern__GlazingBars__Config__DivisionMode'] === DIVISION_MODE_SPACING
-            ? DIVISION_MODE_SPACING
-            : DIVISION_MODE_COUNT;
-
         var targetSpacing  =  barsCfg['Lantern__GlazingBars__Config__TargetSpacingMm'];
 
-        var longCount  =  VghLantern__GlazeBarLayout__ResolveBarCount(
-            divisionMode, frame.HalfLongMm * 2,
-            barsCfg['Lantern__GlazingBars__Config__BarCountLongSlope'], targetSpacing
-        );
+        var longCount  =  VghLantern__GlazeBarLayout__ResolveBarCount(frame.HalfLongMm * 2, targetSpacing);
 
         // One set-out for the whole lantern. The hip ends are wrapped from this
         // same offset list, so the hip end count is derived rather than entered.
@@ -421,7 +406,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
         if (transomEnabled) VghLantern__GlazeBarLayout__BuildTransoms(bars, frame);
 
         if (resolvedSpacing < MIN_PANE_WIDTH_MM) {
-            warnings.push('Resolved pane width is below ' + MIN_PANE_WIDTH_MM + ' mm - reduce the bar count.');
+            warnings.push('Resolved pane width is below ' + MIN_PANE_WIDTH_MM + ' mm - increase the target spacing.');
         }
 
         // A shallow hip end compresses the set-out, so the hip end panes can be
@@ -430,7 +415,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
             ? frame.HalfShortMm * (resolvedSpacing / frame.EndSlopeRunMm)
             : resolvedSpacing;
         if (wrapCount >= 1 && hipStep < MIN_PANE_WIDTH_MM) {
-            warnings.push('Hip end panes are only ' + Math.round(hipStep) + ' mm wide - the plan is too shallow for this bar count.');
+            warnings.push('Hip end panes are only ' + Math.round(hipStep) + ' mm wide - the plan is too shallow for this bar spacing.');
         }
 
         var totalBarLength      =  0;
@@ -446,7 +431,6 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 
         return {
             Meta : {
-                DivisionMode            : divisionMode,
                 LongSlopeBarCount       : longCount,
                 ShortSlopeBarCount      : shortCount,
                 ResolvedLongSpacingMm   : resolvedSpacing,

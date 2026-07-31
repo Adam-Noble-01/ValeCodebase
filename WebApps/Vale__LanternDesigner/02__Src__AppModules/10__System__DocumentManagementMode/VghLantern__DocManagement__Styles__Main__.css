@@ -243,10 +243,17 @@
 
     /* TABLE | Actions Cell */
     /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__Table thead th:last-child,
+    .VghLantern__DocManagement__Table tbody td:last-child {
+        width                              : 1%;
+        white-space                        : nowrap;
+    }
+
     .VghLantern__DocManagement__RowActions {
         display                            : flex;
         gap                                : var(--Vale_Spacing_Small);
         white-space                        : nowrap;
+        width                              : max-content;
     }
     /* ------------------------------------------------------------ */
 
@@ -286,6 +293,79 @@
     }
     /* ------------------------------------------------------------ */
 
+
+    /* TABLE | Save Row Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__RowBtn--save {
+        color                              : var(--VghLantern_StatusIssued);
+        border-color                       : var(--VghLantern_StatusIssued);
+    }
+
+    .VghLantern__DocManagement__RowBtn--save:hover {
+        background                         : var(--VghLantern_StatusIssued);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Cancel Row Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__RowBtn--cancel {
+        color                              : var(--Vale_TextSecondary);
+        border-color                       : var(--Vale_BorderLight);
+    }
+
+    .VghLantern__DocManagement__RowBtn--cancel:hover {
+        background                         : var(--Vale_TextSecondary);
+        color                              : var(--Vale_TextLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Inline Edit Text Input */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__EditInput {
+        width                              : 100%;
+        min-width                          : 120px;
+        padding                            : 4px 8px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-sizing                         : border-box;
+    }
+
+    .VghLantern__DocManagement__EditInput:focus {
+        outline                            : none;
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABLE | Inline Edit Status Select */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__EditSelect {
+        width                              : 100%;
+        min-width                          : 110px;
+        padding                            : 4px 8px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-sizing                         : border-box;
+        cursor                             : pointer;
+    }
+
+    .VghLantern__DocManagement__EditSelect:focus {
+        outline                            : none;
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
 /* #endregion ------------------------------------------------------------------- */
 
 
@@ -310,11 +390,9 @@
 
     /* BADGE | Workflow Status Variants */
     /* ------------------------------------------------------------ */
-    .VghLantern__DocManagement__StatusBadge--draft      { background : var(--VghLantern_StatusDraft);      }
-    .VghLantern__DocManagement__StatusBadge--inProgress { background : var(--VghLantern_StatusInProgress); }
-    .VghLantern__DocManagement__StatusBadge--pending    { background : var(--VghLantern_StatusPending);    }
-    .VghLantern__DocManagement__StatusBadge--approved   { background : var(--VghLantern_StatusApproved);   }
-    .VghLantern__DocManagement__StatusBadge--completed  { background : var(--VghLantern_StatusCompleted);  }
+    .VghLantern__DocManagement__StatusBadge--draft       { background : var(--VghLantern_StatusDraft);       }
+    .VghLantern__DocManagement__StatusBadge--forApproval { background : var(--VghLantern_StatusForApproval); }
+    .VghLantern__DocManagement__StatusBadge--issued      { background : var(--VghLantern_StatusIssued);      }
     /* ------------------------------------------------------------ */
 
 /* #endregion ------------------------------------------------------------------- */

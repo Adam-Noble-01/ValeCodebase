@@ -5,25 +5,21 @@
 
         "StatusOptions": [
             "Draft",
-            "In Progress",
-            "Pending Approval",
-            "Approved",
-            "Completed"
+            "For Approval",
+            "Issued"
         ],
 
         "StatusColours": {
-            "Draft"              : "#d32f2f",
-            "In Progress"        : "#e6a817",
-            "Pending Approval"   : "#d67e28",
-            "Approved"           : "#2a7d4f",
-            "Completed"          : "#2a7d4f"
+            "Draft"         : "#d32f2f",
+            "For Approval"  : "#e6a817",
+            "Issued"        : "#2a7d4f"
         },
 
         "DefaultSortField"     : "dateCreated",
         "DefaultSortDirection" : "desc",
 
         "SearchPlaceholder"    : "Search lantern projects...",
-        "SearchFields"         : ["projectCode", "projectName", "documentName", "status"]
+        "SearchFields"         : ["projectCode", "projectName", "clientName", "documentName", "status"]
     },
 
     "VghLantern__DocManagement__Config__EmptyState": {
@@ -34,7 +30,8 @@
 
     "VghLantern__DocManagement__Config__NewProject": {
         "PlaceholderProjectCode"  : "e.g. 2601",
-        "PlaceholderProjectName"  : "e.g. Jones-Smith",
+        "PlaceholderProjectName"  : "e.g. Jones Residence",
+        "PlaceholderClientName"   : "e.g. Mr & Mrs Jones",
         "PlaceholderDocumentName" : "e.g. Orangery Roof Lantern",
         "LandingModeKey"          : "LanternEditor"
     }

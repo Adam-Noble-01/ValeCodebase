@@ -14,7 +14,7 @@
                 "ProjectionKey"               : "plan",
                 "HorizontalAxisLabel"         : "Width",
                 "VerticalAxisLabel"           : "Depth",
-                "DimensionKeys"               : ["width", "depth", "eavesProjection", "ridgeLength", "kerbThickness"]
+                "DimensionKeys"               : ["width", "depth", "eavesProjection", "ridgeLength", "upstandThickness"]
             },
             "frontElevation": {
                 "Label"                       : "Front Elevation",
@@ -22,7 +22,7 @@
                 "ProjectionKey"               : "frontElevation",
                 "HorizontalAxisLabel"         : "Width",
                 "VerticalAxisLabel"           : "Height",
-                "DimensionKeys"               : ["width", "overallHeight", "kerbHeight", "frameHeight", "pitch"]
+                "DimensionKeys"               : ["width", "overallHeight", "upstandHeight", "frameHeight", "pitch"]
             },
             "sideElevation": {
                 "Label"                       : "Side Elevation",
@@ -30,7 +30,7 @@
                 "ProjectionKey"               : "sideElevation",
                 "HorizontalAxisLabel"         : "Depth",
                 "VerticalAxisLabel"           : "Height",
-                "DimensionKeys"               : ["depth", "overallHeight", "kerbHeight", "frameHeight", "pitch"]
+                "DimensionKeys"               : ["depth", "overallHeight", "upstandHeight", "frameHeight", "pitch"]
             }
         },
 
@@ -66,12 +66,12 @@
             "EavesStrokeWidthMm"              : 8,
             "RidgeStrokeWidthMm"              : 9,
             "HipStrokeWidthMm"                : 8,
-            "KerbStrokeWidthMm"               : 8,
+            "BuildersUpstandStrokeWidthMm"               : 8,
             "FrameStrokeWidthMm"              : 8,
-            "KerbRevealStrokeWidthMm"         : 6,
+            "BuildersUpstandRevealStrokeWidthMm"         : 6,
             "HiddenDashPatternMm"             : "24 16",
-            "KerbRevealDashPatternMm"         : "90 60",
-            "KerbRevealDashNote"              : "Dash pattern in millimetres for the inner face of the kerb - the reveal. Drawn dashed and in the annotation red so it reads as the hole through the upstand rather than a structural member.",
+            "BuildersUpstandRevealDashPatternMm"         : "90 60",
+            "BuildersUpstandRevealDashNote"              : "Dash pattern in millimetres for the inner face of the builders upstand - the reveal. Drawn dashed and in the annotation red so it reads as the hole through the upstand rather than a structural member.",
             "NodeMarkerRadiusMm"              : 9,
             "ShowNodeMarkers"                 : false
         },
@@ -108,7 +108,10 @@
             "TerminatorStyle"                 : "tick",
             "TextFontSizeMm"                  : 90,
             "TextOffsetFromLineMm"            : 34,
-            "AngleArcRadiusMm"                : 400,
+            "AngleTextFontSizeMm"             : 115,
+            "AngleTextOffsetFromSlopeMm"      : 60,
+            "AngleArcRadiusMm"                : 320,
+            "AngleTickLengthMm"               : 55,
             "EditableCursor"                  : "text",
             "EditHintTooltip"                 : "Click to type a new value"
         },

@@ -14,7 +14,7 @@
      differ only in which world axis lies across the page - a fact the projector
      already encodes. Splitting them into two files would duplicate composition
      logic for no gain.
-   - Elevations carry the height family of dimensions: overall height, kerb
+   - Elevations carry the height family of dimensions: overall height, builders upstand
      height, ridge rise and the pitch angle.
    - Hidden linework (members behind the cutting plane) is delegated to the
      skeleton renderer, which already separates its hidden layer.

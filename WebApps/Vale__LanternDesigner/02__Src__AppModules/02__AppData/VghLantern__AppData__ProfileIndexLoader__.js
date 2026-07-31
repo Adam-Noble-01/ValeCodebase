@@ -11,7 +11,7 @@
 
    DESCRIPTION:
    - Loads VghLantern__ProfileDataIndex__.json - the generated catalogue of swept
-     cross-sections (glazing bars, ridge, hip, eaves/kerb, closing sections).
+     cross-sections (glazing bars, ridge, hip, eaves / builders upstand).
    - Fetch order: the server API route first (served no-store so the index stays
      live while authoring), then the static file as a fallback.
    - Memoises the parsed index and builds a ProfileId lookup Map.
@@ -182,7 +182,7 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
 
     // FUNCTION | List Profile Index Entries Suitable for a Skeleton Role
     // ------------------------------------------------------------
-    // Role is one of: glazingBar | ridge | hip | eaves | kerb | closing.
+    // Role is one of: glazingBar | ridge | hip | eaves | buildersUpstand | frame.
     // Entries declare their applicable roles so the editor can filter option
     // lists without hardcoding which category maps to which skeleton member.
     function VghLantern__ProfileIndexLoader__ListEntriesForRole(roleKey) {
@@ -282,18 +282,17 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
     // each skeleton member role. Both render environments resolve through this, so
     // a profile swap updates the SVG trace and the Three.js sweep from one edit.
     //
-    // 'kerbReveal' is deliberately absent. It traces the hole through the base,
+    // 'buildersUpstandReveal' is deliberately absent. It traces the hole through the base,
     // not a section, so an unmapped role here is exactly what stops it being
     // swept or traced as though it were a member.
     const ROLE_PROFILE_FIELDS  =  {
         'ridge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__RidgeProfileId'],
         'hip'        : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
         'verge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
-        'eaves'      : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__EavesProfileId'],
-        'frame'      : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__EavesProfileId'],
-        'framePost'  : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__EavesProfileId'],
-        'kerb'       : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__KerbProfileId'],
-        'kerbPost'   : ['Lantern__KerbAndBase__Config',   'Lantern__KerbAndBase__Config__KerbProfileId'],
+        'eaves'      : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__EavesProfileId'],
+        'frame'      : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__EavesProfileId'],
+                'buildersUpstand'       : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
+        'buildersUpstandPost'   : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
         'glazingBar' : ['Lantern__GlazingBars__Config',   'Lantern__GlazingBars__Config__BarProfileId'],
         'transom'    : ['Lantern__GlazingBars__Config',   'Lantern__GlazingBars__Config__BarProfileId']
     };

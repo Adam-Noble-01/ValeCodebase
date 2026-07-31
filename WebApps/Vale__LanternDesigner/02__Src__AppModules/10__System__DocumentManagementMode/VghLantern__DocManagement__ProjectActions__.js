@@ -13,6 +13,7 @@
    - Renders the "+ New Project" button into the actions container
    - New Project opens a modal for entering project metadata
    - Open action loads a project and switches to the Lantern Editor mode
+   - Edit action toggles inline row editing; Save persists metadata via ProjectFileManager
    - Delete action shows a confirmation modal before removing a project
    - Owns the single delegated click listener on the table container, covering
      both sortable headers and row action buttons
@@ -152,7 +153,9 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
             'Project Code',  'VghLantern__Modal__InputProjectCode',  config.PlaceholderProjectCode  || 'e.g. 2601');
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
-            'Project Name',  'VghLantern__Modal__InputProjectName',  config.PlaceholderProjectName  || 'e.g. Jones-Smith');
+            'Project Name',  'VghLantern__Modal__InputProjectName',  config.PlaceholderProjectName  || 'e.g. Jones Residence');
+        bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
+            'Client Name',   'VghLantern__Modal__InputClientName',   config.PlaceholderClientName   || 'e.g. Mr & Mrs Jones');
         bodyHtml     +=  VghLantern__ProjectActions__BuildInputRow(
             'Document Name', 'VghLantern__Modal__InputDocumentName', config.PlaceholderDocumentName || 'e.g. Orangery Roof Lantern');
         bodyHtml     +=  '<div id="VghLantern__Modal__ValidationMsg" class="VghLantern__Modal__ValidationMsg"></div>';
@@ -186,13 +189,15 @@ const VghLantern__DocManagement__ProjectActions = (function() {
     // SUB FUNCTION | Confirm New Project Creation from Modal
     // ------------------------------------------------------------
     function VghLantern__ProjectActions__OnConfirmNewProject() {
-        var codeInput  =  document.getElementById('VghLantern__Modal__InputProjectCode');
-        var nameInput  =  document.getElementById('VghLantern__Modal__InputProjectName');
-        var docInput   =  document.getElementById('VghLantern__Modal__InputDocumentName');
+        var codeInput    =  document.getElementById('VghLantern__Modal__InputProjectCode');
+        var nameInput    =  document.getElementById('VghLantern__Modal__InputProjectName');
+        var clientInput  =  document.getElementById('VghLantern__Modal__InputClientName');
+        var docInput     =  document.getElementById('VghLantern__Modal__InputDocumentName');
 
-        var projectCode   =  codeInput ? codeInput.value.trim() : '';
-        var projectName   =  nameInput ? nameInput.value.trim() : '';
-        var documentName  =  docInput  ? docInput.value.trim()  : '';
+        var projectCode   =  codeInput   ? codeInput.value.trim()   : '';
+        var projectName   =  nameInput   ? nameInput.value.trim()   : '';
+        var clientName    =  clientInput ? clientInput.value.trim() : '';
+        var documentName  =  docInput    ? docInput.value.trim()    : '';
 
         if (!projectCode || !projectName) {
             VghLantern__ProjectActions__ShowValidationMessage('Project Code and Project Name are both required.');
@@ -215,7 +220,7 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         }
 
         var projectData  =  ProjectFileManager.VghLantern__ProjectFileManager__CreateProject(
-            projectCode, projectName, documentName);
+            projectCode, projectName, documentName, clientName);
 
         if (!projectData) {
             VghLantern__ProjectActions__ShowValidationMessage('Could not create the project. See the console for detail.');
@@ -242,7 +247,7 @@ const VghLantern__DocManagement__ProjectActions = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Row Actions - Open and Delete
+// REGION | Row Actions - Open, Edit, and Delete
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Handle Open Project Row Action
@@ -269,6 +274,102 @@ const VghLantern__DocManagement__ProjectActions = (function() {
             var landingMode =  config.LandingModeKey || 'LanternEditor';
             ModeManager.VghLantern__ModeManager__SwitchToMode(landingMode);
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Enter Inline Edit Mode for a Project Row
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__OnEditProjectClick(projectCode) {
+        var ProjectList  =  window.VghLantern__DocManagement__ProjectList;
+        if (ProjectList) ProjectList.VghLantern__ProjectList__SetEditingRow(projectCode);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Cancel Inline Edit and Restore Display Mode
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__OnCancelEditClick(projectCode) {
+        var ProjectList  =  window.VghLantern__DocManagement__ProjectList;
+        if (ProjectList) ProjectList.VghLantern__ProjectList__ClearEditingRow();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Save Inline Edit Changes to Project Metadata
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__OnSaveEditClick(projectCode, saveButton) {
+        var ProjectFileManager  =  window.VghLantern__AppData__ProjectFileManager;
+        var ProjectList         =  window.VghLantern__DocManagement__ProjectList;
+        if (!ProjectFileManager || !projectCode) return;
+
+        var row  =  saveButton ? saveButton.closest('tr') : null;
+        if (!row) {
+            VghLantern__ProjectActions__Toast('Could not find the editing row.', 'error');
+            return;
+        }
+
+        var nameInput    =  row.querySelector('[data-field="projectName"]');
+        var clientInput  =  row.querySelector('[data-field="clientName"]');
+        var docInput     =  row.querySelector('[data-field="documentName"]');
+        var statusSel    =  row.querySelector('[data-field="status"]');
+
+        var projectName   =  nameInput   ? nameInput.value.trim()   : '';
+        var clientName    =  clientInput ? clientInput.value.trim() : '';
+        var documentName  =  docInput    ? docInput.value.trim()    : '';
+        var statusValue   =  statusSel   ? statusSel.value.trim()   : 'Draft';
+
+        if (!projectName) {
+            VghLantern__ProjectActions__Toast('Project Name is required.', 'error');
+            if (nameInput) nameInput.focus();
+            return;                                                               // <-- Keep edit mode open on validation failure
+        }
+
+        var projectData  =  ProjectFileManager.VghLantern__ProjectFileManager__LoadProject(projectCode);
+        if (!projectData) {
+            VghLantern__ProjectActions__Toast('Could not load project ' + projectCode + '.', 'error');
+            return;
+        }
+
+        var metadata  =  projectData['VghLantern__ProjectFile__Metadata'];
+        if (!metadata) {
+            VghLantern__ProjectActions__Toast('Project metadata is missing.', 'error');
+            return;
+        }
+
+        metadata['VghLantern__ProjectFile__Metadata__ProjectName']     =  projectName;
+        metadata['VghLantern__ProjectFile__Metadata__ClientName']      =  clientName;
+        metadata['VghLantern__ProjectFile__Metadata__DocumentName']    =  documentName;
+        metadata['VghLantern__ProjectFile__Metadata__DocumentStatus']  =  statusValue || 'Draft';
+
+        ProjectFileManager.VghLantern__ProjectFileManager__SaveProject(projectData, 'manual:editMetadata')
+            .then(function(serverResult) {
+                var StateManager  =  window.VghLantern__AppCore__StateManager;
+                if (StateManager) {
+                    var current  =  StateManager.VghLantern__StateManager__GetCurrentProject();
+                    var currentMeta  =  current ? current['VghLantern__ProjectFile__Metadata'] : null;
+                    var currentCode  =  currentMeta
+                        ? currentMeta['VghLantern__ProjectFile__Metadata__ProjectCode']
+                        : '';
+                    if (currentCode === projectCode) {
+                        StateManager.VghLantern__StateManager__SetCurrentProject(projectData); // <-- Keep open project metadata live for drawings
+                    }
+                }
+
+                if (ProjectList) ProjectList.VghLantern__ProjectList__ClearEditingRow();
+                VghLantern__ProjectActions__RefreshProjectList();
+
+                if (serverResult && serverResult.ok) {
+                    VghLantern__ProjectActions__Toast('Project ' + projectCode + ' updated.', 'success');
+                } else {
+                    VghLantern__ProjectActions__Toast(
+                        'Project ' + projectCode + ' saved locally' +
+                        (serverResult && serverResult.error ? ' (' + serverResult.error + ')' : '.') +
+                        ' Disk sync may have failed.',
+                        'info'
+                    );
+                }
+            });
     }
     // ------------------------------------------------------------
 
@@ -381,12 +482,15 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         var btn  =  event.target.closest('.VghLantern__DocManagement__RowBtn');
         if (!btn) return;
 
-        var action  =  btn.getAttribute('data-action');                           // <-- 'open' or 'delete'
+        var action  =  btn.getAttribute('data-action');                           // <-- 'open', 'edit', 'save-edit', 'cancel-edit', or 'delete'
         var code    =  btn.getAttribute('data-code');                             // <-- Project code from the row
         if (!action || !code) return;
 
-        if (action === 'open')   VghLantern__ProjectActions__OpenProject(code);
-        if (action === 'delete') VghLantern__ProjectActions__DeleteProject(code);
+        if (action === 'open')        VghLantern__ProjectActions__OpenProject(code);
+        if (action === 'edit')        VghLantern__ProjectActions__OnEditProjectClick(code);
+        if (action === 'save-edit')   VghLantern__ProjectActions__OnSaveEditClick(code, btn);
+        if (action === 'cancel-edit') VghLantern__ProjectActions__OnCancelEditClick(code);
+        if (action === 'delete')      VghLantern__ProjectActions__DeleteProject(code);
     }
     // ------------------------------------------------------------
 
@@ -410,11 +514,14 @@ const VghLantern__DocManagement__ProjectActions = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__ProjectActions__Init          : VghLantern__ProjectActions__Init,
-        VghLantern__ProjectActions__Render        : VghLantern__ProjectActions__Render,
-        VghLantern__ProjectActions__OpenProject   : VghLantern__ProjectActions__OpenProject,
-        VghLantern__ProjectActions__DeleteProject : VghLantern__ProjectActions__DeleteProject,
-        VghLantern__ProjectActions__HideModal     : VghLantern__ProjectActions__HideModal
+        VghLantern__ProjectActions__Init             : VghLantern__ProjectActions__Init,
+        VghLantern__ProjectActions__Render           : VghLantern__ProjectActions__Render,
+        VghLantern__ProjectActions__OpenProject      : VghLantern__ProjectActions__OpenProject,
+        VghLantern__ProjectActions__OnEditProjectClick  : VghLantern__ProjectActions__OnEditProjectClick,
+        VghLantern__ProjectActions__OnSaveEditClick     : VghLantern__ProjectActions__OnSaveEditClick,
+        VghLantern__ProjectActions__OnCancelEditClick   : VghLantern__ProjectActions__OnCancelEditClick,
+        VghLantern__ProjectActions__DeleteProject    : VghLantern__ProjectActions__DeleteProject,
+        VghLantern__ProjectActions__HideModal        : VghLantern__ProjectActions__HideModal
     };
 
 // endregion -------------------------------------------------------------------

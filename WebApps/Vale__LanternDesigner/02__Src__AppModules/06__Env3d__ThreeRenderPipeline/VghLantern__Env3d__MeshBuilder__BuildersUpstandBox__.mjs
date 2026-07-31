@@ -1,23 +1,24 @@
 /* =============================================================================
-   VGHLANTERN - 3D ENVIRONMENT | MESH BUILDER - KERB BOX
+   VGHLANTERN - 3D ENVIRONMENT | MESH BUILDER - BUILDERS UPSTAND BOX
    =============================================================================
 
-   FILE       : VghLantern__Env3d__MeshBuilder__KerbBox__.mjs
+   FILE       : VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs
    NAMESPACE  : VghLantern
-   MODULE     : Env3d - MeshBuilder KerbBox
+   MODULE     : Env3d - MeshBuilder BuildersUpstandBox
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Extrude the base assembly into two solid hollow prisms
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
    - Builds the base of the lantern as SOLIDS rather than swept members, because
-     that is what it physically is: a studwork upstand built on the roof with a
-     hole through it, and the lantern's base frame sitting on top of it.
+     that is what it physically is: a site-built builders upstand on the roof with a
+     hole through it, and the Vale base frame sitting on top of it.
+     SCOPE: the upstand is prepared by others; Vale mounts the lantern onto it.
    - Reads the Base block of the SolvedSkeleton and nothing else. Every number
      here originates in VghLantern__Geometry__SkeletonSolver.
    - Two prisms, stacked, sharing one footprint and one wall thickness:
-       kerb    z = 0            to  z = KerbTopLevelMm
-       frame   z = KerbTopLevelMm to z = FrameTopLevelMm
+       upstand z = 0               to  z = UpstandTopLevelMm
+       frame   z = UpstandTopLevelMm to z = FrameTopLevelMm
      The outer face of both is the lantern's stated width and depth, so the wall
      thickness only ever eats into the reveal.
 
@@ -52,11 +53,11 @@ import {
 
 import {
     VghLantern__Env3d__MaterialLibrary__Frame,
-    VghLantern__Env3d__MaterialLibrary__Kerb
+    VghLantern__Env3d__MaterialLibrary__BuildersUpstand
 } from './VghLantern__Env3d__MaterialLibrary__.mjs';
 
 // =============================================================================
-// REGION | Kerb Box Mesh Builder Module
+// REGION | Builders Upstand Box Mesh Builder Module
 // =============================================================================
 
 // -----------------------------------------------------------------------------
@@ -71,7 +72,7 @@ import {
     const FINISH_BLOCK          =  'Lantern__FinishAndGlazing__Config';      // <-- Frame finish lives here
     const FINISH_FIELD          =  'Lantern__FinishAndGlazing__Config__FrameFinish';
 
-    const OBJECT_NAME_KERB      =  'VghLantern__Env3d__Base__Kerb';
+    const OBJECT_NAME_UPSTAND      =  'VghLantern__Env3d__Base__BuildersUpstand';
     const OBJECT_NAME_FRAME     =  'VghLantern__Env3d__Base__Frame';
     // ------------------------------------------------------------
 
@@ -86,7 +87,7 @@ import {
     // ------------------------------------------------------------
     // isClockwise reverses the winding, which is what a hole needs relative to
     // its outer contour.
-    function VghLantern__Env3d__KerbBox__TraceRectangle(target, halfWidthMm, halfDepthMm, isClockwise) {
+    function VghLantern__Env3d__BuildersUpstandBox__TraceRectangle(target, halfWidthMm, halfDepthMm, isClockwise) {
         const halfW  =  VghLantern__Env3d__ConfigAccess__MmToWorld(halfWidthMm);
         const halfD  =  VghLantern__Env3d__ConfigAccess__MmToWorld(halfDepthMm);
 
@@ -110,15 +111,15 @@ import {
 
     // HELPER FUNCTION | Build the Base Footprint, Hollow When There Is a Reveal
     // ------------------------------------------------------------
-    function VghLantern__Env3d__KerbBox__Footprint(baseBlock) {
+    function VghLantern__Env3d__BuildersUpstandBox__Footprint(baseBlock) {
         if (baseBlock.OuterHalfWidthMm < MIN_FOOTPRINT_MM || baseBlock.OuterHalfDepthMm < MIN_FOOTPRINT_MM) return null;
 
         const shape  =  new THREE.Shape();
-        VghLantern__Env3d__KerbBox__TraceRectangle(shape, baseBlock.OuterHalfWidthMm, baseBlock.OuterHalfDepthMm, false);
+        VghLantern__Env3d__BuildersUpstandBox__TraceRectangle(shape, baseBlock.OuterHalfWidthMm, baseBlock.OuterHalfDepthMm, false);
 
         if (baseBlock.HasReveal) {
             const hole  =  new THREE.Path();
-            VghLantern__Env3d__KerbBox__TraceRectangle(hole, baseBlock.InnerHalfWidthMm, baseBlock.InnerHalfDepthMm, true);
+            VghLantern__Env3d__BuildersUpstandBox__TraceRectangle(hole, baseBlock.InnerHalfWidthMm, baseBlock.InnerHalfDepthMm, true);
             shape.holes.push(hole);
         }
 
@@ -129,7 +130,7 @@ import {
 
     // HELPER FUNCTION | Map the Extrusion Frame onto the Three.js World
     // ------------------------------------------------------------
-    function VghLantern__Env3d__KerbBox__PlacementMatrix(baseLevelMm) {
+    function VghLantern__Env3d__BuildersUpstandBox__PlacementMatrix(baseLevelMm) {
         const matrix  =  new THREE.Matrix4();
 
         matrix.makeBasis(
@@ -152,10 +153,10 @@ import {
 
     // SUB FUNCTION | Build One Prism of the Base Assembly
     // ------------------------------------------------------------
-    function VghLantern__Env3d__KerbBox__BuildPrism(baseBlock, baseLevelMm, heightMm, material, objectName) {
+    function VghLantern__Env3d__BuildersUpstandBox__BuildPrism(baseBlock, baseLevelMm, heightMm, material, objectName) {
         if (heightMm < MIN_PRISM_HEIGHT_MM) return null;
 
-        const shape  =  VghLantern__Env3d__KerbBox__Footprint(baseBlock);
+        const shape  =  VghLantern__Env3d__BuildersUpstandBox__Footprint(baseBlock);
         if (!shape) return null;
 
         const geometry  =  new THREE.ExtrudeGeometry(shape, {
@@ -165,7 +166,7 @@ import {
             curveSegments : 1
         });
 
-        geometry.applyMatrix4(VghLantern__Env3d__KerbBox__PlacementMatrix(baseLevelMm));
+        geometry.applyMatrix4(VghLantern__Env3d__BuildersUpstandBox__PlacementMatrix(baseLevelMm));
         geometry.computeVertexNormals();
 
         const mesh  =  new THREE.Mesh(geometry, material);
@@ -177,7 +178,7 @@ import {
 
     // HELPER FUNCTION | Read the Lantern's Chosen Frame Finish
     // ------------------------------------------------------------
-    function VghLantern__Env3d__KerbBox__FinishName(lantern) {
+    function VghLantern__Env3d__BuildersUpstandBox__FinishName(lantern) {
         if (!lantern) return '';
 
         const block  =  lantern[FINISH_BLOCK];
@@ -192,11 +193,11 @@ import {
 // REGION | Public Build Entry Point
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Build the Kerb and Frame Solids into a Group
+    // FUNCTION | Build the Builders Upstand and Frame Solids into a Group
     // ------------------------------------------------------------
-    // The kerb takes the kerb material because it is roof studwork, not lantern
-    // joinery; the frame takes the lantern's own finish because it is.
-    export function VghLantern__Env3d__MeshBuilder__KerbBox__Build(targetGroup, skeleton, lantern) {
+    // The upstand takes the builders-upstand material (site studwork, not Vale
+    // manufacture); the frame takes the lantern's own finish because it is.
+    export function VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(targetGroup, skeleton, lantern) {
         if (!targetGroup || !skeleton || !skeleton.Base) return;
 
         const config  =  VghLantern__Env3d__ConfigAccess__Section('MeshBuilders');
@@ -204,15 +205,15 @@ import {
 
         const base  =  skeleton.Base;
 
-        const kerbMesh  =  VghLantern__Env3d__KerbBox__BuildPrism(
-            base, base.KerbBaseLevelMm, base.KerbHeightMm,
-            VghLantern__Env3d__MaterialLibrary__Kerb(), OBJECT_NAME_KERB
+        const upstandMesh  =  VghLantern__Env3d__BuildersUpstandBox__BuildPrism(
+            base, base.UpstandBaseLevelMm, base.UpstandHeightMm,
+            VghLantern__Env3d__MaterialLibrary__BuildersUpstand(), OBJECT_NAME_UPSTAND
         );
-        if (kerbMesh) targetGroup.add(kerbMesh);
+        if (upstandMesh) targetGroup.add(upstandMesh);
 
-        const frameMesh  =  VghLantern__Env3d__KerbBox__BuildPrism(
-            base, base.KerbTopLevelMm, base.FrameHeightMm,
-            VghLantern__Env3d__MaterialLibrary__Frame(VghLantern__Env3d__KerbBox__FinishName(lantern)), OBJECT_NAME_FRAME
+        const frameMesh  =  VghLantern__Env3d__BuildersUpstandBox__BuildPrism(
+            base, base.UpstandTopLevelMm, base.FrameHeightMm,
+            VghLantern__Env3d__MaterialLibrary__Frame(VghLantern__Env3d__BuildersUpstandBox__FinishName(lantern)), OBJECT_NAME_FRAME
         );
         if (frameMesh) targetGroup.add(frameMesh);
     }

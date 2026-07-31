@@ -16,8 +16,7 @@ the ridge. Discrete objects placed at a point (finials, vents) live in
 ├── VghLantern__ProfileLibrary__README__.md
 ├── PRF__GlazingBars/
 ├── PRF__RidgeSections/
-├── PRF__HipSections/
-└── PRF__ClosingSections/
+└── PRF__HipSections/
 ```
 
 File naming: `VghLantern__Profile__{ProfileId}__{ShortName}__.json`
@@ -78,10 +77,10 @@ so no module hardcodes a category-to-role table.
 | `ridge` | Horizontal ridge line |
 | `hip` | Hip from ridge end to eaves corner |
 | `verge` | Gable verge (shares the hip section) |
-| `eaves` | Eaves beam at the slope foot |
-| `kerb` | Kerb upstand |
-| `kerbPost` | Vertical kerb post |
-| `closing` | Trim to surrounding roof finish |
+| `eaves` | Decorative cornice / eaves section at the slope foot |
+| `buildersUpstand` | Site-built builders upstand (not Vale manufacture) |
+| `buildersUpstandPost` | Vertical corner post of the builders upstand |
+| `frame` | Vale base frame ring sitting on the upstand |
 
 The role-to-config-field mapping lives in one place only:
 `ROLE_PROFILE_FIELDS` inside `VghLantern__AppData__ProfileIndexLoader__.js`.

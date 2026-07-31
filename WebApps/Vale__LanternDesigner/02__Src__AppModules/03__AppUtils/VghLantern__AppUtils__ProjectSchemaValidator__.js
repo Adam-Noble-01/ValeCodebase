@@ -14,9 +14,11 @@
    - Normalises the drawing layout block so a reopened project comes back on the
      sheet size, orientation, scale, grid split and 3D viewpoint it was left on.
    - Normalises every lantern block to the current Lantern Editor expectations.
-   - Canonicalises roof form and glazing bar division mode strings.
+   - Canonicalises roof form strings.
    - Migrates lanterns saved under the retired ridge rise drive onto the pitch
      angle that reproduces their height, then strips the two retired fields.
+   - Strips the retired glazing bar division mode and bar count fields, leaving
+     target spacing as the only bar set-out driver.
    - Repairs missing objects so UI hydration never falls back to placeholders.
    - Returns a result payload with ProjectData, DidMutate and Notes.
    - IMPORTANT: single source of truth for project schema compatibility.
@@ -46,10 +48,18 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Canonical Mode Labels
+    // MODULE CONSTANTS | Retired Glazing Bar Division Fields
     // ------------------------------------------------------------
-    const SCHEMA__DIVISION_MODE_COUNT     =  'count';                        // <-- Bar count fixed, spacing derived
-    const SCHEMA__DIVISION_MODE_SPACING   =  'spacing';                      // <-- Target spacing fixed, count derived
+    // Bar division used to be drivable either by an explicit bar count along the
+    // long eaves or by a target spacing, selected by a division mode. Target
+    // spacing is now the only driver, so both fields are stripped on load. The
+    // count was never authoritative once a project was saved in spacing mode, so
+    // there is nothing to migrate - the stored target spacing already describes
+    // the set-out.
+    const SCHEMA__RETIRED_GLAZING_FIELDS  =  [
+        'Lantern__GlazingBars__Config__DivisionMode',
+        'Lantern__GlazingBars__Config__BarCountLongSlope'
+    ];
     // ------------------------------------------------------------
 
 
@@ -72,26 +82,26 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     const SCHEMA__DEFAULT_WIDTH_MM        =  2400;                           // <-- Default lantern width  (long axis)
     const SCHEMA__DEFAULT_DEPTH_MM        =  1400;                           // <-- Default lantern depth  (short axis)
     const SCHEMA__DEFAULT_PITCH_DEGREES   =  25;                             // <-- Default roof pitch
-    const SCHEMA__DEFAULT_EAVES_PROJ_MM   =  50;                             // <-- Default eaves projection past kerb
+    const SCHEMA__DEFAULT_EAVES_PROJ_MM   =  50;                             // <-- Default eaves projection past builders upstand
     const SCHEMA__DEFAULT_BAR_SPACING_MM  =  500;                            // <-- Default target glazing bar spacing
     // ------------------------------------------------------------
 
 
     // MODULE CONSTANTS | Base Assembly Defaults and Bounds
     // ------------------------------------------------------------
-    // Width and depth are measured to the OUTER face of the kerb, so the kerb
+    // Width and depth are measured to the OUTER face of the builders upstand, so the builders upstand
     // thickness only ever eats into the reveal, never into the stated size.
     // Bounds mirror VghLantern__Validation__Config and the editor ControlBounds;
     // all three must move together.
-    const SCHEMA__DEFAULT_KERB_HEIGHT_MM     =  150;                         // <-- Standard Vale upstand height
-    const SCHEMA__MIN_KERB_HEIGHT_MM         =  100;
-    const SCHEMA__MAX_KERB_HEIGHT_MM         =  400;
+    const SCHEMA__DEFAULT_UPSTAND_HEIGHT_MM     =  150;                         // <-- Standard builders upstand height (site-built)
+    const SCHEMA__MIN_UPSTAND_HEIGHT_MM         =  100;
+    const SCHEMA__MAX_UPSTAND_HEIGHT_MM         =  400;
 
-    const SCHEMA__DEFAULT_KERB_THICKNESS_MM  =  110;                         // <-- Standard studwork kerb wall thickness
-    const SCHEMA__MIN_KERB_THICKNESS_MM      =  90;
-    const SCHEMA__MAX_KERB_THICKNESS_MM      =  150;
+    const SCHEMA__DEFAULT_UPSTAND_THICKNESS_MM  =  110;                         // <-- Standard studwork upstand wall thickness
+    const SCHEMA__MIN_UPSTAND_THICKNESS_MM      =  90;
+    const SCHEMA__MAX_UPSTAND_THICKNESS_MM      =  150;
 
-    const SCHEMA__DEFAULT_FRAME_HEIGHT_MM    =  50;                          // <-- Base frame sitting on the kerb
+    const SCHEMA__DEFAULT_FRAME_HEIGHT_MM    =  50;                          // <-- Base frame sitting on the builders upstand
     const SCHEMA__MIN_FRAME_HEIGHT_MM        =  30;
     const SCHEMA__MAX_FRAME_HEIGHT_MM        =  100;
     // ------------------------------------------------------------
@@ -236,15 +246,6 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Canonicalise Glazing Bar Division Mode
-    // ------------------------------------------------------------
-    function VghLantern__SchemaValidator__NormaliseDivisionMode(rawDivisionMode) {
-        var cleaned  =  VghLantern__SchemaValidator__CleanToken(rawDivisionMode);
-        if (cleaned.indexOf('spacing') !== -1 || cleaned.indexOf('pitch') !== -1) return SCHEMA__DIVISION_MODE_SPACING;
-        return SCHEMA__DIVISION_MODE_COUNT;
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -366,12 +367,13 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         var didMutate  =  false;
         var barsCfg    =  lantern['Lantern__GlazingBars__Config'];
 
-        var nextMode  =  VghLantern__SchemaValidator__NormaliseDivisionMode(barsCfg['Lantern__GlazingBars__Config__DivisionMode']);
-        if (barsCfg['Lantern__GlazingBars__Config__DivisionMode'] !== nextMode) {
-            barsCfg['Lantern__GlazingBars__Config__DivisionMode']  =  nextMode;
-            didMutate  =  true;
+        for (var i = 0; i < SCHEMA__RETIRED_GLAZING_FIELDS.length; i++) {
+            if (SCHEMA__RETIRED_GLAZING_FIELDS[i] in barsCfg) {
+                delete barsCfg[SCHEMA__RETIRED_GLAZING_FIELDS[i]];
+                didMutate  =  true;
+            }
         }
-        if (VghLantern__SchemaValidator__ApplyIntField(barsCfg, 'Lantern__GlazingBars__Config__BarCountLongSlope', 3, 0, 40)) didMutate  =  true;
+
         if (VghLantern__SchemaValidator__ApplyIntField(barsCfg, 'Lantern__GlazingBars__Config__TargetSpacingMm', SCHEMA__DEFAULT_BAR_SPACING_MM, 100, 3000)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__BarProfileId', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyBoolField(barsCfg, 'Lantern__GlazingBars__Config__HorizontalTransomEnabled', false)) didMutate  =  true;
@@ -414,23 +416,64 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB HELPER FUNCTION | Normalise Lantern Kerb and Base Block
+    // SUB HELPER FUNCTION | Migrate Legacy KerbAndBase Block to BuildersUpstandAndBase
     // ------------------------------------------------------------
-    // KerbThicknessMm and FrameHeightMm were introduced after the first release.
+    // Older projects stored the base assembly under Lantern__KerbAndBase__Config.
+    // On load we rewrite that block to Lantern__BuildersUpstandAndBase__Config so
+    // saves persist the new naming. ClosingProfileId is dropped (removed feature).
+    function VghLantern__SchemaValidator__MigrateLegacyKerbBlock(lantern) {
+        var legacy  =  lantern['Lantern__KerbAndBase__Config'];
+        if (!legacy || typeof legacy !== 'object') return false;
+
+        var target  =  lantern['Lantern__BuildersUpstandAndBase__Config'];
+        if (!target || typeof target !== 'object') {
+            target  =  {};
+            lantern['Lantern__BuildersUpstandAndBase__Config']  =  target;
+        }
+
+        var fieldMap  =  [
+            ['Lantern__KerbAndBase__Config__KerbHeightMm',    'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm'],
+            ['Lantern__KerbAndBase__Config__KerbThicknessMm', 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm'],
+            ['Lantern__KerbAndBase__Config__KerbProfileId',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
+            ['Lantern__KerbAndBase__Config__FrameHeightMm',   'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm'],
+            ['Lantern__KerbAndBase__Config__EavesProfileId',  'Lantern__BuildersUpstandAndBase__Config__EavesProfileId']
+        ];
+
+        for (var i = 0; i < fieldMap.length; i++) {
+            var fromKey  =  fieldMap[i][0];
+            var toKey    =  fieldMap[i][1];
+            if (target[toKey] === undefined && legacy[fromKey] !== undefined) {
+                target[toKey]  =  legacy[fromKey];
+            }
+        }
+
+        delete lantern['Lantern__KerbAndBase__Config'];
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Normalise Lantern Builders Upstand and Base Block
+    // ------------------------------------------------------------
+    // UpstandThicknessMm and FrameHeightMm were introduced after the first release.
     // A project saved before them has neither field, and ApplyIntField writes the
     // default in on load, which is exactly the migration those projects need:
-    // they were drawn against a 110 mm kerb and a 50 mm frame all along.
-    function VghLantern__SchemaValidator__NormaliseKerbAndBase(lantern) {
+    // they were drawn against a 110 mm builders upstand and a 50 mm frame all along.
+    // SCOPE: Vale supplies the lantern and base frame; the builders upstand is
+    // site-prepared by others and shown here for context only.
+    function VghLantern__SchemaValidator__NormaliseBuildersUpstandAndBase(lantern) {
         var didMutate  =  false;
-        var kerbCfg    =  lantern['Lantern__KerbAndBase__Config'];
 
-        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbHeightMm',    SCHEMA__DEFAULT_KERB_HEIGHT_MM,    SCHEMA__MIN_KERB_HEIGHT_MM,    SCHEMA__MAX_KERB_HEIGHT_MM))    didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbThicknessMm', SCHEMA__DEFAULT_KERB_THICKNESS_MM, SCHEMA__MIN_KERB_THICKNESS_MM, SCHEMA__MAX_KERB_THICKNESS_MM)) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyIntField(kerbCfg, 'Lantern__KerbAndBase__Config__FrameHeightMm',   SCHEMA__DEFAULT_FRAME_HEIGHT_MM,   SCHEMA__MIN_FRAME_HEIGHT_MM,   SCHEMA__MAX_FRAME_HEIGHT_MM))   didMutate  =  true;
+        if (VghLantern__SchemaValidator__MigrateLegacyKerbBlock(lantern)) didMutate  =  true;
 
-        if (VghLantern__SchemaValidator__ApplyStringField(kerbCfg, 'Lantern__KerbAndBase__Config__KerbProfileId', '')) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyStringField(kerbCfg, 'Lantern__KerbAndBase__Config__EavesProfileId', '')) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyStringField(kerbCfg, 'Lantern__KerbAndBase__Config__ClosingProfileId', '')) didMutate  =  true;
+        var upstandCfg  =  lantern['Lantern__BuildersUpstandAndBase__Config'];
+
+        if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm',    SCHEMA__DEFAULT_UPSTAND_HEIGHT_MM,    SCHEMA__MIN_UPSTAND_HEIGHT_MM,    SCHEMA__MAX_UPSTAND_HEIGHT_MM))    didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm', SCHEMA__DEFAULT_UPSTAND_THICKNESS_MM, SCHEMA__MIN_UPSTAND_THICKNESS_MM, SCHEMA__MAX_UPSTAND_THICKNESS_MM)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',   SCHEMA__DEFAULT_FRAME_HEIGHT_MM,   SCHEMA__MIN_FRAME_HEIGHT_MM,   SCHEMA__MAX_FRAME_HEIGHT_MM))   didMutate  =  true;
+
+        if (VghLantern__SchemaValidator__ApplyStringField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__EavesProfileId', '')) didMutate  =  true;
 
         return didMutate;
     }
@@ -487,7 +530,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             'Lantern__GlazingBars__Config',
             'Lantern__RidgeAndHips__Config',
             'Lantern__Finials__Config',
-            'Lantern__KerbAndBase__Config',
+            'Lantern__BuildersUpstandAndBase__Config',
             'Lantern__Ventilation__Config',
             'Lantern__FinishAndGlazing__Config'
         ];
@@ -502,7 +545,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseGlazingBars(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseRidgeAndHips(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinials(lantern)) didMutate  =  true;
-        if (VghLantern__SchemaValidator__NormaliseKerbAndBase(lantern)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseBuildersUpstandAndBase(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseVentilation(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinishAndGlazing(lantern)) didMutate  =  true;
 

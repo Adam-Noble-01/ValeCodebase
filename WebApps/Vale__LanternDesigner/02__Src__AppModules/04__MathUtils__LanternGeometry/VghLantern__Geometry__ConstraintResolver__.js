@@ -23,7 +23,7 @@
 
    DIRECT vs DERIVED DIMENSIONS:
    - Direct  : the typed value maps straight onto one config field
-               (width, depth, eaves projection, kerb height, pitch).
+               (width, depth, eaves projection, builders upstand height, pitch).
    - Derived : the typed value is a consequence of other fields, so the resolver
                back-solves which field to move. Examples:
                  overall height -> pitch angle, holding the base assembly
@@ -60,12 +60,11 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     // ------------------------------------------------------------
     const BLOCK_DIMENSIONS   =  'Lantern__Dimensions__Config';               // <-- Width, depth, eaves projection
     const BLOCK_ROOF_PITCH   =  'Lantern__RoofPitch__Config';                // <-- Pitch angle, the sole driver of roof height
-    const BLOCK_KERB         =  'Lantern__KerbAndBase__Config';              // <-- Kerb height and section ids
-    const BLOCK_GLAZING_BARS =  'Lantern__GlazingBars__Config';              // <-- Division mode, counts, spacing
+    const BLOCK_UPSTAND         =  'Lantern__BuildersUpstandAndBase__Config';              // <-- Builders Upstand height and section ids
+    const BLOCK_GLAZING_BARS =  'Lantern__GlazingBars__Config';              // <-- Bar profile and target spacing
 
     const PITCH_MIN_DEGREES  =  5;                                           // <-- Mirrors the schema validator's pitch bounds
     const PITCH_MAX_DEGREES  =  70;
-    const DIVISION_SPACING   =  'spacing';                                   // <-- Bar division driven by target spacing
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -145,7 +144,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
 
     // HELPER FUNCTION | Horizontal Run of the Short Axis Slope, Eaves to Ridge
     // ------------------------------------------------------------
-    // Mirrors the SkeletonSolver: width and depth are measured over the kerb and
+    // Mirrors the SkeletonSolver: width and depth are measured over the builders upstand and
     // the eaves project past both, so the eaves half-extent of the SHORT axis is
     // the run a full-height slope covers. Every rise-to-pitch conversion works
     // from this number, so the two modules must agree on it exactly.
@@ -167,20 +166,20 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
 
     // SUB FUNCTION | Apply an Overall Height Edit by Moving the Roof Pitch
     // ------------------------------------------------------------
-    // Holds the whole base assembly and the plan size constant: the kerb is
+    // Holds the whole base assembly and the plan size constant: the builders upstand is
     // site-fixed, the frame is a standard section, and width and depth are the
     // opening the lantern has to match. That leaves the pitch as the only free
     // variable, which is also the only field that drives roof height. Overall
-    // height is measured from the kerb base, so the rise the pitch has to
-    // produce is what is left after BOTH the kerb and the frame.
+    // height is measured from the builders upstand base, so the rise the pitch has to
+    // produce is what is left after BOTH the builders upstand and the frame.
     function VghLantern__ConstraintResolver__ApplyOverallHeight(result, lantern, descriptor, typedValue) {
-        var kerbHeight   =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbHeightMm');
-        var frameHeight  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__FrameHeightMm');
-        var baseHeight   =  kerbHeight + frameHeight;
+        var upstandHeight   =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm');
+        var frameHeight  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm');
+        var baseHeight   =  upstandHeight + frameHeight;
         var targetRise   =  typedValue - baseHeight;
 
         if (targetRise <= 0) {
-            result.Warnings.push('Overall height must exceed the ' + baseHeight + ' mm kerb and frame below the eaves.');
+            result.Warnings.push('Overall height must exceed the ' + baseHeight + ' mm builders upstand and frame below the eaves.');
             return;
         }
 
@@ -199,7 +198,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
         nextPitch  =  VghLantern__ConstraintResolver__Clamp(result, nextPitch, PITCH_MIN_DEGREES, PITCH_MAX_DEGREES, 'deg');
 
         VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_ROOF_PITCH, 'Lantern__RoofPitch__Config__PitchDegrees', nextPitch);
-        result.Notes.push('Kerb held at ' + kerbHeight + ' mm and frame at ' + frameHeight + ' mm; pitch resolved to ' + nextPitch + ' deg.');
+        result.Notes.push('Builders Upstand held at ' + upstandHeight + ' mm and frame at ' + frameHeight + ' mm; pitch resolved to ' + nextPitch + ' deg.');
     }
     // ------------------------------------------------------------
 
@@ -226,14 +225,13 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Apply a Pane Width Edit by Switching to Spacing Division
+    // SUB FUNCTION | Apply a Pane Width Edit by Moving the Target Spacing
     // ------------------------------------------------------------
     function VghLantern__ConstraintResolver__ApplyPaneWidth(result, lantern, descriptor, typedValue) {
         var nextSpacing  =  VghLantern__ConstraintResolver__Clamp(result, Math.round(typedValue), descriptor.MinMm, descriptor.MaxMm, 'mm');
 
         VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_GLAZING_BARS, 'Lantern__GlazingBars__Config__TargetSpacingMm', nextSpacing);
-        VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_GLAZING_BARS, 'Lantern__GlazingBars__Config__DivisionMode', DIVISION_SPACING);
-        result.Notes.push('Bar division switched to target spacing.');
+        result.Notes.push('Target bar spacing set to ' + nextSpacing + ' mm; rounded to whole panes on set-out.');
     }
     // ------------------------------------------------------------
 
@@ -280,19 +278,19 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             MaxMm      : 600,
             Views      : ['plan', 'frontElevation', 'sideElevation']
         },
-        'kerbHeight' : {
-            Label      : 'Kerb Height',
-            Block      : BLOCK_KERB,
-            Field      : 'Lantern__KerbAndBase__Config__KerbHeightMm',
+        'upstandHeight' : {
+            Label      : 'Builders Upstand Height',
+            Block      : BLOCK_UPSTAND,
+            Field      : 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm',
             Unit       : 'mm',
             MinMm      : 100,
             MaxMm      : 400,
             Views      : ['frontElevation', 'sideElevation']
         },
-        'kerbThickness' : {
-            Label      : 'Kerb Thickness',
-            Block      : BLOCK_KERB,
-            Field      : 'Lantern__KerbAndBase__Config__KerbThicknessMm',
+        'upstandThickness' : {
+            Label      : 'Builders Upstand Thickness',
+            Block      : BLOCK_UPSTAND,
+            Field      : 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm',
             Unit       : 'mm',
             MinMm      : 90,
             MaxMm      : 150,
@@ -300,8 +298,8 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
         },
         'frameHeight' : {
             Label      : 'Frame Height',
-            Block      : BLOCK_KERB,
-            Field      : 'Lantern__KerbAndBase__Config__FrameHeightMm',
+            Block      : BLOCK_UPSTAND,
+            Field      : 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',
             Unit       : 'mm',
             MinMm      : 30,
             MaxMm      : 100,

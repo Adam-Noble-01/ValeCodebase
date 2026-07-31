@@ -25,11 +25,13 @@
 
         "VghLantern__Specification__Config__Tables": {
             "LinearColumns": [
-                { "Key": "Label",        "Label": "Section",          "Align": "left"  },
-                { "Key": "ProfileId",    "Label": "Profile Ref",      "Align": "left"  },
-                { "Key": "MemberCount",  "Label": "Members",          "Align": "right" },
-                { "Key": "LengthMEach",  "Label": "Length m (each)",  "Align": "right" },
-                { "Key": "LengthMTotal", "Label": "Length m (total)", "Align": "right" }
+                { "Key": "Label",            "Label": "Section",             "Align": "left"  },
+                { "Key": "ProfileId",        "Label": "Profile Ref",         "Align": "left"  },
+                { "Key": "MemberCount",      "Label": "Members",             "Align": "right" },
+                { "Key": "SectionWidthMm",   "Label": "Width mm",            "Align": "right" },
+                { "Key": "SectionHeightMm",  "Label": "Height mm",           "Align": "right" },
+                { "Key": "LengthMEach",      "Label": "Length m (each)",     "Align": "right" },
+                { "Key": "LengthMTotal",     "Label": "Length m (total)",    "Align": "right" }
             ],
             "AreaColumns": [
                 { "Key": "Label",        "Label": "Area",             "Align": "left"  },

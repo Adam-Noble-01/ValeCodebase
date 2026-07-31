@@ -11,7 +11,8 @@
 
    DESCRIPTION:
    - Draws witness lines, dimension lines, terminators and value text for every
-     dimension the active view exposes, plus an angular dimension for the pitch.
+     dimension the active view exposes, plus a mid-hip pitch arc and label on
+     elevations.
    - Dimension lines are placed OUTSIDE the projected extents of the geometry and
      chained outward, so annotation never crosses the lantern.
    - Each value text node is tagged with data-vgh-dimension-key. That tag is the
@@ -47,7 +48,8 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     const CSS_DIM_TERMINATOR   =  'VghLantern__Env2d__Dimension__Terminator';     // <-- Tick or arrow at each end
     const CSS_DIM_TEXT         =  'VghLantern__Env2d__Dimension__Text';           // <-- Value text
     const CSS_DIM_TEXT_EDIT    =  'VghLantern__Env2d__Dimension__Text--editable'; // <-- Editable variant
-    const CSS_DIM_ARC          =  'VghLantern__Env2d__Dimension__Arc';            // <-- Angular dimension arc
+    const CSS_DIM_TEXT_ANGLE   =  'VghLantern__Env2d__Dimension__Text--angle';    // <-- Pitch label centred on the hip
+    const CSS_DIM_ARC          =  'VghLantern__Env2d__Dimension__Arc';            // <-- Pitch angle arc
 
     const ATTR_KEY             =  'data-vgh-dimension-key';                       // <-- Editor binding hook
     const ATTR_VALUE           =  'data-vgh-dimension-value';                      // <-- Current numeric value
@@ -86,10 +88,13 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             ExtensionLineGapMm     : num('ExtensionLineGapMm',      30),
             TerminatorLengthMm     : num('TerminatorLengthMm',      60),
             TerminatorStyle        : dimCfg.TerminatorStyle || 'tick',
-            TextFontSizeMm         : num('TextFontSizeMm',           90),
-            TextOffsetFromLineMm   : num('TextOffsetFromLineMm',     34),
-            AngleArcRadiusMm       : num('AngleArcRadiusMm',        400),
-            EditHintTooltip        : dimCfg.EditHintTooltip || 'Click to type a new value'
+            TextFontSizeMm            : num('TextFontSizeMm',              90),
+            TextOffsetFromLineMm      : num('TextOffsetFromLineMm',        34),
+            AngleTextFontSizeMm       : num('AngleTextFontSizeMm',        115),
+            AngleTextOffsetFromSlopeMm: num('AngleTextOffsetFromSlopeMm',  60),
+            AngleArcRadiusMm          : num('AngleArcRadiusMm',           320),
+            AngleTickLengthMm         : num('AngleTickLengthMm',           55),
+            EditHintTooltip           : dimCfg.EditHintTooltip || 'Click to type a new value'
         };
     }
     // ------------------------------------------------------------
@@ -161,10 +166,10 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             }
         };
 
-        // Kerb thickness is dimensioned off the near edge, so the reveal offset
+        // Builders Upstand thickness is dimensioned off the near edge, so the reveal offset
         // reads against the same line the width is measured from.
         if (base.HasReveal) {
-            runs['kerbThickness']  =  {
+            runs['upstandThickness']  =  {
                 Start : Pt(-halfWidth,                       -halfDepth, 0),
                 End   : Pt(-base.InnerHalfWidthMm,           -halfDepth, 0),
                 Side  : SIDE_BELOW,
@@ -223,17 +228,17 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             Chain : 0
         };
 
-        // The base reads bottom-up on the same side: kerb, then the frame that
+        // The base reads bottom-up on the same side: builders upstand, then the frame that
         // sits on it, then the overall height chained outside both.
-        runs['kerbHeight']  =  {
+        runs['upstandHeight']  =  {
             Start : acrossPt(acrossHalf, 0),
-            End   : acrossPt(acrossHalf, meta.KerbTopLevelMm),
+            End   : acrossPt(acrossHalf, meta.UpstandTopLevelMm),
             Side  : SIDE_RIGHT,
             Chain : 0
         };
 
         runs['frameHeight']  =  {
-            Start : acrossPt(acrossHalf, meta.KerbTopLevelMm),
+            Start : acrossPt(acrossHalf, meta.UpstandTopLevelMm),
             End   : acrossPt(acrossHalf, meta.EavesLevelMm),
             Side  : SIDE_RIGHT,
             Chain : 1
@@ -255,7 +260,7 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             };
         }
 
-        if (meta.KerbHeightMm  <= 0) delete runs['kerbHeight'];
+        if (meta.UpstandHeightMm  <= 0) delete runs['upstandHeight'];
         if (meta.FrameHeightMm <= 0) delete runs['frameHeight'];
 
         return runs;
@@ -341,17 +346,23 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
     // SUB FUNCTION | Draw the Value Text and Tag It for the Dimension Editor
     // ------------------------------------------------------------
-    function VghLantern__Env2d__DimensionRenderer__DrawValueText(group, midPt, isHorizontalRun, displayValue, numericValue, unitLabel, dimensionKey, isEditable, config) {
+    // extraCssClass is optional - the pitch annotation appends the --angle modifier
+    // so the paper halo and heavier weight apply only to that label.
+    function VghLantern__Env2d__DimensionRenderer__DrawValueText(group, midPt, isHorizontalRun, displayValue, numericValue, unitLabel, dimensionKey, isEditable, config, extraCssClass) {
         var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
 
         var textPt  =  isHorizontalRun
             ? { x: midPt.x, y: midPt.y - config.TextOffsetFromLineMm }
             : { x: midPt.x, y: midPt.y };
 
+        // Zero line-offset (pitch mid-slope label) centres the glyph on the point;
+        // linear dimensions keep the alphabetic baseline so the value sits above the line.
+        var baseline  =  (!isHorizontalRun || config.TextOffsetFromLineMm === 0) ? 'middle' : 'auto';
+
         var attrs  =  {
-            'font-size'      : config.TextFontSizeMm,
-            'text-anchor'    : 'middle',
-            'dominant-baseline': isHorizontalRun ? 'auto' : 'middle'
+            'font-size'         : config.TextFontSizeMm,
+            'text-anchor'       : 'middle',
+            'dominant-baseline' : baseline
         };
         attrs[ATTR_KEY]       =  dimensionKey;
         attrs[ATTR_VALUE]     =  numericValue;
@@ -365,6 +376,7 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         }
 
         var cssClass  =  isEditable ? (CSS_DIM_TEXT + ' ' + CSS_DIM_TEXT_EDIT) : CSS_DIM_TEXT;
+        if (extraCssClass) cssClass  +=  ' ' + extraCssClass;
         var textEl    =  SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateText(textPt, displayValue, cssClass, attrs);
 
         if (isEditable) {
@@ -444,8 +456,8 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     // ------------------------------------------------------------
     // The hip whose projection spans the greatest horizontal distance forms the
     // silhouette in an elevation, so its apparent angle is the slope the viewer
-    // actually sees. Anchoring the arc to real drawn geometry keeps the
-    // annotation truthful for every roof form the solver supports.
+    // actually sees. Anchoring the annotation to real drawn geometry keeps the
+    // label truthful for every roof form the solver supports.
     function VghLantern__Env2d__DimensionRenderer__FindSlopeEdge(skeleton, viewKey) {
         var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
         var Solver        =  window.VghLantern__Geometry__SkeletonSolver;
@@ -484,27 +496,61 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Draw the Pitch Angle Arc and Value
+    // SUB HELPER FUNCTION | Draw a Short Tick Across an Arc Endpoint
     // ------------------------------------------------------------
+    // The tick is perpendicular to the ray from the pivot through the endpoint,
+    // matching the Vale angle-dimension convention on issued drawings.
+    function VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, atPt, tickLengthMm) {
+        var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
+        var dx   =  atPt.x - pivot.x;
+        var dy   =  atPt.y - pivot.y;
+        var len  =  Math.sqrt((dx * dx) + (dy * dy));
+        if (len < 1) return;
+
+        var half  =  tickLengthMm / 2;
+        var nx    =  -dy / len;                                              // <-- Unit normal across the ray
+        var ny    =   dx / len;
+
+        group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
+            { x: atPt.x - (nx * half), y: atPt.y - (ny * half) },
+            { x: atPt.x + (nx * half), y: atPt.y + (ny * half) },
+            CSS_DIM_TERMINATOR
+        ));
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Draw the Pitch Angle Arc and Label Centred on the Hip
+    // ------------------------------------------------------------
+    // Pivot sits at the silhouette hip midpoint so the arc and the degree text
+    // read mid-slope rather than crowding the eaves corner. A short horizontal
+    // baseline, the arc, ticks at both ends, and the value outside the arc.
     function VghLantern__Env2d__DimensionRenderer__DrawAngular(targetLayer, skeleton, viewKey, numericValue, isEditable, config) {
         var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
         var edge        =  VghLantern__Env2d__DimensionRenderer__FindSlopeEdge(skeleton, viewKey);
         if (!edge) return;
 
-        var anchor  =  edge.Anchor;
-        var toward  =  edge.Toward;
-
-        var dx  =  toward.x - anchor.x;
-        var dy  =  toward.y - anchor.y;
-        var len =  Math.sqrt((dx * dx) + (dy * dy));
+        var dx   =  edge.Toward.x - edge.Anchor.x;
+        var dy   =  edge.Toward.y - edge.Anchor.y;
+        var len  =  Math.sqrt((dx * dx) + (dy * dy));
         if (len < 1) return;
 
-        var radius  =  Math.min(config.AngleArcRadiusMm, len * 0.75);
+        // Pivot at mid-hip so the whole annotation rides the centre of the slope.
+        var pivot  =  {
+            x : (edge.Anchor.x + edge.Toward.x) / 2,
+            y : (edge.Anchor.y + edge.Toward.y) / 2
+        };
+
+        var radius  =  Math.min(config.AngleArcRadiusMm, len * 0.22);
+        if (radius < 40) return;
+
         var signX   =  (dx >= 0) ? 1 : -1;
+        var ux      =  dx / len;
+        var uy      =  dy / len;
 
         // Arc runs from the horizontal baseline round to the slope edge.
-        var startPt  =  { x: anchor.x + (signX * radius), y: anchor.y };
-        var endPt    =  { x: anchor.x + ((dx / len) * radius), y: anchor.y + ((dy / len) * radius) };
+        var startPt  =  { x: pivot.x + (signX * radius), y: pivot.y };
+        var endPt    =  { x: pivot.x + (ux * radius),    y: pivot.y + (uy * radius) };
 
         // Slope edges rise up the page, so the sweep is always the short way.
         var sweepFlag  =  (signX > 0) ? 0 : 1;
@@ -515,22 +561,32 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             'data-vgh-dimension-group' : 'pitch'
         });
 
-        // A short baseline makes the angle legible when the eaves line is faint.
+        // Short horizontal baseline makes the angle legible against the hip.
         group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
-            anchor, { x: anchor.x + (signX * radius * 1.15), y: anchor.y }, CSS_DIM_WITNESS));
+            pivot, { x: pivot.x + (signX * radius * 1.15), y: pivot.y }, CSS_DIM_WITNESS));
 
         group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreatePath(pathData, CSS_DIM_ARC));
 
-        var midAngle  =  Math.atan2(dy, dx) / 2;
-        var textPt    =  {
-            x : anchor.x + (Math.cos(midAngle) * radius * 1.30),
-            y : anchor.y + (Math.sin(midAngle) * radius * 1.30)
+        VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, startPt, config.AngleTickLengthMm);
+        VghLantern__Env2d__DimensionRenderer__DrawAngleTick(group, pivot, endPt,   config.AngleTickLengthMm);
+
+        // Text sits outside the arc on the angle bisector (horizontal angle is 0).
+        var midAngle   =  Math.atan2(uy, ux) / 2;
+        var textRadius =  radius + config.AngleTextOffsetFromSlopeMm;
+        var textPt     =  {
+            x : pivot.x + (Math.cos(midAngle) * textRadius),
+            y : pivot.y + (Math.sin(midAngle) * textRadius)
         };
+
+        var angleConfig  =  Object.assign({}, config, {
+            TextFontSizeMm       : config.AngleTextFontSizeMm,
+            TextOffsetFromLineMm : 0
+        });
 
         VghLantern__Env2d__DimensionRenderer__DrawValueText(
             group, textPt, true,
             VghLantern__Env2d__DimensionRenderer__FormatValue(numericValue, 'deg'),
-            numericValue, 'deg', 'pitch', isEditable, config);
+            numericValue, 'deg', 'pitch', isEditable, angleConfig, CSS_DIM_TEXT_ANGLE);
 
         targetLayer.appendChild(group);
     }

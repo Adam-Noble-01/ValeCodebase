@@ -3,6 +3,76 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.4 - 31-Jul-2026
+### Projects table: tighter Actions column and Client Name for drawings
+
+#### Added
+- **Client Name** column on the Projects table (sortable, searchable, inline-editable).
+- Client Name field on the New Project modal.
+- Value writes to `VghLantern__ProjectFile__Metadata__ClientName`, which already drives the Drawing Editor title block, Specification schedule, and Document Preview / PDF metadata.
+- Seeded Client Name `"David Brent"` on project 6969.
+
+#### Changed
+- Actions column shrinks to content width so Open / Edit / Delete no longer leave a wide empty strip.
+- Project list / manifest / server list responses now carry `clientName`.
+
+#### Files
+- `VghLantern__DocManagement__Styles__Main__.css`, `Na__DocManagement__Config.json`
+- `VghLantern__DocManagement__ProjectList__.js`, `VghLantern__DocManagement__ProjectActions__.js`
+- `VghLantern__AppData__ProjectFileManager__.js`, `VghLantern__FlaskServer__Localhost__.py`
+- `07__LocalProjectData/VghLantern__ProjectFile__6969__David_Brent__.json`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.3 - 31-Jul-2026
+### Pitch annotation arc sized to stay compact and centred on the hip
+
+#### Fixed
+- The mid-hip pitch arc introduced in v0.4.1 used a radius small enough that a 22.5° sweep produced almost no visible curvature - it read as a flat, tick-ended line rather than an arc.
+- A first attempt enlarged the radius to 900mm, but because a shallow 22.5° arc's bow is a fixed proportion of its own chord, this dragged the whole symbol (baseline, arc, ticks) a long way out from the pivot - the horizontal reference line ended up floating below the roofline and the text drifted off-centre toward the ridge.
+- Settled on a modest radius (320mm) that keeps the whole assembly (baseline + arc + ticks + text) tight at the true hip midpoint, and tightened the radius safety cap (`len * 0.22`) so it only ever engages on genuinely small lanterns rather than routinely overriding the configured size.
+
+#### Config
+- `Na__Env2d__Config.json` → `AngleArcRadiusMm` (320), `AngleTickLengthMm` (55), `AngleTextOffsetFromSlopeMm` (60).
+
+#### Files
+- `VghLantern__Env2d__DimensionRenderer__.js`, `Na__Env2d__Config.json`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.2 - 31-Jul-2026
+### Inline project row edit and simplified status tracker
+
+#### Added
+- **Edit** action on each Projects table row. Pressing Edit turns Project Name and Document Name into text inputs and Status into a dropdown; the Edit button becomes **Save** (with Cancel alongside). Save writes via the existing `POST /api/projects/{code}` path through `ProjectFileManager.SaveProject`.
+
+#### Changed
+- Document status options simplified to three values with a clear traffic-light scheme:
+  - **Draft** (red)
+  - **For Approval** (yellow)
+  - **Issued** (green)
+- Status config, CSS tokens, badge classes, and sort order updated to match. Legacy five-status values (`In Progress`, `Pending Approval`, `Approved`, `Completed`) are no longer offered.
+
+#### Files
+- `Na__DocManagement__Config.json`, `VghLantern__CoreUi__Styles__Variables__.css`, `VghLantern__DocManagement__Styles__Main__.css`
+- `VghLantern__DocManagement__ProjectList__.js`, `VghLantern__DocManagement__ProjectActions__.js`
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.1 - 31-Jul-2026
+### Elevation pitch annotation centred on the hip
+
+#### Changed
+- Pitch angle annotation on front and side elevations sits at the **midpoint of the silhouette hip** instead of crowding the eaves corner.
+- Restored the arched angle line: horizontal baseline, arc from horizontal to the slope, and tick marks at both arc ends - matching issued Vale drawing convention.
+- Angle text uses a larger config-sized font (`AngleTextFontSizeMm`) and a paper-white halo (`--angle` modifier) so it stays readable at 1:50 sheet scale.
+- `paint-order` is included in Env2d SVG style serialisation so the halo survives PDF export.
+
+#### Config
+- `Na__Env2d__Config.json` → `AngleTextFontSizeMm` (115), `AngleTextOffsetFromSlopeMm` (55, radial clearance past the arc), `AngleArcRadiusMm` (280), `AngleTickLengthMm` (50).
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.4.0 - 31-Jul-2026
 ### Full PWA support on Windows, iOS and Android, a real caching service worker, an honest read-only notice for the hosted build, and Component Index thumbnails at a consistent line weight and scale
 
@@ -212,14 +282,14 @@ First build of the **VghLantern Roof Lantern Designer**, a parametric roof lante
 #### Configuration SSOT (`02__AppData/VghLantern__AppConfig__Main__.json`)
 - App identity, port **8006**, data folder paths, autosave debounce, default mode.
 - **`VghLantern__RoofForm__Options__Config`** — selectable forms **Hipped Ridge**, **Pyramid**, with **Gable** and **Mono Pitch** present but listed in `DisabledRoofForms` (visible, not yet selectable). Labels must match the canonical set in `ProjectSchemaValidator` because **`SkeletonSolver`** branches on them.
-- **`VghLantern__Lantern__GlobalDefaults__Config`** — every new lantern seeds from here (2400 × 1400 mm, 150 mm kerb, 25° pitch, 3 bars long slope / 1 short).
+- **`VghLantern__Lantern__GlobalDefaults__Config`** — every new lantern seeds from here (2400 × 1400 mm, 150 mm builders upstand, 25° pitch, 500 mm target bar spacing).
 - **`VghLantern__DataLibraries__Config`** — locations of the two generated library indexes and the GLB asset folder.
 
 #### Geometry solver (`04__MathUtils__LanternGeometry`)
 The single source of geometric truth; both render environments and the takeoff consume its output rather than deriving their own.
 - **`VghLantern__Geometry__SkeletonSolver__.js`** — resolves a lantern config into a named member skeleton (eaves, ridge, hips, verges, closing sections) as 3D points in millimetres, branching on roof form.
 - **`VghLantern__Geometry__RoofPitchCalculator__.js`** — pitch angle is the stored property and roof height derives from it; this is the one place angle ⇄ rise conversion happens (`DefaultPitchDegrees`).
-- **`VghLantern__Geometry__GlazeBarLayout__.js`** — distributes glazing bars per slope by **count** or **target spacing**, returning bar lines with their slope association.
+- **`VghLantern__Geometry__GlazeBarLayout__.js`** — distributes glazing bars per slope by **target spacing**, rounded to whole panes, returning bar lines with their slope association.
 - **`VghLantern__Geometry__ConstraintResolver__.js`** — clamps interdependent dimensions so the editor cannot produce an unbuildable lantern.
 - **`VghLantern__Geometry__QuantityTakeoff__.js`** — pure function over solved skeleton + bar set returning linear metres per member role, glazing areas, and component counts. No DOM, no config reads.
 
@@ -238,7 +308,7 @@ The single source of geometric truth; both render environments and the takeoff c
 
 #### Lantern Editor (`20__System__LanternAssembly__EditorMode`)
 - **`ControlDescriptors__.js` is the SSOT for controls** — every slider, dropdown, and toggle is declared as data (bounds, step, options source, visibility predicate). **`ControlPanel__.js`** is a generic renderer over those descriptors, so a new control is a data edit, not new DOM code.
-- **Seven section modules** supply descriptors: **`FormAndSize`**, **`GlazingBars`**, **`RidgeAndHips`**, **`Finials`**, **`KerbAndBase`**, **`Ventilation`**, **`FinishAndGlazing`**. Dropdown options come from the library indexes filtered by **`ApplicableRoles`**, so no module hardcodes a category-to-role mapping.
+- **Seven section modules** supply descriptors: **`FormAndSize`**, **`GlazingBars`**, **`RidgeAndHips`**, **`Finials`**, **`BuildersUpstandAndBase`**, **`Ventilation`**, **`FinishAndGlazing`**. Dropdown options come from the library indexes filtered by **`ApplicableRoles`**, so no module hardcodes a category-to-role mapping.
 - **`WarningSystem__.js`** + **`Na__LanternEditor__Warnings__.json`** — declarative rules evaluated against lantern metrics and solved geometry; renders inline warnings and errors in the editor.
 - **`ViewportHost__2d__.js`** / **`ViewportHost__3d__.js`** — host the two environments inside the editor split layout, with view tabs (plan / front / side) and an optional live 3D preview.
 
@@ -275,7 +345,7 @@ The single source of geometric truth; both render environments and the takeoff c
 - **Unified asset schema** shared by both libraries: metadata block, 2D profile points, optional 3D mesh (inline or GLB URL), and behaviour block (sweep or placement).
 - **Profile coordinate convention:** origin sits on the skeleton line at the section's bottom-centre; **x** spans ±half-width, **y** rises into the member. Each asset carries its own origin note.
 - **Component coordinate convention:** finials and bases use the seating point; cresting uses the centre of one repeat; vents use the centre of the pane they replace.
-- **Worked examples** so the whole pipeline renders end to end: four profiles (**`PRF_GLB0001`** 50 mm capped glazing bar, **`PRF_RDG0001`** 90 mm capped ridge, **`PRF_HIP0001`** 75 mm hip, **`PRF_CLS0001`** 45 mm closing section) and four components (**`VGH_FIN0001`** ball-and-spike finial, **`VGH_FIN0101`** moulded finial base, **`VGH_CRS0001`** fleur cresting, **`VGH_VNT0001`** manual roof vent). Dimensions are provisional pending real Vale sections.
+- **Worked examples** so the whole pipeline renders end to end: three profiles (**`PRF_GLB0001`** 50 mm capped glazing bar, **`PRF_RDG0001`** 90 mm capped ridge, **`PRF_HIP0001`** 75 mm hip) and four components (**`VGH_FIN0001`** ball-and-spike finial, **`VGH_FIN0101`** moulded finial base, **`VGH_CRS0001`** fleur cresting, **`VGH_VNT0001`** manual roof vent). Dimensions are provisional pending real Vale sections.
 - **`VghLantern__ProfileDataIndex__.json`** / **`VghLantern__ComponentDataIndex__.json`** are **generated output** — marked `DoNotEditByHand`, served by the Flask server at `/api/profile-index` and `/api/component-index` with `no-store`, with the static files as a fallback.
 
 #### Version-locked dependencies (`04__Src__Dependencies__VersionLocked`)

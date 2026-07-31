@@ -4,9 +4,9 @@
         "VghLantern__ProjectFile__Metadata__ProjectCode": "2001",
         "VghLantern__ProjectFile__Metadata__ProjectName": "Test",
         "VghLantern__ProjectFile__Metadata__DocumentName": "Test Roof Lantern",
-        "VghLantern__ProjectFile__Metadata__ClientName": "",
+        "VghLantern__ProjectFile__Metadata__ClientName": "Test Manor",
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
-        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Issued",
         "VghLantern__ProjectFile__Metadata__DateCreated": "30-Jul-2026",
         "VghLantern__ProjectFile__Metadata__DateModified": "31-Jul-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
@@ -43,8 +43,6 @@
                 "Lantern__RoofPitch__Config__PitchDegrees": 22.5
             },
             "Lantern__GlazingBars__Config": {
-                "Lantern__GlazingBars__Config__DivisionMode": "spacing",
-                "Lantern__GlazingBars__Config__BarCountLongSlope": 10,
                 "Lantern__GlazingBars__Config__BarCountShortSlope": 1,
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
                 "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
@@ -63,13 +61,12 @@
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
             },
-            "Lantern__KerbAndBase__Config": {
-                "Lantern__KerbAndBase__Config__KerbHeightMm": 390,
-                "Lantern__KerbAndBase__Config__KerbProfileId": "",
-                "Lantern__KerbAndBase__Config__EavesProfileId": "PRF_EVK0001",
-                "Lantern__KerbAndBase__Config__ClosingProfileId": "",
-                "Lantern__KerbAndBase__Config__KerbThicknessMm": 150,
-                "Lantern__KerbAndBase__Config__FrameHeightMm": 60
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 390,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": "",
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 60
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,

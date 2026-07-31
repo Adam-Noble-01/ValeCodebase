@@ -68,15 +68,16 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
     // HELPER FUNCTION | Build Normalised Manifest Entry Object
     // ------------------------------------------------------------
-    function VghLantern__ProjectFileManager__BuildManifestEntry(code, name, docName, status, dateCreated, dateModified) {
+    function VghLantern__ProjectFileManager__BuildManifestEntry(code, name, docName, clientName, status, dateCreated, dateModified) {
         var safeStatus        =  (typeof status === 'string' && status.trim()) ? status.trim() : 'Draft';
         var safeDateCreated   =  dateCreated || '';
         var safeDateModified  =  dateModified || safeDateCreated || VghLantern__ProjectFileManager__GetTodayStamp();
 
         return {
-            projectCode   : code     || '',
-            projectName   : name     || '',
-            documentName  : docName  || '',
+            projectCode   : code       || '',
+            projectName   : name       || '',
+            documentName  : docName    || '',
+            clientName    : clientName || '',
             status        : safeStatus,
             dateCreated   : safeDateCreated,
             dateModified  : safeDateModified
@@ -91,11 +92,12 @@ const VghLantern__AppData__ProjectFileManager = (function() {
         var fallback      =  fallbackEntry || {};
         var projectName   =  metadata['VghLantern__ProjectFile__Metadata__ProjectName']    || fallback.projectName;
         var documentName  =  metadata['VghLantern__ProjectFile__Metadata__DocumentName']   || fallback.documentName;
+        var clientName    =  metadata['VghLantern__ProjectFile__Metadata__ClientName']     || fallback.clientName;
         var status        =  metadata['VghLantern__ProjectFile__Metadata__DocumentStatus'] || fallback.status;
         var dateCreated   =  metadata['VghLantern__ProjectFile__Metadata__DateCreated']    || fallback.dateCreated;
         var dateModified  =  metadata['VghLantern__ProjectFile__Metadata__DateModified']   || fallback.dateModified;
 
-        return VghLantern__ProjectFileManager__BuildManifestEntry(code, projectName, documentName, status, dateCreated, dateModified);
+        return VghLantern__ProjectFileManager__BuildManifestEntry(code, projectName, documentName, clientName, status, dateCreated, dateModified);
     }
     // ------------------------------------------------------------
 
@@ -120,15 +122,16 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
     // HELPER FUNCTION | Add Entry to Manifest
     // ------------------------------------------------------------
-    function VghLantern__ProjectFileManager__AddToManifest(code, name, docName, status, dateCreated, dateModified) {
+    function VghLantern__ProjectFileManager__AddToManifest(code, name, docName, clientName, status, dateCreated, dateModified) {
         var manifest  =  VghLantern__ProjectFileManager__GetManifest();
         var existing  =  manifest.findIndex(function(p) { return p.projectCode === code; });
         var previous  =  existing >= 0 ? manifest[existing] : null;
-        var entry     =  VghLantern__ProjectFileManager__BuildManifestEntry(code, name, docName, status, dateCreated, dateModified);
+        var entry     =  VghLantern__ProjectFileManager__BuildManifestEntry(code, name, docName, clientName, status, dateCreated, dateModified);
 
         if (previous) {
             if (!entry.projectName)  entry.projectName   =  previous.projectName   || '';
             if (!entry.documentName) entry.documentName  =  previous.documentName  || '';
+            if (!entry.clientName)   entry.clientName    =  previous.clientName    || '';
             if (!entry.dateCreated)  entry.dateCreated   =  previous.dateCreated   || '';
         }
 
@@ -165,6 +168,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 '',
                 source.projectName,
                 source.documentName,
+                source.clientName,
                 source.status,
                 source.dateCreated,
                 source.dateModified
@@ -189,6 +193,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
             projectCode,
             source.projectName,
             source.documentName,
+            source.clientName,
             source.status,
             source.dateCreated,
             source.dateModified
@@ -206,6 +211,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
             (left.projectCode  || '')      === (right.projectCode  || '')      &&
             (left.projectName  || '')      === (right.projectName  || '')      &&
             (left.documentName || '')      === (right.documentName || '')      &&
+            (left.clientName   || '')      === (right.clientName   || '')      &&
             (left.status       || 'Draft') === (right.status       || 'Draft') &&
             (left.dateCreated  || '')      === (right.dateCreated  || '')      &&
             (left.dateModified || '')      === (right.dateModified || '')
@@ -302,7 +308,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
     // SUB FUNCTION | Build a Fresh Project Data Object
     // ------------------------------------------------------------
-    function VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName) {
+    function VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName) {
         var now  =  VghLantern__ProjectFileManager__GetTodayStamp();
 
         return {
@@ -311,7 +317,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__Metadata__ProjectCode'     : projectCode,
                 'VghLantern__ProjectFile__Metadata__ProjectName'     : projectName,
                 'VghLantern__ProjectFile__Metadata__DocumentName'    : documentName || projectName + ' Roof Lanterns',
-                'VghLantern__ProjectFile__Metadata__ClientName'      : '',
+                'VghLantern__ProjectFile__Metadata__ClientName'      : clientName || '',
                 'VghLantern__ProjectFile__Metadata__SiteAddress'     : '',
                 'VghLantern__ProjectFile__Metadata__DocumentStatus'  : 'Draft',
                 'VghLantern__ProjectFile__Metadata__DateCreated'     : now,
@@ -346,10 +352,10 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
     // FUNCTION | Create New Project
     // ------------------------------------------------------------
-    function VghLantern__ProjectFileManager__CreateProject(projectCode, projectName, documentName) {
+    function VghLantern__ProjectFileManager__CreateProject(projectCode, projectName, documentName, clientName) {
         var storageKey   =  STORAGE_PREFIX + projectCode;
         var now          =  VghLantern__ProjectFileManager__GetTodayStamp();
-        var projectData  =  VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName);
+        var projectData  =  VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName);
 
         var normalisedCreate  =  VghLantern__ProjectFileManager__NormaliseProjectData(projectData, 'createProject');
         projectData  =  normalisedCreate.projectData || projectData;
@@ -359,6 +365,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
             projectCode,
             projectName,
             documentName || projectName + ' Roof Lanterns',
+            clientName || '',
             'Draft',
             now,
             now
@@ -484,6 +491,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                                             entry.projectCode,
                                             entry.projectName,
                                             entry.documentName,
+                                            entry.clientName,
                                             entry.status,
                                             entry.dateCreated,
                                             entry.dateModified

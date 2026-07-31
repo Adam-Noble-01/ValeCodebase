@@ -88,11 +88,9 @@
     /* ------------------------------------------------------------ */
     :root {
         /* Status Badge Colors */
-        --VghLantern_StatusDraft            : #d32f2f;                      /* <-- Draft status red (same as --VghLantern_ErrorRed) */
-        --VghLantern_StatusInProgress       : #e6a817;                      /* <-- In Progress status amber */
-        --VghLantern_StatusPending          : #d67e28;                      /* <-- Pending Approval status orange */
-        --VghLantern_StatusApproved         : #2a7d4f;                      /* <-- Approved status green */
-        --VghLantern_StatusCompleted        : #2a7d4f;                      /* <-- Completed status green */
+        --VghLantern_StatusDraft            : #d32f2f;                      /* <-- Draft status red */
+        --VghLantern_StatusForApproval      : #e6a817;                      /* <-- For Approval status yellow */
+        --VghLantern_StatusIssued           : #2a7d4f;                      /* <-- Issued status green */
 
         /* Viewport Environments — shared backdrop / overlay (2D SVG + 3D Three stay matched) */
         --VghLantern_ViewportBackdrop       : #f6f7f8;                      /* <-- Light neutral clear — high contrast for dark linework */
@@ -113,9 +111,9 @@
         --VghLantern_SvgSkeletonHip         : #2f4a5e;                      /* <-- Hip line stroke colour */
         --VghLantern_SvgSkeletonRafter      : #5a6d7a;                      /* <-- Common rafter line stroke colour */
         --VghLantern_SvgSkeletonEaves       : #172b3a;                      /* <-- Eaves / wall plate stroke colour */
-        --VghLantern_SvgSkeletonKerb        : #8a949c;                      /* <-- Kerb / upstand stroke colour */
-        --VghLantern_SvgSkeletonFrame       : #6c7780;                      /* <-- Base frame stroke colour — a shade over the kerb */
-        --VghLantern_SvgKerbReveal          : #cc3333;                      /* <-- Inner face of the kerb — the reveal, drawn dashed red */
+        --VghLantern_SvgSkeletonBuildersUpstand        : #8a949c;                      /* <-- Builders Upstand / upstand stroke colour */
+        --VghLantern_SvgSkeletonFrame       : #6c7780;                      /* <-- Base frame stroke colour — a shade over the builders upstand */
+        --VghLantern_SvgBuildersUpstandReveal          : #cc3333;                      /* <-- Inner face of the builders upstand — the reveal, drawn dashed red */
         --VghLantern_SvgConstructionLine    : #e2e5e8;                      /* <-- Soft grid guide — stays behind geometry */
 
         /* 2D Environment - Glazing And Profiles */

@@ -21,9 +21,9 @@
    ---------------------------------------------------------------------------
 
    MATERIAL ROLES:
-       frame        all structural members: kerb, eaves, ridge, hip, bars
+       frame        all structural members: builders upstand, eaves, ridge, hip, bars
        glazing      translucent glass faces
-       kerb         kerb and base, usually a slightly different tone to frame
+       builders upstand         builders upstand and base, usually a slightly different tone to frame
        component    fallback for GLB components with no embedded material
        skeletonLine line-mode fallback when a profile is unavailable
 
@@ -45,7 +45,7 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     // ------------------------------------------------------------
     const ROLE_FRAME          =  'frame';                                    // <-- All structural members
     const ROLE_GLAZING        =  'glazing';                                  // <-- Translucent glass faces
-    const ROLE_KERB           =  'kerb';                                     // <-- Kerb and base upstand
+    const ROLE_BUILDERS_UPSTAND           =  'buildersUpstand';                                     // <-- Builders Upstand and base upstand
     const ROLE_COMPONENT      =  'component';                                // <-- GLB fallback material
     const ROLE_SKELETON_LINE  =  'skeletonLine';                             // <-- Line-mode member fallback
 
@@ -144,9 +144,9 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
     export function VghLantern__Env3d__MaterialLibrary__Get(roleKey, finishName) {
         let hexColour;
 
-        if (roleKey === ROLE_KERB) {
+        if (roleKey === ROLE_BUILDERS_UPSTAND) {
             const config  =  VghLantern__Env3d__ConfigAccess__Section('Materials');
-            hexColour     =  config.KerbColour || '#d9d5cf';
+            hexColour     =  config.BuildersUpstandColour || '#d9d5cf';
         } else if (roleKey === ROLE_GLAZING || roleKey === ROLE_SKELETON_LINE) {
             hexColour     =  'role-fixed';                                    // <-- Colour comes from config, not the finish
         } else {
@@ -175,8 +175,8 @@ import { VghLantern__Env3d__ConfigAccess__Section } from './VghLantern__Env3d__C
         return VghLantern__Env3d__MaterialLibrary__Get(ROLE_GLAZING, null);
     }
 
-    export function VghLantern__Env3d__MaterialLibrary__Kerb() {
-        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_KERB, null);
+    export function VghLantern__Env3d__MaterialLibrary__BuildersUpstand() {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_BUILDERS_UPSTAND, null);
     }
 
     export function VghLantern__Env3d__MaterialLibrary__Component(finishName) {

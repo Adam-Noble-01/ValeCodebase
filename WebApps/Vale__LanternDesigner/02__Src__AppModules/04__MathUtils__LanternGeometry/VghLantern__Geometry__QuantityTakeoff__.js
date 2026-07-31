@@ -30,7 +30,8 @@
            IsDerivedFromValidGeometry
        },
        Linear     : [ { Key, Label, ProfileId, LengthMmEach, LengthMEach,
-                        LengthMTotal, MemberCount } ],
+                        LengthMTotal, MemberCount,
+                        SectionWidthMm?, SectionHeightMm? } ],
        Areas      : [ { Key, Label, AreaSqMmEach, AreaSqMEach, AreaSqMTotal } ],
        Components : [ { Key, Label, ComponentId, CountEach, CountTotal } ],
        Totals     : { LinearMEach, LinearMTotal,
@@ -67,7 +68,7 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
     const BLOCK_GLAZING_BARS  =  'Lantern__GlazingBars__Config';
     const BLOCK_RIDGE_HIPS    =  'Lantern__RidgeAndHips__Config';
     const BLOCK_FINIALS       =  'Lantern__Finials__Config';
-    const BLOCK_KERB          =  'Lantern__KerbAndBase__Config';
+    const BLOCK_UPSTAND          =  'Lantern__BuildersUpstandAndBase__Config';
     const BLOCK_VENTILATION   =  'Lantern__Ventilation__Config';
     // ------------------------------------------------------------
 
@@ -106,12 +107,14 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
 
     // HELPER FUNCTION | Push a Linear Section Row
     // ------------------------------------------------------------
-    function VghLantern__QuantityTakeoff__PushLinear(rows, key, label, profileId, lengthMm, memberCount, quantity) {
+    // sectionSizeOpts may carry SectionWidthMm / SectionHeightMm for prism
+    // members (base frame) where pricing needs the ring beam cross-section.
+    function VghLantern__QuantityTakeoff__PushLinear(rows, key, label, profileId, lengthMm, memberCount, quantity, sectionSizeOpts) {
         if (lengthMm <= 0) return;
 
         var lengthMEach  =  lengthMm / MM_PER_METRE;
 
-        rows.push({
+        var row  =  {
             Key          : key,
             Label        : label,
             ProfileId    : profileId || '',
@@ -119,7 +122,14 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             LengthMEach  : VghLantern__QuantityTakeoff__Round(lengthMEach, LINEAR_DP),
             LengthMTotal : VghLantern__QuantityTakeoff__Round(lengthMEach * quantity, LINEAR_DP),
             MemberCount  : memberCount
-        });
+        };
+
+        if (sectionSizeOpts) {
+            if (sectionSizeOpts.SectionWidthMm  != null) row.SectionWidthMm  =  Math.round(Number(sectionSizeOpts.SectionWidthMm)  || 0);
+            if (sectionSizeOpts.SectionHeightMm != null) row.SectionHeightMm =  Math.round(Number(sectionSizeOpts.SectionHeightMm) || 0);
+        }
+
+        rows.push(row);
     }
     // ------------------------------------------------------------
 
@@ -186,22 +196,25 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             totalFor('hip'), countFor('hip'), quantity);
 
         VghLantern__QuantityTakeoff__PushLinear(rows, 'eaves', 'Eaves Section',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__EavesProfileId', ''),
+            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__EavesProfileId', ''),
             totalFor('eaves'), countFor('eaves'), quantity);
 
-        // The kerb and the frame are prisms, not swept members, so their runs come
+        // The builders upstand and the frame are prisms, not swept members, so their runs come
         // from the Base block rather than from a member-role total. Summing the
-        // 'kerb' role would double-count: the solver draws that box at both its
+        // 'buildersUpstand' role would double-count: the solver draws that box at both its
         // base and its top, and each ring is one full perimeter.
         var base  =  skeleton.Base || {};
 
         VghLantern__QuantityTakeoff__PushLinear(rows, 'frame', 'Base Frame',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__EavesProfileId', ''),
-            (Number(base.FrameHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
+            '',                                                              // <-- Prism member; no swept profile id
+            (Number(base.FrameHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity, {
+                SectionHeightMm : Number(base.FrameHeightMm) || 0,            // <-- Vale frame ring beam height
+                SectionWidthMm  : Number(base.UpstandThicknessMm) || 0         // <-- Thickness follows the upstand wall
+            });
 
-        VghLantern__QuantityTakeoff__PushLinear(rows, 'kerb', 'Kerb Upstand',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbProfileId', ''),
-            (Number(base.KerbHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
+        VghLantern__QuantityTakeoff__PushLinear(rows, 'buildersUpstand', 'Builders Upstand',
+            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', ''),
+            (Number(base.UpstandHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
 
         if (barSet && barSet.Meta) {
             var barProfileId  =  VghLantern__QuantityTakeoff__Read(lantern, BLOCK_GLAZING_BARS, 'Lantern__GlazingBars__Config__BarProfileId', '');

@@ -51,7 +51,7 @@
 
    A 'heading' descriptor carries a Label and nothing else. It splits a long
    section into named subsections without introducing a nested accordion, which
-   is what a section like Frame and Kerb needs: two groups of controls that
+   is what a section like Frame and Builders Upstand needs: two groups of controls that
    belong together and should both be visible at once.
 
    ============================================================================= */
@@ -86,7 +86,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         'glazingBars'      : { Global : 'VghLantern__LanternEditor__Section__GlazingBars',      Fn : 'VghLantern__Section__GlazingBars__Build'      },
         'ridgeAndHips'     : { Global : 'VghLantern__LanternEditor__Section__RidgeAndHips',     Fn : 'VghLantern__Section__RidgeAndHips__Build'     },
         'finials'          : { Global : 'VghLantern__LanternEditor__Section__Finials',          Fn : 'VghLantern__Section__Finials__Build'          },
-        'kerbAndBase'      : { Global : 'VghLantern__LanternEditor__Section__KerbAndBase',      Fn : 'VghLantern__Section__KerbAndBase__Build'      },
+        'buildersUpstandAndBase'      : { Global : 'VghLantern__LanternEditor__Section__BuildersUpstandAndBase',      Fn : 'VghLantern__Section__BuildersUpstandAndBase__Build'      },
         'ventilation'      : { Global : 'VghLantern__LanternEditor__Section__Ventilation',      Fn : 'VghLantern__Section__Ventilation__Build'      },
         'finishAndGlazing' : { Global : 'VghLantern__LanternEditor__Section__FinishAndGlazing', Fn : 'VghLantern__Section__FinishAndGlazing__Build' }
     };

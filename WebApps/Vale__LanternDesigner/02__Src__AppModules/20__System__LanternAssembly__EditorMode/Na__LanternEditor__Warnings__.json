@@ -81,52 +81,52 @@
                 "Message"    : "Pitch of {value} degrees is shallow; below {limit} degrees rainwater run-off and glass self-cleaning both suffer."
             },
             {
-                "Key"        : "kerbBelowMinimum",
+                "Key"        : "upstandBelowMinimum",
                 "Severity"   : "error",
-                "Metric"     : "kerbHeightMm",
+                "Metric"     : "upstandHeightMm",
                 "Operator"   : "lt",
-                "LimitField" : "VghLantern__Validation__Config__MinKerbHeightMm",
-                "Message"    : "Kerb height of {value} mm is below the buildable minimum upstand of {limit} mm."
+                "LimitField" : "VghLantern__Validation__Config__MinUpstandHeightMm",
+                "Message"    : "Builders Upstand height of {value} mm is below the buildable minimum upstand of {limit} mm."
             },
             {
-                "Key"        : "kerbAboveMaximum",
+                "Key"        : "upstandAboveMaximum",
                 "Severity"   : "error",
-                "Metric"     : "kerbHeightMm",
+                "Metric"     : "upstandHeightMm",
                 "Operator"   : "gt",
-                "LimitField" : "VghLantern__Validation__Config__MaxKerbHeightMm",
-                "Message"    : "Kerb height of {value} mm exceeds the maximum of {limit} mm; confirm the upstand detail with the joinery shop."
+                "LimitField" : "VghLantern__Validation__Config__MaxUpstandHeightMm",
+                "Message"    : "Builders Upstand height of {value} mm exceeds the maximum of {limit} mm; confirm the upstand detail with the joinery shop."
             },
             {
-                "Key"        : "kerbBelowStandard",
+                "Key"        : "upstandBelowStandard",
                 "Severity"   : "warning",
-                "Metric"     : "kerbHeightMm",
+                "Metric"     : "upstandHeightMm",
                 "Operator"   : "lt",
-                "LimitField" : "VghLantern__Validation__Config__RecommendedMinKerbHeightMm",
-                "Message"    : "Kerb height of {value} mm is below the standard {limit} mm upstand; confirm the roof build-up gives enough weathering height."
+                "LimitField" : "VghLantern__Validation__Config__RecommendedMinUpstandHeightMm",
+                "Message"    : "Builders Upstand height of {value} mm is below the standard {limit} mm upstand; confirm the roof build-up gives enough weathering height."
             },
             {
-                "Key"        : "kerbThicknessBelowMinimum",
+                "Key"        : "upstandThicknessBelowMinimum",
                 "Severity"   : "error",
-                "Metric"     : "kerbThicknessMm",
+                "Metric"     : "upstandThicknessMm",
                 "Operator"   : "lt",
-                "LimitField" : "VghLantern__Validation__Config__MinKerbThicknessMm",
-                "Message"    : "Kerb thickness of {value} mm is below the buildable minimum of {limit} mm."
+                "LimitField" : "VghLantern__Validation__Config__MinUpstandThicknessMm",
+                "Message"    : "Builders Upstand thickness of {value} mm is below the buildable minimum of {limit} mm."
             },
             {
-                "Key"        : "kerbThicknessAboveMaximum",
+                "Key"        : "upstandThicknessAboveMaximum",
                 "Severity"   : "error",
-                "Metric"     : "kerbThicknessMm",
+                "Metric"     : "upstandThicknessMm",
                 "Operator"   : "gt",
-                "LimitField" : "VghLantern__Validation__Config__MaxKerbThicknessMm",
-                "Message"    : "Kerb thickness of {value} mm exceeds the maximum of {limit} mm."
+                "LimitField" : "VghLantern__Validation__Config__MaxUpstandThicknessMm",
+                "Message"    : "Builders Upstand thickness of {value} mm exceeds the maximum of {limit} mm."
             },
             {
-                "Key"        : "kerbThicknessBelowStandard",
+                "Key"        : "upstandThicknessBelowStandard",
                 "Severity"   : "warning",
-                "Metric"     : "kerbThicknessMm",
+                "Metric"     : "upstandThicknessMm",
                 "Operator"   : "lt",
-                "LimitField" : "VghLantern__Validation__Config__RecommendedMinKerbThicknessMm",
-                "Message"    : "Kerb thickness of {value} mm is under the {limit} mm studwork guidance; confirm the upstand can carry the lantern."
+                "LimitField" : "VghLantern__Validation__Config__RecommendedMinUpstandThicknessMm",
+                "Message"    : "Builders Upstand thickness of {value} mm is under the {limit} mm studwork guidance; confirm the upstand can carry the lantern."
             },
             {
                 "Key"        : "frameBelowMinimum",

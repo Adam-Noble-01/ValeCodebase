@@ -25,14 +25,14 @@
 
    COORDINATE CONVENTION (authoritative for the whole application):
    - Units          : millimetres throughout.
-   - Origin         : centre of the lantern footprint, at kerb BASE level.
+   - Origin         : centre of the lantern footprint, at builders upstand BASE level.
    - +X              : the width axis.
    - +Y              : the depth axis.
    - +Z              : vertically up.
-   - Kerb base       : z = 0
-   - Kerb top        : z = kerbHeightMm
-   - Frame top/eaves : z = kerbHeightMm + frameHeightMm
-   - Ridge / apex    : z = kerbHeightMm + frameHeightMm + riseMm
+   - Builders Upstand base       : z = 0
+   - Builders Upstand top        : z = upstandHeightMm
+   - Frame top/eaves : z = upstandHeightMm + frameHeightMm
+   - Ridge / apex    : z = upstandHeightMm + frameHeightMm + riseMm
 
    The long axis is whichever of width/depth is greater once the eaves
    projection is added. The ridge always runs along the long axis.
@@ -43,15 +43,15 @@
    The lantern sits on a two-part base, stacked and sharing one footprint:
 
      KERB   the studwork upstand built on the roof. A hollow rectangular prism:
-            outer face = the lantern's width x depth, wall thickness = the kerb
+            outer face = the lantern's width x depth, wall thickness = the builders upstand
             thickness, and the hole through it is the reveal the daylight comes
             down. Width and depth are ALWAYS measured to the OUTER face.
-     FRAME  the lantern's own base frame, sitting directly on the kerb. Same
-            footprint and same wall thickness as the kerb by definition; only
+     FRAME  the lantern's own base frame, sitting directly on the builders upstand. Same
+            footprint and same wall thickness as the builders upstand by definition; only
             its height is free.
 
    The roof springs from the top of the frame, so EavesLevelMm is the frame top,
-   not the kerb top. Kerb and frame are described together in the Base block
+   not the builders upstand top. Builders upstand and frame are described together in the Base block
    below, which is what the 3D environment extrudes into a solid.
 
    ---------------------------------------------------------------------------
@@ -62,17 +62,17 @@
        Meta : {
            RoofForm, IsValid, Warnings[],
            WidthMm, DepthMm, EavesProjectionMm,
-           KerbHeightMm, KerbThicknessMm, FrameHeightMm,
+           UpstandHeightMm, UpstandThicknessMm, FrameHeightMm,
            EavesHalfWidthMm, EavesHalfDepthMm,
            LongAxis            : 'x' | 'y',
            PitchDegrees, RiseMm, RidgeLengthMm,
            ShortRafterLengthMm, LongRafterLengthMm,
            HipLengthMm, HipAngleDegrees,
-           KerbTopLevelMm, EavesLevelMm, RidgeLevelMm, OverallHeightMm
+           UpstandTopLevelMm, EavesLevelMm, RidgeLevelMm, OverallHeightMm
        },
        Base : {
-           KerbHeightMm, KerbThicknessMm, FrameHeightMm,
-           KerbBaseLevelMm, KerbTopLevelMm, FrameTopLevelMm,
+           UpstandHeightMm, UpstandThicknessMm, FrameHeightMm,
+           UpstandBaseLevelMm, UpstandTopLevelMm, FrameTopLevelMm,
            OuterHalfWidthMm, OuterHalfDepthMm,
            InnerHalfWidthMm, InnerHalfDepthMm,
            RevealWidthMm, RevealDepthMm,
@@ -85,12 +85,12 @@
        Bounds          : { MinX, MaxX, MinY, MaxY, MinZ, MaxZ }
    }
 
-   Member roles : 'kerb' | 'kerbPost' | 'kerbReveal' | 'frame' | 'framePost'
+   Member roles : 'buildersUpstand' | 'buildersUpstandPost' | 'buildersUpstandReveal' | 'frame' 
                 | 'eaves' | 'ridge' | 'hip' | 'verge'
    Face roles   : 'glazingFace'
    SlopeKey     : 'long+' | 'long-' | 'short+' | 'short-' for slope identification
 
-   'kerbReveal' members trace the inner face of the upstand. They are the hole
+   'buildersUpstandReveal' members trace the inner face of the upstand. They are the hole
    through the base, not a section, so they carry no profile and are drawn as an
    annotation line rather than swept into a solid.
 
@@ -126,8 +126,8 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
     // Used only when a lantern block reaches the solver without the field, which
     // a schema-normalised project never does. They match the schema defaults so a
     // hand-edited file solves to the same geometry the editor would produce.
-    const FALLBACK_KERB_HEIGHT_MM     =  150;                                // <-- Standard Vale upstand height
-    const FALLBACK_KERB_THICKNESS_MM  =  110;                                // <-- Standard studwork kerb wall thickness
+    const FALLBACK_UPSTAND_HEIGHT_MM     =  150;                                // <-- Standard Vale upstand height
+    const FALLBACK_UPSTAND_THICKNESS_MM  =  110;                                // <-- Standard studwork upstand wall thickness
     const FALLBACK_FRAME_HEIGHT_MM    =  50;                                 // <-- Standard base frame height
     const MIN_REVEAL_DIMENSION_MM     =  100;                                // <-- Below this the hole is not a usable reveal
     // ------------------------------------------------------------
@@ -278,44 +278,43 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Emit the Kerb Box, the Frame on Top of It and the Eaves Ring
+    // SUB FUNCTION | Emit the Builders Upstand Box, the Frame on Top of It and the Eaves Ring
     // ------------------------------------------------------------
-    // The kerb and the frame share one footprint and one wall thickness, so they
+    // The builders upstand and the frame share one footprint and one wall thickness, so they
     // are emitted as one stacked assembly. The reveal is traced once, from the
-    // kerb base straight through to the frame top, because the inner face is
-    // continuous - there is no step between kerb and frame to draw.
+    // upstand base straight through to the frame top, because the inner face is
+    // continuous - there is no step between builders upstand and frame to draw.
     function VghLantern__SkeletonSolver__EmitBaseMembers(members, context) {
         var mapTo      =  context.MapTo;
-        var outerLong  =  context.KerbHalfLongMm;
-        var outerShort =  context.KerbHalfShortMm;
-        var kerbTopMm  =  context.KerbTopLevelMm;
+        var outerLong  =  context.UpstandHalfLongMm;
+        var outerShort =  context.UpstandHalfShortMm;
+        var upstandTopMm  =  context.UpstandTopLevelMm;
         var frameTopMm =  context.FrameTopLevelMm;
 
         var outerBase      =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, 0);
-        var outerKerbTop   =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, kerbTopMm);
+        var outerUpstandTop   =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, upstandTopMm);
         var outerFrameTop  =  VghLantern__SkeletonSolver__Ring(mapTo, outerLong, outerShort, frameTopMm);
 
-        // KERB - the studwork upstand.
-        VghLantern__SkeletonSolver__PushRing(members, 'kerbTop', 'kerb', outerKerbTop);
-        if (context.KerbHeightMm > 0) {
-            VghLantern__SkeletonSolver__PushRing(members, 'kerbBase', 'kerb', outerBase);
-            VghLantern__SkeletonSolver__PushPosts(members, 'kerbPost', 'kerbPost', outerBase, outerKerbTop);
+        // BUILDERS UPSTAND - site-built studwork (not Vale manufacture).
+        VghLantern__SkeletonSolver__PushRing(members, 'upstandTop', 'buildersUpstand', outerUpstandTop);
+        if (context.UpstandHeightMm > 0) {
+            VghLantern__SkeletonSolver__PushRing(members, 'upstandBase', 'buildersUpstand', outerBase);
+            VghLantern__SkeletonSolver__PushPosts(members, 'buildersUpstandPost', 'buildersUpstandPost', outerBase, outerUpstandTop);
         }
 
-        // FRAME - the lantern base frame sitting on the kerb.
+        // FRAME - the lantern base frame sitting on the builders upstand.
         if (context.FrameHeightMm > 0) {
             VghLantern__SkeletonSolver__PushRing(members, 'frameTop', 'frame', outerFrameTop);
-            VghLantern__SkeletonSolver__PushPosts(members, 'framePost', 'framePost', outerKerbTop, outerFrameTop);
         }
 
-        // REVEAL - the hole through the base, offset inward by the kerb thickness.
+        // REVEAL - the hole through the base, offset inward by the builders upstand thickness.
         if (context.HasReveal) {
             var innerBase  =  VghLantern__SkeletonSolver__Ring(mapTo, context.InnerHalfLongMm, context.InnerHalfShortMm, 0);
             var innerTop   =  VghLantern__SkeletonSolver__Ring(mapTo, context.InnerHalfLongMm, context.InnerHalfShortMm, frameTopMm);
 
-            VghLantern__SkeletonSolver__PushRing(members, 'revealBase', 'kerbReveal', innerBase);
-            VghLantern__SkeletonSolver__PushRing(members, 'revealTop',  'kerbReveal', innerTop);
-            VghLantern__SkeletonSolver__PushPosts(members, 'revealPost', 'kerbReveal', innerBase, innerTop);
+            VghLantern__SkeletonSolver__PushRing(members, 'revealBase', 'buildersUpstandReveal', innerBase);
+            VghLantern__SkeletonSolver__PushRing(members, 'revealTop',  'buildersUpstandReveal', innerTop);
+            VghLantern__SkeletonSolver__PushPosts(members, 'revealPost', 'buildersUpstandReveal', innerBase, innerTop);
         }
 
         // EAVES - the ring the roof springs from, oversailing the frame.
@@ -334,15 +333,15 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
     function VghLantern__SkeletonSolver__BuildBaseBlock(context) {
         var outerHalfX  =  context.WidthMm / 2;
         var outerHalfY  =  context.DepthMm / 2;
-        var innerHalfX  =  Math.max(0, outerHalfX - context.KerbThicknessMm);
-        var innerHalfY  =  Math.max(0, outerHalfY - context.KerbThicknessMm);
+        var innerHalfX  =  Math.max(0, outerHalfX - context.UpstandThicknessMm);
+        var innerHalfY  =  Math.max(0, outerHalfY - context.UpstandThicknessMm);
 
         return {
-            KerbHeightMm      : context.KerbHeightMm,
-            KerbThicknessMm   : context.KerbThicknessMm,
+            UpstandHeightMm      : context.UpstandHeightMm,
+            UpstandThicknessMm   : context.UpstandThicknessMm,
             FrameHeightMm     : context.FrameHeightMm,
-            KerbBaseLevelMm   : 0,
-            KerbTopLevelMm    : context.KerbTopLevelMm,
+            UpstandBaseLevelMm   : 0,
+            UpstandTopLevelMm    : context.UpstandTopLevelMm,
             FrameTopLevelMm   : context.FrameTopLevelMm,
             OuterHalfWidthMm  : outerHalfX,
             OuterHalfDepthMm  : outerHalfY,
@@ -466,20 +465,20 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var formCfg   =  lantern['Lantern__Form__Config']        || {};
         var dimsCfg   =  lantern['Lantern__Dimensions__Config']  || {};
         var pitchCfg  =  lantern['Lantern__RoofPitch__Config']   || {};
-        var kerbCfg   =  lantern['Lantern__KerbAndBase__Config'] || {};
+        var upstandCfg   =  lantern['Lantern__BuildersUpstandAndBase__Config'] || {};
 
         var roofForm       =  formCfg['Lantern__Form__Config__RoofForm'] || ROOF_FORM_HIPPED_RIDGE;
         var widthMm        =  Number(dimsCfg['Lantern__Dimensions__Config__WidthMm']) || 0;
         var depthMm        =  Number(dimsCfg['Lantern__Dimensions__Config__DepthMm']) || 0;
         var eavesProjMm    =  Number(dimsCfg['Lantern__Dimensions__Config__EavesProjectionMm']) || 0;
 
-        // BASE ASSEMBLY - width and depth are measured to the OUTER kerb face.
-        var kerbHeightMm     =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(kerbCfg, 'Lantern__KerbAndBase__Config__KerbHeightMm',    FALLBACK_KERB_HEIGHT_MM));
-        var kerbThicknessMm  =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(kerbCfg, 'Lantern__KerbAndBase__Config__KerbThicknessMm', FALLBACK_KERB_THICKNESS_MM));
-        var frameHeightMm    =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(kerbCfg, 'Lantern__KerbAndBase__Config__FrameHeightMm',   FALLBACK_FRAME_HEIGHT_MM));
+        // BASE ASSEMBLY - width and depth are measured to the OUTER builders upstand face.
+        var upstandHeightMm     =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm',    FALLBACK_UPSTAND_HEIGHT_MM));
+        var upstandThicknessMm  =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm', FALLBACK_UPSTAND_THICKNESS_MM));
+        var frameHeightMm    =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',   FALLBACK_FRAME_HEIGHT_MM));
 
-        var kerbTopLevelMm   =  kerbHeightMm;
-        var frameTopLevelMm  =  kerbHeightMm + frameHeightMm;
+        var upstandTopLevelMm   =  upstandHeightMm;
+        var frameTopLevelMm  =  upstandHeightMm + frameHeightMm;
 
         var eavesHalfX  =  (widthMm / 2) + eavesProjMm;
         var eavesHalfY  =  (depthMm / 2) + eavesProjMm;
@@ -487,11 +486,11 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var longAxis        =  eavesHalfX >= eavesHalfY ? 'x' : 'y';
         var eavesHalfLong   =  Math.max(eavesHalfX, eavesHalfY);
         var eavesHalfShort  =  Math.min(eavesHalfX, eavesHalfY);
-        var kerbHalfLong    =  longAxis === 'x' ? widthMm / 2 : depthMm / 2;
-        var kerbHalfShort   =  longAxis === 'x' ? depthMm / 2 : widthMm / 2;
+        var upstandHalfLong    =  longAxis === 'x' ? widthMm / 2 : depthMm / 2;
+        var upstandHalfShort   =  longAxis === 'x' ? depthMm / 2 : widthMm / 2;
 
-        var innerHalfLong   =  kerbHalfLong  - kerbThicknessMm;
-        var innerHalfShort  =  kerbHalfShort - kerbThicknessMm;
+        var innerHalfLong   =  upstandHalfLong  - upstandThicknessMm;
+        var innerHalfShort  =  upstandHalfShort - upstandThicknessMm;
         var hasReveal       =  (innerHalfShort * 2) >= MIN_REVEAL_DIMENSION_MM
                             && (innerHalfLong  * 2) >= MIN_REVEAL_DIMENSION_MM;
 
@@ -511,20 +510,20 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             WidthMm            : widthMm,
             DepthMm            : depthMm,
             EavesProjectionMm  : eavesProjMm,
-            KerbHeightMm       : kerbHeightMm,
-            KerbThicknessMm    : kerbThicknessMm,
+            UpstandHeightMm       : upstandHeightMm,
+            UpstandThicknessMm    : upstandThicknessMm,
             FrameHeightMm      : frameHeightMm,
             LongAxis           : longAxis,
             MapTo              : VghLantern__SkeletonSolver__BuildAxisMapper(longAxis),
             EavesHalfLongMm    : eavesHalfLong,
             EavesHalfShortMm   : eavesHalfShort,
-            KerbHalfLongMm     : kerbHalfLong,
-            KerbHalfShortMm    : kerbHalfShort,
+            UpstandHalfLongMm     : upstandHalfLong,
+            UpstandHalfShortMm    : upstandHalfShort,
             InnerHalfLongMm    : innerHalfLong,
             InnerHalfShortMm   : innerHalfShort,
             HasReveal          : hasReveal,
             RidgeHalfLengthMm  : ridgeHalfLength,
-            KerbTopLevelMm     : kerbTopLevelMm,
+            UpstandTopLevelMm     : upstandTopLevelMm,
             FrameTopLevelMm    : frameTopLevelMm,
             EavesLevelMm       : frameTopLevelMm,
             RidgeLevelMm       : frameTopLevelMm + pitchSet.RiseMm,
@@ -548,11 +547,11 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             context.Warnings.push('The roof pitch resolves to no rise at all - the roof would be flat.');
             isValid  =  false;
         }
-        if (context.EavesProjectionMm > context.KerbHalfShortMm) {
+        if (context.EavesProjectionMm > context.UpstandHalfShortMm) {
             context.Warnings.push('Eaves projection exceeds half the short span - check the overhang.');
         }
         if (!context.HasReveal) {
-            context.Warnings.push('A kerb thickness of ' + Math.round(context.KerbThicknessMm)
+            context.Warnings.push('A builders upstand thickness of ' + Math.round(context.UpstandThicknessMm)
                 + ' mm leaves no usable reveal at this size - the upstand is solid through.');
         }
 
@@ -626,8 +625,8 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
                 WidthMm              : context.WidthMm,
                 DepthMm              : context.DepthMm,
                 EavesProjectionMm    : context.EavesProjectionMm,
-                KerbHeightMm         : context.KerbHeightMm,
-                KerbThicknessMm      : context.KerbThicknessMm,
+                UpstandHeightMm         : context.UpstandHeightMm,
+                UpstandThicknessMm      : context.UpstandThicknessMm,
                 FrameHeightMm        : context.FrameHeightMm,
                 LongAxis             : context.LongAxis,
                 EavesHalfWidthMm     : context.LongAxis === 'x' ? context.EavesHalfLongMm : context.EavesHalfShortMm,
@@ -640,7 +639,7 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
                 LongSlopePitchDeg    : pitchSet.LongSlopePitchDegrees,
                 HipLengthMm          : pitchSet.HipLengthMm,
                 HipAngleDegrees      : pitchSet.HipAngleDegrees,
-                KerbTopLevelMm       : context.KerbTopLevelMm,
+                UpstandTopLevelMm       : context.UpstandTopLevelMm,
                 EavesLevelMm         : context.EavesLevelMm,
                 RidgeLevelMm         : context.RidgeLevelMm,
                 OverallHeightMm      : context.RidgeLevelMm

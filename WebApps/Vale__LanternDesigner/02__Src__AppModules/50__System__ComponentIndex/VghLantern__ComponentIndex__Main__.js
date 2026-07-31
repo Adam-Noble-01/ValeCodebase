@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Renders a card gallery of every asset in the two data libraries
    - Two library tabs: Components (finials, bases, cresting, vents) and Profiles
-     (glazing bars, ridge, hip, eaves and kerb sections)
+     (glazing bars, ridge, hip, eaves and builders upstand sections)
    - Category filter chips plus a live text search across id, name and category
    - Each card shows a 2D preview traced from the asset's Na__Asset__Profile2D
      outline, so nothing depends on pre-rendered raster thumbnails

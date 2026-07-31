@@ -68,7 +68,7 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
     // MODULE CONSTANTS | Lantern Block Names
     // ------------------------------------------------------------
     const BLOCK_DIMENSIONS  =  'Lantern__Dimensions__Config';
-    const BLOCK_KERB        =  'Lantern__KerbAndBase__Config';
+    const BLOCK_UPSTAND        =  'Lantern__BuildersUpstandAndBase__Config';
     const BLOCK_BARS        =  'Lantern__GlazingBars__Config';
     const BLOCK_FINIALS     =  'Lantern__Finials__Config';
     const BLOCK_VENTS       =  'Lantern__Ventilation__Config';
@@ -238,9 +238,9 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
         return {
             widthMm                        : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__WidthMm'),
             depthMm                        : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__DepthMm'),
-            kerbHeightMm                   : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbHeightMm'),
-            kerbThicknessMm                : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__KerbThicknessMm'),
-            frameHeightMm                  : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_KERB, 'Lantern__KerbAndBase__Config__FrameHeightMm'),
+            upstandHeightMm                   : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm'),
+            upstandThicknessMm                : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm'),
+            frameHeightMm                  : VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm'),
             revealWidthMm                  : Number(((skeleton && skeleton.Base) || {}).RevealWidthMm) || 0,
             revealDepthMm                  : Number(((skeleton && skeleton.Base) || {}).RevealDepthMm) || 0,
             pitchDegrees                   : Number(meta.PitchDegrees) || 0,
